@@ -26,6 +26,7 @@ import org.sonar.java.checks.security.InstanceShouldBeInitializedCorrectlyBase;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2092")
 public class SecureCookieCheck extends InstanceShouldBeInitializedCorrectlyBase {
@@ -33,6 +34,11 @@ public class SecureCookieCheck extends InstanceShouldBeInitializedCorrectlyBase 
   @Override
   protected String getMessage() {
     return "Add the \"secure\" attribute to this cookie";
+  }
+
+  @Override
+  protected boolean isCorrectlyInitializedViaConstructor(VariableTree variableTree) {
+    return false;
   }
 
   @Override

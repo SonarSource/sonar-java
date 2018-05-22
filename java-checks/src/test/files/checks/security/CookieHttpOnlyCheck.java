@@ -26,6 +26,10 @@ class S3330 {
 
     Cookie c4 = new Cookie("name", "value"); // Noncompliant
     c4.setHttpOnly(TRUE_CONSTANT); // would require SE to avoid FP
+
+    Cookie c5 = new Cookie("name", "value"); // Noncompliant
+    boolean b = true;
+    c5.setHttpOnly(b); // would require SE to avoid FP
   }
 
   void httpCookie() {
