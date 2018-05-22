@@ -19,12 +19,17 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -35,7 +40,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Collections.singletonList(
       MethodMatcher.create().typeDefinition("javax.crypto.spec.IvParameterSpec").name("<init>").withAnyParameters());
   }
 
@@ -43,7 +48,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   protected void onConstructorFound(NewClassTree newClassTree) {
     Tree mTree = findEnclosingMethod(newClassTree);
     if (mTree != null) {
-      MethodInvocationVisitor mitVisit = new MethodInvocationVisitor();
+      MethodInvocationVisitor mitVisit = new MethodInvocationVisitor(newClassTree);
       mTree.accept(mitVisit);
       if (!mitVisit.secureRandomFound) {
         reportIssue(newClassTree, "Use a dynamically-generated, random IV.");
@@ -64,6 +69,11 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
 
     private boolean secureRandomFound = false;
+    private NewClassTree ivParameterConstructor = null;
+
+    public MethodInvocationVisitor(NewClassTree newClassTree) {
+      ivParameterConstructor = newClassTree;
+    }
 
     private static final MethodMatcher SECURE_RANDOM_NEXT_BYTES = MethodMatcher.create()
       .typeDefinition("java.security.SecureRandom")
@@ -73,9 +83,23 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
       if (SECURE_RANDOM_NEXT_BYTES.matches(methodInvocation)) {
-        secureRandomFound = true;
+        Symbol initVector = returnSymbolOfInitializerVectorBuffer(ivParameterConstructor.arguments().get(0));
+        if (initVector != null && initVector.equals(returnSymbolOfInitializerVectorBuffer(methodInvocation.arguments().get(0)))) {
+          secureRandomFound = true;
+        }
       }
       super.visitMethodInvocation(methodInvocation);
+    }
+
+    @CheckForNull
+    private static Symbol returnSymbolOfInitializerVectorBuffer(ExpressionTree argument) {
+      Symbol symbolArgument = null;
+      if (argument.is(Tree.Kind.IDENTIFIER)) {
+        symbolArgument = ((IdentifierTree) argument).symbol();
+      } else if (argument.is(Tree.Kind.MEMBER_SELECT)) {
+        symbolArgument = ((MemberSelectExpressionTree) argument).identifier().symbol();
+      }
+      return symbolArgument;
     }
   }
 }

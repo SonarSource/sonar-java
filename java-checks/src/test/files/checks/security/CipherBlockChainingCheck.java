@@ -1,11 +1,5 @@
 import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 
 class A {
@@ -15,11 +9,10 @@ class A {
   {
     random.nextBytes(bytes2);
   }
-  IvParameterSpec iv = new IvParameterSpec(bytes2); // Compliant FP, will be fixed with SE engine
+  IvParameterSpec iv = new IvParameterSpec(bytes2); // Compliant FN, will be fixed with SE engine
 
   void foo1()
-    throws InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, IllegalBlockSizeException,
-    BadPaddingException {
+    throws Exception {
     byte[] bytes = "111".getBytes("UTF-8");
     random.nextBytes(bytes);
     IvParameterSpec iv = new IvParameterSpec(bytes); // Compliant
@@ -31,7 +24,7 @@ class A {
   }
 
   void foo3() {
-    IvParameterSpec iv = new IvParameterSpec(bytes2); // Noncompliant FP, will be fixed with SE engine
+    IvParameterSpec iv = new IvParameterSpec(bytes2); // Noncompliant FN, will be fixed with SE engine
   }
 
   void foo4() throws UnsupportedEncodingException {
@@ -86,4 +79,16 @@ class A {
     }
   }
 
+  void foo12() throws UnsupportedEncodingException {
+    byte[] bytes = "111".getBytes("UTF-8");
+    random.nextBytes(bytes);
+    IvParameterSpec iv = new IvParameterSpec(null); // Noncompliant Coverage reasons
+  }
+
+  void foo13() throws UnsupportedEncodingException {
+    byte[] bytes = "111".getBytes("UTF-8");
+    random.nextBytes(bytes);
+    byte[] bytes2 = "111222".getBytes("UTF-8");
+    IvParameterSpec iv = new IvParameterSpec(bytes2); // Noncompliant Coverage reasons
+  }
 }
