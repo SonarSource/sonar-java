@@ -183,3 +183,49 @@ static class UtilityClass {
     }
   }
 }
+
+static class UtilityClassWithPublicConstructorCheck {
+  private UtilityClassWithPublicConstructorCheck() {
+  }
+
+  static class A { // WithIssue
+    public static void foo() {
+    }
+  }
+
+  @lombok.NoArgsConstructor
+  public static class B { // WithIssue
+    public static void foo() {
+    }
+  }
+
+  @lombok.RequiredArgsConstructor
+  public static class C { // WithIssue
+    public static void foo() {
+    }
+  }
+
+  @lombok.AllArgsConstructor
+  public static class D { // WithIssue
+    public static void foo() {
+    }
+  }
+
+  @lombok.NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+  static class E { // NoIssue
+    public static void foo() {
+    }
+  }
+
+  @lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+  static class F { // NoIssue
+    public static void foo() {
+    }
+  }
+
+  @lombok.AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+  static class G { // NoIssue
+    public static void foo() {
+    }
+  }
+}
