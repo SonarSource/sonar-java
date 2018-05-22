@@ -69,10 +69,10 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
 
     private boolean secureRandomFound = false;
-    private NewClassTree ivParameterConstructor = null;
+    private NewClassTree ivParameterSpecInstantiation = null;
 
     public MethodInvocationVisitor(NewClassTree newClassTree) {
-      ivParameterConstructor = newClassTree;
+      ivParameterSpecInstantiation = newClassTree;
     }
 
     private static final MethodMatcher SECURE_RANDOM_NEXT_BYTES = MethodMatcher.create()
@@ -83,8 +83,8 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
       if (SECURE_RANDOM_NEXT_BYTES.matches(methodInvocation)) {
-        Symbol initVector = returnSymbolOfInitializerVectorBuffer(ivParameterConstructor.arguments().get(0));
-        if (initVector != null && initVector.equals(returnSymbolOfInitializerVectorBuffer(methodInvocation.arguments().get(0)))) {
+        Symbol initVector = symbol(ivParameterSpecInstantiation.arguments().get(0));
+        if (initVector != null && initVector.equals(symbol(methodInvocation.arguments().get(0)))) {
           secureRandomFound = true;
         }
       }
@@ -92,14 +92,14 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
     }
 
     @CheckForNull
-    private static Symbol returnSymbolOfInitializerVectorBuffer(ExpressionTree argument) {
-      Symbol symbolArgument = null;
-      if (argument.is(Tree.Kind.IDENTIFIER)) {
-        symbolArgument = ((IdentifierTree) argument).symbol();
-      } else if (argument.is(Tree.Kind.MEMBER_SELECT)) {
-        symbolArgument = ((MemberSelectExpressionTree) argument).identifier().symbol();
+    private static Symbol symbol(ExpressionTree expression) {
+      Symbol symbol = null;
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        symbol = ((IdentifierTree) expression).symbol();
+      } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+        symbol = ((MemberSelectExpressionTree) expression).identifier().symbol();
       }
-      return symbolArgument;
+      return symbol;
     }
   }
 }
