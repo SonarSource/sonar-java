@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks.helpers;
 
+import static java.lang.Boolean.TRUE;
+
 // used by ConstantUtilsTest
 public class ClassWithConstants {
 
@@ -27,6 +29,7 @@ public class ClassWithConstants {
   public static final int INT_CONSTANT1 = 42;
   public static final long LONG_CONSTANT1 = 99L;
   public static final Object OBJECT_CONSTANT = new Object();
+  public static final boolean BOOLEAN_CONSTANT = false;
 
   public void literals(String param) {
     System.out.println("hello");
@@ -41,6 +44,8 @@ public class ClassWithConstants {
     System.out.println(CONSTANT2);
     System.out.println(INT_CONSTANT1);
     System.out.println(LONG_CONSTANT1);
+    System.out.println(TRUE);
+    System.out.println(BOOLEAN_CONSTANT);
   }
 
   public void parentheses(String parentheses) {
@@ -50,6 +55,8 @@ public class ClassWithConstants {
 
   public void memberSelect(String parentheses) {
     System.out.println(ClassWithConstants.CONSTANT1);
+    System.out.println(Boolean.TRUE);
+    System.out.println(Boolean.FALSE);
   }
 
   public void plus(String param) {

@@ -47,13 +47,15 @@ public class ConstantUtilsTest {
     assertThat(resolveAsStrings("literals")).containsExactly("hello", null, null, null, null);
     assertThat(resolveAsInts("literals")).containsExactly(null, null, 43, null, null);
     assertThat(resolveAsLongs("literals")).containsExactly(null, null, 43L, 77L, null);
+    assertThat(resolveAsBooleans("literals")).containsExactly(null, true, null, null, null);
   }
 
   @Test
   public void identifiers() {
-    assertThat(resolveAsStrings("identifiers")).containsExactly("abc", "abcdef", null, null);
-    assertThat(resolveAsInts("identifiers")).containsExactly(null, null, 42, null);
-    assertThat(resolveAsLongs("identifiers")).containsExactly(null, null, 42L, 99L);
+    assertThat(resolveAsStrings("identifiers")).containsExactly("abc", "abcdef", null, null, null, null);
+    assertThat(resolveAsInts("identifiers")).containsExactly(null, null, 42, null, null, null);
+    assertThat(resolveAsLongs("identifiers")).containsExactly(null, null, 42L, 99L, null, null);
+    assertThat(resolveAsBooleans("identifiers")).containsExactly(null, null, null, null, true, false);
   }
 
   @Test
@@ -64,7 +66,8 @@ public class ConstantUtilsTest {
 
   @Test
   public void memberSelect() {
-    assertThat(resolveAsStrings("memberSelect")).containsExactly("abc");
+    assertThat(resolveAsStrings("memberSelect")).containsExactly("abc", null, null);
+    assertThat(resolveAsBooleans("memberSelect")).containsExactly(null, true, false);
   }
 
   @Test
@@ -96,6 +99,10 @@ public class ConstantUtilsTest {
 
   private List<Long> resolveAsLongs(String methodName) {
     return constantValuesInMethod(methodName, ConstantUtils::resolveAsLongConstant);
+  }
+
+  private List<Boolean> resolveAsBooleans(String methodName) {
+    return constantValuesInMethod(methodName, ConstantUtils::resolveAsBooleanConstant);
   }
 
   private <T> List<T> constantValuesInMethod(String methodName, Function<ExpressionTree,T> resolver) {

@@ -24,5 +24,7 @@ public class ClassWithConstants {
   final String nonStatic = "xxx";
   static String nonFinal = "xxx";
   static final String CONST1 = "CONST_VALUE";
+  static final boolean BOOLEAN_TRUE = true;
+  static final boolean BOOLEAN_FALSE = false;
 
 }

@@ -59,10 +59,12 @@ public class ConstantTest {
           valuesByFieldName.put(variableTree.simpleName().name(), value);
         }
       }), Collections.singletonList(bytecodeDir), null));
-    assertThat(valuesByFieldName.keySet()).contains("CONST1", "nonStatic", "nonFinal");
+    assertThat(valuesByFieldName.keySet()).contains("CONST1", "nonStatic", "nonFinal", "BOOLEAN_TRUE", "BOOLEAN_FALSE");
     assertThat(valuesByFieldName.get("CONST1")).isEqualTo("CONST_VALUE");
     assertThat(valuesByFieldName.get("nonStatic")).isNull();
     assertThat(valuesByFieldName.get("nonFinal")).isNull();
+    assertThat(valuesByFieldName.get("BOOLEAN_TRUE")).isEqualTo(true);
+    assertThat(valuesByFieldName.get("BOOLEAN_FALSE")).isEqualTo(false);
   }
 
 }
