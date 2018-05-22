@@ -25,12 +25,18 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class CryptographicKeySizeCheckTest {
 
   @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/CryptographicKeySizeCheck.java", new CryptographicKeySizeCheck());
+  public void test_RSA() {
+    JavaCheckVerifier.verify("src/test/files/checks/security/CryptographicKeySizeCheck/RSA.java", new CryptographicKeySizeCheck());
+  }
+
+  @Test
+  public void test_Blowfish() {
+    JavaCheckVerifier.verify("src/test/files/checks/security/CryptographicKeySizeCheck/Blowfish.java", new CryptographicKeySizeCheck());
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/CryptographicKeySizeCheck.java", new CryptographicKeySizeCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/CryptographicKeySizeCheck/RSA.java", new CryptographicKeySizeCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/CryptographicKeySizeCheck/Blowfish.java", new CryptographicKeySizeCheck());
   }
 }
