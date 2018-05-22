@@ -512,6 +512,9 @@ public class JavaSymbol implements Symbol {
 
     public Optional<Object> constantValue() {
       if (Flags.isFlagged(flags, Flags.STATIC) && Flags.isFlagged(flags, Flags.FINAL)) {
+        if (value != null && type.is("boolean")) {
+          return Optional.of(Integer.valueOf(1).equals(value) ? Boolean.TRUE : Boolean.FALSE);
+        }
         return Optional.ofNullable(value);
       }
       return Optional.empty();

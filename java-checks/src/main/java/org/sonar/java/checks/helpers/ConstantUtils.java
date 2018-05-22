@@ -61,6 +61,12 @@ public class ConstantUtils {
   }
 
   @CheckForNull
+  public static Boolean resolveAsBooleanConstant(ExpressionTree tree) {
+    Object constant = resolveAsConstant(tree);
+    return constant instanceof Boolean ? (Boolean) constant : null;
+  }
+
+  @CheckForNull
   private static Object resolveAsConstant(ExpressionTree tree) {
     ExpressionTree expression = tree;
     while (expression.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
@@ -70,11 +76,10 @@ public class ConstantUtils {
       expression = ((MemberSelectExpressionTree) expression).identifier();
     }
     if (expression.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree id = (IdentifierTree) expression;
-      Symbol symbol = id.symbol();
-      if (symbol.isVariableSymbol()) {
-        return ((JavaSymbol.VariableJavaSymbol) symbol).constantValue().orElse(null);
-      }
+      return resolveIdentifier((IdentifierTree) expression);
+    }
+    if (expression.is(Tree.Kind.BOOLEAN_LITERAL)) {
+      return Boolean.parseBoolean(((LiteralTree) expression).value());
     }
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
       return LiteralUtils.trimQuotes(((LiteralTree) expression).value());
@@ -90,6 +95,27 @@ public class ConstantUtils {
       return resolvePlus((BinaryExpressionTree) expression);
     }
     return null;
+  }
+
+  @CheckForNull
+  private static Object resolveIdentifier(IdentifierTree tree) {
+    Symbol symbol = tree.symbol();
+    if (!symbol.isVariableSymbol()) {
+      return null;
+    }
+    JavaSymbol.VariableJavaSymbol javaSymbol = (JavaSymbol.VariableJavaSymbol) symbol;
+    JavaSymbol owner = javaSymbol.owner();
+    if (owner.isTypeSymbol()) {
+      JavaSymbol.TypeJavaSymbol ownerType = (JavaSymbol.TypeJavaSymbol) owner;
+      if ("java.lang.Boolean".equals(ownerType.getFullyQualifiedName())) {
+        if ("TRUE".equals(javaSymbol.getName())) {
+          return Boolean.TRUE;
+        } else if ("FALSE".equals(javaSymbol.getName())) {
+          return Boolean.FALSE;
+        }
+      }
+    }
+    return javaSymbol.constantValue().orElse(null);
   }
 
   @CheckForNull
