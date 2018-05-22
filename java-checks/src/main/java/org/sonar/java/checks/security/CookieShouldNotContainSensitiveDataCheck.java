@@ -43,7 +43,7 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
     private static final String SPRING_COOKIE = "org.springframework.security.web.savedrequest.SavedCookie";
   }
 
-  private static List<String> cookieArgumentTypes = Arrays.asList(
+  private static final List<String> cookieArgumentTypes = Arrays.asList(
       ClassName.SERVLET_COOKIE,
       ClassName.JAX_RS_COOKIE,
       "org.apache.shiro.web.servlet.Cookie"
@@ -70,7 +70,7 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodTree) {
-    reportIssue(methodTree.methodSelect(), MESSAGE);
+    reportIssue(methodTree.arguments(), MESSAGE);
   }
 
   @Override

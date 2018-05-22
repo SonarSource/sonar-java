@@ -10,10 +10,8 @@ class S2255 {
   private static final String VALUE = "value";
 
   void servletCookie(){
-    Cookie cookie = new Cookie("name", "value"); // Noncompliant {{If the data stored in this cookie is sensitive, it should be stored internally in the user session.}}
-//                      ^^^^^^
-    cookie.setValue("value"); // Noncompliant
-//         ^^^^^^^^
+    Cookie cookie = new Cookie("name", "value"); // Noncompliant [[sc=40;ec=47]] {{If the data stored in this cookie is sensitive, it should be stored internally in the user session.}}
+    cookie.setValue("value"); // Noncompliant [[sc=20;ec=29]]
     String x = "value";
     cookie.setValue(x); // Noncompliant
     cookie.setValue(VALUE); // Noncompliant
