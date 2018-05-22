@@ -1,0 +1,23 @@
+{
+  "title": "Cookies should not be used to store sensitive information",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "cert",
+    "owasp-a3"
+  ],
+  "standards": [
+    "CWE",
+    "CERT",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-2255",
+  "sqKey": "S2255",
+  "scope": "Main"
+}
