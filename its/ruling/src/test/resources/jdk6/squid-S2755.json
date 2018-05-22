@@ -1,0 +1,13 @@
+{
+'jdk6:java/beans/XMLDecoder.java':[
+234,
+],
+'jdk6:java/util/XMLUtils.java':[
+75,
+110,
+],
+'jdk6:java/util/prefs/XmlSupport.java':[
+208,
+224,
+],
+}

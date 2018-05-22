@@ -1,0 +1,22 @@
+{
+  "title": "Untrusted XML should be parsed with a local, static DTD",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a1",
+    "owasp-a4"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-2755",
+  "sqKey": "S2755",
+  "scope": "Main"
+}

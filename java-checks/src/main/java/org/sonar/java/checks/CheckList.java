@@ -53,6 +53,7 @@ import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.security.LDAPDeserializationCheck;
 import org.sonar.java.checks.security.SecureXmlTransformerCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
+import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
 import org.sonar.java.checks.serialization.PrivateReadResolveCheck;
@@ -342,6 +343,7 @@ public final class CheckList {
       .add(AESAlgorithmCheck.class)
       .add(ConstructorCallingOverridableCheck.class)
       .add(EqualsOnAtomicClassCheck.class)
+      .add(XmlExternalEntityProcessingCheck.class)
       .add(LDAPAuthenticatedConnectionCheck.class)
       .add(LDAPDeserializationCheck.class)
       .add(SecureXmlTransformerCheck.class)
