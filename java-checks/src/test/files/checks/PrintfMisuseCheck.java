@@ -2,10 +2,10 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.text.FieldPosition;
 import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.Calendar;
 
 class A {
   void foo(Calendar c){
@@ -98,7 +98,7 @@ class A {
     MessageFormat.format("Result '{0}'", 14); // Noncompliant {{String contains no format specifiers.}}
     MessageFormat.format("Result ' {0}", 14);
     MessageFormat.format("Result {{{0}}.", 14);
-    MessageFormat.format("Result {0}!", myObject.toString()); // Noncompliant {{No need to call toString "method()" as formatting and string conversion is done by the Formatter.}}
+    MessageFormat.format("Result {0}!", myObject.toString()); // Noncompliant {{No need to call "toString()" method as formatting and string conversion is done by the Formatter.}}
     MessageFormat.format("Result {0}!", myObject.hashCode()); // Compliant
     MessageFormat.format("Result yeah!", 14); // Noncompliant {{String contains no format specifiers.}}
     MessageFormat.format("Result {1}!", 14);
@@ -119,7 +119,7 @@ class A {
     logger.log(java.util.logging.Level.SEVERE, "Result '{0}'", 14); // Noncompliant {{String contains no format specifiers.}}
     logger.log(java.util.logging.Level.SEVERE, "Result ' {0}", 14);
     logger.log(java.util.logging.Level.SEVERE, "Result {{{0}}.", 14);
-    logger.log(java.util.logging.Level.SEVERE, "Result {0}!", myObject.toString()); // Noncompliant {{No need to call toString "method()" as formatting and string conversion is done by the Formatter.}}
+    logger.log(java.util.logging.Level.SEVERE, "Result {0}!", myObject.toString()); // Noncompliant {{No need to call "toString()" method as formatting and string conversion is done by the Formatter.}}
     logger.log(java.util.logging.Level.SEVERE, "Result {0}!", myObject.hashCode()); // Compliant
     logger.log(java.util.logging.Level.SEVERE, "Result yeah!", 14); // Noncompliant {{String contains no format specifiers.}}
     logger.log(java.util.logging.Level.SEVERE, "Result yeah!", new Exception()); // compliant, throwable parameter
@@ -131,6 +131,8 @@ class A {
     logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
     logger.log(java.util.logging.Level.SEVERE, "value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
     logger.log(java.util.logging.Level.SEVERE, "value=\"{0}'{'{1}'}'\"", new Object[] {"value 1", "value 2"});
+    logger.log(java.util.logging.Level.SEVERE, "Result {0}!", new Object[] {myObject.toString()}); // Noncompliant {{No need to call "toString()" method as formatting and string conversion is done by the Formatter.}}
+    logger.log(java.util.logging.Level.SEVERE, "Result {0}!", new String[] {myObject.toString()}); // Noncompliant {{No need to call "toString()" method since an array of Objects can be used here.}}
 
     org.slf4j.Logger slf4jLog;
     org.slf4j.Marker marker;

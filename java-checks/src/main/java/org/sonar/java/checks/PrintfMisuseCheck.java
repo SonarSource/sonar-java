@@ -22,11 +22,13 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.resolve.ArrayJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -170,9 +172,30 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   private void checkToStringInvocation(List<ExpressionTree> args) {
     args.stream()
       .filter(arg -> arg.is(Tree.Kind.METHOD_INVOCATION) && TO_STRING.matches((MethodInvocationTree) arg))
-      .forEach(arg -> reportIssue(arg, "No need to call toString \"method()\" as formatting and string conversion is done by the Formatter."));
+      .forEach(arg -> reportIssue(arg, getToStringMessage(arg)));
   }
 
+  private static String getToStringMessage(ExpressionTree arg) {
+    if (isInStringArrayInitializer(arg)) {
+      return "No need to call \"toString()\" method since an array of Objects can be used here.";
+    }
+    return "No need to call \"toString()\" method as formatting and string conversion is done by the Formatter.";
+  }
+
+  private static boolean isInStringArrayInitializer(ExpressionTree arg) {
+    return Optional.of(arg)
+      .map(Tree::parent)
+      .filter(tree -> tree.is(Tree.Kind.LIST))
+      .map(Tree::parent)
+      .filter(tree -> tree.is(Tree.Kind.NEW_ARRAY))
+      .map(NewArrayTree.class::cast)
+      .map(ExpressionTree::symbolType)
+      .filter(Type::isArray)
+      .map(ArrayJavaType.class::cast)
+      .map(ArrayJavaType::elementType)
+      .filter(type -> type.is("java.lang.String"))
+      .isPresent();
+  }
 
   private void verifyParameters(MethodInvocationTree mit, List<ExpressionTree> args, Set<Integer> indexes) {
     List<ExpressionTree> unusedArgs = new ArrayList<>(args);
