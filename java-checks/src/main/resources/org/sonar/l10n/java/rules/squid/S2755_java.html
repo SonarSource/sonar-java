@@ -1,0 +1,54 @@
+<p>Allowing external entities in untrusted documents to be processed could lay your systems bare to attackers. Imagine if these entities were
+parsed:</p>
+<pre>
+&lt;!ENTITY xxe SYSTEM "file:///etc/passwd" &gt;]&gt;&lt;foo&gt;&amp;xxe;&lt;/foo&gt;
+&lt;!ENTITY xxe SYSTEM "http://www.attacker.com/text.txt" &gt;]&gt;&lt;foo&gt;&amp;xxe;&lt;/foo&gt;
+</pre>
+<p>If you must parse untrusted XML, the best way to protect yourself is to use a local, static DTD during parsing and igore any DTD's included in
+included in the document.</p>
+<p>This rule raises an issue when any of the following are used without first disabling external entity processing: JAXP's
+<code>DocumentBuilderFactory</code>, <code>SAXParserFactory</code>, Xerces 1 and Xerces 2 StAX's <code>XMLInputFactory</code> and
+<code>XMLReaderFactory</code>.</p>
+<p>To disable external entity processing for <code>XMLInputFactory</code>, configure one of the properties
+<code>XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES</code> or <code>XMLInputFactory.SUPPORT_DTD</code> to false.</p>
+<p>To disable external entity processing for <code>SAXParserFactory</code>, <code>XMLReader</code> or <code>DocumentBuilderFactory</code> configure
+one of the properties <code>XMLConstants.FEATURE_SECURE_PROCESSING</code> or <code>"http://apache.org/xml/features/disallow-doctype-decl"</code> to
+true.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+/* Load XML stream and display content */
+String maliciousSample = "xxe.xml";
+XMLInputFactory factory = XMLInputFactory.newInstance();
+
+try (FileInputStream fis = new FileInputStream(malicousSample)) {
+  // Load XML stream
+  XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(fis);  // Noncompliant; reader is vulnerable
+
+  //...
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+/* Load XML stream and display content */
+String maliciousSample = "xxe.xml";
+XMLInputFactory factory = XMLInputFactory.newInstance();
+
+// disable external entities
+factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+
+try (FileInputStream fis = new FileInputStream(malicousSample)) {
+    // Load XML stream
+    XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(fis);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/611.html">MITRE, CWE-611</a> - Information Exposure Through XML External Entity Reference </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/827.html">MITRE, CWE-827</a> - Improper Control of Document Type Definition </li>
+  <li> OWASP Top 10 2017 Category A1 - Injection </li>
+  <li> OWASP Top 10 2017 Category A4 - XML External Entities (XXE) </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#XXE_XMLSTREAMREADER">XXE_XMLSTREAMREADER</a> </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#XXE_SAXPARSER">XXE_SAXPARSER</a> </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#XXE_XMLREADER">XXE_XMLREADER</a> </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#XXE_DOCUMENT">XXE_DOCUMENT</a> </li>
+</ul>
+
