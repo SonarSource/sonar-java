@@ -27,6 +27,5 @@ public class CookieHttpOnlyCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/security/CookieHttpOnlyCheck.java", new CookieHttpOnlyCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/CookieHttpOnlyCheck.java", new CookieHttpOnlyCheck());
   }
 }

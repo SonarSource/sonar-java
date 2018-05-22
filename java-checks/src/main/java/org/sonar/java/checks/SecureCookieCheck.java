@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.security.InstanceShouldBeInitializedCorrectlyBase;
@@ -41,7 +41,7 @@ public class SecureCookieCheck extends InstanceShouldBeInitializedCorrectlyBase 
   }
 
   @Override
-  protected boolean argumentsHaveExpectedValue(Arguments arguments) {
+  protected boolean methodArgumentsHaveExpectedValue(Arguments arguments) {
     ExpressionTree expressionTree = arguments.get(0);
     return LiteralUtils.isTrue(expressionTree);
   }
@@ -53,6 +53,6 @@ public class SecureCookieCheck extends InstanceShouldBeInitializedCorrectlyBase 
 
   @Override
   protected List<String> getClasses() {
-    return Arrays.asList("javax.servlet.http.Cookie");
+    return Collections.singletonList("javax.servlet.http.Cookie");
   }
 }

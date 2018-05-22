@@ -25,9 +25,11 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
 
   protected abstract String getMessage();
 
+  //protected abstract boolean constructorArgumentsHaveExpectedValue(Arguments arguments);
+
   protected abstract String getMethodName();
 
-  protected abstract boolean argumentsHaveExpectedValue(Arguments arguments);
+  protected abstract boolean methodArgumentsHaveExpectedValue(Arguments arguments);
 
   protected abstract int getMethodArity();
 
@@ -86,7 +88,7 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
   private boolean isInitializedWithMethod(MethodInvocationTree mit) {
     Symbol methodSymbol = mit.symbol();
     boolean hasMethodArity = mit.arguments().size() == getMethodArity();
-    if (hasMethodArity && isWantedClassMethod(methodSymbol) && argumentsHaveExpectedValue(mit.arguments())) {
+    if (hasMethodArity && isWantedClassMethod(methodSymbol) && methodArgumentsHaveExpectedValue(mit.arguments())) {
       return getMethodName().equals(getIdentifier(mit).name());
     }
     return false;
