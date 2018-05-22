@@ -1,0 +1,23 @@
+<p>The <code>HttpOnly</code> cookie attribute tells the browser to prevent client-side scripts from reading cookies with the attribute, and its use
+can go a long way to defending against Cross-Site Scripting (XSS) attacks. Thus, as a precaution, the attribute should be set by default on all
+cookies set server-side, such as session id cookies.</p>
+<p>Setting the attribute can be done either programmatically, or globally via configuration files. </p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Cookie cookie = new Cookie("myCookieName"); // Noncompliant; by default cookie.isHttpOnly() is returning false
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+Cookie cookie = new Cookie("myCookieName");
+cookie.setHttpOnly(true); // Compliant
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/79.html">CWE-79</a> - Improper Neutralization of Input During Web Page Generation ('Cross-site
+  Scripting') </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/1004.html">CWE-1004</a> - Sensitive Cookie Without 'HttpOnly' Flag </li>
+  <li> OWASP Top 10 2017 Category A7 - Cross-Site Scripting (XSS) </li>
+  <li> <a href="https://www.owasp.org/index.php/HttpOnly">OWASP HttpOnly</a> </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#HTTPONLY_COOKIE">HTTPONLY_COOKIE</a> </li>
+</ul>
+
