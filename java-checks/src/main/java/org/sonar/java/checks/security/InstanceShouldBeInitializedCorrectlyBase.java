@@ -22,6 +22,7 @@ package org.sonar.java.checks.security;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.List;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -38,7 +39,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableSubscriptionVisitor {
 
   private final List<VariableSymbol> correctlyInitializedViaConstructor = Lists.newArrayList();
-  private final List<VariableSymbol> variablesToFlag = Lists.newArrayList();
+  private final List<VariableSymbol> declarationsToFlag = Lists.newArrayList();
+  private final List<MethodInvocationTree> settersToFlag = Lists.newArrayList();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -47,22 +49,25 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
 
   protected abstract String getMessage();
 
-  protected abstract boolean isCorrectlyInitializedViaConstructor(VariableTree variableSymbol);
+  protected abstract boolean constructorInitializesCorrectly(VariableTree variableSymbol);
 
-  protected abstract String getMethodName();
-
-  protected abstract boolean methodArgumentsHaveExpectedValue(Arguments arguments);
-
-  protected abstract int getMethodArity();
+  protected abstract String getSetterName();
 
   protected abstract List<String> getClasses();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    variablesToFlag.clear();
+    correctlyInitializedViaConstructor.clear();
+    declarationsToFlag.clear();
+    settersToFlag.clear();
     super.scanFile(context);
-    for (Symbol.VariableSymbol var : variablesToFlag) {
-      reportIssue(var.declaration().simpleName(), getMessage());
+    for (VariableSymbol var : declarationsToFlag) {
+      if (var.declaration() != null) {
+        reportIssue(var.declaration().simpleName(), getMessage());
+      }
+    }
+    for (MethodInvocationTree mit : settersToFlag) {
+      reportIssue(mit.arguments(), getMessage());
     }
   }
 
@@ -74,56 +79,60 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
         addToVariablesToFlag(variableTree);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
-        removeFromVariablesToFlagIfInitializedWithMethod(mit);
+        checkSetterInvocation(mit);
       }
     }
   }
 
   private void addToVariablesToFlag(VariableTree variableTree) {
     Type type = variableTree.type().symbolType();
-    if (getClasses().stream().anyMatch(type::isSubtypeOf) && isConstructorInitialized(variableTree)) {
+    if (getClasses().stream().anyMatch(type::isSubtypeOf) && isInitializedByConstructor(variableTree)) {
       Symbol variableTreeSymbol = variableTree.symbol();
       //Ignore field variables
       if (variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol()) {
         VariableSymbol variableSymbol = (VariableSymbol) variableTreeSymbol;
-        if (isCorrectlyInitializedViaConstructor(variableTree)) {
+        if (constructorInitializesCorrectly(variableTree)) {
           correctlyInitializedViaConstructor.add(variableSymbol);
-        }
-        else {
-          variablesToFlag.add(variableSymbol);
+        } else {
+          declarationsToFlag.add(variableSymbol);
         }
       }
     }
   }
 
-  private static boolean isConstructorInitialized(VariableTree variableTree) {
+  private static boolean isInitializedByConstructor(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
     return initializer != null && initializer.is(Tree.Kind.NEW_CLASS);
   }
 
-  // TODO should check the method vs constructor parameters
-  private void removeFromVariablesToFlagIfInitializedWithMethod(MethodInvocationTree mit) {
-    if (isExpectedMethod(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+  private void checkSetterInvocation(MethodInvocationTree mit) {
+    if (isExpectedSetter(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
       if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
         VariableSymbol reference = (VariableSymbol)((IdentifierTree) mse.expression()).symbol();
-        if (methodArgumentsHaveExpectedValue(mit.arguments())) {
-          variablesToFlag.remove(reference);
-        }
-        else if (correctlyInitializedViaConstructor.contains(reference)) {
-          variablesToFlag.add(reference);
+        if (setterArgumentHasExpectedValue(mit.arguments())) {
+          declarationsToFlag.remove(reference);
+        } else if (correctlyInitializedViaConstructor.contains(reference)) {
+          declarationsToFlag.add(reference);
+        } else if (!declarationsToFlag.contains(reference)) {
+          settersToFlag.add(mit);
         }
       }
     }
   }
 
-  private boolean isExpectedMethod(MethodInvocationTree mit) {
+  private boolean isExpectedSetter(MethodInvocationTree mit) {
     Symbol methodSymbol = mit.symbol();
-    boolean hasMethodArity = mit.arguments().size() == getMethodArity();
+    boolean hasMethodArity = mit.arguments().size() == 1;
     if (hasMethodArity && isWantedClassMethod(methodSymbol)) {
-      return getMethodName().equals(getIdentifier(mit).name());
+      return getSetterName().equals(getIdentifier(mit).name());
     }
     return false;
+  }
+
+  private boolean setterArgumentHasExpectedValue(Arguments arguments) {
+    ExpressionTree expressionTree = arguments.get(0);
+    return !LiteralUtils.isFalse(expressionTree);
   }
 
   private boolean isWantedClassMethod(Symbol methodSymbol) {

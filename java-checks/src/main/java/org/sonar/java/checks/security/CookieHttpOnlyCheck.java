@@ -40,7 +40,7 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
   private static final String INT = "int";
   private static final String BOOLEAN = "boolean";
 
-  private final class ClassName {
+  private static final class ClassName {
     private static final String SERVLET_COOKIE = "javax.servlet.http.Cookie";
     private static final String NET_HTTP_COOKIE = "java.net.HttpCookie";
     private static final String JAX_RS_COOKIE = "javax.ws.rs.core.Cookie";
@@ -48,7 +48,7 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
     private static final String SHIRO_COOKIE = "org.apache.shiro.web.servlet.SimpleCookie";
   }
 
-  private List<MethodMatcher> constructorsWithHttpOnlyParameter() {
+  private static List<MethodMatcher> constructorsWithHttpOnlyParameter() {
     return Arrays.asList(
         MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
           .parameters(ClassName.JAX_RS_COOKIE, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN),
@@ -70,7 +70,7 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
   }
 
   @Override
-  protected boolean isCorrectlyInitializedViaConstructor(VariableTree variableTree) {
+  protected boolean constructorInitializesCorrectly(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
     if (initializer != null && initializer.is(Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) initializer;
@@ -78,8 +78,7 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
         Arguments arguments = newClassTree.arguments();
         ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
         return LiteralUtils.isTrue(lastArgument);
-      }
-      else {
+      } else {
         return constructorsWithGoodDefault().stream().anyMatch(matcher -> matcher.matches(newClassTree));
       }
     }
@@ -87,19 +86,8 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
   }
 
   @Override
-  protected String getMethodName() {
+  protected String getSetterName() {
     return "setHttpOnly";
-  }
-
-  @Override
-  protected boolean methodArgumentsHaveExpectedValue(Arguments arguments) {
-    ExpressionTree expressionTree = arguments.get(0);
-    return LiteralUtils.isTrue(expressionTree);
-  }
-
-  @Override
-  protected int getMethodArity() {
-    return 1;
   }
 
   @Override
