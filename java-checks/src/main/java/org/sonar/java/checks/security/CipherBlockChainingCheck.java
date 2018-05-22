@@ -21,15 +21,10 @@ package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
-import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -48,7 +43,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   protected void onConstructorFound(NewClassTree newClassTree) {
     Tree mTree = findEnclosingMethod(newClassTree);
     if (mTree != null) {
-      MethodInvocationVisitor mitVisit = new MethodInvocationVisitor(newClassTree);
+      MethodInvocationVisitor mitVisit = new MethodInvocationVisitor();
       mTree.accept(mitVisit);
       if (!mitVisit.secureRandomFound) {
         reportIssue(newClassTree, "Use a dynamically-generated, random IV.");
@@ -59,42 +54,28 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   private static MethodTree findEnclosingMethod(Tree tree) {
     while (!tree.is(Tree.Kind.CLASS, Tree.Kind.METHOD)) {
       tree = tree.parent();
-      if (tree.is(Tree.Kind.METHOD)) {
-        return (MethodTree) tree;
-      }
     }
-    return null;
+    if (tree.is(Tree.Kind.CLASS)) {
+      return null;
+    }
+    return (MethodTree) tree;
   }
 
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
 
-    private NewClassTree newClass;
     private boolean secureRandomFound = false;
 
-    public MethodInvocationVisitor(NewClassTree newClassTree) {
-      this.newClass = newClassTree;
-    }
+    private static final MethodMatcher SECURE_RANDOM_NEXT_BYTES = MethodMatcher.create()
+      .typeDefinition("java.security.SecureRandom")
+      .name("nextBytes")
+      .withAnyParameters();
 
     @Override
-    public void visitMethodInvocation(MethodInvocationTree tree) {
-      if ("nextBytes".equals(tree.symbol().name())) {
-        Symbol initVector = returnSymbolOfInitializerVectorBuffer(newClass.arguments().get(0));
-        if (initVector != null && initVector.equals(returnSymbolOfInitializerVectorBuffer(tree.arguments().get(0)))) {
-          secureRandomFound = true;
-        }
+    public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
+      if (SECURE_RANDOM_NEXT_BYTES.matches(methodInvocation)) {
+        secureRandomFound = true;
       }
-      super.visitMethodInvocation(tree);
-    }
-
-    @CheckForNull
-    private static Symbol returnSymbolOfInitializerVectorBuffer(ExpressionTree argument) {
-      Symbol symbolArgument = null;
-      if (argument.is(Tree.Kind.IDENTIFIER)) {
-        symbolArgument = ((IdentifierTree) argument).symbol();
-      } else if (argument.is(Tree.Kind.MEMBER_SELECT)) {
-        symbolArgument = ((MemberSelectExpressionTree) argument).identifier().symbol();
-      }
-      return symbolArgument;
+      super.visitMethodInvocation(methodInvocation);
     }
   }
 }

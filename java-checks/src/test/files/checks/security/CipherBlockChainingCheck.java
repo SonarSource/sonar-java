@@ -38,6 +38,7 @@ class A {
     A a = new A();
     a.bytes2 = "111".getBytes("UTF-8");
     random.nextBytes(a.bytes2);
+    byte[] bytes = "111".getBytes("UTF-8");
     IvParameterSpec iv = new IvParameterSpec(a.bytes2); // Compliant
   }
 
