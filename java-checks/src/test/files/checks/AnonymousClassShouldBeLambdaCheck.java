@@ -274,7 +274,7 @@ class ThisInstanceTest {
   void testRecursion() {
     Math f = new Math() {  // Compliant, recursion
       @Override
-      public String powerOfTwo(int n) {
+      public int powerOfTwo(int n) {
         return n == 0 ? 1 : 2 * powerOfTwo(n -1);
       }
     };
@@ -287,7 +287,7 @@ class ThisInstanceTest {
   void testNotThisInstanceMethod() {
     Math f = new Math() {  // Noncompliant
       @Override
-      public String powerOfTwo(int n) {
+      public int powerOfTwo(int n) {
         return globalPowerOfTwo(n);
       }
     };
@@ -300,7 +300,7 @@ class ThisInstanceTest {
     static int staticFunc() {
       InvokeStatic f = new InvokeStatic() {  // Noncompliant
         @Override
-        public String func(int n) {
+        public int func() {
           unknown();
           staticFunc();
           return 0;
