@@ -1,0 +1,41 @@
+<p>An XML External Entity or XSLT External Entity (XXE) vulnerability can occur when a <code>javax.xml.transform.Transformer</code> is created without
+enabling "Secure Processing" or when one is created without disabling external DTDs. If that external entity is hijacked by an attacker it may lead to
+the disclosure of confidential data, denial of service, server side request forgery, port scanning from the perspective of the machine where the
+parser is located, and other system impacts.</p>
+<p>This rule raises an issue when a <code>Transformer</code> is created without either of these settings.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Transformer transformer = TransformerFactory.newInstance().newTransformer();
+transformer.transform(input, result);
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+TransformerFactory factory = TransformerFactory.newInstance();
+factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+Transformer transformer = factory.newTransformer();
+transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+transformer.transform(input, result);
+</pre>
+<p>or</p>
+<pre>
+TransformerFactory factory = TransformerFactory.newInstance();
+factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+Transformer transformer = factory.newTransformer();
+transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+transformer.transform(input, result);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/611.html">MITRE, CWE-611</a> Improper Restriction of XML External Entity Reference ('XXE') </li>
+  <li> OWASP Top 10 2017 Category A4 - XML External Entities </li>
+  <li> [OWASP XXE cheat sheet| https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet#TransformerFactory] </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#XXE_DTD_TRANSFORM_FACTORY">XXE_DTD_TRANSFORM_FACTORY</a> </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#XXE_XSLT_TRANSFORM_FACTORY">XXE_XSLT_TRANSFORM_FACTORY</a>
+  </li>
+</ul>
+
