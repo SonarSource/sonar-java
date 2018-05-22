@@ -31,11 +31,13 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -73,7 +75,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     ClassTree classBody = tree.classBody();
     if (classBody != null) {
       TypeTree identifier = tree.identifier();
-      if (!useThisIdentifier(classBody) && !enumConstants.contains(identifier) && isSAM(classBody)) {
+      if (!useThisInstance(classBody) && !enumConstants.contains(identifier) && isSAM(classBody)) {
         context.reportIssue(this, identifier, "Make this anonymous inner class a lambda" + context.getJavaVersion().java8CompatibilityMessage());
       }
     }
@@ -81,6 +83,8 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
 
   private static boolean isSAM(ClassTree classBody) {
     if (hasOnlyOneMethod(classBody.members())) {
+      // When overriding only one method of a functional interface, it can only be the single abstract method
+      // and not one of the default methods. No need to check that the method signature matches.
       JavaSymbol.TypeJavaSymbol symbol = (JavaSymbol.TypeJavaSymbol) classBody.symbol();
       // should be anonymous class of interface and not abstract class
       return symbol.getInterfaces().size() == 1
@@ -127,15 +131,20 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     return methodTree != null && methodTree.throwsClauses().isEmpty();
   }
 
-  private static boolean useThisIdentifier(ClassTree body) {
-    ThisIdentifierVisitor visitor = new ThisIdentifierVisitor();
+  private static boolean useThisInstance(ClassTree body) {
+    UsesThisInstanceVisitor visitor = new UsesThisInstanceVisitor(body.symbol().type());
     body.accept(visitor);
-    return visitor.usesThisIdentifier;
+    return visitor.usesThisInstance;
   }
 
-  private static class ThisIdentifierVisitor extends BaseTreeVisitor {
-    boolean usesThisIdentifier = false;
+  private static class UsesThisInstanceVisitor extends BaseTreeVisitor {
+    private final Type instanceType;
+    boolean usesThisInstance = false;
     boolean visitedClassTree = false;
+
+    public UsesThisInstanceVisitor(Type instanceType) {
+      this.instanceType = instanceType;
+    }
 
     @Override
     public void visitClass(ClassTree tree) {
@@ -158,8 +167,19 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     }
 
     @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (tree.methodSelect().is(Tree.Kind.IDENTIFIER)) {
+        Symbol symbol = ((IdentifierTree) tree.methodSelect()).symbol();
+        usesThisInstance |= symbol.isMethodSymbol() &&
+          !symbol.isStatic() &&
+          instanceType.isSubtypeOf(symbol.owner().type());
+      }
+      super.visitMethodInvocation(tree);
+    }
+
+    @Override
     public void visitIdentifier(IdentifierTree tree) {
-      usesThisIdentifier |= "this".equals(tree.name());
+      usesThisInstance |= "this".equals(tree.name());
     }
   }
 
