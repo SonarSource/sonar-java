@@ -48,6 +48,7 @@ import org.sonar.java.checks.security.CookieShouldNotContainSensitiveDataCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPDeserializationCheck;
+import org.sonar.java.checks.security.SecureXmlTransformerCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
@@ -340,6 +341,7 @@ public final class CheckList {
       .add(EqualsOnAtomicClassCheck.class)
       .add(LDAPAuthenticatedConnectionCheck.class)
       .add(LDAPDeserializationCheck.class)
+      .add(SecureXmlTransformerCheck.class)
       .add(NonShortCircuitLogicCheck.class)
       .add(ArrayHashCodeAndToStringCheck.class)
       .add(DefaultEncodingUsageCheck.class)

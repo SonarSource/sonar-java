@@ -1,0 +1,21 @@
+{
+  "title": "XML transformers should be secured",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a4"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4435",
+  "sqKey": "S4435",
+  "scope": "Main"
+}
