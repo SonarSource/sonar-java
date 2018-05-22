@@ -4,6 +4,8 @@ import javax.xml.XMLConstants;
 
 class A {
 
+  static final boolean BOOLEAN_TRUE = true;
+
   TransformerFactory classField = TransformerFactory.newInstance();
 
   TransformerFactory no_call_to_securing_method() {
@@ -31,7 +33,7 @@ class A {
     return factory;
   }
 
-  TransformerFactory secure_processing_true() {
+  TransformerFactory setfeature_with_other_than_secure_processing() {
     TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant
     factory.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, true);
     return factory;
@@ -84,5 +86,31 @@ class A {
     factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, value);
     factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, value);
     return factory;
+  }
+}
+
+class Limitations {
+
+  TransformerFactory multiple_instances() {
+    TransformerFactory factory = TransformerFactory.newInstance();
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    factory = TransformerFactory.newInstance(); // FN
+    return factory;
+  }
+
+  TransformerFactory constant_boolean_value() {
+    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant (FP)
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, BOOLEAN_TRUE);
+    return factory;
+  }
+
+  TransformerFactory cross_procedural() {
+    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant (FP, would require symbolic execution)
+    enableSecureProcessing(factory);
+    return factory;
+  }
+
+  void enableSecureProcessing(TransformerFactory factory) {
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
   }
 }
