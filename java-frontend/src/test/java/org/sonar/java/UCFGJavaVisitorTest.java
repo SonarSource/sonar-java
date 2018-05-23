@@ -405,6 +405,14 @@ public class UCFGJavaVisitorTest {
     UCFGJavaVisitor.scanFile(context);
   }
 
+  @Test
+  public void null_literal_should_produce_a_constant_expression() {
+    UCFG ucfg = createUCFG("class A {String foo(String s) {return foo(null);}}");
+    BasicBlock basicBlock = ucfg.entryBlocks().iterator().next();
+    Expression argExpression = basicBlock.calls().get(0).getArgExpressions().get(0);
+    assertThat(argExpression.isConstant()).isTrue();
+  }
+
   private CompilationUnitTree getCompilationUnitTreeWithSemantics(String source) {
     CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(source);
     SemanticModel.createFor(cut, squidClassLoader);

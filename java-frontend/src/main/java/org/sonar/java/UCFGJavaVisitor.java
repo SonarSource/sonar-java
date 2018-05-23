@@ -253,13 +253,13 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       return;
     }
 
-    List<String> arguments = null;
+    List<Expression> arguments = null;
 
     if (isString(mit.symbol().owner().type())) {
       // myStr.myMethod(args) -> myMethod(myStr, args)
       arguments = new ArrayList<>();
       if (mit.methodSelect().is(MEMBER_SELECT)) {
-        arguments.add(idGenerator.lookupIdFor(((MemberSelectExpressionTree) mit.methodSelect()).expression()));
+        arguments.add(idGenerator.lookupExpressionFor(((MemberSelectExpressionTree) mit.methodSelect()).expression()));
       }
       arguments.addAll(argumentIds(idGenerator, mit));
     } else if (isString(mit.symbolType()) || mit.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isString)) {
@@ -270,13 +270,13 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       String destination = idGenerator.newIdFor(mit);
       blockBuilder.assignTo(variableWithId(destination),
         UCFGBuilder.call(signatureFor((Symbol.MethodSymbol) mit.symbol()))
-          .withArgs(arguments.stream().map(UCFGBuilder::variableWithId).toArray(Expression.Variable[]::new)),
+          .withArgs(arguments.toArray(new Expression[0])),
         location(mit));
     }
   }
 
-  private static List<String> argumentIds(IdentifierGenerator idGenerator, MethodInvocationTree mit) {
-    return mit.arguments().stream().map(idGenerator::lookupIdFor).collect(Collectors.toList());
+  private static List<Expression> argumentIds(IdentifierGenerator idGenerator, MethodInvocationTree mit) {
+    return mit.arguments().stream().map(idGenerator::lookupExpressionFor).collect(Collectors.toList());
   }
 
   private static String signatureFor(Symbol.MethodSymbol methodSymbol) {
