@@ -111,25 +111,15 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
   private void checkSetterInvocation(MethodInvocationTree mit) {
     if (isExpectedSetter(mit)) {
       if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
-        if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
-          VariableSymbol reference = (VariableSymbol) ((IdentifierTree) mse.expression()).symbol();
-          if (setterArgumentHasExpectedValue(mit.arguments())) {
-            declarationsToFlag.remove(reference);
-          } else if (correctlyInitializedViaConstructor.contains(reference)) {
-            declarationsToFlag.add(reference);
-          } else if (!declarationsToFlag.contains(reference)) {
-            settersToFlag.add(mit);
-          }
-        } else if (!setterArgumentHasExpectedValue(mit.arguments())) {
+        if (((MemberSelectExpressionTree) mit.methodSelect()).expression().is(Tree.Kind.IDENTIFIER)) {
+          treatMethodCallOnVariable(mit);
+        } else if (!setterArgumentHasGoodValue(mit.arguments())) {
           // builder method
           settersToFlag.add(mit);
         }
-      } else if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
-        if (!setterArgumentHasExpectedValue(mit.arguments())) {
-          // sub-class method
-          settersToFlag.add(mit);
-        }
+      } else if (mit.methodSelect().is(Tree.Kind.IDENTIFIER) && !setterArgumentHasGoodValue(mit.arguments())) {
+        // sub-class method
+        settersToFlag.add(mit);
       }
     }
   }
@@ -143,7 +133,19 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
     return false;
   }
 
-  private static boolean setterArgumentHasExpectedValue(Arguments arguments) {
+  private void treatMethodCallOnVariable(MethodInvocationTree mit) {
+    MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
+    VariableSymbol reference = (VariableSymbol) ((IdentifierTree) mse.expression()).symbol();
+    if (setterArgumentHasGoodValue(mit.arguments())) {
+      declarationsToFlag.remove(reference);
+    } else if (correctlyInitializedViaConstructor.contains(reference)) {
+      declarationsToFlag.add(reference);
+    } else if (!declarationsToFlag.contains(reference)) {
+      settersToFlag.add(mit);
+    }
+  }
+
+  private static boolean setterArgumentHasGoodValue(Arguments arguments) {
     ExpressionTree expressionTree = arguments.get(0);
     return !LiteralUtils.isFalse(expressionTree);
   }
