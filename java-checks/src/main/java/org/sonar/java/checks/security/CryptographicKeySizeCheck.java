@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
@@ -52,10 +53,10 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    MethodTree methodTree = findEnclosingMethod(mit);
+    MethodTree methodTree = ExpressionsHelper.findEnclosingMethod(mit);
     ExpressionTree getInstanceArg = mit.arguments().get(0);
     if (methodTree != null && getInstanceArg.is(Tree.Kind.STRING_LITERAL)) {
-      MethodVisitor methodVisitor = new MethodVisitor(getInstanceArg);
+      MethodVisitor methodVisitor = new MethodVisitor((LiteralTree) getInstanceArg);
       methodTree.accept(methodVisitor);
       if (methodVisitor.reportString != null) {
         reportIssue(methodVisitor.treeToReport, methodVisitor.reportString);
@@ -63,24 +64,14 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
     }
   }
 
-  private static MethodTree findEnclosingMethod(Tree tree) {
-    while (!tree.is(Tree.Kind.CLASS, Tree.Kind.METHOD)) {
-      tree = tree.parent();
-    }
-    if (tree.is(Tree.Kind.CLASS)) {
-      return null;
-    }
-    return (MethodTree) tree;
-  }
-
   private static class MethodVisitor extends BaseTreeVisitor {
 
-    private String algorithm = null;
+    private final String algorithm;
     private String reportString = null;
     private MethodInvocationTree treeToReport = null;
 
-    public MethodVisitor(ExpressionTree getInstanceArg) {
-      this.algorithm = LiteralUtils.trimQuotes(((LiteralTree) getInstanceArg).value());
+    public MethodVisitor(LiteralTree getInstanceArg) {
+      this.algorithm = LiteralUtils.trimQuotes(getInstanceArg.value());
     }
 
     private static final Map<String, Integer> algorithmKeySizeMap = new HashMap<>();
@@ -95,16 +86,16 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       if (KEY_GEN_INIT.matches(mit) || KEY_PAIR_GEN_INITIALIZE.matches(mit)) {
-        Integer minKeySize = algorithmKeySizeMap.get(algorithm);
+        Integer minKeySize = algorithmKeySizeMap.get(this.algorithm);
         if (minKeySize != null) {
-          checkAlgorithmParameterToReport(mit.arguments().get(0), minKeySize)
-            .ifPresent(argValue -> reportString = argValue);
+          getMessageIfValueIsLessThanMinimum(mit.arguments().get(0), minKeySize)
+            .ifPresent(message -> this.reportString = message);
           this.treeToReport = mit;
         }
       }
     }
 
-    private static Optional<String> checkAlgorithmParameterToReport(ExpressionTree argument, Integer keySize) {
+    private static Optional<String> getMessageIfValueIsLessThanMinimum(ExpressionTree argument, Integer keySize) {
       String resultString = null;
       if (argument.is(Tree.Kind.INT_LITERAL) && (Integer.parseInt(((LiteralTree) argument).value()) < keySize)) {
         resultString = "Use a key length of at least " + keySize + " bits.";

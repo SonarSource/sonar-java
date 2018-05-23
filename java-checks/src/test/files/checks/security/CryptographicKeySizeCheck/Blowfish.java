@@ -6,6 +6,7 @@ import javax.crypto.KeyGenerator;
 class Blowfish {
 
   KeyGenerator keyG;
+  private static final Integer CONSTANT_INT = 64;
 
   public Blowfish() throws NoSuchAlgorithmException {
     keyG = KeyGenerator.getInstance("Blowfish");
@@ -94,5 +95,16 @@ class Blowfish {
     KeyGenerator keyGen = KeyGenerator.getInstance("AES");
     KeyGenerator keyGen2 = KeyGenerator.getInstance("Blowfish");
     keyGen.init(64); // Noncompliant FP
+  }
+
+  public void constant_key_value() {
+    KeyGenerator keyGen = KeyGenerator.getInstance("Blowfish");
+    keyGen.init(CONSTANT_INT); // FN requires following variable's values with SE-based engine
+  }
+
+  public void big_key_value() {
+    KeyGenerator keyG;
+    keyG = KeyGenerator.getInstance("Blowfish");
+    keyG.init(256); // Compliant
   }
 }

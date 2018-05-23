@@ -5,6 +5,7 @@ import javax.crypto.KeyGenerator;
 class RSA {
 
   KeyPairGenerator keyPairG;
+  private static final Integer CONSTANT_INT = 1024;
 
   RSA() throws NoSuchAlgorithmException{
    keyPairG = KeyPairGenerator.getInstance("RSA");
@@ -58,5 +59,16 @@ class RSA {
     KeyPairGenerator keyG;
     keyG = KeyPairGenerator.getInstance("DSA");
     keyG.initialize(1024); // Compliant
+  }
+
+  public void constant_key_value() {
+    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+    keyGen.initialize(CONSTANT_INT); // FN requires following variable's values with SE-based engine
+  }
+
+  public void big_key_value() {
+    KeyPairGenerator keyG;
+    keyG = KeyPairGenerator.getInstance("RSA");
+    keyG.initialize(3000); // Compliant
   }
 }
