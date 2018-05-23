@@ -86,6 +86,11 @@ class S3330 {
     SimpleCookie c4 = new SimpleCookie("name");
   }
 
+  void playFw() {
+    play.mvc.Http.Cookie c1 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, false); // Noncompliant
+    play.mvc.Http.Cookie c2 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true);
+  }
+
   void compliant(Cookie c1, HttpCookie c2, javax.ws.rs.core.Cookie c3, NewCookie c4, SimpleCookie c5) {
     c1.isHttpOnly();
     c2.isHttpOnly();

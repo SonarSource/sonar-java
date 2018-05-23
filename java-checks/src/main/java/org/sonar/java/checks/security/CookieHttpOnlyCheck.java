@@ -44,15 +44,22 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
     private static final String JAX_RS_COOKIE = "javax.ws.rs.core.Cookie";
     private static final String JAX_RS_NEW_COOKIE = "javax.ws.rs.core.NewCookie";
     private static final String SHIRO_COOKIE = "org.apache.shiro.web.servlet.SimpleCookie";
+    private static final String PLAY_COOKIE = "play.mvc.Http$Cookie";
   }
 
   private static final List<MethodMatcher> CONSTRUCTORS_WITH_HTTP_ONLY_PARAM = Arrays.asList(
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
+        MethodMatcher.create()
+          .typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
           .parameters(ClassName.JAX_RS_COOKIE, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN),
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
+        MethodMatcher.create()
+          .typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
           .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN),
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
-          .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN));
+        MethodMatcher.create()
+          .typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
+          .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN),
+        MethodMatcher.create()
+          .typeDefinition(TypeCriteria.subtypeOf(ClassName.PLAY_COOKIE)).name(CONSTRUCTOR)
+          .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN));
 
   private static final List<MethodMatcher> CONSTRUCTORS_WITH_GOOD_DEFAULT = Arrays.asList(
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(CONSTRUCTOR).withoutParameter(),
@@ -85,6 +92,7 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
       ClassName.SERVLET_COOKIE,
       ClassName.NET_HTTP_COOKIE,
       ClassName.JAX_RS_COOKIE,
-      ClassName.SHIRO_COOKIE);
+      ClassName.SHIRO_COOKIE,
+      ClassName.PLAY_COOKIE);
   }
 }
