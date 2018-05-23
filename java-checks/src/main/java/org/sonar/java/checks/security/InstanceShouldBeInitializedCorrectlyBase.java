@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -49,7 +50,7 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
 
   protected abstract String getMessage();
 
-  protected abstract boolean constructorInitializesCorrectly(VariableTree variableSymbol);
+  protected abstract boolean constructorInitializesCorrectly(NewClassTree newClassTree);
 
   protected abstract String getSetterName();
 
@@ -62,8 +63,9 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
     settersToFlag.clear();
     super.scanFile(context);
     for (VariableSymbol var : declarationsToFlag) {
-      if (var.declaration() != null) {
-        reportIssue(var.declaration().simpleName(), getMessage());
+      VariableTree declaration = var.declaration();
+      if (declaration != null) {
+        reportIssue(declaration.simpleName(), getMessage());
       }
     }
     for (MethodInvocationTree mit : settersToFlag) {
@@ -88,10 +90,11 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
     Type type = variableTree.type().symbolType();
     if (getClasses().stream().anyMatch(type::isSubtypeOf) && isInitializedByConstructor(variableTree)) {
       Symbol variableTreeSymbol = variableTree.symbol();
+      NewClassTree initializer = (NewClassTree) variableTree.initializer();
       //Ignore field variables
       if (variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol()) {
         VariableSymbol variableSymbol = (VariableSymbol) variableTreeSymbol;
-        if (constructorInitializesCorrectly(variableTree)) {
+        if (constructorInitializesCorrectly(initializer)) {
           correctlyInitializedViaConstructor.add(variableSymbol);
         } else {
           declarationsToFlag.add(variableSymbol);
@@ -130,7 +133,7 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
     return false;
   }
 
-  private boolean setterArgumentHasExpectedValue(Arguments arguments) {
+  private static boolean setterArgumentHasExpectedValue(Arguments arguments) {
     ExpressionTree expressionTree = arguments.get(0);
     return !LiteralUtils.isFalse(expressionTree);
   }

@@ -28,8 +28,6 @@ import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3330")
 public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBase {
@@ -48,21 +46,17 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
     private static final String SHIRO_COOKIE = "org.apache.shiro.web.servlet.SimpleCookie";
   }
 
-  private static List<MethodMatcher> constructorsWithHttpOnlyParameter() {
-    return Arrays.asList(
+  private static final List<MethodMatcher> CONSTRUCTORS_WITH_HTTP_ONLY_PARAM = Arrays.asList(
         MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
           .parameters(ClassName.JAX_RS_COOKIE, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN),
         MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
           .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN),
         MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
           .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN));
-  }
 
-  private static final List<MethodMatcher> constructorsWithGoodDefault() {
-    return Arrays.asList(
+  private static final List<MethodMatcher> CONSTRUCTORS_WITH_GOOD_DEFAULT = Arrays.asList(
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(CONSTRUCTOR).withoutParameter(),
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(CONSTRUCTOR).parameters(JAVA_LANG_STRING));
-  }
 
   @Override
   protected String getMessage() {
@@ -70,19 +64,14 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
   }
 
   @Override
-  protected boolean constructorInitializesCorrectly(VariableTree variableTree) {
-    ExpressionTree initializer = variableTree.initializer();
-    if (initializer != null && initializer.is(Kind.NEW_CLASS)) {
-      NewClassTree newClassTree = (NewClassTree) initializer;
-      if (constructorsWithHttpOnlyParameter().stream().anyMatch(matcher -> matcher.matches(newClassTree))) {
-        Arguments arguments = newClassTree.arguments();
-        ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
-        return LiteralUtils.isTrue(lastArgument);
-      } else {
-        return constructorsWithGoodDefault().stream().anyMatch(matcher -> matcher.matches(newClassTree));
-      }
+  protected boolean constructorInitializesCorrectly(NewClassTree newClassTree) {
+    if (CONSTRUCTORS_WITH_HTTP_ONLY_PARAM.stream().anyMatch(matcher -> matcher.matches(newClassTree))) {
+      Arguments arguments = newClassTree.arguments();
+      ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
+      return LiteralUtils.isTrue(lastArgument);
+    } else {
+      return CONSTRUCTORS_WITH_GOOD_DEFAULT.stream().anyMatch(matcher -> matcher.matches(newClassTree));
     }
-    return false;
   }
 
   @Override
