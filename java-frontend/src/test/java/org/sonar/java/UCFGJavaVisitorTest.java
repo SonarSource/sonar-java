@@ -23,6 +23,7 @@ package org.sonar.java;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.BeforeClass;
@@ -419,6 +420,18 @@ public class UCFGJavaVisitorTest {
     BasicBlock basicBlock = ucfg.entryBlocks().iterator().next();
     Expression argExpression = basicBlock.calls().get(0).getArgExpressions().get(0);
     assertThat(argExpression.isConstant()).isTrue();
+  }
+
+  @Test
+  public void constructors_should_have_a_ucfg() {
+    UCFG ucfg = createUCFG("class A { Object foo(String s) {new A(s); new Object(); return new String();} A(String s) {} }");
+    assertThat(ucfg.methodId()).isEqualTo("A#foo(Ljava/lang/String;)Ljava/lang/Object;");
+    List<Instruction.AssignCall> calls = ucfg.entryBlocks().iterator().next().calls();
+    assertThat(calls).hasSize(2);
+    Instruction.AssignCall assignCall0 = calls.get(0);
+    assertThat(assignCall0.getMethodId()).isEqualTo("A#<init>(Ljava/lang/String;)V");
+    Instruction.AssignCall assignCall1 = calls.get(1);
+    assertThat(assignCall1.getMethodId()).isEqualTo("java.lang.String#<init>()V");
   }
 
   private CompilationUnitTree getCompilationUnitTreeWithSemantics(String source) {
