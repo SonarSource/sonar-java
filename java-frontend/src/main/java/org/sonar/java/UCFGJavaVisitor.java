@@ -254,46 +254,44 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     }
   }
 
-  private void buildConstructorInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, NewClassTree newClassTree) {
-    List<Expression> arguments = null;
-    if(isString(newClassTree.constructorSymbol().owner().type()) || newClassTree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isString)) {
-      arguments = argumentIds(idGenerator, newClassTree.arguments());
+  private void buildConstructorInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, NewClassTree tree) {
+    Symbol constructorSymbol = tree.constructorSymbol();
+    if (constructorSymbol.isUnknown()) {
+      return;
     }
 
-    if (arguments != null) {
-      String destination = idGenerator.newIdFor(newClassTree);
-      blockBuilder.assignTo(variableWithId(destination),
-        UCFGBuilder.call(signatureFor((Symbol.MethodSymbol) newClassTree.constructorSymbol()))
-          .withArgs(arguments.toArray(new Expression[0])),
-        location(newClassTree));
+    if(isString(constructorSymbol.owner().type()) || tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isString)) {
+      List<Expression> arguments = argumentIds(idGenerator, tree.arguments());
+      buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) constructorSymbol);
     }
   }
 
-  private void buildMethodInvocation(UCFGBuilder.BlockBuilder blockBuilder, IdentifierGenerator idGenerator, MethodInvocationTree mit) {
-    if (mit.symbol().isUnknown()) {
+  private void buildMethodInvocation(UCFGBuilder.BlockBuilder blockBuilder, IdentifierGenerator idGenerator, MethodInvocationTree tree) {
+    if (tree.symbol().isUnknown()) {
       return;
     }
 
     List<Expression> arguments = null;
 
-    if (isString(mit.symbol().owner().type())) {
+    if (isString(tree.symbol().owner().type())) {
       // myStr.myMethod(args) -> myMethod(myStr, args)
       arguments = new ArrayList<>();
-      if (mit.methodSelect().is(MEMBER_SELECT)) {
-        arguments.add(idGenerator.lookupExpressionFor(((MemberSelectExpressionTree) mit.methodSelect()).expression()));
+      if (tree.methodSelect().is(MEMBER_SELECT)) {
+        arguments.add(idGenerator.lookupExpressionFor(((MemberSelectExpressionTree) tree.methodSelect()).expression()));
       }
-      arguments.addAll(argumentIds(idGenerator, mit.arguments()));
-    } else if (isString(mit.symbolType()) || mit.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isString)) {
-      arguments = argumentIds(idGenerator, mit.arguments());
+      arguments.addAll(argumentIds(idGenerator, tree.arguments()));
+    } else if (isString(tree.symbolType()) || tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isString)) {
+      arguments = argumentIds(idGenerator, tree.arguments());
     }
 
     if (arguments != null) {
-      String destination = idGenerator.newIdFor(mit);
-      blockBuilder.assignTo(variableWithId(destination),
-        UCFGBuilder.call(signatureFor((Symbol.MethodSymbol) mit.symbol()))
-          .withArgs(arguments.toArray(new Expression[0])),
-        location(mit));
+      buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) tree.symbol());
     }
+  }
+
+  private void buildAssignCall(BlockBuilder blockBuilder, IdentifierGenerator idGenerator,  List<Expression> arguments, Tree tree, Symbol.MethodSymbol symbol) {
+    String destination = idGenerator.newIdFor(tree);
+    blockBuilder.assignTo(variableWithId(destination), UCFGBuilder.call(signatureFor(symbol)).withArgs(arguments.toArray(new Expression[0])), location(tree));
   }
 
   private static List<Expression> argumentIds(IdentifierGenerator idGenerator, Arguments arguments) {

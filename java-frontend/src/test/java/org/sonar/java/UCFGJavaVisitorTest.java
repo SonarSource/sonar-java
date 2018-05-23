@@ -424,7 +424,7 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void constructors_should_have_a_ucfg() {
-    UCFG ucfg = createUCFG("class A { Object foo(String s) {new A(s); new Object(); return new String();} A(String s) {} }");
+    UCFG ucfg = createUCFG("class A { Object foo(String s) {new A(s); new Object(); new Unknown(\"\"); return new String();} A(String s) {} }");
     assertThat(ucfg.methodId()).isEqualTo("A#foo(Ljava/lang/String;)Ljava/lang/Object;");
     List<Instruction.AssignCall> calls = ucfg.entryBlocks().iterator().next().calls();
     assertThat(calls).hasSize(2);
