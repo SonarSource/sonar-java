@@ -135,9 +135,21 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-email</artifactId>
+                    <version>1.3.2</version>
+                    <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.springframework</groupId>
                   <artifactId>spring-beans</artifactId>
                   <version>4.3.7.RELEASE</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.mail</groupId>
+                  <artifactId>mail</artifactId>
+                  <version>1.4.7</version>
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
