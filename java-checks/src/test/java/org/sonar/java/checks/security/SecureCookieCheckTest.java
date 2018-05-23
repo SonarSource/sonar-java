@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.security;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
@@ -26,6 +26,7 @@ public class SecureCookieCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SecureCookieCheck.java", new SecureCookieCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/security/SecureCookieCheck.java", new SecureCookieCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/SecureCookieCheck.java", new SecureCookieCheck());
   }
 }

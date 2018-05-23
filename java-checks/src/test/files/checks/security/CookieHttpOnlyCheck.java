@@ -36,6 +36,9 @@ class S3330 {
 
     Cookie c6 = new Cookie("name", "value");
     c6.setHttpOnly(param);
+
+    Cookie c7 = new UnknownCookie("name", "value"); // Noncompliant
+    Object c8 = new Cookie("name", "value"); // Noncompliant
   }
 
   Cookie getC1() {

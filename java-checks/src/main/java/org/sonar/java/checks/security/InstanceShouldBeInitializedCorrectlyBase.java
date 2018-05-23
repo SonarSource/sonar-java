@@ -77,24 +77,20 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.VARIABLE)) {
-        VariableTree variableTree = (VariableTree) tree;
-        categorizeBasedOnInitialization(variableTree);
+        categorizeBasedOnInitialization((VariableTree) tree);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree mit = (MethodInvocationTree) tree;
-        checkSetterInvocation(mit);
+        checkSetterInvocation((MethodInvocationTree) tree);
       }
     }
   }
 
   private void categorizeBasedOnInitialization(VariableTree variableTree) {
-    Type type = variableTree.type().symbolType();
-    if (getClasses().stream().anyMatch(type::isSubtypeOf) && isInitializedByConstructor(variableTree)) {
+    if (isInitializedByConstructor(variableTree) && variableOrConstructorAreSupportedTypes(variableTree)) {
       Symbol variableTreeSymbol = variableTree.symbol();
-      NewClassTree initializer = (NewClassTree) variableTree.initializer();
       //Ignore field variables
       if (variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol()) {
         VariableSymbol variableSymbol = (VariableSymbol) variableTreeSymbol;
-        if (constructorInitializesCorrectly(initializer)) {
+        if (constructorInitializesCorrectly((NewClassTree) variableTree.initializer())) {
           correctlyInitializedViaConstructor.add(variableSymbol);
         } else {
           declarationsToFlag.add(variableSymbol);
@@ -106,6 +102,13 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
   private static boolean isInitializedByConstructor(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
     return initializer != null && initializer.is(Tree.Kind.NEW_CLASS);
+  }
+
+  private boolean variableOrConstructorAreSupportedTypes(VariableTree variableTree) {
+    Type variableType = variableTree.type().symbolType();
+    Type newClassType = variableTree.initializer().symbolType();
+    return getClasses().stream().anyMatch(variableType::isSubtypeOf)
+        || getClasses().stream().anyMatch(newClassType::isSubtypeOf);
   }
 
   private void checkSetterInvocation(MethodInvocationTree mit) {
