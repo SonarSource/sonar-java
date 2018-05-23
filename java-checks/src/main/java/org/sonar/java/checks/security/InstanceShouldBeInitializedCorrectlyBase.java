@@ -52,7 +52,7 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
 
   protected abstract boolean constructorInitializesCorrectly(NewClassTree newClassTree);
 
-  protected abstract String getSetterName();
+  protected abstract List<String> getSetterNames();
 
   protected abstract List<String> getClasses();
 
@@ -78,7 +78,7 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) tree;
-        addToVariablesToFlag(variableTree);
+        categorizeBasedOnInitialization(variableTree);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
         checkSetterInvocation(mit);
@@ -86,7 +86,7 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
     }
   }
 
-  private void addToVariablesToFlag(VariableTree variableTree) {
+  private void categorizeBasedOnInitialization(VariableTree variableTree) {
     Type type = variableTree.type().symbolType();
     if (getClasses().stream().anyMatch(type::isSubtypeOf) && isInitializedByConstructor(variableTree)) {
       Symbol variableTreeSymbol = variableTree.symbol();
@@ -109,15 +109,25 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
   }
 
   private void checkSetterInvocation(MethodInvocationTree mit) {
-    if (isExpectedSetter(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
-      if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
-        VariableSymbol reference = (VariableSymbol)((IdentifierTree) mse.expression()).symbol();
-        if (setterArgumentHasExpectedValue(mit.arguments())) {
-          declarationsToFlag.remove(reference);
-        } else if (correctlyInitializedViaConstructor.contains(reference)) {
-          declarationsToFlag.add(reference);
-        } else if (!declarationsToFlag.contains(reference)) {
+    if (isExpectedSetter(mit)) {
+      if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
+        if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
+          VariableSymbol reference = (VariableSymbol) ((IdentifierTree) mse.expression()).symbol();
+          if (setterArgumentHasExpectedValue(mit.arguments())) {
+            declarationsToFlag.remove(reference);
+          } else if (correctlyInitializedViaConstructor.contains(reference)) {
+            declarationsToFlag.add(reference);
+          } else if (!declarationsToFlag.contains(reference)) {
+            settersToFlag.add(mit);
+          }
+        } else if (!setterArgumentHasExpectedValue(mit.arguments())) {
+          // builder method
+          settersToFlag.add(mit);
+        }
+      } else if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
+        if (!setterArgumentHasExpectedValue(mit.arguments())) {
+          // sub-class method
           settersToFlag.add(mit);
         }
       }
@@ -128,7 +138,7 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
     Symbol methodSymbol = mit.symbol();
     boolean hasMethodArity = mit.arguments().size() == 1;
     if (hasMethodArity && isWantedClassMethod(methodSymbol)) {
-      return getSetterName().equals(getIdentifier(mit).name());
+      return getSetterNames().contains(getIdentifier(mit).name());
     }
     return false;
   }

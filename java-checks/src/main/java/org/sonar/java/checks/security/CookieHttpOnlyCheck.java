@@ -45,6 +45,7 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
     private static final String JAX_RS_NEW_COOKIE = "javax.ws.rs.core.NewCookie";
     private static final String SHIRO_COOKIE = "org.apache.shiro.web.servlet.SimpleCookie";
     private static final String PLAY_COOKIE = "play.mvc.Http$Cookie";
+    private static final String PLAY_COOKIE_BUILDER = "play.mvc.Http$CookieBuilder";
   }
 
   private static final List<MethodMatcher> CONSTRUCTORS_WITH_HTTP_ONLY_PARAM = Arrays.asList(
@@ -82,8 +83,8 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
   }
 
   @Override
-  protected String getSetterName() {
-    return "setHttpOnly";
+  protected List<String> getSetterNames() {
+    return Arrays.asList("setHttpOnly", "withHttpOnly");
   }
 
   @Override
@@ -93,6 +94,7 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
       ClassName.NET_HTTP_COOKIE,
       ClassName.JAX_RS_COOKIE,
       ClassName.SHIRO_COOKIE,
-      ClassName.PLAY_COOKIE);
+      ClassName.PLAY_COOKIE,
+      ClassName.PLAY_COOKIE_BUILDER);
   }
 }

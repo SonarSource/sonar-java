@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -39,8 +40,8 @@ public class SecureCookieCheck extends InstanceShouldBeInitializedCorrectlyBase 
   }
 
   @Override
-  protected String getSetterName() {
-    return "setSecure";
+  protected List<String> getSetterNames() {
+    return Arrays.asList("setSecure");
   }
 
   @Override

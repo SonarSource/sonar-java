@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.NewCookie;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.security.web.savedrequest.SavedCookie;
+import play.mvc.Http.CookieBuilder;
 
 class S3330 {
 
@@ -89,6 +90,19 @@ class S3330 {
   void playFw() {
     play.mvc.Http.Cookie c1 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, false); // Noncompliant
     play.mvc.Http.Cookie c2 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true);
+    CookieBuilder cb1 = Cookie.builder("1", "2");
+    cb1.withHttpOnly(false); // Noncompliant
+    cb1.withHttpOnly(true); // is ignored, so above is a FN
+    CookieBuilder cb2 = Cookie.builder("1", "2");
+    cb2.withHttpOnly(true);
+    play.mvc.Http.Cookie.builder("1", "2")
+        .withMaxAge(1)
+        .withPath("x")
+        .withDomain("x")
+        .withSecure(true)
+        .withHttpOnly(false) // Noncompliant
+        .build();
+    play.mvc.Http.Cookie.builder("theme", "blue").withHttpOnly(true);
   }
 
   void compliant(Cookie c1, HttpCookie c2, javax.ws.rs.core.Cookie c3, NewCookie c4, SimpleCookie c5) {
@@ -99,5 +113,25 @@ class S3330 {
     c5.isHttpOnly();
     SavedCookie c6 = new SavedCookie(c1); // Spring cookies are HttpOnly, without possibility to change that
     SavedCookie c7 = new SavedCookie("n", "v", "c", "d", 1, "p", false, 1);
+  }
+}
+
+class A extends Cookie {
+  public void setHttpOnly(boolean isHttpOnly) { }
+  void foo() {
+    setHttpOnly(false); // Noncompliant
+  }
+  void bar(boolean x) {
+    setHttpOnly(x);
+  }
+  void baz() {
+    setHttpOnly(true);
+  }
+}
+
+class B {
+  public void setHttpOnly(boolean isHttpOnly) { }
+  void foo() {
+    setHttpOnly(false);
   }
 }
