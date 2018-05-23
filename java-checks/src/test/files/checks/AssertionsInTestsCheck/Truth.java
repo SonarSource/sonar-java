@@ -1,5 +1,9 @@
 import com.google.common.truth.Truth;
+import com.google.common.truth.Truth8;
+import static com.google.common.truth.Truth8.*;
 import org.junit.Test;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class AssertionsInTestsCheckTest {
   
@@ -38,5 +42,20 @@ public class AssertionsInTestsCheckTest {
   public void test5() { // Compliant
     boolean b = true;
     Truth.assertWithMessage("Invalid option").that(b);
+  }
+
+  @Test
+  public void test8_0() { // Compliant
+    Truth8.assertThat(Stream.of("foo")).isNotEmpty();
+  }
+
+  @Test
+  public void test8_1() { // Compliant
+    Truth8.assertThat(Stream.of("foo"));
+  }
+
+  @Test
+  public void test8_2() { // Compliant
+    assertThat(Optional.of("foo")).isPresent();
   }
 }
