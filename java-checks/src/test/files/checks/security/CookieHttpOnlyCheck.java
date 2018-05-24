@@ -12,9 +12,11 @@ class S3330 {
 
   private static final boolean FALSE_CONSTANT = false;
 
-  Cookie c1 = new Cookie("name", "value"); // FN
-  HttpCookie c3 = new HttpCookie("name", "value"); // FN
-  javax.ws.rs.core.Cookie c2 = new javax.ws.rs.core.Cookie("name", "value"); // FN
+  Cookie field1 = new Cookie("name", "value"); // FN
+  HttpCookie field2 = new HttpCookie("name", "value"); // FN
+  javax.ws.rs.core.Cookie field3 = new javax.ws.rs.core.Cookie("name", "value"); // FN
+  Cookie field4;
+  HttpCookie field5;
 
   void servletCookie(boolean param, Cookie c0) {
     c0.setHttpOnly(false); // Noncompliant [[sc=19;ec=26]] {{Add the "HttpOnly" cookie attribute.}}
@@ -39,6 +41,28 @@ class S3330 {
 
     Cookie c7 = new UnknownCookie("name", "value"); // Noncompliant
     Object c8 = new Cookie("name", "value"); // Noncompliant
+
+    Cookie c9; // Noncompliant
+    c9 = new Cookie("name", "value");
+    c9.setHttpOnly(false);
+
+    Cookie c10;  // Noncompliant
+    c10 = new Cookie("name", "value");
+
+    Cookie c11;
+    c11 = new Cookie("name", "value");
+    c11.setHttpOnly(true);
+
+    Object c12; // Noncompliant
+    c12 = new Cookie("name", "value");
+
+    Cookie c13; // Noncompliant
+    c13 = new UnknownCookie("name", "value");
+
+    field4 = new Cookie("name, value"); // FN
+
+    X x;
+    x = new X("name", "value");
   }
 
   Cookie getC1() {
@@ -56,6 +80,12 @@ class S3330 {
 
     HttpCookie c4 = new HttpCookie("name", "value");
     c4.setHttpOnly(FALSE_CONSTANT); // FN, would require SE
+
+    HttpCookie c5; // Noncompliant
+    c5 = new HttpCookie("name", "value");
+    c3.setHttpOnly(false);
+
+    field5 = new HttpCookie("name, value"); // FN
   }
 
   HttpCookie getC2() {
@@ -116,12 +146,6 @@ class S3330 {
     c5.isHttpOnly();
     SavedCookie c6 = new SavedCookie(c1); // Spring cookies are HttpOnly, without possibility to change that
     SavedCookie c7 = new SavedCookie("n", "v", "c", "d", 1, "p", false, 1);
-  }
-
-  Cookie createCookie() {
-    Cookie c5;
-    c5 = new Cookie("name", "value"); // FN
-    return c5;
   }
 }
 

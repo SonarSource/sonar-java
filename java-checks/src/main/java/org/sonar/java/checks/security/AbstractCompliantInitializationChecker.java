@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.VariableSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -45,7 +46,10 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.VARIABLE, Tree.Kind.METHOD_INVOCATION);
+    return ImmutableList.of(
+      Tree.Kind.VARIABLE,
+      Tree.Kind.ASSIGNMENT,
+      Tree.Kind.METHOD_INVOCATION);
   }
 
   protected abstract String getMessage();
@@ -77,38 +81,59 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.VARIABLE)) {
-        categorizeBasedOnInitialization((VariableTree) tree);
+        categorizeBasedOnConstructor((VariableTree) tree);
+      } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
+        categorizeBasedOnConstructor((AssignmentExpressionTree) tree);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         checkSetterInvocation((MethodInvocationTree) tree);
       }
     }
   }
 
-  private void categorizeBasedOnInitialization(VariableTree variableTree) {
-    if (isInitializedByConstructor(variableTree) && variableOrConstructorAreSupportedTypes(variableTree)) {
-      Symbol variableTreeSymbol = variableTree.symbol();
-      //Ignore field variables
-      if (variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol()) {
-        VariableSymbol variableSymbol = (VariableSymbol) variableTreeSymbol;
-        if (isCompliantConstructorCall((NewClassTree) variableTree.initializer())) {
-          compliantConstructorInitializations.add(variableSymbol);
-        } else {
-          declarationsToReport.add(variableSymbol);
-        }
-      }
+  private void categorizeBasedOnConstructor(VariableTree declaration) {
+    if (isSupported(declaration)) {
+      categorizeBasedOnConstructor((NewClassTree) declaration.initializer(),
+        (VariableSymbol) declaration.symbol());
     }
   }
 
-  private static boolean isInitializedByConstructor(VariableTree variableTree) {
-    ExpressionTree initializer = variableTree.initializer();
-    return initializer != null && initializer.is(Tree.Kind.NEW_CLASS);
+  private void categorizeBasedOnConstructor(AssignmentExpressionTree assignment) {
+    if (isSupported(assignment)) {
+      categorizeBasedOnConstructor((NewClassTree) assignment.expression(),
+        (VariableSymbol) ((IdentifierTree) assignment.variable()).symbol());
+    }
   }
 
-  private boolean variableOrConstructorAreSupportedTypes(VariableTree variableTree) {
-    Type variableType = variableTree.type().symbolType();
-    Type newClassType = variableTree.initializer().symbolType();
-    return getClasses().stream().anyMatch(variableType::isSubtypeOf)
-        || getClasses().stream().anyMatch(newClassType::isSubtypeOf);
+  private void categorizeBasedOnConstructor(NewClassTree newClassTree, VariableSymbol variableSymbol) {
+    if (isCompliantConstructorCall(newClassTree)) {
+      compliantConstructorInitializations.add(variableSymbol);
+    } else {
+      declarationsToReport.add(variableSymbol);
+    }
+  }
+
+  private boolean isSupported(VariableTree declaration) {
+    ExpressionTree initializer = declaration.initializer();
+    if (initializer != null && initializer.is(Tree.Kind.NEW_CLASS)) {
+      Symbol variableTreeSymbol = declaration.symbol();
+      boolean isMethodVariable = variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol();
+      boolean isSupportedClass = getClasses().stream().anyMatch(declaration.type().symbolType()::isSubtypeOf)
+          || getClasses().stream().anyMatch(declaration.initializer().symbolType()::isSubtypeOf);
+      return isMethodVariable && isSupportedClass;
+    }
+    return false;
+  }
+
+  private boolean isSupported(AssignmentExpressionTree assignment) {
+    if (assignment.expression().is(Tree.Kind.NEW_CLASS) && assignment.variable().is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) assignment.variable();
+      boolean isMethodVariable = identifier.symbol().isVariableSymbol()
+        && identifier.symbol().owner().isMethodSymbol();
+      boolean isSupportedClass = getClasses().stream().anyMatch(identifier.symbolType()::isSubtypeOf)
+        || getClasses().stream().anyMatch(assignment.expression().symbolType()::isSubtypeOf);
+      return isMethodVariable && isSupportedClass;
+    }
+    return false;
   }
 
   private void checkSetterInvocation(MethodInvocationTree mit) {
