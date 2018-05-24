@@ -37,11 +37,11 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableSubscriptionVisitor {
+public abstract class AbstractCompliantInitializationChecker extends IssuableSubscriptionVisitor {
 
-  private final List<VariableSymbol> correctlyInitializedViaConstructor = Lists.newArrayList();
-  private final List<VariableSymbol> declarationsToFlag = Lists.newArrayList();
-  private final List<MethodInvocationTree> settersToFlag = Lists.newArrayList();
+  private final List<VariableSymbol> compliantConstructorInitializations = Lists.newArrayList();
+  private final List<VariableSymbol> declarationsToReport = Lists.newArrayList();
+  private final List<MethodInvocationTree> settersToReport = Lists.newArrayList();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -50,7 +50,7 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
 
   protected abstract String getMessage();
 
-  protected abstract boolean constructorInitializesCorrectly(NewClassTree newClassTree);
+  protected abstract boolean isCompliantConstructorCall(NewClassTree newClassTree);
 
   protected abstract List<String> getSetterNames();
 
@@ -58,17 +58,17 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    correctlyInitializedViaConstructor.clear();
-    declarationsToFlag.clear();
-    settersToFlag.clear();
+    compliantConstructorInitializations.clear();
+    declarationsToReport.clear();
+    settersToReport.clear();
     super.scanFile(context);
-    for (VariableSymbol var : declarationsToFlag) {
+    for (VariableSymbol var : declarationsToReport) {
       VariableTree declaration = var.declaration();
       if (declaration != null) {
         reportIssue(declaration.simpleName(), getMessage());
       }
     }
-    for (MethodInvocationTree mit : settersToFlag) {
+    for (MethodInvocationTree mit : settersToReport) {
       reportIssue(mit.arguments(), getMessage());
     }
   }
@@ -90,10 +90,10 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
       //Ignore field variables
       if (variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol()) {
         VariableSymbol variableSymbol = (VariableSymbol) variableTreeSymbol;
-        if (constructorInitializesCorrectly((NewClassTree) variableTree.initializer())) {
-          correctlyInitializedViaConstructor.add(variableSymbol);
+        if (isCompliantConstructorCall((NewClassTree) variableTree.initializer())) {
+          compliantConstructorInitializations.add(variableSymbol);
         } else {
-          declarationsToFlag.add(variableSymbol);
+          declarationsToReport.add(variableSymbol);
         }
       }
     }
@@ -116,13 +116,13 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
       if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         if (((MemberSelectExpressionTree) mit.methodSelect()).expression().is(Tree.Kind.IDENTIFIER)) {
           treatMethodCallOnVariable(mit);
-        } else if (!setterArgumentHasGoodValue(mit.arguments())) {
+        } else if (!setterArgumentHasCompliantValue(mit.arguments())) {
           // builder method
-          settersToFlag.add(mit);
+          settersToReport.add(mit);
         }
-      } else if (mit.methodSelect().is(Tree.Kind.IDENTIFIER) && !setterArgumentHasGoodValue(mit.arguments())) {
+      } else if (mit.methodSelect().is(Tree.Kind.IDENTIFIER) && !setterArgumentHasCompliantValue(mit.arguments())) {
         // sub-class method
-        settersToFlag.add(mit);
+        settersToReport.add(mit);
       }
     }
   }
@@ -139,16 +139,16 @@ public abstract class InstanceShouldBeInitializedCorrectlyBase extends IssuableS
   private void treatMethodCallOnVariable(MethodInvocationTree mit) {
     MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
     VariableSymbol reference = (VariableSymbol) ((IdentifierTree) mse.expression()).symbol();
-    if (setterArgumentHasGoodValue(mit.arguments())) {
-      declarationsToFlag.remove(reference);
-    } else if (correctlyInitializedViaConstructor.contains(reference)) {
-      declarationsToFlag.add(reference);
-    } else if (!declarationsToFlag.contains(reference)) {
-      settersToFlag.add(mit);
+    if (setterArgumentHasCompliantValue(mit.arguments())) {
+      declarationsToReport.remove(reference);
+    } else if (compliantConstructorInitializations.contains(reference)) {
+      declarationsToReport.add(reference);
+    } else if (!declarationsToReport.contains(reference)) {
+      settersToReport.add(mit);
     }
   }
 
-  private static boolean setterArgumentHasGoodValue(Arguments arguments) {
+  private static boolean setterArgumentHasCompliantValue(Arguments arguments) {
     ExpressionTree expressionTree = arguments.get(0);
     return !LiteralUtils.isFalse(expressionTree);
   }

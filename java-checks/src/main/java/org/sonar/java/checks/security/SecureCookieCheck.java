@@ -23,11 +23,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.security.InstanceShouldBeInitializedCorrectlyBase;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(key = "S2092")
-public class SecureCookieCheck extends InstanceShouldBeInitializedCorrectlyBase {
+public class SecureCookieCheck extends AbstractCompliantInitializationChecker {
 
   @Override
   protected String getMessage() {
@@ -35,7 +34,7 @@ public class SecureCookieCheck extends InstanceShouldBeInitializedCorrectlyBase 
   }
 
   @Override
-  protected boolean constructorInitializesCorrectly(NewClassTree newClassTree) {
+  protected boolean isCompliantConstructorCall(NewClassTree newClassTree) {
     return false;
   }
 

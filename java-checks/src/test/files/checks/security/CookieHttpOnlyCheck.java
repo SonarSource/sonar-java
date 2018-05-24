@@ -117,6 +117,12 @@ class S3330 {
     SavedCookie c6 = new SavedCookie(c1); // Spring cookies are HttpOnly, without possibility to change that
     SavedCookie c7 = new SavedCookie("n", "v", "c", "d", 1, "p", false, 1);
   }
+
+  Cookie createCookie() {
+    Cookie c5;
+    c5 = new Cookie("name", "value"); // FN
+    return c5;
+  }
 }
 
 class A extends Cookie {

@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(key = "S3330")
-public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBase {
+public class CookieHttpOnlyCheck extends AbstractCompliantInitializationChecker {
 
   private static final String CONSTRUCTOR = "<init>";
   private static final String JAVA_LANG_STRING = "java.lang.String";
@@ -72,7 +72,7 @@ public class CookieHttpOnlyCheck extends InstanceShouldBeInitializedCorrectlyBas
   }
 
   @Override
-  protected boolean constructorInitializesCorrectly(NewClassTree newClassTree) {
+  protected boolean isCompliantConstructorCall(NewClassTree newClassTree) {
     if (CONSTRUCTORS_WITH_HTTP_ONLY_PARAM.stream().anyMatch(matcher -> matcher.matches(newClassTree))) {
       Arguments arguments = newClassTree.arguments();
       ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
