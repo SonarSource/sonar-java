@@ -70,6 +70,8 @@ public class LiteralUtilsTest {
   int x6 = 0xff;
   int x7 = 0b0100;
   int x8 = 56_78;
+  int x9 = 0XFF;
+  int x10 = 0B1100110;
 
   long y1 = 42;
   long y2 = 42L;
@@ -87,6 +89,8 @@ public class LiteralUtilsTest {
   long y14 = 0x7FFF_FFFF_FFFF_FFFFL;
   long y15 = 0b11010010_01101001_10010100_10010010;
   long y16 = 100_10;
+  long y17 = 0XFFL;
+  long y18 = 0B1100110L;
 
   String s1 = "";
   String s2 = " ";
@@ -104,8 +108,9 @@ public class LiteralUtilsTest {
 
   @Test
   public void test_int_and_long_value() throws Exception {
-    Integer[] expectedIntegerValues = {42, -7, 3, null, null, null, null, 5678};
-    Long[] expectedLongValues = {42L, 42L, -7L, -7L, +3L, +3L, null, null, 255L, null, null, null, Long.MAX_VALUE, Long.MAX_VALUE, null, 10010L};
+    Integer[] expectedIntegerValues = {42, -7, 3, null, null, 0xff, 0b0100, 5678, 0xFF, 0b1100110};
+    Long[] expectedLongValues = {42L, 42L, -7L, -7L, +3L, +3L, null, null, 0xFFL, null, null, null,
+      Long.MAX_VALUE, Long.MAX_VALUE, 0b11010010_01101001_10010100_10010010L, 10010L, 0xFFL, 0b1100110L};
     int i = 0;
     int j = 0;
 

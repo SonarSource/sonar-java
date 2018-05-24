@@ -24,5 +24,6 @@ class A {
     for (int i = 1;      ; ) {}
     for (int i = 0; i < 0x10; ) {}
     for (int i = 0; i < 0b10; ) {}
+    for (int i = 1; i <= 0Xffff; i++) {}
   }
 }
