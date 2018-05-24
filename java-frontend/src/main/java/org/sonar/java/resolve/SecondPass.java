@@ -109,6 +109,15 @@ public class SecondPass implements JavaSymbol.Completer {
 
     if ((symbol.flags() & Flags.INTERFACE) == 0) {
       symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", type.supertype, symbol));
+    } else {
+      // JLS9 - 15.12.1 : Used in form 'TypeName.super.foo()', where 'TypeName' is an interface. To support invocation
+      // of default methods from super-interfaces, 'TypeName' may also refer to a direct super-interface of the current
+      // class or interface. The method being invoked ('foo()') has to be searched in that super-interface.
+      symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", type, symbol));
+      // Note: The above "super" symbol will always be qualified when referenced. e.g. A.super.hashCode()
+      // because it's a compilation error to use unqualified "super" in default method. e.g. super.hashCode()
+      // Note: interface/class can extend/implement multiple interfaces containing default methods with the same
+      // signature. Mentioning the super-interfaces explicitly removes any ambiguity.
     }
 
     // Register default constructor

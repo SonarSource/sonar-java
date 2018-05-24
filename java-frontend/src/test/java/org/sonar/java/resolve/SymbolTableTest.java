@@ -383,7 +383,7 @@ public class SymbolTableTest {
       result.symbol("FirstInterface").type,
       result.symbol("SecondInterface").type);
     assertThat(interfaceSymbol.members.lookup("this")).hasSize(1);
-    assertThat(interfaceSymbol.members.lookup("super")).isEmpty();
+    assertThat(interfaceSymbol.members.lookup("super")).hasSize(1);
 
     JavaSymbol.VariableJavaSymbol variableSymbol = (JavaSymbol.VariableJavaSymbol) result.symbol("FIRST_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(interfaceSymbol);
@@ -1108,6 +1108,42 @@ public class SymbolTableTest {
     JavaSymbol add = result.symbol("add");
     assertThat(add.usages()).hasSize(1);
 
+  }
+
+  @Test
+  public void SuperMethodCall() {
+    Result result = Result.createFor("references/SuperMethodCall");
+
+    JavaSymbol fOfD = result.reference(21, 5);
+    assertThat(fOfD.name()).isEqualTo("f");
+    assertThat(fOfD.owner().name()).isEqualTo("D");
+
+    JavaSymbol superOfD = result.reference(25, 12);
+    assertThat(superOfD.name()).isEqualTo("super");
+    assertThat(superOfD.isVariableSymbol()).isTrue();
+    assertThat(superOfD.type().fullyQualifiedName()).isEqualTo("C");
+    assertThat(superOfD.owner().name()).isEqualTo("D");
+
+    JavaSymbol fOfC = result.reference(25, 18);
+    assertThat(fOfC.name()).isEqualTo("f");
+    assertThat(fOfC.owner().name()).isEqualTo("C");
+
+    JavaSymbol refA = result.reference(26, 12);
+    assertThat(refA.name()).isEqualTo("A");
+    assertThat(refA.isTypeSymbol()).isTrue();
+
+    JavaSymbol superOfA = result.reference(26, 14);
+    assertThat(superOfA.name()).isEqualTo("super");
+    assertThat(superOfA.isVariableSymbol()).isTrue();
+    assertThat(superOfA.type().fullyQualifiedName()).isEqualTo("A");
+
+    JavaSymbol fOfA = result.reference(26, 20);
+    assertThat(fOfA.name()).isEqualTo("f");
+    assertThat(fOfA.owner().name()).isEqualTo("A");
+
+    JavaSymbol fOfB = result.reference(27, 20);
+    assertThat(fOfB.name()).isEqualTo("f");
+    assertThat(fOfB.owner().name()).isEqualTo("B");
   }
 
   @Test
