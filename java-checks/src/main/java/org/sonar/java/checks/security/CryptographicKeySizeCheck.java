@@ -20,18 +20,16 @@
 package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableList;
-import java.util.HashMap;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -53,54 +51,49 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    MethodTree methodTree = ExpressionsHelper.findEnclosingMethod(mit);
-    ExpressionTree getInstanceArg = mit.arguments().get(0);
-    if (methodTree != null && getInstanceArg.is(Tree.Kind.STRING_LITERAL)) {
-      MethodVisitor methodVisitor = new MethodVisitor((LiteralTree) getInstanceArg);
+    MethodTree methodTree = findEnclosingMethod(mit);
+    String getInstanceArg = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
+    if (methodTree != null && getInstanceArg != null) {
+      MethodVisitor methodVisitor = new MethodVisitor(getInstanceArg);
       methodTree.accept(methodVisitor);
-      if (methodVisitor.reportString != null) {
-        reportIssue(methodVisitor.treeToReport, methodVisitor.reportString);
-      }
     }
   }
 
-  private static class MethodVisitor extends BaseTreeVisitor {
+  @CheckForNull
+  public static MethodTree findEnclosingMethod(Tree tree) {
+    while (!tree.is(Tree.Kind.CLASS, Tree.Kind.METHOD)) {
+      tree = tree.parent();
+    }
+    if (tree.is(Tree.Kind.CLASS)) {
+      return null;
+    }
+    return (MethodTree) tree;
+  }
+
+  private class MethodVisitor extends BaseTreeVisitor {
 
     private final String algorithm;
-    private String reportString = null;
-    private MethodInvocationTree treeToReport = null;
 
-    public MethodVisitor(LiteralTree getInstanceArg) {
-      this.algorithm = LiteralUtils.trimQuotes(getInstanceArg.value());
+    public MethodVisitor(String getInstanceArg) {
+      this.algorithm = getInstanceArg;
     }
 
-    private static final Map<String, Integer> algorithmKeySizeMap = new HashMap<>();
-    static {
-      algorithmKeySizeMap.put("RSA", 2048);
-      algorithmKeySizeMap.put("Blowfish", 128);
-    }
+    private final Map<String, Integer> algorithmKeySizeMap = ImmutableMap.of("Blowfish", 128, "RSA", 2048);
 
-    private static final MethodMatcher KEY_GEN_INIT = MethodMatcher.create().typeDefinition(KEY_GENERATOR).name("init").addParameter("int");
-    private static final MethodMatcher KEY_PAIR_GEN_INITIALIZE = MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name("initialize").addParameter("int");
+    private final MethodMatcher keyGenInit = MethodMatcher.create().typeDefinition(KEY_GENERATOR).name("init").addParameter("int");
+    private final MethodMatcher keyPairGenInitialize = MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name("initialize").addParameter("int");
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (KEY_GEN_INIT.matches(mit) || KEY_PAIR_GEN_INITIALIZE.matches(mit)) {
+      if (keyGenInit.matches(mit) || keyPairGenInitialize.matches(mit)) {
         Integer minKeySize = algorithmKeySizeMap.get(this.algorithm);
         if (minKeySize != null) {
-          getMessageIfValueIsLessThanMinimum(mit.arguments().get(0), minKeySize)
-            .ifPresent(message -> this.reportString = message);
-          this.treeToReport = mit;
+          Integer keySize = LiteralUtils.intLiteralValue(mit.arguments().get(0));
+          if (keySize != null && keySize < minKeySize) {
+            reportIssue(mit, "Use a key length of at least " + minKeySize + " bits.");
+          }
         }
       }
-    }
-
-    private static Optional<String> getMessageIfValueIsLessThanMinimum(ExpressionTree argument, Integer keySize) {
-      String resultString = null;
-      if (argument.is(Tree.Kind.INT_LITERAL) && (Integer.parseInt(((LiteralTree) argument).value()) < keySize)) {
-        resultString = "Use a key length of at least " + keySize + " bits.";
-      }
-      return Optional.ofNullable(resultString);
     }
   }
 }

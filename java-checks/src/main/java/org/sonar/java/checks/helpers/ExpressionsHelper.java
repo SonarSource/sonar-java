@@ -19,12 +19,10 @@
  */
 package org.sonar.java.checks.helpers;
 
-
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -74,18 +72,5 @@ public class ExpressionsHelper {
     return reportTree;
   }
 
-  /**
-   * Return the enclosing method tree of the parameter.
-   * @param tree.
-   * @return enclosing methodTree or null if classTree is found.
-   */
-  public static MethodTree findEnclosingMethod(Tree tree) {
-    while (!tree.is(Tree.Kind.CLASS, Tree.Kind.METHOD)) {
-      tree = tree.parent();
-    }
-    if (tree.is(Tree.Kind.CLASS)) {
-      return null;
-    }
-    return (MethodTree) tree;
-  }
+
 }
