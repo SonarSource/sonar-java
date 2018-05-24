@@ -69,8 +69,12 @@ class S3330 {
     x = new X("name", "value");
   }
 
+  Cookie getC0() {
+    return new UnknownCookie("name", "value"); // FN
+  }
+
   Cookie getC1() {
-    return new Cookie("name", "value"); // FN
+    return new Cookie("name", "value"); // Noncompliant [[sc=12;ec=39]]
   }
 
   void httpCookie() {
@@ -93,7 +97,7 @@ class S3330 {
   }
 
   HttpCookie getC2() {
-    return new HttpCookie("name", "value"); // FN
+    return new HttpCookie("name", "value"); // Noncompliant
   }
 
   void jaxRsCookie() {
@@ -113,7 +117,7 @@ class S3330 {
   }
 
   NewCookie getC3() {
-    return new NewCookie("name", "value", "path", "domain", "comment", 1, true); // FN
+    return new NewCookie("name", "value", "path", "domain", "comment", 1, true); // Noncompliant
   }
 
   void apacheShiro(SimpleCookie unknownCookie) {
@@ -122,6 +126,10 @@ class S3330 {
     c2.setHttpOnly(false);
     SimpleCookie c3 = new SimpleCookie(); // Apache Shiro cookies have HttpOnly 'true' value by default
     SimpleCookie c4 = new SimpleCookie("name");
+  }
+
+  SimpleCookie getC4() {
+    return new SimpleCookie(); // compliant
   }
 
   void playFw() {
@@ -142,6 +150,14 @@ class S3330 {
     play.mvc.Http.Cookie.builder("theme", "blue").withHttpOnly(true);
   }
 
+  play.mvc.Http.Cookie getC5() {
+    return new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, false); // Noncompliant
+  }
+
+  play.mvc.Http.Cookie getC6() {
+    return play.mvc.Http.Cookie.builder("theme", "blue").withHttpOnly(false); // Noncompliant
+  }
+
   void compliant(Cookie c1, HttpCookie c2, javax.ws.rs.core.Cookie c3, NewCookie c4, SimpleCookie c5) {
     c1.isHttpOnly();
     c2.isHttpOnly();
@@ -150,6 +166,10 @@ class S3330 {
     c5.isHttpOnly();
     SavedCookie c6 = new SavedCookie(c1); // Spring cookies are HttpOnly, without possibility to change that
     SavedCookie c7 = new SavedCookie("n", "v", "c", "d", 1, "p", false, 1);
+  }
+
+  SavedCookie getC7() {
+    return new SavedCookie("n", "v", "c", "d", 1, "p", false, 1); // compliant
   }
 }
 

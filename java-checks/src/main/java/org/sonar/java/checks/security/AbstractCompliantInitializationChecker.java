@@ -34,7 +34,9 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 public abstract class AbstractCompliantInitializationChecker extends IssuableSubscriptionVisitor {
@@ -42,13 +44,15 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
   private final List<VariableSymbol> compliantConstructorInitializations = Lists.newArrayList();
   private final List<VariableSymbol> variablesToReport = Lists.newArrayList();
   private final List<MethodInvocationTree> settersToReport = Lists.newArrayList();
+  private final List<NewClassTree> newClassToReport = Lists.newArrayList();
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
+  public List<Kind> nodesToVisit() {
     return ImmutableList.of(
-      Tree.Kind.VARIABLE,
-      Tree.Kind.ASSIGNMENT,
-      Tree.Kind.METHOD_INVOCATION);
+      Kind.VARIABLE,
+      Kind.ASSIGNMENT,
+      Kind.METHOD_INVOCATION,
+      Kind.RETURN_STATEMENT);
   }
 
   protected abstract String getMessage();
@@ -74,17 +78,22 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
     for (MethodInvocationTree mit : settersToReport) {
       reportIssue(mit.arguments(), getMessage());
     }
+    for (NewClassTree newClassTree : newClassToReport) {
+      reportIssue(newClassTree, getMessage());
+    }
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      if (tree.is(Tree.Kind.VARIABLE)) {
+      if (tree.is(Kind.VARIABLE)) {
         categorizeBasedOnConstructor((VariableTree) tree);
-      } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
+      } else if (tree.is(Kind.ASSIGNMENT)) {
         categorizeBasedOnConstructor((AssignmentExpressionTree) tree);
-      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      } else if (tree.is(Kind.METHOD_INVOCATION)) {
         checkSetterInvocation((MethodInvocationTree) tree);
+      } else if (tree.is(Kind.RETURN_STATEMENT)) {
+        categorizeBasedOnConstructor((ReturnStatementTree) tree);
       }
     }
   }
@@ -103,6 +112,16 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
     }
   }
 
+  private void categorizeBasedOnConstructor(ReturnStatementTree returnStatement) {
+    ExpressionTree returnedExpression = returnStatement.expression();
+    if (returnedExpression != null && returnedExpression.is(Kind.NEW_CLASS)) {
+      NewClassTree newClass = (NewClassTree) returnStatement.expression();
+      if (!isCompliantConstructorCall(newClass) && getClasses().stream().anyMatch(newClass.symbolType()::isSubtypeOf)) {
+        newClassToReport.add(newClass);
+      }
+    }
+  }
+
   private void categorizeBasedOnConstructor(NewClassTree newClassTree, VariableSymbol variableSymbol) {
     if (isCompliantConstructorCall(newClassTree)) {
       compliantConstructorInitializations.add(variableSymbol);
@@ -113,7 +132,7 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
 
   private boolean isSupported(VariableTree declaration) {
     ExpressionTree initializer = declaration.initializer();
-    if (initializer != null && initializer.is(Tree.Kind.NEW_CLASS)) {
+    if (initializer != null && initializer.is(Kind.NEW_CLASS)) {
       Symbol variableTreeSymbol = declaration.symbol();
       boolean isMethodVariable = variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol();
       boolean isSupportedClass = getClasses().stream().anyMatch(declaration.type().symbolType()::isSubtypeOf)
@@ -124,7 +143,7 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
   }
 
   private boolean isSupported(AssignmentExpressionTree assignment) {
-    if (assignment.expression().is(Tree.Kind.NEW_CLASS) && assignment.variable().is(Tree.Kind.IDENTIFIER)) {
+    if (assignment.expression().is(Kind.NEW_CLASS) && assignment.variable().is(Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) assignment.variable();
       boolean isMethodVariable = identifier.symbol().isVariableSymbol()
         && identifier.symbol().owner().isMethodSymbol();
@@ -137,15 +156,15 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
 
   private void checkSetterInvocation(MethodInvocationTree mit) {
     if (isExpectedSetter(mit)) {
-      if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        boolean isCalledOnIdentifier = ((MemberSelectExpressionTree) mit.methodSelect()).expression().is(Tree.Kind.IDENTIFIER);
+      if (mit.methodSelect().is(Kind.MEMBER_SELECT)) {
+        boolean isCalledOnIdentifier = ((MemberSelectExpressionTree) mit.methodSelect()).expression().is(Kind.IDENTIFIER);
         if (isCalledOnIdentifier) {
           updateIssuesToReport(mit);
         } else if (!setterArgumentHasCompliantValue(mit.arguments())) {
           // builder method
           settersToReport.add(mit);
         }
-      } else if (mit.methodSelect().is(Tree.Kind.IDENTIFIER) && !setterArgumentHasCompliantValue(mit.arguments())) {
+      } else if (mit.methodSelect().is(Kind.IDENTIFIER) && !setterArgumentHasCompliantValue(mit.arguments())) {
         // sub-class method
         settersToReport.add(mit);
       }
@@ -184,7 +203,7 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
 
   private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
     IdentifierTree id;
-    if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
+    if (mit.methodSelect().is(Kind.IDENTIFIER)) {
       id = (IdentifierTree) mit.methodSelect();
     } else {
       id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
