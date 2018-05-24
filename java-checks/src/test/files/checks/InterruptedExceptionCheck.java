@@ -32,6 +32,16 @@ class A {
     }
   }
 
+  public void catchUnionType () {
+    try {
+      while (true) {
+        // do stuff
+      }
+    } catch (InterruptedException | java.io.IOException e) { // Noncompliant [[sc=14;ec=58]] {{Either re-interrupt this method or rethrow the "InterruptedException".}}
+      unknownField.log(Level.WARN, "Interrupted!", e);
+    }
+  }
+
   public void run () throws InterruptedException{
     try {
       while (true) {

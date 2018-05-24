@@ -20,7 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -34,15 +39,16 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-
-import javax.annotation.Nullable;
-
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.UnionTypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2142")
 public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
+
+  private static final Predicate<Type> INTERRUPTING_TYPE_PREDICATE = catchType ->
+      catchType.is("java.lang.InterruptedException") ||
+      catchType.is("java.lang.ThreadDeath");
 
   private Deque<Boolean> withinInterruptingFinally = new LinkedList<>();
 
@@ -64,15 +70,29 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     TryStatementTree tryStatementTree = (TryStatementTree) tree;
     withinInterruptingFinally.addFirst(isFinallyInterrupting(tryStatementTree.finallyBlock()));
     for (CatchTree catchTree : tryStatementTree.catches()) {
-      Type catchType = catchTree.parameter().symbol().type();
-      if(catchType.is("java.lang.InterruptedException") || catchType.is("java.lang.ThreadDeath")) {
+      Optional<Type> interruptType = findInterruptingType(catchTree.parameter());
+      if(interruptType.isPresent()) {
         BlockVisitor blockVisitor = new BlockVisitor(catchTree.parameter().symbol());
         catchTree.block().accept(blockVisitor);
         if(!blockVisitor.threadInterrupted && !isWithinInterruptingFinally()) {
-          reportIssue(catchTree.parameter(), "Either re-interrupt this method or rethrow the \""+catchType.name()+"\".");
+          reportIssue(catchTree.parameter(), "Either re-interrupt this method" +
+            " or rethrow the \""+interruptType.get().name()+"\".");
         }
       }
     }
+  }
+
+  private static Optional<Type> findInterruptingType(VariableTree parameter) {
+    if (parameter.type().is(Tree.Kind.UNION_TYPE)) {
+      return ((UnionTypeTree) parameter.type()).typeAlternatives().stream()
+        .map(TypeTree::symbolType)
+        .filter(INTERRUPTING_TYPE_PREDICATE)
+        .findFirst();
+    }
+    return Optional.of(parameter)
+      .map(VariableTree::symbol)
+      .map(Symbol::type)
+      .filter(INTERRUPTING_TYPE_PREDICATE);
   }
 
   private boolean isWithinInterruptingFinally() {
