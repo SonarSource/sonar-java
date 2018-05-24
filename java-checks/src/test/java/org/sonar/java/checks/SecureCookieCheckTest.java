@@ -17,34 +17,15 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.security;
+package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.junit.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@Rule(key = "S2092")
-public class SecureCookieCheck extends AbstractCompliantInitializationChecker {
+public class SecureCookieCheckTest {
 
-  @Override
-  protected String getMessage() {
-    return "Add the \"secure\" attribute to this cookie";
-  }
-
-  @Override
-  protected boolean isCompliantConstructorCall(NewClassTree newClassTree) {
-    return false;
-  }
-
-  @Override
-  protected List<String> getSetterNames() {
-    return Arrays.asList("setSecure");
-  }
-
-  @Override
-  protected List<String> getClasses() {
-    return Collections.singletonList("javax.servlet.http.Cookie");
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/SecureCookieCheck.java", new SecureCookieCheck());
   }
 }

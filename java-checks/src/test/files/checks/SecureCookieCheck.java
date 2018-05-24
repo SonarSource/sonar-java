@@ -22,7 +22,7 @@ class A {
     cookie.setSecure(false);
   }
   void baw(Cookie cookie) {
-    cookie.setSecure(false); // Noncompliant [[sc=21;ec=28]] {{Add the "secure" attribute to this cookie}}
+    cookie.setSecure(false); // FN
   }
   void qiz() {
     Cookie cookie = new Cookie("name", "value");

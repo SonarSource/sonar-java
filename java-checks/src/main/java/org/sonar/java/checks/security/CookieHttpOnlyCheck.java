@@ -19,24 +19,43 @@
  */
 package org.sonar.java.checks.security;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.VariableSymbol;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3330")
-public class CookieHttpOnlyCheck extends AbstractCompliantInitializationChecker {
+public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
+  private final List<Symbol.VariableSymbol> compliantConstructorInitializations = Lists.newArrayList();
+  private final List<Symbol.VariableSymbol> variablesToReport = Lists.newArrayList();
+  private final List<MethodInvocationTree> settersToReport = Lists.newArrayList();
+  private final List<NewClassTree> newClassToReport = Lists.newArrayList();
 
   private static final String CONSTRUCTOR = "<init>";
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_DATE = "java.util.Date";
   private static final String INT = "int";
   private static final String BOOLEAN = "boolean";
+
+  private static final String MESSAGE = "Add the \"HttpOnly\" cookie attribute.";
 
   private static final class ClassName {
     private static final String SERVLET_COOKIE = "javax.servlet.http.Cookie";
@@ -47,6 +66,16 @@ public class CookieHttpOnlyCheck extends AbstractCompliantInitializationChecker 
     private static final String PLAY_COOKIE = "play.mvc.Http$Cookie";
     private static final String PLAY_COOKIE_BUILDER = "play.mvc.Http$CookieBuilder";
   }
+
+  private static final List<String> SETTER_NAMES = Arrays.asList("setHttpOnly", "withHttpOnly");
+
+  private static final List<String> CLASSES = Arrays.asList(
+        ClassName.SERVLET_COOKIE,
+        ClassName.NET_HTTP_COOKIE,
+        ClassName.JAX_RS_COOKIE,
+        ClassName.SHIRO_COOKIE,
+        ClassName.PLAY_COOKIE,
+        ClassName.PLAY_COOKIE_BUILDER);
 
   private static final List<MethodMatcher> CONSTRUCTORS_WITH_HTTP_ONLY_PARAM = Arrays.asList(
         MethodMatcher.create()
@@ -67,12 +96,107 @@ public class CookieHttpOnlyCheck extends AbstractCompliantInitializationChecker 
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(CONSTRUCTOR).parameters(JAVA_LANG_STRING));
 
   @Override
-  protected String getMessage() {
-    return "Add the \"HttpOnly\" cookie attribute.";
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(
+        Tree.Kind.VARIABLE,
+        Tree.Kind.ASSIGNMENT,
+        Tree.Kind.METHOD_INVOCATION,
+        Tree.Kind.RETURN_STATEMENT);
   }
 
   @Override
-  protected boolean isCompliantConstructorCall(NewClassTree newClassTree) {
+  public void scanFile(JavaFileScannerContext context) {
+    compliantConstructorInitializations.clear();
+    variablesToReport.clear();
+    settersToReport.clear();
+    newClassToReport.clear();
+    super.scanFile(context);
+    for (VariableSymbol var : variablesToReport) {
+      VariableTree declaration = var.declaration();
+      if (declaration != null) {
+        reportIssue(declaration.simpleName(), MESSAGE);
+      }
+    }
+    for (MethodInvocationTree mit : settersToReport) {
+      reportIssue(mit.arguments(), MESSAGE);
+    }
+    for (NewClassTree newClassTree : newClassToReport) {
+      reportIssue(newClassTree, MESSAGE);
+    }
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (hasSemantic()) {
+      if (tree.is(Tree.Kind.VARIABLE)) {
+        categorizeBasedOnConstructor((VariableTree) tree);
+      } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
+        categorizeBasedOnConstructor((AssignmentExpressionTree) tree);
+      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+        checkSetterInvocation((MethodInvocationTree) tree);
+      } else if (tree.is(Tree.Kind.RETURN_STATEMENT)) {
+        categorizeBasedOnConstructor((ReturnStatementTree) tree);
+      }
+    }
+  }
+
+  private void categorizeBasedOnConstructor(VariableTree declaration) {
+    if (shouldVerify(declaration)) {
+      categorizeBasedOnConstructor((NewClassTree) declaration.initializer(),
+          (VariableSymbol) declaration.symbol());
+    }
+  }
+
+  private void categorizeBasedOnConstructor(AssignmentExpressionTree assignment) {
+    if (shouldVerify(assignment)) {
+      categorizeBasedOnConstructor((NewClassTree) assignment.expression(),
+          (VariableSymbol) ((IdentifierTree) assignment.variable()).symbol());
+    }
+  }
+
+  private void categorizeBasedOnConstructor(ReturnStatementTree returnStatement) {
+    ExpressionTree returnedExpression = returnStatement.expression();
+    if (returnedExpression != null && returnedExpression.is(Tree.Kind.NEW_CLASS)) {
+      NewClassTree newClass = (NewClassTree) returnedExpression;
+      if (!isCompliantConstructorCall(newClass) && CLASSES.stream().anyMatch(newClass.symbolType()::isSubtypeOf)) {
+        newClassToReport.add(newClass);
+      }
+    }
+  }
+
+  private void categorizeBasedOnConstructor(NewClassTree newClassTree, VariableSymbol variableSymbol) {
+    if (isCompliantConstructorCall(newClassTree)) {
+      compliantConstructorInitializations.add(variableSymbol);
+    } else {
+      variablesToReport.add(variableSymbol);
+    }
+  }
+
+  private static boolean shouldVerify(VariableTree declaration) {
+    ExpressionTree initializer = declaration.initializer();
+    if (initializer != null && initializer.is(Tree.Kind.NEW_CLASS)) {
+      Symbol variableTreeSymbol = declaration.symbol();
+      boolean isMethodVariable = variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol();
+      boolean isSupportedClass = CLASSES.stream().anyMatch(declaration.type().symbolType()::isSubtypeOf)
+          || CLASSES.stream().anyMatch(initializer.symbolType()::isSubtypeOf);
+      return isMethodVariable && isSupportedClass;
+    }
+    return false;
+  }
+
+  private static boolean shouldVerify(AssignmentExpressionTree assignment) {
+    if (assignment.expression().is(Tree.Kind.NEW_CLASS) && assignment.variable().is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) assignment.variable();
+      boolean isMethodVariable = identifier.symbol().isVariableSymbol()
+          && identifier.symbol().owner().isMethodSymbol();
+      boolean isSupportedClass = CLASSES.stream().anyMatch(identifier.symbolType()::isSubtypeOf)
+          || CLASSES.stream().anyMatch(assignment.expression().symbolType()::isSubtypeOf);
+      return isMethodVariable && isSupportedClass;
+    }
+    return false;
+  }
+
+  private static boolean isCompliantConstructorCall(NewClassTree newClassTree) {
     if (CONSTRUCTORS_WITH_HTTP_ONLY_PARAM.stream().anyMatch(matcher -> matcher.matches(newClassTree))) {
       Arguments arguments = newClassTree.arguments();
       ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
@@ -82,19 +206,54 @@ public class CookieHttpOnlyCheck extends AbstractCompliantInitializationChecker 
     }
   }
 
-  @Override
-  protected List<String> getSetterNames() {
-    return Arrays.asList("setHttpOnly", "withHttpOnly");
+  private void checkSetterInvocation(MethodInvocationTree mit) {
+    if (isExpectedSetter(mit)) {
+      if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        boolean isCalledOnIdentifier = ((MemberSelectExpressionTree) mit.methodSelect()).expression().is(Tree.Kind.IDENTIFIER);
+        if (isCalledOnIdentifier) {
+          updateIssuesToReport(mit);
+        } else if (!setterArgumentHasCompliantValue(mit.arguments())) {
+          // builder method
+          settersToReport.add(mit);
+        }
+      } else if (mit.methodSelect().is(Tree.Kind.IDENTIFIER) && !setterArgumentHasCompliantValue(mit.arguments())) {
+        // sub-class method
+        settersToReport.add(mit);
+      }
+    }
   }
 
-  @Override
-  protected List<String> getClasses() {
-    return Arrays.asList(
-      ClassName.SERVLET_COOKIE,
-      ClassName.NET_HTTP_COOKIE,
-      ClassName.JAX_RS_COOKIE,
-      ClassName.SHIRO_COOKIE,
-      ClassName.PLAY_COOKIE,
-      ClassName.PLAY_COOKIE_BUILDER);
+  private static boolean isExpectedSetter(MethodInvocationTree mit) {
+    return mit.arguments().size() == 1
+        && mit.symbol().isMethodSymbol()
+        && CLASSES.stream().anyMatch(mit.symbol().owner().type()::isSubtypeOf)
+        && SETTER_NAMES.contains(getIdentifier(mit).name());
+  }
+
+  private void updateIssuesToReport(MethodInvocationTree mit) {
+    MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
+    VariableSymbol reference = (VariableSymbol) ((IdentifierTree) mse.expression()).symbol();
+    if (setterArgumentHasCompliantValue(mit.arguments())) {
+      variablesToReport.remove(reference);
+    } else if (compliantConstructorInitializations.contains(reference)) {
+      variablesToReport.add(reference);
+    } else if (!variablesToReport.contains(reference)) {
+      settersToReport.add(mit);
+    }
+  }
+
+  private static boolean setterArgumentHasCompliantValue(Arguments arguments) {
+    ExpressionTree expressionTree = arguments.get(0);
+    return !LiteralUtils.isFalse(expressionTree);
+  }
+
+  private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
+    IdentifierTree id;
+    if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
+      id = (IdentifierTree) mit.methodSelect();
+    } else {
+      id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
+    }
+    return id;
   }
 }
