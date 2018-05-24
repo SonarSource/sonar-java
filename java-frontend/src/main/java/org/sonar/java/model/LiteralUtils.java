@@ -50,10 +50,10 @@ public class LiteralUtils {
   @CheckForNull
   private static Integer intLiteralValue(LiteralTree literal) {
     String literalValue = literal.value().replaceAll("_", "");
-    if (literalValue.startsWith("0x") || literalValue.startsWith("0b")) {
-      return null;
+    if (literalValue.startsWith("0b") || literalValue.startsWith("0B")) {
+      return Integer.valueOf(literalValue.substring(2), 2);
     }
-    return Integer.valueOf(literalValue);
+    return Integer.decode(literalValue);
   }
 
   @CheckForNull
@@ -70,6 +70,9 @@ public class LiteralUtils {
       // long as hexadecimal can be written using underscore to separate groups
       value = value.replaceAll("\\_", "");
       try {
+        if (value.startsWith("0b") || value.startsWith("0B")) {
+          return sign * Long.valueOf(value.substring(2), 2);
+        }
         return sign * Long.decode(value);
       } catch (NumberFormatException e) {
         // Long.decode() may fail in case of very large long number written in hexadecimal. In such situation, we ignore the number.

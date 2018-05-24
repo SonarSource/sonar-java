@@ -14,7 +14,7 @@ class a {
   long l2 = 0xFFFF_FFFF_FFFF_FFFFL;
   long l3;
   long l4 = 0x0000_0000_0000_0000L; // Noncompliant {{Remove this initialization to "0x0000_0000_0000_0000L", the compiler will do that for you.}}
-  long l5 = 0b00000000_00000000_00000000_00000000; // Know limitation, this 0 initialisation not supported
+  long l5 = 0b00000000_00000000_00000000_00000000; // Noncompliant {{Remove this initialization to "0b00000000_00000000_00000000_00000000", the compiler will do that for you.}}
   float f = 0; // Noncompliant {{Remove this initialization to "0", the compiler will do that for you.}}
   float f1 = 0.f; // Noncompliant {{Remove this initialization to "0.f", the compiler will do that for you.}}
   float f2 = 1.f;
