@@ -17,9 +17,13 @@ class S3330 {
   javax.ws.rs.core.Cookie field3 = new javax.ws.rs.core.Cookie("name", "value"); // FN
   Cookie field4;
   HttpCookie field5;
+  Cookie field6;
+  UnknownCookie field7;
 
   void servletCookie(boolean param, Cookie c0) {
     c0.setHttpOnly(false); // Noncompliant [[sc=19;ec=26]] {{Add the "HttpOnly" cookie attribute.}}
+    field6.setHttpOnly(false); // Noncompliant
+    field7.setHttpOnly(false);
 
     Cookie c1 = new Cookie("name", "value");
     c1.setHttpOnly(true);

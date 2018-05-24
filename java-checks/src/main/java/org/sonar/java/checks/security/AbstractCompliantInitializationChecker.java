@@ -27,7 +27,6 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.VariableSymbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -41,7 +40,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public abstract class AbstractCompliantInitializationChecker extends IssuableSubscriptionVisitor {
 
   private final List<VariableSymbol> compliantConstructorInitializations = Lists.newArrayList();
-  private final List<VariableSymbol> declarationsToReport = Lists.newArrayList();
+  private final List<VariableSymbol> variablesToReport = Lists.newArrayList();
   private final List<MethodInvocationTree> settersToReport = Lists.newArrayList();
 
   @Override
@@ -63,10 +62,10 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
   @Override
   public void scanFile(JavaFileScannerContext context) {
     compliantConstructorInitializations.clear();
-    declarationsToReport.clear();
+    variablesToReport.clear();
     settersToReport.clear();
     super.scanFile(context);
-    for (VariableSymbol var : declarationsToReport) {
+    for (VariableSymbol var : variablesToReport) {
       VariableTree declaration = var.declaration();
       if (declaration != null) {
         reportIssue(declaration.simpleName(), getMessage());
@@ -108,7 +107,7 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
     if (isCompliantConstructorCall(newClassTree)) {
       compliantConstructorInitializations.add(variableSymbol);
     } else {
-      declarationsToReport.add(variableSymbol);
+      variablesToReport.add(variableSymbol);
     }
   }
 
@@ -118,7 +117,7 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
       Symbol variableTreeSymbol = declaration.symbol();
       boolean isMethodVariable = variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol();
       boolean isSupportedClass = getClasses().stream().anyMatch(declaration.type().symbolType()::isSubtypeOf)
-          || getClasses().stream().anyMatch(declaration.initializer().symbolType()::isSubtypeOf);
+          || getClasses().stream().anyMatch(initializer.symbolType()::isSubtypeOf);
       return isMethodVariable && isSupportedClass;
     }
     return false;
@@ -139,8 +138,9 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
   private void checkSetterInvocation(MethodInvocationTree mit) {
     if (isExpectedSetter(mit)) {
       if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        if (((MemberSelectExpressionTree) mit.methodSelect()).expression().is(Tree.Kind.IDENTIFIER)) {
-          treatMethodCallOnVariable(mit);
+        boolean isCalledOnIdentifier = ((MemberSelectExpressionTree) mit.methodSelect()).expression().is(Tree.Kind.IDENTIFIER);
+        if (isCalledOnIdentifier) {
+          updateIssuesToReport(mit);
         } else if (!setterArgumentHasCompliantValue(mit.arguments())) {
           // builder method
           settersToReport.add(mit);
@@ -161,14 +161,14 @@ public abstract class AbstractCompliantInitializationChecker extends IssuableSub
     return false;
   }
 
-  private void treatMethodCallOnVariable(MethodInvocationTree mit) {
+  private void updateIssuesToReport(MethodInvocationTree mit) {
     MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
     VariableSymbol reference = (VariableSymbol) ((IdentifierTree) mse.expression()).symbol();
     if (setterArgumentHasCompliantValue(mit.arguments())) {
-      declarationsToReport.remove(reference);
+      variablesToReport.remove(reference);
     } else if (compliantConstructorInitializations.contains(reference)) {
-      declarationsToReport.add(reference);
-    } else if (!declarationsToReport.contains(reference)) {
+      variablesToReport.add(reference);
+    } else if (!variablesToReport.contains(reference)) {
       settersToReport.add(mit);
     }
   }
