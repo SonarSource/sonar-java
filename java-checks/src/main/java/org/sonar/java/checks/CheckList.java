@@ -45,6 +45,7 @@ import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.CookieShouldNotContainSensitiveDataCheck;
+import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPDeserializationCheck;
@@ -557,6 +558,7 @@ public final class CheckList {
       .add(SpecializedFunctionalInterfacesCheck.class)
       .add(IndentationAfterConditionalCheck.class)
       .add(CipherBlockChainingCheck.class)
+      .add(CryptographicKeySizeCheck.class)
       .build();
   }
 

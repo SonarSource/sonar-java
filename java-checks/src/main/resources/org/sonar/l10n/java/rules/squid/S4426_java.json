@@ -1,0 +1,21 @@
+{
+  "title": "Cryptographic keys should not be too short",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a3"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-4426",
+  "sqKey": "S4426",
+  "scope": "Main"
+}
