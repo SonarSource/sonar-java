@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 @Rule(key = "S1313")
 public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Matcher IP = Pattern.compile("([^\\d.]*\\/)?(?<ip>(?:\\d{1,3}\\.){3}\\d{1,3}(?!\\d|\\.))(\\/.*)?").matcher("");
+  private static final Matcher IP = Pattern.compile("([^\\d.]*\\/)?((?<ip>(?:\\d{1,3}\\.){3}\\d{1,3})(:\\d{1,5})?(?!\\d|\\.))(\\/.*)?").matcher("");
 
   private JavaFileScannerContext context;
 
