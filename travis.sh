@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -euo pipefail
 
 function configureTravis {
@@ -16,6 +15,7 @@ case "$TEST" in
 CI)
   export DEPLOY_PULL_REQUEST=true
   regular_mvn_build_deploy_analyze
+  ./check-license-compliance.sh
   ;;
 
 *)
