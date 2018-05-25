@@ -92,7 +92,7 @@ public class LiteralUtils {
   }
 
   public static boolean isEmptyString(Tree tree) {
-    return tree.is(Kind.STRING_LITERAL) && trimQuotes(((LiteralTree) tree).value()).isEmpty();
+    return tree.is(Tree.Kind.STRING_LITERAL) && trimQuotes(((LiteralTree) tree).value()).isEmpty();
   }
 
   public static boolean is0xff(ExpressionTree expression) {
