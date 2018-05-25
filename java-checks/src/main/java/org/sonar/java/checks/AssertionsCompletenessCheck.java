@@ -73,7 +73,9 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     // AssertJ 3.X
     assertThatOnType("org.assertj.core.api.StrictAssertions"),
     // Truth 0.29
-    methodWithName("com.google.common.truth.Truth", NameCriteria.startsWith("assert"))
+    methodWithName("com.google.common.truth.Truth", NameCriteria.startsWith("assert")),
+    // Truth8 0.39
+    methodWithName("com.google.common.truth.Truth8", NameCriteria.startsWith("assert"))
   );
 
   private static final MethodMatcherCollection FEST_LIKE_EXCLUSIONS = MethodMatcherCollection.create(
@@ -87,6 +89,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.startsWith("with")),
     methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.is("describedAs")),
     methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.is("overridingErrorMessage")),
+    // Truth has assertWithMessage, Truth8 does not
     methodWithName(TRUTH_SUPERTYPE, NameCriteria.is("that"))
   );
 

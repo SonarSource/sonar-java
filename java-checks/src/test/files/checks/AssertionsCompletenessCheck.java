@@ -3,9 +3,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import com.google.common.truth.Truth;
+import com.google.common.truth.Truth8;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.stream.Stream;
 
 public class AssertionsCompletenessCheck {
 
@@ -63,6 +67,17 @@ public class AssertionsCompletenessCheck {
     Truth.assertThat(b); // Noncompliant
     Truth.assertWithMessage("Invalid option").that(b).isFalse();
     Truth.assertWithMessage("Invalid option").that(b); // Noncompliant
+  }
+
+  @Test
+  public void google_truth8_assertions() {
+    Truth8.assertThat(Stream.of(1, 2, 3)); // Noncompliant
+    Truth8.assertThat(Stream.of(1, 2, 3)).containsAllOf(1, 2, 3).inOrder();
+    boolean b = true;
+    Truth8.assertThat(Optional.of(b)); // Noncompliant
+    Truth8.assertThat(Optional.of(b)).isPresent();
+    Truth8.assertThat(OptionalInt.of(1)); // Noncompliant
+    Truth8.assertThat(OptionalInt.of(1)).hasValue(0);
   }
 
   @Test

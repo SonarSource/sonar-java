@@ -98,6 +98,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     method(TypeCriteria.subtypeOf("org.easymock.EasyMockSupport"), "verifyAll").withAnyParameters(),
     // Truth Framework
     method("com.google.common.truth.Truth", STARTS_WITH_ASSERT).withAnyParameters(),
+    method("com.google.common.truth.Truth8", STARTS_WITH_ASSERT).withAnyParameters(),
     // JMock Mockery
     method(TypeCriteria.subtypeOf("org.jmock.Mockery"), "assertIsSatisfied").withAnyParameters(),
     // WireMock
