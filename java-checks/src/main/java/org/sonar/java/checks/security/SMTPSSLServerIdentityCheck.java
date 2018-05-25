@@ -48,7 +48,7 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
     .addParameter(BOOLEAN);
 
   private static final MethodMatcher HASHTABLE_PUT = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf(HASHTABLE))
+    .typeDefinition(TypeCriteria.is(HASHTABLE))
     .name("put")
     .withAnyParameters();
 
@@ -60,30 +60,27 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     MethodTree method = findEnclosingMethod(mit);
-    MethodBodyVisitor methodVisitor = null;
     if (method != null) {
       Arguments args = mit.arguments();
       if (SET_SSL_ON_CONNECT.matches(mit) && LiteralUtils.isTrue(args.get(0))) {
-        methodVisitor = new MethodBodyVisitor(0);
+        MethodBodyApacheVisitor apacheVisitor = new MethodBodyApacheVisitor();
+        method.accept(apacheVisitor);
+        if (!apacheVisitor.isSecured) {
+          reportIssue(mit, "Enable server identity validation on this SMTP SSL connection.");
+        }
       } else if (HASHTABLE_PUT.matches(mit) && parametersSocketFactoryMatch(args.get(0), args.get(1))) {
-        methodVisitor = new MethodBodyVisitor(1);
-      }
-      if (methodVisitor != null) {
-        visitEnclosingMethodAndReportMessageIfNotSecure(method, mit, methodVisitor);
+        MethodBodyHashtableVisitor hashVisitor = new MethodBodyHashtableVisitor();
+        method.accept(hashVisitor);
+        if (!hashVisitor.isSecured) {
+          reportIssue(mit, "Enable server identity validation, set \"mail.smtp.ssl.checkserveridentity\" to true");
+        }
       }
     }
     super.onMethodInvocationFound(mit);
   }
 
-  private void visitEnclosingMethodAndReportMessageIfNotSecure(MethodTree method, MethodInvocationTree mit, MethodBodyVisitor methodVisitor) {
-    method.accept(methodVisitor);
-    if (!methodVisitor.isSecured) {
-      if (methodVisitor.differentiateInvocations == 0) {
-        reportIssue(mit, "Enable server identity validation on this SMTP SSL connection.");
-      } else if (methodVisitor.differentiateInvocations == 1) {
-        reportIssue(mit, "Enable server identity validation, set \"mail.smtp.ssl.checkserveridentity\" to true");
-      }
-    }
+  private static boolean argIsNotBooleanOrIsTrue(ExpressionTree arg) {
+    return LiteralUtils.isTrue(arg) || !arg.is(Tree.Kind.BOOLEAN_LITERAL);
   }
 
   @CheckForNull
@@ -102,32 +99,13 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
       && "javax.net.ssl.SSLSocketFactory".equals(ConstantUtils.resolveAsStringConstant(arg2));
   }
 
-  private static class MethodBodyVisitor extends BaseTreeVisitor {
-
-    /*
-     * MethodVisitor constructor's parameter is 0 when "send()" from org.apache.commons.mail.Email is invoked
-     * and 1 for "getDefaultInstance" from javax.mail.Session
-     */
-    private final Integer differentiateInvocations;
+  private static class MethodBodyHashtableVisitor extends BaseTreeVisitor {
     private boolean isSecured = false;
-    private static final MethodMatcher SET_SSL_CHECK_SERVER_ID = MethodMatcher.create()
-      .typeDefinition(APACHE)
-      .name("setSSLCheckServerIdentity")
-      .addParameter(BOOLEAN);
-
-    public MethodBodyVisitor(Integer specifyInvocationByNumber) {
-      differentiateInvocations = specifyInvocationByNumber;
-    }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       Arguments args = mit.arguments();
-      if (differentiateInvocations == 0 && SET_SSL_CHECK_SERVER_ID.matches(mit)
-        && (argIsNotBooleanOrIsTrue(args.get(0)))) {
-        this.isSecured = true;
-      }
-
-      if (differentiateInvocations == 1 && HASHTABLE_PUT.matches(mit)
+      if (HASHTABLE_PUT.matches(mit)
         && mailSessionIsChecked(args.get(0), args.get(1))) {
         this.isSecured = true;
       }
@@ -138,9 +116,24 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
       return ("mail.smtp.ssl.checkserveridentity".equals(ConstantUtils.resolveAsStringConstant(arg1))
         && argIsNotBooleanOrIsTrue(arg2));
     }
+  }
 
-    private static boolean argIsNotBooleanOrIsTrue(ExpressionTree arg) {
-      return LiteralUtils.isTrue(arg) || !arg.is(Tree.Kind.BOOLEAN_LITERAL);
+  private static class MethodBodyApacheVisitor extends BaseTreeVisitor {
+
+    private boolean isSecured = false;
+
+    private static final MethodMatcher SET_SSL_CHECK_SERVER_ID = MethodMatcher.create()
+      .typeDefinition(APACHE)
+      .name("setSSLCheckServerIdentity")
+      .addParameter(BOOLEAN);
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree mit) {
+      if (SET_SSL_CHECK_SERVER_ID.matches(mit)
+        && (argIsNotBooleanOrIsTrue(mit.arguments().get(0)))) {
+        this.isSecured = true;
+      }
+      super.visitMethodInvocation(mit);
     }
   }
 }
