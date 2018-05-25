@@ -21,12 +21,18 @@ class S3330 {
   UnknownCookie field7;
 
   void servletCookie(boolean param, Cookie c0) {
+
     c0.setHttpOnly(false); // Noncompliant [[sc=19;ec=26]] {{Add the "HttpOnly" cookie attribute.}}
     field6.setHttpOnly(false); // Noncompliant
     field7.setHttpOnly(false);
 
     Cookie c1 = new Cookie("name", "value");
-    c1.setHttpOnly(true);
+    if (param) {
+      c1.setHttpOnly(false); // FN
+    }
+    else {
+      c1.setHttpOnly(true);
+    }
 
     Cookie c2 = new Cookie("name", "value"); // Noncompliant [[sc=12;ec=14]]
 
@@ -174,6 +180,7 @@ class S3330 {
 }
 
 class A extends Cookie {
+  public Cookie c;
   public void setHttpOnly(boolean isHttpOnly) { }
   void foo() {
     setHttpOnly(false); // Noncompliant
@@ -187,8 +194,19 @@ class A extends Cookie {
 }
 
 class B {
+  A a;
   public void setHttpOnly(boolean isHttpOnly) { }
   void foo() {
     setHttpOnly(false);
+  }
+  void bar() { return; }
+  A getA() {
+    return new A(); // Noncompliant
+  }
+  void baw() {
+    int i;
+    i = 1;
+    a.c = new Cookie("1", "2"); // FN
+    unknown = new A("1", "2");
   }
 }

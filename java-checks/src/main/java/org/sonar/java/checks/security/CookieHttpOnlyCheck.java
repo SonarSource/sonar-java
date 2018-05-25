@@ -96,15 +96,6 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(CONSTRUCTOR).parameters(JAVA_LANG_STRING));
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(
-        Tree.Kind.VARIABLE,
-        Tree.Kind.ASSIGNMENT,
-        Tree.Kind.METHOD_INVOCATION,
-        Tree.Kind.RETURN_STATEMENT);
-  }
-
-  @Override
   public void scanFile(JavaFileScannerContext context) {
     compliantConstructorInitializations.clear();
     variablesToReport.clear();
@@ -126,6 +117,15 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(
+        Tree.Kind.VARIABLE,
+        Tree.Kind.ASSIGNMENT,
+        Tree.Kind.METHOD_INVOCATION,
+        Tree.Kind.RETURN_STATEMENT);
+  }
+
+  @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.VARIABLE)) {
@@ -134,7 +134,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
         categorizeBasedOnConstructor((AssignmentExpressionTree) tree);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         checkSetterInvocation((MethodInvocationTree) tree);
-      } else if (tree.is(Tree.Kind.RETURN_STATEMENT)) {
+      } else {
         categorizeBasedOnConstructor((ReturnStatementTree) tree);
       }
     }
@@ -172,14 +172,12 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean shouldVerify(VariableTree declaration) {
-    ExpressionTree initializer = declaration.initializer();
+  private static boolean shouldVerify(VariableTree variableDeclaration) {
+    ExpressionTree initializer = variableDeclaration.initializer();
     if (initializer != null && initializer.is(Tree.Kind.NEW_CLASS)) {
-      Symbol variableTreeSymbol = declaration.symbol();
-      boolean isMethodVariable = variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol();
-      boolean isSupportedClass = CLASSES.stream().anyMatch(declaration.type().symbolType()::isSubtypeOf)
+      boolean isSupportedClass = CLASSES.stream().anyMatch(variableDeclaration.type().symbolType()::isSubtypeOf)
           || CLASSES.stream().anyMatch(initializer.symbolType()::isSubtypeOf);
-      return isMethodVariable && isSupportedClass;
+      return variableDeclaration.symbol().owner().isMethodSymbol() && isSupportedClass;
     }
     return false;
   }
@@ -216,7 +214,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
           // builder method
           settersToReport.add(mit);
         }
-      } else if (mit.methodSelect().is(Tree.Kind.IDENTIFIER) && !setterArgumentHasCompliantValue(mit.arguments())) {
+      } else if (!setterArgumentHasCompliantValue(mit.arguments())) {
         // sub-class method
         settersToReport.add(mit);
       }
