@@ -9,12 +9,13 @@ import org.springframework.security.web.savedrequest.SavedCookie;
 class S2255 {
   private static final String VALUE = "value";
 
-  void servletCookie(){
+  void servletCookie(Cookie c){
     Cookie cookie = new Cookie("name", "value"); // Noncompliant [[sc=40;ec=47]] {{If the data stored in this cookie is sensitive, it should be stored internally in the user session.}}
     cookie.setValue("value"); // Noncompliant [[sc=20;ec=29]]
     String x = "value";
     cookie.setValue(x); // Noncompliant
     cookie.setValue(VALUE); // Noncompliant
+    c.setValue("x"); // Noncompliant
   }
 
   void jaxRsCookie() {
@@ -25,13 +26,15 @@ class S2255 {
     new NewCookie(cookie); // Noncompliant
   }
 
-  void httpCookie() {
+  void httpCookie(HttpCookie hc) {
     HttpCookie cookie = new HttpCookie("name", "value"); // Noncompliant
     cookie.setValue("value"); // Noncompliant
+    hc.setValue("x"); // Noncompliant
   }
 
   void shiroCookie(SimpleCookie cookie) {
     SimpleCookie sc = new SimpleCookie(cookie); // Noncompliant
+    cookie.setValue("value"); // Noncompliant
     sc.setValue("value"); // Noncompliant
   }
 
@@ -51,7 +54,24 @@ class S2255 {
     c4.getValue();
     c5.getValue();
     c6.getValue();
+    c1.setValue(null);
+    c1.setValue("");
+    c1.setValue("   ");
+    c2.setValue(null);
+    c2.setValue("");
+    c2.setValue("   ");
+    c5.setValue(null);
+    c5.setValue("");
+    c5.setValue("    ");
     new SimpleCookie();
     new SimpleCookie("name");
+    new Cookie("name", "");
+    new Cookie("name", "  ");
+    new Cookie("name", null);
+    new javax.ws.rs.core.Cookie("name", "");
+    new HttpCookie("name", null);
+    new HttpCookie("name", "");
+    new SavedCookie("n", "", "c", "d", 1, "p", true, 1);
+    new SavedCookie("n", "   ", "c", "d", 1, "p", true, 1);
   }
 }
