@@ -184,13 +184,11 @@ public class LiteralUtilsTest {
     assertThat(LiteralUtils.is0xff(tree)).isFalse();
   }
 
-  @Test
   public void isTrue_withNonBooleanLiteral_returnsFalse() {
     ExpressionTree tree = getFirstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
     assertThat(LiteralUtils.isTrue(tree)).isFalse();
   }
 
-  @Test
   public void isFalse_withNonBooleanLiteral_returnsFalse() {
     ExpressionTree tree = getFirstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
     assertThat(LiteralUtils.isFalse(tree)).isFalse();
@@ -218,36 +216,6 @@ public class LiteralUtilsTest {
   public void isFalse_withExpectedValue_returnsTrue() {
     LiteralTree falseTree = (LiteralTree) getReturnExpression("void foo(){ return false; }");
     assertThat(LiteralUtils.isFalse(falseTree)).isTrue();
-  }
-
-  @Test
-  public void isNullOrWhitespace_withOtherLiteral_returnsFalse() {
-    LiteralTree falseTree = (LiteralTree) getReturnExpression("void foo(){ return false; }");
-    assertThat(LiteralUtils.isNullOrWhitespace(falseTree)).isFalse();
-  }
-
-  @Test
-  public void isNullOrWhitespace_withNull_returnsTrue() {
-    LiteralTree x = (LiteralTree) getReturnExpression("void foo(){ return null; }");
-    assertThat(LiteralUtils.isNullOrWhitespace(x)).isTrue();
-  }
-
-  @Test
-  public void isNullOrWhitespace_withEmptyString_returnsTrue() {
-    LiteralTree x = (LiteralTree) getReturnExpression("void foo(){ return \"\"; }");
-    assertThat(LiteralUtils.isNullOrWhitespace(x)).isTrue();
-  }
-
-  @Test
-  public void isNullOrWhitespace_withWhitespace_returnsTrue() {
-    LiteralTree x = (LiteralTree) getReturnExpression("void foo(){ return \"  \"; }");
-    assertThat(LiteralUtils.isNullOrWhitespace(x)).isTrue();
-  }
-
-  @Test
-  public void isNullOrWhitespace_withText_returnsFalse() {
-    LiteralTree x = (LiteralTree) getReturnExpression("void foo(){ return \"  Hi  \"; }");
-    assertThat(LiteralUtils.isNullOrWhitespace(x)).isFalse();
   }
 
   private ExpressionTree getFirstExpression(String code) {

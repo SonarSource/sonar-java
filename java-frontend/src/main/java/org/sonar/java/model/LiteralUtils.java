@@ -95,10 +95,6 @@ public class LiteralUtils {
     return tree.is(Kind.STRING_LITERAL) && trimQuotes(((LiteralTree) tree).value()).isEmpty();
   }
 
-  public static boolean isNullOrWhitespace(Tree tree) {
-    return tree.is(Kind.NULL_LITERAL) || (tree.is(Kind.STRING_LITERAL) && StringUtils.isBlank(trimQuotes(((LiteralTree) tree).value())));
-  }
-
   public static boolean is0xff(ExpressionTree expression) {
     return expression.is(Tree.Kind.INT_LITERAL) && "0xff".equalsIgnoreCase(((LiteralTree) expression).value());
   }
