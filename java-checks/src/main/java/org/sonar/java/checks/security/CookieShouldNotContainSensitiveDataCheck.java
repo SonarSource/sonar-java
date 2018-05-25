@@ -29,7 +29,6 @@ import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2255")
 public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDetection {
@@ -72,8 +71,7 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodTree) {
-    Tree param = methodTree.arguments().get(0);
-    if (!LiteralUtils.isNullOrWhitespace(param)) {
+    if (!LiteralUtils.isNullOrWhitespace(methodTree.arguments().get(0))) {
       reportIssue(methodTree.arguments(), MESSAGE);
     }
   }
