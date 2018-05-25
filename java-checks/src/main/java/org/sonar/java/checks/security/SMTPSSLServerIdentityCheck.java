@@ -38,20 +38,23 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4499")
 public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
 
-  private static final String EMAIL_CLASS_NAME = "org.apache.commons.mail.Email";
-  private static final String SESSION_CLASS_NAME = "javax.mail.Session";
+  private static final String APACHE = "org.apache.commons.mail.Email";
+  private static final String BOOLEAN = "boolean";
+  private static final String HASHTABLE = "java.util.Hashtable";
+
+  private static final MethodMatcher SET_SSL_ON_CONNECT = MethodMatcher.create()
+    .typeDefinition(TypeCriteria.is(APACHE))
+    .name("setSSLOnConnect")
+    .addParameter(BOOLEAN);
+
+  private static final MethodMatcher HASHTABLE_PUT = MethodMatcher.create()
+    .typeDefinition(TypeCriteria.subtypeOf(HASHTABLE))
+    .name("put")
+    .withAnyParameters();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
-      MethodMatcher.create()
-        .typeDefinition(TypeCriteria.is(EMAIL_CLASS_NAME))
-        .name("send")
-        .withoutParameter(),
-      MethodMatcher.create()
-        .typeDefinition(TypeCriteria.is(SESSION_CLASS_NAME))
-        .name("getDefaultInstance")
-        .withAnyParameters());
+    return ImmutableList.of(SET_SSL_ON_CONNECT, HASHTABLE_PUT);
   }
 
   @Override
@@ -59,21 +62,28 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
     MethodTree method = findEnclosingMethod(mit);
     MethodBodyVisitor methodVisitor = null;
     if (method != null) {
-      if ("send".equals(mit.symbol().name())) {
+      Arguments args = mit.arguments();
+      if (SET_SSL_ON_CONNECT.matches(mit) && LiteralUtils.isTrue(args.get(0))) {
         methodVisitor = new MethodBodyVisitor(0);
-      } else {
+      } else if (HASHTABLE_PUT.matches(mit) && parametersSocketFactoryMatch(args.get(0), args.get(1))) {
         methodVisitor = new MethodBodyVisitor(1);
       }
-      method.accept(methodVisitor);
-      if (methodVisitor.bothFunctionsAreChecked < 2) {
-        if (methodVisitor.differentiateEmailAndSessionInvocations == 0) {
-          reportIssue(mit.methodSelect(), "Enable server identity validation on this SMTP SSL connection.");
-        } else if (methodVisitor.differentiateEmailAndSessionInvocations == 1) {
-          reportIssue(mit.methodSelect(), "Enable server identity validation, set \"mail.smtp.ssl.checkserveridentity\" to true");
-        }
+      if (methodVisitor != null) {
+        visitEnclosingMethodAndReportMessageIfNotSecure(method, mit, methodVisitor);
       }
     }
     super.onMethodInvocationFound(mit);
+  }
+
+  private void visitEnclosingMethodAndReportMessageIfNotSecure(MethodTree method, MethodInvocationTree mit, MethodBodyVisitor methodVisitor) {
+    method.accept(methodVisitor);
+    if (!methodVisitor.isSecured) {
+      if (methodVisitor.differentiateInvocations == 0) {
+        reportIssue(mit, "Enable server identity validation on this SMTP SSL connection.");
+      } else if (methodVisitor.differentiateInvocations == 1) {
+        reportIssue(mit, "Enable server identity validation, set \"mail.smtp.ssl.checkserveridentity\" to true");
+      }
+    }
   }
 
   @CheckForNull
@@ -87,64 +97,50 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
     return (MethodTree) tree;
   }
 
+  private static boolean parametersSocketFactoryMatch(ExpressionTree arg1, ExpressionTree arg2) {
+    return "mail.smtp.socketFactory.class".equals(ConstantUtils.resolveAsStringConstant(arg1))
+      && "javax.net.ssl.SSLSocketFactory".equals(ConstantUtils.resolveAsStringConstant(arg2));
+  }
+
   private static class MethodBodyVisitor extends BaseTreeVisitor {
 
-    private Integer bothFunctionsAreChecked = 0;
     /*
      * MethodVisitor constructor's parameter is 0 when "send()" from org.apache.commons.mail.Email is invoked
      * and 1 for "getDefaultInstance" from javax.mail.Session
      */
-    private final Integer differentiateEmailAndSessionInvocations;
-
-    private static final String BOOLEAN = "boolean";
-    private static final String HASHTABLE = "java.util.Hashtable";
-
-    private static final MethodMatcher SET_SSL_ON_CONNECT = MethodMatcher.create()
-      .typeDefinition(TypeCriteria.is(EMAIL_CLASS_NAME))
-      .name("setSSLOnConnect")
-      .addParameter(BOOLEAN);
-
+    private final Integer differentiateInvocations;
+    private boolean isSecured = false;
     private static final MethodMatcher SET_SSL_CHECK_SERVER_ID = MethodMatcher.create()
-      .typeDefinition(EMAIL_CLASS_NAME)
+      .typeDefinition(APACHE)
       .name("setSSLCheckServerIdentity")
       .addParameter(BOOLEAN);
 
-    private static final MethodMatcher MAIL_SMTP_SSL = MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(HASHTABLE))
-      .name("put")
-      .withAnyParameters();
-
     public MethodBodyVisitor(Integer specifyInvocationByNumber) {
-      differentiateEmailAndSessionInvocations = specifyInvocationByNumber;
+      differentiateInvocations = specifyInvocationByNumber;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       Arguments args = mit.arguments();
-      if (differentiateEmailAndSessionInvocations == 0
-        && (SET_SSL_CHECK_SERVER_ID.matches(mit) || SET_SSL_ON_CONNECT.matches(mit))
-        && LiteralUtils.isTrue(args.get(0))) {
-        bothFunctionsAreChecked++;
+      if (differentiateInvocations == 0 && SET_SSL_CHECK_SERVER_ID.matches(mit)
+        && (argIsNotBooleanOrIsTrue(args.get(0)))) {
+        this.isSecured = true;
       }
 
-      if (differentiateEmailAndSessionInvocations == 1 && MAIL_SMTP_SSL.matches(mit)) {
-        ExpressionTree arg1 = args.get(0);
-        ExpressionTree arg2 = args.get(1);
-        if (mailSessionIsChecked(arg1, arg2) || parametersSocketFactoryMatch(arg1, arg2)) {
-          bothFunctionsAreChecked++;
-        }
+      if (differentiateInvocations == 1 && HASHTABLE_PUT.matches(mit)
+        && mailSessionIsChecked(args.get(0), args.get(1))) {
+        this.isSecured = true;
       }
       super.visitMethodInvocation(mit);
     }
 
     private static boolean mailSessionIsChecked(ExpressionTree arg1, ExpressionTree arg2) {
       return ("mail.smtp.ssl.checkserveridentity".equals(ConstantUtils.resolveAsStringConstant(arg1))
-        && LiteralUtils.isTrue(arg2));
+        && argIsNotBooleanOrIsTrue(arg2));
     }
 
-    private static boolean parametersSocketFactoryMatch(ExpressionTree arg1, ExpressionTree arg2) {
-      return "mail.smtp.socketFactory.class".equals(ConstantUtils.resolveAsStringConstant(arg1))
-        && "javax.net.ssl.SSLSocketFactory".equals(ConstantUtils.resolveAsStringConstant(arg2));
+    private static boolean argIsNotBooleanOrIsTrue(ExpressionTree arg) {
+      return LiteralUtils.isTrue(arg) || !arg.is(Tree.Kind.BOOLEAN_LITERAL);
     }
   }
 }
