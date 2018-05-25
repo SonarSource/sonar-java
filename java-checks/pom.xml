@@ -147,6 +147,11 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                    <groupId>com.typesafe.play</groupId>
+                    <artifactId>play_2.12</artifactId>
+                    <version>2.6.14</version>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.springframework</groupId>
                   <artifactId>spring-test</artifactId>
                   <version>4.3.7.RELEASE</version>
@@ -188,6 +193,12 @@
                   <groupId>javax</groupId>
                   <artifactId>javaee-api</artifactId>
                   <version>7.0</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.ws.rs</groupId>
+                  <artifactId>javax.ws.rs-api</artifactId>
+                  <version>2.1</version>
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>

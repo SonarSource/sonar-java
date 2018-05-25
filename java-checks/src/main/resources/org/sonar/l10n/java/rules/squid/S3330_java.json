@@ -1,0 +1,23 @@
+{
+  "title": "\"HttpOnly\" should be set on cookies",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "cwe",
+    "sans-top25-insecure",
+    "owasp-a7"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten",
+    "SANS Top 25"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-3330",
+  "sqKey": "S3330",
+  "scope": "Main"
+}
