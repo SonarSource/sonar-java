@@ -65,6 +65,7 @@ public class A {
   public static final Set PROPER_SET = Collections.unmodifiableSet(new HashSet(Arrays.asList("a")));
 
   public static final Map MAP = new HashMap(); // Noncompliant
+  public static final Map otherMap = MAP; // Noncompliant
 
   static {
     MAP.put("a", "b");
@@ -94,11 +95,16 @@ public class A {
   public static final Set<String> immutableSet = ImmutableSet.of("a");
   public static final Map<String, String> immutableMap = ImmutableMap.of("a", "a");
 
+  public static final Set<String> otherImmutableSet = immutableSet;
+  public static final Map<String, String> otherImmutableMap = immutableMap;
+
   // apache commons collections 4.x
   public static final List<String> immutableListApacheNew = new org.apache.commons.collections4.list.UnmodifiableList(new ArrayList<>());
   public static final List<String> immutableListApache = org.apache.commons.collections4.list.UnmodifiableList.unmodifiableList(new ArrayList<String>());
   public static final Set<String> immutableSetApache = org.apache.commons.collections4.set.UnmodifiableSet.unmodifiableSet(new HashSet<String>());
   public static final Map<String, String> immutableMapApache = org.apache.commons.collections4.map.UnmodifiableMap.unmodifiableMap(new HashMap<String, String>());
+
+  public static final List<String> otherImmutableListApache = immutableListApache;
 
   public static final List noInitializer;
   // we don't know the type of foo
@@ -146,11 +152,13 @@ interface I {
   public static MyImmutableCollection<String> immutableList2; //Compliant : immutable collection
 
   public static Point p = new Point(); // Noncompliant
+  public static Point otherP = p; // Noncompliant
 
   // guava
   public static final List<String> immutableList3 = ImmutableList.of("a");
   public static final Set<String> immutableSet2 = ImmutableSet.of("a");
   public static final Map<String, String> immutableMap2 = ImmutableMap.of("a", "a");
+  public static final Set otherImmutableSet2 = immutableSet2;
 
   // apache commons collections 4.x
   public static final List<String> immutableListApacheNew = new org.apache.commons.collections4.list.UnmodifiableList(new ArrayList<>());
