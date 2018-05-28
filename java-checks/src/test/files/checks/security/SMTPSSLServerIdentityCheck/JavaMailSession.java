@@ -13,15 +13,31 @@ public class JavaMailSession {
     props.put("mail.smtp.ssl.checkserveridentity", true);
   }
 
-  public void foo4() {
+  public void foo3() {
     Properties props = new Properties();
     props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); // Noncompliant {{Enable server identity validation, set "mail.smtp.ssl.checkserveridentity" to true}}
     props.put("mail.smtp.ssl.checkserveridentity", false);
   }
 
-  public void false_positive(boolean flag) {
+  public void foo4(boolean flag) {
     Properties props = new Properties();
     props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-    props.put("mail.smtp.ssl.checkserveridentity", flag);  // Compliant FN
+    props.put("mail.smtp.ssl.checkserveridentity", flag);  // Compliant
+  }
+
+  public void foo5() {
+    Properties props = new Properties();
+    props.put("mail.smtp.socketFactory.class", ""); // coverage
+  }
+
+  public void foo6() {
+    Properties props = new Properties();
+    props.put("mail.smtp.ssl.protocols", "");
+  }
+
+  public void foo7() {
+    Properties props = new Properties();
+    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); // Noncompliant
+    props.clear();  // coverage
   }
 }

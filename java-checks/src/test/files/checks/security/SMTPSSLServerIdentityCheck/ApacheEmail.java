@@ -3,6 +3,11 @@ import org.apache.commons.mail.SimpleEmail;
 
 public class ApacheEmail {
 
+  static {
+    Email email = new SimpleEmail();
+    email.setSSLOnConnect(true);  // for coverage
+  }
+
   public void foo() {
     Email email = new SimpleEmail();
     email.setSSLOnConnect(true);   // Noncompliant [[sc=5;ec=32]] {{Enable server identity validation on this SMTP SSL connection.}}
@@ -26,18 +31,18 @@ public class ApacheEmail {
     email.setSSLCheckServerIdentity(false);
   }
 
-  public void false_negative1(boolean flag) {
-    Email email = new SimpleEmail();
-    email.setSSLOnConnect(flag);     // Compliant FN flag value will be read with SE engine
-  }
-
   public void foo5(boolean flag) {
     Email email = new SimpleEmail();
-    email.setSSLOnConnect(true);  // Compliant   needs SE - engine to compute flag's value
+    email.setSSLOnConnect(flag);     // Compliant needs SE - engine to compute flag's value
+  }
+
+  public void foo6(boolean flag) {
+    Email email = new SimpleEmail();
+    email.setSSLOnConnect(true);  // Compliant needs SE - engine to compute flag's value
     email.setSSLCheckServerIdentity(flag);
   }
 
-  public void foo5(boolean flag) {
+  public void foo7(boolean flag) {
     Email email = new SimpleEmail();
     email.setSSLOnConnect(flag);  // Compliant
     email.setSSLCheckServerIdentity(true);
