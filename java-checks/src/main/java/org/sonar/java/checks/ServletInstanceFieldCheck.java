@@ -49,7 +49,8 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
   private static final List<String> ANNOTATIONS_EXCLUDING_FIELDS = Arrays.asList(
     "javax.inject.Inject",
     "javax.ejb.EJB",
-    "javax.annotation.Resource");
+    "javax.annotation.Resource",
+    "com.google.inject.Inject");
 
   @Override
   public List<Kind> nodesToVisit() {
