@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.helpers;
 
+import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -35,11 +36,14 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.sonar.java.checks.helpers.ConstantUtils.resolveAsIntConstant;
 
 public class ConstantUtilsTest {
 
+  private final ActionParser<Tree> parser = JavaParser.createParser();
   private final ClassTree classTree = parse();
 
   @Test
@@ -82,9 +86,25 @@ public class ConstantUtilsTest {
     assertThat(resolveAsStrings("other")).containsExactly(null, null);
   }
 
+  @Test
+  public void uncompilable_expressions() {
+    assertThat(resolveAsIntConstant(expression("42 + 1"))).isEqualTo(43);
+    assertThat(resolveAsIntConstant(expression("42 + true"))).isNull();
+    assertThat(resolveAsIntConstant(expression("42L + true"))).isNull();
+    assertThat(resolveAsIntConstant(expression("true + 42"))).isNull();
+    assertThat(resolveAsIntConstant(expression("unknownVar"))).isNull();
+  }
+
+  private ExpressionTree expression(String expressionAsString) {
+    CompilationUnitTree compilationUnit = (CompilationUnitTree) parser.parse("class A { Object obj = " + expressionAsString + "; } ");
+    ClassTree classTree = (ClassTree) compilationUnit.types().get(0);
+    VariableTree field = (VariableTree) classTree.members().get(0);
+    return field.initializer();
+  }
+
   private ClassTree parse() {
-    File file = new File("src/test/java//org/sonar/java/checks/helpers/ClassWithConstants.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    File file = new File("src/test/java/org/sonar/java/checks/helpers/ClassWithConstants.java");
+    CompilationUnitTree tree = (CompilationUnitTree) parser.parse(file);
     SemanticModel.createFor(tree, new SquidClassLoader(Collections.singletonList(new File("target/test-classes"))));
     return (ClassTree) tree.types().get(0);
   }
