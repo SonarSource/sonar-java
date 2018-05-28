@@ -17,6 +17,8 @@ abstract class A {
     Cipher.getInstance(algo); // Noncompliant
 
     Cipher.getInstance("AES" + "/ECB/NoPadding"); // Noncompliant
+    Cipher.getInstance(null);
+    Cipher.getInstance("");
   }
 
   abstract java.security.Provider getProvider();

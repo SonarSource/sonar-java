@@ -62,6 +62,9 @@ public class LiteralUtilsTest {
       .collect(Collectors.toList());
   }
 
+  /**
+   * The variables below are used in the setUp method above to create the 'variables' list which is used in tests
+   */
   int x1 = 42;
   int x2 = -7;
   int x3 = +3;
@@ -184,11 +187,13 @@ public class LiteralUtilsTest {
     assertThat(LiteralUtils.is0xff(tree)).isFalse();
   }
 
+  @Test
   public void isTrue_withNonBooleanLiteral_returnsFalse() {
     ExpressionTree tree = getFirstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
     assertThat(LiteralUtils.isTrue(tree)).isFalse();
   }
 
+  @Test
   public void isFalse_withNonBooleanLiteral_returnsFalse() {
     ExpressionTree tree = getFirstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
     assertThat(LiteralUtils.isFalse(tree)).isFalse();

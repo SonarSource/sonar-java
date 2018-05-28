@@ -39,7 +39,7 @@ public class LDAPDeserializationCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Arrays.asList(
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(CLASS_NAME)).name("<init>").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(CLASS_NAME)).name("setReturningObjFlag").withAnyParameters());
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(CLASS_NAME)).name("setReturningObjFlag").parameters("boolean"));
   }
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
@@ -52,9 +52,6 @@ public class LDAPDeserializationCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodTree) {
-    if (methodTree.arguments().size() != 1) {
-      return;
-    }
     ExpressionTree setValue = methodTree.arguments().get(0);
     reportIfTrue(setValue);
   }
