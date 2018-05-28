@@ -25,19 +25,19 @@ public class JavaMailSession {
     props.put("mail.smtp.ssl.checkserveridentity", flag);  // Compliant
   }
 
-  public void foo5() {
+  public void parameters_dont_match() {
     Properties props = new Properties();
-    props.put("mail.smtp.socketFactory.class", ""); // coverage
+    props.put("mail.smtp.socketFactory.class", "");
   }
 
   public void foo6() {
     Properties props = new Properties();
-    props.put("mail.smtp.ssl.protocols", "");
+    props.put("mail.smtp.ssl.protocols", ""); // Compliant
   }
 
   public void foo7() {
     Properties props = new Properties();
     props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); // Noncompliant
-    props.clear();  // coverage
+    props.clear();   // this invocation does not check server's identity
   }
 }

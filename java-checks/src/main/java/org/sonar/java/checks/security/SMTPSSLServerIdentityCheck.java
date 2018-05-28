@@ -38,12 +38,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4499")
 public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
 
-  private static final String APACHE = "org.apache.commons.mail.Email";
+  private static final String APACHE_EMAIL = "org.apache.commons.mail.Email";
   private static final String BOOLEAN = "boolean";
   private static final String HASHTABLE = "java.util.Hashtable";
 
   private static final MethodMatcher SET_SSL_ON_CONNECT = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.is(APACHE))
+    .typeDefinition(TypeCriteria.is(APACHE_EMAIL))
     .name("setSSLOnConnect")
     .addParameter(BOOLEAN);
 
@@ -114,7 +114,7 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
     private boolean isSecured = false;
 
     private static final MethodMatcher SET_SSL_CHECK_SERVER_ID = MethodMatcher.create()
-      .typeDefinition(APACHE)
+      .typeDefinition(APACHE_EMAIL)
       .name("setSSLCheckServerIdentity")
       .addParameter(BOOLEAN);
 

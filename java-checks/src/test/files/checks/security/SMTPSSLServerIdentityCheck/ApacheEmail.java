@@ -5,7 +5,7 @@ public class ApacheEmail {
 
   static {
     Email email = new SimpleEmail();
-    email.setSSLOnConnect(true);  // for coverage
+    email.setSSLOnConnect(true);  // invocation outside a method
   }
 
   public void foo() {
