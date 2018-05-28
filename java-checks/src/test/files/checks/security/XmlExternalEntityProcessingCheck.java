@@ -136,3 +136,7 @@ class DocumentBuilderFactoryTest {
   }
 
 }
+
+class Foo {
+  XMLInputFactory factory = XMLInputFactory.newInstance();
+}

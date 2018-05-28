@@ -49,7 +49,7 @@ public class LiteralUtilsTest {
 
   private final ActionParser<Tree> p = JavaParser.createParser();
 
-  private static List<VariableTree> variables;
+  static List<VariableTree> variables;
 
   @BeforeClass
   public static void setUp() {
@@ -61,6 +61,44 @@ public class LiteralUtilsTest {
       .map(VariableTree.class::cast)
       .collect(Collectors.toList());
   }
+
+  /**
+   * The variables below are used in the setUp method above to create the 'variables' list which is used in tests
+   */
+  int x1 = 42;
+  int x2 = -7;
+  int x3 = +3;
+  int x4 = 42 + x1;
+  int x5 = -x1;
+  int x6 = 0xff;
+  int x7 = 0b0100;
+  int x8 = 56_78;
+  int x9 = 0XFF;
+  int x10 = 0B1100110;
+
+  long y1 = 42;
+  long y2 = 42L;
+  long y3 = -7;
+  long y4 = -7l;
+  long y5 = +3;
+  long y6 = +3L;
+  long y7 = 42 + y1;
+  long y8 = -y1;
+  long y9 = 0xFFL;
+  long y10 = 0xFFFFFFFFFFFFFFFFL;
+  long y11 = 0xFFFFFFFFFFFFFFFEL;
+  long y12 = 0x8000000000000000L;
+  long y13 = 0x7FFFFFFFFFFFFFFFL;
+  long y14 = 0x7FFF_FFFF_FFFF_FFFFL;
+  long y15 = 0b11010010_01101001_10010100_10010010;
+  long y16 = 100_10;
+  long y17 = 0XFFL;
+  long y18 = 0B1100110L;
+
+  String s1 = "";
+  String s2 = " ";
+  String s3 = "not_empty";
+  String s4 = "\n";
 
   @Test
   public void private_constructor() throws Exception {
