@@ -256,7 +256,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
   private void buildConstructorInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, NewClassTree tree) {
     Symbol constructorSymbol = tree.constructorSymbol();
-    if (constructorSymbol.isUnknown()) {
+    if (!constructorSymbol.isMethodSymbol()) {
       return;
     }
 
