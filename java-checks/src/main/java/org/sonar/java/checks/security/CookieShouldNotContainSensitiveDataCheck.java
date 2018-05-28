@@ -21,14 +21,17 @@ package org.sonar.java.checks.security;
 
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2255")
 public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDetection {
@@ -43,7 +46,7 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
     private static final String SPRING_COOKIE = "org.springframework.security.web.savedrequest.SavedCookie";
   }
 
-  private static final List<String> cookieArgumentTypes = Arrays.asList(
+  private static final List<String> COOKIE_ARGUMENT_TYPES = Arrays.asList(
       ClassName.SERVLET_COOKIE,
       ClassName.JAX_RS_COOKIE,
       "org.apache.shiro.web.servlet.Cookie"
@@ -51,14 +54,15 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
 
   private static final String CONSTRUCTOR = "<init>";
   private static final String SET_VALUE_METHOD = "setValue";
+  private static final String JAVA_LANG_STRING = "java.lang.String";
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Arrays.asList(
       // setters
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(SET_VALUE_METHOD).withAnyParameters(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(SET_VALUE_METHOD).withAnyParameters(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(SET_VALUE_METHOD).withAnyParameters(),
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(SET_VALUE_METHOD).parameters(JAVA_LANG_STRING),
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(SET_VALUE_METHOD).parameters(JAVA_LANG_STRING),
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(SET_VALUE_METHOD).parameters(JAVA_LANG_STRING),
       // constructors
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
@@ -70,7 +74,9 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodTree) {
-    reportIssue(methodTree.arguments(), MESSAGE);
+    if (isNotNullOrWhitespace(methodTree.arguments().get(0))) {
+      reportIssue(methodTree.arguments(), MESSAGE);
+    }
   }
 
   @Override
@@ -87,7 +93,7 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
       return false;
     }
     ExpressionTree firstArgument = newClassTree.arguments().get(0);
-    return cookieArgumentTypes.stream().anyMatch(type -> firstArgument.symbolType().isSubtypeOf(type));
+    return COOKIE_ARGUMENT_TYPES.stream().anyMatch(type -> firstArgument.symbolType().isSubtypeOf(type));
   }
 
   private static boolean secondArgumentIsValue(NewClassTree newClassTree) {
@@ -95,6 +101,11 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
       return false;
     }
     ExpressionTree secondArgument = newClassTree.arguments().get(1);
-    return secondArgument.symbolType().isSubtypeOf("java.lang.String");
+    return secondArgument.symbolType().isSubtypeOf(JAVA_LANG_STRING) && isNotNullOrWhitespace(secondArgument);
+  }
+
+  private static boolean isNotNullOrWhitespace(Tree tree) {
+    return !tree.is(Tree.Kind.NULL_LITERAL)
+        && !(tree.is(Tree.Kind.STRING_LITERAL) && StringUtils.isBlank(LiteralUtils.trimQuotes(((LiteralTree) tree).value())));
   }
 }
