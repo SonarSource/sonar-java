@@ -119,7 +119,9 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       UCFG uCFG = buildUCfg(tree, cfg);
       UCFGtoProtobuf.toProtobufFile(uCFG, filePath());
     } catch (Exception e) {
-      LOG.error("Cannot generate ucfg in file " + fileKey + " for method at line" + tree.firstToken().line(), e);
+      String msg = String.format("Cannot generate ucfg in file %s for method at line %d", fileKey, tree.firstToken().line());
+      LOG.error(msg, e);
+      throw new AnalysisException(msg, e);
     }
   }
 
