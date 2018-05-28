@@ -51,6 +51,7 @@ import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.security.LDAPDeserializationCheck;
+import org.sonar.java.checks.security.SMTPSSLServerIdentityCheck;
 import org.sonar.java.checks.security.SecureXmlTransformerCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
 import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
@@ -563,6 +564,7 @@ public final class CheckList {
       .add(IndentationAfterConditionalCheck.class)
       .add(CipherBlockChainingCheck.class)
       .add(CryptographicKeySizeCheck.class)
+      .add(SMTPSSLServerIdentityCheck.class)
       .build();
   }
 
