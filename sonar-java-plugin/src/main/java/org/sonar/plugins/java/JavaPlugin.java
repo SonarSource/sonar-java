@@ -31,6 +31,7 @@ import org.sonar.java.JavaConstants;
 import org.sonar.java.JavaSonarLintClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.UCFGCollector;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefireExtensions;
@@ -60,6 +61,7 @@ public class JavaPlugin implements Plugin {
         .description("when set to true, if an exception is thrown by the analyzer, feedback will be collected and sent to server")
         .build());
       builder.add(JavaMetricDefinition.class);
+      builder.add(UCFGCollector.class);
     }
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
