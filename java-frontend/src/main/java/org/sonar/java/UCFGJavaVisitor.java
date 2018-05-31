@@ -87,6 +87,8 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     this.protobufDirectory = new File(new File(workdir, "ucfg"), "java");
     if(!protobufDirectory.exists()) {
       protobufDirectory.mkdirs();
+    } else {
+      index = protobufDirectory.list().length;
     }
   }
 

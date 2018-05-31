@@ -335,6 +335,12 @@ public class UCFGJavaVisitorTest {
   }
 
   private UCFG createUCFG(String source) {
+    File java_ucfg_dir = new File(new File(tmp.getRoot(), "ucfg"), "java");
+    if(java_ucfg_dir.isDirectory()) {
+      for (File file : java_ucfg_dir.listFiles()) {
+        file.delete();
+      }
+    }
     CompilationUnitTree cut = getCompilationUnitTreeWithSemantics(source);
     UCFGJavaVisitor UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot());
     UCFGJavaVisitor.fileKey = FILE_KEY;
@@ -342,13 +348,34 @@ public class UCFGJavaVisitorTest {
 
     UCFG actualUCFG = null;
     try {
-      File java_ucfg_dir = new File(new File(tmp.getRoot(), "ucfg"), "java");
       File ucfg = new File(java_ucfg_dir, "ucfg_0.proto");
       actualUCFG = UCFGtoProtobuf.fromProtobufFile(ucfg);
     } catch (IOException e) {
       e.printStackTrace();
     }
     return actualUCFG;
+  }
+
+  @Test
+  public void test_index_initialization() {
+    File java_ucfg_dir = new File(new File(tmp.getRoot(), "ucfg"), "java");
+    if(java_ucfg_dir.isDirectory()) {
+      for (File file : java_ucfg_dir.listFiles()) {
+        file.delete();
+      }
+    }
+    CompilationUnitTree cut = getCompilationUnitTreeWithSemantics("class A {String fun() {return \"\";}} ");
+    UCFGJavaVisitor UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot());
+    UCFGJavaVisitor.fileKey = FILE_KEY;
+    UCFGJavaVisitor.visitCompilationUnit(cut);
+
+    UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot());
+    UCFGJavaVisitor.fileKey = FILE_KEY;
+    UCFGJavaVisitor.visitCompilationUnit(cut);
+
+    String[] list = new File(new File(tmp.getRoot(), "ucfg"), "java").list();
+    assertThat(list).hasSize(2).containsExactly("ucfg_0.proto", "ucfg_1.proto");
+
   }
 
   @Test
