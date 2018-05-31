@@ -373,7 +373,7 @@ public class UCFGJavaVisitorTest {
     UCFGJavaVisitor.fileKey = FILE_KEY;
     UCFGJavaVisitor.visitCompilationUnit(cut);
 
-    String[] list = new File(new File(tmp.getRoot(), "ucfg"), "java").list();
+    String[] list = java_ucfg_dir.list();
     assertThat(list).hasSize(2).containsExactly("ucfg_0.proto", "ucfg_1.proto");
 
   }

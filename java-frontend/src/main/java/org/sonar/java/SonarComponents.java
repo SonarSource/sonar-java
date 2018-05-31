@@ -81,6 +81,7 @@ public class SonarComponents {
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
+  @Nullable
   private final ProjectDefinition projectDefinition;
   private final FileSystem fs;
   private final JavaClasspath javaClasspath;
@@ -101,13 +102,13 @@ public class SonarComponents {
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
-                         CheckFactory checkFactory, ProjectDefinition projectDefinition) {
+                         CheckFactory checkFactory, @Nullable ProjectDefinition projectDefinition) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, projectDefinition, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-                         ProjectDefinition projectDefinition, @Nullable CheckRegistrar[] checkRegistrars) {
+                         @Nullable ProjectDefinition projectDefinition, @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
@@ -334,6 +335,9 @@ public class SonarComponents {
 
   public File workDir() {
     ProjectDefinition current = projectDefinition;
+    if(current == null) {
+      return fs.workDir();
+    }
     while (current.getParent() != null) {
       current = current.getParent();
     }
