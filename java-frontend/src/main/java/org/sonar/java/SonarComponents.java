@@ -321,10 +321,6 @@ public class SonarComponents {
     return context.config().getBoolean(COLLECT_ANALYSIS_ERRORS_KEY).orElse(false);
   }
 
-  public File workDir() {
-    return context.fileSystem().workDir();
-  }
-
   public boolean shouldGenerateUCFG() {
     Set<String> activeRuleKeys = context.activeRules().findByRepository(this.ruleRepositoryKey).stream()
       .map(ActiveRule::ruleKey)

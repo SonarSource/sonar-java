@@ -55,10 +55,16 @@ public class JavaSquid {
     JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
     this(javaVersion, false, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, visitors);
   }
-
   public JavaSquid(JavaVersion javaVersion, boolean xFileEnabled,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
+    this(javaVersion, xFileEnabled, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, null, visitors);
+  }
+
+  public JavaSquid(JavaVersion javaVersion, boolean xFileEnabled,
+                   @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
+                   JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter,
+                   @Nullable UCFGCollector ucfgCollector,JavaCheck... visitors) {
 
     List<JavaCheck> commonVisitors = Lists.newArrayList(javaResourceLocator);
     if (postAnalysisIssueFilter != null) {
@@ -77,8 +83,8 @@ public class JavaSquid {
     if (sonarComponents != null) {
       if(!sonarComponents.isSonarLintContext()) {
         codeVisitors = Iterables.concat(codeVisitors, Arrays.asList(new FileLinesVisitor(sonarComponents), new SyntaxHighlighterVisitor(sonarComponents)));
-        if (sonarComponents.shouldGenerateUCFG()) {
-          codeVisitors = Iterables.concat(codeVisitors, Collections.singletonList(new UCFGJavaVisitor(sonarComponents.workDir())));
+        if (sonarComponents.shouldGenerateUCFG()&& ucfgCollector != null) {
+          codeVisitors = Iterables.concat(codeVisitors, Collections.singletonList(ucfgCollector.getVisitor()));
         }
         testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
       }
@@ -86,7 +92,6 @@ public class JavaSquid {
       testClasspath = sonarComponents.getJavaTestClasspath();
       testCodeVisitors.addAll(sonarComponents.testCheckClasses());
     }
-
     //AstScanner for main files
     ActionParser<Tree> parser = JavaParser.createParser();
     astScanner = new JavaAstScanner(parser, sonarComponents);

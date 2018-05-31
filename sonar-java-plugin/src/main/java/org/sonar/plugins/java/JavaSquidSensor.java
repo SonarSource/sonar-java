@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import javax.annotation.Nullable;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
@@ -41,6 +42,7 @@ import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.UCFGCollector;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
@@ -60,14 +62,25 @@ public class JavaSquidSensor implements Sensor {
   private final Configuration settings;
   private final NoSonarFilter noSonarFilter;
   private final PostAnalysisIssueFilter postAnalysisIssueFilter;
+  @Nullable
+  private final UCFGCollector ucfgCollector;
 
   public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs,
-                         DefaultJavaResourceLocator javaResourceLocator, Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
+                         DefaultJavaResourceLocator javaResourceLocator, Configuration settings,
+                         NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
+    this(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, null, postAnalysisIssueFilter);
+
+  }
+
+  public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs,
+                         DefaultJavaResourceLocator javaResourceLocator, Configuration settings,
+                         NoSonarFilter noSonarFilter, @Nullable UCFGCollector ucfgCollector, PostAnalysisIssueFilter postAnalysisIssueFilter) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.fs = fs;
     this.javaResourceLocator = javaResourceLocator;
     this.settings = settings;
+    this.ucfgCollector = ucfgCollector;
     this.postAnalysisIssueFilter = postAnalysisIssueFilter;
   }
 
@@ -89,7 +102,8 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, checks);
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
     Measurer measurer = new Measurer(fs, context, noSonarFilter);
-    JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
+    JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), sonarComponents,
+      measurer, javaResourceLocator, postAnalysisIssueFilter, ucfgCollector, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles());
     sonarComponents.saveAnalysisErrors();
   }
