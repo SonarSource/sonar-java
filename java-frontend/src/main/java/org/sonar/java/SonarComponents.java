@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.InputPath;
@@ -80,6 +81,8 @@ public class SonarComponents {
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
+  @Nullable
+  private final ProjectDefinition projectDefinition;
   private final FileSystem fs;
   private final JavaClasspath javaClasspath;
   private final List<Checks<JavaCheck>> checks;
@@ -90,19 +93,28 @@ public class SonarComponents {
   @VisibleForTesting
   public List<AnalysisError> analysisErrors;
   private int errorsSize = 0;
+
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
                          CheckFactory checkFactory) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null);
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory, @Nullable CheckRegistrar[] checkRegistrars) {
+                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
+                         CheckFactory checkFactory, @Nullable ProjectDefinition projectDefinition) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, projectDefinition, null);
+  }
+
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
+                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
+                         @Nullable ProjectDefinition projectDefinition, @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
     this.javaTestClasspath = javaTestClasspath;
     this.checkFactory = checkFactory;
+    this.projectDefinition = projectDefinition;
     this.checks = new ArrayList<>();
     this.testChecks = new ArrayList<>();
     this.allChecks = new ArrayList<>();
@@ -322,7 +334,14 @@ public class SonarComponents {
   }
 
   public File workDir() {
-    return context.fileSystem().workDir();
+    ProjectDefinition current = projectDefinition;
+    if(current == null) {
+      return fs.workDir();
+    }
+    while (current.getParent() != null) {
+      current = current.getParent();
+    }
+    return current.getWorkDir();
   }
 
   public boolean shouldGenerateUCFG() {
