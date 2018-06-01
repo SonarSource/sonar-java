@@ -374,7 +374,7 @@ public class UCFGJavaVisitorTest {
     UCFGJavaVisitor.visitCompilationUnit(cut);
 
     String[] list = java_ucfg_dir.list();
-    assertThat(list).hasSize(2).containsExactly("ucfg_0.proto", "ucfg_1.proto");
+    assertThat(list).hasSize(2).containsExactlyInAnyOrder("ucfg_0.proto", "ucfg_1.proto");
 
   }
 
