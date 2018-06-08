@@ -36,7 +36,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 public class LombokFilter extends BaseTreeVisitorIssueFilter {
@@ -122,41 +121,30 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     return false;
   }
 
-  private boolean generatesPrivateConstructor(ClassTree classTree) {
+  private static boolean generatesPrivateConstructor(ClassTree classTree) {
     if (usesAnnotation(classTree, GENERATE_PRIVATE_CONSTRUCTOR)) {
       return true;
     }
     SymbolMetadata metadata = classTree.symbol().metadata();
-    for (String annotation : GENERATE_CONSTRUCTOR) {
-      if (metadata.isAnnotatedWith(annotation) && generatesPrivateAccess(metadata, annotation)) {
-        return true;
-      }
-    }
-    return false;
+    return GENERATE_CONSTRUCTOR.stream().anyMatch(annotation -> generatesPrivateAccess(metadata, annotation));
   }
 
   private static boolean generatesPrivateAccess(SymbolMetadata metadata, String annotation) {
-    for (SymbolMetadata.AnnotationValue annotationValue : metadata.valuesForAnnotation(annotation)) {
-      if (Objects.equals(annotationValue.name(), "access") && Objects.equals(getAccessLevelValue(annotationValue.value()), "PRIVATE")) {
-        return true;
-      }
-    }
-    return false;
+    return metadata.isAnnotatedWith(annotation) && metadata.valuesForAnnotation(annotation).stream().anyMatch(av -> "access".equals(av.name()) && "PRIVATE".equals(getAccessLevelValue(av.value())));
   }
 
   @Nullable
   private static String getAccessLevelValue(Object value) {
-    String retentionValue = null;
     if (value instanceof Tree) {
       Tree tree = (Tree) value;
       if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-        retentionValue = ((MemberSelectExpressionTree) tree).identifier().name();
+        return ((MemberSelectExpressionTree) tree).identifier().name();
       } else if (tree.is(Tree.Kind.IDENTIFIER)) {
-        retentionValue = ((IdentifierTree) tree).name();
+        return ((IdentifierTree) tree).name();
       }
     } else if (value instanceof Symbol.VariableSymbol) {
-      retentionValue = ((Symbol.VariableSymbol) value).name();
+      return ((Symbol.VariableSymbol) value).name();
     }
-    return retentionValue;
+    return null;
   }
 }
