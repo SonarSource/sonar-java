@@ -565,6 +565,7 @@ public final class CheckList {
       .add(CipherBlockChainingCheck.class)
       .add(CryptographicKeySizeCheck.class)
       .add(SMTPSSLServerIdentityCheck.class)
+      .add(StringOffsetMethodsCheck.class)
       .build();
   }
 
