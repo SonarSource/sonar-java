@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class LombokFilter extends BaseTreeVisitorIssueFilter {
@@ -126,11 +127,14 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
       return true;
     }
     SymbolMetadata metadata = classTree.symbol().metadata();
-    return GENERATE_CONSTRUCTOR.stream().anyMatch(annotation -> generatesPrivateAccess(metadata, annotation));
+    return GENERATE_CONSTRUCTOR.stream()
+            .map(metadata::valuesForAnnotation)
+            .filter(Objects::nonNull)
+            .anyMatch(LombokFilter::generatesPrivateAccess);
   }
 
-  private static boolean generatesPrivateAccess(SymbolMetadata metadata, String annotation) {
-    return metadata.isAnnotatedWith(annotation) && metadata.valuesForAnnotation(annotation).stream().anyMatch(av -> "access".equals(av.name()) && "PRIVATE".equals(getAccessLevelValue(av.value())));
+  private static boolean generatesPrivateAccess(List<SymbolMetadata.AnnotationValue> values) {
+    return values.stream().anyMatch(av -> "access".equals(av.name()) && "PRIVATE".equals(getAccessLevelValue(av.value())));
   }
 
   @Nullable
