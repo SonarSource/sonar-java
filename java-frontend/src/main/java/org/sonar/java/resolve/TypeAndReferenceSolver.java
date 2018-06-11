@@ -812,6 +812,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     Resolve.Resolution resolution = resolve.findMethod(methodEnv, (JavaType) type, "<init>", argTypes, typeArgumentsTypes);
     JavaSymbol symbol = resolution.symbol();
     inferArgumentTypes(argTypes, resolution);
+    ((IdentifierTreeImpl) identifier).setSymbol(symbol);
     associateReference(identifier, symbol);
     return resolution;
   }

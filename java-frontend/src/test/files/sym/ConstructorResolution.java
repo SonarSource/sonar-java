@@ -7,5 +7,6 @@ class ChildClass extends ParentClass {
 
   void foo() {
     new ChildClass("hello world");
+    java.util.Map<Integer, String> m = new java.util.HashMap<>(someMethod());
   }
 }
