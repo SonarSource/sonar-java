@@ -21,17 +21,22 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-
 import org.sonar.java.checks.AtLeastOneConstructorCheck;
 import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
 import org.sonar.java.checks.UtilityClassWithPublicConstructorCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class LombokFilter extends BaseTreeVisitorIssueFilter {
@@ -98,7 +103,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
       acceptLines(tree, EqualsNotOverridenWithCompareToCheck.class);
     }
 
-    if (usesAnnotation(tree, GENERATE_PRIVATE_CONSTRUCTOR)) {
+    if (generatesPrivateConstructor(tree)) {
       excludeLines(tree, UtilityClassWithPublicConstructorCheck.class);
     } else {
       acceptLines(tree, UtilityClassWithPublicConstructorCheck.class);
@@ -115,5 +120,35 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
       }
     }
     return false;
+  }
+
+  private static boolean generatesPrivateConstructor(ClassTree classTree) {
+    if (usesAnnotation(classTree, GENERATE_PRIVATE_CONSTRUCTOR)) {
+      return true;
+    }
+    SymbolMetadata metadata = classTree.symbol().metadata();
+    return GENERATE_CONSTRUCTOR.stream()
+            .map(metadata::valuesForAnnotation)
+            .filter(Objects::nonNull)
+            .anyMatch(LombokFilter::generatesPrivateAccess);
+  }
+
+  private static boolean generatesPrivateAccess(List<SymbolMetadata.AnnotationValue> values) {
+    return values.stream().anyMatch(av -> "access".equals(av.name()) && "PRIVATE".equals(getAccessLevelValue(av.value())));
+  }
+
+  @Nullable
+  private static String getAccessLevelValue(Object value) {
+    if (value instanceof Tree) {
+      Tree tree = (Tree) value;
+      if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+        return ((MemberSelectExpressionTree) tree).identifier().name();
+      } else if (tree.is(Tree.Kind.IDENTIFIER)) {
+        return ((IdentifierTree) tree).name();
+      }
+    } else if (value instanceof Symbol.VariableSymbol) {
+      return ((Symbol.VariableSymbol) value).name();
+    }
+    return null;
   }
 }
