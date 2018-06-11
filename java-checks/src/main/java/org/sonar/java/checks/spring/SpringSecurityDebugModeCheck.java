@@ -21,6 +21,8 @@ package org.sonar.java.checks.spring;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
+import java.util.Objects;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -43,21 +45,24 @@ public class SpringSecurityDebugModeCheck extends IssuableSubscriptionVisitor {
     AnnotationTree annotation = (AnnotationTree) tree;
     if (annotation.symbolType().is("org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")) {
       annotation.arguments().stream()
-        .filter(SpringSecurityDebugModeCheck::isDebugArgument)
-        .map(AssignmentExpressionTree.class::cast)
-        .filter(assignment -> Boolean.TRUE.equals(ConstantUtils.resolveAsBooleanConstant(assignment.expression())))
+        .map(SpringSecurityDebugModeCheck::getDebugArgument)
+        .filter(Objects::nonNull)
         .findFirst()
+        .filter(assignment -> Boolean.TRUE.equals(ConstantUtils.resolveAsBooleanConstant(assignment.expression())))
         .ifPresent(assignment -> reportIssue(assignment, "Deactivate Spring Security's debug mode."));
     }
   }
 
-  private static boolean isDebugArgument(ExpressionTree expression) {
+  @CheckForNull
+  private static AssignmentExpressionTree getDebugArgument(ExpressionTree expression) {
     if (expression.is(Tree.Kind.ASSIGNMENT)) {
       AssignmentExpressionTree assignment = (AssignmentExpressionTree) expression;
-      return assignment.variable().is(Tree.Kind.IDENTIFIER) &&
-        "debug".equals(((IdentifierTree) assignment.variable()).name());
+      if (assignment.variable().is(Tree.Kind.IDENTIFIER) &&
+        "debug".equals(((IdentifierTree) assignment.variable()).name())) {
+        return assignment;
+      }
     }
-    return false;
+    return null;
   }
 
 }
