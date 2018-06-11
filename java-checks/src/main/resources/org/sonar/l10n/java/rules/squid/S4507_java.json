@@ -1,0 +1,21 @@
+{
+  "title": "Spring Security's debug mode should not be used",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a3"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4507",
+  "sqKey": "S4507",
+  "scope": "Main"
+}

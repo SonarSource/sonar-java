@@ -1,0 +1,24 @@
+<p>Spring Security's debug mode is useful during development and debugging, but could expose sensitive information to attackers such as request
+parameters or headers and should not be included in production code. </p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Configuration
+@EnableWebSecurity(debug = true) // Noncompliant
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+...
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@Configuration
+@EnableWebSecurity(debug = false) // Compliant
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+...
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/489.html">MITRE, CWE-489</a> - Leftover Debug Code </li>
+  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+</ul>
+
