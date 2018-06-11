@@ -687,6 +687,8 @@ public class SymbolTableTest {
 
     assertThat(stringConstructor.usages()).isEmpty();
     assertThat(objectConstructor.usages()).hasSize(1);
+    NewClassTree hashmapConstructorCall = (NewClassTree) ((VariableTree) result.symbol("m").declaration()).initializer();
+    assertThat(hashmapConstructorCall.constructorSymbol().isUnknown()).isTrue();
   }
 
   @Test
