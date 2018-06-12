@@ -1,10 +1,10 @@
 public class A implements I {
   public A() {
-    foo(String.class); // resolved to I.foo(...)
+    foo(String.class);
   }
 
   @Override
-  public final <T> T foo(Class<T> clazz) { // not resolved as being used in constructor
+  public final <T> T foo(Class<T> clazz) {
     return null;
   }
 }

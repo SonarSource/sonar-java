@@ -753,6 +753,7 @@ public class Resolve {
     boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2, argTypes, m1Substitution, m2Substitution);
     boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1, argTypes, m2Substitution, m1Substitution);
     if (m1SignatureMoreSpecific && m2SignatureMoreSpecific) {
+      // JLS8 18.5.4 naive implementation of most specific when inferring of parametric method is involved
       if(!m1IsGeneric && m2IsGeneric) {
         return m1;
       } else if(m1IsGeneric && !m2IsGeneric) {

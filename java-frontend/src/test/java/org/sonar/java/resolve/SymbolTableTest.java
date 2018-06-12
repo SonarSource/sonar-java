@@ -873,7 +873,7 @@ public class SymbolTableTest {
     JavaSymbol.TypeJavaSymbol classSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("MyClass");
     List<JavaSymbol> constructors = classSymbol.members.lookup("<init>");
 
-    // FIXME : there should be one reference to each constructor : this is a bug in how method inference specificity is applied see JLS8 18.5.4
+    // FIXME SONARJAVA-2791 : there should be one reference to each constructor : this is a bug in how method inference specificity is applied see JLS8 18.5.4
     assertThat(constructors.get(0).usages()).hasSize(2);
     assertThat(constructors.get(1).usages()).hasSize(0);
   }
