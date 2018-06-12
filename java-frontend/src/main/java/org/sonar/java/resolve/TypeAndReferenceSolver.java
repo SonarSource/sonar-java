@@ -982,15 +982,44 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitTypeCast(TypeCastTree tree) {
-    // FIXME SONARJAVA-2724: should be the intersection of the type with its bounds
     resolveAs(tree.type(), JavaSymbol.TYP);
+    for (Tree bound : tree.bounds()) {
+      resolveAs(bound, JavaSymbol.TYP);
+    }
     resolveAs(tree.expression(), JavaSymbol.VAR);
-    JavaType castType = getType(tree.type());
+    JavaType castType = intersectionType(getType(tree.type()), tree.bounds().stream().map(b -> ((JavaType) ((ExpressionTree) b).symbolType())).collect(Collectors.toSet()), tree);
     Type expressionType = tree.expression().symbolType();
     if(expressionType instanceof DeferredType) {
       setInferedType(castType, (DeferredType) expressionType);
     }
     registerType(tree, castType);
+  }
+
+  /**
+   * JLS8 4.9 Intersection types
+   */
+  private JavaType intersectionType(JavaType type, Set<JavaType> interfaces, Tree tree) {
+    if (interfaces.isEmpty()) {
+      return type;
+    }
+    List<String> names = new ArrayList<>();
+    names.add(type.name());
+    names.addAll(interfaces.stream().map(JavaType::name).collect(Collectors.toSet()));
+    JavaSymbol.TypeJavaSymbol typeJavaSymbol = new JavaSymbol.TypeJavaSymbol(0, "<intersectionType of "+names.stream().collect(Collectors.joining(" & ")) + ">",
+      semanticModel.getEnv(tree).packge);
+
+    typeJavaSymbol.members = new Scope(typeJavaSymbol);
+    IntersectionType intersectionType = new IntersectionType(typeJavaSymbol);
+    typeJavaSymbol.type = intersectionType;
+    Set<JavaType> superInterfaces =  new HashSet<>(interfaces);
+    if(type.symbol.isInterface()) {
+      superInterfaces.add(type);
+      intersectionType.supertype = symbols.objectType;
+    } else {
+      intersectionType.supertype = type;
+    }
+    intersectionType.interfaces = ImmutableList.<JavaType>builder().addAll(superInterfaces).build();
+    return intersectionType;
   }
 
   @Override
