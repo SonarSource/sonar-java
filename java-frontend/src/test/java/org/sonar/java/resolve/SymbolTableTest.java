@@ -46,6 +46,7 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -1587,9 +1588,13 @@ public class SymbolTableTest {
   }
 
   @Test
-  public void type_inference_should_be_triggered_on_cast_expression() throws Exception {
+  public void target_type_of_cast_expression() {
     Result result = Result.createFor("CastTargetType");
     assertThat(result.symbol("s").usages()).hasSize(1);
+    TypeCastTree typeCast = (TypeCastTree) ((VariableTree) result.symbol("UNIQUE_ID_COMPARATOR").declaration()).initializer();
+    assertThat(((IdentifierTree) typeCast.bounds().get(0)).symbol().type().is("java.io.Serializable")).isTrue();
+    assertThat(typeCast.symbolType().isSubtypeOf("java.io.Serializable")).isTrue();
+    assertThat(typeCast.symbolType().fullyQualifiedName()).startsWith("<intersection");
   }
 
   @Test
