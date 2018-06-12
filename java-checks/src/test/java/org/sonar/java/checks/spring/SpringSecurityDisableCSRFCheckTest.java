@@ -27,7 +27,6 @@ public class SpringSecurityDisableCSRFCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/spring/SpringSecurityDisableCSRFCheck.java", new SpringSecurityDisableCSRFCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringSecurityDisableCSRFCheck.java", new SpringSecurityDisableCSRFCheck());
   }
 
 }
