@@ -41,6 +41,7 @@ public class JavaPerformanceTest {
 
   @ClassRule
   public static final Orchestrator ORCHESTRATOR = Orchestrator.builderEnv()
+    .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[6.7]"))
     .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
     .restoreProfileAtStartup(FileLocation.of("src/test/profile.xml"))
     .build();

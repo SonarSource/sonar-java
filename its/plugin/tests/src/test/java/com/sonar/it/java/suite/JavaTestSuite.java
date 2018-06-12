@@ -62,6 +62,7 @@ public class JavaTestSuite {
 
   static {
     OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
+      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[6.7]"))
       .addPlugin(JAVA_PLUGIN_LOCATION)
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-extension.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-version-aware-visitor.xml"))
