@@ -3,6 +3,8 @@ package files.checks.spring;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -17,8 +19,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
       .csrf().disable() // Noncompliant
       .cors().disable();
 
-    // coverage
-    http.csrf();
-    http.csrf().disable;
+    CsrfConfigurer<HttpSecurity> csrf = http.csrf();
+    csrf.disable(); // Noncompliant
+
+    LogoutConfigurer<HttpSecurity> logout = http.logout();
+    logout.disable();
   }
 }

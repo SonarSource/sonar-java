@@ -24,7 +24,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -32,19 +32,21 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4502")
 public class SpringSecurityDisableCSRFCheck extends AbstractMethodDetection {
 
+  private static final String CSRF_CONFIGURER_CLASS = "org.springframework.security.config.annotation.web.configurers.CsrfConfigurer";
+
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(MethodMatcher.create()
-      .typeDefinition("org.springframework.security.config.annotation.web.builders.HttpSecurity")
-      .name("csrf").withoutParameter());
+      .typeDefinition(TypeCriteria.subtypeOf("org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer"))
+      .name("disable").withoutParameter());
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (mit.parent().is(Tree.Kind.MEMBER_SELECT) && mit.parent().parent().is(Tree.Kind.METHOD_INVOCATION)) {
-      IdentifierTree memberIdentifier = ((MemberSelectExpressionTree) mit.parent()).identifier();
-      if (memberIdentifier.name().equals("disable")) {
-        reportIssue(memberIdentifier, "Activate Spring Security's CSRF protection.");
+    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree selectExpression = (MemberSelectExpressionTree) mit.methodSelect();
+      if (selectExpression.expression().symbolType().is(CSRF_CONFIGURER_CLASS)) {
+        reportIssue(selectExpression.identifier(), "Activate Spring Security's CSRF protection.");
       }
     }
   }
