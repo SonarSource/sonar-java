@@ -185,6 +185,7 @@ public class CFG {
       this.id = id;
     }
 
+    @Override
     public int id() {
       return id;
     }
@@ -242,6 +243,7 @@ public class CFG {
       return predecessors;
     }
 
+    @Override
     public Set<Block> successors() {
       return successors;
     }
@@ -250,6 +252,7 @@ public class CFG {
       return exceptions;
     }
 
+    @Override
     @CheckForNull
     public Tree terminator() {
       return terminator;
@@ -728,7 +731,7 @@ public class CFG {
       CaseGroupTree firstCase = switchStatementTree.cases().get(0);
       for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
         build(caseGroupTree.body());
-        caseGroupTree.labels().forEach(l -> {
+        Lists.reverse(caseGroupTree.labels()).forEach(l -> {
           if (l.expression() != null) {
             build(l.expression());
           }

@@ -655,8 +655,8 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "qix"),
         element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).hasCaseGroup().successors(0),
       block(
-        element(INT_LITERAL, "4"),
         element(INT_LITERAL, "3"),
+        element(INT_LITERAL, "4"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.IDENTIFIER, "baz"),
