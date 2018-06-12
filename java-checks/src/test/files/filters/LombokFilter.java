@@ -1,3 +1,5 @@
+import static lombok.AccessLevel.PRIVATE;
+
 class Fields {
   @lombok.Getter
   class Getter { // WithIssue
@@ -189,43 +191,49 @@ static class UtilityClassWithPublicConstructorCheck {
   }
 
   static class A { // WithIssue
-    public static void foo() {
-    }
   }
 
   @lombok.NoArgsConstructor
   public static class B { // WithIssue
-    public static void foo() {
-    }
   }
 
   @lombok.RequiredArgsConstructor
   public static class C { // WithIssue
-    public static void foo() {
-    }
   }
 
   @lombok.AllArgsConstructor
   public static class D { // WithIssue
-    public static void foo() {
-    }
   }
 
-  @lombok.NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-  static class E { // NoIssue
-    public static void foo() {
-    }
+  @lombok.NoArgsConstructor(staticName = "yolo", access = lombok.AccessLevel.PRIVATE)
+  public static class E { // NoIssue
   }
 
   @lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-  static class F { // NoIssue
-    public static void foo() {
-    }
+  public static class F { // NoIssue
   }
 
   @lombok.AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-  static class G { // NoIssue
-    public static void foo() {
-    }
+  public static class G { // NoIssue
+  }
+
+  @lombok.NoArgsConstructor(access = PRIVATE)
+  public static class H { // NoIssue
+  }
+
+  @lombok.NoArgsConstructor(access = lombok.AccessLevel.NONE)
+  public static class I { // WithIssue
+  }
+
+  @lombok.NoArgsConstructor()
+  public static class J { // WithIssue
+  }
+
+  @lombok.NoArgsConstructor(access = getValue()) // does not compile - for coverage only
+  public static class K { // NoIssue
+  }
+
+  public static lombok.AccessLevel getValue() {
+    return lombok.AccessLevel.MODULE;
   }
 }
