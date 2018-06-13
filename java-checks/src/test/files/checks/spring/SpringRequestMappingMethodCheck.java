@@ -1,5 +1,6 @@
 package files.checks.spring;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +23,11 @@ public class Controller {
   @RequestMapping(path = "/list", method = {RequestMethod.POST})
   String list() {
     return "Hello from list";
+  }
+
+  @GetMapping(path = "/get")
+  String get() {
+    return "Hello from get";
   }
 
   @RequestMapping(path = "/delete", method = {RequestMethod.GET, RequestMethod.POST}) // Noncompliant [[sc=46;ec=85]] {{Consider narrowing this list of methods to one.}}
