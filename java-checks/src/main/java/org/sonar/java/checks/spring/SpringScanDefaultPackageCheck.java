@@ -19,12 +19,13 @@
  */
 package org.sonar.java.checks.spring;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -65,7 +66,7 @@ public class SpringScanDefaultPackageCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.ANNOTATION);
+    return Collections.singletonList(Tree.Kind.ANNOTATION);
   }
 
   @Override
@@ -73,46 +74,38 @@ public class SpringScanDefaultPackageCheck extends IssuableSubscriptionVisitor {
     AnnotationTree annotation = (AnnotationTree) tree;
     Set<String> scanPackageAttributeNames = SCAN_PACKAGE_ATTRIBUTES.get(annotation.symbolType().fullyQualifiedName());
     if (scanPackageAttributeNames != null) {
-      List<ExpressionTree> scanPackageAttributes = annotation.arguments().stream()
+      List<ExpressionTree> scanPackageAttributeValues = annotation.arguments().stream()
         .filter(argument -> scanPackageAttributeNames.contains(attributeName(argument)))
+        .flatMap(SpringScanDefaultPackageCheck::extractValues)
         .collect(Collectors.toList());
 
-      if (scanPackageAttributes.isEmpty()) {
-        checkIfAnnotationIsInDefaultPackage(annotation);
-      } else {
-        checkAnnotationPackageAttributes(annotation, scanPackageAttributes);
+      checkAnnotationPackageAttributes(annotation, scanPackageAttributeValues);
+    }
+  }
+
+  private void checkAnnotationPackageAttributes(AnnotationTree annotation, List<ExpressionTree> scanPackageAttributeValues) {
+    if (scanPackageAttributeValues.isEmpty()) {
+      if (isNodeInDefaultPackage(annotation)) {
+        reportIssue(annotation.annotationType(), "Remove the annotation \"@" + annotation.symbolType().name() +
+          "\" or move the annotated class out of the default package.");
       }
+    } else {
+      scanPackageAttributeValues.stream()
+        .map(SpringScanDefaultPackageCheck::findEmptyString)
+        .forEach(opt -> opt.ifPresent(expression -> reportIssue(expression, "Define packages to scan. Don't rely on the default package.")));
+
+      scanPackageAttributeValues.stream()
+        .map(SpringScanDefaultPackageCheck::findClassInDefaultPackage)
+        .forEach(opt -> opt.ifPresent(identifier -> reportIssue(identifier, "Remove the annotation \"@" + annotation.symbolType().name() +
+          "\" or move the \"" + identifier.name() + "\" class out of the default package.")));
     }
-  }
-
-  private void checkIfAnnotationIsInDefaultPackage(AnnotationTree annotation) {
-    if (isNodeInDefaultPackage(annotation)) {
-      reportIssue(annotation.annotationType(), "Remove the annotation \"@" + annotation.symbolType().name() +
-        "\" or move the annotated class out of the default package.");
-    }
-  }
-
-  private void checkAnnotationPackageAttributes(AnnotationTree annotation, List<ExpressionTree> scanPackageAttributes) {
-    List<ExpressionTree> values = scanPackageAttributes.stream()
-      .flatMap(SpringScanDefaultPackageCheck::extractValues)
-      .collect(Collectors.toList());
-
-    values.stream()
-      .flatMap(SpringScanDefaultPackageCheck::findEmptyString)
-      .forEach(expression -> reportIssue(expression, "Define packages to scan. Don't rely on the default package."));
-
-    values.stream()
-      .flatMap(SpringScanDefaultPackageCheck::findClassInDefaultPackage)
-      .forEach(identifier -> reportIssue(identifier, "Remove the annotation \"@" + annotation.symbolType().name() +
-        "\" or move the \"" + identifier.name() + "\" class out of the default package."));
   }
 
   private static String attributeName(ExpressionTree expression) {
     if (expression.is(Tree.Kind.ASSIGNMENT)) {
       AssignmentExpressionTree assignment = (AssignmentExpressionTree) expression;
-      if (assignment.variable().is(Tree.Kind.IDENTIFIER)) {
-        return ((IdentifierTree) assignment.variable()).name();
-      }
+      // assignment.variable() in annotation is always a Tree.Kind.IDENTIFIER
+      return ((IdentifierTree) assignment.variable()).name();
     }
     return DEFAULT_ATTRIBUTE;
   }
@@ -129,25 +122,25 @@ public class SpringScanDefaultPackageCheck extends IssuableSubscriptionVisitor {
     return Stream.of(expression);
   }
 
-  private static Stream<ExpressionTree> findEmptyString(ExpressionTree expression) {
+  private static Optional<ExpressionTree> findEmptyString(ExpressionTree expression) {
     String stringValue = ConstantUtils.resolveAsStringConstant(expression);
     if (stringValue != null && stringValue.isEmpty()) {
-      return Stream.of(expression);
+      return Optional.of(expression);
     }
-    return Stream.empty();
+    return Optional.empty();
   }
 
-  private static Stream<IdentifierTree> findClassInDefaultPackage(ExpressionTree expression) {
+  private static Optional<IdentifierTree> findClassInDefaultPackage(ExpressionTree expression) {
     if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expression;
       if ("class".equals(memberSelect.identifier().name()) && memberSelect.expression().is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) memberSelect.expression();
         if (isTypeInDefaultPackage(identifier.symbol())) {
-          return Stream.of(identifier);
+          return Optional.of(identifier);
         }
       }
     }
-    return Stream.empty();
+    return Optional.empty();
   }
 
   private static boolean isTypeInDefaultPackage(Symbol symbol) {
