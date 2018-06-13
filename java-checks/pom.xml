@@ -228,6 +228,11 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>javax.inject</groupId>
+                  <artifactId>javax.inject</artifactId>
+                  <version>1</version>
+                </artifactItem>
+                <artifactItem>
                   <groupId>com.google.guava</groupId>
                   <artifactId>guava</artifactId>
                   <version>10.0.1</version>

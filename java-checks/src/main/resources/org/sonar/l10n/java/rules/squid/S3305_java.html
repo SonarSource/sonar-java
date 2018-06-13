@@ -1,0 +1,32 @@
+<p>When <code>@Autowired</code> is used, dependencies need to be resolved when the class is instantiated, which may cause early initialization of
+beans or lead the context to look in places it shouldn't to find the bean. To avoid this tricky issue and optimize the way the context loads,
+dependencies should be requested as late as possible. That means using parameter injection instead of field injection for dependencies that are only
+used in a single <code>@Bean</code> method.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Configuration
+public class ​FooConfiguration {
+
+  @Autowired private ​DataSource dataSource​;  // Noncompliant
+
+  @Bean
+  public ​MyService myService() {
+    return new ​MyService(this​.dataSource​);
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@Configuration
+public class ​FooConfiguration {
+
+ @Bean
+  public ​MyService myService(DataSource dataSource) {
+    return new ​MyService(dataSource);
+  }
+}
+</pre>
+<h2>Exceptions</h2>
+<p>Fields used in methods that are called directly by other methods in the application (as opposed to being invoked automatically by the Spring
+framework) are ignored by this rule so that direct callers don't have to provide the dependencies themselves.</p>
+
