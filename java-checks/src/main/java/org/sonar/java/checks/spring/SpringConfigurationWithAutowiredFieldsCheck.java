@@ -60,11 +60,11 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
       classTree.accept(autowiredFieldVisitor);
       BeanMethodVisitor beanMethodVisitor = new BeanMethodVisitor(autowiredFieldVisitor.autowiredFields.keySet());
       classTree.accept(beanMethodVisitor);
-      beanMethodVisitor.beanMethodsThatUseAutowiredField.entrySet().stream()
-        .filter(fieldSymbolAndBeanMethods -> fieldSymbolAndBeanMethods.getValue().size() == 1)
-        .forEach(fieldSymbolAndBeanMethods -> reportIssue(
-          autowiredFieldVisitor.autowiredFields.get(fieldSymbolAndBeanMethods.getKey()).simpleName(),
-          String.format(MESSAGE_FORMAT, fieldSymbolAndBeanMethods.getValue().get(0))));
+      beanMethodVisitor.beanMethodsThatUseAutowiredFields.entrySet().stream()
+        .filter(beanMethodsThatUseAutowiredField -> beanMethodsThatUseAutowiredField.getValue().size() == 1)
+        .forEach(beanMethodsThatUseAutowiredField -> reportIssue(
+          autowiredFieldVisitor.autowiredFields.get(beanMethodsThatUseAutowiredField.getKey()).simpleName(),
+          String.format(MESSAGE_FORMAT, beanMethodsThatUseAutowiredField.getValue().get(0))));
     }
   }
 
@@ -81,22 +81,22 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
   }
 
   private static class BeanMethodVisitor extends BaseTreeVisitor {
-    private final Map<Symbol, List<String>> beanMethodsThatUseAutowiredField = new HashMap<>();
+    private final Map<Symbol, List<String>> beanMethodsThatUseAutowiredFields = new HashMap<>();
 
     BeanMethodVisitor(Set<Symbol> autowiredFields) {
-      autowiredFields.forEach(f -> beanMethodsThatUseAutowiredField.put(f, new ArrayList<>()));
+      autowiredFields.forEach(f -> beanMethodsThatUseAutowiredFields.put(f, new ArrayList<>()));
     }
 
     @Override
     public void visitMethod(MethodTree methodTree) {
       if (methodTree.symbol().metadata().isAnnotatedWith(BEAN_ANNOTATION)) {
-        IdentifiersVisitor identifiersVisitor = new IdentifiersVisitor(beanMethodsThatUseAutowiredField.keySet());
+        IdentifiersVisitor identifiersVisitor = new IdentifiersVisitor(beanMethodsThatUseAutowiredFields.keySet());
         methodTree.accept(identifiersVisitor);
         // for each autowired field that is referenced in this method, add the current method name to the list
         identifiersVisitor.isFieldReferenced.entrySet().stream()
           .filter(Map.Entry::getValue)
           .map(Map.Entry::getKey)
-          .forEach(field -> beanMethodsThatUseAutowiredField.get(field).add(methodTree.simpleName().name()));
+          .forEach(field -> beanMethodsThatUseAutowiredFields.get(field).add(methodTree.simpleName().name()));
       }
     }
 
