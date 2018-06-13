@@ -66,6 +66,7 @@ import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.spring.SpringComponentWithWrongScopeCheck;
+import org.sonar.java.checks.spring.SpringRequestMappingMethodCheck;
 import org.sonar.java.checks.spring.SpringSecurityDebugModeCheck;
 import org.sonar.java.checks.spring.SpringSecurityDisableCSRFCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
@@ -528,6 +529,7 @@ public final class CheckList {
       .add(NestedTernaryOperatorsCheck.class)
       .add(SpringComponentWithNonAutowiredMembersCheck.class)
       .add(SpringComponentWithWrongScopeCheck.class)
+      .add(SpringRequestMappingMethodCheck.class)
       .add(SpringSecurityDebugModeCheck.class)
       .add(SpringSecurityDisableCSRFCheck.class)
       .add(RequestMappingMethodPublicCheck.class)
