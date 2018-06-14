@@ -1,0 +1,16 @@
+{
+  "title": "Composed \"@RequestMapping\" variants should be preferred",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4488",
+  "sqKey": "S4488",
+  "scope": "Main"
+}
