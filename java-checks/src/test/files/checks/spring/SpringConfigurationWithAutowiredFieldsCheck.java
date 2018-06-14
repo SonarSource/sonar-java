@@ -1,9 +1,9 @@
 package src.test.files.checks.spring;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Bean;
 import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 class Bar { }
 
@@ -53,6 +53,21 @@ class A {
 }
 
 @Configuration
+class B {
+  @Autowired private Bar multipleUsage;
+  @Bean
+  public Foo method() {
+    return indirectMethod();
+  }
+  private Foo indirectMethod() {
+    return new Foo(this.multipleUsage);
+  }
+  @Bean Foo method2() {
+    return new Foo(this.multipleUsage);
+  }
+}
+
+@Configuration
 class FalseNegative {
 
   private Bar bar; // FN
@@ -74,5 +89,28 @@ class Ok {
   @Bean
   public Foo method(Bar bar) {
     return new Foo(bar);
+  }
+}
+
+@Configuration
+public class NestedConfig {
+
+  @Configuration
+  public class InnerConfig {
+    @Autowired private Bar x; // Noncompliant
+    @Bean
+    public Foo method() {
+      return new Foo(this.x);
+    }
+  }
+
+  @Configuration
+  public static class InnerStaticConfig {
+    @Autowired private Bar x; // ignore static context
+
+    @Bean
+    public Foo method() {
+      return new Foo(this.x);
+    }
   }
 }
