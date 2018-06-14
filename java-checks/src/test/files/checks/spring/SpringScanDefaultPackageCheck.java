@@ -2,7 +2,9 @@ import java.util.Map;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 @ComponentScan // Noncompliant [[sc=2;ec=15]] {{Remove the annotation "@ComponentScan" or move the annotated class out of the default package.}}
 @SpringBootApplication // Noncompliant [[sc=2;ec=23]] {{Remove the annotation "@SpringBootApplication" or move the annotated class out of the default package.}}
 @ServletComponentScan // Noncompliant [[sc=2;ec=22]] {{Remove the annotation "@ServletComponentScan" or move the annotated class out of the default package.}}

@@ -71,6 +71,9 @@ public class SpringScanDefaultPackageCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     AnnotationTree annotation = (AnnotationTree) tree;
     Set<String> scanPackageAttributeNames = SCAN_PACKAGE_ATTRIBUTES.get(annotation.symbolType().fullyQualifiedName());
     if (scanPackageAttributeNames != null) {
