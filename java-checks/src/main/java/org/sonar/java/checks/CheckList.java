@@ -67,6 +67,7 @@ import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.spring.SpringComponentWithWrongScopeCheck;
 import org.sonar.java.checks.spring.SpringComposedRequestMappingCheck;
+import org.sonar.java.checks.spring.SpringConfigurationWithAutowiredFieldsCheck;
 import org.sonar.java.checks.spring.SpringRequestMappingMethodCheck;
 import org.sonar.java.checks.spring.SpringScanDefaultPackageCheck;
 import org.sonar.java.checks.spring.SpringSecurityDebugModeCheck;
@@ -530,6 +531,7 @@ public final class CheckList {
       .add(StaticFieldUpdateInConstructorCheck.class)
       .add(NestedTernaryOperatorsCheck.class)
       .add(SpringComponentWithNonAutowiredMembersCheck.class)
+      .add(SpringConfigurationWithAutowiredFieldsCheck.class)
       .add(SpringComponentWithWrongScopeCheck.class)
       .add(SpringComposedRequestMappingCheck.class)
       .add(SpringRequestMappingMethodCheck.class)

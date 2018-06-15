@@ -1,0 +1,17 @@
+{
+  "title": "Factory method injection should be used in \"@Configuration\" classes",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring",
+    "performance"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-3305",
+  "sqKey": "S3305",
+  "scope": "Main"
+}
