@@ -56,17 +56,20 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (classTree.symbol().metadata().isAnnotatedWith(CONFIGURATION_ANNOTATION) && isNotStatic(classTree)) {
-      // we only inspect specific members to avoid analysing inner classes twice
-      AutowiredFieldVisitor autowiredFieldVisitor = new AutowiredFieldVisitor();
-      classTree.members().stream().filter(m -> m.is(Tree.Kind.VARIABLE)).forEach(m -> m.accept(autowiredFieldVisitor));
-      MethodVisitor methodVisitor = new MethodVisitor(autowiredFieldVisitor.autowiredFields.keySet());
-      classTree.members().stream().filter(m -> m.is(Tree.Kind.METHOD)).forEach(m -> m.accept(methodVisitor));
-      methodVisitor.methodsThatUseAutowiredFields.entrySet().stream()
-        .filter(methodsThatUseField -> methodsThatUseField.getValue().size() == 1 &&
-          methodsThatUseField.getValue().get(0).symbol().metadata().isAnnotatedWith(BEAN_ANNOTATION))
-        .forEach(methodsThatUseField -> reportIssue(
-          autowiredFieldVisitor.autowiredFields.get(methodsThatUseField.getKey()).simpleName(),
-          String.format(MESSAGE_FORMAT, methodsThatUseField.getValue().get(0).simpleName().name())));
+      Map<Symbol, VariableTree> autowiredFields = new HashMap<>();
+      classTree.members().forEach(m -> collectAutowiredFields(m, autowiredFields));
+
+      Map<Symbol, List<MethodTree>> methodsThatUseAutowiredFields = new HashMap<>();
+      autowiredFields.keySet().forEach(f -> methodsThatUseAutowiredFields.put(f, new ArrayList<>()));
+      classTree.members().forEach(m -> collectMethodsThatUseAutowiredFields(m, methodsThatUseAutowiredFields));
+
+      // report autowired fields that are used by a single method, if that method is @Bean
+      methodsThatUseAutowiredFields.entrySet().stream()
+        .filter(methodsForField -> methodsForField.getValue().size() == 1 &&
+          methodsForField.getValue().get(0).symbol().metadata().isAnnotatedWith(BEAN_ANNOTATION))
+        .forEach(methodsForField -> reportIssue(
+          autowiredFields.get(methodsForField.getKey()).simpleName(),
+          String.format(MESSAGE_FORMAT, methodsForField.getValue().get(0).simpleName().name())));
     }
   }
 
@@ -74,48 +77,40 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
     return classTree.modifiers().modifiers().stream().noneMatch(m -> m.modifier().toString().equalsIgnoreCase("static"));
   }
 
-  private static class AutowiredFieldVisitor extends BaseTreeVisitor {
-    private final Map<Symbol, VariableTree> autowiredFields = new HashMap<>();
-
-    @Override
-    public void visitVariable(VariableTree tree) {
-      Symbol symbol = tree.symbol();
-      if (AUTOWIRED_ANNOTATIONS.stream().anyMatch(a -> symbol.metadata().isAnnotatedWith(a))) {
-        autowiredFields.put(symbol, tree);
-      }
+  private static void collectAutowiredFields(Tree tree, Map<Symbol, VariableTree> autowiredFields) {
+    if (!tree.is(Tree.Kind.VARIABLE)) {
+      return;
+    }
+    VariableTree variable = (VariableTree) tree;
+    Symbol variableSymbol = variable.symbol();
+    if (AUTOWIRED_ANNOTATIONS.stream().anyMatch(a -> variableSymbol.metadata().isAnnotatedWith(a))) {
+      autowiredFields.put(variableSymbol, variable);
     }
   }
 
-  private static class MethodVisitor extends BaseTreeVisitor {
-    private final Map<Symbol, List<MethodTree>> methodsThatUseAutowiredFields = new HashMap<>();
+  private static void collectMethodsThatUseAutowiredFields(Tree tree, Map<Symbol, List<MethodTree>> methodsThatUseAutowiredFields) {
+    if (!tree.is(Tree.Kind.METHOD)) {
+      return;
+    }
+    IdentifiersVisitor identifiersVisitor = new IdentifiersVisitor(methodsThatUseAutowiredFields.keySet());
+    tree.accept(identifiersVisitor);
+    // for each autowired field that is referenced in this method, add the current method name to the list
+    identifiersVisitor.isFieldReferenced.entrySet().stream()
+      .filter(Map.Entry::getValue)
+      .map(Map.Entry::getKey)
+      .forEach(field -> methodsThatUseAutowiredFields.get(field).add((MethodTree) tree));
+  }
 
-    MethodVisitor(Set<Symbol> autowiredFields) {
-      autowiredFields.forEach(f -> methodsThatUseAutowiredFields.put(f, new ArrayList<>()));
+  private static class IdentifiersVisitor extends BaseTreeVisitor {
+    private final Map<Symbol, Boolean> isFieldReferenced = new HashMap<>();
+
+    IdentifiersVisitor(Set<Symbol> autowiredFields) {
+      autowiredFields.forEach(f -> isFieldReferenced.put(f, false));
     }
 
     @Override
-    public void visitMethod(MethodTree methodTree) {
-      IdentifiersVisitor identifiersVisitor = new IdentifiersVisitor(methodsThatUseAutowiredFields.keySet());
-      methodTree.accept(identifiersVisitor);
-      // for each autowired field that is referenced in this method, add the current method name to the list
-      identifiersVisitor.isFieldReferenced.entrySet().stream()
-        .filter(Map.Entry::getValue)
-        .map(Map.Entry::getKey)
-        .forEach(field -> methodsThatUseAutowiredFields.get(field).add(methodTree));
-    }
-
-    private static class IdentifiersVisitor extends BaseTreeVisitor {
-      private final Map<Symbol, Boolean> isFieldReferenced = new HashMap<>();
-
-      IdentifiersVisitor(Set<Symbol> autowiredFields) {
-        autowiredFields.forEach(f -> isFieldReferenced.put(f, false));
-      }
-
-      @Override
-      public void visitIdentifier(IdentifierTree identifierTree) {
-        isFieldReferenced.computeIfPresent(identifierTree.symbol(), (fieldSym, isPresent) -> true);
-      }
+    public void visitIdentifier(IdentifierTree identifierTree) {
+      isFieldReferenced.computeIfPresent(identifierTree.symbol(), (fieldSym, isPresent) -> true);
     }
   }
-
 }
