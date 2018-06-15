@@ -1,0 +1,37 @@
+<p><code>@ComponentScan</code> is used to determine which Spring Beans are available in the application context. The packages to scan can be
+configured thanks to the <code>basePackageClasses</code> or <code>basePackages</code> (or its alias <code>value</code>) parameters. If neither
+parameter is configured, <code>@ComponentScan</code> will consider only the package of the class annotated with it. When <code>@ComponentScan</code>
+is used on a class belonging to the default package, the entire classpath will be scanned.</p>
+<p>This will slow-down the start-up of the application and it is likely the application will fail to start with an
+<code>BeanDefinitionStoreException</code> because you ended up scanning the Spring Framework package itself.</p>
+<p>This rule raises an issue when:</p>
+<p>- <code>@ComponentScan</code>, <code>@SpringBootApplication</code> and <code>@ServletComponentScan</code> are used on a class belonging to the
+default package</p>
+<p>- <code>@ComponentScan</code> is explicitly configured with the default package</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+import org.springframework.boot.SpringApplication;
+
+@SpringBootApplication // Noncompliant; RootBootApp is declared in the default package
+public class RootBootApp {
+...
+}
+</pre>
+<pre>
+@ComponentScan("")
+public class Application {
+...
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+package hello;
+
+import org.springframework.boot.SpringApplication;
+
+@SpringBootApplication // Compliant; RootBootApp belongs to the "hello" package
+public class RootBootApp {
+...
+}
+</pre>
+

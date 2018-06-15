@@ -1,0 +1,16 @@
+{
+  "title": "\"@SpringBootApplication\" and \"@ComponentScan\" should not be used in the default package",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-4602",
+  "sqKey": "S4602",
+  "scope": "Main"
+}
