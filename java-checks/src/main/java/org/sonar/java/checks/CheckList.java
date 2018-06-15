@@ -52,6 +52,7 @@ import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.security.LDAPDeserializationCheck;
 import org.sonar.java.checks.security.SMTPSSLServerIdentityCheck;
+import org.sonar.java.checks.security.SecureCookieCheck;
 import org.sonar.java.checks.security.SecureXmlTransformerCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
 import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
