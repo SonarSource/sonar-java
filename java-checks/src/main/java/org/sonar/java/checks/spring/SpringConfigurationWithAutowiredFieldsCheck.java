@@ -55,7 +55,7 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (classTree.symbol().metadata().isAnnotatedWith(CONFIGURATION_ANNOTATION) && isNotStatic(classTree)) {
+    if (classTree.symbol().metadata().isAnnotatedWith(CONFIGURATION_ANNOTATION)) {
       Map<Symbol, VariableTree> autowiredFields = new HashMap<>();
       classTree.members().forEach(m -> collectAutowiredFields(m, autowiredFields));
 
@@ -71,10 +71,6 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
           autowiredFields.get(methodsForField.getKey()).simpleName(),
           String.format(MESSAGE_FORMAT, methodsForField.getValue().get(0).simpleName().name())));
     }
-  }
-
-  private static boolean isNotStatic(ClassTree classTree) {
-    return classTree.modifiers().modifiers().stream().noneMatch(m -> m.modifier().toString().equalsIgnoreCase("static"));
   }
 
   private static void collectAutowiredFields(Tree tree, Map<Symbol, VariableTree> autowiredFields) {

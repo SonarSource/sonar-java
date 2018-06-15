@@ -103,10 +103,12 @@ public class NestedConfig {
       return new Foo(this.x);
     }
   }
+}
 
+public class StaticConfig {
   @Configuration
   public static class InnerStaticConfig {
-    @Autowired private Bar x; // ignore static context
+    @Autowired private Bar x; // Noncompliant
 
     @Bean
     public Foo method() {
