@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -34,6 +35,20 @@ public class RequestMappingMethodPublicCheck extends IssuableSubscriptionVisitor
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.METHOD);
   }
+
+  private static final List<String> CONTROLLER_ANNOTATIONS = Arrays.asList(
+    "org.springframework.stereotype.Controller",
+    "org.springframework.web.bind.annotation.RestController"
+  );
+
+  private static final List<String> REQUEST_ANNOTATIONS = Arrays.asList(
+    "org.springframework.web.bind.annotation.RequestMapping",
+    "org.springframework.web.bind.annotation.GetMapping",
+    "org.springframework.web.bind.annotation.PostMapping",
+    "org.springframework.web.bind.annotation.PutMapping",
+    "org.springframework.web.bind.annotation.DeleteMapping",
+    "org.springframework.web.bind.annotation.PatchMapping"
+  );
 
   @Override
   public void visitNode(Tree tree) {
@@ -52,11 +67,11 @@ public class RequestMappingMethodPublicCheck extends IssuableSubscriptionVisitor
   }
 
   private static boolean isClassController(Symbol.MethodSymbol methodSymbol) {
-    return methodSymbol.owner().metadata().isAnnotatedWith("org.springframework.stereotype.Controller");
+    return CONTROLLER_ANNOTATIONS.stream().anyMatch(methodSymbol.owner().metadata()::isAnnotatedWith);
   }
 
   private static boolean isRequestMappingAnnotated(Symbol.MethodSymbol methodSymbol) {
-    return methodSymbol.metadata().isAnnotatedWith("org.springframework.web.bind.annotation.RequestMapping");
+    return REQUEST_ANNOTATIONS.stream().anyMatch(methodSymbol.metadata()::isAnnotatedWith);
   }
 
 }
