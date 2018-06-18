@@ -19,6 +19,10 @@
  */
 package org.sonar.java.xml.maven;
 
+import java.io.File;
+import java.util.List;
+import javax.annotation.Nullable;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.maven.model.LocatedAttribute;
 import org.sonar.maven.model.LocatedTree;
@@ -30,13 +34,9 @@ import org.sonar.maven.model.maven2.Plugin;
 import org.sonar.maven.model.maven2.PluginExecution.Configuration;
 import org.w3c.dom.Element;
 
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Ignore
 public class PomParserTest {
   private static final File UNRELATED_XML_FILE = new File("src/test/files/xml/parsing.xml");
   private static final File SIMPLE_POM_FILE = new File("src/test/files/xml/maven/simple-project/pom.xml");

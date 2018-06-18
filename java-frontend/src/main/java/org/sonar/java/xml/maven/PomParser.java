@@ -19,13 +19,9 @@
  */
 package org.sonar.java.xml.maven;
 
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-import org.sonar.maven.model.LocatedAttributeAdapter;
-import org.sonar.maven.model.LocatedTreeImpl;
-import org.sonar.maven.model.XmlLocation;
-import org.sonar.maven.model.maven2.MavenProject;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import javax.annotation.CheckForNull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -35,10 +31,12 @@ import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
+import org.sonar.maven.model.LocatedAttributeAdapter;
+import org.sonar.maven.model.LocatedTreeImpl;
+import org.sonar.maven.model.XmlLocation;
+import org.sonar.maven.model.maven2.MavenProject;
 
 public class PomParser {
 
