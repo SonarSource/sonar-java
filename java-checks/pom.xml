@@ -193,6 +193,16 @@
                   <version>2.0.2.RELEASE</version>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.springframework.security</groupId>
+                  <artifactId>spring-security-crypto</artifactId>
+                  <version>5.0.6.RELEASE</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.springframework.security</groupId>
+                  <artifactId>spring-security-core</artifactId>
+                  <version>4.2.6.RELEASE</version>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.apache.shiro</groupId>
                   <artifactId>shiro-web</artifactId>
                   <version>1.2.3</version>
