@@ -33,6 +33,7 @@ class A {
 
     field4 = new Cookie("name, value"); // FN, ignore fields
     field5.setSecure(false); // FN, ignore fields
+    this.field4 = new Cookie("name", "value"); // FN ignore fields
 
     Cookie cookie = new Cookie("name", "value");
     cookie.setSecure(true);

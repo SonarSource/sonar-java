@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -67,33 +66,25 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   /**
    * Some constructors have the 'secure' parameter and do not need a 'setSecure' call afterwards.
    */
-  private static final String CONSTRUCTOR = "<init>";
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String INT = "int";
   private static final String BOOLEAN = "boolean";
 
   private static final List<MethodMatcher> CONSTRUCTORS_WITH_SECURE_PARAM_LAST = Arrays.asList(
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
-      .parameters(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, BOOLEAN),
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, BOOLEAN),
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN));
+    constructorMatcher(JAX_RS_NEW_COOKIE).parameters(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, BOOLEAN),
+    constructorMatcher(JAX_RS_NEW_COOKIE).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, BOOLEAN),
+    constructorMatcher(JAX_RS_NEW_COOKIE).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN));
 
   private static final List<MethodMatcher> CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_LAST = Arrays.asList(
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
-      .parameters(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN),
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
+    constructorMatcher(JAX_RS_NEW_COOKIE)
       .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN),
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN),
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(SPRING_SAVED_COOKIE)).name(CONSTRUCTOR)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, BOOLEAN, INT),
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(PLAY_COOKIE)).name(CONSTRUCTOR)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN));
+    constructorMatcher(JAX_RS_NEW_COOKIE).parameters(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN),
+    constructorMatcher(JAX_RS_NEW_COOKIE).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN),
+    constructorMatcher(SPRING_SAVED_COOKIE).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, BOOLEAN, INT),
+    constructorMatcher(PLAY_COOKIE).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN));
 
   private static final List<MethodMatcher> CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_BEFORE_LAST = Collections.singletonList(
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(PLAY_COOKIE)).name(CONSTRUCTOR)
+    constructorMatcher(PLAY_COOKIE)
       .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN, "play.mvc.Http$Cookie$SameSite"));
 
   private final Set<Symbol.VariableSymbol> unsecuredCookies = new HashSet<>();
@@ -138,12 +129,13 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
   private void addToUnsecuredCookies(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
+    Symbol variableTreeSymbol = variableTree.symbol();
     // Ignore field variables
-    if (initializer != null && variableTree.symbol().isVariableSymbol() && variableTree.symbol().owner().isMethodSymbol()) {
+    if (initializer != null && variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol()) {
       boolean isInitializedWithConstructor = initializer.is(Tree.Kind.NEW_CLASS);
-      boolean isMatchedType = isCookieClass(variableTree.symbol().type()) || isCookieClass(initializer.symbolType());
+      boolean isMatchedType = isCookieClass(variableTreeSymbol.type()) || isCookieClass(initializer.symbolType());
       if (isInitializedWithConstructor && isMatchedType && isSecureParamFalse((NewClassTree) initializer)) {
-        unsecuredCookies.add((Symbol.VariableSymbol) variableTree.symbol());
+        unsecuredCookies.add((Symbol.VariableSymbol) variableTreeSymbol);
       }
     }
   }
@@ -151,10 +143,15 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private void addToUnsecuredCookies(AssignmentExpressionTree assignment) {
     if (assignment.expression().is(Tree.Kind.NEW_CLASS) && assignment.variable().is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) assignment.variable();
-      boolean isMethodVariable = identifier.symbol().isVariableSymbol() && identifier.symbol().owner().isMethodSymbol();
+      Symbol identifierSymbol = identifier.symbol();
+      boolean isMethodVariable = identifierSymbol.isVariableSymbol() && identifierSymbol.owner().isMethodSymbol();
       boolean isMatchedType = isCookieClass(identifier.symbolType()) || isCookieClass(assignment.expression().symbolType());
-      if (isMethodVariable && isMatchedType && isSecureParamFalse((NewClassTree) assignment.expression())) {
-        unsecuredCookies.add((Symbol.VariableSymbol) ((IdentifierTree) assignment.variable()).symbol());
+      Symbol assignmentVariableSymbol = ((IdentifierTree) assignment.variable()).symbol();
+      if (isMethodVariable
+          && isMatchedType
+          && assignmentVariableSymbol.isVariableSymbol()
+          && isSecureParamFalse((NewClassTree) assignment.expression())) {
+        unsecuredCookies.add((Symbol.VariableSymbol) assignmentVariableSymbol);
       }
     }
   }
@@ -179,9 +176,9 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private void addToUnsecuredReturns(ReturnStatementTree tree) {
     ExpressionTree returnedExpression = tree.expression();
     if (returnedExpression != null
-      && returnedExpression.is(Tree.Kind.NEW_CLASS)
-      && isCookieClass(returnedExpression.symbolType())
-      && isSecureParamFalse((NewClassTree) returnedExpression)) {
+        && returnedExpression.is(Tree.Kind.NEW_CLASS)
+        && isCookieClass(returnedExpression.symbolType())
+        && isSecureParamFalse((NewClassTree) returnedExpression)) {
       unsecuredReturns.add((NewClassTree) returnedExpression);
     }
   }
@@ -223,4 +220,9 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     }
     return id;
   }
+
+  private static MethodMatcher constructorMatcher(String fullyQualifiedName) {
+    return MethodMatcher.create().typeDefinition(fullyQualifiedName).name("<init>");
+  }
+
 }
