@@ -376,6 +376,16 @@ public class BytecodeCompleterTest {
   }
 
   @Test
+  public void super_class_can_be_an_inner_class() {
+    JavaSymbol.TypeJavaSymbol innerClassDerivedSymbol = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ParametrizedExtendDerived$InnerClassDerived");
+    innerClassDerivedSymbol.complete();
+    assertThat(innerClassDerivedSymbol.getSuperclass().symbol().type().fullyQualifiedName()).isEqualTo("org.sonar.java.resolve.targets.ParametrizedExtend$InnerClass");
+    JavaSymbol.MethodJavaSymbol symbol = (JavaSymbol.MethodJavaSymbol) innerClassDerivedSymbol.members().lookup("innerMethod").get(0);
+    assertThat(symbol.getReturnType().type).isInstanceOf(TypeVariableJavaType.class);
+    assertThat(symbol.getReturnType().getName()).isEqualTo("S");
+  }
+
+  @Test
   public void annotated_enum_constructor() {
     //Test to handle difference between signature and descriptor for enum:
     //see : https://bugs.openjdk.java.net/browse/JDK-8071444 and https://bugs.openjdk.java.net/browse/JDK-8024694
