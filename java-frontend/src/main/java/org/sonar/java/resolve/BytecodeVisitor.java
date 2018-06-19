@@ -559,6 +559,7 @@ public class BytecodeVisitor extends ClassVisitor {
     @Nullable
     private final JavaSymbol.MethodJavaSymbol methodSymbol;
     JavaType typeRead;
+    String bytecodeName;
     List<JavaType> typeArguments = Lists.newArrayList();
 
     public ReadType() {
@@ -572,7 +573,15 @@ public class BytecodeVisitor extends ClassVisitor {
     }
 
     @Override
+    public void visitInnerClassType(String name) {
+      bytecodeName += "$" + name;
+      typeRead = getClassSymbol(bytecodeName).type;
+      typeArguments = Lists.newArrayList();
+    }
+
+    @Override
     public void visitClassType(String name) {
+      bytecodeName = name;
       typeRead = getClassSymbol(name).type;
     }
 
