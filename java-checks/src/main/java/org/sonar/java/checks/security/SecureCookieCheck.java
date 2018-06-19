@@ -142,14 +142,12 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
   private void addToUnsecuredCookies(AssignmentExpressionTree assignment) {
     if (assignment.expression().is(Tree.Kind.NEW_CLASS) && assignment.variable().is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifier = (IdentifierTree) assignment.variable();
-      Symbol identifierSymbol = identifier.symbol();
-      boolean isMethodVariable = identifierSymbol.isVariableSymbol() && identifierSymbol.owner().isMethodSymbol();
-      boolean isMatchedType = isCookieClass(identifier.symbolType()) || isCookieClass(assignment.expression().symbolType());
-      Symbol assignmentVariableSymbol = ((IdentifierTree) assignment.variable()).symbol();
+      IdentifierTree assignmentVariable = (IdentifierTree) assignment.variable();
+      Symbol assignmentVariableSymbol = assignmentVariable.symbol();
+      boolean isMethodVariable = assignmentVariableSymbol.isVariableSymbol() && assignmentVariableSymbol.owner().isMethodSymbol();
+      boolean isMatchedType = isCookieClass(assignmentVariable.symbolType()) || isCookieClass(assignment.expression().symbolType());
       if (isMethodVariable
           && isMatchedType
-          && assignmentVariableSymbol.isVariableSymbol()
           && isSecureParamFalse((NewClassTree) assignment.expression())) {
         unsecuredCookies.add((Symbol.VariableSymbol) assignmentVariableSymbol);
       }
