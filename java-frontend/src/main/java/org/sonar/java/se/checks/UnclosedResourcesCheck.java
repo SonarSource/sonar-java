@@ -20,10 +20,17 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
-
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
@@ -47,19 +54,11 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 import static org.sonar.java.se.checks.UnclosedResourcesCheck.ResourceConstraint.CLOSED;
 import static org.sonar.java.se.checks.UnclosedResourcesCheck.ResourceConstraint.OPEN;
@@ -88,7 +87,9 @@ public class UnclosedResourcesCheck extends SECheck {
     defaultValue = "")
   public String excludedTypes = "";
   private final List<String> excludedTypesList = new ArrayList<>();
-  
+
+  private Type visitedMethodOwnerType;
+
   private static final String JAVA_IO_AUTO_CLOSEABLE = "java.lang.AutoCloseable";
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
   private static final String JAVA_SQL_STATEMENT = "java.sql.Statement";
@@ -130,6 +131,11 @@ public class UnclosedResourcesCheck extends SECheck {
   private static final MethodMatcherCollection CLOSEABLE_EXCEPTIONS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition("java.nio.file.FileSystems").name("getDefault").withoutParameter()
   );
+
+  @Override
+  public void init(MethodTree methodTree, CFG cfg) {
+    this.visitedMethodOwnerType = methodTree.symbol().owner().type();
+  }
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -475,9 +481,19 @@ public class UnclosedResourcesCheck extends SECheck {
     private boolean methodOpeningResource(MethodInvocationTree mit) {
       return !isWithinTryHeader(mit)
         && !excludedByRuleOption(mit.symbolType())
+        && !handledByFramework(mit)
         && (JDBC_RESOURCE_CREATIONS.anyMatch(mit)
           || STREAMS_BACKED_BY_RESOURCE.anyMatch(mit)
           || (needsClosing(mit.symbolType()) && !CLOSEABLE_EXCEPTIONS.anyMatch(mit) && mitHeuristics(mit)));
+    }
+
+    private boolean handledByFramework(MethodInvocationTree mit) {
+      // according to spring documentation, no leak is expected:
+      // "Implementations do not need to concern themselves with SQLExceptions that may be thrown from operations
+      // they attempt. The JdbcTemplate class will catch and handle SQLExceptions appropriately."
+      return JDBC_RESOURCE_CREATIONS.anyMatch(mit)
+        && (visitedMethodOwnerType.isSubtypeOf("org.springframework.jdbc.core.PreparedStatementCreator")
+          || visitedMethodOwnerType.isSubtypeOf("org.springframework.jdbc.core.CallableStatementCreator"));
     }
 
     private boolean mitHeuristics(MethodInvocationTree mit) {
