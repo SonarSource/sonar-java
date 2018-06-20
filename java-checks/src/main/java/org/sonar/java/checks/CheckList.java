@@ -581,6 +581,7 @@ public final class CheckList {
       .add(CryptographicKeySizeCheck.class)
       .add(SMTPSSLServerIdentityCheck.class)
       .add(StringOffsetMethodsCheck.class)
+      .add(EnumEqualCheck.class)
       .build();
   }
 
