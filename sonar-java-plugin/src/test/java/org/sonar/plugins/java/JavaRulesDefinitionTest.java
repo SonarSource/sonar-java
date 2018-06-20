@@ -23,10 +23,14 @@ import java.util.ArrayList;
 import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.api.SonarQubeSide;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.CheckList;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -35,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaRulesDefinitionTest {
 
+  private static final SonarRuntime RUNTIME = SonarRuntimeImpl.forSonarQube(Version.create(7, 3), SonarQubeSide.SERVER);
   private Configuration settings;
 
   @Before
@@ -44,7 +49,7 @@ public class JavaRulesDefinitionTest {
 
   @Test
   public void test_creation_of_rules() {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings, RUNTIME);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -80,9 +85,9 @@ public class JavaRulesDefinitionTest {
   @Test
   public void rules_definition_should_be_locale_independent() {
     Locale defaultLocale = Locale.getDefault();
-    Locale trlocale= Locale.forLanguageTag("tr-TR");
+    Locale trlocale = Locale.forLanguageTag("tr-TR");
     Locale.setDefault(trlocale);
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings, RUNTIME);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -97,7 +102,7 @@ public class JavaRulesDefinitionTest {
   public void debug_rules() {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.debug", true);
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings.asConfig());
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings.asConfig(), RUNTIME);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -112,25 +117,25 @@ public class JavaRulesDefinitionTest {
     RulesDefinition.Context context = new RulesDefinition.Context();
     RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
     newRepository.createRule("correctRule");
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings, RUNTIME);
     JavaSonarWayProfile.Profile profile = new JavaSonarWayProfile.Profile();
     profile.ruleKeys = new ArrayList<>();
     try {
       definition.newRule(CheckWithNoAnnotation.class, newRepository, profile);
     } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessage("No Rule annotation was found on class "+CheckWithNoAnnotation.class.getName());
+      assertThat(iae).hasMessage("No Rule annotation was found on class " + CheckWithNoAnnotation.class.getName());
     }
 
     try {
       definition.newRule(EmptyRuleKey.class, newRepository, profile);
     } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessage("No key is defined in Rule annotation of class "+EmptyRuleKey.class.getName());
+      assertThat(iae).hasMessage("No key is defined in Rule annotation of class " + EmptyRuleKey.class.getName());
     }
 
     try {
       definition.newRule(UnregisteredRule.class, newRepository, profile);
     } catch (IllegalStateException ise) {
-      assertThat(ise).hasMessage("No rule was created for class "+UnregisteredRule.class.getName()+" in test");
+      assertThat(ise).hasMessage("No rule was created for class " + UnregisteredRule.class.getName() + " in test");
     }
     // no metadata defined, does not fail on registration of rule
     definition.newRule(CorrectRule.class, newRepository, profile);

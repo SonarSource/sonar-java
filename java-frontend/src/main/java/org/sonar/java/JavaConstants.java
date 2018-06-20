@@ -19,9 +19,31 @@
  */
 package org.sonar.java;
 
+import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+
 public final class JavaConstants {
 
   public static final String JAVA_CATEGORY = "java";
+
+  public static final Set<String> SECURITY_HOTSPOT_KEYS = ImmutableSet.of(
+    "S2255",
+    "S3330",
+    "S4426",
+    "S4434",
+    "S4435",
+    "S4499",
+    "S4347",
+    "S2755",
+    "S2278",
+    "S2277",
+    "S2257",
+    "S2255",
+    "S2245",
+    "S2092",
+    "S2070",
+    "S2068",
+    "S1313");
 
   private JavaConstants() {
   }

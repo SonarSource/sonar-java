@@ -40,6 +40,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.sonar.api.SonarQubeSide;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -78,6 +79,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SonarComponentsTest {
+
+  private static final SonarRuntime RUNTIME = SonarRuntimeImpl.forSonarQube(Version.create(7, 3), SonarQubeSide.SCANNER);
 
   private static final Version V6_7 = Version.create(6, 7);
 
@@ -136,7 +139,7 @@ public class SonarComponentsTest {
     assertThat(newHighlighting).isNotNull();
     verify(sensorContextTester, times(1)).newHighlighting();
     NewSymbolTable newSymbolTable = sonarComponents.symbolizableFor(file);
-    assertThat(newSymbolTable ).isNotNull();
+    assertThat(newSymbolTable).isNotNull();
     verify(sensorContextTester, times(1)).newSymbolTable();
     assertThat(sonarComponents.fileLinesContextFor(file)).isEqualTo(fileLinesContext);
 
@@ -155,7 +158,7 @@ public class SonarComponentsTest {
     when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<>());
     SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, null, null, null, this.checkFactory, null, new CheckRegistrar[] {
       expectedRegistrar
-    });
+    }, RUNTIME);
     sonarComponents.setSensorContext(context);
 
     JavaCheck[] visitors = sonarComponents.checkClasses();
@@ -175,7 +178,7 @@ public class SonarComponentsTest {
     when(checks.all()).thenReturn(new ArrayList<>()).thenReturn(Lists.newArrayList(expectedCheck));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null, null, checkFactory, null, new CheckRegistrar[] {
       expectedRegistrar
-    });
+    }, RUNTIME);
     sonarComponents.setSensorContext(context);
 
     JavaCheck[] visitors = sonarComponents.checkClasses();
@@ -199,7 +202,7 @@ public class SonarComponentsTest {
     when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(Lists.newArrayList(expectedTestCheck));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null, null, checkFactory, null, new CheckRegistrar[] {
       expectedRegistrar
-    });
+    }, RUNTIME);
     sonarComponents.setSensorContext(context);
 
     JavaCheck[] visitors = sonarComponents.checkClasses();
@@ -223,7 +226,7 @@ public class SonarComponentsTest {
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(null);
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null, null, checkFactory, null, new CheckRegistrar[] {
       expectedRegistrar
-    });
+    }, RUNTIME);
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(new File(""), expectedCheck, 0, "message", null);
@@ -241,7 +244,7 @@ public class SonarComponentsTest {
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null, null, checkFactory, null, new CheckRegistrar[] {
       expectedRegistrar
-    });
+    }, RUNTIME);
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(file, expectedCheck, 0, "message", null);
@@ -268,7 +271,7 @@ public class SonarComponentsTest {
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null, null, checkFactory, null, new CheckRegistrar[] {
       expectedRegistrar
-    });
+    }, RUNTIME);
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(file, expectedCheck, -5, "message on wrong line", null);
@@ -297,15 +300,16 @@ public class SonarComponentsTest {
 
     File file = new File("file.java");
     DefaultInputFile inputFile = new TestInputFileBuilder("", file.getPath())
-    .initMetadata("class A {\n"
-      + "  void foo() {\n"
-      + "    System.out.println();\n"
-      + "  }\n"
-      + "}\n").build();
+      .initMetadata("class A {\n"
+        + "  void foo() {\n"
+        + "    System.out.println();\n"
+        + "  }\n"
+        + "}\n")
+      .build();
 
     SensorContextTester context = SensorContextTester.create(new File(""));
     DefaultFileSystem fileSystem = context.fileSystem();
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null, null, checkFactory, null, new CheckRegistrar[] {expectedRegistrar});
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null, null, checkFactory, null, new CheckRegistrar[] {expectedRegistrar}, RUNTIME);
     sonarComponents.setSensorContext(context);
 
     AnalyzerMessage.TextSpan emptyTextSpan = new AnalyzerMessage.TextSpan(3, 10, 3, 10);
@@ -410,7 +414,8 @@ public class SonarComponentsTest {
     SensorContextTester sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
     sensorContext.settings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true);
     Measure<String> feedback = analysisWithAnError(sensorContext);
-    Collection<AnalysisError> analysisErrorsDeserialized = new Gson().fromJson(feedback.value(), new TypeToken<Collection<AnalysisError>>(){}.getType());
+    Collection<AnalysisError> analysisErrorsDeserialized = new Gson().fromJson(feedback.value(), new TypeToken<Collection<AnalysisError>>() {
+    }.getType());
     assertThat(analysisErrorsDeserialized.size()).isBetween(35, 45);
     assertThat(analysisErrorsDeserialized.iterator().next().getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
   }
@@ -423,7 +428,8 @@ public class SonarComponentsTest {
     try {
       throw new IllegalStateException("This is the message of this exception");
     } catch (IllegalStateException iae) {
-      analysisError = new AnalysisError(iae, "/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/some_very/long/path/FileInError.java", AnalysisError.Kind.PARSE_ERROR);
+      analysisError = new AnalysisError(iae, "/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/some_very/long/path/FileInError.java",
+        AnalysisError.Kind.PARSE_ERROR);
     }
 
     for (int i = 0; i < 200_000; i++) {
@@ -448,7 +454,7 @@ public class SonarComponentsTest {
     feedback = analysisWithAnError(sensorContext);
     assertThat(feedback).isNull();
 
-    //analysis with no error
+    // analysis with no error
     sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContext);

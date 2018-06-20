@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.batch.fs.FileSystem;
@@ -54,6 +55,7 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.CheckRegistrar;
@@ -81,6 +83,7 @@ public class SonarComponents {
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
+  private final SonarRuntime runtime;
   @Nullable
   private final ProjectDefinition projectDefinition;
   private final FileSystem fs;
@@ -95,26 +98,27 @@ public class SonarComponents {
   private int errorsSize = 0;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
-                         CheckFactory checkFactory) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null);
+    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
+    CheckFactory checkFactory, SonarRuntime runtime) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null, runtime);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
-                         CheckFactory checkFactory, @Nullable ProjectDefinition projectDefinition) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, projectDefinition, null);
+    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
+    CheckFactory checkFactory, @Nullable ProjectDefinition projectDefinition, SonarRuntime runtime) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, projectDefinition, null, runtime);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable ProjectDefinition projectDefinition, @Nullable CheckRegistrar[] checkRegistrars) {
+    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
+    @Nullable ProjectDefinition projectDefinition, @Nullable CheckRegistrar[] checkRegistrars, SonarRuntime runtime) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
     this.javaTestClasspath = javaTestClasspath;
     this.checkFactory = checkFactory;
     this.projectDefinition = projectDefinition;
+    this.runtime = runtime;
     this.checks = new ArrayList<>();
     this.testChecks = new ArrayList<>();
     this.allChecks = new ArrayList<>();
@@ -236,6 +240,11 @@ public class SonarComponents {
     if (key == null) {
       return;
     }
+    if (runtime.getProduct() == SonarProduct.SONARLINT && !runtime.getApiVersion().isGreaterThanOrEqual(Version.create(7, 3))
+      && JavaConstants.SECURITY_HOTSPOT_KEYS.contains(key.rule())) {
+      // Old versions of SonarLint should not display hotspots
+      return;
+    }
     File file = analyzerMessage.getFile();
     InputPath inputPath = inputPathFromIOFile(file);
     if (inputPath == null) {
@@ -282,18 +291,18 @@ public class SonarComponents {
     try {
       return inputFromIOFile(file).contents();
     } catch (IOException e) {
-      throw new AnalysisException("Unable to read file "+file, e);
+      throw new AnalysisException("Unable to read file " + file, e);
     }
   }
 
   public List<String> fileLines(File file) {
     List<String> lines = new ArrayList<>();
-    try(Scanner scanner = new Scanner(getInputStream(file), getCharset(file).name())) {
+    try (Scanner scanner = new Scanner(getInputStream(file), getCharset(file).name())) {
       while (scanner.hasNextLine()) {
         lines.add(scanner.nextLine());
       }
     } catch (IOException e) {
-      throw new AnalysisException("Unable to read file "+file, e);
+      throw new AnalysisException("Unable to read file " + file, e);
     }
     return lines;
   }
@@ -335,7 +344,7 @@ public class SonarComponents {
 
   public File workDir() {
     ProjectDefinition current = projectDefinition;
-    if(current == null) {
+    if (current == null) {
       return fs.workDir();
     }
     while (current.getParent() != null) {
