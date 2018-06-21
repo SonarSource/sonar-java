@@ -22,11 +22,14 @@ package org.sonar.java.model;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.AnalyzerMessageReporter;
+import org.sonar.java.CrossFileScanner;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.resolve.SemanticModel;
@@ -38,7 +41,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
+public class DefaultJavaFileScannerContext implements JavaFileScannerContext, AnalyzerMessageReporter {
   private final CompilationUnitTree tree;
   @VisibleForTesting
   private final SemanticModel semanticModel;
@@ -109,29 +112,39 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
+    throwIfCrossFileScanner(javaCheck);
     reportIssue(javaCheck, tree, message, ImmutableList.of(), null);
   }
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
+    throwIfCrossFileScanner(javaCheck);
     List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
     reportIssueWithFlow(javaCheck, syntaxNode, message, flows, cost);
   }
 
   @Override
   public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
-    sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, flows, cost));
+    throwIfCrossFileScanner(javaCheck);
+    reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, flows, cost));
   }
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
+    throwIfCrossFileScanner(javaCheck);
     reportIssue(javaCheck, startTree, endTree, message, ImmutableList.of(), null);
   }
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
+    throwIfCrossFileScanner(javaCheck);
     List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
-    sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, startTree, endTree, message, flows, cost));
+    reportIssue(createAnalyzerMessage(file, javaCheck, startTree, endTree, message, flows, cost));
+  }
+
+  @Override
+  public void reportIssue(AnalyzerMessage message) {
+    sonarComponents.reportIssue(message);
   }
 
   @Override
@@ -142,6 +155,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public String getFileContent() {
     return sonarComponents.fileContent(file);
+  }
+
+  @Override
+  public AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, String message) {
+    return createAnalyzerMessage(file, javaCheck, startTree, null, message, new ArrayList<>(), null);
   }
 
   protected static AnalyzerMessage createAnalyzerMessage(File file, JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, Iterable<List<Location>> flows,
@@ -169,5 +187,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree) {
     return getComplexityNodes(tree);
+  }
+
+  private static void throwIfCrossFileScanner(JavaCheck javaCheck) {
+    if (javaCheck instanceof CrossFileScanner) {
+      throw new UnsupportedOperationException("CrossFileScanner must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
+    }
   }
 }

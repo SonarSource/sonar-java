@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -110,6 +111,16 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     @Override
     public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
       issues.add(createAnalyzerMessage(getFile(), javaCheck, syntaxNode, null, message, flows, cost));
+    }
+
+    @Override
+    public void reportIssue(AnalyzerMessage message) {
+      issues.add(message);
+    }
+
+    @Override
+    public AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, String message) {
+      return createAnalyzerMessage(getFile(), javaCheck, startTree, null, message, Arrays.asList(), null);
     }
 
     private AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
