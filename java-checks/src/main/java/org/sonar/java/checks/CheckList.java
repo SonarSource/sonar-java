@@ -64,6 +64,7 @@ import org.sonar.java.checks.serialization.SerializableComparatorCheck;
 import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassCheck;
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
+import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringAntMatcherOrderCheck;
 import org.sonar.java.checks.spring.SpringAutoConfigurationCheck;
@@ -545,6 +546,7 @@ public final class CheckList {
       .add(SpringScanDefaultPackageCheck.class)
       .add(SpringSecurityDebugModeCheck.class)
       .add(SpringSecurityDisableCSRFCheck.class)
+      .add(PersistentEntityUsedAsRequestParameterCheck.class)
       .add(RequestMappingMethodPublicCheck.class)
       .add(BooleanGratuitousExpressionsCheck.class)
       .add(AllBranchesAreIdenticalCheck.class)

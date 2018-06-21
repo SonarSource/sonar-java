@@ -147,6 +147,11 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.springframework.data</groupId>
+                  <artifactId>spring-data-mongodb</artifactId>
+                  <version>2.0.8.RELEASE</version>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.springframework</groupId>
                   <artifactId>spring-web</artifactId>
                   <version>5.0.6.RELEASE</version>
@@ -246,6 +251,11 @@
                   <groupId>javax.inject</groupId>
                   <artifactId>javax.inject</artifactId>
                   <version>1</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.persistence</groupId>
+                  <artifactId>javax.persistence-api</artifactId>
+                  <version>2.2</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>com.google.guava</groupId>
