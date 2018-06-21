@@ -17,6 +17,11 @@ public class Foo {
 public class Doc {
 }
 
+@org.springframework.data.elasticsearch.annotations.Document
+public class ElasticsearchDoc {
+
+}
+
 public class Bar {
 }
 
@@ -40,7 +45,7 @@ class FooController {
   }
 
   @PutMapping
-  public void foo4(Foo foo) { // Noncompliant
+  public void foo4(ElasticsearchDoc doc) { // Noncompliant
   }
 
   @DeleteMapping

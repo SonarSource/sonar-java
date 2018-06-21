@@ -47,7 +47,8 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
 
   private static final List<String> ENTITY_ANNOTATIONS = Arrays.asList(
     "javax.persistence.Entity",
-    "org.springframework.data.mongodb.core.mapping.Document");
+    "org.springframework.data.mongodb.core.mapping.Document",
+    "org.springframework.data.elasticsearch.annotations.Document");
 
   @Override
   public void visitNode(Tree tree) {

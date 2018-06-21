@@ -152,6 +152,11 @@
                   <version>2.0.8.RELEASE</version>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.springframework.data</groupId>
+                  <artifactId>spring-data-elasticsearch</artifactId>
+                  <version>3.0.8.RELEASE</version>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.springframework</groupId>
                   <artifactId>spring-web</artifactId>
                   <version>5.0.6.RELEASE</version>
