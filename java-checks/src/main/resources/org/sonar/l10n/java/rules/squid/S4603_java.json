@@ -1,0 +1,17 @@
+{
+  "title": "\"@Import\"s should be preferred to \"@ComponentScan\"s",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "spring",
+    "performance"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4603",
+  "sqKey": "S4603",
+  "scope": "Main"
+}
