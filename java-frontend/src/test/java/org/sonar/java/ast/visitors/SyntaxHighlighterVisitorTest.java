@@ -31,12 +31,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.api.SonarQubeSide;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.utils.Version;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.JavaTestClasspath;
@@ -64,12 +68,14 @@ public class SyntaxHighlighterVisitorTest {
   private List<String> lines;
   private String eol;
 
+  private static final SonarRuntime RUNTIME = SonarRuntimeImpl.forSonarQube(Version.create(7, 3), SonarQubeSide.SCANNER);
+
   @Before
   public void setUp() throws Exception {
     context = SensorContextTester.create(temp.getRoot());
     fs = context.fileSystem();
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), fs,
-      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
+      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class), RUNTIME);
     sonarComponents.setSensorContext(context);
     syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents);
   }
@@ -212,7 +218,7 @@ public class SyntaxHighlighterVisitorTest {
     File file = temp.newFile().getAbsoluteFile();
     Files.write(Files.toString(new File(filename), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, StandardCharsets.UTF_8);
     lines = Files.readLines(file, StandardCharsets.UTF_8);
-    String content  = Joiner.on(eol).join(lines);
+    String content = Joiner.on(eol).join(lines);
     fs.add(new TestInputFileBuilder("", file.getName()).initMetadata(content).build());
     return file;
   }

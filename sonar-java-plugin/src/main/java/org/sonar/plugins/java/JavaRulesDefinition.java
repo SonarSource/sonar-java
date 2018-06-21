@@ -33,6 +33,7 @@ import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.rules.RuleType;
@@ -40,6 +41,8 @@ import org.sonar.api.server.debt.DebtRemediationFunction;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.api.utils.Version;
+import org.sonar.java.JavaConstants;
 import org.sonar.java.checks.CheckList;
 
 /**
@@ -60,15 +63,10 @@ public class JavaRulesDefinition implements RulesDefinition {
     "S3546",
     "S4011");
 
-  /**
-   * 'Configuration' does exists yet in SonarLint context, consequently, in standalone mode, this constructor will be used.
-   * See {@link https://jira.sonarsource.com/browse/SLCORE-159}
-   */
-  public JavaRulesDefinition() {
-    this.isDebugEnabled = false;
-  }
+  private final SonarRuntime runtime;
 
-  public JavaRulesDefinition(Configuration settings) {
+  public JavaRulesDefinition(Configuration settings, SonarRuntime runtime) {
+    this.runtime = runtime;
     this.isDebugEnabled = settings.getBoolean(Java.DEBUG_RULE_KEY).orElse(false);
   }
 
@@ -116,6 +114,9 @@ public class JavaRulesDefinition implements RulesDefinition {
     // 'setActivatedByDefault' is used by SonarLint standalone, to define which rules will be active
     rule.setActivatedByDefault(profile.ruleKeys.contains(ruleKey) || profile.ruleKeys.contains(metadataKey));
     rule.setTemplate(TEMPLATE_RULE_KEY.contains(ruleKey));
+    if (runtime.getApiVersion().isGreaterThanOrEqual(Version.create(7, 3)) && JavaConstants.SECURITY_HOTSPOT_KEYS.contains(ruleKey)) {
+      rule.setType(RuleType.SECURITY_HOTSPOT);
+    }
   }
 
   private String ruleMetadata(Class<?> ruleClass, NewRule rule) {
@@ -139,7 +140,7 @@ public class JavaRulesDefinition implements RulesDefinition {
       rule.addTags(metadata.tags);
       rule.setType(RuleType.valueOf(metadata.type));
       rule.setStatus(RuleStatus.valueOf(metadata.status.toUpperCase(Locale.US)));
-      if(metadata.remediation != null) {
+      if (metadata.remediation != null) {
         rule.setDebtRemediationFunction(metadata.remediation.remediationFunction(rule.debtRemediationFunctions()));
         rule.setGapDescription(metadata.remediation.linearDesc);
       }
@@ -180,10 +181,10 @@ public class JavaRulesDefinition implements RulesDefinition {
     String linearFactor;
 
     public DebtRemediationFunction remediationFunction(DebtRemediationFunctions drf) {
-      if(func.startsWith("Constant")) {
+      if (func.startsWith("Constant")) {
         return drf.constantPerIssue(constantCost.replace("mn", "min"));
       }
-      if("Linear".equals(func)) {
+      if ("Linear".equals(func)) {
         return drf.linear(linearFactor.replace("mn", "min"));
       }
       return drf.linearWithOffset(linearFactor.replace("mn", "min"), linearOffset.replace("mn", "min"));
