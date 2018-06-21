@@ -101,6 +101,7 @@ import org.sonar.java.checks.xml.maven.DeprecatedPomPropertiesCheck;
 import org.sonar.java.checks.xml.maven.DisallowedDependenciesCheck;
 import org.sonar.java.checks.xml.maven.GroupIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
+import org.sonar.java.checks.xml.spring.DefaultMessageListenerContainerCheck;
 import org.sonar.java.checks.xml.spring.SingleConnectionFactoryCheck;
 import org.sonar.java.checks.xml.struts.ActionNumberCheck;
 import org.sonar.java.checks.xml.struts.FormNameDuplicationCheck;
@@ -627,6 +628,7 @@ public final class CheckList {
       .add(DefaultInterceptorsLocationCheck.class)
       .add(InterceptorExclusionsCheck.class)
       .add(SingleConnectionFactoryCheck.class)
+      .add(DefaultMessageListenerContainerCheck.class)
       .add(SecurityConstraintsInWebXmlCheck.class)
       .add(ValidationFiltersCheck.class)
       .add(ActionNumberCheck.class)
