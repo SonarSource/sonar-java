@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MyFirstApp {
 }
 
-@SpringBootApplication(scanBasePackages = "com.myapp") // Noncompliant
+@SpringBootApplication(scanBasePackages = "com.myapp") // Noncompliant [[sc=2;ec=23]] {{Consider replacing "@SpringBootApplication" by a list of beans imported with @Import to speed-up the start-up of the application.}}
 class MySecondApp {
 }
 
