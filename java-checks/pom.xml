@@ -198,9 +198,19 @@
                   <version>5.0.6.RELEASE</version>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.springframework</groupId>
+                  <artifactId>spring-tx</artifactId>
+                  <version>5.0.6.RELEASE</version>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.springframework.security</groupId>
                   <artifactId>spring-security-core</artifactId>
                   <version>4.2.6.RELEASE</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.transaction</groupId>
+                  <artifactId>javax.transaction-api</artifactId>
+                  <version>1.2</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.apache.shiro</groupId>
