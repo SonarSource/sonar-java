@@ -1359,7 +1359,19 @@ public class SymbolTableTest {
     Result result = Result.createFor("SwitchStatement");
     assertThat(result.symbol("a", 16)).isSameAs(result.reference(18, 28));
     assertThat(result.symbol("a", 20)).isSameAs(result.reference(21, 24));
+  }
 
+  @Test
+  public void switch_cases() {
+    Result result = Result.createFor("SwitchCases");
+
+    assertThat(result.symbol("A", 2)).isSameAs(result.reference(11, 12));
+    assertThat(result.symbol("B", 3)).isSameAs(result.reference(14, 12));
+
+    // relying on syntax
+    assertThat(result.referenceTree(11, 12).symbolType().is("MyEnum")).isTrue();
+    // relying on bytecode
+    assertThat(result.referenceTree(27, 12).symbolType().is("java.util.concurrent.TimeUnit")).isTrue();
   }
 
   @Test
