@@ -14,8 +14,13 @@ public class CheckMessage {
   public void springTransactionalDefault() {
   }
 
+  @Transactional
+  public static void unexpectedStaticMethodAnnotatedWithTransactional() {
+  }
+
   public void nonTransactional() {
     springTransactionalDefault();     // Noncompliant [[sc=5;ec=31;secondary=14]] {{"springTransactionalDefault's" @Transactional requirement is incompatible with the one for this method.}}
+    unexpectedStaticMethodAnnotatedWithTransactional(); // ignore static methods, Spring does not support @Transactional on static methods.
 
     other.springTransactionalDefault();
     getOther().springTransactionalDefault();
@@ -240,6 +245,44 @@ public class InvalidPropagation {
 
   @Transactional(propagation = Propagation.REQUIRED)
   public void methodB() {
+  }
+
+}
+
+public class ComplexMethodInvocation {
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public String methodA() {
+    return "";
+  }
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  public int methodB() {
+    methodA().length(); // Noncompliant
+  }
+
+}
+
+public interface BaseInterface {
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public String methodA();
+
+}
+
+public class DerivedClass implements BaseInterface {
+
+  // Knonwn limitation, Spring also look at the "interface that the invoked method has been called through" to determine
+  // the "propagation" value, and this rule ignore super classes/interfaces.
+  // @see <a href="https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/interceptor/AbstractFallbackTransactionAttributeSource.html">AbstractFallbackTransactionAttributeSource.html</a>
+  @Override
+  public String methodA() {
+    return "";
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES)
+  public int methodB() {
+    methodA(); // false-negative, see above
   }
 
 }

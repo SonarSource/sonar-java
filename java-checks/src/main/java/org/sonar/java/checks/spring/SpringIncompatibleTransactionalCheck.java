@@ -20,13 +20,12 @@
 package org.sonar.java.checks.spring;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -86,18 +85,15 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
       return;
     }
     ClassTree classTree = (ClassTree) tree;
-    if (!hasMethodsAnnotatedWithTransactional(classTree)) {
-      return;
-    }
     Map<Symbol, String> methodsPropagationMap = collectMethodsPropagation(classTree);
-    if (hasSameValues(methodsPropagationMap)) {
+    if (hasSameValues(methodsPropagationMap.values())) {
       return;
     }
     methodsPropagationMap
-      .forEach((symbol, propagation) -> checkMethodInvocation((MethodTree) symbol.declaration(), propagation, methodsPropagationMap));
+      .forEach((symbol, propagation) -> checkMethodInvocations((MethodTree) symbol.declaration(), propagation, methodsPropagationMap));
   }
 
-  private void checkMethodInvocation(MethodTree method, @Nullable String callerPropagation, Map<Symbol, String> methodsPropagationMap) {
+  private void checkMethodInvocations(MethodTree method, @Nullable String callerPropagation, Map<Symbol, String> methodsPropagationMap) {
     BlockTree methodBody = method.block();
     if (methodBody == null) {
       return;
@@ -116,6 +112,9 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
   }
 
   private static boolean methodInvocationOnThisInstance(MethodInvocationTree methodInvocation) {
+    if (methodInvocation.symbol().isStatic()) {
+      return false;
+    }
     ExpressionTree expression = methodInvocation.methodSelect();
     if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       expression = ((MemberSelectExpressionTree) expression).expression();
@@ -146,19 +145,8 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
     return methodPropagationMap;
   }
 
-  private static boolean hasSameValues(Map<Symbol, String> methodsPropagationMap) {
-    if (methodsPropagationMap.size() < 2) {
-      return true;
-    }
-    String firstValue = methodsPropagationMap.values().iterator().next();
-    return methodsPropagationMap.values().stream().allMatch(value -> Objects.equals(value, firstValue));
-  }
-
-  private static boolean hasMethodsAnnotatedWithTransactional(ClassTree classTree) {
-    return classTree.symbol().memberSymbols().stream()
-      .map(Symbol::metadata)
-      .anyMatch(metadata -> metadata.isAnnotatedWith(SPRING_TRANSACTIONAL_ANNOTATION) ||
-        metadata.isAnnotatedWith(JAVAX_TRANSACTIONAL_ANNOTATION));
+  private static boolean hasSameValues(Collection<String> methodsPropagationList) {
+    return methodsPropagationList.stream().distinct().count() <= 1;
   }
 
   @CheckForNull
@@ -178,19 +166,17 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
   }
 
   private static String getAnnotationAttributeAsString(List<AnnotationValue> values, String attributeName, String defaultValue) {
-    Optional<Object> propagation = values.stream()
+    return values.stream()
       .filter(annotationValue -> annotationValue.name().equals(attributeName))
       .map(AnnotationValue::value)
-      .findFirst();
-    if (!propagation.isPresent()) {
-      return defaultValue;
-    }
-    if (propagation.get() instanceof MemberSelectExpressionTree) {
-      return ((MemberSelectExpressionTree) propagation.get()).identifier().name();
-    } else if (propagation.get() instanceof IdentifierTree) {
-      return ((IdentifierTree) propagation.get()).name();
-    }
-    return defaultValue;
+      .filter(Tree.class::isInstance)
+      .map(Tree.class::cast)
+      .map(tree -> tree.is(Tree.Kind.MEMBER_SELECT) ? ((MemberSelectExpressionTree) tree).identifier() : tree)
+      .filter(tree -> tree.is(Tree.Kind.IDENTIFIER))
+      .map(IdentifierTree.class::cast)
+      .map(IdentifierTree::name)
+      .findFirst()
+      .orElse(defaultValue);
   }
 
 }
