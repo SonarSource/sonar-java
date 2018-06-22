@@ -68,6 +68,7 @@ import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringAntMatcherOrderCheck;
 import org.sonar.java.checks.spring.SpringAutoConfigurationCheck;
+import org.sonar.java.checks.spring.SpringComponentScanCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.spring.SpringComponentWithWrongScopeCheck;
 import org.sonar.java.checks.spring.SpringComposedRequestMappingCheck;
@@ -537,6 +538,7 @@ public final class CheckList {
       .add(NestedTernaryOperatorsCheck.class)
       .add(SpringAntMatcherOrderCheck.class)
       .add(SpringAutoConfigurationCheck.class)
+      .add(SpringComponentScanCheck.class)
       .add(SpringComponentWithNonAutowiredMembersCheck.class)
       .add(SpringConfigurationWithAutowiredFieldsCheck.class)
       .add(SpringIncompatibleTransactionalCheck.class)
