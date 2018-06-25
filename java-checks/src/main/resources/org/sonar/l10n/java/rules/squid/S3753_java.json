@@ -1,0 +1,16 @@
+{
+  "title": "\"@Controller\" classes that use \"@SessionAttributes\" must call \"setComplete\" on their \"SessionStatus\" objects",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-3753",
+  "sqKey": "S3753",
+  "scope": "Main"
+}

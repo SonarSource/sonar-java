@@ -65,6 +65,7 @@ import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassC
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
 import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
+import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringAntMatcherOrderCheck;
 import org.sonar.java.checks.spring.SpringAutoConfigurationCheck;
@@ -537,6 +538,7 @@ public final class CheckList {
       .add(BooleanMethodNameCheck.class)
       .add(StaticFieldUpdateInConstructorCheck.class)
       .add(NestedTernaryOperatorsCheck.class)
+      .add(ControllerWithSessionAttributesCheck.class)
       .add(SpringAntMatcherOrderCheck.class)
       .add(SpringAutoConfigurationCheck.class)
       .add(SpringComponentScanCheck.class)
