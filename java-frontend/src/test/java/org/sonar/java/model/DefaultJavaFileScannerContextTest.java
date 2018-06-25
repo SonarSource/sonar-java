@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessage.TextSpan;
-import org.sonar.java.CrossFileScanner;
+import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -53,7 +53,7 @@ public class DefaultJavaFileScannerContextTest {
   private static final File JAVA_FILE = new File(JAVA_FILE_RELATIVE_PATH);
   private static final int COST = 42;
   private static final JavaCheck CHECK = new JavaCheck() { };
-  private static final CrossFileScanner CROSS_FILE_SCANNER = () -> { };
+  private static final EndOfAnalysisCheck END_OF_ANALYSIS_CHECK = () -> { };
   private SonarComponents sonarComponents;
   private CompilationUnitTree compilationUnitTree;
   private DefaultJavaFileScannerContext context;
@@ -171,8 +171,8 @@ public class DefaultJavaFileScannerContextTest {
   @Test
   public void report_issue_on_tree_with_cross_file_scanner_throws() {
     assertThatExceptionOfType(UnsupportedOperationException.class)
-        .isThrownBy(() -> context.reportIssue(CROSS_FILE_SCANNER, compilationUnitTree, "msg"))
-        .withMessage("CrossFileScanner must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
+        .isThrownBy(() -> context.reportIssue(END_OF_ANALYSIS_CHECK, compilationUnitTree, "msg"))
+        .withMessage("EndOfAnalysisCheck must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
   }
 
   @Test

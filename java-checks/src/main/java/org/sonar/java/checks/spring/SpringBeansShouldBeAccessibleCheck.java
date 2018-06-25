@@ -26,26 +26,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessageReporter;
-import org.sonar.java.CrossFileScanner;
+import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.checks.helpers.ConstantUtils;
-import org.sonar.java.model.PackageUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4605")
-public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisitor implements CrossFileScanner {
+public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisitor implements EndOfAnalysisCheck {
 
   private static final String MESSAGE_FORMAT = "'%s' is not reachable by @ComponentsScan or @SpringBootApplication. "
     + "Either move it to a package configured in @ComponentsScan or update your @ComponentsScan configuration.";
@@ -63,7 +60,11 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
 
   private static final String SPRING_BOOT_APP_ANNOTATION = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-  private final Map<String, List<AnalyzerMessage>> messagesPerPackage = new HashMap<>();
+  /**
+   * The key is the class fully qualified name prefix, which includes the name of the package
+   * The value is a list of messages which are independent of Syntax Trees (to avoid keeping references to all ASTs in all files)
+   */
+  private final Map<String, List<AnalyzerMessage>> messagesPerClassPrefix = new HashMap<>();
   private final Set<String> scannedPackages = new HashSet<>();
 
   @Override
@@ -73,85 +74,72 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
 
   @Override
   public void endOfAnalysis() {
-    if (!(context instanceof AnalyzerMessageReporter)) {
-      return;
-    }
-
     AnalyzerMessageReporter reporter = (AnalyzerMessageReporter) context;
-    messagesPerPackage.entrySet().stream()
-      // also consider sub-packages
+    messagesPerClassPrefix.entrySet().stream()
+      // support sub-packages and inner classes
       .filter(entry -> scannedPackages.stream().noneMatch(entry.getKey()::contains))
       .forEach(entry -> entry.getValue().forEach(reporter::reportIssue));
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic() || !(context instanceof AnalyzerMessageReporter)) {
+    ClassTree classTree = (ClassTree) tree;
+
+    if (!hasSemantic() || classTree.simpleName() == null) {
       return;
     }
 
-    ClassTree classTree = (ClassTree) tree;
-    String classPackageName = packageNameOf(classTree);
+    String classPackageName = extractClassPrefix(classTree.symbol().type().fullyQualifiedName());
+    SymbolMetadata classSymbolMetadata = classTree.symbol().metadata();
 
-    Optional<AnnotationTree> componentScanAnnotation = classTree.modifiers().annotations().stream()
-      .filter(SpringBeansShouldBeAccessibleCheck::isComponentScan).findFirst();
-    if (componentScanAnnotation.isPresent()) {
-      componentScanAnnotation.get().arguments().forEach(this::addToScannedPackages);
-    } else if (hasAnnotation(classTree, SPRING_BOOT_APP_ANNOTATION)) {
+    List<SymbolMetadata.AnnotationValue> componentScanValues = classSymbolMetadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
+    if (componentScanValues != null) {
+      componentScanValues.forEach(this::addToScannedPackages);
+    } else if (hasAnnotation(classSymbolMetadata, SPRING_BOOT_APP_ANNOTATION)) {
       scannedPackages.add(classPackageName);
-    } else if (hasAnnotation(classTree, SPRING_BEAN_ANNOTATIONS)) {
-      addMessageToMap(classPackageName, classTree);
+    } else if (hasAnnotation(classSymbolMetadata, SPRING_BEAN_ANNOTATIONS)) {
+      addMessageToMap(classPackageName, classTree.simpleName());
     }
   }
 
-  private void addMessageToMap(String classPackageName, ClassTree classTree) {
+  private void addMessageToMap(String classPackageName, IdentifierTree classNameTree) {
     AnalyzerMessageReporter reporter = (AnalyzerMessageReporter) context;
-    IdentifierTree className = classTree.simpleName();
-    if (className != null) {
-      AnalyzerMessage analyzerMessage = reporter.createAnalyzerMessage(this, className, String.format(MESSAGE_FORMAT, className));
-      messagesPerPackage.computeIfAbsent(classPackageName, k -> new ArrayList<>());
-      messagesPerPackage.get(classPackageName).add(analyzerMessage);
-    }
+    AnalyzerMessage analyzerMessage = reporter.createAnalyzerMessage(this, classNameTree, String.format(MESSAGE_FORMAT, classNameTree));
+    messagesPerClassPrefix.computeIfAbsent(classPackageName, k -> new ArrayList<>()).add(analyzerMessage);
   }
 
-  private void addToScannedPackages(ExpressionTree annotationArgument) {
-    if (annotationArgument.is(Tree.Kind.ASSIGNMENT)) {
-      AssignmentExpressionTree argumentAssignment = (AssignmentExpressionTree) annotationArgument;
-      ExpressionTree argumentAssignmentVar = argumentAssignment.variable();
-      if (argumentAssignmentVar.is(Tree.Kind.IDENTIFIER) && COMPONENT_SCAN_ARGUMENTS.contains(((IdentifierTree) argumentAssignmentVar).name())) {
-        addLiteralsToScannedPackages(argumentAssignment.expression());
-      }
-    } else {
-      addLiteralsToScannedPackages(annotationArgument);
-    }
-  }
-
-  private void addLiteralsToScannedPackages(ExpressionTree packageNames) {
-    if (packageNames.is(Tree.Kind.STRING_LITERAL)) {
-      String name = ConstantUtils.resolveAsStringConstant(packageNames);
-      scannedPackages.add(name);
-    } else if (packageNames.is(Tree.Kind.NEW_ARRAY)) {
-      for (ExpressionTree p : ((NewArrayTree) packageNames).initializers()) {
-        String name = ConstantUtils.resolveAsStringConstant(p);
-        scannedPackages.add(name);
+  private void addToScannedPackages(SymbolMetadata.AnnotationValue annotationValue) {
+    if (COMPONENT_SCAN_ARGUMENTS.contains(annotationValue.name()) && annotationValue.value() instanceof ExpressionTree) {
+      ExpressionTree values = (ExpressionTree) annotationValue.value();
+      if (values.is(Tree.Kind.STRING_LITERAL)) {
+        String packageName = ConstantUtils.resolveAsStringConstant(values);
+        scannedPackages.add(packageName);
+      } else if (values.is(Tree.Kind.NEW_ARRAY)) {
+        for (ExpressionTree p : ((NewArrayTree) values).initializers()) {
+          String packageName = ConstantUtils.resolveAsStringConstant(p);
+          scannedPackages.add(packageName);
+        }
       }
     }
   }
 
-  private static String packageNameOf(ClassTree classTree) {
-    Tree classTreeParent = classTree.parent();
-    if (classTreeParent != null && classTreeParent.is(Tree.Kind.COMPILATION_UNIT)) {
-      return PackageUtils.packageName(((CompilationUnitTree) classTreeParent).packageDeclaration(), ".");
+  /**
+   * Returns the prefix of the class name, which:
+   * - in general, is the package name (e.g. 'foo.bar')
+   * - for inner classes, is the package name + outer class name (e.g. 'foo.bar.Outer')
+   * - for classes in the default package, is the empty string
+   */
+  private static String extractClassPrefix(String fullyQualifiedClassName) {
+    // '$' sign is the delimiter for inner classes
+    String[] nameGroup = fullyQualifiedClassName.split("\\$|\\.");
+    StringJoiner stringJoiner = new StringJoiner(".");
+    for (int i = 0; i < nameGroup.length - 1; i++) {
+      stringJoiner.add(nameGroup[i]);
     }
-    return "";
+    return stringJoiner.toString();
   }
 
-  private static boolean hasAnnotation(ClassTree classTree, String... annotationName) {
-    return Arrays.stream(annotationName).anyMatch(annotation -> classTree.symbol().metadata().isAnnotatedWith(annotation));
+  private static boolean hasAnnotation(SymbolMetadata classSymbolMetadata, String... annotationName) {
+    return Arrays.stream(annotationName).anyMatch(classSymbolMetadata::isAnnotatedWith);
   }
-
-  private static boolean isComponentScan(AnnotationTree annotation) {
-    return annotation.annotationType().symbolType().fullyQualifiedName().equals(COMPONENT_SCAN_ANNOTATION);
-  }
-
 }

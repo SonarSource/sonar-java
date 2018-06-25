@@ -37,7 +37,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisError;
-import org.sonar.java.CrossFileScanner;
+import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.java.JavaVersionAwareVisitor;
@@ -232,10 +232,10 @@ public class VisitorsBridge {
       }
       LOG.warn("Classes not found during the analysis : [{}{}]", classesNotFound.stream().limit(50).collect(Collectors.joining(", ")), message);
     }
-    scanners.stream()
-        .filter(s -> s instanceof CrossFileScanner)
-        .map(s -> (CrossFileScanner)s)
-        .forEach(CrossFileScanner::endOfAnalysis);
+    executableScanners.stream()
+      .filter(s -> s instanceof EndOfAnalysisCheck)
+      .map(EndOfAnalysisCheck.class::cast)
+      .forEach(EndOfAnalysisCheck::endOfAnalysis);
     classLoader.close();
   }
 }

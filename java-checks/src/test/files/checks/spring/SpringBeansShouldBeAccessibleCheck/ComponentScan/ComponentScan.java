@@ -6,16 +6,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.function.Consumer;
 
 @Configuration
 @ComponentScan({"src.test.files.checks.spring.A", "src.test.files.checks.spring.B"})
 class Foo1 {
-
 }
 
 @ComponentScan("src.test.files.checks.spring.X")
 class Foo2 {
-
+  Consumer<Foo1> foo = new Consumer<Foo1>() { // anonymous classes are ignored
+    @Override public void accept(Foo1 foo1) { }
+  };
 }
 
 @ComponentScan(basePackageClasses = Bar4.class, basePackages = {"src.test.files.checks.spring.Y1"})

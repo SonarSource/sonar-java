@@ -53,7 +53,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     this(Collections.singletonList(visitor), new ArrayList<>(), sonarComponents);
   }
 
-  public VisitorsBridgeForTests(Iterable visitors, SonarComponents sonarComponents) {
+  public VisitorsBridgeForTests(Iterable visitors, @Nullable SonarComponents sonarComponents) {
     super(visitors, new ArrayList<>(), sonarComponents, SymbolicExecutionMode.DISABLED);
     enableSemantic = false;
   }
