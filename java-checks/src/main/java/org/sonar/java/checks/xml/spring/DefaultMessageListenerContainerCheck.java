@@ -20,12 +20,13 @@
 package org.sonar.java.checks.xml.spring;
 
 import com.google.common.collect.Iterables;
+import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
-import org.sonar.java.xml.XmlCheckUtils;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 @Rule(key = "S3439")
@@ -52,18 +53,21 @@ public class DefaultMessageListenerContainerCheck extends XPathXmlCheck {
   }
 
   private boolean hasAcceptMessagePropertyEnabled(XmlCheckContext context, Node bean) {
-    return hasAttributeValue(bean, "p:acceptMessagesWhileStopping")
+    return hasAttributeValue(bean, "acceptMessagesWhileStopping")
       || hasPropertyAsChild(context, bean, acceptMessageWhileStoppingPropertyExpression);
   }
 
   private boolean hasSessionTransactedDisabled(XmlCheckContext context, Node bean) {
-    return !hasAttributeValue(bean, "p:sessionTransacted")
+    return !hasAttributeValue(bean, "sessionTransacted")
       && !hasPropertyAsChild(context, bean, sessionTransactedPropertyExpression);
   }
 
   private static boolean hasAttributeValue(Node bean, String attributeName) {
-    Node attribute = XmlCheckUtils.nodeAttribute(bean, attributeName);
-    return attribute != null && "true".equals(attribute.getNodeValue());
+    NamedNodeMap attributes = bean.getAttributes();
+    return IntStream.range(0, attributes.getLength())
+      .mapToObj(attributes::item)
+      // ignore namespace
+      .anyMatch(attribute -> attribute.getNodeName().endsWith(attributeName) && "true".equals(attribute.getNodeValue()));
   }
 
   private boolean hasPropertyAsChild(XmlCheckContext context, Node bean, XPathExpression expression) {
