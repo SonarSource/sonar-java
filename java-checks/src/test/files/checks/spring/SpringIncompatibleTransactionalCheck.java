@@ -184,7 +184,7 @@ public class SupportJavaxTransactional {
 }
 
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
-public class ClassInheritance {
+public class ClassInheritanceNotSupported {
 
   public void nonTransactional() {
     transactional();
@@ -192,6 +192,21 @@ public class ClassInheritance {
 
   @Transactional // inherits NOT_SUPPORTED
   public void transactional() {
+  }
+
+}
+
+@Transactional(propagation = Propagation.REQUIRED)
+class ClassInheritanceRequired {
+
+  // even if not anotated with @Transactional, this "public" method inherit form the class transactional propagation.
+  public void methodA() {
+    methodB();
+  }
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void methodB() {
+
   }
 
 }
@@ -283,6 +298,42 @@ public class DerivedClass implements BaseInterface {
   @Transactional(propagation = Propagation.REQUIRES)
   public int methodB() {
     methodA(); // false-negative, see above
+  }
+
+}
+
+public class IntermediatePrivateMethodA {
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void methodA() {
+    intermediatePrivateMethod();
+  }
+
+  private void intermediatePrivateMethod() {
+    methodB();
+  }
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void methodB() {
+
+  }
+
+}
+
+class IntermediatePrivateMethodFalseNegative {
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void methodA() {
+    intermediatePrivateMethod(); // false-negative, limitation, the rule only at the first level of the call hierachy
+  }
+
+  private void intermediatePrivateMethod() {
+    methodB(); // no issue here because the private method can't be called from outside this class.
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void methodB() {
+
   }
 
 }
