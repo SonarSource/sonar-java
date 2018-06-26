@@ -22,11 +22,13 @@ package org.sonar.java.model;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.resolve.SemanticModel;
@@ -120,7 +122,9 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
-    sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, flows, cost));
+    throwIfEndOfAnalysisCheck(javaCheck);
+
+    reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, flows, cost));
   }
 
   @Override
@@ -130,8 +134,10 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
+    throwIfEndOfAnalysisCheck(javaCheck);
+
     List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
-    sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, startTree, endTree, message, flows, cost));
+    reportIssue(createAnalyzerMessage(file, javaCheck, startTree, endTree, message, flows, cost));
   }
 
   @Override
@@ -142,6 +148,14 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public String getFileContent() {
     return sonarComponents.fileContent(file);
+  }
+
+  public void reportIssue(AnalyzerMessage message) {
+    sonarComponents.reportIssue(message);
+  }
+
+  public AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, String message) {
+    return createAnalyzerMessage(file, javaCheck, startTree, null, message, new ArrayList<>(), null);
   }
 
   protected static AnalyzerMessage createAnalyzerMessage(File file, JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, Iterable<List<Location>> flows,
@@ -169,5 +183,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree) {
     return getComplexityNodes(tree);
+  }
+
+  private static void throwIfEndOfAnalysisCheck(JavaCheck javaCheck) {
+    if (javaCheck instanceof EndOfAnalysisCheck) {
+      throw new UnsupportedOperationException("EndOfAnalysisCheck must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
+    }
   }
 }

@@ -19,10 +19,15 @@
  */
 package org.sonar.java.model;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessage.TextSpan;
+import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -33,22 +38,22 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 public class DefaultJavaFileScannerContextTest {
 
-  private static final File JAVA_FILE = new File("src/test/files/api/JavaFileScannerContext.java");
+  private static final String JAVA_FILE_RELATIVE_PATH = "src/test/files/api/JavaFileScannerContext.java";
+  private static final File JAVA_FILE = new File(JAVA_FILE_RELATIVE_PATH);
   private static final int COST = 42;
-  private static final JavaCheck CHECK = new JavaCheck() {
-  };
+  private static final JavaCheck CHECK = new JavaCheck() { };
+  private static final EndOfAnalysisCheck END_OF_ANALYSIS_CHECK = () -> { };
   private SonarComponents sonarComponents;
   private CompilationUnitTree compilationUnitTree;
   private DefaultJavaFileScannerContext context;
@@ -58,7 +63,85 @@ public class DefaultJavaFileScannerContextTest {
   public void setup() {
     sonarComponents = createSonarComponentsMock();
     compilationUnitTree = (CompilationUnitTree) JavaParser.createParser().parse(JAVA_FILE);
-    context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_FILE, null, sonarComponents, null, true);
+    context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_FILE, null, sonarComponents, new JavaVersionImpl(), true);
+  }
+
+  @Test
+  public void get_complexity_nodes() {
+    assertThat(context.getComplexityNodes(compilationUnitTree)).isEmpty();
+  }
+
+  @Test
+  public void get_tree() {
+    assertThat(context.getTree()).isEqualTo(compilationUnitTree);
+  }
+
+  @Test
+  public void get_file_parsed() {
+    assertThat(context.fileParsed()).isTrue();
+  }
+
+  @Test
+  public void get_absolute_path() {
+    assertThat(context.getFileKey()).contains(JAVA_FILE_RELATIVE_PATH);
+  }
+
+  @Test
+  public void get_java_version() {
+    assertThat(context.getJavaVersion()).isNotNull();
+  }
+
+  @Test
+  public void get_file_content() {
+    assertThat(context.getFileContent()).isEqualTo("content");
+  }
+
+  @Test
+  public void get_file() {
+    assertThat(context.getFile()).isEqualTo(JAVA_FILE);
+  }
+
+  @Test
+  public void get_file_lines() {
+    assertThat(context.getFileLines()).isEmpty();
+  }
+
+  @Test
+  public void get_semantic_model() {
+    assertThat(context.getSemanticModel()).isNull();
+  }
+
+  @Test
+  public void add_issue_on_file() {
+    context.addIssueOnFile(CHECK, "file");
+
+    assertThat(reportedMessage.getMessage()).isEqualTo("file");
+    assertThat(reportedMessage.getFile()).isEqualTo(JAVA_FILE);
+  }
+
+  @Test
+  public void add_issue_with_file() {
+    context.addIssue(JAVA_FILE, CHECK, 1, "msg");
+
+    assertThat(reportedMessage.getMessage()).isEqualTo("msg");
+    assertThat(reportedMessage.getFile()).isEqualTo(JAVA_FILE);
+  }
+
+  @Test
+  public void add_issue_no_file() {
+    context.addIssue(10, CHECK, "msg2");
+
+    assertThat(reportedMessage.getMessage()).isEqualTo("msg2");
+    assertThat(reportedMessage.getFile()).isEqualTo(JAVA_FILE);
+  }
+
+  @Test
+  public void add_issue_no_file_with_cost() {
+    context.addIssue(10, CHECK, "msg3", 2);
+
+    assertThat(reportedMessage.getMessage()).isEqualTo("msg3");
+    assertThat(reportedMessage.getFile()).isEqualTo(JAVA_FILE);
+    assertThat(reportedMessage.getCost()).isEqualTo(2);
   }
 
   @Test
@@ -70,6 +153,26 @@ public class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.flows).isEmpty();
 
     assertMessagePosition(reportedMessage, 1, 0, 4, 1);
+  }
+
+  @Test
+  public void report_issue_with_message() {
+    AnalyzerMessage message = context.createAnalyzerMessage(CHECK, compilationUnitTree, "msg");
+
+    context.reportIssue(message);
+
+    assertThat(reportedMessage.getMessage()).isEqualTo("msg");
+    assertThat(reportedMessage.getCost()).isNull();
+    assertThat(reportedMessage.flows).isEmpty();
+
+    assertMessagePosition(reportedMessage, 1, 0, 4, 1);
+  }
+
+  @Test
+  public void report_issue_on_tree_with_cross_file_scanner_throws() {
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(() -> context.reportIssue(END_OF_ANALYSIS_CHECK, compilationUnitTree, "msg"))
+        .withMessage("EndOfAnalysisCheck must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
   }
 
   @Test
@@ -150,6 +253,19 @@ public class DefaultJavaFileScannerContextTest {
       reportedMessage = (AnalyzerMessage) invocation.getArguments()[0];
       return null;
     }).when(sonarComponents).reportIssue(any(AnalyzerMessage.class));
+
+    doAnswer(invocation -> {
+      Integer cost = invocation.getArgument(4);
+      reportedMessage = new AnalyzerMessage(invocation.getArgument(1),
+          invocation.getArgument(0),
+          null,
+          invocation.getArgument(3),
+          cost != null ? cost : 0);
+      return null;
+    }).when(sonarComponents).addIssue(any(File.class), any(JavaCheck.class), anyInt(), anyString(), any());
+
+    doAnswer(invocation -> new ArrayList()).when(sonarComponents).fileLines(eq(JAVA_FILE));
+    doAnswer(invocation -> "content").when(sonarComponents).fileContent(eq(JAVA_FILE));
 
     return sonarComponents;
   }
