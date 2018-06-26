@@ -184,7 +184,7 @@ public class SupportJavaxTransactional {
 }
 
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
-public class ClassInheritance {
+public class ClassInheritanceNotSupported {
 
   public void nonTransactional() {
     transactional();
@@ -192,6 +192,21 @@ public class ClassInheritance {
 
   @Transactional // inherits NOT_SUPPORTED
   public void transactional() {
+  }
+
+}
+
+@Transactional(propagation = Propagation.REQUIRED)
+class ClassInheritanceRequired {
+
+  // even if not anotated with @Transactional, this "public" method inherit form the class transactional propagation.
+  public void methodA() {
+    methodB();
+  }
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void methodB() {
+
   }
 
 }

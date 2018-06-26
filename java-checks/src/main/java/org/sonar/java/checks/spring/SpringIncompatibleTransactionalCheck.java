@@ -162,7 +162,7 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
       if (values != null) {
         return getAnnotationAttributeAsString(values, "value", defaultValue);
       } else {
-        return null;
+        return inheritedPropagation;
       }
     }
   }
