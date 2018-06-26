@@ -139,7 +139,9 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree method = (MethodTree) member;
-        methodPropagationMap.put(method.symbol(), getPropagation(method.symbol(), classPropagation));
+        if (method.symbol().isPublic()) {
+          methodPropagationMap.put(method.symbol(), getPropagation(method.symbol(), classPropagation));
+        }
       }
     }
     return methodPropagationMap;

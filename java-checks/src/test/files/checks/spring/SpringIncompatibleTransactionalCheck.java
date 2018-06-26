@@ -286,3 +286,39 @@ public class DerivedClass implements BaseInterface {
   }
 
 }
+
+public class IntermediatePrivateMethodA {
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void methodA() {
+    intermediatePrivateMethod();
+  }
+
+  private void intermediatePrivateMethod() {
+    methodB();
+  }
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void methodB() {
+
+  }
+
+}
+
+class IntermediatePrivateMethodFalseNegative {
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void methodA() {
+    intermediatePrivateMethod(); // false-negative, limitation, the rule only at the first level of the call hierachy
+  }
+
+  private void intermediatePrivateMethod() {
+    methodB(); // no issue here because the private method can't be called from outside this class.
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void methodB() {
+
+  }
+
+}
