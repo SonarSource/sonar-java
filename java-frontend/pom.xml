@@ -222,6 +222,12 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.springframework</groupId>
+                  <artifactId>spring-core</artifactId>
+                  <version>5.0.7.RELEASE</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>javax</groupId>
                   <artifactId>javaee-api</artifactId>
                   <version>7.0</version>

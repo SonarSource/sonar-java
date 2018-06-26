@@ -48,7 +48,8 @@ public final class NullableAnnotationUtils {
     "javax.annotation.CheckForNull",
     "javax.annotation.Nullable",
     "org.eclipse.jdt.annotation.Nullable",
-    "org.jetbrains.annotations.Nullable");
+    "org.jetbrains.annotations.Nullable",
+    "org.springframework.lang.Nullable");
   private static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
     "android.support.annotation.NonNull",
     "edu.umd.cs.findbugs.annotations.NonNull",
@@ -56,7 +57,8 @@ public final class NullableAnnotationUtils {
     "javax.validation.constraints.NotNull",
     "lombok.NonNull",
     "org.eclipse.jdt.annotation.NonNull",
-    "org.jetbrains.annotations.NotNull");
+    "org.jetbrains.annotations.NotNull",
+    "org.springframework.lang.NonNull");
 
   public static boolean isAnnotatedNullable(Symbol symbol) {
     return isUsingNullable(symbol) || ((SymbolMetadataResolve) symbol.metadata()).metaAnnotations().stream().anyMatch(NullableAnnotationUtils::isUsingNullable);
