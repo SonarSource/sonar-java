@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.AnalyzerMessageReporter;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
@@ -41,7 +40,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class DefaultJavaFileScannerContext implements JavaFileScannerContext, AnalyzerMessageReporter {
+public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final CompilationUnitTree tree;
   @VisibleForTesting
   private final SemanticModel semanticModel;
@@ -112,15 +111,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, An
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
-    throwIfEndOfAnalysisCheck(javaCheck);
-
     reportIssue(javaCheck, tree, message, ImmutableList.of(), null);
   }
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-    throwIfEndOfAnalysisCheck(javaCheck);
-
     List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
     reportIssueWithFlow(javaCheck, syntaxNode, message, flows, cost);
   }
@@ -134,8 +129,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, An
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
-    throwIfEndOfAnalysisCheck(javaCheck);
-
     reportIssue(javaCheck, startTree, endTree, message, ImmutableList.of(), null);
   }
 
@@ -148,11 +141,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, An
   }
 
   @Override
-  public void reportIssue(AnalyzerMessage message) {
-    sonarComponents.reportIssue(message);
-  }
-
-  @Override
   public List<String> getFileLines() {
     return sonarComponents.fileLines(file);
   }
@@ -162,7 +150,10 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, An
     return sonarComponents.fileContent(file);
   }
 
-  @Override
+  public void reportIssue(AnalyzerMessage message) {
+    sonarComponents.reportIssue(message);
+  }
+
   public AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, String message) {
     return createAnalyzerMessage(file, javaCheck, startTree, null, message, new ArrayList<>(), null);
   }

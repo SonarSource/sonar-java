@@ -23,7 +23,8 @@ import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
 
 /**
- * Common interface for checks that are triggered at the end of the analysis, after all files have been scanned
+ * Common interface for checks that are triggered at the end of the analysis, after all files have been scanned.
+ * <b>Warning</b>: keeping state between files can lead to memory leaks. Implement with care.
  */
 @Beta
 public interface EndOfAnalysisCheck extends JavaCheck {

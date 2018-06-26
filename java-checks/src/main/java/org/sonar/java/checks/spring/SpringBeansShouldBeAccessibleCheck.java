@@ -27,12 +27,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringJoiner;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.AnalyzerMessageReporter;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.resolve.Convert;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -61,10 +61,10 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   private static final String SPRING_BOOT_APP_ANNOTATION = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
   /**
-   * The key is the class fully qualified name prefix, which includes the name of the package
-   * The value is a list of messages which are independent of Syntax Trees (to avoid keeping references to all ASTs in all files)
+   * The key is the package name.
+   * The value is a list of messages which are independent of Syntax Trees (to avoid memory leaks).
    */
-  private final Map<String, List<AnalyzerMessage>> messagesPerClassPrefix = new HashMap<>();
+  private final Map<String, List<AnalyzerMessage>> messagesPerPackage = new HashMap<>();
   private final Set<String> scannedPackages = new HashSet<>();
 
   @Override
@@ -74,11 +74,11 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
 
   @Override
   public void endOfAnalysis() {
-    AnalyzerMessageReporter reporter = (AnalyzerMessageReporter) context;
-    messagesPerClassPrefix.entrySet().stream()
-      // support sub-packages and inner classes
+    DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
+    messagesPerPackage.entrySet().stream()
+      // support sub-packages
       .filter(entry -> scannedPackages.stream().noneMatch(entry.getKey()::contains))
-      .forEach(entry -> entry.getValue().forEach(reporter::reportIssue));
+      .forEach(entry -> entry.getValue().forEach(defaultContext::reportIssue));
   }
 
   @Override
@@ -89,7 +89,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       return;
     }
 
-    String classPackageName = extractClassPrefix(classTree.symbol().type().fullyQualifiedName());
+    String classPackageName = Convert.packagePart(classTree.symbol().type().fullyQualifiedName());
     SymbolMetadata classSymbolMetadata = classTree.symbol().metadata();
 
     List<SymbolMetadata.AnnotationValue> componentScanValues = classSymbolMetadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
@@ -103,9 +103,9 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   }
 
   private void addMessageToMap(String classPackageName, IdentifierTree classNameTree) {
-    AnalyzerMessageReporter reporter = (AnalyzerMessageReporter) context;
-    AnalyzerMessage analyzerMessage = reporter.createAnalyzerMessage(this, classNameTree, String.format(MESSAGE_FORMAT, classNameTree));
-    messagesPerClassPrefix.computeIfAbsent(classPackageName, k -> new ArrayList<>()).add(analyzerMessage);
+    DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
+    AnalyzerMessage analyzerMessage = defaultContext.createAnalyzerMessage(this, classNameTree, String.format(MESSAGE_FORMAT, classNameTree.name()));
+    messagesPerPackage.computeIfAbsent(classPackageName, k -> new ArrayList<>()).add(analyzerMessage);
   }
 
   private void addToScannedPackages(SymbolMetadata.AnnotationValue annotationValue) {
@@ -121,22 +121,6 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
         }
       }
     }
-  }
-
-  /**
-   * Returns the prefix of the class name, which:
-   * - in general, is the package name (e.g. 'foo.bar')
-   * - for inner classes, is the package name + outer class name (e.g. 'foo.bar.Outer')
-   * - for classes in the default package, is the empty string
-   */
-  private static String extractClassPrefix(String fullyQualifiedClassName) {
-    // '$' sign is the delimiter for inner classes
-    String[] nameGroup = fullyQualifiedClassName.split("\\$|\\.");
-    StringJoiner stringJoiner = new StringJoiner(".");
-    for (int i = 0; i < nameGroup.length - 1; i++) {
-      stringJoiner.add(nameGroup[i]);
-    }
-    return stringJoiner.toString();
   }
 
   private static boolean hasAnnotation(SymbolMetadata classSymbolMetadata, String... annotationName) {

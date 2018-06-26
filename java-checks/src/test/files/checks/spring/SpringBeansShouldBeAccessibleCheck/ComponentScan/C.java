@@ -24,3 +24,12 @@ class C4 { // Noncompliant
 @Repository
 class C5 { // Noncompliant
 }
+
+class C6 {
+  @Service
+  public class C6Inner { // Noncompliant
+  }
+  @Component
+  public static class C6StaticInner { // Noncompliant
+  }
+}
