@@ -65,7 +65,10 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
    * The value is a list of messages which are independent of Syntax Trees (to avoid memory leaks).
    */
   private final Map<String, List<AnalyzerMessage>> messagesPerPackage = new HashMap<>();
-  private final Set<String> scannedPackages = new HashSet<>();
+  /**
+   * These are the packages that will be scanned by Spring in search of components
+   */
+  private final Set<String> packagesScannedBySpring = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -77,7 +80,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
     messagesPerPackage.entrySet().stream()
       // support sub-packages
-      .filter(entry -> scannedPackages.stream().noneMatch(entry.getKey()::contains))
+      .filter(entry -> packagesScannedBySpring.stream().noneMatch(entry.getKey()::contains))
       .forEach(entry -> entry.getValue().forEach(defaultContext::reportIssue));
   }
 
@@ -96,7 +99,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     if (componentScanValues != null) {
       componentScanValues.forEach(this::addToScannedPackages);
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BOOT_APP_ANNOTATION)) {
-      scannedPackages.add(classPackageName);
+      packagesScannedBySpring.add(classPackageName);
     } else if (hasAnnotation(classSymbolMetadata, SPRING_BEAN_ANNOTATIONS)) {
       addMessageToMap(classPackageName, classTree.simpleName());
     }
@@ -113,11 +116,11 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       ExpressionTree values = (ExpressionTree) annotationValue.value();
       if (values.is(Tree.Kind.STRING_LITERAL)) {
         String packageName = ConstantUtils.resolveAsStringConstant(values);
-        scannedPackages.add(packageName);
+        packagesScannedBySpring.add(packageName);
       } else if (values.is(Tree.Kind.NEW_ARRAY)) {
         for (ExpressionTree p : ((NewArrayTree) values).initializers()) {
           String packageName = ConstantUtils.resolveAsStringConstant(p);
-          scannedPackages.add(packageName);
+          packagesScannedBySpring.add(packageName);
         }
       }
     }
