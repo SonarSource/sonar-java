@@ -28,4 +28,7 @@ class A {
   public boolean isFruitGrape(Cake candidateFruit) {
     return candidateFruit == Fruit.GRAPE; // Compliant: compilation time failure
   }
+  public boolean objectIsObject(Object object) {
+    return object.equals(object);
+  }
 }
