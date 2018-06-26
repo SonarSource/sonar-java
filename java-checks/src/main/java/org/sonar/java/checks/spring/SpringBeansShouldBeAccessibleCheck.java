@@ -32,8 +32,8 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
-import org.sonar.java.resolve.Convert;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -92,7 +92,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       return;
     }
 
-    String classPackageName = Convert.packagePart(classTree.symbol().type().fullyQualifiedName());
+    String classPackageName = packageNameOf(classTree.symbol());
     SymbolMetadata classSymbolMetadata = classTree.symbol().metadata();
 
     List<SymbolMetadata.AnnotationValue> componentScanValues = classSymbolMetadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
@@ -124,6 +124,14 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
         }
       }
     }
+  }
+
+  private static String packageNameOf(Symbol symbol) {
+    Symbol owner = symbol.owner();
+    while (!owner.isPackageSymbol()) {
+      owner = owner.owner();
+    }
+    return owner.name();
   }
 
   private static boolean hasAnnotation(SymbolMetadata classSymbolMetadata, String... annotationName) {
