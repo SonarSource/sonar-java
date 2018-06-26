@@ -65,3 +65,7 @@ public class Bar4 {
 })
 public class Bar5 {
 }
+
+@SpringBootApplication(foo = "foo") // Noncompliant
+public class Bar6 {
+}

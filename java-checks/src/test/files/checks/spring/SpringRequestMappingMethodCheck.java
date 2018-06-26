@@ -57,8 +57,10 @@ public class DerivedController extends OtherController {
 
 }
 
+interface X {}
+
 @RequestMapping(path = "/other", method = RequestMethod.GET)
-interface InterfaceController {
+interface InterfaceController extends X {
 }
 
 @RestController
@@ -69,4 +71,14 @@ public class ControllerImpl implements InterfaceController {
     return "Hello from get";
   }
 
+}
+
+interface Dummy { }
+
+public class DummyFoo implements Dummy {
+
+  @RequestMapping(path = "/other") // Noncompliant
+  String get() {
+    return "Hello from get";
+  }
 }
