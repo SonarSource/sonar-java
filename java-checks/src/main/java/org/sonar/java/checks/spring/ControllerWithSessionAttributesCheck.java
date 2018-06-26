@@ -22,22 +22,14 @@ package org.sonar.java.checks.spring;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3753")
@@ -60,89 +52,29 @@ public class ControllerWithSessionAttributesCheck extends IssuableSubscriptionVi
       .stream()
       .filter(a -> a.annotationType().symbolType().fullyQualifiedName().equals("org.springframework.web.bind.annotation.SessionAttributes"))
       .findFirst();
-    if (classMetadata.isAnnotatedWith("org.springframework.stereotype.Controller")
-        && sessionAttributesAnnotation.isPresent()
-        && classTree.members().stream().noneMatch(ControllerWithSessionAttributesCheck::methodCompletesSessionStatus)) {
+    MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor();
+    classTree.accept(methodInvocationVisitor);
+    if (sessionAttributesAnnotation.isPresent()
+        && classMetadata.isAnnotatedWith("org.springframework.stereotype.Controller")
+        && !methodInvocationVisitor.setCompleteIsCalled) {
       reportIssue(sessionAttributesAnnotation.get().annotationType(),
-          "Add a call to \"setComplete()\" on the SessionStatus object in a \"@RequestMapping\" method that handles \"POST\".");
+          "Add a call to \"setComplete()\" on the SessionStatus object in a \"@RequestMapping\" method.");
     }
   }
 
-  private static boolean methodCompletesSessionStatus(Tree tree) {
-    if (!tree.is(Tree.Kind.METHOD)) {
-      return false;
-    }
-
-    MethodTree methodTree = (MethodTree) tree;
-    List<AnnotationTree> annotationTrees = methodTree.modifiers().annotations();
-    if (annotationTrees.stream().anyMatch(ControllerWithSessionAttributesCheck::isPostRequest)
-        && methodTree.parameters().stream().anyMatch(p -> p.type().symbolType().fullyQualifiedName().equals("org.springframework.web.bind.support.SessionStatus"))) {
-      MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor();
-      methodTree.block().accept(methodInvocationVisitor);
-      return methodInvocationVisitor.found;
-    }
-    return false;
-  }
-
-  private static boolean isPostRequest(AnnotationTree annotation) {
-    if (annotation.symbolType().is("org.springframework.web.bind.annotation.RequestMapping")) {
-      List<ExpressionTree> methodValues = annotation.arguments().stream()
-          .filter(argument -> "method".equals(attributeName(argument)))
-          .flatMap(ControllerWithSessionAttributesCheck::extractValues)
-          .collect(Collectors.toList());
-      if (methodValues.size() == 1) {
-        return getRequestMethodEnumEntry(methodValues.get(0)).equals("POST");
-      }
-      return false;
-    } else {
-      return annotation.symbolType().is("org.springframework.web.bind.annotation.PostMapping");
-    }
-  }
-
-  // FIXME copy pasted from SpringComposedRequestMappingCheck
-  private static String getRequestMethodEnumEntry(ExpressionTree requestMethod) {
-    ExpressionTree expression = requestMethod;
-    if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      expression = ((MemberSelectExpressionTree) requestMethod).identifier();
-    }
-    if (expression.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = ((IdentifierTree) expression).symbol();
-      if (symbol.type().is("org.springframework.web.bind.annotation.RequestMethod")) {
-        return symbol.name();
-      }
-    }
-    return "";
-  }
-
-  // FIXME copy pasted from SpringComposedRequestMappingCheck
-  private static String attributeName(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.ASSIGNMENT)) {
-      AssignmentExpressionTree assignment = (AssignmentExpressionTree) expression;
-      // assignment.variable() in annotation is always a Tree.Kind.IDENTIFIER
-      return ((IdentifierTree) assignment.variable()).name();
-    }
-    return "";
-  }
-
-  // FIXME copy pasted from SpringComposedRequestMappingCheck
-  private static Stream<ExpressionTree> extractValues(ExpressionTree argument) {
-    ExpressionTree expression = argument;
-    if (expression.is(Tree.Kind.ASSIGNMENT)) {
-      expression = ((AssignmentExpressionTree) expression).expression();
-    }
-    if (expression.is(Tree.Kind.NEW_ARRAY)) {
-      return ((NewArrayTree) expression).initializers().stream()
-          .flatMap(ControllerWithSessionAttributesCheck::extractValues);
-    }
-    return Stream.of(expression);
-  }
-
+  /**
+   * We don't actually care if setComplete is called in a @RequestMapping method, as long as it eventually gets called inside the controller.
+   */
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
-    boolean found;
+    private static final MethodMatcher SET_COMPLETE = MethodMatcher.create()
+      .typeDefinition("org.springframework.web.bind.support.SessionStatus").name("setComplete").withAnyParameters();
+
+    boolean setCompleteIsCalled;
+
     @Override
-    public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (tree.symbol().toString().equals("SessionStatus#setComplete()")) {
-        found = true;
+    public void visitMethodInvocation(MethodInvocationTree methodInvocationTree) {
+      if (SET_COMPLETE.matches(methodInvocationTree)) {
+        setCompleteIsCalled = true;
       }
     }
   }
