@@ -59,7 +59,6 @@ public class VisitorsBridge {
 
   private static final Logger LOG = Loggers.get(VisitorsBridge.class);
 
-  private final List<JavaFileScanner> scanners;
   private final BehaviorCache behaviorCache;
   private List<JavaFileScanner> executableScanners;
   private final SonarComponents sonarComponents;
@@ -87,8 +86,7 @@ public class VisitorsBridge {
         scannersBuilder.add((JavaFileScanner) visitor);
       }
     }
-    this.scanners = scannersBuilder.build();
-    this.executableScanners = scanners;
+    this.executableScanners = scannersBuilder.build();
     this.sonarComponents = sonarComponents;
     this.classLoader = ClassLoaderBuilder.create(projectClasspath);
     this.symbolicExecutionEnabled = symbolicExecutionMode.isEnabled();
@@ -97,7 +95,7 @@ public class VisitorsBridge {
 
   public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
-    this.executableScanners = executableScanners(scanners, javaVersion);
+    this.executableScanners = executableScanners(executableScanners, javaVersion);
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
@@ -213,7 +211,7 @@ public class VisitorsBridge {
     addAnalysisError(e, file.getPath(), AnalysisError.Kind.PARSE_ERROR);
     if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, file)) {
       this.visitFile(null);
-      scanners.stream()
+      executableScanners.stream()
         .filter(scanner -> scanner instanceof ExceptionHandler)
         .forEach(scanner -> ((ExceptionHandler) scanner).processRecognitionException(e));
     }
