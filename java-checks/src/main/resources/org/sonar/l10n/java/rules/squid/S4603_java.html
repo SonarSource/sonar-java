@@ -3,7 +3,7 @@
 you begin a new project but it comes with the drawback of slowing down the application start-up time especially when the application becomes bigger
 (ie: it references a large JAR file, or it references a significant number of JAR files, or the base-package refers to a large amount of .class
 files).</p>
-<p><code>@ComponentScan</code> should be replaced by an implicit list of Spring beans loaded by <code>@Import</code>.</p>
+<p><code>@ComponentScan</code> should be replaced by an explicit list of Spring beans loaded by <code>@Import</code>.</p>
 <p>The interface <code>@SpringBootApplication</code> is also considered by this rule because it is annotated with <code>@ComponentScan</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
