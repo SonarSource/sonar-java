@@ -50,15 +50,17 @@ public class ControllerWithSessionAttributesCheck extends IssuableSubscriptionVi
     SymbolMetadata classMetadata = classTree.symbol().metadata();
     Optional<AnnotationTree> sessionAttributesAnnotation = classTree.modifiers().annotations()
       .stream()
-      .filter(a -> a.annotationType().symbolType().fullyQualifiedName().equals("org.springframework.web.bind.annotation.SessionAttributes"))
+      .filter(a -> a.annotationType().symbolType().is("org.springframework.web.bind.annotation.SessionAttributes"))
       .findFirst();
-    MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor();
-    classTree.accept(methodInvocationVisitor);
+
     if (sessionAttributesAnnotation.isPresent()
-        && classMetadata.isAnnotatedWith("org.springframework.stereotype.Controller")
-        && !methodInvocationVisitor.setCompleteIsCalled) {
-      reportIssue(sessionAttributesAnnotation.get().annotationType(),
+        && classMetadata.isAnnotatedWith("org.springframework.stereotype.Controller")) {
+      MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor();
+      classTree.accept(methodInvocationVisitor);
+      if (!methodInvocationVisitor.setCompleteIsCalled) {
+        reportIssue(sessionAttributesAnnotation.get().annotationType(),
           "Add a call to \"setComplete()\" on the SessionStatus object in a \"@RequestMapping\" method.");
+      }
     }
   }
 
