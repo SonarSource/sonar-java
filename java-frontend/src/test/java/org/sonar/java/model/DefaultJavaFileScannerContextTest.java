@@ -49,8 +49,7 @@ import static org.mockito.Mockito.mock;
 
 public class DefaultJavaFileScannerContextTest {
 
-  private static final String JAVA_FILE_RELATIVE_PATH = "src/test/files/api/JavaFileScannerContext.java";
-  private static final File JAVA_FILE = new File(JAVA_FILE_RELATIVE_PATH);
+  private static final File JAVA_FILE = new File("src/test/files/api/JavaFileScannerContext.java");
   private static final int COST = 42;
   private static final JavaCheck CHECK = new JavaCheck() { };
   private static final EndOfAnalysisCheck END_OF_ANALYSIS_CHECK = () -> { };
@@ -83,7 +82,7 @@ public class DefaultJavaFileScannerContextTest {
 
   @Test
   public void get_absolute_path() {
-    assertThat(context.getFileKey()).contains(JAVA_FILE_RELATIVE_PATH);
+    assertThat(context.getFileKey()).contains(JAVA_FILE.getAbsolutePath());
   }
 
   @Test
