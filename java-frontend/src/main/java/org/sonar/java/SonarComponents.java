@@ -100,10 +100,22 @@ public class SonarComponents {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null);
   }
 
+  /**
+   * Will be called in SonarLint context when custom rules are present
+   */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
                          @Nullable CheckRegistrar[] checkRegistrars) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, checkRegistrars, null);
+  }
+
+  /**
+   * Will be called in SonarScanner context when no custom rules is present
+   */
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
+                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
+                         @Nullable ProjectDefinition projectDefinition) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, projectDefinition);
   }
 
   /**
