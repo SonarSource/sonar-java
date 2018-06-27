@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -54,6 +55,25 @@ public class VisitorsBridgeForTestsTest {
     visitorsBridgeForTests.visitFile(parse);
     assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNotNull();
 
+  }
+
+  @Test
+  public void test_report_with_analysis_message() {
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
+    sonarComponents.setSensorContext(context);
+
+    Tree parse = JavaParser.createParser().parse("class A{}");
+    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(new DummyVisitor()), sonarComponents);
+    visitorsBridgeForTests.setCurrentFile(new File("dummy.java"));
+    visitorsBridgeForTests.visitFile(parse);
+    VisitorsBridgeForTests.TestJavaFileScannerContext lastContext = visitorsBridgeForTests.lastCreatedTestContext();
+    assertThat(lastContext.getIssues()).isEmpty();
+
+    AnalyzerMessage message = lastContext.createAnalyzerMessage(new DummyVisitor(), parse, "test");
+    lastContext.reportIssue(message);
+    assertThat(message.getMessage()).isEqualTo("test");
+    assertThat(lastContext.getIssues()).isNotEmpty();
   }
 
   private static class DummyVisitor implements JavaFileScanner {
