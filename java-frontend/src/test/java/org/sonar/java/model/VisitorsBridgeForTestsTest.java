@@ -19,6 +19,8 @@
  */
 package org.sonar.java.model;
 
+import java.io.File;
+import java.util.Collections;
 import org.junit.Test;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.internal.SonarRuntimeImpl;
@@ -30,9 +32,6 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.File;
-import java.util.Collections;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VisitorsBridgeForTestsTest {
@@ -40,7 +39,7 @@ public class VisitorsBridgeForTestsTest {
   @Test
   public void test_semantic_disabled() {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponents.setSensorContext(context);
 
     Tree parse = JavaParser.createParser().parse("class A{}");
@@ -60,7 +59,7 @@ public class VisitorsBridgeForTestsTest {
   @Test
   public void test_report_with_analysis_message() {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponents.setSensorContext(context);
 
     Tree parse = JavaParser.createParser().parse("class A{}");

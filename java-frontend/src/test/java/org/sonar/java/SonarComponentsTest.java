@@ -122,7 +122,7 @@ public class SonarComponentsTest {
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
 
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, javaTestClasspath, checkFactory, null);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, null, javaTestClasspath, checkFactory);
     sonarComponents.setSensorContext(sensorContextTester);
 
     JavaCheck[] visitors = sonarComponents.checkClasses();
@@ -143,7 +143,7 @@ public class SonarComponentsTest {
     JavaClasspath javaClasspath = mock(JavaClasspath.class);
     List<File> list = mock(List.class);
     when(javaClasspath.getElements()).thenReturn(list);
-    sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null);
+    sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory);
     assertThat(sonarComponents.getJavaClasspath()).isEqualTo(list);
   }
 
@@ -323,7 +323,7 @@ public class SonarComponentsTest {
 
   @Test
   public void cancellation() {
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     SensorContextTester context = SensorContextTester.create(new File(""));
     sonarComponents.setSensorContext(context);
 
@@ -349,7 +349,7 @@ public class SonarComponentsTest {
     DefaultFileSystem fileSystem = context.fileSystem();
     fileSystem.add(inputFile);
     fileSystem.setEncoding(StandardCharsets.ISO_8859_1);
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null);
 
     context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
     sonarComponents.setSensorContext(context);
@@ -370,7 +370,7 @@ public class SonarComponentsTest {
     DefaultFileSystem fileSystem = context.fileSystem();
     fileSystem.add(new TestInputFileBuilder("", "unknown_file.java").setCharset(StandardCharsets.UTF_8).build());
     context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null);
     sonarComponents.setSensorContext(context);
 
     File unknownFile = new File("unknown_file.java");
@@ -416,7 +416,7 @@ public class SonarComponentsTest {
   }
 
   private Measure<String> analysisWithAnError(SensorContextTester sensorContext) {
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContext);
 
     AnalysisError analysisError;
@@ -450,7 +450,7 @@ public class SonarComponentsTest {
 
     //analysis with no error
     sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContext);
     sonarComponents.saveAnalysisErrors();
     assertThat(sensorContext.measure("projectKey", "sonarjava_feedback")).isNull();
@@ -461,7 +461,7 @@ public class SonarComponentsTest {
   public void ucfg_activation_should_rely_on_active_rules() {
     File file = new File("src/test/files/ParseError.java");
     SensorContextTester sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setRuleRepositoryKey("squid");
     sonarComponents.setSensorContext(sensorContext);
     // no security rules available
