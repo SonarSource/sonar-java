@@ -343,7 +343,7 @@ public class UCFGJavaVisitorTest {
     }
     CompilationUnitTree cut = getCompilationUnitTreeWithSemantics(source);
     UCFGJavaVisitor UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot());
-    UCFGJavaVisitor.fileKey = FILE_KEY;
+    UCFGJavaVisitor.javaFileKey = FILE_KEY;
     UCFGJavaVisitor.visitCompilationUnit(cut);
 
     UCFG actualUCFG = null;
@@ -366,11 +366,11 @@ public class UCFGJavaVisitorTest {
     }
     CompilationUnitTree cut = getCompilationUnitTreeWithSemantics("class A {String fun() {return \"\";}} ");
     UCFGJavaVisitor UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot());
-    UCFGJavaVisitor.fileKey = FILE_KEY;
+    UCFGJavaVisitor.javaFileKey = FILE_KEY;
     UCFGJavaVisitor.visitCompilationUnit(cut);
 
     UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot());
-    UCFGJavaVisitor.fileKey = FILE_KEY;
+    UCFGJavaVisitor.javaFileKey = FILE_KEY;
     UCFGJavaVisitor.visitCompilationUnit(cut);
 
     String[] list = java_ucfg_dir.list();
@@ -386,7 +386,7 @@ public class UCFGJavaVisitorTest {
         fail("should not serialize a UCFG of a method with unknown parameters");
       }
     };
-    UCFGJavaVisitor.fileKey = FILE_KEY;
+    UCFGJavaVisitor.javaFileKey = FILE_KEY;
     // method with unknown arg
     CompilationUnitTree cut = getCompilationUnitTreeWithSemantics("class A {void foo(UnkownType t) {return t;}}");
     UCFGJavaVisitor.visitCompilationUnit(cut);

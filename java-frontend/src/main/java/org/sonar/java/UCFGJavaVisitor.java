@@ -80,13 +80,13 @@ import static org.sonar.ucfg.UCFGBuilder.variableWithId;
 public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner {
   private static final Logger LOG = Loggers.get(JavaSquid.class);
   private final File protobufDirectory;
-  String fileKey;
+  String javaFileKey;
   private int index = 0;
 
   public UCFGJavaVisitor(File workdir) {
     this.protobufDirectory = new File(new File(workdir, "ucfg"), "java");
     if (protobufDirectory.exists()) {
-      // set index to number of file, to avoid overwriting previous files
+      // set index to the number of files, to avoid overwriting previous files
       index = protobufDirectory.list().length;
     } else {
       protobufDirectory.mkdirs();
@@ -95,7 +95,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    this.fileKey = context.getFileKey();
+    this.javaFileKey = context.getFileKey();
     if (context.getSemanticModel() == null) {
       return;
     }
@@ -120,15 +120,15 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   protected void serializeUCFG(MethodTree tree, CFG cfg) {
     try {
       UCFG uCFG = buildUCfg(tree, cfg);
-      UCFGtoProtobuf.toProtobufFile(uCFG, filePath());
+      UCFGtoProtobuf.toProtobufFile(uCFG, ucfgFilePath());
     } catch (Exception e) {
-      String msg = String.format("Cannot generate ucfg in file %s for method at line %d", fileKey, tree.firstToken().line());
+      String msg = String.format("Cannot generate ucfg for file %s for method at line %d", javaFileKey, tree.firstToken().line());
       LOG.error(msg, e);
       throw new AnalysisException(msg, e);
     }
   }
 
-  private String filePath() {
+  private String ucfgFilePath() {
     String absolutePath = new File(protobufDirectory, "ucfg_" + index + ".proto").getAbsolutePath();
     index++;
     return absolutePath;
@@ -329,7 +329,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
   private LocationInFile location(SyntaxToken firstToken, SyntaxToken lastToken) {
     return new LocationInFile(
-      fileKey,
+      javaFileKey,
       firstToken.line(), firstToken.column(),
       lastToken.line(), lastToken.column() + lastToken.text().length()
     );
