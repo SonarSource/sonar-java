@@ -1,6 +1,6 @@
 {
   "title": "Cookies should be \"secure\"",
-  "type": "VULNERABILITY",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -21,5 +21,16 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2092",
   "sqKey": "S2092",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      614,
+      311,
+      315
+    ],
+    "OWASP": [
+      "A2",
+      "A3"
+    ]
+  }
 }

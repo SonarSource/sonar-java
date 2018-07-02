@@ -1,6 +1,6 @@
 {
   "title": "Only standard cryptographic algorithms should be used",
-  "type": "VULNERABILITY",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -19,5 +19,13 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2257",
   "sqKey": "S2257",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      327
+    ],
+    "OWASP": [
+      "A3"
+    ]
+  }
 }

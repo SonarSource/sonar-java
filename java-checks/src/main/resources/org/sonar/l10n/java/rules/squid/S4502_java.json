@@ -1,6 +1,6 @@
 {
   "title": "Spring Security's CSRF protection should not be disabled",
-  "type": "VULNERABILITY",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -20,5 +20,13 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4502",
   "sqKey": "S4502",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      352
+    ],
+    "OWASP": [
+      "A6"
+    ]
+  }
 }

@@ -1,6 +1,6 @@
 {
   "title": "Cookies should not be used to store sensitive information",
-  "type": "VULNERABILITY",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -19,5 +19,14 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2255",
   "sqKey": "S2255",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      315,
+      312
+    ],
+    "OWASP": [
+      "A3"
+    ]
+  }
 }

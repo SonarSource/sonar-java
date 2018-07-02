@@ -1,6 +1,6 @@
 {
   "title": "Unsafe Jackson deserialization configuration should not be used",
-  "type": "VULNERABILITY",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

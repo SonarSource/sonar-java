@@ -1,6 +1,6 @@
 {
-  "title": "Spring Security's debug mode should not be used",
-  "type": "VULNERABILITY",
+  "title": "Spring Security's debug mode should not be left in production code",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -18,5 +18,14 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-4507",
   "sqKey": "S4507",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      489,
+      215
+    ],
+    "OWASP": [
+      "A3"
+    ]
+  }
 }

@@ -20,5 +20,13 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2653",
   "sqKey": "S2653",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      489
+    ],
+    "OWASP": [
+      "A3"
+    ]
+  }
 }
