@@ -60,6 +60,13 @@
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-project</artifactId>
     </dependency>
+    <!-- we use woodstox parser as underlying XML parser for JAXB in PomParser.java because element location in source provided by XML parsers
+    is implementation specific and woodstox was used historically for this purpose. If you remove this dependency JAXB will use Xerces parser
+    which provides different column numbers for location -->
+    <dependency>
+      <groupId>com.fasterxml.woodstox</groupId>
+      <artifactId>woodstox-core</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.sonarsource.sslr</groupId>
