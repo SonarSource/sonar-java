@@ -54,8 +54,6 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.internal.SonarRuntimeImpl;
-import org.sonar.api.issue.Issuable;
-import org.sonar.api.issue.Issue;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
@@ -218,8 +216,6 @@ public class SonarComponentsTest {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
-    Issuable issuable = mock(Issuable.class);
-
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(null);
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null, null, checkFactory, new CheckRegistrar[] {
       expectedRegistrar
@@ -227,7 +223,7 @@ public class SonarComponentsTest {
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(new File(""), expectedCheck, 0, "message", null);
-    verify(issuable, never()).addIssue(any(Issue.class));
+    verify(context, never()).newIssue();
   }
 
   @Test

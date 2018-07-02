@@ -212,15 +212,7 @@ public class FileLinesVisitorTest {
     public void save() {
     }
 
-    @Override
-    public String getStringValue(String metricKey, int line) {
-      return null;
-    }
 
-    @Override
-    public Integer getIntValue(String metricKey, int line) {
-      return null;
-    }
   }
 
   private static class TriviaVisitor extends SubscriptionVisitor {
