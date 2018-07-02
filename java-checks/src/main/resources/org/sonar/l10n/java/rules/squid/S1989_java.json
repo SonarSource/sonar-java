@@ -20,5 +20,13 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1989",
   "sqKey": "S1989",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      600
+    ],
+    "OWASP": [
+      "A3"
+    ]
+  }
 }

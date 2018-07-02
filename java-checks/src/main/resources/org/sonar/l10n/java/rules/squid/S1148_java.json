@@ -16,5 +16,10 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1148",
   "sqKey": "S1148",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      489
+    ]
+  }
 }

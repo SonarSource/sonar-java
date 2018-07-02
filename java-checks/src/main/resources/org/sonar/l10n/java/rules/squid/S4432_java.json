@@ -21,5 +21,13 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4432",
   "sqKey": "S4432",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      327
+    ],
+    "OWASP": [
+      "A6"
+    ]
+  }
 }
