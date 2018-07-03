@@ -235,14 +235,15 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     } else if (element.is(NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) element;
       buildConstructorInvocation(blockBuilder, idGenerator, newClassTree);
-    } else if (element.is(PLUS, PLUS_ASSIGNMENT, ASSIGNMENT) && isString(((ExpressionTree) element).symbolType())) {
-      if (element.is(PLUS)) {
+    } else if (element.is(PLUS, PLUS_ASSIGNMENT, ASSIGNMENT) && isObject(((ExpressionTree) element).symbolType())) {
+      boolean elementIsString = isString(((ExpressionTree) element).symbolType());
+      if (element.is(PLUS) && elementIsString) {
         BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) element;
         Expression lhs = idGenerator.lookupExpressionFor(binaryExpressionTree.leftOperand());
         Expression rhs = idGenerator.lookupExpressionFor(binaryExpressionTree.rightOperand());
         Expression.Variable var = variableWithId(idGenerator.newIdFor(binaryExpressionTree));
         blockBuilder.assignTo(var, call("__concat").withArgs(lhs, rhs), location(element));
-      } else if (element.is(PLUS_ASSIGNMENT)) {
+      } else if (element.is(PLUS_ASSIGNMENT) && elementIsString) {
         Expression var = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).variable());
         Expression expr = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).expression());
         if (!var.isConstant()) {
@@ -366,7 +367,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       List<Symbol> parameters = methodTree.parameters().stream().map(VariableTree::symbol).collect(Collectors.toList());
       VariableReadExtractor variableReadExtractor = new VariableReadExtractor(methodTree.symbol(), false);
       methodTree.accept(variableReadExtractor);
-      Set<Symbol> locals = variableReadExtractor.usedVariables().stream().filter(s -> s.type().is("java.lang.String")).collect(Collectors.toSet());
+      Set<Symbol> locals = variableReadExtractor.usedVariables().stream().filter(s -> s.type().isSubtypeOf("java.lang.Object")).collect(Collectors.toSet());
       vars = Sets.union(new HashSet<>(parameters), locals).stream().collect(Collectors.toMap(s -> s, Symbol::name));
       temps = new HashMap<>();
       counter = 0;

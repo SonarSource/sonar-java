@@ -242,6 +242,23 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
+  public void build_assignment_for_object() {
+    Expression.Variable arg1 = UCFGBuilder.variableWithId("arg1");
+    Expression.Variable arg2 = UCFGBuilder.variableWithId("arg2");
+    Expression.Variable var = UCFGBuilder.variableWithId("var");
+    Expression.Variable aux = UCFGBuilder.variableWithId("%0");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/String;").addMethodParam(arg1)
+        .addBasicBlock(newBasicBlock("1")
+            .assignTo(var, call("__id").withArgs(arg1), new LocationInFile(FILE_KEY, 1,50,1,68))
+            .assignTo(var, call("__id").withArgs(arg2), new LocationInFile(FILE_KEY, 1,87,1,97))
+            .assignTo(aux, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(var), new LocationInFile(FILE_KEY, 1,117,1,131))
+            .ret(aux, new LocationInFile(FILE_KEY, 1,110,1,132)))
+        .build();
+
+    assertCodeToUCfg("class A {String method(Object arg1, Object arg2) {Object var = arg1; int foo; int bar; var = arg2; foo = bar; return var.toString();}}", expectedUCFG);
+  }
+
+  @Test
   public void build_assignment_for_string() {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     Expression.Variable arg2 = UCFGBuilder.variableWithId("arg2");
