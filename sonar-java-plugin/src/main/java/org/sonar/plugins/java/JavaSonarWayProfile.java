@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.SonarComponents;
@@ -39,6 +40,12 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 @SonarLintSide
 public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
 
+  private final SonarRuntime sonarRuntime;
+
+  public JavaSonarWayProfile(SonarRuntime sonarRuntime) {
+    this.sonarRuntime = sonarRuntime;
+  }
+
   @Override
   public void define(Context context) {
     NewBuiltInQualityProfile sonarWay = context.createBuiltInQualityProfile("Sonar way", Java.KEY);
@@ -46,12 +53,25 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
     Profile jsonProfile = readProfile();
     Map<String, String> keys = legacyKeys();
     for (String key : jsonProfile.ruleKeys) {
-      sonarWay.activateRule(CheckList.REPOSITORY_KEY, keys.get(key));
+      if (shouldActivateRule(key)) {
+        sonarWay.activateRule(CheckList.REPOSITORY_KEY, keys.get(key));
+      }
     }
 
     SonarComponents.getSecurityRuleKeys().forEach(key -> sonarWay.activateRule(CheckList.REPOSITORY_KEY, key));
 
     sonarWay.done();
+  }
+
+  private boolean shouldActivateRule(String ruleKey) {
+    JavaRulesDefinition.RuleMetadata ruleMetadata = JavaRulesDefinition.readRuleMetadata(ruleKey);
+    if (ruleMetadata == null) {
+      return true;
+    }
+    if (!ruleMetadata.isSecurityHotspot()) {
+      return true;
+    }
+    return SecurityHotspots.securityHotspotsSupported(sonarRuntime);
   }
 
 
