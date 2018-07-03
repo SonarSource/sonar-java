@@ -263,17 +263,13 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     if (isObject(tree.symbol().owner().type()) ) {
       arguments = new ArrayList<>();
       if (tree.symbol().isStatic()) {
-        arguments.add(fullyQualifiedNameExpression(tree.symbol().type()));
+        arguments.add(new Expression.ClassName(tree.symbol().type().fullyQualifiedName()));
       } else if (tree.methodSelect().is(MEMBER_SELECT)) {
         arguments.add(idGenerator.lookupExpressionFor(((MemberSelectExpressionTree) tree.methodSelect()).expression()));
       } else if (tree.methodSelect().is(IDENTIFIER)) {
         arguments.add(Expression.THIS);
       }
       arguments.addAll(argumentIds(idGenerator, tree.arguments()));
-    } else if (isObject(tree.symbolType())
-        || tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isObject)) {
-
-      arguments = argumentIds(idGenerator, tree.arguments());
     }
 
     if (arguments != null) {
@@ -282,7 +278,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   }
 
   private void buildPlusOrAssignmentInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, Tree element) {
-    boolean elementIsString = isString(((ExpressionTree) element).symbolType());
+    boolean elementIsString = (((ExpressionTree) element).symbolType()).is("java.lang.String");
     if (element.is(PLUS) && elementIsString) {
       BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) element;
       Expression lhs = idGenerator.lookupExpressionFor(binaryExpressionTree.leftOperand());
@@ -292,14 +288,14 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     } else if (element.is(PLUS_ASSIGNMENT) && elementIsString) {
       Expression var = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).variable());
       Expression expr = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).expression());
-      if (!var.isConstant()) {
+      if (var instanceof Expression.Variable) {
         idGenerator.varForExpression(element, ((Expression.Variable) var).id());
         blockBuilder.assignTo((Expression.Variable) var, call("__concat").withArgs(var, expr), location(element));
       }
     } else if (element.is(ASSIGNMENT)) {
       Expression var = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).variable());
       Expression expr = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).expression());
-      if (!var.isConstant()) {
+      if (var instanceof Expression.Variable) {
         blockBuilder.assignTo((Expression.Variable) var, call("__id").withArgs(expr), location(element));
       }
     }
@@ -356,16 +352,8 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     return isObject(var.type().symbolType());
   }
 
-  private static boolean isString(Type type) {
-    return type.is("java.lang.String");
-  }
-
   private static boolean isObject(Type type) {
-    return type.isSubtypeOf("java.lang.Object");
-  }
-
-  private static Expression fullyQualifiedNameExpression(Type type) {
-    return new Expression.ClassName(type.fullyQualifiedName());
+    return !type.isPrimitive() && !type.isUnknown();
   }
 
   public static class IdentifierGenerator {
@@ -380,7 +368,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       List<Symbol> parameters = methodTree.parameters().stream().map(VariableTree::symbol).collect(Collectors.toList());
       VariableReadExtractor variableReadExtractor = new VariableReadExtractor(methodTree.symbol(), false);
       methodTree.accept(variableReadExtractor);
-      Set<Symbol> locals = variableReadExtractor.usedVariables().stream().filter(s -> s.type().isSubtypeOf("java.lang.Object")).collect(Collectors.toSet());
+      Set<Symbol> locals = variableReadExtractor.usedVariables().stream().filter(s -> isObject(s.type())).collect(Collectors.toSet());
       vars = Sets.union(new HashSet<>(parameters), locals).stream().collect(Collectors.toMap(s -> s, Symbol::name));
       temps = new HashMap<>();
       counter = 0;

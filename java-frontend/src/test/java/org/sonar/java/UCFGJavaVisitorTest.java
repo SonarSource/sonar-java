@@ -250,17 +250,34 @@ public class UCFGJavaVisitorTest {
   @Test
   public void explicit_static_method_call() {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
-    Expression.Variable var0 = UCFGBuilder.variableWithId("%0");
-    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Integer;)I").addMethodParam(arg)
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Integer;)Ljava/lang/String;")
         .addStartingBlock(
             newBasicBlock("1")
-                .assignTo(var0, call("java.lang.String#valueOf(Ljava/lang/Object;)Ljava/lang/String;").withArgs(new Expression.ClassName("java.lang.String"), arg),
-                    new LocationInFile(FILE_KEY, 3,11,3,30))
-                .ret(constant("\"\""), new LocationInFile(FILE_KEY, 3,4,3,31)))
+                .assignTo(aux0, call("java.util.Objects#toString(Ljava/lang/Object;)Ljava/lang/String;").withArgs(new Expression.ClassName("java.util.Objects"), arg),
+                    new LocationInFile(FILE_KEY, 3,11,3,42))
+                .ret(aux0, new LocationInFile(FILE_KEY, 3,4,3,43)))
         .build();
     assertCodeToUCfg("class A { \n" +
-        "  int method(Integer arg) {\n" +
-        "    return String.valueOf(arg);\n" +
+        "  String method(Integer arg) {\n" +
+        "    return java.util.Objects.toString(arg);\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
+  @Test
+  public void ignore_primitives_and_interfaces() {
+    Expression.Variable arg = UCFGBuilder.variableWithId("foo");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;)V").addMethodParam(arg)
+        .addBasicBlock(newBasicBlock("0")
+            .ret(constant("implicit return"), new LocationInFile(FILE_KEY, 7, 2, 7, 3)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  private void foo(String foo) { \n" +
+        "    int x = 1 + 1;\n" +
+        "    x += 1;\n" +
+        "    Consumer<String> c = s -> System.out.println(s);\n" +
+        "    c.accept(\"foo\");\n" +
         "  }\n" +
         "}", expectedUCFG);
   }
