@@ -69,14 +69,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <!-- During release:perform, enable the "release" profile -->
-          <releaseProfiles>release</releaseProfiles>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
   <profiles>
