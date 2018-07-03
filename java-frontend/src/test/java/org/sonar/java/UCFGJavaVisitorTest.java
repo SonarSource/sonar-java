@@ -187,7 +187,9 @@ public class UCFGJavaVisitorTest {
       .addBasicBlock(newBasicBlock("1")
         .assignTo(aux0, call("java.util.Collection#stream()Ljava/util/stream/Stream;").withArgs(arg), new LocationInFile(FILE_KEY, 6, 4, 6, 16))
         .assignTo(aux1, call("java.util.stream.Stream#flatMap(Ljava/util/function/Function;)Ljava/util/stream/Stream;").withArgs(aux0, constant("\"\"")), new LocationInFile(FILE_KEY, 6, 4, 7, 34))
-        .assignTo(aux2, call("java.util.stream.Collectors#toCollection(Ljava/util/function/Supplier;)Ljava/util/stream/Collector;").withArgs(constant("\"\""), constant("\"\"")), new LocationInFile(FILE_KEY, 8, 15, 8, 58))
+        .assignTo(aux2,
+            call("java.util.stream.Collectors#toCollection(Ljava/util/function/Supplier;)Ljava/util/stream/Collector;").withArgs(new Expression.ClassName("java.util.stream.Collectors"), constant("\"\"")),
+            new LocationInFile(FILE_KEY, 8, 15, 8, 58))
         .jumpTo(UCFGBuilder.createLabel("0")))
       .addBasicBlock(newBasicBlock("0")
         .ret(constant("implicit return"), new LocationInFile(FILE_KEY, 9, 2, 9, 3)))
@@ -241,6 +243,24 @@ public class UCFGJavaVisitorTest {
     assertCodeToUCfg("class A { \n" +
         "  private String foo() { \n" +
         "    return toString();\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
+  @Test
+  public void explicit_static_method_call() {
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable var0 = UCFGBuilder.variableWithId("%0");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Integer;)I").addMethodParam(arg)
+        .addStartingBlock(
+            newBasicBlock("1")
+                .assignTo(var0, call("java.lang.String#valueOf(Ljava/lang/Object;)Ljava/lang/String;").withArgs(new Expression.ClassName("java.lang.String"), arg),
+                    new LocationInFile(FILE_KEY, 3,11,3,30))
+                .ret(constant("\"\""), new LocationInFile(FILE_KEY, 3,4,3,31)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  int method(Integer arg) {\n" +
+        "    return String.valueOf(arg);\n" +
         "  }\n" +
         "}", expectedUCFG);
   }
@@ -370,7 +390,7 @@ public class UCFGJavaVisitorTest {
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Integer;)I").addMethodParam(arg)
       .addStartingBlock(
         newBasicBlock("1")
-          .assignTo(var0, call("java.lang.String#valueOf(Ljava/lang/Object;)Ljava/lang/String;").withArgs(arg),
+          .assignTo(var0, call("java.lang.String#valueOf(Ljava/lang/Object;)Ljava/lang/String;").withArgs(new Expression.ClassName("java.lang.String"), arg),
             new LocationInFile(FILE_KEY, 4,11,4,23))
         .ret(constant("\"\""), new LocationInFile(FILE_KEY, 4,4,4,24)))
       .build();

@@ -284,12 +284,12 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
     if (isObject(tree.symbol().owner().type()) ) {
       arguments = new ArrayList<>();
-      if (tree.methodSelect().is(MEMBER_SELECT)) {
+      if (tree.symbol().isStatic()) {
+        arguments.add(fullyQualifiedNameExpression(tree.symbol().type()));
+      } else if (tree.methodSelect().is(MEMBER_SELECT)) {
         arguments.add(idGenerator.lookupExpressionFor(((MemberSelectExpressionTree) tree.methodSelect()).expression()));
       } else if (tree.methodSelect().is(IDENTIFIER)) {
-        if (!tree.symbol().isStatic()) {
-          arguments.add(Expression.THIS);
-        }
+        arguments.add(Expression.THIS);
       }
       arguments.addAll(argumentIds(idGenerator, tree.arguments()));
     } else if (isObject(tree.symbolType())
@@ -360,6 +360,10 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
   private static boolean isObject(Type type) {
     return type.isSubtypeOf("java.lang.Object");
+  }
+
+  private static Expression fullyQualifiedNameExpression(Type type) {
+    return new Expression.ClassName(type.fullyQualifiedName());
   }
 
   public static class IdentifierGenerator {
