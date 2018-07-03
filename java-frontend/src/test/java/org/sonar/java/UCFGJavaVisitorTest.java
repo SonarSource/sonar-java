@@ -43,10 +43,10 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.ucfg.BasicBlock;
 import org.sonar.ucfg.Expression;
-import org.sonar.ucfg.Instruction;
 import org.sonar.ucfg.LocationInFile;
 import org.sonar.ucfg.UCFG;
 import org.sonar.ucfg.UCFGBuilder;
+import org.sonar.ucfg.UCFGElement.Instruction;
 import org.sonar.ucfg.UCFGtoProtobuf;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -213,6 +213,38 @@ public class UCFGJavaVisitorTest {
     assertCodeToUCfg(source, expectedUCFG);
   }
 
+  @Test
+  public void explicit_usage_of_this() {
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo()Ljava/lang/String;").addMethodParam(arg)
+        .addBasicBlock(newBasicBlock("1")
+            .assignTo(aux0, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(Expression.THIS), new LocationInFile(FILE_KEY, 3, 11, 3, 26))
+            .ret(aux0, new LocationInFile(FILE_KEY, 3, 4, 3, 27)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  private String foo() { \n" +
+        "    return this.toString();\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
+  @Test
+  public void implicit_usage_of_this() {
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo()Ljava/lang/String;").addMethodParam(arg)
+        .addBasicBlock(newBasicBlock("1")
+            .assignTo(aux0, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(Expression.THIS), new LocationInFile(FILE_KEY, 3, 11, 3, 21))
+            .ret(aux0, new LocationInFile(FILE_KEY, 3, 4, 3, 22)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  private String foo() { \n" +
+        "    return toString();\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
   private void assertUnknownMethodCalled(String source) {
     CompilationUnitTree cut = getCompilationUnitTreeWithSemantics(source);
     UnknownMethodVisitor unknownMethodVisitor = new UnknownMethodVisitor();
@@ -362,10 +394,10 @@ public class UCFGJavaVisitorTest {
     UCFG actualUCFG = createUCFG(source);
     assertThat(actualUCFG.methodId()).isEqualTo(expectedUCFG.methodId());
     assertThat(actualUCFG.basicBlocks()).isEqualTo(expectedUCFG.basicBlocks());
-    assertThat(actualUCFG.basicBlocks().values().stream().flatMap(b->b.calls().stream()))
-      .containsExactlyElementsOf(expectedUCFG.basicBlocks().values().stream().flatMap(b->b.calls().stream()).collect(Collectors.toList()));
+    assertThat(actualUCFG.basicBlocks().values().stream().flatMap(b->b.instructions().stream()))
+        .containsExactlyElementsOf(expectedUCFG.basicBlocks().values().stream().flatMap(b->b.instructions().stream()).collect(Collectors.toList()));
     assertThat(actualUCFG.basicBlocks().values().stream().map(BasicBlock::terminator))
-      .containsExactlyElementsOf(expectedUCFG.basicBlocks().values().stream().map(BasicBlock::terminator).collect(Collectors.toList()));
+        .containsExactlyElementsOf(expectedUCFG.basicBlocks().values().stream().map(BasicBlock::terminator).collect(Collectors.toList()));
     assertThat(actualUCFG.entryBlocks()).isEqualTo(expectedUCFG.entryBlocks());
     assertThat(toLocationStream(actualUCFG).noneMatch(l->l == UCFGBuilder.LOC)).isTrue();
     if(testLocations) {
@@ -478,7 +510,8 @@ public class UCFGJavaVisitorTest {
   public void null_literal_should_produce_a_constant_expression() {
     UCFG ucfg = createUCFG("class A {String foo(String s) {return foo(null);}}");
     BasicBlock basicBlock = ucfg.entryBlocks().iterator().next();
-    Expression argExpression = basicBlock.calls().get(0).getArgExpressions().get(0);
+    // first argument is "this"
+    Expression argExpression = ((Instruction.AssignCall)basicBlock.instructions().get(0)).getArgExpressions().get(1);
     assertThat(argExpression.isConstant()).isTrue();
   }
 
@@ -486,7 +519,8 @@ public class UCFGJavaVisitorTest {
   public void string_literal_should_produce_a_constant_expression() {
     UCFG ucfg = createUCFG("class A {String foo(String s) {return foo(\"plop\");}}");
     BasicBlock basicBlock = ucfg.entryBlocks().iterator().next();
-    Expression argExpression = basicBlock.calls().get(0).getArgExpressions().get(0);
+    // first argument is "this"
+    Expression argExpression = ((Instruction.AssignCall)basicBlock.instructions().get(0)).getArgExpressions().get(1);
     assertThat(argExpression.isConstant()).isTrue();
   }
 
@@ -494,13 +528,13 @@ public class UCFGJavaVisitorTest {
   public void constructors_should_have_a_ucfg() {
     UCFG ucfg = createUCFG("class A { Object foo(String s) {new A(s); new Object(); new Unknown(\"\"); return new String();} A(String s) {} }");
     assertThat(ucfg.methodId()).isEqualTo("A#foo(Ljava/lang/String;)Ljava/lang/Object;");
-    List<Instruction.AssignCall> calls = ucfg.entryBlocks().iterator().next().calls();
+    List<Instruction> calls = ucfg.entryBlocks().iterator().next().instructions();
     assertThat(calls).hasSize(3);
-    Instruction.AssignCall assignCall0 = calls.get(0);
+    Instruction.AssignCall assignCall0 = (Instruction.AssignCall)calls.get(0);
     assertThat(assignCall0.getMethodId()).isEqualTo("A#<init>(Ljava/lang/String;)V");
-    Instruction.AssignCall assignCall1 = calls.get(1);
+    Instruction.AssignCall assignCall1 = (Instruction.AssignCall)calls.get(1);
     assertThat(assignCall1.getMethodId()).isEqualTo("java.lang.Object#<init>()V");
-    Instruction.AssignCall assignCall2 = calls.get(2);
+    Instruction.AssignCall assignCall2 = (Instruction.AssignCall)calls.get(2);
     assertThat(assignCall2.getMethodId()).isEqualTo("java.lang.String#<init>()V");
   }
 
@@ -511,7 +545,7 @@ public class UCFGJavaVisitorTest {
   }
 
   private Stream<LocationInFile> toLocationStream(UCFG UCFG) {
-    return UCFG.basicBlocks().values().stream().flatMap(b -> Stream.concat(b.calls().stream().map(Instruction::location), Stream.of(b.terminator().location())));
+    return UCFG.basicBlocks().values().stream().flatMap(b -> Stream.concat(b.instructions().stream().map(Instruction::location), Stream.of(b.terminator().location())));
   }
 
   private static class UnknownMethodVisitor extends BaseTreeVisitor {

@@ -37,6 +37,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -53,6 +54,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -68,6 +70,7 @@ import org.sonar.ucfg.UCFGtoProtobuf;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSIGNMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.MEMBER_SELECT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_CLASS;
@@ -283,6 +286,10 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       arguments = new ArrayList<>();
       if (tree.methodSelect().is(MEMBER_SELECT)) {
         arguments.add(idGenerator.lookupExpressionFor(((MemberSelectExpressionTree) tree.methodSelect()).expression()));
+      } else if (tree.methodSelect().is(IDENTIFIER)) {
+        if (!tree.symbol().isStatic()) {
+          arguments.add(Expression.THIS);
+        }
       }
       arguments.addAll(argumentIds(idGenerator, tree.arguments()));
     } else if (isObject(tree.symbolType())
@@ -395,8 +402,12 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     public Expression lookupExpressionFor(@Nullable Tree tree) {
       String id = lookupIdFor(tree);
       if (isConst(id)) {
-        if (tree != null && tree.is(Tree.Kind.STRING_LITERAL)) {
-          return constant(LiteralUtils.trimQuotes(((LiteralTree) tree).value()));
+        if (tree != null) {
+          if (tree.is(Tree.Kind.STRING_LITERAL)) {
+            return constant(LiteralUtils.trimQuotes(((LiteralTree) tree).value()));
+          } else if (tree.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) tree).name().equals("this")) {
+            return Expression.THIS;
+          }
         }
         return constant(id);
       }
