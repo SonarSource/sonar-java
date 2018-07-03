@@ -147,7 +147,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
     BlockBuilder entryBlockBuilder = buildBasicBlock(cfg.entry(), methodTree, idGenerator);
 
-    if (getAnnotatedStringParameters(methodTree).count() > 0) {
+    if (getAnnotatedParameters(methodTree).count() > 0) {
       builder.addStartingBlock(buildParameterAnnotationsBlock(methodTree, idGenerator, cfg));
       builder.addBasicBlock(entryBlockBuilder);
     } else {
@@ -164,7 +164,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     LocationInFile parametersLocation = location(methodTree.openParenToken(), methodTree.closeParenToken());
     UCFGBuilder.BlockBuilder blockBuilder = UCFGBuilder.newBasicBlock("paramAnnotations", parametersLocation);
 
-    getAnnotatedStringParameters(methodTree).forEach(parameter -> buildBlockForParameter(parameter, blockBuilder, idGenerator));
+    getAnnotatedParameters(methodTree).forEach(parameter -> buildBlockForParameter(parameter, blockBuilder, idGenerator));
 
     Label nextBlockLabel = UCFGBuilder.createLabel(Integer.toString(cfg.entry().id()));
     blockBuilder.jumpTo(nextBlockLabel);
@@ -186,8 +186,8 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     blockBuilder.assignTo(parameterVariable, call("__annotation").withArgs(args), location(parameter.simpleName()));
   }
 
-  private static Stream<VariableTree> getAnnotatedStringParameters(MethodTree methodTree) {
-    return methodTree.parameters().stream().filter(parameter -> isString(parameter.type().symbolType())).filter(parameter -> !parameter.modifiers().annotations().isEmpty());
+  private static Stream<VariableTree> getAnnotatedParameters(MethodTree methodTree) {
+    return methodTree.parameters().stream().filter(parameter -> isObject(parameter.type().symbolType())).filter(parameter -> !parameter.modifiers().annotations().isEmpty());
   }
 
   private UCFGBuilder.BlockBuilder buildBasicBlock(CFG.Block javaBlock, MethodTree methodTree, IdentifierGenerator idGenerator) {
@@ -199,7 +199,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     if (terminator != null && terminator.is(Tree.Kind.RETURN_STATEMENT)) {
       ExpressionTree returnedExpression = ((ReturnStatementTree) terminator).expression();
       Expression retExpr = constant(IdentifierGenerator.CONST);
-      if (methodTree.returnType() != null && isString(methodTree.returnType().symbolType())) {
+      if (methodTree.returnType() != null && isObject(methodTree.returnType().symbolType())) {
         retExpr = idGenerator.lookupExpressionFor(returnedExpression);
       }
       blockBuilder.ret(retExpr, location(terminator));
@@ -217,7 +217,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   }
 
   private void buildCall(Tree element, UCFGBuilder.BlockBuilder blockBuilder, IdentifierGenerator idGenerator) {
-    if (isStringVarDecl(element)) {
+    if (isObjectVarDeclaration(element)) {
       VariableTree variableTree = (VariableTree) element;
 
       String lhs = idGenerator.lookupIdFor(variableTree.simpleName());
@@ -265,7 +265,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       return;
     }
 
-    if(isString(constructorSymbol.owner().type()) || tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isString)) {
+    if(isObject(constructorSymbol.owner().type()) || tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isObject)) {
       List<Expression> arguments = argumentIds(idGenerator, tree.arguments());
       buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) constructorSymbol);
     }
@@ -278,14 +278,15 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
     List<Expression> arguments = null;
 
-    if (isString(tree.symbol().owner().type())) {
-      // myStr.myMethod(args) -> myMethod(myStr, args)
+    if (isObject(tree.symbol().owner().type()) ) {
       arguments = new ArrayList<>();
       if (tree.methodSelect().is(MEMBER_SELECT)) {
         arguments.add(idGenerator.lookupExpressionFor(((MemberSelectExpressionTree) tree.methodSelect()).expression()));
       }
       arguments.addAll(argumentIds(idGenerator, tree.arguments()));
-    } else if (isString(tree.symbolType()) || tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isString)) {
+    } else if (isObject(tree.symbolType())
+        || tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isObject)) {
+
       arguments = argumentIds(idGenerator, tree.arguments());
     }
 
@@ -306,6 +307,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   private static String signatureFor(Symbol.MethodSymbol methodSymbol) {
     return ((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature();
   }
+
 
   @Nullable
   private LocationInFile location(CFG.Block javaBlock) {
@@ -335,17 +337,21 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     );
   }
 
-  private static boolean isStringVarDecl(Tree tree) {
+  private static boolean isObjectVarDeclaration(Tree tree) {
     if (!tree.is(Tree.Kind.VARIABLE)) {
       return false;
     }
 
     VariableTree var = (VariableTree) tree;
-    return isString(var.type().symbolType());
+    return isObject(var.type().symbolType());
   }
 
   private static boolean isString(Type type) {
     return type.is("java.lang.String");
+  }
+
+  private static boolean isObject(Type type) {
+    return type.isSubtypeOf("java.lang.Object");
   }
 
   public static class IdentifierGenerator {

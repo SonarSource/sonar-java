@@ -80,6 +80,7 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void assign_to_field() {
+    // fields are ignored
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1").ret(arg, new LocationInFile(FILE_KEY, 1,69,1,80)))
@@ -107,19 +108,34 @@ public class UCFGJavaVisitorTest {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     Expression.Variable var = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Object;)Ljava/lang/String;").addMethodParam(arg)
-      .addBasicBlock(newBasicBlock("1").assignTo(var, call("java.lang.Object#toString()Ljava/lang/String;"), new LocationInFile(FILE_KEY, 1,44,1,58))
+      .addBasicBlock(newBasicBlock("1").assignTo(var, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(arg), new LocationInFile(FILE_KEY, 1,44,1,58))
         .ret(var, new LocationInFile(FILE_KEY, 1,37,1,59)))
       .build();
     assertCodeToUCfg("class A { String method(Object arg) {return arg.toString();}}", expectedUCFG);
   }
 
   @Test
-  public void filter_invocation_unrelated_to_string() {
+  public void invocation_on_string() {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable temp = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
-      .addBasicBlock(newBasicBlock("1").ret(arg, new LocationInFile(FILE_KEY, 1,61,1,72)))
+        .addBasicBlock(newBasicBlock("1")
+            .assignTo(temp, call("java.lang.String#toString()Ljava/lang/String;").withArgs(arg), new LocationInFile(FILE_KEY, 1, 45, 1, 59))
+            .ret(temp, new LocationInFile(FILE_KEY, 1, 38, 1, 60)))
+        .build();
+    assertCodeToUCfg("class A { String method(String arg) { return arg.toString();}}", expectedUCFG);
+  }
+
+  @Test
+  public void invocation_on_object() {
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable temp = UCFGBuilder.variableWithId("%0");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Object;)Ljava/lang/String;").addMethodParam(arg)
+      .addBasicBlock(newBasicBlock("1")
+          .assignTo(temp, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(arg), new LocationInFile(FILE_KEY, 1,62,1,76))
+          .ret(temp, new LocationInFile(FILE_KEY, 1, 55, 1, 77)))
       .build();
-    assertCodeToUCfg("class A { String method(String arg) {Object o; o.hashCode(); return arg;}}", expectedUCFG);
+    assertCodeToUCfg("class A { String method(Object arg) {int var; var = 2; return arg.toString(); }}", expectedUCFG);
   }
 
   @Test
@@ -163,8 +179,16 @@ public class UCFGJavaVisitorTest {
   @Test
   public void unknown_method() {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
 
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/util/Set;)V").addMethodParam(arg)
+      .addBasicBlock(newBasicBlock("1")
+        .assignTo(aux0, call("java.util.Collection#stream()Ljava/util/stream/Stream;").withArgs(arg), new LocationInFile(FILE_KEY, 6, 4, 6, 16))
+        .assignTo(aux1, call("java.util.stream.Stream#flatMap(Ljava/util/function/Function;)Ljava/util/stream/Stream;").withArgs(aux0, constant("\"\"")), new LocationInFile(FILE_KEY, 6, 4, 7, 34))
+        .assignTo(aux2, call("java.util.stream.Collectors#toCollection(Ljava/util/function/Supplier;)Ljava/util/stream/Collector;").withArgs(constant("\"\""), constant("\"\"")), new LocationInFile(FILE_KEY, 8, 15, 8, 58))
+        .jumpTo(UCFGBuilder.createLabel("0")))
       .addBasicBlock(newBasicBlock("0")
         .ret(constant("implicit return"), new LocationInFile(FILE_KEY, 9, 2, 9, 3)))
       .build();
@@ -203,29 +227,18 @@ public class UCFGJavaVisitorTest {
     Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
     Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
 
-    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg0).addMethodParam(arg1)
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/String;").addMethodParam(arg0).addMethodParam(arg1)
       .addBasicBlock(newBasicBlock("paramAnnotations")
         .assignTo(aux0, call("javax.annotation.Nullable").withArgs(arg0), new LocationInFile(FILE_KEY, 1, 24, 1, 50))
         .assignTo(arg0, call("__annotation").withArgs(aux0), new LocationInFile(FILE_KEY, 1, 58, 1, 62))
         .assignTo(aux1, call("javax.annotation.Nullable").withArgs(arg1), new LocationInFile(FILE_KEY, 1, 64, 1, 90))
-        .assignTo(arg1, call("__annotation").withArgs(aux1), new LocationInFile(FILE_KEY, 1, 98, 1, 102))
+        .assignTo(arg1, call("__annotation").withArgs(aux1), new LocationInFile(FILE_KEY, 1, 99, 1, 103))
         .jumpTo(UCFGBuilder.createLabel("1")))
       .addBasicBlock(
         newBasicBlock("1")
-          .ret(constant("foo"), new LocationInFile(FILE_KEY, 1, 106, 1, 119)))
+          .ret(constant("foo"), new LocationInFile(FILE_KEY, 1, 107, 1, 120)))
       .build();
-    assertCodeToUCfg("class A { String method(@javax.annotation.Nullable String arg0, @javax.annotation.Nullable String arg1) { return \"foo\";}}", expectedUCFG);
-  }
-
-  @Test
-  public void ignore_parameter_annotations_for_non_string() {
-    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
-
-    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Integer;)Ljava/lang/String;").addMethodParam(arg)
-      .addBasicBlock(newBasicBlock("1")
-        .ret(constant("foo"), new LocationInFile(FILE_KEY, 1, 66, 1, 79)))
-      .build();
-    assertCodeToUCfg("class A { String method(@javax.annotation.Nullable Integer arg) { return \"foo\";}}", expectedUCFG);
+    assertCodeToUCfg("class A { String method(@javax.annotation.Nullable String arg0, @javax.annotation.Nullable Integer arg1) { return \"foo\";}}", expectedUCFG);
   }
 
   @Test
@@ -288,6 +301,17 @@ public class UCFGJavaVisitorTest {
         .ret(constant("\"\""), new LocationInFile(FILE_KEY, 1,34,1,54)))
       .build();
     assertCodeToUCfg("class A { int method(String arg) {return arg.length();}}", expectedUCFG);
+  }
+
+  @Test
+  public void object_to_string_invocation() {
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable var0 = UCFGBuilder.variableWithId("%0");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Integer;)Ljava/lang/String;").addMethodParam(arg)
+      .addStartingBlock(newBasicBlock("1").assignTo(var0, call("java.lang.Integer#toString()Ljava/lang/String;").withArgs(arg), new LocationInFile(FILE_KEY, 1, 45, 1, 59))
+        .ret(var0, new LocationInFile(FILE_KEY, 1, 38, 1, 60)))
+      .build();
+    assertCodeToUCfg("class A { String method(Integer arg) {return arg.toString();}}", expectedUCFG);
   }
 
   @Test
@@ -454,11 +478,13 @@ public class UCFGJavaVisitorTest {
     UCFG ucfg = createUCFG("class A { Object foo(String s) {new A(s); new Object(); new Unknown(\"\"); return new String();} A(String s) {} }");
     assertThat(ucfg.methodId()).isEqualTo("A#foo(Ljava/lang/String;)Ljava/lang/Object;");
     List<Instruction.AssignCall> calls = ucfg.entryBlocks().iterator().next().calls();
-    assertThat(calls).hasSize(2);
+    assertThat(calls).hasSize(3);
     Instruction.AssignCall assignCall0 = calls.get(0);
     assertThat(assignCall0.getMethodId()).isEqualTo("A#<init>(Ljava/lang/String;)V");
     Instruction.AssignCall assignCall1 = calls.get(1);
-    assertThat(assignCall1.getMethodId()).isEqualTo("java.lang.String#<init>()V");
+    assertThat(assignCall1.getMethodId()).isEqualTo("java.lang.Object#<init>()V");
+    Instruction.AssignCall assignCall2 = calls.get(2);
+    assertThat(assignCall2.getMethodId()).isEqualTo("java.lang.String#<init>()V");
   }
 
   private CompilationUnitTree getCompilationUnitTreeWithSemantics(String source) {
