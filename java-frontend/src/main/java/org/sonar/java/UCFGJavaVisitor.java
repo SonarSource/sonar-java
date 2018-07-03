@@ -37,7 +37,6 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -54,7 +53,6 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -239,27 +237,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       NewClassTree newClassTree = (NewClassTree) element;
       buildConstructorInvocation(blockBuilder, idGenerator, newClassTree);
     } else if (element.is(PLUS, PLUS_ASSIGNMENT, ASSIGNMENT) && isObject(((ExpressionTree) element).symbolType())) {
-      boolean elementIsString = isString(((ExpressionTree) element).symbolType());
-      if (element.is(PLUS) && elementIsString) {
-        BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) element;
-        Expression lhs = idGenerator.lookupExpressionFor(binaryExpressionTree.leftOperand());
-        Expression rhs = idGenerator.lookupExpressionFor(binaryExpressionTree.rightOperand());
-        Expression.Variable var = variableWithId(idGenerator.newIdFor(binaryExpressionTree));
-        blockBuilder.assignTo(var, call("__concat").withArgs(lhs, rhs), location(element));
-      } else if (element.is(PLUS_ASSIGNMENT) && elementIsString) {
-        Expression var = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).variable());
-        Expression expr = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).expression());
-        if (!var.isConstant()) {
-          idGenerator.varForExpression(element, ((Expression.Variable) var).id());
-          blockBuilder.assignTo((Expression.Variable) var, call("__concat").withArgs(var, expr), location(element));
-        }
-      } else if (element.is(ASSIGNMENT)) {
-        Expression var = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).variable());
-        Expression expr = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).expression());
-        if (!var.isConstant()) {
-          blockBuilder.assignTo((Expression.Variable) var, call("__id").withArgs(expr), location(element));
-        }
-      }
+      buildPlusOrAssignmentInvocation(blockBuilder, idGenerator, element);
     }
   }
 
@@ -300,6 +278,30 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
     if (arguments != null) {
       buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) tree.symbol());
+    }
+  }
+
+  private void buildPlusOrAssignmentInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, Tree element) {
+    boolean elementIsString = isString(((ExpressionTree) element).symbolType());
+    if (element.is(PLUS) && elementIsString) {
+      BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) element;
+      Expression lhs = idGenerator.lookupExpressionFor(binaryExpressionTree.leftOperand());
+      Expression rhs = idGenerator.lookupExpressionFor(binaryExpressionTree.rightOperand());
+      Expression.Variable var = variableWithId(idGenerator.newIdFor(binaryExpressionTree));
+      blockBuilder.assignTo(var, call("__concat").withArgs(lhs, rhs), location(element));
+    } else if (element.is(PLUS_ASSIGNMENT) && elementIsString) {
+      Expression var = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).variable());
+      Expression expr = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).expression());
+      if (!var.isConstant()) {
+        idGenerator.varForExpression(element, ((Expression.Variable) var).id());
+        blockBuilder.assignTo((Expression.Variable) var, call("__concat").withArgs(var, expr), location(element));
+      }
+    } else if (element.is(ASSIGNMENT)) {
+      Expression var = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).variable());
+      Expression expr = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).expression());
+      if (!var.isConstant()) {
+        blockBuilder.assignTo((Expression.Variable) var, call("__id").withArgs(expr), location(element));
+      }
     }
   }
 
@@ -409,7 +411,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
         if (tree != null) {
           if (tree.is(Tree.Kind.STRING_LITERAL)) {
             return constant(LiteralUtils.trimQuotes(((LiteralTree) tree).value()));
-          } else if (tree.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) tree).name().equals("this")) {
+          } else if (tree.is(IDENTIFIER) && ((IdentifierTree) tree).name().equals("this")) {
             return Expression.THIS;
           }
         }
@@ -421,7 +423,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     public String lookupIdFor(@Nullable Tree tree) {
       if (tree == null) {
         return CONST;
-      } else if (tree.is(Tree.Kind.IDENTIFIER)) {
+      } else if (tree.is(IDENTIFIER)) {
         return lookupIdFor(((IdentifierTree) tree).symbol());
       } else {
         return temps.getOrDefault(tree, CONST);
