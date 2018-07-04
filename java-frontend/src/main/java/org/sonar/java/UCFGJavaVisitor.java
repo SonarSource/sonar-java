@@ -247,10 +247,8 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       return;
     }
 
-    if(isObject(constructorSymbol.owner().type()) || tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isObject)) {
-      List<Expression> arguments = argumentIds(idGenerator, tree.arguments());
-      buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) constructorSymbol);
-    }
+    List<Expression> arguments = argumentIds(idGenerator, tree.arguments());
+    buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) constructorSymbol);
   }
 
   private void buildMethodInvocation(UCFGBuilder.BlockBuilder blockBuilder, IdentifierGenerator idGenerator, MethodInvocationTree tree) {
@@ -258,34 +256,27 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       return;
     }
 
-    List<Expression> arguments = null;
-
-    if (isObject(tree.symbol().owner().type()) ) {
-      arguments = new ArrayList<>();
-      if (tree.symbol().isStatic()) {
-        arguments.add(new Expression.ClassName(tree.symbol().type().fullyQualifiedName()));
-      } else if (tree.methodSelect().is(MEMBER_SELECT)) {
-        arguments.add(idGenerator.lookupExpressionFor(((MemberSelectExpressionTree) tree.methodSelect()).expression()));
-      } else if (tree.methodSelect().is(IDENTIFIER)) {
-        arguments.add(Expression.THIS);
-      }
-      arguments.addAll(argumentIds(idGenerator, tree.arguments()));
+    List<Expression> arguments = new ArrayList<>();
+    if (tree.symbol().isStatic()) {
+      arguments.add(new Expression.ClassName(tree.symbol().type().fullyQualifiedName()));
+    } else if (tree.methodSelect().is(MEMBER_SELECT)) {
+      arguments.add(idGenerator.lookupExpressionFor(((MemberSelectExpressionTree) tree.methodSelect()).expression()));
+    } else if (tree.methodSelect().is(IDENTIFIER)) {
+      arguments.add(Expression.THIS);
     }
+    arguments.addAll(argumentIds(idGenerator, tree.arguments()));
 
-    if (arguments != null) {
-      buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) tree.symbol());
-    }
+    buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) tree.symbol());
   }
 
   private void buildPlusOrAssignmentInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, Tree element) {
-    boolean elementIsString = (((ExpressionTree) element).symbolType()).is("java.lang.String");
-    if (element.is(PLUS) && elementIsString) {
+    if (element.is(PLUS)) {
       BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) element;
       Expression lhs = idGenerator.lookupExpressionFor(binaryExpressionTree.leftOperand());
       Expression rhs = idGenerator.lookupExpressionFor(binaryExpressionTree.rightOperand());
       Expression.Variable var = variableWithId(idGenerator.newIdFor(binaryExpressionTree));
       blockBuilder.assignTo(var, call("__concat").withArgs(lhs, rhs), location(element));
-    } else if (element.is(PLUS_ASSIGNMENT) && elementIsString) {
+    } else if (element.is(PLUS_ASSIGNMENT)) {
       Expression var = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).variable());
       Expression expr = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).expression());
       if (var instanceof Expression.Variable) {
@@ -379,12 +370,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     }
 
     public String newIdFor(@Nullable Tree tree) {
-      String id = lookupIdFor(tree);
-      if (isConst(id)) {
-        return temps.computeIfAbsent(tree, t -> newId());
-      } else {
-        return id;
-      }
+      return temps.computeIfAbsent(tree, t -> newId());
     }
 
     private String newId() {
