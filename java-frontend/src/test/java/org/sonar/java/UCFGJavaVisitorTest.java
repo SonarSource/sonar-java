@@ -60,7 +60,6 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.ucfg.UCFGBuilder.call;
 import static org.sonar.ucfg.UCFGBuilder.constant;
 import static org.sonar.ucfg.UCFGBuilder.newBasicBlock;
-import static org.sonar.ucfg.UCFGBuilder.variableWithId;
 
 public class UCFGJavaVisitorTest {
 
@@ -412,7 +411,7 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
-  public void create_multiple_auxiliaries_for_same_expression() {
+  public void create_multiple_auxiliary_local_variables_for_same_expression() {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
     Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
@@ -433,6 +432,31 @@ public class UCFGJavaVisitorTest {
         "    String x = true + arg;\n" +
         "    String y = true + arg;\n" +
         "    return \"\";\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
+  @Test
+  public void reuse_id_for_same_variable() {
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable x = UCFGBuilder.variableWithId("x");
+    Expression.Variable y = UCFGBuilder.variableWithId("y");
+    Expression.Variable z = UCFGBuilder.variableWithId("z");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
+        .addBasicBlock(newBasicBlock("1")
+            .assignTo(x, call("__id").withArgs(arg), new LocationInFile(FILE_KEY, 3,4,3,19))
+            .assignTo(y, call("__id").withArgs(x), new LocationInFile(FILE_KEY, 4,4,4,17))
+            .assignTo(z, call("__id").withArgs(x), new LocationInFile(FILE_KEY, 5,4,5,17))
+            .assignTo(aux0, call("__concat").withArgs(y, z), new LocationInFile(FILE_KEY, 6,11,6,16))
+            .ret(aux0, new LocationInFile(FILE_KEY, 6, 4, 6, 17)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  private String foo(String arg) { \n" +
+        "    String x = arg;\n" +
+        "    String y = x;\n" +
+        "    String z = x;\n" +
+        "    return y + z;\n" +
         "  }\n" +
         "}", expectedUCFG);
   }
