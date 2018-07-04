@@ -61,6 +61,27 @@ public class ResourceFactory {
     }
 }
 </pre>
+<p>With volatile field:</p>
+<pre>
+@ThreadSafe
+public class DoubleCheckedLocking {
+    private static volatile Resource resource;
+
+    public static Resource getInstance() {
+        if (resource == null) {
+            synchronized (DoubleCheckedLocking.class) {
+                if (resource == null)
+                    resource = new Resource();
+            }
+        }
+        return resource;
+    }
+
+    static class Resource {
+
+    }
+}
+</pre>
 <h2>See</h2>
 <ul>
   <li> <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">The "Double-Checked Locking is Broken" Declaration</a> </li>
