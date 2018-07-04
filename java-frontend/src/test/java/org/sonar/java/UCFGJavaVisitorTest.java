@@ -345,13 +345,6 @@ public class UCFGJavaVisitorTest {
         "}", expectedUCFG);
   }
 
-  private void assertUnknownMethodCalled(String source) {
-    CompilationUnitTree cut = getCompilationUnitTreeWithSemantics(source);
-    UnknownMethodVisitor unknownMethodVisitor = new UnknownMethodVisitor();
-    unknownMethodVisitor.visitCompilationUnit(cut);
-    assertThat(unknownMethodVisitor.unknownMethodCount).isGreaterThan(0);
-  }
-
   @Test
   public void build_two_parameters_annotations() {
     Expression.Variable arg0 = UCFGBuilder.variableWithId("arg0");
@@ -493,6 +486,13 @@ public class UCFGJavaVisitorTest {
       "    return valueOf(arg);\n" +
       "  }\n" +
       "}", expectedUCFG);
+  }
+
+  private void assertUnknownMethodCalled(String source) {
+    CompilationUnitTree cut = getCompilationUnitTreeWithSemantics(source);
+    UnknownMethodVisitor unknownMethodVisitor = new UnknownMethodVisitor();
+    unknownMethodVisitor.visitCompilationUnit(cut);
+    assertThat(unknownMethodVisitor.unknownMethodCount).isGreaterThan(0);
   }
 
   private void assertCodeToUCfgAndLocations(String source, UCFG expectedUCFG) {
