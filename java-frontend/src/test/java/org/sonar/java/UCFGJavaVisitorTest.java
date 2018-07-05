@@ -584,6 +584,35 @@ public class UCFGJavaVisitorTest {
         "}", expectedUCFG);
   }
 
+  @Test
+  public void method_argument_expressions_get_stored_in_auxiliary_local_variables() {
+    Expression.Variable arg1 = UCFGBuilder.variableWithId("arg1");
+    Expression.Variable arg2 = UCFGBuilder.variableWithId("arg2");
+    Expression.Variable arg3 = UCFGBuilder.variableWithId("arg3");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
+
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Object;[Ljava/lang/String;LA$Foo;)Ljava/lang/String;").addMethodParam(arg1).addMethodParam(arg2).addMethodParam(arg3)
+        .addStartingBlock(newBasicBlock("1")
+            .newObject(aux0, "java.lang.Integer", new LocationInFile(FILE_KEY, 4, 35, 4, 42))
+            .assignTo(aux1, call("java.lang.Integer#<init>(I)V").withArgs(aux0, constant("\"\"")), new LocationInFile(FILE_KEY, 4,31,4,45))
+            .assignTo(aux2, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(arg1), new LocationInFile(FILE_KEY, 4,47,4,62))
+            // field access and array access will change with SONARSEC-121 and SONARSEC-131, respectively
+            .assignTo(aux3, call("java.lang.String#format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;")
+                    .withArgs(new Expression.ClassName("java.lang.String"), constant("%s"), aux0, aux2, constant("\"\""), constant("\"\"")),
+                new LocationInFile(FILE_KEY, 4,11,4,82))
+            .ret(aux3, new LocationInFile(FILE_KEY, 4,4,4,83)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  class Foo { String foo; }\n" +
+        "  String method(Object arg1, String[] arg2, Foo arg3) {\n" +
+        "    return String.format(\"%s\", new Integer(1), arg1.toString(), arg2[0], arg3.foo);\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
   private void assertUnknownMethodCalled(String source) {
     CompilationUnitTree cut = getCompilationUnitTreeWithSemantics(source);
     UnknownMethodVisitor unknownMethodVisitor = new UnknownMethodVisitor();
