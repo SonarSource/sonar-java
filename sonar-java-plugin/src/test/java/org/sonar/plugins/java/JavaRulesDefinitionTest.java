@@ -29,9 +29,15 @@ import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.CheckList;
+import org.sonar.java.checks.ServletMethodsExceptionsThrownCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JavaRulesDefinitionTest {
 
@@ -159,6 +165,29 @@ public class JavaRulesDefinitionTest {
     RulesDefinition.Rule hardcodedCredentialsRule = repository.rule("S1313");
     assertThat(hardcodedCredentialsRule.type()).isEqualTo(RuleType.VULNERABILITY);
     assertThat(hardcodedCredentialsRule.activatedByDefault()).isFalse();
+  }
+
+  @Test
+  public void test_security_standards() throws Exception {
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_73_RUNTIME);
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    RulesDefinition.Repository repository = context.repository("squid");
+
+    RulesDefinition.Rule rule = repository.rule("S1989");
+    assertThat(rule.securityStandards()).containsExactlyInAnyOrder("cwe:600", "owaspTop10:a3");
+  }
+
+  @Test
+  public void test_security_standards_not_set_when_unsupported() throws Exception {
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_67_RUNTIME);
+    RulesDefinition.NewRepository repository = mock(RulesDefinition.NewRepository.class);
+    RulesDefinition.NewRule newRule = mock(RulesDefinition.NewRule.class);
+    when(repository.rule(any())).thenReturn(newRule);
+    definition.newRule(ServletMethodsExceptionsThrownCheck.class, repository, JavaSonarWayProfile.readProfile());
+
+    verify(newRule, never()).addOwaspTop10();
+    verify(newRule, never()).addCwe();
   }
 
   private class CheckWithNoAnnotation implements JavaCheck {

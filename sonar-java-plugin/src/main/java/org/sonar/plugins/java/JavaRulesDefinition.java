@@ -170,6 +170,16 @@ public class JavaRulesDefinition implements RulesDefinition {
       rule.setDebtRemediationFunction(metadata.remediation.remediationFunction(rule.debtRemediationFunctions()));
       rule.setGapDescription(metadata.remediation.linearDesc);
     }
+    if (supportsSecurityHotspots) {
+      addSecurityStandards(rule, metadata.securityStandards);
+    }
+  }
+
+  private static void addSecurityStandards(NewRule rule, SecurityStandards securityStandards) {
+    for (String s : securityStandards.OWASP) {
+      rule.addOwaspTop10(OwaspTop10.valueOf(s));
+    }
+    rule.addCwe(securityStandards.CWE);
   }
 
   private static String readResource(URL resource) {
@@ -191,10 +201,16 @@ public class JavaRulesDefinition implements RulesDefinition {
     String type;
     String[] tags;
     String defaultSeverity;
+    SecurityStandards securityStandards = new SecurityStandards();
 
     boolean isSecurityHotspot() {
       return SECURITY_HOTSPOT.equals(type);
     }
+  }
+
+  static class SecurityStandards {
+    int[] CWE = {};
+    String[] OWASP = {};
   }
 
   private static class Remediation {
