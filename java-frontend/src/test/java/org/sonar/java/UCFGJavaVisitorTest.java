@@ -177,6 +177,49 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
+  public void build_primitive_types_to_constants() {
+    Expression.Variable arg1 = UCFGBuilder.variableWithId("arg1");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
+    Expression.Variable aux4 = UCFGBuilder.variableWithId("%4");
+    Expression.Variable aux5 = UCFGBuilder.variableWithId("%5");
+    Expression.Variable s = UCFGBuilder.variableWithId("s");
+    Expression.Variable aux6 = UCFGBuilder.variableWithId("%6");
+    Expression.Variable aux7 = UCFGBuilder.variableWithId("%7");
+    Expression.Variable aux8 = UCFGBuilder.variableWithId("%8");
+    Expression.Variable aux9 = UCFGBuilder.variableWithId("%9");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(ZBCS)Ljava/lang/String;").addMethodParam(arg1)
+        .addBasicBlock(newBasicBlock("1")
+            .assignTo(aux0, call("java.io.PrintStream#print(I)V").withArgs(constant("\"\""), constant("\"\"")), new LocationInFile(FILE_KEY, 7,4,7,26))
+            .assignTo(aux1, call("java.io.PrintStream#print(Z)V").withArgs(constant("\"\""), constant("\"\"")), new LocationInFile(FILE_KEY, 8,4,8,26))
+            .assignTo(aux2, call("__concat").withArgs(constant(""), constant("\"\"")), new LocationInFile(FILE_KEY, 9,15,9,24))
+            .assignTo(aux3, call("__concat").withArgs(aux2, constant("\"\"")), new LocationInFile(FILE_KEY, 9,15,9,31))
+            .assignTo(aux4, call("__concat").withArgs(aux3, constant("\"\"")), new LocationInFile(FILE_KEY, 9,15,9,38))
+            .assignTo(aux5, call("__concat").withArgs(aux4, constant("\"\"")), new LocationInFile(FILE_KEY, 9,15,9,45))
+            .assignTo(s, call("__id").withArgs(aux5), new LocationInFile(FILE_KEY, 9,4,9,46))
+            .assignTo(aux6, call("__concat").withArgs(s, constant("\"\"")), new LocationInFile(FILE_KEY, 10,11,10,19))
+            .assignTo(aux7, call("__concat").withArgs(aux6, constant("\"\"")), new LocationInFile(FILE_KEY, 10,11,10,26))
+            .assignTo(aux8, call("__concat").withArgs(aux7, constant("\"\"")), new LocationInFile(FILE_KEY, 10,11,10,33))
+            .assignTo(aux9, call("__concat").withArgs(aux8, constant("\"\"")), new LocationInFile(FILE_KEY, 10,11,10,40))
+            .ret(aux9, new LocationInFile(FILE_KEY, 10,4,10,41)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  String method(boolean arg1, byte arg2, char arg3, short arg4) {\n" +
+        "    int var5 = 12;\n" +
+        "    long var6 = 12L;\n" +
+        "    float var7 = 1.0;\n" +
+        "    double var8 = 1.0;\n" +
+        "    System.out.print(var5);\n" +
+        "    System.out.print(arg1);\n" +
+        "    String s = \"\" + var5 + var6 + var7 + var8;\n" +
+        "    return s + arg1 + arg2 + arg3 + arg4;\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
+  @Test
   public void build_parameter_annotations() {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
