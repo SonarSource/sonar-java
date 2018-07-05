@@ -1,0 +1,23 @@
+<p>XML deserialization from an untrusted source can lead to unexpected code execution. XMLDecoder supports arbitrary method invocation. This
+capability is intended to call setter methods only but nothing prevents the execution of any other method.</p>
+<p>This rule raises an issue when XMLDecoder is instantiated. It's up to a security auditor to validate the input can't come from an untrusted
+source.</p>
+<p>The call to "readObject" is also highlighted to show where the malicious code can be executed.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public void decode(InputStream in) {
+  XMLDecoder d = new XMLDecoder(in); // Noncompliant
+  Object result = d.readObject();
+  [...]
+  d.close();
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://cwe.mitre.org/data/definitions/502.html">MITRE, CWE-502</a> - Deserialization of Untrusted Data </li>
+  <li> OWASP Top 10 2017 Category A1 - Injection </li>
+  <li> OWASP Top 10 2017 Category A8 - Insecure Deserialization </li>
+  <li> <a href="https://www.owasp.org/index.php/Deserialization_of_untrusted_data">OWASP Deserialization of untrusted data</a> </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#XML_DECODER">XML_DECODER </a> </li>
+</ul>
+

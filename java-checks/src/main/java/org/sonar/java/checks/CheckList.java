@@ -595,6 +595,7 @@ public final class CheckList {
       .add(SMTPSSLServerIdentityCheck.class)
       .add(StringOffsetMethodsCheck.class)
       .add(EnumEqualCheck.class)
+      .add(XmlDeserializationCheck.class)
       .add(JacksonDeserializationCheck.class)
       .build();
   }
