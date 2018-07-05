@@ -599,6 +599,7 @@ public class UCFGJavaVisitorTest {
             .newObject(aux0, "java.lang.Integer", new LocationInFile(FILE_KEY, 4, 35, 4, 42))
             .assignTo(aux1, call("java.lang.Integer#<init>(I)V").withArgs(aux0, constant("\"\"")), new LocationInFile(FILE_KEY, 4,31,4,45))
             .assignTo(aux2, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(arg1), new LocationInFile(FILE_KEY, 4,47,4,62))
+            // field access and array access will change with SONARSEC-121 and SONARSEC-131, respectively
             .assignTo(aux3, call("java.lang.String#format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;")
                     .withArgs(new Expression.ClassName("java.lang.String"), constant("%s"), aux0, aux2, constant("\"\""), constant("\"\"")),
                 new LocationInFile(FILE_KEY, 4,11,4,82))
