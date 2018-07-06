@@ -178,7 +178,6 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void build_primitive_types_to_constants() {
-    Expression.Variable arg1 = UCFGBuilder.variableWithId("arg1");
     Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
     Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
     Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
@@ -190,7 +189,7 @@ public class UCFGJavaVisitorTest {
     Expression.Variable aux7 = UCFGBuilder.variableWithId("%7");
     Expression.Variable aux8 = UCFGBuilder.variableWithId("%8");
     Expression.Variable aux9 = UCFGBuilder.variableWithId("%9");
-    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(ZBCS)Ljava/lang/String;").addMethodParam(arg1)
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(ZBCS)Ljava/lang/String;")
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("java.io.PrintStream#print(I)V").withArgs(constant("\"\""), constant("\"\"")), new LocationInFile(FILE_KEY, 7,4,7,26))
             .assignTo(aux1, call("java.io.PrintStream#print(Z)V").withArgs(constant("\"\""), constant("\"\"")), new LocationInFile(FILE_KEY, 8,4,8,26))
