@@ -25,7 +25,6 @@ import com.google.common.collect.Sets;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -358,16 +357,16 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
     private static final String CONST = "\"\"";
 
-    private final Map<Symbol, String> vars;
+    private final Map<Symbol, String> objectVars;
     private final Map<Tree, String> temps;
     private int counter;
 
     public IdentifierGenerator(MethodTree methodTree) {
-      List<Symbol> parameters = methodTree.parameters().stream().map(VariableTree::symbol).collect(Collectors.toList());
+      Set<Symbol> objectParameters = methodTree.parameters().stream().filter(p -> isObject(p.symbol().type())).map(VariableTree::symbol).collect(Collectors.toSet());
       VariableReadExtractor variableReadExtractor = new VariableReadExtractor(methodTree.symbol(), false);
       methodTree.accept(variableReadExtractor);
-      Set<Symbol> locals = variableReadExtractor.usedVariables().stream().filter(s -> isObject(s.type())).collect(Collectors.toSet());
-      vars = Sets.union(new HashSet<>(parameters), locals).stream().collect(Collectors.toMap(s -> s, Symbol::name));
+      Set<Symbol> objectLocals = variableReadExtractor.usedVariables().stream().filter(s -> isObject(s.type())).collect(Collectors.toSet());
+      objectVars = Sets.union(objectParameters, objectLocals).stream().collect(Collectors.toMap(s -> s, Symbol::name));
       temps = new HashMap<>();
       counter = 0;
     }
@@ -412,7 +411,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     }
 
     public String lookupIdFor(Symbol symbol) {
-      return vars.getOrDefault(symbol, CONST);
+      return objectVars.getOrDefault(symbol, CONST);
     }
 
     public void varForExpression(Tree element, String id) {
