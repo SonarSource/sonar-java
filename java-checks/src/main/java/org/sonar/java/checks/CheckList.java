@@ -597,6 +597,7 @@ public final class CheckList {
       .add(EnumEqualCheck.class)
       .add(XmlDeserializationCheck.class)
       .add(JacksonDeserializationCheck.class)
+      .add(ObjectDeserializationCheck.class)
       .build();
   }
 
