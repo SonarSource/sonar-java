@@ -1,0 +1,19 @@
+<p>Object deserialization from an untrusted source can lead to unexpected code execution. ObjectInputStream doesn't provide a way to apply rules on
+its InputStream argument. Knowing that all serializable classes in the scope of the classloader will be deserialized, there is a possibility to
+execute malicious code during the deserialization phase even if, in the end, a ClassCastException will be raised.</p>
+<p>This rule raises an issue when one of the methods "readObject", "readUnshared" is called on a "java.io.ObjectInputStream" or any object inheriting
+from it.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+InputStream untrusted = new WhatEverInputStream();
+ObjectInputStream ois = new ObjectInputStream(untrusted);
+Foo deserialized = (Foo) ois.readObject(); // Noncompliant
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://cwe.mitre.org/data/definitions/502.html">MITRE, CWE-502</a> - Deserialization of Untrusted Data </li>
+  <li> OWASP Top 10 2017 Category A8 - Insecure Deserialization </li>
+  <li> <a href="https://www.owasp.org/index.php/Deserialization_of_untrusted_data">OWASP Deserialization of untrusted data</a> </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#OBJECT_DESERIALIZATION">OBJECT_DESERIALIZATION </a> </li>
+</ul>
+
