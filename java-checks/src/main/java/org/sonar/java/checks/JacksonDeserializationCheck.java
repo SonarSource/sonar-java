@@ -20,8 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -89,7 +91,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
       if (tree.is(Tree.Kind.ASSIGNMENT)) {
         AssignmentExpressionTree assignment = (AssignmentExpressionTree) tree;
         if (((IdentifierTree) assignment.variable()).name().equals("use")
-            && isJsonTypeIdEnumValue(assignment.expression(),"CLASS", "MINIMAL_CLASS")) {
+            && isJsonTypeIdEnumValue(assignment.expression(), ImmutableSet.of("CLASS", "MINIMAL_CLASS"))) {
           return Optional.of(assignment.expression());
         }
       }
@@ -97,7 +99,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
     return Optional.empty();
   }
 
-  private static boolean isJsonTypeIdEnumValue(ExpressionTree tree, String... value) {
+  private static boolean isJsonTypeIdEnumValue(ExpressionTree tree, Set<String> values) {
     if (!isJsonTypeId(tree)) {
       return false;
     }
@@ -107,12 +109,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
     } else {
       valueName = ((IdentifierTree) tree).name();
     }
-    for (String enumValue : value) {
-      if (enumValue.equals(valueName)) {
-        return true;
-      }
-    }
-    return false;
+    return values.contains(valueName);
   }
 
   private static boolean isJsonTypeId(ExpressionTree tree) {

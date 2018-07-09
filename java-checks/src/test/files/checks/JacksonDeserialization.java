@@ -7,7 +7,7 @@ class JacksonDeserialization {
 
   public void enableDefaultTyping() {
     ObjectMapper mapper = new ObjectMapper();
-    mapper.enableDefaultTyping(); // Noncompliant {{Consider using @JsonTypeInfo instead of enabling polymorphic type handling globally}}
+    mapper.enableDefaultTyping(); // Noncompliant [[sc=5;ec=33]] {{Consider using @JsonTypeInfo instead of enabling polymorphic type handling globally}}
   }
 
 }
@@ -15,6 +15,8 @@ class JacksonDeserialization {
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS) // Noncompliant [[sc=21;ec=42]] {{Use @JsonTypeInfo(use = Id.NAME) instead}}
 abstract class PhoneNumber {
 
+  @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS) // Noncompliant {{Use @JsonTypeInfo(use = Id.NAME) instead}}
+  String field;
 }
 
 @JsonTypeInfo(use = MINIMAL_CLASS) // Noncompliant
