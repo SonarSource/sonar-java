@@ -69,8 +69,8 @@ import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
 import org.sonar.java.checks.spring.SpringAntMatcherOrderCheck;
 import org.sonar.java.checks.spring.SpringAutoConfigurationCheck;
-import org.sonar.java.checks.spring.SpringComponentScanCheck;
 import org.sonar.java.checks.spring.SpringBeansShouldBeAccessibleCheck;
+import org.sonar.java.checks.spring.SpringComponentScanCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.spring.SpringComponentWithWrongScopeCheck;
 import org.sonar.java.checks.spring.SpringComposedRequestMappingCheck;
@@ -595,6 +595,7 @@ public final class CheckList {
       .add(SMTPSSLServerIdentityCheck.class)
       .add(StringOffsetMethodsCheck.class)
       .add(EnumEqualCheck.class)
+      .add(JacksonDeserializationCheck.class)
       .build();
   }
 
