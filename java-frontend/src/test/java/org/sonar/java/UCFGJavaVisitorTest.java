@@ -479,7 +479,7 @@ public class UCFGJavaVisitorTest {
     Expression.Variable var1 = UCFGBuilder.variableWithId("var1");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("1")
-            .assignTo(var1, call("__id").withArgs(variableWithId("\"\"")), new LocationInFile(FILE_KEY, 1,36,1,48))
+            .assignTo(var1, call("__id").withArgs(constant("\"\"")), new LocationInFile(FILE_KEY, 1,36,1,48))
             .assignTo(var1, call("__id").withArgs(arg), new LocationInFile(FILE_KEY, 1,49,1,59))
             .ret(var1, new LocationInFile(FILE_KEY, 1,61,1,73)))
         .build();
@@ -597,7 +597,7 @@ public class UCFGJavaVisitorTest {
 
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/Integer;").addMethodParam(arg)
         .addStartingBlock(newBasicBlock("1")
-            .assignTo(instance, call("__id").withArgs(variableWithId("\"\"")), new LocationInFile(FILE_KEY, 3,4,3,21))
+            .assignTo(instance, call("__id").withArgs(constant("\"\"")), new LocationInFile(FILE_KEY, 3,4,3,21))
             .newObject(aux0, "java.lang.Integer", new LocationInFile(FILE_KEY, 4, 19, 4, 26))
             .assignTo(aux1, call("java.lang.Integer#<init>(Ljava/lang/String;)V").withArgs(aux0, arg), new LocationInFile(FILE_KEY, 4,15,4,31))
             .assignTo(instance, call("__id").withArgs(aux0), new LocationInFile(FILE_KEY, 4,4,4,31))
@@ -757,6 +757,8 @@ public class UCFGJavaVisitorTest {
     Expression.Variable aux5 = UCFGBuilder.variableWithId("%5");
     Expression.Variable aux6 = UCFGBuilder.variableWithId("%6");
     Expression.Variable aux7 = UCFGBuilder.variableWithId("%7");
+    Expression.Variable aux8 = UCFGBuilder.variableWithId("%8");
+    Expression.Variable s = UCFGBuilder.variableWithId("s");
     String methodId = "A#foo(Ljava/lang/String;[Ljava/lang/String;[I)Ljava/lang/String;";
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod(methodId)
         .addBasicBlock(newBasicBlock("1")
@@ -766,15 +768,18 @@ public class UCFGJavaVisitorTest {
             .assignTo(aux3, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 4,4,4,12))
             .assignTo(aux4, call("__concat").withArgs(aux3, foo), new LocationInFile(FILE_KEY, 4,4,4,19))
             .assignTo(aux5, call("__arraySet").withArgs(array, aux4), new LocationInFile(FILE_KEY, 4,4,4,19))
-            .assignTo(aux6, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 5,11,5,19))
-            .assignTo(aux7, call("__concat").withArgs(aux6, foo), new LocationInFile(FILE_KEY, 5,11,5,25))
-            .ret(aux7, new LocationInFile(FILE_KEY, 5, 4, 5, 26)))
+            .assignTo(aux6, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 5,15,5,23))
+            .assignTo(s, call("__id").withArgs(aux6), new LocationInFile(FILE_KEY, 5,4,5,24))
+            .assignTo(aux7, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 6,11,6,19))
+            .assignTo(aux8, call("__concat").withArgs(aux7, s), new LocationInFile(FILE_KEY, 6,11,6,23))
+            .ret(aux8, new LocationInFile(FILE_KEY, 6, 4, 6, 24)))
         .build();
     assertCodeToUCfg("class A { \n" +
         "  private String foo(String foo, String[] array, int[] intA) { \n" +
         "    foo(array[intA[0]], array, intA);\n" +
         "    array[0] += foo;\n" +
-        "    return array[0] + foo;\n" +
+        "    String s = array[1];\n" +
+        "    return array[0] + s;\n" +
         "  }\n" +
         "}", expectedUCFG);
   }
