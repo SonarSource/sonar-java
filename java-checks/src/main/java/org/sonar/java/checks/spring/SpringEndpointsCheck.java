@@ -45,11 +45,8 @@ public class SpringEndpointsCheck extends IssuableSubscriptionVisitor {
     }
     MethodTree methodTree = (MethodTree) tree;
     List<AnnotationTree> annotations = methodTree.modifiers().annotations();
-    annotations.forEach(annotationTree -> {
-      if (isSpringWebHandler(annotationTree)) {
-        reportIssue(methodTree.simpleName(), "Review this Spring request handler");
-      }
-    });
+    annotations.stream().filter(SpringEndpointsCheck::isSpringWebHandler).forEach(annotationTree ->
+        reportIssue(methodTree.simpleName(), "Review this Spring request handler"));
   }
 
   private static boolean isSpringWebHandler(AnnotationTree annotationTree) {
