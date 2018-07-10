@@ -28,4 +28,6 @@ public class SpringEndpoints {
   @PatchMapping
   public Object patch() {} // Noncompliant
 
+  public Object noIssueWithoutAnnotation() {}
+
 }

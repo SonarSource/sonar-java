@@ -21,7 +21,6 @@ package org.sonar.java.checks.spring;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -36,29 +35,26 @@ public class SpringEndpointsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.ANNOTATION);
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    AnnotationTree annotationTree = (AnnotationTree) tree;
-    if (isSpringWebHandler(annotationTree)) {
-      findParentMethod(annotationTree).ifPresent(annotatedMethod ->
-          reportIssue(annotatedMethod.simpleName(), "Review this Spring request handler"));
+    if (!hasSemantic()) {
+      return;
     }
+    MethodTree methodTree = (MethodTree) tree;
+    List<AnnotationTree> annotations = methodTree.modifiers().annotations();
+    annotations.forEach(annotationTree -> {
+      if (isSpringWebHandler(annotationTree)) {
+        reportIssue(methodTree.simpleName(), "Review this Spring request handler");
+      }
+    });
   }
 
   private static boolean isSpringWebHandler(AnnotationTree annotationTree) {
     Type annotationType = annotationTree.annotationType().symbolType();
     return annotationType.is(REQUEST_MAPPING_ANNOTATION)
         || annotationType.symbol().metadata().isAnnotatedWith(REQUEST_MAPPING_ANNOTATION);
-  }
-
-  private static Optional<MethodTree> findParentMethod(AnnotationTree annotationTree) {
-    Tree parent = annotationTree.parent();
-    while (parent != null && !parent.is(Tree.Kind.METHOD)) {
-      parent = parent.parent();
-    }
-    return Optional.ofNullable((MethodTree) parent);
   }
 }
