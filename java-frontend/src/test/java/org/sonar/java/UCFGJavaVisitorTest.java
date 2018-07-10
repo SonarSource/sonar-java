@@ -22,8 +22,14 @@ package org.sonar.java;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.BeforeClass;
@@ -512,7 +518,7 @@ public class UCFGJavaVisitorTest {
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1").ret(arg, new LocationInFile(FILE_KEY, 3,5,3,16)))
       .build();
-    UCFG ucfg = assertCodeToUCfg("class A {\n  String method(String arg) {\n     return arg;\n}}", expectedUCFG);
+    UCFG ucfg = assertCodeToUCfg("class A {\n  String method(String arg) {\n     return arg;\n}}", expectedUCFG).values().iterator().next();
     assertThat(ucfg.entryBlocks()).hasSize(1);
     assertThat(ucfg.entryBlocks().iterator().next().locationInFile()).isEqualTo(new LocationInFile(FILE_KEY, 3, 12, 3, 15));
   }
@@ -855,6 +861,40 @@ public class UCFGJavaVisitorTest {
         "}", expectedUCFG);
   }
 
+  @Test
+  public void constructor_chaining() {
+    Expression.Variable collection = UCFGBuilder.variableWithId("collection");
+    Expression.Variable s = UCFGBuilder.variableWithId("s");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    UCFG firstConstructor = UCFGBuilder.createUCFGForMethod("A#<init>(Ljava/util/Collection;)V")
+        .addStartingBlock(newBasicBlock("1")
+            .assignTo(aux0, call("java.util.ArrayList#<init>(Ljava/util/Collection;)V")
+                .withArgs(Expression.THIS, collection), new LocationInFile(FILE_KEY, 3,2,3,19))
+            .jumpTo(UCFGBuilder.createLabel("0")))
+        .addBasicBlock(newBasicBlock("0")
+            .ret(constant("implicit return"), new LocationInFile(FILE_KEY, 4,0,4,1)))
+        .build();
+    UCFG secondConstructor = UCFGBuilder.createUCFGForMethod("A#<init>(Ljava/lang/String;)V")
+        .addStartingBlock(newBasicBlock("1")
+            .assignTo(aux0, call("java.util.Arrays#asList([Ljava/lang/Object;)Ljava/util/List;")
+                .withArgs(new Expression.ClassName("java.util.Arrays"), s), new LocationInFile(FILE_KEY, 6,7,6,33))
+            .assignTo(aux1, call("A#<init>(Ljava/util/Collection;)V")
+                .withArgs(Expression.THIS, aux0), new LocationInFile(FILE_KEY, 6,2,6,34))
+            .jumpTo(UCFGBuilder.createLabel("0")))
+        .addBasicBlock(newBasicBlock("0")
+            .ret(constant("implicit return"), new LocationInFile(FILE_KEY, 7,0,7,1)))
+        .build();
+    assertCodeToUCfg("class A extends java.util.ArrayList<String> {\n" +
+        "public A(java.util.Collection<String> collection) {\n" +
+        "  super(collection);\n" +
+        "}\n" +
+        "public A(String s) {\n" +
+        "  this(java.util.Arrays.asList(s));\n" +
+        "}\n" +
+        "}", firstConstructor, secondConstructor);
+  }
+
   private void assertUnknownMethodCalled(String source) {
     CompilationUnitTree cut = getCompilationUnitTreeWithSemantics(source);
     UnknownMethodVisitor unknownMethodVisitor = new UnknownMethodVisitor();
@@ -862,32 +902,35 @@ public class UCFGJavaVisitorTest {
     assertThat(unknownMethodVisitor.unknownMethodCount).isGreaterThan(0);
   }
 
-  private void assertCodeToUCfgAndLocations(String source, UCFG expectedUCFG) {
-    assertCodeToUCfg(source, expectedUCFG, true);
+  private void assertCodeToUCfgAndLocations(String source, UCFG... expectedUCFGs) {
+    assertCodeToUCfg(source, true, expectedUCFGs);
   }
 
-  private UCFG assertCodeToUCfg(String source, UCFG expectedUCFG) {
-    return assertCodeToUCfg(source, expectedUCFG, false);
+  private Map<String, UCFG>  assertCodeToUCfg(String source, UCFG... expectedUCFGs) {
+    return assertCodeToUCfg(source, false, expectedUCFGs);
   }
 
-  private UCFG assertCodeToUCfg(String source, UCFG expectedUCFG, boolean testLocations) {
-    UCFG actualUCFG = createUCFG(source);
-    assertThat(actualUCFG.methodId()).isEqualTo(expectedUCFG.methodId());
-    assertThat(actualUCFG.basicBlocks()).isEqualTo(expectedUCFG.basicBlocks());
-    assertThat(actualUCFG.basicBlocks().values().stream().flatMap(b->b.instructions().stream()))
-        .containsExactlyElementsOf(expectedUCFG.basicBlocks().values().stream().flatMap(b->b.instructions().stream()).collect(Collectors.toList()));
-    assertThat(actualUCFG.basicBlocks().values().stream().map(BasicBlock::terminator))
-        .containsExactlyElementsOf(expectedUCFG.basicBlocks().values().stream().map(BasicBlock::terminator).collect(Collectors.toList()));
-    assertThat(actualUCFG.entryBlocks()).isEqualTo(expectedUCFG.entryBlocks());
-    assertThat(toLocationStream(actualUCFG).noneMatch(l->l == UCFGBuilder.LOC)).isTrue();
-    if(testLocations) {
-      Stream<LocationInFile> locStream = toLocationStream(actualUCFG);
-      assertThat(locStream).containsExactlyElementsOf(toLocationStream(expectedUCFG).collect(Collectors.toList()));
+  private Map<String, UCFG> assertCodeToUCfg(String source, boolean testLocations, UCFG... expectedUCFGs) {
+    Map<String, UCFG> actualUCFGs  = createUCFG(source);
+    for (UCFG expectedUCFG : expectedUCFGs) {
+      UCFG actualUCFG = actualUCFGs.get(expectedUCFG.methodId());
+      assertThat(actualUCFG.methodId()).isEqualTo(expectedUCFG.methodId());
+      assertThat(actualUCFG.basicBlocks()).isEqualTo(expectedUCFG.basicBlocks());
+      assertThat(actualUCFG.basicBlocks().values().stream().flatMap(b -> b.instructions().stream()))
+          .containsExactlyElementsOf(expectedUCFG.basicBlocks().values().stream().flatMap(b -> b.instructions().stream()).collect(Collectors.toList()));
+      assertThat(actualUCFG.basicBlocks().values().stream().map(BasicBlock::terminator))
+          .containsExactlyElementsOf(expectedUCFG.basicBlocks().values().stream().map(BasicBlock::terminator).collect(Collectors.toList()));
+      assertThat(actualUCFG.entryBlocks()).isEqualTo(expectedUCFG.entryBlocks());
+      assertThat(toLocationStream(actualUCFG).noneMatch(l -> l == UCFGBuilder.LOC)).isTrue();
+      if (testLocations) {
+        Stream<LocationInFile> locStream = toLocationStream(actualUCFG);
+        assertThat(locStream).containsExactlyElementsOf(toLocationStream(expectedUCFG).collect(Collectors.toList()));
+      }
     }
-    return actualUCFG;
+    return actualUCFGs;
   }
 
-  private UCFG createUCFG(String source) {
+  private Map<String, UCFG> createUCFG(String source) {
     File java_ucfg_dir = new File(new File(tmp.getRoot(), "ucfg"), "java");
     if(java_ucfg_dir.isDirectory()) {
       for (File file : java_ucfg_dir.listFiles()) {
@@ -899,14 +942,22 @@ public class UCFGJavaVisitorTest {
     UCFGJavaVisitor.javaFileKey = FILE_KEY;
     UCFGJavaVisitor.visitCompilationUnit(cut);
 
-    UCFG actualUCFG = null;
+    Map<String, UCFG> result = new HashMap<String, UCFG>();
     try {
-      File ucfg = new File(java_ucfg_dir, "ucfg_0.proto");
-      actualUCFG = UCFGtoProtobuf.fromProtobufFile(ucfg);
+      DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(java_ucfg_dir.getAbsolutePath()), new DirectoryStream.Filter<Path>() {
+        @Override
+        public boolean accept(final Path entry) {
+          return entry.toFile().getName().matches("ucfg_(.*).proto");
+        }
+      });
+      for (Path path : stream) {
+        UCFG ucfg = UCFGtoProtobuf.fromProtobufFile(path.toFile());
+        result.put(ucfg.methodId(), ucfg);
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return actualUCFG;
+    return result;
   }
 
   @Test
@@ -988,7 +1039,7 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void null_literal_should_produce_a_constant_expression() {
-    UCFG ucfg = createUCFG("class A {String foo(String s) {return foo(null);}}");
+    UCFG ucfg = createUCFG("class A {String foo(String s) {return foo(null);}}").values().iterator().next();
     BasicBlock basicBlock = ucfg.entryBlocks().iterator().next();
     // first argument is "this"
     Expression argExpression = ((Instruction.AssignCall)basicBlock.instructions().get(0)).getArgExpressions().get(1);
@@ -997,7 +1048,7 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void string_literal_should_produce_a_constant_expression() {
-    UCFG ucfg = createUCFG("class A {String foo(String s) {return foo(\"plop\");}}");
+    UCFG ucfg = createUCFG("class A {String foo(String s) {return foo(\"plop\");}}").values().iterator().next();
     BasicBlock basicBlock = ucfg.entryBlocks().iterator().next();
     // first argument is "this"
     Expression argExpression = ((Instruction.AssignCall)basicBlock.instructions().get(0)).getArgExpressions().get(1);
@@ -1006,7 +1057,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void constructors_should_have_a_ucfg() {
-    UCFG ucfg = createUCFG("class A { Object foo(String s) {new A(s); new Object(); new Unknown(\"\"); return new String();} A(String s) {} }");
+    UCFG ucfg = createUCFG("class A { Object foo(String s) {new A(s); new Object(); new Unknown(\"\"); return new String();} A(String s) {} }")
+        .get("A#foo(Ljava/lang/String;)Ljava/lang/Object;");
     assertThat(ucfg.methodId()).isEqualTo("A#foo(Ljava/lang/String;)Ljava/lang/Object;");
     List<Instruction> calls = ucfg.entryBlocks().iterator().next().instructions();
     assertThat(calls).hasSize(6);
