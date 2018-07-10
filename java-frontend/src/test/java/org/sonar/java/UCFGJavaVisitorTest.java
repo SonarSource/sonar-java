@@ -709,6 +709,36 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
+  public void array_multidimensional_getters_and_setters() {
+    Expression.Variable foo = UCFGBuilder.variableWithId("foo");
+    Expression.Variable multiDim = UCFGBuilder.variableWithId("multiDim");
+    Expression.Variable array = UCFGBuilder.variableWithId("array");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
+    Expression.Variable aux4 = UCFGBuilder.variableWithId("%4");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;[[Ljava/lang/String;[Ljava/lang/String;)Ljava/lang/String;")
+        .addBasicBlock(newBasicBlock("1")
+            .assignTo(aux0, call("__arraySet").withArgs(multiDim, array), new LocationInFile(FILE_KEY, 3,4,3,23))
+            .assignTo(aux1, call("__arrayGet").withArgs(multiDim), new LocationInFile(FILE_KEY, 4,4,4,15))
+            .assignTo(aux2, call("__arraySet").withArgs(aux1, foo), new LocationInFile(FILE_KEY, 4,4,4,24))
+            .assignTo(aux3, call("__arrayGet").withArgs(multiDim), new LocationInFile(FILE_KEY, 5,10,5,21))
+            .assignTo(aux4, call("__arrayGet").withArgs(aux3), new LocationInFile(FILE_KEY, 5,10,5,24))
+            .assignTo(foo, call("__id").withArgs(aux4), new LocationInFile(FILE_KEY, 5,4,5,24))
+            .ret(foo, new LocationInFile(FILE_KEY, 6, 4, 6, 15)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  private String foo(String foo, String[][] multiDim, String[] array) { \n" +
+        "    multiDim[0] = array;\n" +
+        "    multiDim[0][1] = foo;\n" +
+        "    foo = multiDim[0][0];\n" +
+        "    return foo;\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
+  @Test
   public void array_getters_and_setters_in_expressions() {
     Expression.Variable foo = UCFGBuilder.variableWithId("foo");
     Expression.Variable array = UCFGBuilder.variableWithId("array");

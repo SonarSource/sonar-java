@@ -247,7 +247,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) element;
       buildPlusAssignmentInvocation(blockBuilder, idGenerator, assignmentExpressionTree);
     } else if (element.is(ARRAY_ACCESS_EXPRESSION) && !element.parent().is(PLUS_ASSIGNMENT, ASSIGNMENT)) {
-      // in general, an array access is a get
+      // PLUS_ASSIGNMENT and ASSIGNMENT might imply an array set, otherwise an array access is always a get
       Expression.Variable getValue = variableWithId(idGenerator.newId());
       Expression array = idGenerator.lookupExpressionFor(((ArrayAccessExpressionTree)element).expression());
       blockBuilder.assignTo(getValue, arrayGet(array), location(element));
