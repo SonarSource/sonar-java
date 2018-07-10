@@ -64,6 +64,7 @@ import org.sonar.ucfg.LocationInFile;
 import org.sonar.ucfg.UCFG;
 import org.sonar.ucfg.UCFGBuilder;
 import org.sonar.ucfg.UCFGBuilder.BlockBuilder;
+import org.sonar.ucfg.UCFGBuilder.CallBuilder;
 import org.sonar.ucfg.UCFGtoProtobuf;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.ARRAY_ACCESS_EXPRESSION;
@@ -149,7 +150,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
     BlockBuilder entryBlockBuilder = buildBasicBlock(cfg.entry(), methodTree, idGenerator);
 
-    if (getAnnotatedParameters(methodTree).count() > 0) {
+    if (hasAnnotatedParameters(methodTree)) {
       builder.addStartingBlock(buildParameterAnnotationsBlock(methodTree, idGenerator, cfg));
       builder.addBasicBlock(entryBlockBuilder);
     } else {
@@ -175,21 +176,31 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
   private void buildBlockForParameter(VariableTree parameter, BlockBuilder blockBuilder, IdentifierGenerator idGenerator) {
     Expression.Variable parameterVariable = variableWithId(idGenerator.lookupIdFor(parameter.symbol()));
-    List<AnnotationTree> annotationList = parameter.modifiers().annotations();
     List<Expression> annotationVariables = new ArrayList<>();
 
-    annotationList.forEach(annotationTree -> {
+    parameter.modifiers().annotations().forEach(annotationTree -> {
       Expression.Variable var = variableWithId(idGenerator.newIdFor(annotationTree));
       annotationVariables.add(var);
-      blockBuilder.assignTo(var, call(annotationTree.annotationType().symbolType().fullyQualifiedName()).withArgs(parameterVariable), location(annotationTree));
+      blockBuilder.assignTo(var, annotateCall(annotationTree, parameterVariable), location(annotationTree));
     });
 
     Expression[] args = annotationVariables.toArray(new Expression[annotationVariables.size()]);
     blockBuilder.assignTo(parameterVariable, call("__annotation").withArgs(args), location(parameter.simpleName()));
   }
 
+  private static CallBuilder annotateCall(AnnotationTree annotation, Expression.Variable annotatedVariable) {
+    Expression.Constant fullyQualifiedName = constant(annotation.symbolType().fullyQualifiedName());
+    return call("__annotate").withArgs(fullyQualifiedName, annotatedVariable);
+  }
+
+  private static boolean hasAnnotatedParameters(MethodTree methodTree) {
+    return getAnnotatedParameters(methodTree).count() > 0;
+  }
+
   private static Stream<VariableTree> getAnnotatedParameters(MethodTree methodTree) {
-    return methodTree.parameters().stream().filter(parameter -> isObject(parameter.type().symbolType())).filter(parameter -> !parameter.modifiers().annotations().isEmpty());
+    return methodTree.parameters().stream()
+      .filter(parameter -> isObject(parameter.type().symbolType()))
+      .filter(parameter -> !parameter.modifiers().annotations().isEmpty());
   }
 
   private UCFGBuilder.BlockBuilder buildBasicBlock(CFG.Block javaBlock, MethodTree methodTree, IdentifierGenerator idGenerator) {
