@@ -691,10 +691,12 @@ public class UCFGJavaVisitorTest {
     Expression.Variable foo = UCFGBuilder.variableWithId("foo");
     Expression.Variable array = UCFGBuilder.variableWithId("array");
     Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;[Ljava/lang/String;)Ljava/lang/String;").addMethodParam(foo).addMethodParam(array)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("__arraySet").withArgs(array, foo), new LocationInFile(FILE_KEY, 3,4,3,18))
-            .assignTo(foo, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 4,4,4,18))
+            .assignTo(aux1, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 4,10,4,18))
+            .assignTo(foo, call("__id").withArgs(aux1), new LocationInFile(FILE_KEY, 4,4,4,18))
             .ret(foo, new LocationInFile(FILE_KEY, 5, 4, 5, 15)))
         .build();
     assertCodeToUCfg("class A { \n" +
@@ -742,7 +744,7 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
-  public void array_getters_and_setters_in_complex_expressions() {
+  public void array_in_expressions_with_multiple_access() {
     Expression.Variable array = UCFGBuilder.variableWithId("array");
     Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
     Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");

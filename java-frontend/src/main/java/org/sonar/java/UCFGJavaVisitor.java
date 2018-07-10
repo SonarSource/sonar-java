@@ -307,22 +307,15 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     }
     ExpressionTree lhsTree = tree.variable();
     ExpressionTree rhsTree = tree.expression();
+    Expression rightSide = lookupExpression(blockBuilder, idGenerator, rhsTree);
     if (lhsTree.is(ARRAY_ACCESS_EXPRESSION)) {
       Expression leftSide = idGenerator.lookupExpressionFor(((ArrayAccessExpressionTree)lhsTree).expression());
       // when an assignment implies both get and set on arrays, the get must be stored in an auxiliary local variable
-      Expression rightSide = lookupExpressionOrArrayGet(blockBuilder, idGenerator, rhsTree);
       blockBuilder.assignTo(variableWithId(idGenerator.newId()), arraySet(leftSide, rightSide), location(tree));
     } else {
       Expression leftSide = idGenerator.lookupExpressionFor(lhsTree);
-      if (leftSide instanceof Expression.Variable) {
-        if (rhsTree.is(ARRAY_ACCESS_EXPRESSION)) {
-          // the only case where a get is not stored in an auxiliary variable is when it's directly assigned to a variable
-          Expression rightSide = idGenerator.lookupExpressionFor(((ArrayAccessExpressionTree)rhsTree).expression());
-          blockBuilder.assignTo((Expression.Variable) leftSide, arrayGet(rightSide), location(tree));
-        } else {
-          Expression rightSide = idGenerator.lookupExpressionFor(rhsTree);
-          blockBuilder.assignTo((Expression.Variable) leftSide, call("__id").withArgs(rightSide), location(tree));
-        }
+      if (leftSide instanceof  Expression.Variable) {
+        blockBuilder.assignTo((Expression.Variable) leftSide, call("__id").withArgs(rightSide), location(tree));
       }
     }
   }
@@ -334,8 +327,8 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     ExpressionTree lhsTree = tree.variable();
     ExpressionTree rhsTree = tree.expression();
     // '+=' is the only expression which can imply two gets and one set on an array
-    Expression leftSide = lookupExpressionOrArrayGet(blockBuilder, idGenerator, lhsTree);
-    Expression rightSide = lookupExpressionOrArrayGet(blockBuilder, idGenerator, rhsTree);
+    Expression leftSide = lookupExpression(blockBuilder, idGenerator, lhsTree);
+    Expression rightSide = lookupExpression(blockBuilder, idGenerator, rhsTree);
     if (leftSide instanceof Expression.Variable) {
       if (lhsTree.is(ARRAY_ACCESS_EXPRESSION)) {
         Expression.Variable concatAux = variableWithId(idGenerator.newId());
@@ -363,7 +356,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
    * An array access expression depends on context - it might be a get or a set.
    * This method should be used for the contexts where it is clear that the array access (if present) is a get.
    */
-  private Expression lookupExpressionOrArrayGet(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, ExpressionTree expressionTree) {
+  private Expression lookupExpression(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, ExpressionTree expressionTree) {
     if (expressionTree.is(ARRAY_ACCESS_EXPRESSION)) {
       Expression array = idGenerator.lookupExpressionFor(((ArrayAccessExpressionTree)expressionTree).expression());
       Expression.Variable aux = variableWithId(idGenerator.newId());
