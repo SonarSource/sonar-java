@@ -261,16 +261,53 @@ public class UCFGJavaVisitorTest {
 
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("paramAnnotations")
-        .assignTo(aux0, call("javax.annotation.Nullable").withArgs(arg), new LocationInFile(FILE_KEY, 1, 24, 1, 50))
-        .assignTo(aux1, call("org.springframework.web.bind.annotation.RequestParam").withArgs(arg), new LocationInFile(FILE_KEY, 1, 51, 1, 106))
-        .assignTo(aux2, call("org.springframework.format.annotation.DateTimeFormat").withArgs(arg), new LocationInFile(FILE_KEY, 1, 107, 1, 160))
-        .assignTo(arg, call("__annotation").withArgs(aux0, aux1, aux2), new LocationInFile(FILE_KEY, 1, 168, 1, 171))
+        .assignTo(aux0, call("__annotate").withArgs(constant("javax.annotation.Nullable"), arg), new LocationInFile(FILE_KEY, 3, 6, 3, 32))
+        .assignTo(aux1, call("__annotate").withArgs(constant("org.springframework.web.bind.annotation.RequestParam"), arg), new LocationInFile(FILE_KEY, 4, 6, 4, 61))
+        .assignTo(aux2, call("__annotate").withArgs(constant("org.springframework.format.annotation.DateTimeFormat"), arg), new LocationInFile(FILE_KEY, 5, 6, 5, 59))
+        .assignTo(arg, call("__annotation").withArgs(aux0, aux1, aux2), new LocationInFile(FILE_KEY, 6, 13, 6, 16))
         .jumpTo(UCFGBuilder.createLabel("1")))
       .addBasicBlock(
         newBasicBlock("1")
-          .ret(constant("foo"), new LocationInFile(FILE_KEY, 1, 175, 1, 188)))
+          .ret(constant("foo"), new LocationInFile(FILE_KEY, 7, 4, 7, 17)))
       .build();
-    assertCodeToUCfg("class A { String method(@javax.annotation.Nullable @org.springframework.web.bind.annotation.RequestParam() @org.springframework.format.annotation.DateTimeFormat String arg) { return \"foo\";}}", expectedUCFG);
+    assertCodeToUCfg(
+      "class A {\n"
+        + "  String method(\n"
+        + "      @javax.annotation.Nullable\n"
+        + "      @org.springframework.web.bind.annotation.RequestParam()\n"
+        + "      @org.springframework.format.annotation.DateTimeFormat\n"
+        + "      String arg) {\n"
+        + "    return \"foo\";\n"
+        + "  }\n"
+        + "}",
+      expectedUCFG);
+  }
+
+  @Test
+  public void build_two_parameters_annotations() {
+    Expression.Variable arg0 = UCFGBuilder.variableWithId("arg0");
+    Expression.Variable arg1 = UCFGBuilder.variableWithId("arg1");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/String;").addMethodParam(arg0).addMethodParam(arg1)
+      .addBasicBlock(newBasicBlock("paramAnnotations")
+        .assignTo(aux0, call("__annotate").withArgs(constant("javax.annotation.Nullable"), arg0), new LocationInFile(FILE_KEY, 3, 6, 3, 32))
+        .assignTo(arg0, call("__annotation").withArgs(aux0), new LocationInFile(FILE_KEY, 3, 40, 3, 44))
+        .assignTo(aux1, call("__annotate").withArgs(constant("javax.annotation.Nullable"), arg1), new LocationInFile(FILE_KEY, 4, 6, 4, 32))
+        .assignTo(arg1, call("__annotation").withArgs(aux1), new LocationInFile(FILE_KEY, 4, 41, 4, 45))
+        .jumpTo(UCFGBuilder.createLabel("1")))
+      .addBasicBlock(
+        newBasicBlock("1")
+          .ret(constant("foo"), new LocationInFile(FILE_KEY, 5, 4, 5, 17)))
+      .build();
+    assertCodeToUCfg("class A {\n"
+      + "  String method(\n"
+      + "      @javax.annotation.Nullable String arg0,\n"
+      + "      @javax.annotation.Nullable Integer arg1) {\n"
+      + "    return \"foo\";\n"
+      + "  }\n"
+      + "}", expectedUCFG);
   }
 
   @Test
@@ -419,27 +456,6 @@ public class UCFGJavaVisitorTest {
         "    c.accept(\"foo\");\n" +
         "  }\n" +
         "}", expectedUCFG);
-  }
-
-  @Test
-  public void build_two_parameters_annotations() {
-    Expression.Variable arg0 = UCFGBuilder.variableWithId("arg0");
-    Expression.Variable arg1 = UCFGBuilder.variableWithId("arg1");
-    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
-    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
-
-    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/String;").addMethodParam(arg0).addMethodParam(arg1)
-      .addBasicBlock(newBasicBlock("paramAnnotations")
-        .assignTo(aux0, call("javax.annotation.Nullable").withArgs(arg0), new LocationInFile(FILE_KEY, 1, 24, 1, 50))
-        .assignTo(arg0, call("__annotation").withArgs(aux0), new LocationInFile(FILE_KEY, 1, 58, 1, 62))
-        .assignTo(aux1, call("javax.annotation.Nullable").withArgs(arg1), new LocationInFile(FILE_KEY, 1, 64, 1, 90))
-        .assignTo(arg1, call("__annotation").withArgs(aux1), new LocationInFile(FILE_KEY, 1, 99, 1, 103))
-        .jumpTo(UCFGBuilder.createLabel("1")))
-      .addBasicBlock(
-        newBasicBlock("1")
-          .ret(constant("foo"), new LocationInFile(FILE_KEY, 1, 107, 1, 120)))
-      .build();
-    assertCodeToUCfg("class A { String method(@javax.annotation.Nullable String arg0, @javax.annotation.Nullable Integer arg1) { return \"foo\";}}", expectedUCFG);
   }
 
   @Test
