@@ -311,6 +311,36 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
+  public void build_method_annotations() {
+    Expression.Variable arg0 = UCFGBuilder.variableWithId("arg0");
+    Expression.Variable arg1 = UCFGBuilder.variableWithId("arg1");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/String;").addMethodParam(arg0).addMethodParam(arg1)
+      .addBasicBlock(newBasicBlock("paramAnnotations")
+        .assignTo(aux0, call("__annotate").withArgs(constant("org.springframework.format.annotation.DateTimeFormat"), arg0), new LocationInFile(FILE_KEY, 2, 2, 2, 55))
+        .assignTo(aux1, call("__annotate").withArgs(constant("javax.annotation.Nullable"), arg0), new LocationInFile(FILE_KEY, 4, 6, 4, 32))
+        .assignTo(arg0, call("__annotation").withArgs(aux0, aux1), new LocationInFile(FILE_KEY, 4, 40, 4, 44))
+        .assignTo(aux2, call("__annotate").withArgs(constant("org.springframework.format.annotation.DateTimeFormat"), arg1), new LocationInFile(FILE_KEY, 2, 2, 2, 55))
+        .assignTo(arg1, call("__annotation").withArgs(aux2), new LocationInFile(FILE_KEY, 5, 14, 5, 18))
+        .jumpTo(UCFGBuilder.createLabel("1")))
+      .addBasicBlock(
+        newBasicBlock("1")
+          .ret(constant("foo"), new LocationInFile(FILE_KEY, 6, 4, 6, 17)))
+      .build();
+    assertCodeToUCfg("class A {\n"
+      + "  @org.springframework.format.annotation.DateTimeFormat\n"
+      + "  String method(\n"
+      + "      @javax.annotation.Nullable String arg0,\n"
+      + "      Integer arg1) {\n"
+      + "    return \"foo\";\n"
+      + "  }\n"
+      + "}", expectedUCFG);
+  }
+
+  @Test
   public void unknown_method() {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
