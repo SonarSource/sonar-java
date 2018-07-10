@@ -761,6 +761,39 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
+  public void array_variable_declaration() {
+    Expression.Variable foo = UCFGBuilder.variableWithId("foo");
+    Expression.Variable array = UCFGBuilder.variableWithId("array");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
+    Expression.Variable aux4 = UCFGBuilder.variableWithId("%4");
+    Expression.Variable aux5 = UCFGBuilder.variableWithId("%5");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;)[Ljava/lang/String;")
+        .addBasicBlock(newBasicBlock("1")
+            .newObject(aux0, "$Array", new LocationInFile(FILE_KEY, 3, 21, 3, 28))
+            .assignTo(aux1, call("__arraySet").withArgs(aux0, foo), new LocationInFile(FILE_KEY, 3, 21, 3, 28))
+            .assignTo(array, call("__id").withArgs(aux0), new LocationInFile(FILE_KEY, 3,4,3,29))
+            .newObject(aux2, "$Array", new LocationInFile(FILE_KEY, 4, 12, 4, 39))
+            .assignTo(aux3, call("__arraySet").withArgs(aux2, foo), new LocationInFile(FILE_KEY, 4,12,4,39))
+            .assignTo(aux4, call("__arraySet").withArgs(aux2, constant("bar")), new LocationInFile(FILE_KEY, 4,12,4,39))
+            .assignTo(array, call("__id").withArgs(aux2), new LocationInFile(FILE_KEY, 4,4,4,39))
+            .newObject(aux5, "$Array", new LocationInFile(FILE_KEY, 5, 12, 5, 25))
+            .assignTo(array, call("__id").withArgs(aux5), new LocationInFile(FILE_KEY, 5,4,5,25))
+            .ret(array, new LocationInFile(FILE_KEY, 6, 4, 6, 17)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  private String[] foo(String foo) { \n" +
+        "    String[] array = { foo };\n" +
+        "    array = new String[] { foo, \"bar\" };\n" +
+        "    array = new String[1];\n" +
+        "    return array;\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
+  @Test
   public void array_multidimensional_getters_and_setters() {
     Expression.Variable foo = UCFGBuilder.variableWithId("foo");
     Expression.Variable multiDim = UCFGBuilder.variableWithId("multiDim");
@@ -965,6 +998,8 @@ public class UCFGJavaVisitorTest {
     Map<String, UCFG> actualUCFGs  = createUCFG(source);
     for (UCFG expectedUCFG : expectedUCFGs) {
       UCFG actualUCFG = actualUCFGs.get(expectedUCFG.methodId());
+      // actualUCFG will be null in case there's no UCFG with the expected methodId
+      assertThat(actualUCFG).isNotNull();
       assertThat(actualUCFG.methodId()).isEqualTo(expectedUCFG.methodId());
       assertThat(actualUCFG.basicBlocks()).isEqualTo(expectedUCFG.basicBlocks());
       assertThat(actualUCFG.basicBlocks().values().stream().flatMap(b -> b.instructions().stream()))

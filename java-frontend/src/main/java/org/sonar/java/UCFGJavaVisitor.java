@@ -53,6 +53,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -73,6 +74,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.MEMBER_SELECT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_ARRAY;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_CLASS;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.PLUS;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.PLUS_ASSIGNMENT;
@@ -250,6 +252,9 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     } else if (element.is(NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) element;
       buildConstructorInvocation(blockBuilder, idGenerator, newClassTree);
+    } else if (element.is(NEW_ARRAY)) {
+      NewArrayTree newArrayTree = (NewArrayTree) element;
+      buildNewArrayInvocation(blockBuilder, idGenerator, newArrayTree);
     } else if (element.is(PLUS)) {
       BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) element;
       buildConcatenationInvocation(blockBuilder, idGenerator, binaryExpressionTree);
@@ -265,6 +270,17 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       Expression array = idGenerator.lookupExpressionFor(((ArrayAccessExpressionTree)element).expression());
       blockBuilder.assignTo(getValue, arrayGet(array), location(element));
       idGenerator.varForExpression(element, getValue.id());
+    }
+  }
+
+  private void buildNewArrayInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, NewArrayTree tree) {
+    Expression.Variable newArray = variableWithId(idGenerator.newIdFor(tree));
+    blockBuilder.newObject(newArray, tree.symbolType().fullyQualifiedName(), location(tree));
+    idGenerator.varForExpression(tree, newArray.id());
+
+    for (ExpressionTree initializer : tree.initializers()) {
+      Expression argument = idGenerator.lookupExpressionFor(initializer);
+      blockBuilder.assignTo(variableWithId(idGenerator.newId()), arraySet(newArray, argument), location(tree));
     }
   }
 
