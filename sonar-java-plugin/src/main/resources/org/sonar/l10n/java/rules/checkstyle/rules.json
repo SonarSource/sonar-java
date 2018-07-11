@@ -1,0 +1,1451 @@
+[
+  {
+    "key": "ArrayTypeStyleCheck",
+    "name": "Array Type Style",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks the style of array type definitions. Some like Java-style: public static void main(String[] args) and some like C-style: public static void main(String args[])\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "AvoidEscapedUnicodeCharactersCheck",
+    "name": "Avoid Escaped Unicode Characters",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<div >\n<h2><a name=\"AvoidEscapedUnicodeCharacters\"></a>AvoidEscapedUnicodeCharacters</h2>\n      \n<div >\n<h3><a name=\"Description\"></a>Description</h3>\n        \n<p>\n          Restrict using <a class=\"externalLink\" href=\"http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.3\">\n          Unicode escapes</a> (e.g. \\u221e).\n          It is possible to allow using escapes for\n          <a class=\"externalLink\" href=\"https://en.wiktionary.org/wiki/Appendix:Control_characters\"> non-printable(control) characters</a>.\n          Also, this check can be configured to allow using escapes\n          if trail comment is present. By the option it is possible to\n          allow using escapes if literal contains only them.\n        </p>\n      </div>\n\n       \n<div class=\"section\">\n<h3><a name=\"Properties\"></a>Properties</h3>\n        \n<table class=\"bodyTable\" border=\"0\">\n          \n<tbody><tr class=\"a\">\n            \n<th>name</th>\n            \n<th>description</th>\n            \n<th>type</th>\n            \n<th>default value</th>\n          </tr>\n          \n<tr class=\"b\">\n            \n<td>allowEscapesForControlCharacters</td>\n            \n<td>Allow use escapes for non-printable(control) characters.</td>\n            \n<td><a href=\"http://checkstyle.sourceforge.net/property_types.html#boolean\">Boolean</a></td>\n            \n<td>false</td>\n          </tr>\n          \n<tr class=\"a\">\n            \n<td>allowByTailComment</td>\n            \n<td>Allow use escapes if trail comment is present.</td>\n            \n<td><a href=\"http://checkstyle.sourceforge.net/property_types.html#boolean\">Boolean</a></td>\n            \n<td>false</td>\n          </tr>\n          \n<tr class=\"b\">\n            \n<td>allowIfAllCharactersEscaped</td>\n            \n<td>Allow if all characters in literal are escaped.</td>\n            \n<td><a href=\"http://checkstyle.sourceforge.net/property_types.html#boolean\">Boolean</a></td>\n            \n<td>false</td>\n          </tr>\n          \n<tr class=\"a\">\n            \n<td>allowNonPrintableEscapes</td>\n            \n<td>Allow non-printable escapes.</td>\n            \n<td><a href=\"http://checkstyle.sourceforge.net/property_types.html#boolean\">Boolean</a></td>\n            \n<td>false</td>\n          </tr>\n        </tbody></table>\n      </div>\n\n      \n<div class=\"section\">\n<h3><a name=\"Examples\"></a>Examples</h3>\n       \n<p>\n          Examples of using Unicode:\n        </p>\n        \n<div class=\"source\">\n<pre>String unitAbbrev = \"μs\"; //Best: perfectly clear even without a comment.\nString unitAbbrev = \"\\u03bcs\"; //Poor: the reader has no idea what this is.\n        </pre></div>\n        \n<p>\n          An example of how to configure the check is:\n        </p>\n        \n<div class=\"source\">\n<pre>&lt;module name=\"AvoidEscapedUnicodeCharacters\"/&gt;\n        </pre></div>\n        \n<p>\n          An example of non-printable(control) characters.\n        </p>\n        \n<div class=\"source\">\n<pre>return '\\ufeff' + content; // byte order mark\n        </pre></div>\n        \n<p>\n          An example of how to configure the check to allow using escapes\n          for non-printable(control) characters:\n        </p>\n        \n<div class=\"source\">\n<pre>&lt;module name=\"AvoidEscapedUnicodeCharacters\"&gt;\n    &lt;property name=\"allowEscapesForControlCharacters\" value=\"true\"/&gt;\n&lt;/module&gt;\n        </pre></div>\n        \n<p>\n          Example of using escapes with trail comment:\n        </p>\n        \n<div class=\"source\">\n<pre>String unitAbbrev = \"\\u03bcs\"; // Greek letter mu, \"s\"\n        </pre></div>\n        \n<p>\n          An example of how to configure the check to allow using escapes\n          if trail comment is present:\n        </p>\n        \n<div class=\"source\">\n<pre>&lt;module name=\"AvoidEscapedUnicodeCharacters\"&gt;\n    &lt;property name=\"allowByTailComment\" value=\"true\"/&gt;\n&lt;/module&gt;\n        </pre></div>\n        \n<p>\n          Example of using escapes if literal contains only them:\n        </p>\n        \n<div class=\"source\">\n<pre>String unitAbbrev = \"\\u03bc\\u03bc\\u03bc\";\n        </pre></div>\n        \n<p>\n          An example of how to configure the check to allow escapes\n          if literal contains only them:\n        </p>\n        \n<div class=\"source\">\n<pre>&lt;module name=\"AvoidEscapedUnicodeCharacters\"&gt;\n    &lt;property name=\"allowIfAllCharactersEscaped\" value=\"true\"/&gt;\n&lt;/module&gt;\n        </pre></div>\n        \n<p>\n          An example of how to configure the check to allow non-printable escapes:\n        </p>\n        \n<div class=\"source\">\n<pre>&lt;module name=\"AvoidEscapedUnicodeCharacters\"&gt;\n    &lt;property name=\"allowNonPrintableEscapes\" value=\"true\"/&gt;\n&lt;/module&gt;\n        </pre></div>\n      </div>\n\n      </div>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "DescendantTokenCheck",
+    "name": "Descendant Token",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks for restricted tokens beneath other tokens.\n\nWARNING: This is a very powerful and flexible check, but, at the same time, it is low-level and very implementation-dependent because its results depend on the grammar we use to build abstract syntax trees. Thus we recommend using other checks when they provide the desired functionality. Essentially, this check just works on the level of an abstract syntax tree and knows nothing about language structures.",
+    "tags": [],
+    "constantDebtMinutes": 60
+  },
+  {
+    "key": "FinalParametersCheck",
+    "name": "Final Parameters",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Check that method/constructor/catch/foreach parameters are final.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "NewlineAtEndOfFileCheck",
+    "name": "Newline At End Of File",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p>\nChecks that there is a newline at the end of each file. Any source files and text files in general should end with a newline character, especially when using SCM systems such as CVS. CVS will even print a warning when it encounters a file that doesn't end with a newline.\n</p>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "OuterTypeFilenameCheck",
+    "name": "Outer Type Filename",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that the outer type name and the file name match. For example, the class Foo must be in a file named Foo.java.",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "SuppressWarningsHolder",
+    "name": "Suppress Warnings Holder",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Maintains a set of check suppressions from @SuppressWarnings annotations. It allows to prevent Checkstyle from reporting errors from parts of code that were annotated with @SuppressWarnings and using name of the check to be excluded. You can also define aliases for check names that need to be suppressed.",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "TodoCommentCheck",
+    "name": "Comment pattern matcher",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "This rule allows to find any kind of pattern inside comments like TODO, NOPMD, ..., except NOSONAR\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "TrailingCommentCheck",
+    "name": "Trailing Comment",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p>\n  The check to ensure that requires that comments be the only thing on a line. For the case of // comments that means that the only thing that should precede it is whitespace. It\n  doesn't check comments if they do not end line, i.e. it accept the following: Thread.sleep( 10 &lt;some comment here&gt; ); Format property is intended to deal with the \"} //\n  while\" example.\n</p>\n<p>\n  Rationale: Steve McConnel in \"Code Complete\" suggests that endline comments are a bad practice. An end line comment would be one that is on the same line as actual code. For\n  example:\n</p>\n<pre>\n  <code>\n    a = b + c; // Some insightful comment\n    d = e / f; // Another comment for this line\n  </code>\n</pre>\n\n<p>\n  Quoting \"Code Complete\" for the justfication:\n</p>\n<ul>\n  <li>\"The comments have to be aligned so that they do not interfere with the visual structure of the code. If you don't align them neatly, they'll make your listing look like it's\n    been through a washing machine.\"\n  </li>\n  <li>\"Endline comments tend to be hard to format...It takes time to align them. Such time is not spent learning more about the code; it's dedicated solely to the tedious task of\n    pressing the spacebar or tab key.\"\n  </li>\n  <li>\"Endline comments are also hard to maintain. If the code on any line containing an endline comment grows, it bumps the comment farther out, and all the other endline comments\n    will have to bumped out to match. Styles that are hard to maintain aren't maintained....\"\n  </li>\n  <li>\"Endline comments also tend to be cryptic. The right side of the line doesn't offer much room and the desire to keep the comment on one line means the comment must be short.\n    Work\n    then goes into making the line as short as possible instead of as clear as possible. The comment usually ends up as cryptic as possible....\"\n  </li>\n  <li>\"A systemic problem with endline comments is that it's hard to write a meaningful comment for one line of code. Most endline comments just repeat the line of code, which\n    hurts\n    more than it helps.\"\n  </li>\n</ul>\n<p>\n  His comments on being hard to maintain when the size of the line changes are even more important in the age of automated refactorings.\n</p>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "TranslationCheck",
+    "name": "Translation",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "A FileSetCheck that ensures the correct translation of code by checking property files for consistency regarding their keys. Two property files describing one and the same context are consistent if they contain the same keys. TranslationCheck also can check an existence of required translations which must exist in project, if 'requiredTranslations' option is used.",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "UncommentedMainCheck",
+    "name": "Uncommented Main",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Detects uncommented main methods.",
+    "tags": [],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "UniquePropertiesCheck",
+    "name": "Unique Properties",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>Checks properties file for a duplicated properties.</p>\n\n<p>Rationale: Multiple property keys usualy appears after merge or rebase of several branches. While there is no errors in runtime, there can be a confusion on having different values for the duplicated properties.</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "UpperEllCheck",
+    "name": "Upper Ell",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p>\n          Checks that long constants are defined with an upper ell. That\n          is <code>' L'</code> and not <code>'l'</code>. This is in accordance with the Java\n          Language Specification, <a class=\"externalLink\" href=\"http://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.10.1\">\n          Section 3.10.1</a>.\n        </p>\n\n\n<p>\n          The capital L looks a lot like <code>1</code>.\n        </p>",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "annotation.AnnotationLocationCheck",
+    "name": "Annotation Location",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>Check location of annotation on language elements. By default, Check enforce to locate annotations immetiately after documentation block and before target element, annotation should be located on separate line from target element.</p>\n\n<p>Example:</p>\n\n<pre>\n@Override\n@Nullable\npublic String getNameIfPresent() { ... }\n</pre>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "annotation.AnnotationOnSameLineCheck",
+    "name": "Annotation On Same Line",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p>The check does verifying that annotations are located on the same line with their targets. Verifying with this check is not good practice, but it is using by some style guides.</p>",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "annotation.AnnotationUseStyleCheck",
+    "name": "Annotation Use Style",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Controls the style with the usage of annotations.",
+    "tags": [
+      "formatting"
+    ],
+    "constantDebtMinutes": 15
+  },
+  {
+    "key": "annotation.MissingDeprecatedCheck",
+    "name": "Missing Deprecated",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Verifies that both the java.lang.Deprecated annotation is present and the @deprecated Javadoc tag is present when either is present.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "annotation.MissingOverrideCheck",
+    "name": "Missing Override",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Verifies that the java.lang.Override annotation is present when the {@inheritDoc} javadoc tag is present.",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "annotation.PackageAnnotationCheck",
+    "name": "Package Annotation",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<h2><a name=\"PackageAnnotation\"></a>PackageAnnotation</h2>\n\n<div >\n<h3><a name=\"Description\"></a>Description</h3>\n        \n<p>  This check makes sure that all package annotations are in the\n             package-info.java file.\n        </p>\n        \n<p>\n             According to the Java Language Specification.\n        </p>\n\n        \n<p>\n            The JLS does not enforce the placement of package annotations.\n            This placement may vary based on implementation. The JLS\n            does highly recommend that all package annotations are\n            placed in the package-info.java file.\n\n            See <a class=\"externalLink\" href=\"http://docs.oracle.com/javase/specs/jls/se8/html/jls-7.html#jls-7.4.1\">\n            Java Language Specification, section 7.4.1</a>.\n        </p>\n      </div>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "annotation.SuppressWarningsCheck",
+    "name": "Suppress Warnings",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p> This check allows you to specify what warnings that SuppressWarnings is not allowed to suppress. You can also specify a list of TokenTypes that the configured warning(s) cannot be suppressed on.</p>\n<p>Limitations: This check does not consider conditionals inside the SuppressWarnings annotation.\nFor example: @SupressWarnings((false) ? (true) ? \"unchecked\" : \"foo\" : \"unused\") According to the above example, the \"unused\" warning is being suppressed not the \"unchecked\" or \"foo\" warnings. All of these warnings will be considered and matched against regardless of what the conditional evaluates to.</p>",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "blocks.AvoidNestedBlocksCheck",
+    "name": "Avoid Nested Blocks",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Finds nested blocks.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "blocks.EmptyBlockCheck",
+    "name": "Empty Block",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\nChecks for empty blocks.\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "blocks.EmptyCatchBlockCheck",
+    "name": "Empty catch block",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for empty catch blocks. There are two options to make validation more precise (by default Check allows empty catch block with any comment inside)",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "blocks.LeftCurlyCheck",
+    "name": "Left Curly",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks for the placement of left curly braces for code blocks. The policy to verify is specified using property option. Policies <code>eol</code> and <code>nlow</code> take into account property maxLineLength.\n\n<p>\n</p>",
+    "tags": [
+      "formatting"
+    ],
+    "constantDebtMinutes": 1
+  },
+  {
+    "key": "blocks.NeedBracesCheck",
+    "name": "Need Braces",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p>\nChecks for braces around code blocks.\n</p>\n\n<p>\n</p>",
+    "tags": [
+      "convention"
+    ],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "blocks.RightCurlyCheck",
+    "name": "Right Curly",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks the placement of right curly braces.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "coding.ArrayTrailingCommaCheck",
+    "name": "Array Trailing Comma",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks if array initialization contains optional trailing comma.",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "coding.AvoidInlineConditionalsCheck",
+    "name": "Avoid Inline Conditionals",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p>Detects inline conditionals.</p>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 15
+  },
+  {
+    "key": "coding.CovariantEqualsCheck",
+    "name": "Covariant Equals",
+    "type": "CODE_SMELL",
+    "severity": "CRITICAL",
+    "description": "Checks that if a class defines a covariant method equals, then it defines method equals(java.lang.Object).\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.DeclarationOrderCheck",
+    "name": "Declaration Order",
+    "type": "CODE_SMELL",
+    "severity": "INFO",
+    "description": "Checks that the parts of a class or interface declaration appear in the order suggested by the Code Convention for the Java Programming Language : <ul><li>Class (static) variables. First the public class variables, then the protected, then package level (no access modifier), and then the private.</li><li>Instance variables. First the public class variables, then the protected, then package level (no access modifier), and then the private.</li><li>Constructors</li><li>Methods</li></ul>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.DefaultComesLastCheck",
+    "name": "Default Comes Last",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Check that the default is after all the cases in a switch statement.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.EmptyStatementCheck",
+    "name": "Empty Statement",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Detects empty statements (standalone ';').\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.EqualsAvoidNullCheck",
+    "name": "Equals Avoid Null",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>Checks that any combination of String literals with optional assignment is on the left side of an equals() comparison.</p>\n<p>Rationale: Calling the equals() method on String literals will avoid a potential NullPointerException. Also, it is pretty common to see null check right before equals comparisons which is not necessary in the below example.</p>\n<p>For example:</p>\n<pre>\n  String nullString = null;\n  nullString.equals(\"My_Sweet_String\");\n</pre>\n\n<p>should be refactored to:</p>\n<pre>\n  String nullString = null;\n  \"My_Sweet_String\".equals(nullString);\n</pre>\n<p>Limitations: If the equals method is overridden or a covariant equals method is defined and the implementation is incorrect (where s.equals(t) does not return the same result as t.equals(s)) then rearranging the called on object and parameter may have unexpected results.</p>\n<p>Java's Autoboxing feature has an affect on how this check is implemented. Pre Java 5 all IDENT + IDENT object concatenations would not cause a NullPointerException even if null. Those situations could have been included in this check. They would simply act as if they surrounded by String.valueof() which would concatenate the String null.</p>\n<p>The following example will cause a NullPointerException as a result of what autoboxing does.</p>\n<pre>\n  Integer i = null, j = null;\n  String number = \"5\"\n  number.equals(i + j);\n</pre>\n<p>Since, it is difficult to determine what kind of Object is being concatenated all ident concatenation is considered unsafe.</p>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.EqualsHashCodeCheck",
+    "name": "Equals Hash Code",
+    "type": "BUG",
+    "severity": "CRITICAL",
+    "description": "Checks that classes that override equals() also override hashCode().\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "coding.ExplicitInitializationCheck",
+    "name": "Explicit Initialization",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks if any class or object member explicitly initialized to default for its type value (null for object references, zero for numeric types and char and false for boolean).\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "coding.FallThroughCheck",
+    "name": "Fall Through",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for fall through in switch statements Finds locations where a case contains Java code - but lacks a break, return, throw or continue statement.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "coding.FinalLocalVariableCheck",
+    "name": "Final Local Variable",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Ensures that local variables that never get their values changed, must be declared final.",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.HiddenFieldCheck",
+    "name": "Hidden Field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that a local variable or a parameter does not shadow a field that is defined in the same class.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "coding.IllegalCatchCheck",
+    "name": "Illegal Catch",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Catching java.lang.Exception, java.lang.Error or java.lang.RuntimeException is almost never acceptable.",
+    "tags": [
+      "error-handling"
+    ],
+    "constantDebtMinutes": 15
+  },
+  {
+    "key": "coding.IllegalInstantiationCheck",
+    "name": "Illegal Instantiation",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for illegal instantiations where a factory method is preferred. Depending on the project, for some classes it might be preferable to create instances through factory methods rather than calling the constructor. A simple example is the <code>java.lang.Boolean</code> class. In order to save memory and CPU cycles, it is preferable to use the predefined constants TRUE and FALSE. Constructor invocations should be replaced by calls to <code>Boolean.valueOf()</code>. Some extremely performance sensitive projects may require the use of factory methods for other classes as well, to enforce the usage of number caches or object pools.",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "coding.IllegalThrowsCheck",
+    "name": "Illegal Throws",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Throwing java.lang.Error or java.lang.RuntimeException is almost never acceptable.\n\n<p>\n</p>",
+    "tags": [
+      "error-handling"
+    ],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "coding.IllegalTokenCheck",
+    "name": "Illegal Token",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for illegal tokens. Certain language features often lead to hard to maintain code or are non-obvious to novice developers. Other features may be discouraged in certain frameworks, such as not having native methods in EJB components.",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "coding.IllegalTokenTextCheck",
+    "name": "Illegal Token Text",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for illegal token text.",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "coding.IllegalTypeCheck",
+    "name": "Illegal Type",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that particular class are never used as types in variable declarations, return values or parameters.",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "coding.InnerAssignmentCheck",
+    "name": "Inner Assignment",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for assignments in subexpressions, such as in String s = Integer.toString(i = 2);.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.MagicNumberCheck",
+    "name": "Magic Number",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks for magic numbers.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "coding.MissingCtorCheck",
+    "name": "Missing Constructor",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that classes (except abstract one) define a constructor and don't rely on the default one.",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "coding.MissingSwitchDefaultCheck",
+    "name": "Missing Switch Default",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that switch statement has default clause.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "coding.ModifiedControlVariableCheck",
+    "name": "Modified Control Variable",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Check for ensuring that for loop control variables are not modified inside the for block.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "coding.MultipleStringLiteralsCheck",
+    "name": "Multiple String Literals",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for multiple occurrences of the same string literal within a single file. Code duplication makes maintenance more difficult, so it can be better to replace the multiple occurrences with a constant.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.MultipleVariableDeclarationsCheck",
+    "name": "Multiple Variable Declarations",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that each variable declaration is in its own statement and on its own line.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "coding.NestedForDepthCheck",
+    "name": "Nested For Depth",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Restricts nested for blocks to a specified depth.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "coding.NestedIfDepthCheck",
+    "name": "Nested If Depth",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Restricts nested if-else blocks to a specified depth (default = 1).\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "coding.NestedTryDepthCheck",
+    "name": "Nested Try Depth",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Restricts nested try-catch-finally blocks to a specified depth (default = 1).\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "coding.NoCloneCheck",
+    "name": "No Clone",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p> Checks that the clone method is not overridden from the Object class.</p>\n\n<p>Rationale: The clone method relies on strange/hard to follow rules that do not work it all situations. Consequently, it is difficult to override correctly. Below are some of the rules/reasons why the clone method should be avoided.</p>\n<ul>\n    <li>Classes supporting the clone method should implement the Cloneable interface but the Cloneable interface does not include the clone method. As a result, it doesn't enforce the method override.</li>\n    <li>The Cloneable interface forces the Object's clone method to work correctly. Without implementing it, the Object's clone method will throw a CloneNotSupportedException.</li>\n    <li>Non-final classes must return the object returned from a call to super.clone().</li>\n    <li>Final classes can use a constructor to create a clone which is different from non-final classes.</li>\n    <li>If a super class implements the clone method incorrectly all subclasses calling super.clone() are doomed to failure.</li>\n    <li>If a class has references to mutable objects then those object references must be replaced with copies in the clone method after calling super.clone().</li>\n    <li>The clone method does not work correctly with final mutable object references because final references cannot be reassigned.</li>\n    <li>If a super class overrides the clone method then all subclasses must provide a correct clone implementation.</li>\n</ul>\n<p>Two alternatives to the clone method, in some cases, is a copy constructor or a static factory method to return copies of an object. Both of these approaches are simpler and do not conflict with final fields. The do not force the calling client to handle a CloneNotSuportException. They also are typed therefore no casting is necessary. Finally, they are more flexible since they can take interface types rather than concrete classes.</p>\n\n<p>Sometimes a copy constructor or static factory is not an acceptable alternative to the clone method. The example below highlights the limitation of a copy constructor (or static factory). Assume Square is a subclass for Shape.</p>\n<pre>\n  Shape s1 = new Square();\n  System.out.println(s1 instanceof Square); //true\n</pre>\n<p>...assume at this point the code knows nothing of s1 being a Square that's the beauty of polymorphism but the code wants to copy the Square which is declared as a Shape, its super type...</p>\n<pre>\n  Shape s2 = new Shape(s1); //using the copy constructor\n  System.out.println(s2 instanceof Square); //false\n</pre>\n\n<p>The working solution (without knowing about all subclasses and doing many casts) is to do the following (assuming correct clone implementation).</p>\n<pre>\n  Shape s2 = s1.clone();\n  System.out.println(s2 instanceof Square); //true\n</pre>\n\n<p>Just keep in mind if this type of polymorphic cloning is required then a properly implemented clone method may be the best choice.</p>\n\n<p>Much of this information was taken from Effective Java: Programming Language Guide First Edition by Joshua Bloch pages 45-52. Give Bloch credit for writing an excellent book.</p>\n\n<p>This check is almost exactly the same as the \"No Finalizer Check\".</p>",
+    "tags": [],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "coding.NoFinalizerCheck",
+    "name": "No Finalizer",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>Verifies there are no finalize() methods defined in a class.</p>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "coding.OneStatementPerLineCheck",
+    "name": "One Statement Per Line",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\nChecks there is only one statement per line. The following line will be flagged as an error: <code>x = 1; y = 2; // Two statments on a single line.</code>\n</p>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "coding.OverloadMethodsDeclarationOrderCheck",
+    "name": "Overload Methods Declaration Order",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that overload methods are grouped together.",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.PackageDeclarationCheck",
+    "name": "Package Declaration",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Ensures there is a package declaration.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.ParameterAssignmentCheck",
+    "name": "Parameter Assignment",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Disallow assignment of parameters.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.RequireThisCheck",
+    "name": "Require This",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that code doesn't rely on the this default.",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "coding.ReturnCountCheck",
+    "name": "Return Count",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Restricts return statements to a specified count (default = 2).\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "coding.SimplifyBooleanExpressionCheck",
+    "name": "Simplify Boolean Expression",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for overly complicated boolean expressions.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.SimplifyBooleanReturnCheck",
+    "name": "Simplify Boolean Return",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for overly complicated boolean return statements.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "coding.StringLiteralEqualityCheck",
+    "name": "String Literal Equality",
+    "type": "CODE_SMELL",
+    "severity": "CRITICAL",
+    "description": "Checks that string literals are not used with == or !=.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "coding.SuperCloneCheck",
+    "name": "Super Clone",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that an overriding clone() method invokes super.clone().\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "coding.SuperFinalizeCheck",
+    "name": "Super Finalize",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that an overriding finalize() method invokes super.finalize().\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "coding.UnnecessaryParenthesesCheck",
+    "name": "Unnecessary Parentheses",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks if unnecessary parentheses are used in a statement or expression.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 1
+  },
+  {
+    "key": "coding.VariableDeclarationUsageDistanceCheck",
+    "name": "Variable Declaration Usage Distance",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks the distance between declaration of variable and its first usage.",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "design.DesignForExtensionCheck",
+    "name": "Design For Extension",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<h2>DesignForExtension</h2>\n\n<div>\n<h3><a name=\"Description\"></a>Description</h3>\n\n<p>\n          The check finds classes that are designed for extension (subclass creation).\n        </p>\n\n<p>\n          Nothing wrong could be with founded classes.\n          This check makes sense only for library project (not an application projects)\n          which care of ideal OOP-design to make sure that class works in all cases even misusage.\n          Even in library projects this check most likely will find classes that are designed\n          for extension by somebody. User needs to use suppressions extensively to got a benefit from\n          this check, and keep in suppressions all confirmed/known classes that are deigned for\n          inheritance intentionally to let the check catch only new classes, and bring this to\n          team/user attention.\n        </p>\n\n<p>\n         ATTENTION: Only user can decide whether a class is designed for extension or not.\n         The check just shows all classes which are possibly designed for extension.\n         If smth inappropriate is found please use suppression.\n        </p>\n\n<p>\n         ATTENTION: If the method which can be overridden in a subclass has a javadoc comment\n         (a good practise is to explain its self-use of overridable methods) the check will not\n         rise a violation. The violation can also be skipped if the method which can be overridden\n         in a subclass has one or more annotations that are specified in ignoredAnnotations\n         option. Note, that by default @Override annotation is not included in the\n         ignoredAnnotations set as in a subclass the method which has the annotation can also be\n         overridden in its subclass.\n        </p>\n\n<p>\n          Problem is described at \"Effective Java, 2nd Edition by Josh Bloch\" book, chapter \"Item 17: Design and document for inheritance or else prohibit it\".\n        </p>\n\n<p>\n          Some quotes from book:\n        </p>\n\n<blockquote>The class must document its self-use of overridable methods.\nBy convention, a method that invokes overridable methods contains a description\nof these invocations at the end of its documentation comment. The description\nbegins with the phrase “This implementation.”\n        </blockquote>\n\n<blockquote>The best solution to this problem is to prohibit subclassing in classes that\nare not designed and documented to be safely subclassed.\n        </blockquote>\n\n<blockquote>If a concrete class does not implement a standard interface, then you may\ninconvenience some programmers by prohibiting inheritance. If you feel that you\nmust allow inheritance from such a class, one reasonable approach is to ensure\nthat the class never invokes any of its overridable methods and to document this\nfact. In other words, eliminate the class’s self-use of overridable methods entirely.\nIn doing so, you’ll create a class that is reasonably safe to subclass. Overriding a\nmethod will never affect the behavior of any other method.\n        </blockquote>\n\n<p>\n          The check finds classes that have overridable methods (public or protected methods\n          that are non-static, not-final, non-abstract) and have non-empty implementation.\n        </p>\n\n\n<p>\n          Rationale: This library design style protects superclasses against\n          being broken by subclasses. The downside is that subclasses are\n          limited in their flexibility, in particular they cannot prevent\n          execution of code in the superclass, but that also means that\n          subclasses cannot corrupt the state of the superclass by forgetting\n          to call the superclass's method.\n        </p>\n\n<p>\n          More specifically,\n          it enforces a programming style where superclasses provide empty\n          \"hooks\" that can be implemented by subclasses.\n        </p>\n\n<p>\n          Example of code that cause violation as it is designed for extension:\n        </p>\n\n<div class=\"source\">\n<pre>public abstract class Plant {\n    private String roots;\n    private String trunk;\n\n    protected void validate() {\n      if (roots == null) throw new IllegalArgumentException(\"No roots!\");\n      if (trunk == null) throw new IllegalArgumentException(\"No trunk!\");\n    }\n\n    public abstract void grow();\n}\n\npublic class Tree extends Plant {\n    private List leaves;\n\n    @Overrides\n    protected void validate() {\n      super.validate();\n      if (leaves == null) throw new IllegalArgumentException(\"No leaves!\");\n    }\n\n    public void grow() {\n      validate();\n    }\n}\n        </pre></div>\n\n<p>\n          Example of code without violation:\n        </p>\n\n<div class=\"source\">\n<pre>public abstract class Plant {\n    private String roots;\n    private String trunk;\n\n    private void validate() {\n        if (roots == null) throw new IllegalArgumentException(\"No roots!\");\n        if (trunk == null) throw new IllegalArgumentException(\"No trunk!\");\n        validateEx();\n    }\n\n    protected void validateEx() { }\n\n    public abstract void grow();\n}\n        </pre></div>\n      </div>\n\n\n<div>\n<h3><a name=\"Properties\"></a>Properties</h3>\n\n<table class=\"bodyTable\" border=\"0\">\n\n<tbody><tr class=\"a\">\n\n<th>name</th>\n\n<th>description</th>\n\n<th>type</th>\n\n<th>default value</th>\n                </tr>\n\n<tr class=\"b\">\n\n<td>ignoredAnnotations</td>\n\n<td>\n                        Annotations which allow the check to skip the method from validation.\n                    </td>\n\n<td>String Set</td>\n\n<td><code>Test, Before, After, BeforeClass, AfterClass</code></td>\n                </tr>\n            </tbody></table>\n        </div>\n\n\n<div class=\"section\">\n<h3><a name=\"Examples\"></a>Examples</h3>\n\n<p>\n          To configure the check:\n        </p>\n\n\n<div class=\"source\">\n<pre>&lt;module name=\"DesignForExtension\"/&gt;\n        </pre></div>\n\n\n<p>\n          To configure the check to allow methods which have @Override and @Test annotations to be\n          designed for extension.\n        </p>\n\n\n<div class=\"source\">\n<pre>&lt;module name=\"DesignForExtension\"&gt;\n  &lt;property name=\"ignoredAnnotations\" value=\"Override, Test\"/&gt;\n&lt;/module&gt;\n        </pre></div>\n\n\n<div class=\"source\">\n<pre>public class A extends B {\n  @Override\n  public int foo() {\n    return 2;\n  }\n\n  public int foo2() {return 8;} // violation\n}\n\npublic class B {\n  /**\n   * This implementation ...\n     @return some int value.\n   */\n  public int foo() {\n    return 1;\n  }\n\n  public int foo3() {return 3;} // violation\n}\n\npublic class FooTest {\n  @Test\n  public void testFoo() {\n     final B b = new A();\n     assertEquals(2, b.foo());\n  }\n\n  public int foo4() {return 4;} // violation\n}\n        </pre></div>\n      </div>",
+    "tags": [],
+    "constantDebtMinutes": 60
+  },
+  {
+    "key": "design.FinalClassCheck",
+    "name": "Final Class",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that class which has only private constructors is declared as final.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "design.HideUtilityClassConstructorCheck",
+    "name": "Hide Utility Class Constructor",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Make sure that utility classes (classes that contain only static methods) do not have a public constructor.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "design.InnerTypeLastCheck",
+    "name": "Inner Type Last",
+    "type": "CODE_SMELL",
+    "severity": "INFO",
+    "description": "Check nested (internal) classes/interfaces are declared at the bottom of the class after all method and field declarations.",
+    "tags": [],
+    "constantDebtMinutes": 15
+  },
+  {
+    "key": "design.InterfaceIsTypeCheck",
+    "name": "Interface Is Type",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Implements Bloch, Effective Java, Item 17 - Use Interfaces only to define types.  According to Bloch, an interface should describe a type. It is therefore inappropriate to define an interface that does not contain any methods but only constants. The Standard class javax.swing.SwingConstants is an example of a class that would be flagged by this check. The check can be configured to also disallow marker interfaces like java.io.Serializable, that do not contain methods or constants at all.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "design.MutableExceptionCheck",
+    "name": "Mutable Exception",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Ensures that exceptions (defined as any class name conforming to some regular expression) are immutable.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "design.OneTopLevelClassCheck",
+    "name": "One Top Level Class",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\n          Checks that each top-level class, interface or\n          enum resides in a source file of its own.\n          Official description of a 'top-level' term:<a class=\"externalLink\" href=\"http://docs.oracle.com/javase/specs/jls/se7/html/jls-7.html#jls-7.6\">7.6. Top Level Type Declarations</a>.\n          If file doesn't contains public class, enum or interface,\n          top-level type is the first type in file.\n        </p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "design.ThrowsCountCheck",
+    "name": "Throws Count",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Restricts throws statements to a specified count (default = 1).\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 60
+  },
+  {
+    "key": "design.VisibilityModifierCheck",
+    "name": "Visibility Modifier",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks visibility of class members. Only static final members may be public; other class members must be private unless property protectedAllowed or packageAllowed is set.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "header.HeaderCheck",
+    "name": "Header",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>Checks that a source file begins with a specified header. Property headerFile specifies a file that contains the required header. Alternatively, the header specification can be set directly in the header property without the need for an external file.</p>\n<p>Property ignoreLines specifies the line numbers to ignore when matching lines in a header file. This property is very useful for supporting headers that contain copyright dates. For example, consider the following header:</p>\n<pre>\n    line 1: ////////////////////////////////////////////////////////////////////\n    line 2: // checkstyle:\n    line 3: // Checks Java source code for adherence to a set of rules.\n    line 4: // Copyright (C) 2002  Oliver Burn\n    line 5: ////////////////////////////////////////////////////////////////////\n</pre>\n<p>Since the year information will change over time, you can tell Checkstyle to ignore line 4 by setting property ignoreLines to 4.</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "header.RegexpHeaderCheck",
+    "name": "Regexp Header",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>Checks the header of a source file against a header that contains a regular expression for each line of the source header.</p>\n<p>Rationale: In some projects checking against a fixed header is not sufficient, e.g. the header might require a copyright line where the year information is not static. For example, consider the following header:</p>\n<pre>\n    line  1: ^/{71}$\n    line  2: ^// checkstyle:$\n    line  3: ^// Checks Java source code for adherence to a set of rules\\.$\n    line  4: ^// Copyright \\(C\\) \\d\\d\\d\\d  Oliver Burn$\n    line  5: ^// Last modification by \\$Author.*\\$$\n    line  6: ^/{71}$\n    line  7:\n    line  8: ^package\n    line  9:\n    line 10: ^import\n    line 11:\n    line 12: ^/\\*\\*\n    line 13: ^ \\*([^/]|$)\n    line 14: ^ \\*/\n</pre>\n<p>Lines 1 and 6 demonstrate a more compact notation for 71 '/' characters. Line 4 enforces that the copyright notice includes a four digit year. Line 5 is an example how to enforce revision control keywords in a file header. Lines 12-14 is a template for javadoc (line 13 is so complicated to remove conflict with and of javadoc comment).</p>\n<p>Different programming languages have different comment syntax rules, but all of them start a comment with a non-word character. Hence you can often use the non-word character class to abstract away the concrete comment syntax and allow checking the header for different languages with a single header definition. For example, consider the following header specification (note that this is not the full Apache license header):</p>\n<pre>\n    line 1: ^#!\n    line 2: ^&lt;\\?xml.*&gt;$\n    line 3: ^\\W*$\n    line 4: ^\\W*Copyright 2006 The Apache Software Foundation or its licensors, as applicable\\.$\n    line 5: ^\\W*Licensed under the Apache License, Version 2\\.0 \\(the \"License\"\\);$\n    line 6: ^\\W*$\n</pre>\n<p>Lines 1 and 2 leave room for technical header lines, e.g. the \"#!/bin/sh\" line in Unix shell scripts, or the xml file header of XML files. Set the multiline property to \"1, 2\" so these lines can be ignored for file types where they do no apply. Lines 3 through 6 define the actual header content. Note how lines 2, 4 and 5 use escapes for characters that have special regexp semantics.</p>\n<p>Note: ignoreLines property has been removed from this check to simplify it. To make some line optional use \"^.*$\" regexp for this line. </p>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "imports.AvoidStarImportCheck",
+    "name": "Avoid Star Import",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Check that finds import statements that use the * notation.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "imports.AvoidStaticImportCheck",
+    "name": "Avoid Static Import",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p> Checks that there are no static import statements. Rationale: Importing static members can lead to naming conflicts between class' members. It may lead to poor code readability since it may no longer be clear what class a member resides in (without looking at the import statement).</p>",
+    "tags": [],
+    "constantDebtMinutes": 15
+  },
+  {
+    "key": "imports.CustomImportOrderCheck",
+    "name": "Custom Import Order",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\n          Checks that the groups of import declarations appear in the order specified\n          by the user. If there is an import but its group is not specified in the\n          configuration such an import should be placed at the end of the import list.\n        </p>\n\n        <p>\n          The rule consists of:\n        </p>\n        <p>\n         1) STATIC group. This group sets the ordering of static imports.\n        </p>\n        <p>\n          2) SAME_PACKAGE(n) group. This group sets the ordering of the same package imports.\n          n' - a number of the first package domains. For example:\n        </p>\n        <pre>\n package java.util.concurrent;\n\n import java.util.regex.Pattern;\n import java.util.List;\n import java.util.StringTokenizer;\n import java.util.regex.Pattern;\n import java.util.*;\n import java.util.concurrent.AbstractExecutorService;\n import java.util.concurrent.*;\n        </pre>\n        <p>\n          And we have such configuration: SAME_PACKAGE (3).\n          Same package imports are java.util.*, java.util.concurrent.*,\n          java.util.concurrent.AbstractExecutorService,\n          java.util.List and java.util.StringTokenizer\n        </p>\n        <p>\n          3) THIRD_PARTY_PACKAGE group. This group sets ordering of third party imports.\n          Third party imports are all imports except STATIC,\n          SAME_PACKAGE(n) and STANDARD_JAVA_PACKAGE.\n        </p>\n        <p>\n          4) STANDARD_JAVA_PACKAGE group. This group sets ordering of standard java (java|javax) imports.\n        </p>\n        <p>\n          5) SPECIAL_IMPORTS group. This group may contains some imports\n          that have particular meaning for the user.\n        </p>\n\n        <p>\n          Use the separator '###' between rules.\n        </p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "imports.IllegalImportCheck",
+    "name": "Illegal Import",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for imports from a set of illegal packages, like sun.*\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 60
+  },
+  {
+    "key": "imports.ImportControlCheck",
+    "name": "Import Control",
+    "type": "CODE_SMELL",
+    "severity": "BLOCKER",
+    "description": "<div >\n<div class=\"section\">\nsee full documentation at <a href=\"http://checkstyle.sourceforge.net/config_imports.html#ImportControl\">ImportControl</a>\n</div>\n</div>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "imports.ImportOrderCheck",
+    "name": "Import Order",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks the ordering/grouping of imports. Features are:<ul>\n    <li>groups imports: ensures that groups of imports come in a specific order (e.g., java. comes first, javax. comes second, then everything else)</li>\n    <li>adds a separation between groups : ensures that a blank line sit between each group</li>\n    <li>sorts imports inside each group: ensures that imports within each group are in lexicographic order</li>\n    <li>sorts according to case: ensures that the comparison between imports is case sensitive</li>\n    <li>groups static imports: ensures the relative order between regular imports and static imports</li>\n    </ul>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "imports.RedundantImportCheck",
+    "name": "Redundant import",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks for redundant import statements. An import statement is considered redundant if:\n<ul>\n    <li>It is a duplicate of another import. This is, when a class is imported more than once.</li>\n    <li>The class imported is from the java.lang package, e.g. importing java.lang.String.</li>\n    <li>The class imported is from the same package.</li></ul>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "imports.UnusedImportsCheck",
+    "name": "Unused Imports",
+    "type": "CODE_SMELL",
+    "severity": "INFO",
+    "description": "Checks for unused import statements.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "indentation.CommentsIndentationCheck",
+    "name": "Comments Indentation",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<div >\n<h2><a name=\"CommentsIndentation\"></a>CommentsIndentation</h2>\n      \n<div class=\"section\">\n<h3><a name=\"Description\"></a>Description</h3>\n        \n<p>\n          Controls the indentation between comments and surrounding code.\n          Comments are indented at the same level as the surrounding code.\n          Detailed info about such convention can be found <a class=\"externalLink\" href=\"http://checkstyle.sourceforge.net/reports/google-java-style.html#s4.8.6.1-block-comment-style\">\n          here</a>\n        </p>\n        \n<p>Please take a look at the following examples to understand how the check works:</p>\n\n        \n<p>Example #1: Block comments.</p>\n        \n<div class=\"source\">\n<pre>1   /*\n2    * it is Ok\n3    */\n4   boolean bool = true;\n5\n6     /* violation\n7      * (block comment should have the same indentation level as line 9)\n8      */\n9   double d = 3.14;\n        </pre></div>\n        \n<p>Example #2: Comment is placed at the end of the block and has previous statement.</p>\n        \n<div class=\"source\">\n<pre>1   public void foo1() {\n2       foo2();\n3       // it is OK\n4   }\n5\n6   public void foo2() {\n7       foo3();\n8          // violation (comment should have the same indentation level as line 7)\n9   }\n        </pre></div>\n        \n<p>Example #3: Comment is used as a single line border to separate groups of methods.</p>\n        \n<div class=\"source\">\n<pre>1   /////////////////////////////// it is OK\n2\n3   public void foo7() {\n4      int a = 0;\n5   }\n6\n7     /////////////////////////////// violation (should have the same indentation level as line 9)\n8\n9   public void foo8() {}\n        </pre></div>\n        \n<p>Example #4: Comment has destributed previous statement.</p>\n        \n<div class=\"source\">\n<pre>1   public void foo11() {\n2       CheckUtils\n3           .getFirstNode(new DetailAST())\n4           .getFirstChild()\n5           .getNextSibling();\n6       // it is OK\n7   }\n8\n9   public void foo12() {\n10       CheckUtils\n11          .getFirstNode(new DetailAST())\n12          .getFirstChild()\n13          .getNextSibling();\n14                // violation (should have the same indentation level as line 10)\n15  }\n        </pre></div>\n        \n<p>\n          Example #5: Single line block comment is placed within an empty code block.\n          Note, if comment is placed at the end of the empty code block, we have Checkstyle's\n          limitations to clearly detect user intention of explanation target - above or below. The\n          only case we can assume as a violation is when a single line comment within the empty\n          code block has indentation level that is lower than the indentation level of the closing\n          right curly brace.\n        </p>\n        \n<div class=\"source\">\n<pre>1   public void foo46() {\n2       // comment\n3       // block\n4       // it is OK (we cannot clearly detect user intention of explanation target)\n5   }\n6\n7   public void foo46() {\n8  // comment\n9  // block\n10 // violation (comment hould have the same indentation level as line 11)\n11  }\n        </pre></div>\n        \n<p>Example #6: 'fallthrough' comments and similar.</p>\n        \n<div class=\"source\">\n<pre>0   switch(a) {\n1     case \"1\":\n2        int k = 7;\n3        // it is OK\n4     case \"2\":\n5        int k = 7;\n6     // it is OK\n7     case \"3\":\n8        if (true) {}\n9           // violation (should have the same indentation level as line 8 or 10)\n10    case \"4\":\n11    case \"5\": {\n12        int a;\n13    }\n14    // fall through (it is OK)\n15    case \"12\": {\n16        int a;\n17    }\n18    default:\n19        // it is OK\n20  }\n        </pre></div>\n        \n<p>Example #7: Comment is placed within a destributed statement.</p>\n        \n<div class=\"source\">\n<pre>1   String breaks = \"J\"\n2   // violation (comment should have the same indentation level as line 3)\n3       + \"A\"\n4       // it is OK\n5       + \"V\"\n6       + \"A\"\n7   // it is OK\n8   ;\n        </pre></div>\n        \n<p>\n          Examnple #8: Comment is placed within an empty case block.\n          Note, if comment is placed at the end of the empty case block, we have Checkstyle's\n          limitations to clearly detect user intention of explanation target - above or below. The\n          only case we can assume as a violation is when a single line comment within the empty case\n          block has indentation level that is lower than the indentation level of the next case\n          token.\n        </p>\n        \n<div class=\"source\">\n<pre>1   case 4:\n2     // it is OK\n3   case 5:\n4  // violation (should have the same indentation level as line 3 or 5)\n5   case 6:\n        </pre></div>\n        \n<p>Example #9: Single line block comment has previous and next statement.</p>\n        \n<div class=\"source\">\n<pre>1   String s1 = \"Clean code!\";\n2      s.toString().toString().toString();\n3   // single line\n4   // block\n5   // comment (it is OK)\n6   int a = 5;\n7\n8   String s2 = \"Code complete!\";\n9    s.toString().toString().toString();\n10            // violation (should have the same indentation level as line 11)\n11       // violation (should have the same indentation level as line 12)\n12     // violation (should have the same indentation level as line 13)\n13  int b = 18;\n        </pre></div>\n        \n<p>Example #10: Comment within the block tries to describe the next code block.</p>\n        \n<div class=\"source\">\n<pre>1   public void foo42() {\n2      int a = 5;\n3      if (a == 5) {\n4         int b;\n5         // it is OK\n6      } else if (a ==6) { ... }\n7   }\n8\n9   public void foo43() {\n10     try {\n11        int a;\n12     // Why do we catch exception here? - violation (should have the same indenatation as line 11)\n13     } catch (Exception e) { ... }\n14  }\n        </pre></div>\n      </div>\n      \n<div >\n<h3><a name=\"Properties\"></a>Properties</h3>\n        \n<table class=\"bodyTable\" border=\"0\">\n          \n<tbody><tr class=\"a\">\n            \n<th>name</th>\n            \n<th>description</th>\n            \n<th>type</th>\n            \n<th>default value</th>\n          </tr>\n            \n<tr class=\"b\">\n            \n<td>tokens</td>\n            \n<td>tokens to check</td>\n            \n<td>\n              subset of tokens\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#SINGLE_LINE_COMMENT\">SINGLE_LINE_COMMENT</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#BLOCK_COMMENT_BEGIN\">BLOCK_COMMENT_BEGIN</a>.\n            </td>\n            \n<td>\n              <a href=\"http://checkstyle.sourceforge.net/pidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#SINGLE_LINE_COMMENT\">SINGLE_LINE_COMMENT</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#BLOCK_COMMENT_BEGIN\">BLOCK_COMMENT_BEGIN</a>.\n            </td>\n          </tr>\n        </tbody></table>\n      </div>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "indentation.IndentationCheck",
+    "name": "Indentation",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks correct indentation of Java Code.\n\n<p>\n</p>",
+    "tags": [
+      "formatting"
+    ],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "javadoc.AtclauseOrderCheck",
+    "name": "At-clause Order",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks the order of at-clauses.",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "javadoc.JavadocMethodCheck",
+    "name": "Javadoc Method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks the Javadoc of a method or constructor. By default, does not check for unused throws.\n    To allow documented java.lang.RuntimeExceptions that are not declared, set property allowUndeclaredRTE to true.\n    The scope to verify is specified using the Scope class and defaults to Scope.PRIVATE.\n    To verify another scope, set property scope to a different scope.\n\n    <br><br>Error messages about parameters and type parameters for which no param tags are present can be suppressed by defining property allowMissingParamTags.\n    Error messages about exceptions which are declared to be thrown, but for which no throws tag is present can be suppressed by defining property allowMissingThrowsTags.\n    Error messages about methods which return non-void but for which no return tag is present can be suppressed by defining property allowMissingReturnTag.\n\n    <br><br>Javadoc is not required on a method that is tagged with the @Override annotation.\n    However under Java 5 it is not possible to mark a method required for an interface (this was corrected under Java 6).\n    Hence Checkstyle supports using the convention of using a single {@inheritDoc} tag instead of all the other tags.\n\n    <br><br>Note that only inheritable items will allow the {@inheritDoc} tag to be used in place of comments.\n    Static methods at all visibilities, private non-static methods and constructors are not inheritable.\n\n<p>\n</p>",
+    "tags": [
+      "comment"
+    ],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "javadoc.JavadocPackageCheck",
+    "name": "Javadoc Package",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p>Checks that each Java package has a Javadoc file used for commenting. By default it only allows a package-info.java file, but can be configured to allow a package.html file. An error will be reported if both files exist as this is not allowed by the Javadoc tool.</p>\n\n<p>\n</p>",
+    "tags": [
+      "comment"
+    ],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "javadoc.JavadocParagraphCheck",
+    "name": "Javadoc Paragraph",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that:\n<ul>\n    <li>There is one blank line between each of two paragraphs and one blank line before the at-clauses block if it is present.</li>\n    <li>Each paragraph but the first has &lt;p&gt; immediately before the first word, with no space after.</li>\n</ul>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "javadoc.JavadocStyleCheck",
+    "name": "Javadoc Style",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Validates Javadoc comments to help ensure they are well formed. The following checks are performed:\n    <ul>\n      <li>Ensures the first sentence ends with proper punctuation (That is a period, question mark, or exclamation mark, by default). \n      Javadoc automatically places the first sentence in the method summary table and index. With out proper punctuation the Javadoc may be malformed. \n      All items eligible for the {@inheritDoc} tag are exempt from this requirement.</li>\n      <li>Check text for Javadoc statements that do not have any description. \n      This includes both completely empty Javadoc, and Javadoc with only tags such as @param and @return.</li>\n      <li>Check text for incomplete HTML tags. Verifies that HTML tags have corresponding end tags and issues an \"Unclosed HTML tag found:\" error if not. \n      An \"Extra HTML tag found:\" error is issued if an end tag is found without a previous open tag.</li>\n      <li>Check that a package Javadoc comment is well-formed (as described above) and NOT missing from any package-info.java files.</li>\n      <li>Check for allowed HTML tags. The list of allowed HTML tags is \"a\", \"abbr\", \"acronym\", \"address\", \"area\", \"b\", \n      \"bdo\", \"big\", \"blockquote\", \"br\", \"caption\", \"cite\", \"code\", \"colgroup\", \"del\", \"div\", \"dfn\", \"dl\", \"em\", \"fieldset\", \n      \"h1\" to \"h6\", \"hr\", \"i\", \"img\", \"ins\", \"kbd\", \"li\", \"ol\", \"p\", \"pre\", \"q\", \"samp\", \"small\", \"span\", \"strong\", \n      \"sub\", \"sup\", \"table\", \"tbody\", \"td\", \"tfoot\", \"th\", \"thread\", \"tr\", \"tt\", \"ul\"</li>\n    </ul>",
+    "tags": [
+      "comment"
+    ],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "javadoc.JavadocTagContinuationIndentationCheck",
+    "name": "Javadoc Tag Continuation Indentation",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks the indentation of the continuation lines in at-clauses.",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "javadoc.JavadocTypeCheck",
+    "name": "Javadoc Type",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks Javadoc comments for class and interface definitions. By default, does not check for author or version tags.\n    The scope to verify is specified using the Scope class and defaults to Scope.PRIVATE. To verify another scope, set property scope to one of the Scope constants.\n    To define the format for an author tag or a version tag, set property authorFormat or versionFormat respectively to a regular expression.\n    <br><br>Error messages about type parameters for which no param tags are present can be suppressed by defining property allowMissingParamTags.\n\n<p>\n</p>",
+    "tags": [
+      "comment"
+    ],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "javadoc.JavadocVariableCheck",
+    "name": "Javadoc Variable",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that a variable has Javadoc comment.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "javadoc.NonEmptyAtclauseDescriptionCheck",
+    "name": "Non Empty At-clause Description",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that the at-clause tag is followed by description.",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "javadoc.SingleLineJavadocCheck",
+    "name": "Single Line Javadoc",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that a JavaDoc block which can fit on a single line and doesn't contain at-clauses. Javadoc comment that contains at leat one at-clause should be formatted in few lines.",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "javadoc.SummaryJavadocCheck",
+    "name": "Javadoc summary",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that Javadoc summary sentence does not contain phrases that are not recommended to use.",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "javadoc.WriteTagCheck",
+    "name": "Write Tag",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Outputs a JavaDoc tag as information. Can be used e.g. with the stylesheets that sort the report by author name. To define the format for a tag, set property tagFormat to a regular expression. This check uses two different severity levels. The normal one is used for reporting when the tag is missing. The additional one (tagSeverity) is used for the level of reporting when the tag exists.",
+    "tags": [],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "metrics.BooleanExpressionComplexityCheck",
+    "name": "Boolean Expression Complexity",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Restricts nested boolean operators (&amp;&amp;, || and ^) to a specified depth (default = 3).\n\n<p>\n</p>",
+    "tags": [
+      "size"
+    ],
+    "constantDebtMinutes": 30
+  },
+  {
+    "key": "metrics.ClassDataAbstractionCouplingCheck",
+    "name": "Class Data Abstraction Coupling",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "This metric measures the number of instantiations of other classes within the given class.",
+    "tags": [],
+    "constantDebtMinutes": 60
+  },
+  {
+    "key": "metrics.ClassFanOutComplexityCheck",
+    "name": "Class Fan Out Complexity",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "The number of other classes a given class relies on.\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 120
+  },
+  {
+    "key": "metrics.CyclomaticComplexityCheck",
+    "name": "Cyclomatic Complexity",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\nChecks cyclomatic complexity of methods against a specified limit. The complexity is measured by the number of if, while, do, for, ?:, catch, switch, case  statements, and operators &amp;&amp; and || (plus one) in the body of a constructor, method, static initializer, or instance initializer. It is a measure of the minimum number of possible paths through the source and therefore the number of required tests. Generally 1-4 is considered good, 5-7 ok, 8-10 consider re-factoring, and 11+ re-factor now !\n</p>\n\n<p>\n</p>",
+    "tags": [
+      "size"
+    ],
+    "constantDebtMinutes": 180
+  },
+  {
+    "key": "metrics.JavaNCSSCheck",
+    "name": "JavaNCSS",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Determines complexity of methods, classes and files by counting the Non Commenting Source Statements (NCSS). This check adheres to the  specification for the JavaNCSS-Tool  written by Chr. Clemens Lee.\nRougly said the NCSS metric is calculated by counting the source lines which are not comments, (nearly) equivalent to counting the semicolons and opening curly braces.\nThe NCSS for a class is summarized from the NCSS of all its methods, the NCSS of its nested classes and the number of member variable declarations.\nThe NCSS for a file is summarized from the ncss of all its top level classes, the number of imports and the package declaration.\n<br>\nRationale: Too large methods and classes are hard to read and costly to maintain. A large NCSS number often means that a method or class has too many responsabilities and/or functionalities which should be decomposed into smaller units.",
+    "tags": [
+      "size"
+    ],
+    "constantDebtMinutes": 180
+  },
+  {
+    "key": "metrics.NPathComplexityCheck",
+    "name": "NPath Complexity",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks the npath complexity of a method against a specified limit (default = 200). The NPATH metric computes the number of possible execution paths through a function. It takes into account the nesting of conditional statements and multi-part boolean expressions (e.g., A &amp;&amp; B, C || D, etc.).",
+    "tags": [
+      "size"
+    ],
+    "constantDebtMinutes": 60
+  },
+  {
+    "key": "modifier.ModifierOrderCheck",
+    "name": "Modifier Order",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p>\n          Checks that the order of modifiers conforms to the suggestions in\n          the <a class=\"externalLink\" href=\"http://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html\">Java\n          Language specification, sections 8.1.1, 8.3.1, 8.4.3</a> and <a class=\"externalLink\" href=\"https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html\">\n          9.4</a>. The correct order is:\n        </p>\n\n\n<ol style=\"list-style-type: decimal;\">\n\n<li>\n            <code>public</code>\n          </li>\n\n<li>\n            <code>protected</code>\n          </li>\n\n<li>\n            <code>private</code>\n          </li>\n\n<li>\n            <code>abstract</code>\n          </li>\n\n<li>\n            <code>default</code>\n          </li>\n\n<li>\n            <code>static</code>\n          </li>\n\n<li>\n            <code>final</code>\n          </li>\n\n<li>\n            <code>transient</code>\n          </li>\n\n<li>\n            <code>volatile</code>\n          </li>\n\n<li>\n            <code>synchronized</code>\n          </li>\n\n<li>\n            <code>native</code>\n          </li>\n\n<li>\n            <code>strictfp</code>\n          </li>\n        </ol>\n\n\n<p>\n          ATTENTION: We skip <a class=\"externalLink\" href=\"http://www.oracle.com/technetwork/articles/java/ma14-architect-annotations-2177655.html\">\n          type annotations</a> from validation.\n        </p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "modifier.RedundantModifierCheck",
+    "name": "Redundant Modifier",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks for redundant modifiers in interface and annotation definitions.",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "naming.AbbreviationAsWordInNameCheck",
+    "name": "Abbreviation As Word In Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<div >\n<h2><a name=\"AbbreviationAsWordInName\"></a>AbbreviationAsWordInName</h2>\n      \n<div class=\"section\">\n<h3><a name=\"Description\"></a>Description</h3>\n        \n<p>\n         The Check validate abbreviations(consecutive capital letters)\n         length in identifier name, it also allows to enforce camel case naming. Please read more at\n         <a class=\"externalLink\" href=\"http://checkstyle.sourceforge.net/reports/google-java-style.html#s5.3-camel-case\">\n         Google Style Guide</a>\n         to get to know how to avoid long abbreviations in names.\n        </p>\n      </div>\n\n       \n<div class=\"section\">\n<h3><a name=\"Properties\"></a>Properties</h3>\n        \n<table class=\"bodyTable\" border=\"0\">\n          \n<tbody><tr class=\"a\">\n            \n<th>name</th>\n            \n<th>description</th>\n            \n<th>type</th>\n            \n<th>default value</th>\n          </tr>\n          \n<tr class=\"b\">\n            \n<td>allowedAbbreviationLength</td>\n            \n<td>indicates on the allowed amount of capital letters in targeted identifiers\n             (abbreviations in the classes, interfaces, variables and methods names, ... ).</td>\n            \n<td><a href=\"http://checkstyle.sourceforge.net/property_types.html#integer\">Integer</a></td>\n            \n<td>3</td>\n          </tr>\n          \n<tr class=\"a\">\n            \n<td>allowedAbbreviations</td>\n            \n<td>list of abbreviations that must be skipped for checking.\n            Abbreviations should be separated by comma, no spaces are allowed.</td>\n            \n<td><a href=\"http://checkstyle.sourceforge.net/property_types.html#stringSet\">String Set</a></td>\n            \n<td>null</td>\n          </tr>\n          \n<tr class=\"b\">\n            \n<td>ignoreFinal</td>\n            \n<td>allow to skip variables with final modifier.</td>\n            \n<td><a href=\"http://checkstyle.sourceforge.net/property_types.html#boolean\">Boolean</a></td>\n            \n<td>true</td>\n          </tr>\n          \n<tr class=\"a\">\n            \n<td>ignoreStatic</td>\n            \n<td>allow to skip variables with static modifier.</td>\n            \n<td><a href=\"http://checkstyle.sourceforge.net/property_types.html#boolean\">Boolean</a></td>\n            \n<td>true</td>\n          </tr>\n          \n<tr class=\"b\">\n            \n<td>ignoreOverriddenMethods</td>\n            \n<td>Allows to ignore methods tagged with @Override annotation\n            (that usually mean inherited name).</td>\n            \n<td><a href=\"http://checkstyle.sourceforge.net/property_types.html#boolean\">Boolean</a></td>\n            \n<td>true</td>\n          </tr>\n          \n<tr class=\"a\">\n            \n<td>tokens</td>\n            \n<td>tokens to check</td>\n            \n<td>\n              subset of tokens\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF\">CLASS_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF\">INTERFACE_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ENUM_DEF\">ENUM_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ANNOTATION_DEF\">ANNOTATION_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ANNOTATION_FIELD_DEF\">ANNOTATION_FIELD_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#PARAMETER_DEF\">PARAMETER_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#VARIABLE_DEF\">VARIABLE_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#METHOD_DEF\">METHOD_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ENUM_CONSTANT_DEF\">ENUM_CONSTANT_DEF</a>.\n            </td>\n            \n<td>\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF\">CLASS_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#INTERFACE_DEF\">INTERFACE_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ENUM_DEF\">ENUM_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ANNOTATION_DEF\">ANNOTATION_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#ANNOTATION_FIELD_DEF\">ANNOTATION_FIELD_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#PARAMETER_DEF\">PARAMETER_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#VARIABLE_DEF\">VARIABLE_DEF</a>,\n              <a href=\"http://checkstyle.sourceforge.net/apidocs/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#METHOD_DEF\">METHOD_DEF</a>.\n            </td>\n          </tr>\n        </tbody></table>\n      </div>\n\n      \n<div class=\"section\">\n<h3><a name=\"Examples\"></a>Examples</h3>\n       \n<p>\n         Default configuration\n         </p>\n<div class=\"source\">\n<pre>&lt;module name=\"AbbreviationAsWordInName\"/&gt;\n         </pre></div>\n       \n       \n<p>\n          To configure to check variables and classes identifiers,\n          do not ignore variables with static modifier and allow\n          no abbreviations (enforce camel case phrase) and\n          allow no abbreviations to use (camel case phrase) and allow XML and URL abbreviations.\n        </p>\n        \n<div class=\"source\">\n<pre>&lt;module name=\"AbbreviationAsWordInName\"&gt;\n    &lt;property name=\"tokens\" value=\"VARIABLE_DEF,CLASS_DEF\"/&gt;\n    &lt;property name=\"ignoreStatic\" value=\"false\"/&gt;\n    &lt;property name=\"allowedAbbreviationLength\" value=\"1\"/&gt;\n    &lt;property name=\"allowedAbbreviations\" value=\"XML,URL\"/&gt;\n&lt;/module&gt;\n        </pre></div>\n      </div>\n\n</div>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.AbstractClassNameCheck",
+    "name": "Abstract Class Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\nChecks that abstract class names conform to the specified format\n</p>\n\n<p>\n</p>",
+    "tags": [
+      "naming"
+    ],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.CatchParameterNameCheck",
+    "name": "Catch Parameter Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that catch parameter names conform to a format specified by the format property.",
+    "tags": [
+      "naming"
+    ],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.ClassTypeParameterNameCheck",
+    "name": "Class Type(Generic) Parameter Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that class parameter names conform to the specified format\n\n<p>\nThe following code snippet illustrates this rule for format \"^[A-Z]$\":\n</p>\n<pre>\nclass Something&lt;type&gt; { // Non-compliant\n}\n\nclass Something&lt;T&gt; { // Compliant\n}\n</pre>\n\n<p>\n</p>",
+    "tags": [
+      "naming"
+    ],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.ConstantNameCheck",
+    "name": "Constant Name",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p>\nChecks that constant names conform to the specified format\n</p>\n\n<p>\n</p>",
+    "tags": [
+      "naming"
+    ],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.InterfaceTypeParameterNameCheck",
+    "name": "Interface Type Parameter Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\nChecks that interface names conform to the specified format\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.LambdaParameterNameCheck",
+    "name": "Lambda Parameter Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Check to verify lambda parameter names.\nFor more details please refere to <a href=\"http://checkstyle.sourceforge.net/config_naming.html#LambdaParameterName\">online documentation</a>\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.LocalFinalVariableNameCheck",
+    "name": "Local Final Variable Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that local final variable names, including catch parameters, conform to the specified format\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.LocalVariableNameCheck",
+    "name": "Local Variable Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\nChecks that local, non-final variable names conform to the specified format\n</p>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.MemberNameCheck",
+    "name": "Member name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\nChecks that name of non-static fields conform to the specified format\n</p>\n\n<p>\n</p>",
+    "tags": [
+      "naming"
+    ],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "naming.MethodNameCheck",
+    "name": "Method Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that method names conform to the specified format\n\n<p>\n</p>",
+    "tags": [
+      "naming"
+    ],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.MethodTypeParameterNameCheck",
+    "name": "Method Type(Generic) Parameter Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that method type parameter names conform to the specified format\n\n<p>\nThe following code snippet illustrates this rule for format \"^[A-Z]$\":\n</p>\n<pre>\npublic &lt;type&gt; boolean containsAll(Collection&lt;type&gt; c) { // Non-compliant\n  return null;\n}\n\npublic &lt;T&gt; boolean containsAll(Collection&lt;T&gt; c) { // Compliant\n}\n</pre>\n\n<p>\n</p>",
+    "tags": [
+      "naming"
+    ],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.PackageNameCheck",
+    "name": "Package name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\nChecks that package names conform to the specified format. The default value of format\n       has been chosen to match the requirements in the Java Language specification and the Sun coding conventions.\n       However both underscores and uppercase letters are rather uncommon, so most configurations should probably\n       assign value ^[a-z]+(\\.[a-z][a-z0-9]*)*$ to format\n</p>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 20
+  },
+  {
+    "key": "naming.ParameterNameCheck",
+    "name": "Parameter Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that parameter names conform to the specified format\nFor more details please refere to <a href=\"http://checkstyle.sourceforge.net/config_naming.html#ParameterName\">online documentation</a>\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.StaticVariableNameCheck",
+    "name": "Static Variable Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that static, non-final fields conform to the specified format\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "naming.TypeNameCheck",
+    "name": "Type Name",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\nChecks that type names conform to the specified format\n</p>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "regexp.RegexpCheck",
+    "name": "Regexp",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\n          A check that makes sure that a specified pattern exists, exists less\n          than a set number of times, or does not exist in the file.\n        </p>\n        \n<p>\n          This check combines all the functionality provided by\n          <a href=\"http://checkstyle.sourceforge.net/config_header.html#RegexpHeader\">RegexpHeader</a>\n          except supplying the regular expression from a file.\n        </p>\n        \n<p>\n          It differs from them in that it works in multiline mode.\n          Its regular expression can span multiple lines and it checks this\n          against the whole file at once.\n          The others work in singleline mode.\n          Their single or multiple regular expressions can only span one line.\n          They check each of these against each line in the file in turn.\n        </p>\n        \n<p>\n          <b>Note:</b> Because of the different mode of operation there may be\n          some changes in the regular expressions used to achieve a particular end.\n        </p>\n        \n<p>In multiline mode...</p>\n        \n<ul>\n          \n<li> <code>^</code> means the beginning of a line, as opposed to beginning of the input.</li>\n          \n<li> For beginning of the input use <code>\\A</code>.</li>\n          \n<li> <code>$</code> means the end of a line, as opposed to the end of the input.</li>\n          \n<li> For end of input use <code>\\Z</code>.</li>\n          \n<li> Each line in the file is terminated with a line feed character.</li>\n        </ul>\n        \n<p>\n          <b>Note:</b> Not all regular expression engines are created equal. Some provide extra\n          functions that others do not and some elements of the syntax may vary.\n          This check makes use of the <a class=\"externalLink\" href=\"https://docs.oracle.com/javase/8/docs/api/java/util/regex/package-summary.html\">\n          java.util.regex package</a>; please check its documentation for\n          details of how to construct a regular expression to achieve a particular\n          goal.\n        </p>\n        \n<p>\n          <b>Note:</b> When entering a regular expression as a parameter in the\n          XML config file you must also take into account the XML rules. e.g. if\n          you want to match a &lt; symbol you need to enter &amp;lt;. The regular\n          expression should be entered on one line.\n        </p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "regexp.RegexpMultilineCheck",
+    "name": "Regexp Multiline",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>A check for detecting that matches across multiple lines. Rationale: This check can be used to when the regular expression can be span multiple lines.</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "regexp.RegexpOnFilenameCheck",
+    "name": "Regexp On Filename",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Implementation of a check that looks for a file name and/or path match (or mis-match) against specified patterns. It can also be used to verify files match specific naming patterns not covered by other checks (Ex: properties, xml, etc.).",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "regexp.RegexpSinglelineCheck",
+    "name": "Regexp Singleline",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p> A check for detecting single lines that match a supplied regular expression. Works with any file type. Rationale: This check can be used to prototype checks and to find common bad practice such as calling ex.printStacktrace(), System.out.println(), System.exit(), etc.</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "regexp.RegexpSinglelineJavaCheck",
+    "name": "Regexp Singleline Java",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>This class is variation on RegexpSingleline for detecting single lines that match a supplied regular expression in Java files. It supports suppressing matches in Java comments.</p>",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "sizes.AnonInnerLengthCheck",
+    "name": "Anon Inner Length",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for long anonymous inner classes.\n\n<p>\n</p>",
+    "tags": [
+      "size"
+    ],
+    "constantDebtMinutes": 60
+  },
+  {
+    "key": "sizes.ExecutableStatementCountCheck",
+    "name": "Executable Statement Count",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Restricts the number of executable statements to a specified limit (default = 30).",
+    "tags": [
+      "size"
+    ],
+    "constantDebtMinutes": 60
+  },
+  {
+    "key": "sizes.FileLengthCheck",
+    "name": "File Length",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>Checks for long source files.</p>\n<p>Rationale: If a source file becomes very long it is hard to understand. Therefore long classes should usually be refactored into several individual classes that focus on a specific task.</p>",
+    "tags": [
+      "size"
+    ],
+    "constantDebtMinutes": 180
+  },
+  {
+    "key": "sizes.LineLengthCheck",
+    "name": "Line Length",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\nChecks for long lines.\n</p>",
+    "tags": [
+      "size"
+    ],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "sizes.MethodCountCheck",
+    "name": "Method Count",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks the number of methods declared in each type. This includes the number of each scope (private, package, protected and public) as well as an overall total.",
+    "tags": [
+      "size"
+    ],
+    "constantDebtMinutes": 60
+  },
+  {
+    "key": "sizes.MethodLengthCheck",
+    "name": "Method Length",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for long methods.\n\n<p>\n</p>",
+    "tags": [
+      "size"
+    ],
+    "constantDebtMinutes": 60
+  },
+  {
+    "key": "sizes.OuterTypeNumberCheck",
+    "name": "Outer Type Number",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p> Checks for the number of types declared at the outer (or root) level in a file. Rationale: It is considered good practice to only define one outer type per file.</p>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "sizes.ParameterNumberCheck",
+    "name": "Parameter Number",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "<p>\nChecks the number of parameters that a method or constructor has.\n</p>\n\n<p>\n</p>",
+    "tags": [],
+    "constantDebtMinutes": 60
+  },
+  {
+    "key": "whitespace.EmptyForInitializerPadCheck",
+    "name": "Empty For Initializer Pad",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks the padding of an empty for initializer; that is whether a space is required at an empty for initializer, or such spaces are forbidden. Example : <code>for ( ; i &lt; j; i++, j--)</code>",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "whitespace.EmptyForIteratorPadCheck",
+    "name": "Empty For Iterator Pad",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks the padding of an empty for iterator; that is whether a space is required at an empty for iterator, or such spaces are forbidden. Example : <code>for (Iterator foo = very.long.line.iterator(); foo.hasNext(); )</code>",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "whitespace.EmptyLineSeparatorCheck",
+    "name": "Empty Line Separator",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks for empty line separators after header, package, all import declarations, fields, constructors, methods, nested classes, static initializers and instance initializers.",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "whitespace.FileTabCharacterCheck",
+    "name": "File Tab Character",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p>Checks that there are no tab characters ('\\t') in the source code. Rationale:</p>\n<ul>\n    <li>Developers should not need to configure the tab width of their text editors in order to be able to read source code.</li>\n    <li>From the Apache jakarta coding standards: In a distributed development environment, when the commit messages get sent to a mailing list, they are almost impossible to read if you use tabs.</li>\n</ul>",
+    "tags": [],
+    "constantDebtMinutes": 10
+  },
+  {
+    "key": "whitespace.GenericWhitespaceCheck",
+    "name": "Generic Whitespace",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "<p>Checks that the whitespace around the Generic tokens &lt; and &gt;  is correct to the typical convention. The convention is not configurable.</p>\n<p>\nFor example the following is legal:\n</p>\n<pre>\n  List&lt;Integer&gt; x = new ArrayList&lt;Integer&gt;();\n  List&lt;List&lt;Integer&gt;&gt; y = new ArrayList&lt;List&lt;Integer&gt;&gt;();\n</pre>\n<p>\nBut the following example is not:\n</p>\n<pre>\n  List &lt; Integer &gt; x = new ArrayList &lt; Integer &gt; ();\n  List &lt; List &lt; Integer &gt; &gt; y = new ArrayList &lt; List &lt; Integer &gt; &gt; ();\n</pre>",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "whitespace.MethodParamPadCheck",
+    "name": "Method Param Pad",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks the padding between the identifier of a method definition, constructor definition, method call, or constructor invocation; and the left parenthesis of the parameter list.",
+    "tags": [],
+    "constantDebtMinutes": 1
+  },
+  {
+    "key": "whitespace.NoLineWrapCheck",
+    "name": "No Line Wrap",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that chosen statements are not line-wrapped. By default this Check restricts wrapping import and package statements, but it's possible to check any statement.",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "whitespace.NoWhitespaceAfterCheck",
+    "name": "No Whitespace After",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks that there is no whitespace after a token.",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "whitespace.NoWhitespaceBeforeCheck",
+    "name": "No Whitespace Before",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks that there is no whitespace before a token.",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "whitespace.OperatorWrapCheck",
+    "name": "Operator Wrap",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks the policy on how to wrap lines on operators.",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "whitespace.ParenPadCheck",
+    "name": "Paren Pad",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks the padding of parentheses; that is whether a space is required after a left parenthesis and before a right parenthesis, or such spaces are forbidden, with the exception that it does not check for padding of the right parenthesis at an empty for iterator.",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "whitespace.SeparatorWrapCheck",
+    "name": "Separator Wrap",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks line wrapping with separators.",
+    "tags": [],
+    "constantDebtMinutes": 5
+  },
+  {
+    "key": "whitespace.SingleSpaceSeparatorCheck",
+    "name": "Single Space Separator",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks that non-whitespace characters are separated by no more than one whitespace. Separating characters by tabs or multiple spaces will be reported. Currently the check doesn't permit horizontal alignment. To inspect whitespaces before and after comments, set the property validateComments to true.",
+    "tags": [],
+    "constantDebtMinutes": 1
+  },
+  {
+    "key": "whitespace.TypecastParenPadCheck",
+    "name": "Typecast Paren Pad",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "description": "Checks the padding of parentheses for typecasts.",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "whitespace.WhitespaceAfterCheck",
+    "name": "Whitespace After",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks that a token is followed by whitespace, with the exception that it does not check for whitespace after the semicolon of an empty for iterator.",
+    "tags": [],
+    "constantDebtMinutes": 2
+  },
+  {
+    "key": "whitespace.WhitespaceAroundCheck",
+    "name": "Whitespace Around",
+    "type": "CODE_SMELL",
+    "severity": "MINOR",
+    "description": "Checks that a token is surrounded by whitespace.",
+    "tags": [],
+    "constantDebtMinutes": 2
+  }
+]

@@ -24,6 +24,7 @@ import org.sonar.api.Plugin;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.api.utils.Version;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
@@ -33,6 +34,8 @@ import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
+import org.sonar.plugins.java.externalreport.checkstyle.CheckstyleRulesDefinition;
+import org.sonar.plugins.java.externalreport.checkstyle.CheckstyleSensor;
 import org.sonar.plugins.surefire.SurefireExtensions;
 
 public class JavaPlugin implements Plugin {
@@ -80,6 +83,11 @@ public class JavaPlugin implements Plugin {
       JavaSquidSensor.class,
       PostAnalysisIssueFilter.class,
       XmlFileSensor.class);
+
+    boolean externalIssuesSupported = context.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(7, 2));
+    builder.add(CheckstyleSensor.class);
+    builder.add(new CheckstyleRulesDefinition(externalIssuesSupported));
+
     context.addExtensions(builder.build());
   }
 

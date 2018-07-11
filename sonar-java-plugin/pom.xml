@@ -49,6 +49,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.sonarsource.analyzer-commons</groupId>
+      <artifactId>sonar-analyzer-commons</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
     </dependency>
@@ -107,7 +111,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>8900000</maxsize>
+                  <maxsize>9000000</maxsize>
                   <minsize>8000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
