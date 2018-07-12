@@ -40,16 +40,19 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.ExternalIssue;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rules.RuleType;
+import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonarsource.plugins.externalreport.commons.ExternalRulesDefinition;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CheckstyleSensorTest {
 
-  private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "checkstyle");
+  private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "checkstyle")
+    .toAbsolutePath().normalize();
 
   private static CheckstyleSensor checkstyleSensor = new CheckstyleSensor();
 
@@ -58,6 +61,30 @@ public class CheckstyleSensorTest {
 
   @Rule
   public LogTester logTester = new LogTester();
+
+  @Test
+  public void checkstyle_rules_definition() {
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    new ExternalRulesDefinition(CheckstyleSensor.ruleLoader()).define(context);
+
+    assertThat(context.repositories()).hasSize(1);
+    RulesDefinition.Repository repository = context.repository("external_checkstyle");
+    assertThat(repository.name()).isEqualTo("Checkstyle");
+    assertThat(repository.language()).isEqualTo("java");
+    assertThat(repository.isExternal()).isEqualTo(true);
+
+    assertThat(repository.rules().size()).isEqualTo(155);
+
+    RulesDefinition.Rule rule = repository.rule("ArrayTypeStyleCheck");
+    assertThat(rule).isNotNull();
+    assertThat(rule.name()).isEqualTo("Array Type Style");
+    assertThat(rule.type()).isEqualTo(RuleType.CODE_SMELL);
+    assertThat(rule.severity()).isEqualTo("MINOR");
+    assertThat(rule.htmlDescription()).isEqualTo("Checks the style of array type definitions. Some like Java-style:" +
+      " public static void main(String[] args) and some like C-style: public static void main(String args[])\n\n<p>\n</p>");
+    assertThat(rule.tags()).isEmpty();
+    assertThat(rule.debtRemediationFunction().baseEffort()).isEqualTo("5min");
+  }
 
   @Test
   public void test_descriptor() {
@@ -173,7 +200,7 @@ public class CheckstyleSensorTest {
       .endsWith("not-existing-file.java'. No checkstyle issues will be imported on this file.");
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactlyInAnyOrder(
       "Unexpected error without message for rule: 'com.puppycrawl.tools.checkstyle.checks.ArrayTypeStyleCheck'",
-      "Unexpected rule key without 'com.puppycrawl.tools.checkstyle.checks.' suffix: 'invalid-format'");
+      "Unexpected rule key without 'com.puppycrawl.tools.checkstyle.checks.' prefix: 'invalid-format'");
   }
 
   private List<ExternalIssue> executeSensorImporting(int majorVersion, int minorVersion, @Nullable String fileName) throws IOException {

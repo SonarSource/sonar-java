@@ -44,7 +44,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>external-reports-sensor</artifactId>
+      <artifactId>external-reports-sensors</artifactId>
       <version>${project.version}</version>
     </dependency>
 

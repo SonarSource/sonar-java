@@ -101,9 +101,7 @@ class CheckstyleXmlReportReader {
       return;
     }
     FilePredicates predicates = context.fileSystem().predicates();
-    inputFile = context.fileSystem().inputFile(predicates.or(
-      predicates.hasAbsolutePath(filePath),
-      predicates.hasRelativePath(filePath)));
+    inputFile = context.fileSystem().inputFile(predicates.hasPath(filePath));
     if (inputFile == null) {
       LOG.warn("No input file found for '{}'. No checkstyle issues will be imported on this file.", filePath);
     }
@@ -117,7 +115,7 @@ class CheckstyleXmlReportReader {
     String line = getAttributeValue(element, LINE);
     String message = getAttributeValue(element, MESSAGE);
     if (!source.startsWith(CHECKSTYLE_PREFIX)) {
-      LOG.debug("Unexpected rule key without '{}' suffix: '{}'", CHECKSTYLE_PREFIX, source);
+      LOG.debug("Unexpected rule key without '{}' prefix: '{}'", CHECKSTYLE_PREFIX, source);
       return;
     }
     if (message.isEmpty()) {

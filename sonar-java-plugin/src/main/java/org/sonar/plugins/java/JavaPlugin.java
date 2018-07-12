@@ -24,7 +24,6 @@ import org.sonar.api.Plugin;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
-import org.sonar.api.utils.Version;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
@@ -35,8 +34,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefireExtensions;
-import org.sonarsource.plugins.externalreport.checkstyle.CheckstyleRulesDefinition;
-import org.sonarsource.plugins.externalreport.checkstyle.CheckstyleSensor;
+import org.sonarsource.plugins.externalreport.ExternalReportExtensions;
 
 public class JavaPlugin implements Plugin {
 
@@ -63,6 +61,8 @@ public class JavaPlugin implements Plugin {
         .description("when set to true, if an exception is thrown by the analyzer, feedback will be collected and sent to server")
         .build());
       builder.add(JavaMetricDefinition.class);
+
+      ExternalReportExtensions.define(context);
     }
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
@@ -83,12 +83,8 @@ public class JavaPlugin implements Plugin {
       JavaSquidSensor.class,
       PostAnalysisIssueFilter.class,
       XmlFileSensor.class);
-
-    boolean externalIssuesSupported = context.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(7, 2));
-    builder.add(CheckstyleSensor.class);
-    builder.add(new CheckstyleRulesDefinition(externalIssuesSupported));
-
     context.addExtensions(builder.build());
+
   }
 
 }

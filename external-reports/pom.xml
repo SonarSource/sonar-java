@@ -14,7 +14,7 @@
   <name>SonarQube Java :: External Reports</name>
 
   <modules>
-    <module>sensor</module>
+    <module>sensors</module>
   </modules>
 
 </project>

@@ -25,30 +25,46 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import javax.xml.stream.XMLStreamException;
+import org.sonar.api.Plugin.Context;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.issue.NewExternalIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
+import org.sonar.api.config.PropertyDefinition;
+import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
-
-import static org.sonarsource.plugins.externalreport.checkstyle.CheckstyleRulesDefinition.RULE_LOADER;
+import org.sonarsource.analyzer.commons.ExternalRuleLoader;
+import org.sonarsource.plugins.externalreport.ExternalReportExtensions;
+import org.sonarsource.plugins.externalreport.commons.ExternalRulesDefinition;
 
 public class CheckstyleSensor implements Sensor {
 
   private static final Logger LOG = Loggers.get(CheckstyleSensor.class);
 
-  static final String LINTER_KEY = "checkstyle";
+  private static final String LINTER_KEY = "checkstyle";
 
-  static final String LINTER_NAME = "Checkstyle";
+  private static final String LINTER_NAME = "Checkstyle";
 
-  static final String LANGUAGE_KEY = "java";
+  private static final String LANGUAGE_KEY = "java";
 
-  public static final String REPORT_PROPERTY_KEY = "sonar.java.checkstyle.reportPaths";
+  private static final String REPORT_PROPERTY_KEY = "sonar.java.checkstyle.reportPaths";
+
+  private static class SingletonRuleLoader {
+    private static final ExternalRuleLoader INSTANCE = new ExternalRuleLoader(
+      CheckstyleSensor.LINTER_KEY,
+      CheckstyleSensor.LINTER_NAME,
+      "org/sonar/l10n/java/rules/checkstyle/rules.json",
+      CheckstyleSensor.LANGUAGE_KEY);
+  }
+
+  static ExternalRuleLoader ruleLoader() {
+    return SingletonRuleLoader.INSTANCE;
+  }
 
   @Override
   public void describe(SensorDescriptor descriptor) {
@@ -56,6 +72,22 @@ public class CheckstyleSensor implements Sensor {
       .onlyOnLanguage(CheckstyleSensor.LANGUAGE_KEY)
       .onlyWhenConfiguration(conf -> conf.hasKey(REPORT_PROPERTY_KEY))
       .name("Import of Checkstyle issues");
+  }
+
+  public static void define(Context context, boolean externalIssuesSupported) {
+    context.addExtension(CheckstyleSensor.class);
+    if (externalIssuesSupported) {
+      context.addExtension(new ExternalRulesDefinition(ruleLoader()));
+      context.addExtension(
+        PropertyDefinition.builder(CheckstyleSensor.REPORT_PROPERTY_KEY)
+          .name("Checkstyle Report Files")
+          .description("Paths (absolute or relative) to xml files with Checkstyle issues.")
+          .category(ExternalReportExtensions.EXTERNAL_ANALYZERS_CATEGORY)
+          .subCategory(ExternalReportExtensions.JAVA_SUBCATEGORY)
+          .onQualifiers(Qualifiers.PROJECT)
+          .multiValues(true)
+          .build());
+    }
   }
 
   @Override
@@ -78,10 +110,11 @@ public class CheckstyleSensor implements Sensor {
     RuleKey ruleKey = RuleKey.of(CheckstyleSensor.LINTER_KEY, key);
     NewExternalIssue newExternalIssue = context.newExternalIssue();
 
+    ExternalRuleLoader ruleLoader = ruleLoader();
     newExternalIssue
-      .type(RULE_LOADER.ruleType(ruleKey.rule()))
-      .severity(RULE_LOADER.ruleSeverity(ruleKey.rule()))
-      .remediationEffortMinutes(RULE_LOADER.ruleConstantDebtMinutes(ruleKey.rule()));
+      .type(ruleLoader.ruleType(ruleKey.rule()))
+      .severity(ruleLoader.ruleSeverity(ruleKey.rule()))
+      .remediationEffortMinutes(ruleLoader.ruleConstantDebtMinutes(ruleKey.rule()));
 
     NewIssueLocation primaryLocation = newExternalIssue.newLocation()
       .message(message)
