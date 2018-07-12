@@ -74,20 +74,21 @@ public class CheckstyleSensor implements Sensor {
       .name("Import of Checkstyle issues");
   }
 
-  public static void define(Context context, boolean externalIssuesSupported) {
+  public static void defineSensor(Context context) {
     context.addExtension(CheckstyleSensor.class);
-    if (externalIssuesSupported) {
-      context.addExtension(new ExternalRulesDefinition(ruleLoader()));
-      context.addExtension(
-        PropertyDefinition.builder(CheckstyleSensor.REPORT_PROPERTY_KEY)
-          .name("Checkstyle Report Files")
-          .description("Paths (absolute or relative) to xml files with Checkstyle issues.")
-          .category(ExternalReportExtensions.EXTERNAL_ANALYZERS_CATEGORY)
-          .subCategory(ExternalReportExtensions.JAVA_SUBCATEGORY)
-          .onQualifiers(Qualifiers.PROJECT)
-          .multiValues(true)
-          .build());
-    }
+  }
+
+  public static void defineRulesAndProperties(Context context) {
+    context.addExtension(new ExternalRulesDefinition(ruleLoader()));
+    context.addExtension(
+      PropertyDefinition.builder(CheckstyleSensor.REPORT_PROPERTY_KEY)
+        .name("Checkstyle Report Files")
+        .description("Paths (absolute or relative) to xml files with Checkstyle issues.")
+        .category(ExternalReportExtensions.EXTERNAL_ANALYZERS_CATEGORY)
+        .subCategory(ExternalReportExtensions.JAVA_SUBCATEGORY)
+        .onQualifiers(Qualifiers.PROJECT)
+        .multiValues(true)
+        .build());
   }
 
   @Override

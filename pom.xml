@@ -85,7 +85,7 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>7.3.0.14477</sonar.version>
+    <sonar.version>7.3.0.14579</sonar.version>
     <analyzer.commons.version>1.8.0.295</analyzer.commons.version>
     <orchestrator.version>3.19.0.1641</orchestrator.version>
     <sslr.version>1.22</sslr.version>
