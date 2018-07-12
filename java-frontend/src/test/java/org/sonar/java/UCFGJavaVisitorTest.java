@@ -785,16 +785,29 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
-  public void array_getters_and_setters_on_primitives() {
+  public void array_of_primitives_ignore_get_and_set() {
+    Expression.Variable input = variableWithId("input");
     Expression.Variable foo = variableWithId("foo");
+    Expression.Variable bar = variableWithId("bar");
+    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable aux2 = variableWithId("%2");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo([III)[B")
         .addBasicBlock(newBasicBlock("1")
-            .ret(constant("\"\""), new LocationInFile(FILE_KEY, 6, 4, 6, 15)))
+            .newObject(aux0, "$Array", new LocationInFile(FILE_KEY, 4, 17, 4, 29))
+            .assignTo(foo, call("__id").withArgs(aux0), new LocationInFile(FILE_KEY, 4,4,4,30))
+            .newObject(aux1, "$Array", new LocationInFile(FILE_KEY, 5, 16, 5, 24))
+            .assignTo(bar, call("__id").withArgs(aux1), new LocationInFile(FILE_KEY, 5,4,5,25))
+            .assignTo(aux2, call("A#baz([I[I)V").withArgs(Expression.THIS, bar, input), new LocationInFile(FILE_KEY, 6,4,6,19))
+            .ret(foo, new LocationInFile(FILE_KEY, 9, 4, 9, 15)))
         .build();
     assertCodeToUCfg("class A { \n" +
+        "  private void baz(int[] a, int[] b) {}\n" +
         "  private byte[] foo(int[] input, int i, int j) { \n" +
         "    byte[] foo = new byte[10];\n" +
-        "    foo[j] = (byte) (input[i] & 0xff);\n" +
+        "    int[] bar = { 1, 2 };\n" +
+        "    baz(bar, input);\n" +
+        "    foo[bar[0]] = (byte) (input[i] & 0xff);\n" +
         "    foo[j + 1] = (byte) ((input[i] >>> 8) & 0xff);\n" +
         "    return foo;\n" +
         "  }\n" +
@@ -882,7 +895,7 @@ public class UCFGJavaVisitorTest {
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod(methodId)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 3,8,3,22))
-            .assignTo(aux1, call(methodId).withArgs(Expression.THIS, aux0, array, constant("\"\"")), new LocationInFile(FILE_KEY, 3,4,3,36))
+            .assignTo(aux1, call(methodId).withArgs(Expression.THIS, aux0, array, intA), new LocationInFile(FILE_KEY, 3,4,3,36))
             .assignTo(aux2, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 4,4,4,12))
             .assignTo(aux3, call("__concat").withArgs(aux2, foo), new LocationInFile(FILE_KEY, 4,4,4,19))
             .assignTo(aux4, call("__arraySet").withArgs(array, aux3), new LocationInFile(FILE_KEY, 4,4,4,19))
