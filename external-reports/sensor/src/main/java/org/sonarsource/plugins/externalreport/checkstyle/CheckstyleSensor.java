@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.externalreport.checkstyle;
+package org.sonarsource.plugins.externalreport.checkstyle;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,9 +34,9 @@ import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.plugins.java.Java;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
-import org.sonarsource.analyzer.commons.ExternalRuleLoader;
+
+import static org.sonarsource.plugins.externalreport.checkstyle.CheckstyleRulesDefinition.RULE_LOADER;
 
 public class CheckstyleSensor implements Sensor {
 
@@ -46,12 +46,14 @@ public class CheckstyleSensor implements Sensor {
 
   static final String LINTER_NAME = "Checkstyle";
 
+  static final String LANGUAGE_KEY = "java";
+
   public static final String REPORT_PROPERTY_KEY = "sonar.java.checkstyle.reportPaths";
 
   @Override
   public void describe(SensorDescriptor descriptor) {
     descriptor
-      .onlyOnLanguage( Java.KEY)
+      .onlyOnLanguage(CheckstyleSensor.LANGUAGE_KEY)
       .onlyWhenConfiguration(conf -> conf.hasKey(REPORT_PROPERTY_KEY))
       .name("Import of Checkstyle issues");
   }
@@ -67,19 +69,19 @@ public class CheckstyleSensor implements Sensor {
       LOG.info("Importing {}", reportPath);
       CheckstyleXmlReportReader.read(context, in, CheckstyleSensor::saveIssue);
     } catch (IOException | XMLStreamException | RuntimeException e) {
-      LOG.error("No issues information will be saved as the report file '{}' can't be read.", reportPath, e);
+      LOG.error(e.getClass().getSimpleName() + ": " + e.getMessage() +
+        ", no issues information will be saved as the report file '{}' can't be read.", reportPath, e);
     }
   }
 
   private static void saveIssue(SensorContext context, InputFile inputFile, String key, String line, String message) {
     RuleKey ruleKey = RuleKey.of(CheckstyleSensor.LINTER_KEY, key);
     NewExternalIssue newExternalIssue = context.newExternalIssue();
-    String ruleKey1 = ruleKey.rule();
-    ExternalRuleLoader externalRuleLoader = CheckstyleRulesDefinition.RULE_LOADER;
+
     newExternalIssue
-      .type(externalRuleLoader.ruleType(ruleKey1))
-      .severity(externalRuleLoader.ruleSeverity(ruleKey1))
-      .remediationEffortMinutes(externalRuleLoader.ruleConstantDebtMinutes(ruleKey1));
+      .type(RULE_LOADER.ruleType(ruleKey.rule()))
+      .severity(RULE_LOADER.ruleSeverity(ruleKey.rule()))
+      .remediationEffortMinutes(RULE_LOADER.ruleConstantDebtMinutes(ruleKey.rule()));
 
     NewIssueLocation primaryLocation = newExternalIssue.newLocation()
       .message(message)

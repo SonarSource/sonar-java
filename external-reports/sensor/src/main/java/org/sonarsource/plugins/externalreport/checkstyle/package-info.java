@@ -17,31 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.externalreport.checkstyle;
+@ParametersAreNonnullByDefault
+package org.sonarsource.plugins.externalreport.checkstyle;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.plugins.java.Java;
-import org.sonarsource.analyzer.commons.ExternalRuleLoader;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-public class CheckstyleRulesDefinition implements RulesDefinition {
-
-  static final ExternalRuleLoader RULE_LOADER = new ExternalRuleLoader(
-    CheckstyleSensor.LINTER_KEY,
-    CheckstyleSensor.LINTER_NAME,
-    "org/sonar/l10n/java/rules/checkstyle/rules.json",
-    Java.KEY);
-
-  private final boolean externalIssuesSupported;
-
-  public CheckstyleRulesDefinition(boolean externalIssuesSupported) {
-    this.externalIssuesSupported = externalIssuesSupported;
-  }
-
-  @Override
-  public void define(Context context) {
-    if (externalIssuesSupported) {
-      RULE_LOADER.createExternalRuleRepository(context);
-    }
-  }
-
-}

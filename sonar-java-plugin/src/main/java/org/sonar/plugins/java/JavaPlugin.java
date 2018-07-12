@@ -34,9 +34,9 @@ import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
-import org.sonar.plugins.java.externalreport.checkstyle.CheckstyleRulesDefinition;
-import org.sonar.plugins.java.externalreport.checkstyle.CheckstyleSensor;
 import org.sonar.plugins.surefire.SurefireExtensions;
+import org.sonarsource.plugins.externalreport.checkstyle.CheckstyleRulesDefinition;
+import org.sonarsource.plugins.externalreport.checkstyle.CheckstyleSensor;
 
 public class JavaPlugin implements Plugin {
 

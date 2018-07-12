@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<checkstyle version="4.3">
+<file name="${PROJECT_DIR}A.java">
+	<error line="invalid" message="Message for not-existing-file." source="com.puppycrawl.tools.checkstyle.checks.ArrayTypeStyleCheck" />
+</file>
+</checkstyle>

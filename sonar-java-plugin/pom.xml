@@ -42,15 +42,16 @@
       <artifactId>java-checks</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>external-reports-sensor</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.sonarsource.analyzer-commons</groupId>
-      <artifactId>sonar-analyzer-commons</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>

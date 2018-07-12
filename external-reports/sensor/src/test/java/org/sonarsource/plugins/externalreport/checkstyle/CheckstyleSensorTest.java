@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.externalreport.checkstyle;
+package org.sonarsource.plugins.externalreport.checkstyle;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CheckstyleSensorTest {
 
-  private static final Path PROJECT_DIR = Paths.get("src", "test", "files", "checkstyle");
+  private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "checkstyle");
 
   private static CheckstyleSensor checkstyleSensor = new CheckstyleSensor();
 
@@ -121,7 +122,8 @@ public class CheckstyleSensorTest {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "invalid-path.txt");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("No issues information will be saved as the report file '")
+      .startsWith("FileNotFoundException:")
+      .contains("invalid-path.txt (No such file or directory)")
       .endsWith("invalid-path.txt' can't be read.");
   }
 
@@ -130,8 +132,17 @@ public class CheckstyleSensorTest {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "not-checkstyle-file.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("No issues information will be saved as the report file '")
+      .startsWith("IOException: Unexpected document root 'html' instead of 'checkstyle'.")
       .endsWith("not-checkstyle-file.xml' can't be read.");
+  }
+
+  @Test
+  public void no_issues_with_invalid_line_number() throws IOException {
+    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "checkstyle-with-invalid-line.xml");
+    assertThat(externalIssues).isEmpty();
+    assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
+      .startsWith("NumberFormatException: For input string: \"invalid\"")
+      .endsWith("checkstyle-with-invalid-line.xml' can't be read.");
   }
 
   @Test
@@ -139,7 +150,7 @@ public class CheckstyleSensorTest {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "invalid-file.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("No issues information will be saved as the report file '")
+      .startsWith("XMLStreamException: ParseError at [row,col]:[2,1]")
       .endsWith("invalid-file.xml' can't be read.");
   }
 
@@ -189,8 +200,9 @@ public class CheckstyleSensorTest {
 
   public static SensorContextTester createContext(Path projectDir, int majorVersion, int minorVersion) throws IOException {
     SensorContextTester context = SensorContextTester.create(projectDir);
-    Files.list(projectDir)
-      .forEach(file -> addFileToContext(context, projectDir, file));
+    try (Stream<Path> files = Files.list(projectDir)) {
+      files.forEach(file -> addFileToContext(context, projectDir, file));
+    }
     context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(majorVersion, minorVersion), SonarQubeSide.SERVER));
     return context;
   }
