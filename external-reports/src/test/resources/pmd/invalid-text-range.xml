@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 http://pmd.sourceforge.net/report_2_0_0.xsd"
+     version="6.5.0" timestamp="2018-07-10T11:57:14.997">
+  <file name="file1.java">
+    <violation beginline="3" endline="3" begincolumn="9" endcolumn="10" rule="UnusedLocalVariable" priority="3">message</violation>
+    <violation beginline="4" endline="999" begincolumn="5" endcolumn="6" rule="UnusedFormalParameter" priority="3">message</violation>
+    <violation beginline="999" endline="999" begincolumn="1" endcolumn="1" rule="UnusedLocalVariable" priority="3">message</violation>
+  </file>
+</pmd>
