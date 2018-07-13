@@ -34,7 +34,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefireExtensions;
-import org.sonarsource.plugins.externalreport.ExternalReportExtensions;
+import org.sonar.java.externalreport.ExternalReportExtensions;
 
 public class JavaPlugin implements Plugin {
 

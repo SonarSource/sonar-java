@@ -17,29 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.plugins.externalreport;
+@ParametersAreNonnullByDefault
+package org.sonar.java.externalreport.commons;
 
-import org.sonar.api.Plugin.Context;
-import org.sonar.api.utils.Version;
-import org.sonarsource.plugins.externalreport.checkstyle.CheckstyleSensor;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-public final class ExternalReportExtensions {
-
-  public static final String EXTERNAL_ANALYZERS_CATEGORY = "External Analyzers";
-
-  public static final String JAVA_SUBCATEGORY = "Java";
-
-  private ExternalReportExtensions() {
-    // utility class
-  }
-
-  public static void define(Context context) {
-    CheckstyleSensor.defineSensor(context);
-
-    boolean externalIssuesSupported = context.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(7, 2));
-    if (externalIssuesSupported) {
-      CheckstyleSensor.defineRulesAndProperties(context);
-    }
-  }
-
-}

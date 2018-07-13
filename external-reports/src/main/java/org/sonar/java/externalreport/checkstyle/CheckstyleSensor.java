@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.plugins.externalreport.checkstyle;
+package org.sonar.java.externalreport.checkstyle;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,10 +37,10 @@ import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.externalreport.ExternalReportExtensions;
+import org.sonar.java.externalreport.commons.ExternalRulesDefinition;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
-import org.sonarsource.plugins.externalreport.ExternalReportExtensions;
-import org.sonarsource.plugins.externalreport.commons.ExternalRulesDefinition;
 
 public class CheckstyleSensor implements Sensor {
 

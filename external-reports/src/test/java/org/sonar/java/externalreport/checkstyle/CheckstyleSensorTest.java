@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.plugins.externalreport.checkstyle;
+package org.sonar.java.externalreport.checkstyle;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +44,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonarsource.plugins.externalreport.commons.ExternalRulesDefinition;
+import org.sonar.java.externalreport.commons.ExternalRulesDefinition;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;

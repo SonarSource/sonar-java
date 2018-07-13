@@ -17,8 +17,22 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-@ParametersAreNonnullByDefault
-package org.sonarsource.plugins.externalreport.commons;
+package org.sonar.java.externalreport.commons;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.sonar.api.server.rule.RulesDefinition;
+import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
+public class ExternalRulesDefinition implements RulesDefinition {
+
+  private final ExternalRuleLoader ruleLoader;
+
+  public ExternalRulesDefinition(ExternalRuleLoader ruleLoader) {
+    this.ruleLoader = ruleLoader;
+  }
+
+  @Override
+  public void define(RulesDefinition.Context context) {
+    ruleLoader.createExternalRuleRepository(context);
+  }
+
+}
