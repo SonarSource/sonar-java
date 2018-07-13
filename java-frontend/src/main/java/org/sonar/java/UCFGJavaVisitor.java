@@ -433,6 +433,8 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     Expression.Variable rightSide = variableWithId(memberSelectTree.identifier().name());
     Expression.FieldAccess fieldAccess = null;
     if (!rhsTreeSymbol.isStatic()) {
+      // this is a recursive call that will translate any field accesses on the left
+      // we do not call lookupExpression() because that translates array access, too
       buildFieldReadAccessInvocation(blockBuilder, idGenerator, lhsTree);
       Expression leftSide = idGenerator.lookupExpressionFor(lhsTree);
       if (leftSide.equals(Expression.THIS)) {
