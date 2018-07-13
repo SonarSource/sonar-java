@@ -31,7 +31,7 @@ public class ExternalRulesDefinition implements RulesDefinition {
   }
 
   @Override
-  public void define(RulesDefinition.Context context) {
+  public void define(Context context) {
     ruleLoader.createExternalRuleRepository(context);
   }
 
