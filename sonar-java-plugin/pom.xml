@@ -42,6 +42,11 @@
       <artifactId>java-checks</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>external-reports</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
@@ -107,7 +112,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>8900000</maxsize>
+                  <maxsize>9000000</maxsize>
                   <minsize>8000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>

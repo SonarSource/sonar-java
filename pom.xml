@@ -56,6 +56,7 @@
     <module>java-frontend</module>
     <module>java-checks-testkit</module>
     <module>java-checks</module>
+    <module>external-reports</module>
     <module>sonar-java-plugin</module>
     <module>java-surefire</module>
     <module>java-jacoco</module>
@@ -84,7 +85,8 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>7.3.0.14477</sonar.version>
+    <sonar.version>7.3.0.14579</sonar.version>
+    <analyzer.commons.version>1.8.0.295</analyzer.commons.version>
     <orchestrator.version>3.19.0.1641</orchestrator.version>
     <sslr.version>1.22</sslr.version>
     <jacoco.previous.version>0.7.4.201502262128</jacoco.previous.version>
@@ -109,7 +111,11 @@
         <artifactId>sonar-testing-harness</artifactId>
         <version>${sonar.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.sonarsource.analyzer-commons</groupId>
+        <artifactId>sonar-analyzer-commons</artifactId>
+        <version>${analyzer.commons.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.sonarsource.sslr</groupId>
         <artifactId>sslr-core</artifactId>

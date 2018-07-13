@@ -34,6 +34,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefireExtensions;
+import org.sonarsource.plugins.externalreport.ExternalReportExtensions;
 
 public class JavaPlugin implements Plugin {
 
@@ -60,6 +61,8 @@ public class JavaPlugin implements Plugin {
         .description("when set to true, if an exception is thrown by the analyzer, feedback will be collected and sent to server")
         .build());
       builder.add(JavaMetricDefinition.class);
+
+      ExternalReportExtensions.define(context);
     }
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
@@ -81,6 +84,7 @@ public class JavaPlugin implements Plugin {
       PostAnalysisIssueFilter.class,
       XmlFileSensor.class);
     context.addExtensions(builder.build());
+
   }
 
 }
