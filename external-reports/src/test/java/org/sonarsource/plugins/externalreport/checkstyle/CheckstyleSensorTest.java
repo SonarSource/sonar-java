@@ -150,7 +150,6 @@ public class CheckstyleSensorTest {
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
       .startsWith("FileNotFoundException:")
-      .contains("invalid-path.txt (No such file or directory)")
       .endsWith("invalid-path.txt' can't be read.");
   }
 
