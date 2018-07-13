@@ -798,18 +798,45 @@ public class UCFGJavaVisitorTest {
             .assignTo(foo, call("__id").withArgs(aux0), new LocationInFile(FILE_KEY, 4,4,4,30))
             .newObject(aux1, "$Array", new LocationInFile(FILE_KEY, 5, 16, 5, 24))
             .assignTo(bar, call("__id").withArgs(aux1), new LocationInFile(FILE_KEY, 5,4,5,25))
-            .assignTo(aux2, call("A#baz([I[I)V").withArgs(Expression.THIS, bar, input), new LocationInFile(FILE_KEY, 6,4,6,19))
+            .assignTo(aux2, call("A#baz([I[IB)V").withArgs(Expression.THIS, bar, input, constant("\"\"")), new LocationInFile(FILE_KEY, 6,4,6,27))
             .ret(foo, new LocationInFile(FILE_KEY, 9, 4, 9, 15)))
         .build();
     assertCodeToUCfg("class A { \n" +
-        "  private void baz(int[] a, int[] b) {}\n" +
+        "  private void baz(int[] a, int[] b, byte c) {}\n" +
         "  private byte[] foo(int[] input, int i, int j) { \n" +
         "    byte[] foo = new byte[10];\n" +
         "    int[] bar = { 1, 2 };\n" +
-        "    baz(bar, input);\n" +
-        "    foo[bar[0]] = (byte) (input[i] & 0xff);\n" +
+        "    baz(bar, input, foo[0]);\n" +
+        "    foo[bar[0]] = foo[0];\n" +
         "    foo[j + 1] = (byte) ((input[i] >>> 8) & 0xff);\n" +
         "    return foo;\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
+  @Test
+  public void array_of_primitive_mixed_with_object_sets_only_objects() {
+    Expression.Variable array = variableWithId("array");
+    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable aux3 = variableWithId("%3");
+    Expression.Variable aux5 = variableWithId("%5");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/Object;")
+        .addBasicBlock(newBasicBlock("1")
+            .newObject(aux0, "$Array", new LocationInFile(FILE_KEY, 4, 21, 4, 48))
+            .assignTo(variableWithId("%1"), call("__arraySet").withArgs(aux0, variableWithId("tainted")), new LocationInFile(FILE_KEY, 4, 21, 4, 48))
+            .assignTo(variableWithId("%2"), call("__arraySet").withArgs(aux0, variableWithId("i")), new LocationInFile(FILE_KEY, 4, 21, 4, 48))
+            .assignTo(array, call("__id").withArgs(aux0), new LocationInFile(FILE_KEY, 4, 4, 4, 49))
+            .assignTo(aux3, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 5,8,5,16))
+            .assignTo(variableWithId("%4"), call("A#baz(Ljava/lang/Object;)V").withArgs(Expression.THIS, aux3), new LocationInFile(FILE_KEY, 5,4,5,17))
+            .assignTo(aux5, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 6,11,6,19))
+            .ret(aux5, new LocationInFile(FILE_KEY, 6, 4, 6, 20)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  private void baz(Object o) {};\n" +
+        "  private Object foo(String tainted, Integer i) { \n" +
+        "    Object[] array = {0, tainted, 10.0, true, i};\n" +
+        "    baz(array[0]);\n" +
+        "    return array[1];\n" +
         "  }\n" +
         "}", expectedUCFG);
   }
