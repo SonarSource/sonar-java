@@ -36,6 +36,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.resolve.ArrayJavaType;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -287,6 +288,9 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   }
 
   private void buildNewArrayInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, NewArrayTree tree) {
+    if (tree.type() != null  && !isObject(tree.type().symbolType())) {
+      return;
+    }
     Expression.Variable newArray = variableWithId(idGenerator.newIdFor(tree));
     blockBuilder.newObject(newArray, tree.symbolType().fullyQualifiedName(), location(tree));
     idGenerator.varForExpression(tree, newArray.id());
@@ -460,6 +464,9 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   }
 
   private static boolean isObject(Type type) {
+    if (type.isArray()) {
+      return isObject(((ArrayJavaType)type).elementType());
+    }
     return !type.isPrimitive() && !type.isUnknown();
   }
 
