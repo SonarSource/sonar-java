@@ -18,7 +18,7 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 @ParametersAreNonnullByDefault
-package org.sonarsource.plugins.externalreport.checkstyle;
+package org.sonar.java.externalreport.checkstyle;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

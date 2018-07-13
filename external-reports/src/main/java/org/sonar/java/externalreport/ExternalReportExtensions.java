@@ -17,22 +17,29 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.plugins.externalreport.commons;
+package org.sonar.java.externalreport;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonarsource.analyzer.commons.ExternalRuleLoader;
+import org.sonar.api.Plugin.Context;
+import org.sonar.api.utils.Version;
+import org.sonar.java.externalreport.checkstyle.CheckstyleSensor;
 
-public class ExternalRulesDefinition implements RulesDefinition {
+public final class ExternalReportExtensions {
 
-  private final ExternalRuleLoader ruleLoader;
+  public static final String EXTERNAL_ANALYZERS_CATEGORY = "External Analyzers";
 
-  public ExternalRulesDefinition(ExternalRuleLoader ruleLoader) {
-    this.ruleLoader = ruleLoader;
+  public static final String JAVA_SUBCATEGORY = "Java";
+
+  private ExternalReportExtensions() {
+    // utility class
   }
 
-  @Override
-  public void define(RulesDefinition.Context context) {
-    ruleLoader.createExternalRuleRepository(context);
+  public static void define(Context context) {
+    CheckstyleSensor.defineSensor(context);
+
+    boolean externalIssuesSupported = context.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(7, 2));
+    if (externalIssuesSupported) {
+      CheckstyleSensor.defineRulesAndProperties(context);
+    }
   }
 
 }
