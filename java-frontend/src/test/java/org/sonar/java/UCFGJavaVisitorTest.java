@@ -785,6 +785,56 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
+  public void array_of_primitives_ignore() {
+    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable aux1 = variableWithId("%1");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo([I[[III)[B")
+        .addBasicBlock(newBasicBlock("1")
+            .newObject(aux0, "$Array", new LocationInFile(FILE_KEY, 5, 16, 5, 24))
+            .assignTo(aux1, call("A#baz([I[IB)V").withArgs(Expression.THIS, constant("\"\""), constant("\"\""), constant("\"\"")), new LocationInFile(FILE_KEY, 6,4,6,35))
+            .ret(constant("\"\""), new LocationInFile(FILE_KEY, 9, 4, 9, 15)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  private void baz(int[] a, int[] b, byte c) {}\n" +
+        "  private byte[] foo(int[] input, int[][] multiDim, int i, int j) { \n" +
+        "    byte[] foo = new byte[10];\n" +
+        "    int[] bar = { 1, 2 };\n" + // we cannot tell the type of the new array construct
+        "    baz(multiDim[0], input, foo[0]);\n" +
+        "    foo[bar[0]] = foo[0];\n" +
+        "    foo[j + 1] = (byte) ((input[i] >>> 8) & 0xff);\n" +
+        "    return foo;\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
+  @Test
+  public void array_of_primitive_mixed_with_object_sets_only_objects() {
+    Expression.Variable array = variableWithId("array");
+    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable aux3 = variableWithId("%3");
+    Expression.Variable aux5 = variableWithId("%5");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/Object;")
+        .addBasicBlock(newBasicBlock("1")
+            .newObject(aux0, "$Array", new LocationInFile(FILE_KEY, 4, 21, 4, 48))
+            .assignTo(variableWithId("%1"), call("__arraySet").withArgs(aux0, variableWithId("tainted")), new LocationInFile(FILE_KEY, 4, 21, 4, 48))
+            .assignTo(variableWithId("%2"), call("__arraySet").withArgs(aux0, variableWithId("i")), new LocationInFile(FILE_KEY, 4, 21, 4, 48))
+            .assignTo(array, call("__id").withArgs(aux0), new LocationInFile(FILE_KEY, 4, 4, 4, 49))
+            .assignTo(aux3, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 5,8,5,16))
+            .assignTo(variableWithId("%4"), call("A#baz(Ljava/lang/Object;)V").withArgs(Expression.THIS, aux3), new LocationInFile(FILE_KEY, 5,4,5,17))
+            .assignTo(aux5, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 6,11,6,19))
+            .ret(aux5, new LocationInFile(FILE_KEY, 6, 4, 6, 20)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  private void baz(Object o) {};\n" +
+        "  private Object foo(String tainted, Integer i) { \n" +
+        "    Object[] array = {0, tainted, 10.0, true, i};\n" +
+        "    baz(array[0]);\n" +
+        "    return array[1];\n" +
+        "  }\n" +
+        "}", expectedUCFG);
+  }
+
+  @Test
   public void array_variable_declaration() {
     Expression.Variable foo = variableWithId("foo");
     Expression.Variable array = variableWithId("array");
@@ -860,22 +910,20 @@ public class UCFGJavaVisitorTest {
     Expression.Variable aux5 = variableWithId("%5");
     Expression.Variable aux6 = variableWithId("%6");
     Expression.Variable aux7 = variableWithId("%7");
-    Expression.Variable aux8 = variableWithId("%8");
     Expression.Variable s = variableWithId("s");
     String methodId = "A#foo(Ljava/lang/String;[Ljava/lang/String;[I)Ljava/lang/String;";
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod(methodId)
         .addBasicBlock(newBasicBlock("1")
-            .assignTo(aux0, call("__arrayGet").withArgs(intA), new LocationInFile(FILE_KEY, 3,14,3,21))
-            .assignTo(aux1, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 3,8,3,22))
-            .assignTo(aux2, call(methodId).withArgs(Expression.THIS, aux1, array, intA), new LocationInFile(FILE_KEY, 3,4,3,36))
-            .assignTo(aux3, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 4,4,4,12))
-            .assignTo(aux4, call("__concat").withArgs(aux3, foo), new LocationInFile(FILE_KEY, 4,4,4,19))
-            .assignTo(aux5, call("__arraySet").withArgs(array, aux4), new LocationInFile(FILE_KEY, 4,4,4,19))
-            .assignTo(aux6, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 5,15,5,23))
-            .assignTo(s, call("__id").withArgs(aux6), new LocationInFile(FILE_KEY, 5,4,5,24))
-            .assignTo(aux7, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 6,11,6,19))
-            .assignTo(aux8, call("__concat").withArgs(aux7, s), new LocationInFile(FILE_KEY, 6,11,6,23))
-            .ret(aux8, new LocationInFile(FILE_KEY, 6, 4, 6, 24)))
+            .assignTo(aux0, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 3,8,3,22))
+            .assignTo(aux1, call(methodId).withArgs(Expression.THIS, aux0, array, constant("\"\"")), new LocationInFile(FILE_KEY, 3,4,3,36))
+            .assignTo(aux2, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 4,4,4,12))
+            .assignTo(aux3, call("__concat").withArgs(aux2, foo), new LocationInFile(FILE_KEY, 4,4,4,19))
+            .assignTo(aux4, call("__arraySet").withArgs(array, aux3), new LocationInFile(FILE_KEY, 4,4,4,19))
+            .assignTo(aux5, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 5,15,5,23))
+            .assignTo(s, call("__id").withArgs(aux5), new LocationInFile(FILE_KEY, 5,4,5,24))
+            .assignTo(aux6, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 6,11,6,19))
+            .assignTo(aux7, call("__concat").withArgs(aux6, s), new LocationInFile(FILE_KEY, 6,11,6,23))
+            .ret(aux7, new LocationInFile(FILE_KEY, 6, 4, 6, 24)))
         .build();
     assertCodeToUCfg("class A { \n" +
         "  private String foo(String foo, String[] array, int[] intA) { \n" +
