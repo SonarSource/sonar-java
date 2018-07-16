@@ -30,14 +30,13 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.batch.sensor.issue.NewExternalIssue;
-import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.externalreport.ExternalReportExtensions;
+import org.sonar.java.externalreport.commons.ExternalIssueUtils;
 import org.sonar.java.externalreport.commons.ExternalRulesDefinition;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
@@ -109,26 +108,7 @@ public class CheckstyleSensor implements Sensor {
 
   private static void saveIssue(SensorContext context, InputFile inputFile, String key, String line, String message) {
     RuleKey ruleKey = RuleKey.of(CheckstyleSensor.LINTER_KEY, key);
-    NewExternalIssue newExternalIssue = context.newExternalIssue();
-
-    ExternalRuleLoader ruleLoader = ruleLoader();
-    newExternalIssue
-      .type(ruleLoader.ruleType(ruleKey.rule()))
-      .severity(ruleLoader.ruleSeverity(ruleKey.rule()))
-      .remediationEffortMinutes(ruleLoader.ruleConstantDebtMinutes(ruleKey.rule()));
-
-    NewIssueLocation primaryLocation = newExternalIssue.newLocation()
-      .message(message)
-      .on(inputFile);
-
-    if (!line.isEmpty() && !line.equals("0")) {
-      primaryLocation.at(inputFile.selectLine(Integer.parseInt(line)));
-    }
-
-    newExternalIssue
-      .at(primaryLocation)
-      .forRule(ruleKey)
-      .save();
+    ExternalIssueUtils.saveIssue(context, ruleLoader(), inputFile, ruleKey, line, message);
   }
 
 }

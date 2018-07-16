@@ -21,33 +21,27 @@ package org.sonar.java.externalreport.spotbugs;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.api.SonarQubeSide;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.ExternalIssue;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.externalreport.commons.ExternalReportTestUtils;
 import org.sonar.java.externalreport.commons.ExternalRulesDefinition;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.externalreport.commons.ExternalReportTestUtils.onlyOneLogElement;
 
 public class SpotBugsSensorTest {
 
@@ -96,7 +90,7 @@ public class SpotBugsSensorTest {
     spotBugsSensor.describe(sensorDescriptor);
     assertThat(sensorDescriptor.name()).isEqualTo("Import of SpotBugs issues");
     assertThat(sensorDescriptor.languages()).containsOnly("java");
-    assertNoErrorWarnDebugLogs(logTester);
+    ExternalReportTestUtils.assertNoErrorWarnDebugLogs(logTester);
   }
 
   @Test
@@ -127,7 +121,7 @@ public class SpotBugsSensorTest {
   public void no_issues_without_report_paths_property() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, null);
     assertThat(externalIssues).isEmpty();
-    assertNoErrorWarnDebugLogs(logTester);
+    ExternalReportTestUtils.assertNoErrorWarnDebugLogs(logTester);
   }
 
   @Test
@@ -190,63 +184,13 @@ public class SpotBugsSensorTest {
   }
 
   private List<ExternalIssue> executeSensorImporting(int majorVersion, int minorVersion, @Nullable String fileName) throws IOException {
-    SensorContextTester context = createContext(PROJECT_DIR, majorVersion, minorVersion);
+    SensorContextTester context = ExternalReportTestUtils.createContext(PROJECT_DIR, majorVersion, minorVersion);
     if (fileName != null) {
-      File reportFile = generateReport(fileName);
+      File reportFile = ExternalReportTestUtils.generateReport(PROJECT_DIR, tmp, fileName);
       context.settings().setProperty("sonar.java.spotbugs.reportPaths", reportFile.getPath());
     }
     spotBugsSensor.execute(context);
     return new ArrayList<>(context.allExternalIssues());
-  }
-
-  private File generateReport(String fileName) throws IOException {
-    Path filePath = PROJECT_DIR.resolve(fileName);
-    if (!filePath.toFile().exists()) {
-      return filePath.toFile();
-    }
-    String reportData = new String(Files.readAllBytes(filePath), UTF_8);
-    reportData = reportData.replace("${PROJECT_DIR}", PROJECT_DIR.toRealPath() + File.separator);
-    File reportFile = tmp.newFile(fileName).getCanonicalFile();
-    Files.write(reportFile.toPath(), reportData.getBytes(UTF_8));
-    return reportFile;
-  }
-
-  public static SensorContextTester createContext(Path projectDir, int majorVersion, int minorVersion) throws IOException {
-    SensorContextTester context = SensorContextTester.create(projectDir);
-
-    try (Stream<Path> pathStream = Files.walk(projectDir)) {
-      pathStream
-        .filter(path -> !path.toFile().isDirectory())
-        .forEach(path -> addFileToContext(context, projectDir, path));
-    }
-
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(majorVersion, minorVersion), SonarQubeSide.SERVER));
-    return context;
-  }
-
-  public static void assertNoErrorWarnDebugLogs(LogTester logTester) {
-    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
-  }
-
-  public static String onlyOneLogElement(List<String> elements) {
-    assertThat(elements).hasSize(1);
-    return elements.get(0);
-  }
-
-  private static void addFileToContext(SensorContextTester context, Path projectDir, Path file) {
-    try {
-      String projectId = projectDir.getFileName().toString() + "-project";
-      context.fileSystem().add(TestInputFileBuilder.create(projectId, projectDir.toFile(), file.toFile())
-        .setCharset(UTF_8)
-        .setLanguage(file.toString().substring(file.toString().lastIndexOf('.') + 1))
-        .setContents(new String(Files.readAllBytes(file), UTF_8))
-        .setType(InputFile.Type.MAIN)
-        .build());
-    } catch (IOException e) {
-      throw new IllegalStateException(e);
-    }
   }
 
 }
