@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.plugins.externalreport.spotbugs;
+package org.sonar.java.externalreport.spotbugs;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +43,7 @@ public class SpotBugsXmlReportReader {
   private static final QName TYPE_ATTRIBUTE = new QName("type");
   private static final QName SOURCE_PATH_ATTRIBUTE = new QName("sourcepath");
   private static final QName START_ATTRIBUTE = new QName("start");
+  public static final String XPATH_SEPARATOR = "/";
 
   private final SensorContext context;
   private final IssueConsumer consumer;
@@ -77,7 +78,7 @@ public class SpotBugsXmlReportReader {
       XMLEvent event = reader.nextEvent();
       if (event.isStartElement()) {
         String localPart = event.asStartElement().getName().getLocalPart();
-        String xpath = elementStack.isEmpty() ? localPart : (elementStack.peek() + "/" + localPart);
+        String xpath = elementStack.isEmpty() ? localPart : (elementStack.peek() + XPATH_SEPARATOR + localPart);
         if (elementStack.isEmpty() && !"BugCollection".equals(xpath)) {
           throw new IOException("Unexpected document root '" + xpath + "' instead of 'BugCollection'.");
         }

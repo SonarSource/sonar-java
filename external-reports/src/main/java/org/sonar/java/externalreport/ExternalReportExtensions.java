@@ -23,7 +23,7 @@ import org.sonar.api.Plugin.Context;
 import org.sonar.api.utils.Version;
 import org.sonar.java.externalreport.checkstyle.CheckstyleSensor;
 import org.sonar.java.externalreport.pmd.PmdSensor;
-import org.sonarsource.plugins.externalreport.spotbugs.SpotBugsSensor;
+import org.sonar.java.externalreport.spotbugs.SpotBugsSensor;
 
 public final class ExternalReportExtensions {
 

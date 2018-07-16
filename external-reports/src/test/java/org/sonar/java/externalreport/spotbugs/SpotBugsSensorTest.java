@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.plugins.externalreport.spotbugs;
+package org.sonar.java.externalreport.spotbugs;
 
 import java.io.File;
 import java.io.IOException;
