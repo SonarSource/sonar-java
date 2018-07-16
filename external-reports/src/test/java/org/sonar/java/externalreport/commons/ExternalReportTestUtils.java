@@ -26,7 +26,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.api.Plugin;
 import org.sonar.api.SonarQubeSide;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -42,6 +44,11 @@ public final class ExternalReportTestUtils {
 
   private ExternalReportTestUtils() {
     // utility class
+  }
+
+  public static Plugin.Context sensorContext(int major, int minor) {
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(major, minor), SonarQubeSide.SERVER);
+    return new Plugin.Context(runtime);
   }
 
   public static void assertNoErrorWarnDebugLogs(LogTester logTester) {

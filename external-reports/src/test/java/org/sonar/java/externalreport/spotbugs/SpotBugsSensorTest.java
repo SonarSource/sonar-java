@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.api.Plugin;
 import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -58,8 +59,15 @@ public class SpotBugsSensorTest {
 
   @Test
   public void spotbugs_rules_definition() {
+    Plugin.Context sensorContext = ExternalReportTestUtils.sensorContext(7, 2);
+    SpotBugsSensor.defineSensor(sensorContext);
+    assertThat(sensorContext.getExtensions()).hasSize(1);
+    SpotBugsSensor.defineRulesAndProperties(sensorContext);
+    assertThat(sensorContext.getExtensions()).hasSize(3);
+
     RulesDefinition.Context context = new RulesDefinition.Context();
-    new ExternalRulesDefinition(SpotBugsSensor.ruleLoader()).define(context);
+    ExternalRulesDefinition rulesDefinition = (ExternalRulesDefinition) sensorContext.getExtensions().get(1);
+    rulesDefinition.define(context);
 
     assertThat(context.repositories()).hasSize(1);
     RulesDefinition.Repository repository = context.repository("external_spotbugs");
@@ -180,7 +188,16 @@ public class SpotBugsSensorTest {
       .endsWith("not-existing-file.java'. No SpotBugs issues will be imported on this file.");
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactlyInAnyOrder(
       "Unexpected empty 'BugCollection/BugInstance/@type'.",
-      "Unexpected empty 'BugCollection/BugInstance/SourceLine/@sourcepath' for bug 'HE_EQUALS_USE_HASHCODE'.");
+      "Unexpected empty 'BugCollection/BugInstance/SourceLine/@sourcepath' for bug 'HE_EQUALS_USE_HASHCODE'.",
+      "Unexpected empty 'BugCollection/BugInstance/LongMessage/text()' for bug 'NO_MESSAGE'");
+  }
+
+  @Test
+  public void no_issues_without_srcdir() throws IOException {
+    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "spotbugsXml-without-srcdir.xml");
+    assertThat(externalIssues).hasSize(0);
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactlyInAnyOrder(
+      "Unexpected missing 'BugCollection/Project/SrcDir/text()'.");
   }
 
   private List<ExternalIssue> executeSensorImporting(int majorVersion, int minorVersion, @Nullable String fileName) throws IOException {

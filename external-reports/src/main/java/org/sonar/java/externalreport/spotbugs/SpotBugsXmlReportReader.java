@@ -43,7 +43,7 @@ public class SpotBugsXmlReportReader {
   private static final QName TYPE_ATTRIBUTE = new QName("type");
   private static final QName SOURCE_PATH_ATTRIBUTE = new QName("sourcepath");
   private static final QName START_ATTRIBUTE = new QName("start");
-  public static final String XPATH_SEPARATOR = "/";
+  private static final String XPATH_SEPARATOR = "/";
 
   private final SensorContext context;
   private final IssueConsumer consumer;

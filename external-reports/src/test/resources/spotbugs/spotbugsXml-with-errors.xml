@@ -19,4 +19,7 @@
         <LongMessage>No file.</LongMessage>
         <SourceLine start='6' end='6' />
     </BugInstance>
+    <BugInstance type='NO_MESSAGE'>
+        <SourceLine sourcepath='org/myapp/Main.java' />
+    </BugInstance>
 </BugCollection>
