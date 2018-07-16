@@ -86,7 +86,7 @@ public class PmdSensor implements Sensor {
   private static void importReport(File reportFile, SensorContext context) {
     try {
       LOG.info("Importing {}", reportFile);
-      PmdXmlReportReader.read(context, reportFile);
+      PmdXmlReportReader.read(context, reportFile, RULE_LOADER);
     } catch (FileNotFoundException e) {
       LOG.error("Can't find PMD XML report: {}", reportFile);
     } catch (XMLStreamException | IOException | RuntimeException e) {

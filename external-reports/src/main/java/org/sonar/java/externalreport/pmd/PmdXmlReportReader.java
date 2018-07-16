@@ -43,6 +43,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
 public class PmdXmlReportReader {
 
@@ -52,19 +53,21 @@ public class PmdXmlReportReader {
 
   private final SensorContext context;
   private final File reportFile;
+  private final ExternalRuleLoader ruleLoader;
 
   private InputFile inputFile = null;
   private NewExternalIssue issue = null;
   private NewIssueLocation issueLocation = null;
   private StringBuilder issueMessage = new StringBuilder();
 
-  public PmdXmlReportReader(SensorContext context, File reportFile) {
+  public PmdXmlReportReader(SensorContext context, File reportFile, ExternalRuleLoader ruleLoader) {
     this.context = context;
     this.reportFile = reportFile;
+    this.ruleLoader = ruleLoader;
   }
 
-  public static void read(SensorContext context, File reportFile) throws XMLStreamException, IOException {
-    new PmdXmlReportReader(context, reportFile).parse();
+  public static void read(SensorContext context, File reportFile, ExternalRuleLoader ruleLoader) throws XMLStreamException, IOException {
+    new PmdXmlReportReader(context, reportFile, ruleLoader).parse();
   }
 
   private void parse() throws XMLStreamException, IOException {
@@ -106,10 +109,12 @@ public class PmdXmlReportReader {
   private void onViolationStartElement(StartElement element) {
     try {
       TextRange textRange = textRange(element);
+      RuleKey ruleKey = RuleKey.of(PmdSensor.LINTER_KEY, getAttributeValue(element, "rule"));
       issue = context.newExternalIssue()
-        .forRule(RuleKey.of(PmdSensor.LINTER_KEY, getAttributeValue(element, "rule")))
+        .forRule(ruleKey)
         .type(RuleType.CODE_SMELL)
-        .severity(SEVERITIES.get(getAttributeAsInt(element, "priority")));
+        .severity(SEVERITIES.get(getAttributeAsInt(element, "priority")))
+        .remediationEffortMinutes(ruleLoader.ruleConstantDebtMinutes(ruleKey.rule()));
       issueLocation = issue.newLocation()
         .on(inputFile)
         .at(textRange);

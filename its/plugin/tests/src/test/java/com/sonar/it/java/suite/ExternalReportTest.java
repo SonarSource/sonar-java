@@ -77,8 +77,7 @@ public class ExternalReportTest {
       assertThat(issue.line()).isEqualTo(3);
       assertThat(issue.message()).isEqualTo("Avoid unused local variables such as 'unused'.");
       assertThat(issue.severity()).isEqualTo("MAJOR");
-      // Weird SQ behavior, debt should be null
-      assertThat(issue.debt()).isEqualTo("0min");
+      assertThat(issue.debt()).isEqualTo("5min");
     } else {
       assertThat(issues).isEmpty();
     }

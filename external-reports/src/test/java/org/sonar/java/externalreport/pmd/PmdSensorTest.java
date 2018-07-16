@@ -163,7 +163,7 @@ public class PmdSensorTest {
     assertThat(first.primaryLocation().message()).isEqualTo("Avoid unused constructor parameters such as 'arg2'.");
     assertThat(first.primaryLocation().textRange()).isEqualTo(
       new DefaultTextRange(new DefaultTextPointer(3, 34), new DefaultTextPointer(3, 38)));
-    assertThat(first.remediationEffort()).isNull();
+    assertThat(first.remediationEffort()).isEqualTo(5);
 
     ExternalIssue second = externalIssues.get(1);
     assertThat(second.primaryLocation().inputComponent().key()).isEqualTo(PROJECT_ID + ":file1.java");
@@ -173,7 +173,7 @@ public class PmdSensorTest {
     assertThat(second.primaryLocation().message()).isEqualTo("Avoid unused local variables such as 'x'.");
     assertThat(second.primaryLocation().textRange()).isEqualTo(
       new DefaultTextRange(new DefaultTextPointer(4, 8), new DefaultTextPointer(5, 10)));
-    assertThat(first.remediationEffort()).isNull();
+    assertThat(second.remediationEffort()).isEqualTo(5);
 
     ExternalIssue third = externalIssues.get(2);
     assertThat(third.primaryLocation().inputComponent().key()).isEqualTo(PROJECT_ID + ":file2.java");
@@ -182,7 +182,7 @@ public class PmdSensorTest {
     assertThat(third.severity()).isEqualTo(Severity.CRITICAL);
     assertThat(third.primaryLocation().message()).isEqualTo("Avoid unused private methods such as 'privateMethod()'.");
     assertThat(third.primaryLocation().textRange().start().line()).isEqualTo(5);
-    assertThat(first.remediationEffort()).isNull();
+    assertThat(third.remediationEffort()).isEqualTo(5);
 
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly("No input file found for unknown-file.java. No PMD issue will be imported on this file.");
