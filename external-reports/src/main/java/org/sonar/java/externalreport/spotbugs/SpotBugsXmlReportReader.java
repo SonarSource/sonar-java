@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -51,7 +52,8 @@ public class SpotBugsXmlReportReader {
   private static final QName START_ATTRIBUTE = new QName("start");
 
   private final SensorContext context;
-  private final ExternalRuleLoader ruleLoader;
+  private final ExternalRuleLoader defaultRuleLoader;
+  private final Map<String, ExternalRuleLoader> otherLoaders;
 
   private List<String> sourceDirs = new ArrayList<>();
   private String bugInstanceType = "";
@@ -60,13 +62,15 @@ public class SpotBugsXmlReportReader {
   private String sourceLineStart = "";
   private StringBuilder textBuilder = null;
 
-  private SpotBugsXmlReportReader(SensorContext context, ExternalRuleLoader ruleLoader) {
+  private SpotBugsXmlReportReader(SensorContext context, ExternalRuleLoader defaultRuleLoader, Map<String, ExternalRuleLoader> otherLoaders) {
     this.context = context;
-    this.ruleLoader = ruleLoader;
+    this.defaultRuleLoader = defaultRuleLoader;
+    this.otherLoaders = otherLoaders;
   }
 
-  static void read(SensorContext context, InputStream in, ExternalRuleLoader ruleLoader) throws XMLStreamException, IOException {
-    new SpotBugsXmlReportReader(context, ruleLoader).read(in);
+  static void read(SensorContext context, InputStream in, ExternalRuleLoader defaultRuleLoader, Map<String, ExternalRuleLoader> otherLoaders)
+    throws XMLStreamException, IOException {
+    new SpotBugsXmlReportReader(context, defaultRuleLoader, otherLoaders).read(in);
   }
 
   private void read(InputStream in) throws XMLStreamException, IOException {
@@ -161,7 +165,15 @@ public class SpotBugsXmlReportReader {
       LOG.warn("No input file found for '{}'. No SpotBugs issues will be imported on this file.", sourceLinePath);
       return;
     }
-    RuleKey ruleKey = RuleKey.of(SpotBugsSensor.LINTER_KEY, bugInstanceType);
+
+    RuleKey ruleKey = RuleKey.of(SpotBugsSensor.SPOTBUGS_KEY, bugInstanceType);
+    ExternalRuleLoader ruleLoader = defaultRuleLoader;
+    for (Map.Entry<String, ExternalRuleLoader> otherLoader : otherLoaders.entrySet()) {
+      if (otherLoader.getValue().ruleKeys().contains(ruleKey.rule())) {
+        ruleLoader = otherLoader.getValue();
+        ruleKey = RuleKey.of(otherLoader.getKey(), bugInstanceType);
+      }
+    }
     ExternalIssueUtils.saveIssue(context, ruleLoader, inputFile, ruleKey, sourceLineStart, bugInstanceLongMessage);
   }
 

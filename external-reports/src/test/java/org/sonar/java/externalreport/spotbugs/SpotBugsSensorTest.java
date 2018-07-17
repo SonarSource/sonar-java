@@ -39,7 +39,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.externalreport.commons.ExternalReportTestUtils;
-import org.sonar.java.externalreport.commons.ExternalRulesDefinition;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.externalreport.commons.ExternalReportTestUtils.onlyOneLogElement;
@@ -63,19 +62,20 @@ public class SpotBugsSensorTest {
     SpotBugsSensor.defineSensor(sensorContext);
     assertThat(sensorContext.getExtensions()).hasSize(1);
     SpotBugsSensor.defineRulesAndProperties(sensorContext);
-    assertThat(sensorContext.getExtensions()).hasSize(3);
+    assertThat(sensorContext.getExtensions()).hasSize(4);
 
     RulesDefinition.Context context = new RulesDefinition.Context();
-    ExternalRulesDefinition rulesDefinition = (ExternalRulesDefinition) sensorContext.getExtensions().get(1);
-    rulesDefinition.define(context);
+    sensorContext.getExtensions().stream()
+      .filter(RulesDefinition.class::isInstance)
+      .forEach(ext -> ((RulesDefinition) ext).define(context));
 
-    assertThat(context.repositories()).hasSize(1);
+    assertThat(context.repositories()).hasSize(2);
+
     RulesDefinition.Repository repository = context.repository("external_spotbugs");
     assertThat(repository.name()).isEqualTo("SpotBugs");
     assertThat(repository.language()).isEqualTo("java");
     assertThat(repository.isExternal()).isEqualTo(true);
-
-    assertThat(repository.rules().size()).isEqualTo(562);
+    assertThat(repository.rules().size()).isEqualTo(458);
 
     RulesDefinition.Rule rule = repository.rule("AM_CREATES_EMPTY_JAR_FILE_ENTRY");
     assertThat(rule).isNotNull();
@@ -90,6 +90,13 @@ public class SpotBugsSensorTest {
       "<code>closeEntry()</code>.</p>");
     assertThat(rule.tags()).containsExactlyInAnyOrder("bad-practice");
     assertThat(rule.debtRemediationFunction().baseEffort()).isEqualTo("1h");
+
+    RulesDefinition.Repository findsecbugsRepo = context.repository("external_findsecbugs");
+    assertThat(findsecbugsRepo.name()).isEqualTo("FindSecBugs");
+    assertThat(findsecbugsRepo.language()).isEqualTo("java");
+    assertThat(findsecbugsRepo.isExternal()).isEqualTo(true);
+    repository = context.repository("external_findsecbugs");
+    assertThat(repository.rules().size()).isEqualTo(104);
   }
 
   @Test
@@ -116,9 +123,28 @@ public class SpotBugsSensorTest {
     ExternalIssue first = externalIssues.get(0);
     assertThat(first.primaryLocation().inputComponent().key()).isEqualTo("spotbugs-project:src/main/java/org/myapp/Main.java");
     assertThat(first.ruleKey().rule()).isEqualTo("HE_EQUALS_USE_HASHCODE");
+    assertThat(first.ruleKey().repository()).isEqualTo("spotbugs");
     assertThat(first.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(first.severity()).isEqualTo(Severity.MAJOR);
     assertThat(first.remediationEffort().longValue()).isEqualTo(60L);
+    assertThat(first.primaryLocation().message()).isEqualTo("org.myapp.Main defines equals and uses Object.hashCode()");
+    assertThat(first.primaryLocation().textRange().start().line()).isEqualTo(6);
+
+    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+  }
+
+  @Test
+  public void findsecbugs_issue() throws IOException {
+    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "spotbugsXml-findsecbugs.xml");
+    assertThat(externalIssues).hasSize(1);
+
+    ExternalIssue first = externalIssues.get(0);
+    assertThat(first.primaryLocation().inputComponent().key()).isEqualTo("spotbugs-project:src/main/java/org/myapp/Main.java");
+    assertThat(first.ruleKey().rule()).isEqualTo("RSA_KEY_SIZE");
+    assertThat(first.ruleKey().repository()).isEqualTo("findsecbugs");
+    assertThat(first.type()).isEqualTo(RuleType.VULNERABILITY);
+    assertThat(first.severity()).isEqualTo(Severity.MAJOR);
+    assertThat(first.remediationEffort().longValue()).isEqualTo(5L);
     assertThat(first.primaryLocation().message()).isEqualTo("org.myapp.Main defines equals and uses Object.hashCode()");
     assertThat(first.primaryLocation().textRange().start().line()).isEqualTo(6);
 
