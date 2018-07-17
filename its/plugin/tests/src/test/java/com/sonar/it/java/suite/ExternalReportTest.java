@@ -83,6 +83,30 @@ public class ExternalReportTest {
     }
   }
 
+  @Test
+  public void spotbugs() {
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("spotbugs-external-report"))
+      .setProperty("sonar.java.spotbugs.reportPaths", "target" + File.separator + "spotbugsXml.xml")
+      .setGoals("clean package com.github.spotbugs:spotbugs-maven-plugin:3.1.5:spotbugs", "sonar:sonar");
+    orchestrator.executeBuild(build);
+
+    String projectKey = "com.sonarsource.it.projects:spotbugs-external-report";
+    List<Issue> issues = getExternalIssues(projectKey);
+    boolean externalIssuesSupported = orchestrator.getServer().version().isGreaterThanOrEquals(7, 2);
+    if (externalIssuesSupported) {
+      assertThat(issues).hasSize(1);
+      Issue issue = issues.get(0);
+      assertThat(issue.componentKey()).isEqualTo(projectKey + ":src/main/java/org/myapp/Main.java");
+      assertThat(issue.ruleKey()).isEqualTo("external_spotbugs:HE_EQUALS_USE_HASHCODE");
+      assertThat(issue.line()).isEqualTo(6);
+      assertThat(issue.message()).isEqualTo("org.myapp.Main defines equals and uses Object.hashCode()");
+      assertThat(issue.severity()).isEqualTo("MAJOR");
+      assertThat(issue.debt()).isEqualTo("1h");
+    } else {
+      assertThat(issues).isEmpty();
+    }
+  }
+
   private boolean externalIssuesSupported() {
     return orchestrator.getServer().version().isGreaterThanOrEquals(7, 2);
   }

@@ -23,6 +23,7 @@ import org.sonar.api.Plugin.Context;
 import org.sonar.api.utils.Version;
 import org.sonar.java.externalreport.checkstyle.CheckstyleSensor;
 import org.sonar.java.externalreport.pmd.PmdSensor;
+import org.sonar.java.externalreport.spotbugs.SpotBugsSensor;
 
 public final class ExternalReportExtensions {
 
@@ -37,11 +38,13 @@ public final class ExternalReportExtensions {
   public static void define(Context context) {
     CheckstyleSensor.defineSensor(context);
     PmdSensor.defineSensor(context);
+    SpotBugsSensor.defineSensor(context);
 
     boolean externalIssuesSupported = context.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(7, 2));
     if (externalIssuesSupported) {
       CheckstyleSensor.defineRulesAndProperties(context);
       PmdSensor.defineRulesAndProperties(context);
+      SpotBugsSensor.defineRulesAndProperties(context);
     }
   }
 
