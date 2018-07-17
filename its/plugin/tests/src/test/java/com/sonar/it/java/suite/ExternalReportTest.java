@@ -45,9 +45,8 @@ public class ExternalReportTest {
       .setGoals("org.apache.maven.plugins:maven-checkstyle-plugin:3.0.0:checkstyle", "sonar:sonar");
     orchestrator.executeBuild(build);
 
-    List<Issue> issues = getExternalIssues();
-    boolean externalIssuesSupported = orchestrator.getServer().version().isGreaterThanOrEquals(7, 2);
-    if (externalIssuesSupported) {
+    List<Issue> issues = getExternalIssues("com.sonarsource.it.projects:checkstyle-external-report");
+    if (externalIssuesSupported()) {
       assertThat(issues).hasSize(1);
       Issue issue = issues.get(0);
       assertThat(issue.componentKey()).isEqualTo("com.sonarsource.it.projects:checkstyle-external-report:src/main/java/Main.java");
@@ -61,9 +60,36 @@ public class ExternalReportTest {
     }
   }
 
-  private List<Issue> getExternalIssues() {
+  @Test
+  public void pmd() {
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("pmd-external-report"))
+      .setProperty("sonar.java.pmd.reportPaths", "target" + File.separator + "pmd.xml")
+      .setGoals("org.apache.maven.plugins:maven-pmd-plugin:3.10.0:pmd", "sonar:sonar");
+    orchestrator.executeBuild(build);
+
+    String projectKey = "com.sonarsource.it.projects:pmd-external-report";
+    List<Issue> issues = getExternalIssues(projectKey);
+    if (externalIssuesSupported()) {
+      assertThat(issues).hasSize(1);
+      Issue issue = issues.get(0);
+      assertThat(issue.componentKey()).isEqualTo(projectKey + ":src/main/java/Main.java");
+      assertThat(issue.ruleKey()).isEqualTo("external_pmd:UnusedLocalVariable");
+      assertThat(issue.line()).isEqualTo(3);
+      assertThat(issue.message()).isEqualTo("Avoid unused local variables such as 'unused'.");
+      assertThat(issue.severity()).isEqualTo("MAJOR");
+      assertThat(issue.debt()).isEqualTo("5min");
+    } else {
+      assertThat(issues).isEmpty();
+    }
+  }
+
+  private boolean externalIssuesSupported() {
+    return orchestrator.getServer().version().isGreaterThanOrEquals(7, 2);
+  }
+
+  private List<Issue> getExternalIssues(String projectKey) {
     IssueClient issueClient = SonarClient.create(orchestrator.getServer().getUrl()).issueClient();
-    return issueClient.find(IssueQuery.create().componentRoots("com.sonarsource.it.projects:checkstyle-external-report")).list().stream()
+    return issueClient.find(IssueQuery.create().componentRoots(projectKey)).list().stream()
       .filter(issue -> issue.ruleKey().startsWith("external_"))
       .collect(Collectors.toList());
   }
