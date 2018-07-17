@@ -29,7 +29,6 @@ import javax.annotation.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.api.Plugin;
 import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -57,15 +56,8 @@ public class CheckstyleSensorTest {
 
   @Test
   public void checkstyle_rules_definition() {
-    Plugin.Context sensorContext = ExternalReportTestUtils.sensorContext(7, 2);
-    CheckstyleSensor.defineSensor(sensorContext);
-    assertThat(sensorContext.getExtensions()).hasSize(1);
-    CheckstyleSensor.defineRulesAndProperties(sensorContext);
-    assertThat(sensorContext.getExtensions()).hasSize(3);
-
     RulesDefinition.Context context = new RulesDefinition.Context();
-    ExternalRulesDefinition rulesDefinition = (ExternalRulesDefinition) sensorContext.getExtensions().get(1);
-    rulesDefinition.define(context);
+    new ExternalRulesDefinition(CheckstyleSensor.RULE_LOADER).define(context);
 
     assertThat(context.repositories()).hasSize(1);
     RulesDefinition.Repository repository = context.repository("external_checkstyle");

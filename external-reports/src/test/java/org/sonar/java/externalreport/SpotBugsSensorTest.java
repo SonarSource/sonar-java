@@ -29,7 +29,6 @@ import javax.annotation.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.api.Plugin;
 import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -57,17 +56,9 @@ public class SpotBugsSensorTest {
 
   @Test
   public void spotbugs_rules_definition() {
-    Plugin.Context sensorContext = ExternalReportTestUtils.sensorContext(7, 2);
-    SpotBugsSensor.defineSensor(sensorContext);
-    assertThat(sensorContext.getExtensions()).hasSize(1);
-    SpotBugsSensor.defineRulesAndProperties(sensorContext);
-    assertThat(sensorContext.getExtensions()).hasSize(4);
-
     RulesDefinition.Context context = new RulesDefinition.Context();
-    sensorContext.getExtensions().stream()
-      .filter(RulesDefinition.class::isInstance)
-      .forEach(ext -> ((RulesDefinition) ext).define(context));
-
+    new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER).define(context);
+    new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER).define(context);
     assertThat(context.repositories()).hasSize(2);
 
     RulesDefinition.Repository repository = context.repository("external_spotbugs");

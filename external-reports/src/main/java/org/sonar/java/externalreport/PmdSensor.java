@@ -24,12 +24,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import javax.xml.stream.XMLStreamException;
-import org.sonar.api.Plugin;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.config.PropertyDefinition;
-import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
@@ -45,7 +42,7 @@ public class PmdSensor implements Sensor {
   private static final String LINTER_NAME = "PMD";
   private static final String LANGUAGE_KEY = "java";
 
-  static final ExternalRuleLoader RULE_LOADER = new ExternalRuleLoader(
+  public static final ExternalRuleLoader RULE_LOADER = new ExternalRuleLoader(
     PmdSensor.LINTER_KEY,
     PmdSensor.LINTER_NAME,
     "org/sonar/l10n/java/rules/pmd/rules.json",
@@ -56,23 +53,6 @@ public class PmdSensor implements Sensor {
     descriptor
       .onlyWhenConfiguration(conf -> conf.hasKey(REPORT_PROPERTY_KEY))
       .name("Import of PMD issues");
-  }
-
-  public static void defineSensor(Plugin.Context context) {
-    context.addExtension(PmdSensor.class);
-  }
-
-  public static void defineRulesAndProperties(Plugin.Context context) {
-    context.addExtension(new ExternalRulesDefinition(RULE_LOADER));
-    context.addExtension(
-      PropertyDefinition.builder(PmdSensor.REPORT_PROPERTY_KEY)
-        .name("PMD Report Files")
-        .description("Paths (absolute or relative) to xml files with PMD issues.")
-        .category(ExternalReportExtensions.EXTERNAL_ANALYZERS_CATEGORY)
-        .subCategory(ExternalReportExtensions.JAVA_SUBCATEGORY)
-        .onQualifiers(Qualifiers.PROJECT)
-        .multiValues(true)
-        .build());
   }
 
   @Override
