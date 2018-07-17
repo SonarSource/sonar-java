@@ -17,70 +17,69 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.externalreport.spotbugs;
+package org.sonar.java.externalreport;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import org.sonar.api.Plugin.Context;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.externalreport.ExternalReportExtensions;
-import org.sonar.java.externalreport.commons.ExternalRulesDefinition;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
-public class SpotBugsSensor implements Sensor {
+public class CheckstyleSensor implements Sensor {
 
-  private static final Logger LOG = Loggers.get(SpotBugsSensor.class);
+  private static final Logger LOG = Loggers.get(CheckstyleSensor.class);
 
-  public static final String SPOTBUGS_KEY = "spotbugs";
-  private static final String SPOTBUGS_NAME = "SpotBugs";
-  public static final String FINDSECBUGS_KEY = "findsecbugs";
-  private static final String FINDSECBUGS_NAME = "FindSecBugs";
+  private static final String LINTER_KEY = "checkstyle";
+
+  private static final String LINTER_NAME = "Checkstyle";
+
   private static final String LANGUAGE_KEY = "java";
-  private static final String REPORT_PROPERTY_KEY = "sonar.java.spotbugs.reportPaths";
 
-  private static final ExternalRuleLoader RULE_LOADER = new ExternalRuleLoader(
-    SpotBugsSensor.SPOTBUGS_KEY,
-    SpotBugsSensor.SPOTBUGS_NAME,
-    "org/sonar/l10n/java/rules/spotbugs/spotbugs-rules.json",
-    SpotBugsSensor.LANGUAGE_KEY);
+  private static final String REPORT_PROPERTY_KEY = "sonar.java.checkstyle.reportPaths";
 
-  private static final ExternalRuleLoader FINDSECBUGS_LOADER = new ExternalRuleLoader(
-    SpotBugsSensor.FINDSECBUGS_KEY,
-    SpotBugsSensor.FINDSECBUGS_NAME,
-    "org/sonar/l10n/java/rules/spotbugs/findsecbugs-rules.json",
-    SpotBugsSensor.LANGUAGE_KEY);
+  private static class SingletonRuleLoader {
+    private static final ExternalRuleLoader INSTANCE = new ExternalRuleLoader(
+      CheckstyleSensor.LINTER_KEY,
+      CheckstyleSensor.LINTER_NAME,
+      "org/sonar/l10n/java/rules/checkstyle/rules.json",
+      CheckstyleSensor.LANGUAGE_KEY);
+  }
+
+  static ExternalRuleLoader ruleLoader() {
+    return SingletonRuleLoader.INSTANCE;
+  }
 
   @Override
   public void describe(SensorDescriptor descriptor) {
     descriptor
-      .onlyOnLanguage(SpotBugsSensor.LANGUAGE_KEY)
+      .onlyOnLanguage(CheckstyleSensor.LANGUAGE_KEY)
       .onlyWhenConfiguration(conf -> conf.hasKey(REPORT_PROPERTY_KEY))
-      .name("Import of SpotBugs issues");
+      .name("Import of Checkstyle issues");
   }
 
   public static void defineSensor(Context context) {
-    context.addExtension(SpotBugsSensor.class);
+    context.addExtension(CheckstyleSensor.class);
   }
 
   public static void defineRulesAndProperties(Context context) {
-    context.addExtension(new ExternalRulesDefinition(RULE_LOADER));
-    context.addExtension(new ExternalRulesDefinition(FINDSECBUGS_LOADER));
+    context.addExtension(new ExternalRulesDefinition(ruleLoader()));
     context.addExtension(
-      PropertyDefinition.builder(SpotBugsSensor.REPORT_PROPERTY_KEY)
-        .name("SpotBugs Report Files")
-        .description("Paths (absolute or relative) to xml files with SpotBugs issues.")
+      PropertyDefinition.builder(CheckstyleSensor.REPORT_PROPERTY_KEY)
+        .name("Checkstyle Report Files")
+        .description("Paths (absolute or relative) to xml files with Checkstyle issues.")
         .category(ExternalReportExtensions.EXTERNAL_ANALYZERS_CATEGORY)
         .subCategory(ExternalReportExtensions.JAVA_SUBCATEGORY)
         .onQualifiers(Qualifiers.PROJECT)
@@ -97,11 +96,16 @@ public class SpotBugsSensor implements Sensor {
   private static void importReport(File reportPath, SensorContext context) {
     try (InputStream in = new FileInputStream(reportPath)) {
       LOG.info("Importing {}", reportPath);
-      SpotBugsXmlReportReader.read(context, in, RULE_LOADER, Collections.singletonMap(FINDSECBUGS_KEY, FINDSECBUGS_LOADER));
+      CheckstyleXmlReportReader.read(context, in, CheckstyleSensor::saveIssue);
     } catch (IOException | XMLStreamException | RuntimeException e) {
       LOG.error(e.getClass().getSimpleName() + ": " + e.getMessage() +
         ", no issues information will be saved as the report file '{}' can't be read.", reportPath, e);
     }
+  }
+
+  private static void saveIssue(SensorContext context, InputFile inputFile, String key, String line, String message) {
+    RuleKey ruleKey = RuleKey.of(CheckstyleSensor.LINTER_KEY, key);
+    ExternalIssueUtils.saveIssue(context, ruleLoader(), inputFile, ruleKey, line, message);
   }
 
 }

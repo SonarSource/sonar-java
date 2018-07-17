@@ -21,9 +21,6 @@ package org.sonar.java.externalreport;
 
 import org.sonar.api.Plugin.Context;
 import org.sonar.api.utils.Version;
-import org.sonar.java.externalreport.checkstyle.CheckstyleSensor;
-import org.sonar.java.externalreport.pmd.PmdSensor;
-import org.sonar.java.externalreport.spotbugs.SpotBugsSensor;
 
 public final class ExternalReportExtensions {
 
