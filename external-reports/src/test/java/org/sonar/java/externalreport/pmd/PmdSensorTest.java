@@ -38,7 +38,6 @@ import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.ExternalIssue;
-import org.sonar.api.config.internal.ConfigurationBridge;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rules.RuleType;
@@ -70,9 +69,9 @@ public class PmdSensorTest {
     sensor.describe(sensorDescriptor);
     assertThat(sensorDescriptor.name()).isEqualTo("Import of PMD issues");
     MapSettings settings = new MapSettings();
-    assertThat(sensorDescriptor.configurationPredicate().test(new ConfigurationBridge(settings))).isFalse();
+    assertThat(sensorDescriptor.configurationPredicate().test(settings.asConfig())).isFalse();
     settings.setProperty(PmdSensor.REPORT_PROPERTY_KEY, "report.xml");
-    assertThat(sensorDescriptor.configurationPredicate().test(new ConfigurationBridge(settings))).isTrue();
+    assertThat(sensorDescriptor.configurationPredicate().test(settings.asConfig())).isTrue();
   }
 
   @Test

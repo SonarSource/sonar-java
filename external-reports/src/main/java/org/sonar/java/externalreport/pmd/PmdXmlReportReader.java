@@ -49,7 +49,7 @@ public class PmdXmlReportReader {
 
   private static final Logger LOG = Loggers.get(PmdXmlReportReader.class);
 
-  private static final Map<Integer,Severity> SEVERITIES = severities();
+  private static final Map<Integer, Severity> SEVERITIES = severities();
 
   private final SensorContext context;
   private final File reportFile;
