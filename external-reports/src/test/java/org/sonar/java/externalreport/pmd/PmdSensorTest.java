@@ -89,9 +89,8 @@ public class PmdSensorTest {
 
     RulesDefinition.Rule rule = repository.rule("EqualsNull");
     assertThat(rule).isNotNull();
-    assertThat(rule.name()).isEqualTo("EqualsNull");
+    assertThat(rule.name()).isEqualTo("Equals null");
     assertThat(rule.type()).isEqualTo(RuleType.CODE_SMELL);
-    assertThat(rule.severity()).isEqualTo("BLOCKER");
     assertThat(rule.htmlDescription())
       .contains("Tests for null should not use the equals() method. The '==' operator should be used instead.")
       .contains("<p>See more at <a href=\"https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#equalsnull\">PMD website</a>.</p>");
