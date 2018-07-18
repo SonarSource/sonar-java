@@ -97,7 +97,7 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
-  public void method_call() {
+  public void method_call_on_this() {
     Expression.Variable arg = variableWithId("arg");
     Expression.Variable aux0 = variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
@@ -111,13 +111,39 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
+  public void method_call_chain_with_field_access() {
+    Expression.Variable arg = variableWithId("arg");
+    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable aux2 = variableWithId("%2");
+    Expression.Variable aux3 = variableWithId("%3");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#bar()LA;").addMethodParam(arg)
+        .addBasicBlock(newBasicBlock("1")
+            .assignTo(aux0, call("A#foo()LA;").withArgs(Expression.THIS), new LocationInFile(FILE_KEY, 4,11,4,16))
+            .assignTo(aux1, call("A#foo()LA;").withArgs(aux0), new LocationInFile(FILE_KEY, 4,11,4,22))
+            .assignTo(aux2,
+                call("__id").withArgs(new Expression.FieldAccess(aux1, variableWithId("field"))),
+                new LocationInFile(FILE_KEY, 4,11,4,28))
+            .assignTo(aux3, call("A#foo()LA;").withArgs(aux2), new LocationInFile(FILE_KEY, 4,11,4,34))
+            .ret(aux3, new LocationInFile(FILE_KEY, 4,4,4,35)))
+        .build();
+    assertCodeToUCfg("class A {\n" +
+        "  A foo() { A a = new A(); a.field = new A(); return a; } \n" +
+        "  A bar() {\n" +
+        "    return foo().foo().field.foo();\n" +
+        "  }\n" +
+        "  A field;\n" +
+        "}\n", expectedUCFG);
+  }
+
+  @Test
   public void field_access_on_this() {
-    Expression.Variable x = UCFGBuilder.variableWithId("x");
-    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
-    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
-    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
-    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
-    Expression.Variable aux4 = UCFGBuilder.variableWithId("%4");
+    Expression.Variable x = variableWithId("x");
+    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable aux2 = variableWithId("%2");
+    Expression.Variable aux3 = variableWithId("%3");
+    Expression.Variable aux4 = variableWithId("%4");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method()Ljava/lang/String;")
       .addBasicBlock(newBasicBlock("1")
         .assignTo(aux0,
@@ -140,6 +166,29 @@ public class UCFGJavaVisitorTest {
         "  String method() {\n" +
         "    String x = this.field;\n" +
         "    return field + FIELD + x;\n" +
+        "  }\n" +
+        "}\n", expectedUCFG);
+  }
+
+  @Test
+  public void field_access_on_this_from_inner_class() {
+    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable aux1 = variableWithId("%1");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A$B#innerFoo(Ljava/lang/String;)Ljava/lang/String;")
+        .addBasicBlock(newBasicBlock("1")
+            .assignTo(aux0,
+                // FIXME what do we expect here?
+                call("__id").withArgs(new Expression.FieldAccess(new Expression.ClassName("A"), variableWithId("this"))),
+                new LocationInFile(FILE_KEY, 3,47,3,53))
+            .assignTo(aux1, call("A#outerFoo(Ljava/lang/String;)Ljava/lang/String;").withArgs(aux0, variableWithId("x")),
+                new LocationInFile(FILE_KEY, 3,47,3,65))
+            .ret(aux1, new LocationInFile(FILE_KEY, 3,40,3,66)))
+        .build();
+    assertCodeToUCfg("class A {\n" +
+        "  String outerFoo(String x) { return x;};\n" +
+        "  class B { String innerFoo(String x) { return A.this.outerFoo(x); }}\n" +
+        "  String method(B b, String s) {\n" +
+        "    return b.innerFoo(s);\n" +
         "  }\n" +
         "}\n", expectedUCFG);
   }
@@ -182,25 +231,25 @@ public class UCFGJavaVisitorTest {
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0,
                 call("__id").withArgs(new Expression.FieldAccess(variableWithId("foo"))),
-                new LocationInFile(FILE_KEY, 7,4,7,7))
+                new LocationInFile(FILE_KEY, 7,5,7,8))
             .assignTo(aux1,
                 call("__id").withArgs(new Expression.FieldAccess(aux0, variableWithId("foo"))),
-                new LocationInFile(FILE_KEY, 7,4,7,11))
+                new LocationInFile(FILE_KEY, 7,5,7,12))
             .assignTo(aux2,
                 call("__id").withArgs(new Expression.FieldAccess(aux1, variableWithId("bar"))),
-                new LocationInFile(FILE_KEY, 7,4,7,15))
+                new LocationInFile(FILE_KEY, 7,5,7,16))
             .assignTo(aux3,
                 call("__arrayGet").withArgs(aux2),
-                new LocationInFile(FILE_KEY, 7,4,7,18))
+                new LocationInFile(FILE_KEY, 7,5,7,19))
             .assignTo(aux4,
                 call("__id").withArgs(new Expression.FieldAccess(a, variableWithId("foo"))),
-                new LocationInFile(FILE_KEY, 7,25,7,30))
+                new LocationInFile(FILE_KEY, 7,28,7,33))
             .assignTo(aux5,
                 call("__id").withArgs(new Expression.FieldAccess(aux4, variableWithId("baw"))),
-                new LocationInFile(FILE_KEY, 7,25,7,34))
+                new LocationInFile(FILE_KEY, 7,27,7,38))
             .assignTo(new Expression.FieldAccess(aux3, variableWithId("baz")),
                 call("__id").withArgs(aux5),
-                new LocationInFile(FILE_KEY, 7,4,7,34))
+                new LocationInFile(FILE_KEY, 7,4,7,38))
             .ret(a, new LocationInFile(FILE_KEY, 8,4,8,13)))
         .build();
     assertCodeToUCfg("class A {\n" +
@@ -209,7 +258,7 @@ public class UCFGJavaVisitorTest {
         "  String baz;\n" +
         "  String baw;\n" +
         "  A method(A a) {\n" +
-        "    foo.foo.bar[0].baz = a.foo.baw;\n" +
+        "    (foo.foo.bar[0]).baz = (a.foo).baw;\n" +
         "    return a;\n" +
         "  }\n" +
         "}\n", expectedUCFG);
@@ -229,8 +278,6 @@ public class UCFGJavaVisitorTest {
         "  String field;\n" +
         "  A getA() { return new A(); }\n" +
         "  String foo() { return getA().field; }\n" +
-        "  String bar() { return (new A()).field; }\n" +
-        "  String baz(A[] array) { return array[0].field; }\n" +
         "}\n", expectedUCFG);
   }
 
@@ -630,16 +677,16 @@ public class UCFGJavaVisitorTest {
     Expression.Variable aux3 = variableWithId("%3");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("1")
-            .assignTo(aux0, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(constant("\"\"")), new LocationInFile(FILE_KEY, 3, 4, 3, 20))
-            .assignTo(aux1, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(constant("\"\"")), new LocationInFile(FILE_KEY, 4, 4, 4, 20))
+            .assignTo(aux0, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(Expression.THIS), new LocationInFile(FILE_KEY, 3, 4, 3, 19))
+            .assignTo(aux1, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(Expression.THIS), new LocationInFile(FILE_KEY, 4, 4, 4, 19))
             .assignTo(aux2, call("__concat").withArgs(constant("\"\""), arg), new LocationInFile(FILE_KEY, 5,15,5,25))
             .assignTo(aux3, call("__concat").withArgs(constant("\"\""), arg), new LocationInFile(FILE_KEY, 6,15,6,25))
             .ret(constant(""), new LocationInFile(FILE_KEY, 7, 4, 7, 14)))
         .build();
     assertCodeToUCfg("class A { \n" +
         "  private String foo(String arg) { \n" +
-        "    super.toString();\n" +
-        "    super.toString();\n" +
+        "    this.toString();\n" +
+        "    this.toString();\n" +
         "    String x = true + arg;\n" +
         "    String y = true + arg;\n" +
         "    return \"\";\n" +
@@ -936,7 +983,6 @@ public class UCFGJavaVisitorTest {
             .assignTo(aux2, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(argument1), new LocationInFile(FILE_KEY, 4,47,4,62))
             .assignTo(aux3, call("__arrayGet").withArgs(argument2), new LocationInFile(FILE_KEY, 4,64,4,71))
             .assignTo(aux4, call("__id").withArgs(new Expression.FieldAccess(argument3, variableWithId("foo"))), new LocationInFile(FILE_KEY, 4,73,4,81))
-            // field access will change with SONARSEC-121
             .assignTo(aux5, call("java.lang.String#format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;")
                     .withArgs(new Expression.ClassName("java.lang.String"), constant("%s"), aux0, aux2, aux3, aux4),
                 new LocationInFile(FILE_KEY, 4,11,4,82))

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +36,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.VariableReadExtractor;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -275,7 +277,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     } else if (element.is(PLUS_ASSIGNMENT)) {
       AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) element;
       buildPlusAssignmentInvocation(blockBuilder, idGenerator, assignmentExpressionTree);
-    } else if (element.is(IDENTIFIER, MEMBER_SELECT) && !element.parent().is(MEMBER_SELECT, PLUS_ASSIGNMENT, ASSIGNMENT)) {
+    } else if (element.is(IDENTIFIER, MEMBER_SELECT) && !element.parent().is(PLUS_ASSIGNMENT, ASSIGNMENT)) {
       buildFieldReadAccessInvocation(blockBuilder, idGenerator, element);
     } else if (element.is(ARRAY_ACCESS_EXPRESSION) && !element.parent().is(PLUS_ASSIGNMENT, ASSIGNMENT)) {
       // PLUS_ASSIGNMENT and ASSIGNMENT might imply an array set, otherwise an array access is always a get
@@ -355,16 +357,16 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     ExpressionTree lhsTree = tree.variable();
     ExpressionTree rhsTree = tree.expression();
     Expression rightSide = lookupExpression(blockBuilder, idGenerator, rhsTree);
-    Expression.FieldAccess leftFieldAccess = buildFieldAccess(blockBuilder, idGenerator, lhsTree);
-    if (leftFieldAccess != null) {
-      blockBuilder.assignTo(leftFieldAccess, call("__id").withArgs(rightSide), location(tree));
+    Optional<Expression.FieldAccess> leftFieldAccess = buildFieldAccess(idGenerator, lhsTree);
+    if (leftFieldAccess.isPresent()) {
+      blockBuilder.assignTo(leftFieldAccess.get(), call("__id").withArgs(rightSide), location(tree));
     } else if (lhsTree.is(ARRAY_ACCESS_EXPRESSION)) {
       Expression leftSide = idGenerator.lookupExpressionFor(((ArrayAccessExpressionTree)lhsTree).expression());
       // when an assignment implies both get and set on arrays, the get must be stored in an auxiliary local variable
       blockBuilder.assignTo(variableWithId(idGenerator.newId()), arraySet(leftSide, rightSide), location(tree));
     } else {
       Expression leftSide = idGenerator.lookupExpressionFor(lhsTree);
-      if (leftSide instanceof  Expression.Variable) {
+      if (leftSide.isVariable()) {
         blockBuilder.assignTo((Expression.Variable) leftSide, call("__id").withArgs(rightSide), location(tree));
       }
     }
@@ -379,18 +381,18 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     // '+=' is the only expression which can imply two reads and one write on an array / field
     Expression leftSide = lookupExpression(blockBuilder, idGenerator, lhsTree);
     Expression rightSide = lookupExpression(blockBuilder, idGenerator, rhsTree);
-    Expression.FieldAccess leftFieldAccess = buildFieldAccess(blockBuilder, idGenerator, lhsTree);
-    if (leftFieldAccess != null) {
+    Optional<Expression.FieldAccess> leftFieldAccess = buildFieldAccess(idGenerator, lhsTree);
+    if (leftFieldAccess.isPresent()) {
       Expression.Variable concatAux = variableWithId(idGenerator.newId());
       blockBuilder.assignTo(concatAux, concat(leftSide, rightSide), location(tree));
-      blockBuilder.assignTo(leftFieldAccess, call("__id").withArgs(concatAux), location(tree));
+      blockBuilder.assignTo(leftFieldAccess.get(), call("__id").withArgs(concatAux), location(tree));
     } else if (lhsTree.is(ARRAY_ACCESS_EXPRESSION)) {
       Expression.Variable concatAux = variableWithId(idGenerator.newId());
       blockBuilder.assignTo(concatAux, concat(leftSide, rightSide), location(tree));
       blockBuilder.assignTo(variableWithId(idGenerator.newId()),
           arraySet(idGenerator.lookupExpressionFor(((ArrayAccessExpressionTree) lhsTree).expression()), concatAux),
           location(tree));
-    } else if (leftSide instanceof Expression.Variable) {
+    } else if (leftSide.isVariable()) {
       idGenerator.varForExpression(tree, ((Expression.Variable) leftSide).id());
       blockBuilder.assignTo((Expression.Variable) leftSide, concat(leftSide, rightSide), location(tree));
     }
@@ -406,67 +408,63 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
    * This method should be called for field read access.
    */
   private void buildFieldReadAccessInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, Tree tree) {
-    Expression.FieldAccess fieldAccess = buildFieldAccess(blockBuilder, idGenerator, tree);
-    if (fieldAccess != null) {
+    Optional<Expression.FieldAccess> fieldAccess = buildFieldAccess(idGenerator, tree);
+    if (fieldAccess.isPresent()) {
       Expression.Variable aux = variableWithId(idGenerator.newId());
-      blockBuilder.assignTo(aux, call("__id").withArgs(fieldAccess), location(tree));
+      blockBuilder.assignTo(aux, call("__id").withArgs(fieldAccess.get()), location(tree));
       idGenerator.varForExpression(tree, aux.id());
     }
   }
 
-  private Expression.FieldAccess buildFieldAccess(BlockBuilder blockBuilder, IdentifierGenerator identifierGenerator, Tree tree) {
-    Expression.FieldAccess fieldAccess = null;
+  private static Optional<Expression.FieldAccess> buildFieldAccess(IdentifierGenerator identifierGenerator, Tree tree) {
     if (tree.is(IDENTIFIER)) {
-      fieldAccess = buildFieldAccess((IdentifierTree) tree);
-    } else if (tree.is(MEMBER_SELECT)) {
-      fieldAccess = buildFieldAccess(blockBuilder, identifierGenerator, (MemberSelectExpressionTree) tree);
+      return buildFieldAccess((IdentifierTree) tree);
     }
-    return fieldAccess;
+    if (tree.is(MEMBER_SELECT)) {
+      return buildFieldAccess(identifierGenerator, (MemberSelectExpressionTree) tree);
+    }
+    return Optional.empty();
   }
 
-  private Expression.FieldAccess buildFieldAccess(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, MemberSelectExpressionTree memberSelectTree) {
+  private static Optional<Expression.FieldAccess> buildFieldAccess(IdentifierGenerator idGenerator, MemberSelectExpressionTree memberSelectTree) {
     ExpressionTree lhsTree = memberSelectTree.expression();
     Symbol rhsTreeSymbol = memberSelectTree.identifier().symbol();
     if (!rhsTreeSymbol.isVariableSymbol()) {
-      return null;
+      return Optional.empty();
     }
-    Expression.Variable rightSide = variableWithId(memberSelectTree.identifier().name());
-    Expression.FieldAccess fieldAccess = null;
+    Expression.Variable rightSide = variableWithId(rhsTreeSymbol.name());
     if (!rhsTreeSymbol.isStatic()) {
-      // this is a recursive call that will translate any field accesses on the left
-      // we do not call lookupExpression() because that translates array access, too
-      buildFieldReadAccessInvocation(blockBuilder, idGenerator, lhsTree);
       Expression leftSide = idGenerator.lookupExpressionFor(lhsTree);
       if (leftSide.equals(Expression.THIS)) {
-        fieldAccess = new Expression.FieldAccess(rightSide);
-      } else if (leftSide instanceof Expression.Variable) {
-        fieldAccess = new Expression.FieldAccess((Expression.Variable) leftSide, rightSide);
+        return Optional.of(new Expression.FieldAccess(rightSide));
+      } else if (leftSide.isVariable()) {
+        return  Optional.of(new Expression.FieldAccess((Expression.Variable) leftSide, rightSide));
       }
-    } else if (lhsTree.is(IDENTIFIER)) {
-      IdentifierTree lhsIdentifierTree = (IdentifierTree) lhsTree;
-      fieldAccess = new Expression.FieldAccess(
-          new Expression.ClassName(lhsIdentifierTree.symbol().type().fullyQualifiedName()),
-          rightSide);
     }
-    return fieldAccess;
+    if (lhsTree.is(IDENTIFIER)) {
+      IdentifierTree lhsIdentifierTree = (IdentifierTree) lhsTree;
+      return Optional.of(new Expression.FieldAccess(
+        new Expression.ClassName(lhsIdentifierTree.symbol().type().fullyQualifiedName()),
+        rightSide));
+    }
+    return Optional.empty();
   }
 
-  private static Expression.FieldAccess buildFieldAccess(IdentifierTree identifierTree) {
-    if (!identifierTree.symbol().isVariableSymbol()
-        || identifierTree.symbol().owner().isMethodSymbol()
-        || identifierTree.name().equals("this")) {
-      return null;
+  private static Optional<Expression.FieldAccess> buildFieldAccess(IdentifierTree identifierTree) {
+    Symbol identifierTreeSymbol = identifierTree.symbol();
+    if (!identifierTreeSymbol.isVariableSymbol()
+        || identifierTreeSymbol.owner().isMethodSymbol()
+        || identifierTree.name().equals("this")
+        || identifierTree.name().equals("super")) {
+      return Optional.empty();
     }
     Expression.Variable rightSide = variableWithId(identifierTree.name());
-    Expression.FieldAccess fieldAccess;
-    if (identifierTree.symbol().isStatic()) {
-      fieldAccess = new Expression.FieldAccess(
-          new Expression.ClassName(identifierTree.symbol().owner().type().fullyQualifiedName()),
-          rightSide);
-    } else {
-      fieldAccess = new Expression.FieldAccess(rightSide);
+    if (identifierTreeSymbol.isStatic()) {
+      return Optional.of(new Expression.FieldAccess(
+        new Expression.ClassName(identifierTreeSymbol.owner().type().fullyQualifiedName()),
+        rightSide));
     }
-    return fieldAccess;
+    return Optional.of(new Expression.FieldAccess(rightSide));
   }
 
   private static List<Expression> argumentIds(IdentifierGenerator idGenerator, Arguments arguments) {
@@ -604,13 +602,11 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       if (tree == null) {
         return CONST;
       }
-      while (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-        tree = ((ParenthesizedTree) tree).expression();
-      }
-      if (tree.is(IDENTIFIER) && !temps.containsKey(tree)) {
-        return lookupIdFor(((IdentifierTree) tree).symbol());
+      Tree noParentheses = skipParentheses(tree);
+      if (noParentheses.is(IDENTIFIER) && !temps.containsKey(noParentheses)) {
+        return lookupIdFor(((IdentifierTree) noParentheses).symbol());
       } else {
-        return temps.getOrDefault(tree, CONST);
+        return temps.getOrDefault(noParentheses, CONST);
       }
     }
 
@@ -620,6 +616,13 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
     public void varForExpression(Tree element, String id) {
       temps.put(element, id);
+    }
+
+    private static Tree skipParentheses(Tree tree) {
+      if (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+        return ExpressionUtils.skipParentheses((ParenthesizedTree) tree);
+      }
+      return tree;
     }
   }
 
