@@ -167,20 +167,19 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     LocationInFile parametersLocation = location(methodTree.openParenToken(), methodTree.closeParenToken());
     UCFGBuilder.BlockBuilder blockBuilder = UCFGBuilder.newBasicBlock("paramAnnotations", parametersLocation);
 
-    List<AnnotationTree> methodAnnotations = methodTree.modifiers().annotations();
-    getObjectParameters(methodTree).forEach(parameter -> buildBlockForParameter(parameter, methodAnnotations, blockBuilder, idGenerator));
+    getAnnotatedParameters(methodTree).forEach(parameter -> buildBlockForParameter(parameter, blockBuilder, idGenerator));
 
     Label nextBlockLabel = UCFGBuilder.createLabel(Integer.toString(cfg.entry().id()));
     blockBuilder.jumpTo(nextBlockLabel);
     return blockBuilder;
   }
 
-  private void buildBlockForParameter(VariableTree parameter, List<AnnotationTree> methodAnnotations, BlockBuilder blockBuilder, IdentifierGenerator idGenerator) {
+  private void buildBlockForParameter(VariableTree parameter, BlockBuilder blockBuilder, IdentifierGenerator idGenerator) {
     Expression.Variable parameterVariable = variableWithId(idGenerator.lookupIdFor(parameter.symbol()));
     List<Expression> annotationVariables = new ArrayList<>();
 
-    Stream.concat(methodAnnotations.stream(), parameter.modifiers().annotations().stream()).forEach(annotationTree -> {
-      Expression.Variable var = variableWithId(idGenerator.newId());
+    parameter.modifiers().annotations().forEach(annotationTree -> {
+      Expression.Variable var = variableWithId(idGenerator.newIdFor(annotationTree));
       annotationVariables.add(var);
       blockBuilder.assignTo(var, annotateCall(annotationTree, parameterVariable), location(annotationTree));
     });
@@ -195,15 +194,13 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   }
 
   private static boolean hasAnnotatedParameters(MethodTree methodTree) {
-    List<VariableTree> objectParameters = getObjectParameters(methodTree).collect(Collectors.toList());
-    if (objectParameters.isEmpty()) {
-      return false;
-    }
-    return !methodTree.modifiers().annotations().isEmpty() || objectParameters.stream().anyMatch(parameter -> !parameter.modifiers().annotations().isEmpty());
+    return getAnnotatedParameters(methodTree).count() > 0;
   }
 
-  private static Stream<VariableTree> getObjectParameters(MethodTree methodTree) {
-    return methodTree.parameters().stream().filter(parameter -> isObject(parameter.type().symbolType()));
+  private static Stream<VariableTree> getAnnotatedParameters(MethodTree methodTree) {
+    return methodTree.parameters().stream()
+      .filter(parameter -> isObject(parameter.type().symbolType()))
+      .filter(parameter -> !parameter.modifiers().annotations().isEmpty());
   }
 
   private UCFGBuilder.BlockBuilder buildBasicBlock(CFG.Block javaBlock, MethodTree methodTree, IdentifierGenerator idGenerator) {
