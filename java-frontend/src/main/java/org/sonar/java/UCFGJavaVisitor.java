@@ -25,6 +25,7 @@ import com.google.common.collect.Sets;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +44,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -53,7 +53,6 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -65,16 +64,12 @@ import org.sonar.ucfg.LocationInFile;
 import org.sonar.ucfg.UCFG;
 import org.sonar.ucfg.UCFGBuilder;
 import org.sonar.ucfg.UCFGBuilder.BlockBuilder;
-import org.sonar.ucfg.UCFGBuilder.CallBuilder;
 import org.sonar.ucfg.UCFGtoProtobuf;
 
-import static org.sonar.plugins.java.api.tree.Tree.Kind.ARRAY_ACCESS_EXPRESSION;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSIGNMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.MEMBER_SELECT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_ARRAY;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_CLASS;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.PLUS;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.PLUS_ASSIGNMENT;
@@ -85,13 +80,13 @@ import static org.sonar.ucfg.UCFGBuilder.variableWithId;
 public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner {
   private static final Logger LOG = Loggers.get(JavaSquid.class);
   private final File protobufDirectory;
-  String javaFileKey;
+  String fileKey;
   private int index = 0;
 
   public UCFGJavaVisitor(File workdir) {
     this.protobufDirectory = new File(new File(workdir, "ucfg"), "java");
     if (protobufDirectory.exists()) {
-      // set index to the number of files, to avoid overwriting previous files
+      // set index to number of file, to avoid overwriting previous files
       index = protobufDirectory.list().length;
     } else {
       protobufDirectory.mkdirs();
@@ -100,7 +95,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    this.javaFileKey = context.getFileKey();
+    this.fileKey = context.getFileKey();
     if (context.getSemanticModel() == null) {
       return;
     }
@@ -125,15 +120,15 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   protected void serializeUCFG(MethodTree tree, CFG cfg) {
     try {
       UCFG uCFG = buildUCfg(tree, cfg);
-      UCFGtoProtobuf.toProtobufFile(uCFG, ucfgFilePath());
+      UCFGtoProtobuf.toProtobufFile(uCFG, filePath());
     } catch (Exception e) {
-      String msg = String.format("Cannot generate ucfg for file %s for method at line %d", javaFileKey, tree.firstToken().line());
+      String msg = String.format("Cannot generate ucfg in file %s for method at line %d", fileKey, tree.firstToken().line());
       LOG.error(msg, e);
       throw new AnalysisException(msg, e);
     }
   }
 
-  private String ucfgFilePath() {
+  private String filePath() {
     String absolutePath = new File(protobufDirectory, "ucfg_" + index + ".proto").getAbsolutePath();
     index++;
     return absolutePath;
@@ -152,7 +147,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
     BlockBuilder entryBlockBuilder = buildBasicBlock(cfg.entry(), methodTree, idGenerator);
 
-    if (hasAnnotatedParameters(methodTree)) {
+    if (getAnnotatedStringParameters(methodTree).count() > 0) {
       builder.addStartingBlock(buildParameterAnnotationsBlock(methodTree, idGenerator, cfg));
       builder.addBasicBlock(entryBlockBuilder);
     } else {
@@ -169,53 +164,30 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     LocationInFile parametersLocation = location(methodTree.openParenToken(), methodTree.closeParenToken());
     UCFGBuilder.BlockBuilder blockBuilder = UCFGBuilder.newBasicBlock("paramAnnotations", parametersLocation);
 
-    List<AnnotationTree> methodAnnotations = methodTree.modifiers().annotations();
-    getObjectParameters(methodTree).forEach(parameter -> buildBlockForParameter(parameter, methodAnnotations, blockBuilder, idGenerator));
+    getAnnotatedStringParameters(methodTree).forEach(parameter -> buildBlockForParameter(parameter, blockBuilder, idGenerator));
 
     Label nextBlockLabel = UCFGBuilder.createLabel(Integer.toString(cfg.entry().id()));
     blockBuilder.jumpTo(nextBlockLabel);
     return blockBuilder;
   }
 
-  private void buildBlockForParameter(VariableTree parameter, List<AnnotationTree> methodAnnotations, BlockBuilder blockBuilder, IdentifierGenerator idGenerator) {
+  private void buildBlockForParameter(VariableTree parameter, BlockBuilder blockBuilder, IdentifierGenerator idGenerator) {
     Expression.Variable parameterVariable = variableWithId(idGenerator.lookupIdFor(parameter.symbol()));
+    List<AnnotationTree> annotationList = parameter.modifiers().annotations();
     List<Expression> annotationVariables = new ArrayList<>();
 
-    List<AnnotationTree> annotations = new ArrayList<>();
-    annotations.addAll(methodAnnotations);
-    annotations.addAll(parameter.modifiers().annotations());
-
-    if (annotations.isEmpty()) {
-      // method is not annotated && parameter is not annotated
-      return;
-    }
-
-    // at least one annotation should be applied to the parameter
-    annotations.forEach(annotationTree -> {
-      Expression.Variable var = variableWithId(idGenerator.newId());
+    annotationList.forEach(annotationTree -> {
+      Expression.Variable var = variableWithId(idGenerator.newIdFor(annotationTree));
       annotationVariables.add(var);
-      blockBuilder.assignTo(var, annotateCall(annotationTree, parameterVariable), location(annotationTree));
+      blockBuilder.assignTo(var, call(annotationTree.annotationType().symbolType().fullyQualifiedName()).withArgs(parameterVariable), location(annotationTree));
     });
 
     Expression[] args = annotationVariables.toArray(new Expression[annotationVariables.size()]);
     blockBuilder.assignTo(parameterVariable, call("__annotation").withArgs(args), location(parameter.simpleName()));
   }
 
-  private static CallBuilder annotateCall(AnnotationTree annotation, Expression.Variable annotatedVariable) {
-    Expression.Constant fullyQualifiedName = constant(annotation.symbolType().fullyQualifiedName());
-    return call("__annotate").withArgs(fullyQualifiedName, annotatedVariable);
-  }
-
-  private static boolean hasAnnotatedParameters(MethodTree methodTree) {
-    List<VariableTree> objectParameters = getObjectParameters(methodTree).collect(Collectors.toList());
-    if (objectParameters.isEmpty()) {
-      return false;
-    }
-    return !methodTree.modifiers().annotations().isEmpty() || objectParameters.stream().anyMatch(parameter -> !parameter.modifiers().annotations().isEmpty());
-  }
-
-  private static Stream<VariableTree> getObjectParameters(MethodTree methodTree) {
-    return methodTree.parameters().stream().filter(parameter -> isObject(parameter.type().symbolType()));
+  private static Stream<VariableTree> getAnnotatedStringParameters(MethodTree methodTree) {
+    return methodTree.parameters().stream().filter(parameter -> isString(parameter.type().symbolType())).filter(parameter -> !parameter.modifiers().annotations().isEmpty());
   }
 
   private UCFGBuilder.BlockBuilder buildBasicBlock(CFG.Block javaBlock, MethodTree methodTree, IdentifierGenerator idGenerator) {
@@ -227,7 +199,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     if (terminator != null && terminator.is(Tree.Kind.RETURN_STATEMENT)) {
       ExpressionTree returnedExpression = ((ReturnStatementTree) terminator).expression();
       Expression retExpr = constant(IdentifierGenerator.CONST);
-      if (methodTree.returnType() != null && isObject(methodTree.returnType().symbolType())) {
+      if (methodTree.returnType() != null && isString(methodTree.returnType().symbolType())) {
         retExpr = idGenerator.lookupExpressionFor(returnedExpression);
       }
       blockBuilder.ret(retExpr, location(terminator));
@@ -245,13 +217,14 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   }
 
   private void buildCall(Tree element, UCFGBuilder.BlockBuilder blockBuilder, IdentifierGenerator idGenerator) {
-    if (isObjectVarDeclaration(element)) {
+    if (isStringVarDecl(element)) {
       VariableTree variableTree = (VariableTree) element;
 
       String lhs = idGenerator.lookupIdFor(variableTree.simpleName());
       if (!idGenerator.isConst(lhs)) {
-        Expression source = idGenerator.lookupExpressionFor(variableTree.initializer());
-        blockBuilder.assignTo(variableWithId(lhs), UCFGBuilder.call("__id").withArgs(source), location(element));
+        ExpressionTree initializer = variableTree.initializer();
+        String source = idGenerator.lookupIdFor(initializer);
+        blockBuilder.assignTo(variableWithId(lhs), UCFGBuilder.call("__id").withArgs(variableWithId(source)), location(element));
       }
       return;
     }
@@ -262,41 +235,28 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     } else if (element.is(NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) element;
       buildConstructorInvocation(blockBuilder, idGenerator, newClassTree);
-    } else if (element.is(NEW_ARRAY)) {
-      NewArrayTree newArrayTree = (NewArrayTree) element;
-      buildNewArrayInvocation(blockBuilder, idGenerator, newArrayTree);
-    } else if (element.is(PLUS)) {
-      BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) element;
-      buildConcatenationInvocation(blockBuilder, idGenerator, binaryExpressionTree);
-    } else if (element.is(ASSIGNMENT)) {
-      AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) element;
-      buildAssignmentInvocation(blockBuilder, idGenerator, assignmentExpressionTree);
-    } else if (element.is(PLUS_ASSIGNMENT)) {
-      AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) element;
-      buildPlusAssignmentInvocation(blockBuilder, idGenerator, assignmentExpressionTree);
-    } else if (element.is(ARRAY_ACCESS_EXPRESSION) && !element.parent().is(PLUS_ASSIGNMENT, ASSIGNMENT)) {
-      // PLUS_ASSIGNMENT and ASSIGNMENT might imply an array set, otherwise an array access is always a get
-      ArrayAccessExpressionTree arrayAccessExpressionTree = (ArrayAccessExpressionTree) element;
-      if (isObject(arrayAccessExpressionTree.symbolType())) {
-        Expression.Variable getValue = variableWithId(idGenerator.newId());
-        Expression array = idGenerator.lookupExpressionFor(arrayAccessExpressionTree.expression());
-        blockBuilder.assignTo(getValue, arrayGet(array), location(element));
-        idGenerator.varForExpression(element, getValue.id());
+    } else if (element.is(PLUS, PLUS_ASSIGNMENT, ASSIGNMENT) && isString(((ExpressionTree) element).symbolType())) {
+      if (element.is(PLUS)) {
+        BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) element;
+        Expression lhs = idGenerator.lookupExpressionFor(binaryExpressionTree.leftOperand());
+        Expression rhs = idGenerator.lookupExpressionFor(binaryExpressionTree.rightOperand());
+        Expression.Variable var = variableWithId(idGenerator.newIdFor(binaryExpressionTree));
+        blockBuilder.assignTo(var, call("__concat").withArgs(lhs, rhs), location(element));
+      } else if (element.is(PLUS_ASSIGNMENT)) {
+        Expression var = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).variable());
+        Expression expr = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).expression());
+        if (!var.isConstant()) {
+          idGenerator.varForExpression(element, ((Expression.Variable) var).id());
+          blockBuilder.assignTo((Expression.Variable) var, call("__concat").withArgs(var, expr), location(element));
+        }
+      } else if (element.is(ASSIGNMENT)) {
+        Expression var = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).variable());
+        Expression expr = idGenerator.lookupExpressionFor(((AssignmentExpressionTree) element).expression());
+        if (!var.isConstant()) {
+          blockBuilder.assignTo((Expression.Variable) var, call("__id").withArgs(expr), location(element));
+        }
       }
     }
-  }
-
-  private void buildNewArrayInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, NewArrayTree tree) {
-    if (tree.type() != null  && !isObject(tree.type().symbolType())) {
-      return;
-    }
-    Expression.Variable newArray = variableWithId(idGenerator.newIdFor(tree));
-    blockBuilder.newObject(newArray, tree.symbolType().fullyQualifiedName(), location(tree));
-    idGenerator.varForExpression(tree, newArray.id());
-    tree.initializers().stream().filter(i -> isObject(i.symbolType())).forEach(i -> {
-      Expression argument = idGenerator.lookupExpressionFor(i);
-      blockBuilder.assignTo(variableWithId(idGenerator.newId()), arraySet(newArray, argument), location(tree));
-    });
   }
 
   private void buildConstructorInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, NewClassTree tree) {
@@ -305,16 +265,10 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       return;
     }
 
-    Expression.Variable newInstance = variableWithId(idGenerator.newIdFor(tree));
-    blockBuilder.newObject(newInstance, tree.symbolType().fullyQualifiedName(), location(tree.identifier()));
-
-    List<Expression> arguments = new ArrayList<>();
-    arguments.add(newInstance);
-    arguments.addAll(argumentIds(idGenerator, tree.arguments()));
-
-    blockBuilder.assignTo(variableWithId(idGenerator.newId()),
-        UCFGBuilder.call(signatureFor((Symbol.MethodSymbol) constructorSymbol)).withArgs(arguments.toArray(new Expression[0])),
-        location(tree));
+    if(isString(constructorSymbol.owner().type()) || tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isString)) {
+      List<Expression> arguments = argumentIds(idGenerator, tree.arguments());
+      buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) constructorSymbol);
+    }
   }
 
   private void buildMethodInvocation(UCFGBuilder.BlockBuilder blockBuilder, IdentifierGenerator idGenerator, MethodInvocationTree tree) {
@@ -322,68 +276,21 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       return;
     }
 
-    List<Expression> arguments = new ArrayList<>();
-    if (tree.symbol().isStatic()) {
-      arguments.add(new Expression.ClassName(tree.symbol().type().fullyQualifiedName()));
-    } else if (tree.methodSelect().is(MEMBER_SELECT)) {
-      arguments.add(idGenerator.lookupExpressionFor(((MemberSelectExpressionTree) tree.methodSelect()).expression()));
-    } else if (tree.methodSelect().is(IDENTIFIER)) {
-      arguments.add(Expression.THIS);
-    }
-    arguments.addAll(argumentIds(idGenerator, tree.arguments()));
+    List<Expression> arguments = null;
 
-    buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) tree.symbol());
-  }
-
-  private void buildConcatenationInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, BinaryExpressionTree tree) {
-    if (!isObject(tree.symbolType())) {
-      return;
-    }
-    Expression leftOperand = idGenerator.lookupExpressionFor(tree.leftOperand());
-    Expression rightOperand = idGenerator.lookupExpressionFor(tree.rightOperand());
-    Expression.Variable var = variableWithId(idGenerator.newIdFor(tree));
-    blockBuilder.assignTo(var, concat(leftOperand, rightOperand), location(tree));
-  }
-
-  private void buildAssignmentInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, AssignmentExpressionTree tree) {
-    if (!isObject(tree.symbolType())) {
-      return;
-    }
-    ExpressionTree lhsTree = tree.variable();
-    ExpressionTree rhsTree = tree.expression();
-    Expression rightSide = lookupExpression(blockBuilder, idGenerator, rhsTree);
-    if (lhsTree.is(ARRAY_ACCESS_EXPRESSION)) {
-      Expression leftSide = idGenerator.lookupExpressionFor(((ArrayAccessExpressionTree)lhsTree).expression());
-      // when an assignment implies both get and set on arrays, the get must be stored in an auxiliary local variable
-      blockBuilder.assignTo(variableWithId(idGenerator.newId()), arraySet(leftSide, rightSide), location(tree));
-    } else {
-      Expression leftSide = idGenerator.lookupExpressionFor(lhsTree);
-      if (leftSide instanceof  Expression.Variable) {
-        blockBuilder.assignTo((Expression.Variable) leftSide, call("__id").withArgs(rightSide), location(tree));
+    if (isString(tree.symbol().owner().type())) {
+      // myStr.myMethod(args) -> myMethod(myStr, args)
+      arguments = new ArrayList<>();
+      if (tree.methodSelect().is(MEMBER_SELECT)) {
+        arguments.add(idGenerator.lookupExpressionFor(((MemberSelectExpressionTree) tree.methodSelect()).expression()));
       }
+      arguments.addAll(argumentIds(idGenerator, tree.arguments()));
+    } else if (isString(tree.symbolType()) || tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(UCFGJavaVisitor::isString)) {
+      arguments = argumentIds(idGenerator, tree.arguments());
     }
-  }
 
-  private void buildPlusAssignmentInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, AssignmentExpressionTree tree) {
-    if (!isObject(tree.symbolType())) {
-      return;
-    }
-    ExpressionTree lhsTree = tree.variable();
-    ExpressionTree rhsTree = tree.expression();
-    // '+=' is the only expression which can imply two gets and one set on an array
-    Expression leftSide = lookupExpression(blockBuilder, idGenerator, lhsTree);
-    Expression rightSide = lookupExpression(blockBuilder, idGenerator, rhsTree);
-    if (leftSide instanceof Expression.Variable) {
-      if (lhsTree.is(ARRAY_ACCESS_EXPRESSION)) {
-        Expression.Variable concatAux = variableWithId(idGenerator.newId());
-        blockBuilder.assignTo(concatAux, concat(leftSide, rightSide), location(tree));
-        blockBuilder.assignTo(variableWithId(idGenerator.newId()),
-            arraySet(idGenerator.lookupExpressionFor(((ArrayAccessExpressionTree)lhsTree).expression()), concatAux),
-            location(tree));
-      } else {
-        idGenerator.varForExpression(tree, ((Expression.Variable) leftSide).id());
-        blockBuilder.assignTo((Expression.Variable) leftSide, concat(leftSide, rightSide), location(tree));
-      }
+    if (arguments != null) {
+      buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) tree.symbol());
     }
   }
 
@@ -394,32 +301,6 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
   private static List<Expression> argumentIds(IdentifierGenerator idGenerator, Arguments arguments) {
     return arguments.stream().map(idGenerator::lookupExpressionFor).collect(Collectors.toList());
-  }
-
-  /**
-   * An array access expression depends on context - it might be a get or a set.
-   * This method should be used for the contexts where it is clear that the array access (if present) is a get.
-   */
-  private Expression lookupExpression(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, ExpressionTree expressionTree) {
-    if (expressionTree.is(ARRAY_ACCESS_EXPRESSION)) {
-      Expression array = idGenerator.lookupExpressionFor(((ArrayAccessExpressionTree)expressionTree).expression());
-      Expression.Variable aux = variableWithId(idGenerator.newId());
-      blockBuilder.assignTo(aux, arrayGet(array), location(expressionTree));
-      return aux;
-    }
-    return idGenerator.lookupExpressionFor(expressionTree);
-  }
-
-  private static UCFGBuilder.CallBuilder arrayGet(Expression array) {
-    return call("__arrayGet").withArgs(array);
-  }
-
-  private static UCFGBuilder.CallBuilder arraySet(Expression targetArray, Expression value) {
-    return call("__arraySet").withArgs(targetArray, value);
-  }
-
-  private static UCFGBuilder.CallBuilder concat(Expression... args) {
-    return call("__concat").withArgs(args);
   }
 
   private static String signatureFor(Symbol.MethodSymbol methodSymbol) {
@@ -441,53 +322,46 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     return location(firstTree);
   }
 
+
   private LocationInFile location(Tree tree) {
     return location(tree.firstToken(), tree.lastToken());
   }
 
   private LocationInFile location(SyntaxToken firstToken, SyntaxToken lastToken) {
     return new LocationInFile(
-      javaFileKey,
+      fileKey,
       firstToken.line(), firstToken.column(),
       lastToken.line(), lastToken.column() + lastToken.text().length()
     );
   }
 
-  private static boolean isObjectVarDeclaration(Tree tree) {
+  private static boolean isStringVarDecl(Tree tree) {
     if (!tree.is(Tree.Kind.VARIABLE)) {
       return false;
     }
 
     VariableTree var = (VariableTree) tree;
-    return isObject(var.type().symbolType());
+    return isString(var.type().symbolType());
   }
 
-  private static boolean isObject(Type type) {
-    if (type.isArray()) {
-      Type elementType = ((Type.ArrayType)type).elementType();
-      if (elementType == null) {
-        // SONARJAVA-2835 : the type for multi-dimension array initializers is null
-        return false;
-      }
-      return isObject(elementType);
-    }
-    return !type.isPrimitive() && !type.isUnknown();
+  private static boolean isString(Type type) {
+    return type.is("java.lang.String");
   }
 
   public static class IdentifierGenerator {
 
     private static final String CONST = "\"\"";
 
-    private final Map<Symbol, String> objectVars;
+    private final Map<Symbol, String> vars;
     private final Map<Tree, String> temps;
     private int counter;
 
     public IdentifierGenerator(MethodTree methodTree) {
-      Set<Symbol> objectParameters = methodTree.parameters().stream().filter(p -> isObject(p.symbol().type())).map(VariableTree::symbol).collect(Collectors.toSet());
+      List<Symbol> parameters = methodTree.parameters().stream().map(VariableTree::symbol).collect(Collectors.toList());
       VariableReadExtractor variableReadExtractor = new VariableReadExtractor(methodTree.symbol(), false);
       methodTree.accept(variableReadExtractor);
-      Set<Symbol> objectLocals = variableReadExtractor.usedVariables().stream().filter(s -> isObject(s.type())).collect(Collectors.toSet());
-      objectVars = Sets.union(objectParameters, objectLocals).stream().collect(Collectors.toMap(s -> s, Symbol::name));
+      Set<Symbol> locals = variableReadExtractor.usedVariables().stream().filter(s -> s.type().is("java.lang.String")).collect(Collectors.toSet());
+      vars = Sets.union(new HashSet<>(parameters), locals).stream().collect(Collectors.toMap(s -> s, Symbol::name));
       temps = new HashMap<>();
       counter = 0;
     }
@@ -497,7 +371,12 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     }
 
     public String newIdFor(@Nullable Tree tree) {
-      return temps.computeIfAbsent(tree, t -> newId());
+      String id = lookupIdFor(tree);
+      if (isConst(id)) {
+        return temps.computeIfAbsent(tree, t -> newId());
+      } else {
+        return id;
+      }
     }
 
     private String newId() {
@@ -509,12 +388,8 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     public Expression lookupExpressionFor(@Nullable Tree tree) {
       String id = lookupIdFor(tree);
       if (isConst(id)) {
-        if (tree != null) {
-          if (tree.is(Tree.Kind.STRING_LITERAL)) {
-            return constant(LiteralUtils.trimQuotes(((LiteralTree) tree).value()));
-          } else if (tree.is(IDENTIFIER) && ((IdentifierTree) tree).name().equals("this")) {
-            return Expression.THIS;
-          }
+        if (tree != null && tree.is(Tree.Kind.STRING_LITERAL)) {
+          return constant(LiteralUtils.trimQuotes(((LiteralTree) tree).value()));
         }
         return constant(id);
       }
@@ -524,7 +399,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     public String lookupIdFor(@Nullable Tree tree) {
       if (tree == null) {
         return CONST;
-      } else if (tree.is(IDENTIFIER)) {
+      } else if (tree.is(Tree.Kind.IDENTIFIER)) {
         return lookupIdFor(((IdentifierTree) tree).symbol());
       } else {
         return temps.getOrDefault(tree, CONST);
@@ -532,7 +407,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     }
 
     public String lookupIdFor(Symbol symbol) {
-      return objectVars.getOrDefault(symbol, CONST);
+      return vars.getOrDefault(symbol, CONST);
     }
 
     public void varForExpression(Tree element, String id) {
