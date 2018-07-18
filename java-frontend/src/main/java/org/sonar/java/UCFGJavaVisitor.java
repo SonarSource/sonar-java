@@ -181,17 +181,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     Expression.Variable parameterVariable = variableWithId(idGenerator.lookupIdFor(parameter.symbol()));
     List<Expression> annotationVariables = new ArrayList<>();
 
-    List<AnnotationTree> annotations = new ArrayList<>();
-    annotations.addAll(methodAnnotations);
-    annotations.addAll(parameter.modifiers().annotations());
-
-    if (annotations.isEmpty()) {
-      // method is not annotated && parameter is not annotated
-      return;
-    }
-
-    // at least one annotation should be applied to the parameter
-    annotations.forEach(annotationTree -> {
+    Stream.concat(methodAnnotations.stream(), parameter.modifiers().annotations().stream()).forEach(annotationTree -> {
       Expression.Variable var = variableWithId(idGenerator.newId());
       annotationVariables.add(var);
       blockBuilder.assignTo(var, annotateCall(annotationTree, parameterVariable), location(annotationTree));

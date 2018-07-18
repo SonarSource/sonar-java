@@ -341,30 +341,6 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
-  public void build_method_annotations_only_on_annotated() {
-    Expression.Variable arg0 = variableWithId("arg0");
-    Expression.Variable arg1 = variableWithId("arg1");
-    Expression.Variable aux0 = variableWithId("%0");
-
-    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg0).addMethodParam(arg1)
-      .addBasicBlock(newBasicBlock("paramAnnotations")
-        .assignTo(aux0, call("__annotate").withArgs(constant("javax.annotation.Nullable"), arg0), new LocationInFile(FILE_KEY, 3, 6, 3, 32))
-        .assignTo(arg0, call("__annotation").withArgs(aux0), new LocationInFile(FILE_KEY, 3, 40, 3, 44))
-        .jumpTo(UCFGBuilder.createLabel("1")))
-      .addBasicBlock(
-        newBasicBlock("1")
-          .ret(constant("foo"), new LocationInFile(FILE_KEY, 5, 4, 5, 17)))
-      .build();
-    assertCodeToUCfg("class A {\n"
-      + "  String method(\n"
-      + "      @javax.annotation.Nullable String arg0,\n"
-      + "      String arg1) {\n" // should not be annotated
-      + "    return \"foo\";\n"
-      + "  }\n"
-      + "}", expectedUCFG);
-  }
-
-  @Test
   public void unknown_method() {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
