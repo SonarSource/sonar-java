@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.externalreport.pmd;
+package org.sonar.java.externalreport;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,7 +45,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.externalreport.commons.ExternalRulesDefinition;
+import org.sonar.java.externalreport.ExternalRulesDefinition;
+import org.sonar.java.externalreport.PmdSensor;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;

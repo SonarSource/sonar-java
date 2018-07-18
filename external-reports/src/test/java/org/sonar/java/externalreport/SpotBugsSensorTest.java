@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.externalreport.spotbugs;
+package org.sonar.java.externalreport;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,6 @@ import javax.annotation.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.api.Plugin;
 import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -38,10 +37,9 @@ import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.externalreport.commons.ExternalReportTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.externalreport.commons.ExternalReportTestUtils.onlyOneLogElement;
+import static org.sonar.java.externalreport.ExternalReportTestUtils.onlyOneLogElement;
 
 public class SpotBugsSensorTest {
 
@@ -58,17 +56,9 @@ public class SpotBugsSensorTest {
 
   @Test
   public void spotbugs_rules_definition() {
-    Plugin.Context sensorContext = ExternalReportTestUtils.sensorContext(7, 2);
-    SpotBugsSensor.defineSensor(sensorContext);
-    assertThat(sensorContext.getExtensions()).hasSize(1);
-    SpotBugsSensor.defineRulesAndProperties(sensorContext);
-    assertThat(sensorContext.getExtensions()).hasSize(4);
-
     RulesDefinition.Context context = new RulesDefinition.Context();
-    sensorContext.getExtensions().stream()
-      .filter(RulesDefinition.class::isInstance)
-      .forEach(ext -> ((RulesDefinition) ext).define(context));
-
+    new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER).define(context);
+    new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER).define(context);
     assertThat(context.repositories()).hasSize(2);
 
     RulesDefinition.Repository repository = context.repository("external_spotbugs");

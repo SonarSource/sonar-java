@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.externalreport.spotbugs;
+package org.sonar.java.externalreport;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,16 +26,11 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.stream.XMLStreamException;
-import org.sonar.api.Plugin.Context;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.config.PropertyDefinition;
-import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.externalreport.ExternalReportExtensions;
-import org.sonar.java.externalreport.commons.ExternalRulesDefinition;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
@@ -48,15 +43,15 @@ public class SpotBugsSensor implements Sensor {
   public static final String FINDSECBUGS_KEY = "findsecbugs";
   private static final String FINDSECBUGS_NAME = "FindSecBugs";
   private static final String LANGUAGE_KEY = "java";
-  private static final String REPORT_PROPERTY_KEY = "sonar.java.spotbugs.reportPaths";
+  public static final String REPORT_PROPERTY_KEY = "sonar.java.spotbugs.reportPaths";
 
-  private static final ExternalRuleLoader RULE_LOADER = new ExternalRuleLoader(
+  public static final ExternalRuleLoader RULE_LOADER = new ExternalRuleLoader(
     SpotBugsSensor.SPOTBUGS_KEY,
     SpotBugsSensor.SPOTBUGS_NAME,
     "org/sonar/l10n/java/rules/spotbugs/spotbugs-rules.json",
     SpotBugsSensor.LANGUAGE_KEY);
 
-  private static final ExternalRuleLoader FINDSECBUGS_LOADER = new ExternalRuleLoader(
+  public static final ExternalRuleLoader FINDSECBUGS_LOADER = new ExternalRuleLoader(
     SpotBugsSensor.FINDSECBUGS_KEY,
     SpotBugsSensor.FINDSECBUGS_NAME,
     "org/sonar/l10n/java/rules/spotbugs/findsecbugs-rules.json",
@@ -68,24 +63,6 @@ public class SpotBugsSensor implements Sensor {
       .onlyOnLanguage(SpotBugsSensor.LANGUAGE_KEY)
       .onlyWhenConfiguration(conf -> conf.hasKey(REPORT_PROPERTY_KEY))
       .name("Import of SpotBugs issues");
-  }
-
-  public static void defineSensor(Context context) {
-    context.addExtension(SpotBugsSensor.class);
-  }
-
-  public static void defineRulesAndProperties(Context context) {
-    context.addExtension(new ExternalRulesDefinition(RULE_LOADER));
-    context.addExtension(new ExternalRulesDefinition(FINDSECBUGS_LOADER));
-    context.addExtension(
-      PropertyDefinition.builder(SpotBugsSensor.REPORT_PROPERTY_KEY)
-        .name("SpotBugs Report Files")
-        .description("Paths (absolute or relative) to xml files with SpotBugs issues.")
-        .category(ExternalReportExtensions.EXTERNAL_ANALYZERS_CATEGORY)
-        .subCategory(ExternalReportExtensions.JAVA_SUBCATEGORY)
-        .onQualifiers(Qualifiers.PROJECT)
-        .multiValues(true)
-        .build());
   }
 
   @Override
