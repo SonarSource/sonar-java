@@ -54,7 +54,6 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.ucfg.UCFGBuilder.call;
 import static org.sonar.ucfg.UCFGBuilder.constant;
 import static org.sonar.ucfg.UCFGBuilder.newBasicBlock;
-import static org.sonar.ucfg.UCFGBuilder.variableWithId;
 
 public class UCFGJavaVisitorTest {
 
@@ -157,26 +156,6 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
-  public void build_concatenate_heterogenous_elements() {
-    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
-    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
-    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
-    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
-        .addBasicBlock(newBasicBlock("1")
-            .assignTo(aux0, call("__concat").withArgs(constant("\"\""), arg), new LocationInFile(FILE_KEY, 1,43,1,53))
-            .assignTo(aux1, call("__concat").withArgs(aux0, constant("\"\"")), new LocationInFile(FILE_KEY, 1,43,1,58))
-            .ret(aux1,new LocationInFile(FILE_KEY, 1,36,1,59)))
-        .build();
-    assertCodeToUCfg("class A {String method(String arg) {return true + arg + 42;}}", expectedUCFG);
-
-    expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
-        .addBasicBlock(newBasicBlock("1").assignTo(arg, call("__concat").withArgs(arg, constant("\"\"")), new LocationInFile(FILE_KEY, 1,43,1,50))
-            .ret(arg, new LocationInFile(FILE_KEY, 1,36,1,51)))
-        .build();
-    assertCodeToUCfg("class A {String method(String arg) {return arg+=42;}}", expectedUCFG);
-  }
-
-  @Test
   public void build_parameter_annotations() {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
@@ -248,48 +227,6 @@ public class UCFGJavaVisitorTest {
     assertCodeToUCfg("class A { \n" +
         "  private String foo() { \n" +
         "    return this.toString();\n" +
-        "  }\n" +
-        "}", expectedUCFG);
-  }
-
-  @Test
-  public void ignore_usage_of_super() {
-    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
-    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
-    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo()Ljava/lang/String;").addMethodParam(arg)
-        .addBasicBlock(newBasicBlock("1")
-            .assignTo(aux0, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(constant("\"\"")), new LocationInFile(FILE_KEY, 3, 11, 3, 27))
-            .ret(aux0, new LocationInFile(FILE_KEY, 3, 4, 3, 28)))
-        .build();
-    assertCodeToUCfg("class A { \n" +
-        "  private String foo() { \n" +
-        "    return super.toString();\n" +
-        "  }\n" +
-        "}", expectedUCFG);
-  }
-
-  @Test
-  public void create_multiple_auxiliaries_for_same_expression() {
-    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
-    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
-    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
-    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
-    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
-    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
-        .addBasicBlock(newBasicBlock("1")
-            .assignTo(aux0, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(constant("\"\"")), new LocationInFile(FILE_KEY, 3, 4, 3, 20))
-            .assignTo(aux1, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(constant("\"\"")), new LocationInFile(FILE_KEY, 4, 4, 4, 20))
-            .assignTo(aux2, call("__concat").withArgs(constant("\"\""), arg), new LocationInFile(FILE_KEY, 5,15,5,25))
-            .assignTo(aux3, call("__concat").withArgs(constant("\"\""), arg), new LocationInFile(FILE_KEY, 6,15,6,25))
-            .ret(constant(""), new LocationInFile(FILE_KEY, 7, 4, 7, 14)))
-        .build();
-    assertCodeToUCfg("class A { \n" +
-        "  private String foo(String arg) { \n" +
-        "    super.toString();\n" +
-        "    super.toString();\n" +
-        "    String x = true + arg;\n" +
-        "    String y = true + arg;\n" +
-        "    return \"\";\n" +
         "  }\n" +
         "}", expectedUCFG);
   }
@@ -395,26 +332,13 @@ public class UCFGJavaVisitorTest {
     Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     Expression.Variable arg2 = UCFGBuilder.variableWithId("arg2");
     Expression.Variable var1 = UCFGBuilder.variableWithId("var1");
-    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg).addMethodParam(arg2)
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1")
         .assignTo(var1, call("__id").withArgs(arg), new LocationInFile(FILE_KEY, 1,49,1,67))
         .assignTo(var1, call("__id").withArgs(arg2), new LocationInFile(FILE_KEY, 1,88,1,99))
         .ret(var1, new LocationInFile(FILE_KEY, 1,114,1,126)))
       .build();
     assertCodeToUCfg("class A {String method(String arg, String arg2) {String var1 = arg; int var2; int var3; var1 = arg2; var2 = var3; return var1;}}", expectedUCFG);
-  }
-
-  @Test
-  public void variable_declaration_without_initializer() {
-    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
-    Expression.Variable var1 = UCFGBuilder.variableWithId("var1");
-    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
-        .addBasicBlock(newBasicBlock("1")
-            .assignTo(var1, call("__id").withArgs(variableWithId("\"\"")), new LocationInFile(FILE_KEY, 1,36,1,48))
-            .assignTo(var1, call("__id").withArgs(arg), new LocationInFile(FILE_KEY, 1,49,1,59))
-            .ret(var1, new LocationInFile(FILE_KEY, 1,61,1,73)))
-        .build();
-    assertCodeToUCfg("class A {String method(String arg) {String var1; var1 = arg; return var1;}}", expectedUCFG);
   }
 
   @Test
