@@ -224,8 +224,9 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
       String lhs = idGenerator.lookupIdFor(variableTree.simpleName());
       if (!idGenerator.isConst(lhs)) {
-        Expression source = idGenerator.lookupExpressionFor(variableTree.initializer());
-        blockBuilder.assignTo(variableWithId(lhs), UCFGBuilder.call("__id").withArgs(source), location(element));
+        ExpressionTree initializer = variableTree.initializer();
+        String source = idGenerator.lookupIdFor(initializer);
+        blockBuilder.assignTo(variableWithId(lhs), UCFGBuilder.call("__id").withArgs(variableWithId(source)), location(element));
       }
       return;
     }
