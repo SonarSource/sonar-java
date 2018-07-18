@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 public class ObjectDeserializationCheck extends AbstractMethodDetection {
 
   private static final String OBJECT_INPUT_STREAM = "java.io.ObjectInputStream";
+  private static final String MESSAGE = "Make sure deserializing objects is safe here.";
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -41,6 +42,6 @@ public class ObjectDeserializationCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(mit, "Verify there is no risk to deserialize from this source");
+    reportIssue(mit, MESSAGE);
   }
 }

@@ -11,7 +11,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable(); // Noncompliant [[sc=17;ec=24]] {{Activate Spring Security's CSRF protection.}}
+    http.csrf().disable(); // Noncompliant [[sc=17;ec=24]] {{Make sure disabling Spring Security's CSRF protection is safe here.}}
     http.csrf().getClass();
 
     http

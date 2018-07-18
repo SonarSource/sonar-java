@@ -35,6 +35,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4507")
 public class SpringSecurityDebugModeCheck extends IssuableSubscriptionVisitor {
 
+  private static final String MESSAGE = "Make sure this debug mode is deactivated before delivering the code in production.";
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.ANNOTATION);
@@ -49,7 +51,7 @@ public class SpringSecurityDebugModeCheck extends IssuableSubscriptionVisitor {
         .filter(Objects::nonNull)
         .findFirst()
         .filter(assignment -> Boolean.TRUE.equals(ConstantUtils.resolveAsBooleanConstant(assignment.expression())))
-        .ifPresent(assignment -> reportIssue(assignment, "Deactivate Spring Security's debug mode."));
+        .ifPresent(assignment -> reportIssue(assignment, MESSAGE));
     }
   }
 
