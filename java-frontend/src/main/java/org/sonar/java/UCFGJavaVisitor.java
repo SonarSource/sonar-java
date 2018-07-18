@@ -36,7 +36,6 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.ArrayJavaType;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -469,7 +468,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       return true;
     }
     if (type.isArray()) {
-      return isObject(((ArrayJavaType)type).elementType());
+      return isObject(((Type.ArrayType)type).elementType());
     }
     return !type.isPrimitive() && !type.isUnknown();
   }
