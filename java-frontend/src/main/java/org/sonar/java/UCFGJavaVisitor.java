@@ -36,7 +36,6 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.ArrayJavaType;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -465,7 +464,12 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
   private static boolean isObject(Type type) {
     if (type.isArray()) {
-      return isObject(((ArrayJavaType)type).elementType());
+      Type elementType = ((Type.ArrayType)type).elementType();
+      if (elementType == null) {
+        // SONARJAVA-2835 : the type for multi-dimension array initializers is null
+        return false;
+      }
+      return isObject(elementType);
     }
     return !type.isPrimitive() && !type.isUnknown();
   }
