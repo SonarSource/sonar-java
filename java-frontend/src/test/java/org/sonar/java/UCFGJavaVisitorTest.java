@@ -868,43 +868,6 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
-  public void array_multidimensional_initialization() {
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux3 = variableWithId("%3");
-    Expression.Variable aux6 = variableWithId("%6");
-    UCFG expectedFooUCFG = UCFGBuilder.createUCFGForMethod("A#foo()[[[Ljava/lang/String;")
-        .addBasicBlock(newBasicBlock("1")
-            .newObject(aux0, "$Array", new LocationInFile(FILE_KEY, 2, 60, 2, 73))
-            .assignTo(variableWithId("%1"), call("__arraySet").withArgs(aux0, constant("one")), new LocationInFile(FILE_KEY, 2, 60, 2, 73))
-            .assignTo(variableWithId("%2"), call("__arraySet").withArgs(aux0, constant("two")), new LocationInFile(FILE_KEY, 2, 60, 2, 73))
-            .newObject(aux3, "$Array", new LocationInFile(FILE_KEY, 2, 59, 2, 74))
-            .newObject(variableWithId("%4"), "$Array", new LocationInFile(FILE_KEY, 2,77,2,79))
-            .newObject(variableWithId("%5"), "$Array", new LocationInFile(FILE_KEY, 2,76,2,80))
-            .newObject(aux6, "$Array", new LocationInFile(FILE_KEY, 2, 41, 2, 81))
-            .ret(aux6, new LocationInFile(FILE_KEY, 2, 34, 2, 82)))
-        .build();
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
-    UCFG expectedBarUCFG = UCFGBuilder.createUCFGForMethod("A#bar()[[I")
-        .addBasicBlock(newBasicBlock("1")
-            .newObject(aux0, "$Array", new LocationInFile(FILE_KEY, 4, 47, 4, 50))
-            .newObject(aux1, "$Array", new LocationInFile(FILE_KEY, 4, 52, 4, 57))
-            .newObject(aux2, "$Array", new LocationInFile(FILE_KEY, 4, 45, 4, 58))
-            .ret(constant("\"\""), new LocationInFile(FILE_KEY, 5, 4, 5, 17)))
-        .build();
-    assertCodeToUCfg("class A { \n" +
-        // SONARJAVA-2835 : the type for multi-dimension array initializers is null
-        "  private String[][][] foo() {" +
-        "    return new String[][][] {{{\"one\",\"two\"}}, {{}}}; \n" +
-        "  }\n" +
-        "  private int[][] bar() {" +
-        "    int[][] array = { {1}, {1,2}}; \n" +  // we cannot tell the type of the new array construct
-        "    return array;\n" +
-        "  }\n" +
-        "}", expectedFooUCFG, expectedBarUCFG);
-  }
-
-  @Test
   public void array_multidimensional_getters_and_setters() {
     Expression.Variable foo = variableWithId("foo");
     Expression.Variable multiDim = variableWithId("multiDim");
