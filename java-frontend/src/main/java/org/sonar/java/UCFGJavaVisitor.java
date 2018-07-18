@@ -463,7 +463,11 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     return isObject(var.type().symbolType());
   }
 
-  private static boolean isObject(Type type) {
+  private static boolean isObject(@Nullable Type type) {
+    if (type == null) {
+      // typeless arrays will have a null type
+      return true;
+    }
     if (type.isArray()) {
       return isObject(((ArrayJavaType)type).elementType());
     }

@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.api.semantic;
 
+import javax.annotation.Nullable;
+
 /**
  * Interface to access resolved type of an expression or a Type.
  */
@@ -166,8 +168,10 @@ public interface Type {
 
     /**
      * Type of elements in this array.
+     * Can be null in for multi-dimension array initialization
      * @return type of an element.
      */
+    @Nullable
     Type elementType();
 
   }

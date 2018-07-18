@@ -868,6 +868,50 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
+  public void array_multidimensional_initialization() {
+    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable aux3 = variableWithId("%3");
+    Expression.Variable aux5 = variableWithId("%5");
+    Expression.Variable aux6 = variableWithId("%6");
+    Expression.Variable aux8 = variableWithId("%8");
+    UCFG expectedFooUCFG = UCFGBuilder.createUCFGForMethod("A#foo()[[[Ljava/lang/String;")
+        .addBasicBlock(newBasicBlock("1")
+            .newObject(aux0, "$Array", new LocationInFile(FILE_KEY, 2, 60, 2, 73))
+            .assignTo(variableWithId("%1"), call("__arraySet").withArgs(aux0, constant("one")), new LocationInFile(FILE_KEY, 2, 60, 2, 73))
+            .assignTo(variableWithId("%2"), call("__arraySet").withArgs(aux0, constant("two")), new LocationInFile(FILE_KEY, 2, 60, 2, 73))
+            .newObject(aux3, "$Array", new LocationInFile(FILE_KEY, 2, 59, 2, 74))
+            .assignTo(variableWithId("%4"), call("__arraySet").withArgs(aux3, aux0), new LocationInFile(FILE_KEY, 2, 59, 2, 74))
+            .newObject(aux5, "$Array", new LocationInFile(FILE_KEY, 2,77,2,79))
+            .newObject(aux6, "$Array", new LocationInFile(FILE_KEY, 2,76,2,80))
+            .assignTo(variableWithId("%7"), call("__arraySet").withArgs(aux6, aux5), new LocationInFile(FILE_KEY, 2,76,2,80))
+            .newObject(aux8, "$Array", new LocationInFile(FILE_KEY, 2, 41, 2, 81))
+            .assignTo(variableWithId("%9"), call("__arraySet").withArgs(aux8, aux3), new LocationInFile(FILE_KEY, 2, 41, 2, 81))
+            .assignTo(variableWithId("%10"), call("__arraySet").withArgs(aux8, aux6), new LocationInFile(FILE_KEY, 2, 41, 2, 81))
+            .ret(aux8, new LocationInFile(FILE_KEY, 2, 34, 2, 82)))
+        .build();
+    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable aux2 = variableWithId("%2");
+    UCFG expectedBarUCFG = UCFGBuilder.createUCFGForMethod("A#bar()[[I")
+        .addBasicBlock(newBasicBlock("1")
+            .newObject(aux0, "$Array", new LocationInFile(FILE_KEY, 4, 47, 4, 50))
+            .newObject(aux1, "$Array", new LocationInFile(FILE_KEY, 4, 52, 4, 57))
+            .newObject(aux2, "$Array", new LocationInFile(FILE_KEY, 4, 45, 4, 58))
+            .assignTo(variableWithId("%3"), call("__arraySet").withArgs(aux2, aux0), new LocationInFile(FILE_KEY, 4, 45, 4, 58))
+            .assignTo(variableWithId("%4"), call("__arraySet").withArgs(aux2, aux1), new LocationInFile(FILE_KEY, 4, 45, 4, 58))
+            .ret(constant("\"\""), new LocationInFile(FILE_KEY, 5, 4, 5, 17)))
+        .build();
+    assertCodeToUCfg("class A { \n" +
+        "  private String[][][] foo() {" +
+        "    return new String[][][] {{{\"one\",\"two\"}}, {{}}}; \n" +
+        "  }\n" +
+        "  private int[][] bar() {" +
+        "    int[][] array = { {1}, {1,2}}; \n" +  // we cannot tell the type of the new array construct
+        "    return array;\n" +
+        "  }\n" +
+        "}", expectedFooUCFG, expectedBarUCFG);
+  }
+
+  @Test
   public void array_multidimensional_getters_and_setters() {
     Expression.Variable foo = variableWithId("foo");
     Expression.Variable multiDim = variableWithId("multiDim");
