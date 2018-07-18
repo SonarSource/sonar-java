@@ -1,14 +1,20 @@
-<p>Object deserialization from an untrusted source can lead to unexpected code execution. ObjectInputStream doesn't provide a way to apply rules on
-its InputStream argument. Knowing that all serializable classes in the scope of the classloader will be deserialized, there is a possibility to
-execute malicious code during the deserialization phase even if, in the end, a ClassCastException will be raised.</p>
-<p>This rule raises an issue when one of the methods "readObject", "readUnshared" is called on a "java.io.ObjectInputStream" or any object inheriting
-from it.</p>
-<h2>Noncompliant Code Example</h2>
-<pre>
-InputStream untrusted = new WhatEverInputStream();
-ObjectInputStream ois = new ObjectInputStream(untrusted);
-Foo deserialized = (Foo) ois.readObject(); // Noncompliant
-</pre>
+<p>Deserializing objects is security-sensitive. For example, it has led in the past to the following vulnerabilities:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-10654">CVE-2018-10654</a>: Hazelcast Library: Java deserialization
+  vulnerability </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1000058">CVE-2018-1000058</a>: Jenkins Pipeline: arbitrary code execution
+  vulnerability </li>
+</ul>
+<p>Object deserialization from an untrusted source can lead to unexpected code execution. <code>ObjectInputStream</code> doesn't provide a way to
+apply rules on its <code>InputStream</code> argument. Knowing that all serializable classes in the scope of the classloader will be deserialized,
+there is a possibility that malicious code could be executed during the deserialization phase even if, in the end, a <code>ClassCastException</code>
+will be raised.</p>
+<p>Deserialization takes a stream of bits and turns it into an object. If the stream contains the type of object you expect, all is well. But if
+you're deserializing untrusted input, and an attacker has inserted some other type of object, you're in trouble. Why? There are a few different attack
+scenarios, but one widely-documented one goes like this: Deserialization first instantiates an <code>Object</code>, then uses the
+<code>readObject</code> method to populate it. If the attacker has overridden <code>readObject</code> then he is entirely in control of what code
+executes during that process. It is only after <code>readObject</code> has completed that your newly-minted <code>Object</code> can be cast to the
+type you expected. A <code>ClassCastException</code> or <code>ClassNotFoundException</code> will be thrown, but at that point it's too late.</p>
 <h2>See</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/502.html">MITRE, CWE-502</a> - Deserialization of Untrusted Data </li>

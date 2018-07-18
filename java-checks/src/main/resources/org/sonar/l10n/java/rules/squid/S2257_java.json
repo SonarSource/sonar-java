@@ -1,5 +1,5 @@
 {
-  "title": "Only standard cryptographic algorithms should be used",
+  "title": "Using non-standard cryptographic algorithms is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {

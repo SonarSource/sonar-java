@@ -1,5 +1,8 @@
 <p>Spring Security's debug mode is useful during development and debugging, but could expose sensitive information to attackers such as request
-parameters or headers and should not be included in production code. </p>
+parameters, passwords, tokens or headers and should not be included in production code. </p>
+<p>As a Security Auditor, you have to:</p>
+<p>- check if in the release process there is a step deactivating this debug mode before building the final package</p>
+<p>- check that the code that is going to be actually released in production is not having the debug mode activated</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 @Configuration
@@ -19,6 +22,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 <h2>See</h2>
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/489.html">MITRE, CWE-489</a> - Leftover Debug Code </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/215.html">MITRE, CWE-215</a> - Information Exposure Through Debug Information </li>
   <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
 </ul>
 

@@ -4,7 +4,7 @@ review these exposed methods to be sure no attackers will be able to abuse them.
 <p>This rule is there to allow a security auditor to quickly find some potential hotspots to review.</p>
 <h1>Noncompliant Code Example</h1>
 <pre>
-@RequestMapping(path = "/profile", method = RequestMethod.GET)
+@RequestMapping(path = "/profile", method = RequestMethod.GET) // Noncompliant
 public UserProfile getUserProfile(String name) {
 ...
 }

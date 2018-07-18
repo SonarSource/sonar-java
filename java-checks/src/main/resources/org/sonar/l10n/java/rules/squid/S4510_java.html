@@ -3,6 +3,7 @@ capability is intended to call setter methods only but nothing prevents the exec
 <p>This rule raises an issue when XMLDecoder is instantiated. It's up to a security auditor to validate the input can't come from an untrusted
 source.</p>
 <p>The call to "readObject" is also highlighted to show where the malicious code can be executed.</p>
+<p>Verify the InputStream of XMLDecoder in not corrupted because it is coming from untrusted user input.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public void decode(InputStream in) {
