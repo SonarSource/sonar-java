@@ -247,16 +247,8 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       return;
     }
 
-    Expression.Variable newInstance = variableWithId(idGenerator.newIdFor(tree));
-    blockBuilder.newObject(newInstance, tree.symbolType().fullyQualifiedName(), location(tree.identifier()));
-
-    List<Expression> arguments = new ArrayList<>();
-    arguments.add(newInstance);
-    arguments.addAll(argumentIds(idGenerator, tree.arguments()));
-
-    blockBuilder.assignTo(variableWithId(idGenerator.newId()),
-        UCFGBuilder.call(signatureFor((Symbol.MethodSymbol) constructorSymbol)).withArgs(arguments.toArray(new Expression[0])),
-        location(tree));
+    List<Expression> arguments = argumentIds(idGenerator, tree.arguments());
+    buildAssignCall(blockBuilder, idGenerator, arguments, tree, (Symbol.MethodSymbol) constructorSymbol);
   }
 
   private void buildMethodInvocation(UCFGBuilder.BlockBuilder blockBuilder, IdentifierGenerator idGenerator, MethodInvocationTree tree) {
@@ -312,6 +304,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   private static String signatureFor(Symbol.MethodSymbol methodSymbol) {
     return ((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature();
   }
+
 
   @Nullable
   private LocationInFile location(CFG.Block javaBlock) {
