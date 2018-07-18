@@ -78,7 +78,7 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void visit_java_file() {
-    Expression.Variable arg = variableWithId("arg");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1").ret(arg, new LocationInFile(FILE_KEY, 1,37,1,48)))
       .build();
@@ -88,7 +88,7 @@ public class UCFGJavaVisitorTest {
   @Test
   public void assign_to_field() {
     // fields are ignored (will change with SONARSEC-121)
-    Expression.Variable arg = variableWithId("arg");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1").ret(arg, new LocationInFile(FILE_KEY, 1,69,1,80)))
       .build();
@@ -98,7 +98,7 @@ public class UCFGJavaVisitorTest {
   @Test
   public void plus_assign_to_field() {
     // fields are ignored (will change with SONARSEC-121)
-    Expression.Variable arg = variableWithId("arg");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("1").ret(arg, new LocationInFile(FILE_KEY, 1,70,1,81)))
         .build();
@@ -109,10 +109,10 @@ public class UCFGJavaVisitorTest {
   public void plus_assign_to_array_field() {
     // in case of array access, fields are not ignored
     // this will change with SONARSEC-121
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("__arrayGet").withArgs(constant("\"\"")), new LocationInFile(FILE_KEY, 1,53,1,66))
@@ -125,9 +125,9 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void void_method_with_flow() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable var0 = variableWithId("%0");
-    Expression.Variable var1 = variableWithId("%1");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable var0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable var1 = UCFGBuilder.variableWithId("%1");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)V").addMethodParam(arg)
       .addStartingBlock(newBasicBlock("1").assignTo(var1, call("java.lang.String#toString()Ljava/lang/String;").withArgs(arg), new LocationInFile(FILE_KEY, 1,72,1,86))
         .jumpTo(UCFGBuilder.createLabel("0")))
@@ -140,8 +140,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void create_assign_call_for_method_invocation() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable var = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable var = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Object;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1").assignTo(var, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(arg), new LocationInFile(FILE_KEY, 1,44,1,58))
         .ret(var, new LocationInFile(FILE_KEY, 1,37,1,59)))
@@ -151,8 +151,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void invocation_on_string() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable temp = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable temp = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(temp, call("java.lang.String#toString()Ljava/lang/String;").withArgs(arg), new LocationInFile(FILE_KEY, 1, 45, 1, 59))
@@ -163,8 +163,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void invocation_on_object() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable temp = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable temp = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Object;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1")
           .assignTo(temp, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(arg), new LocationInFile(FILE_KEY, 1,62,1,76))
@@ -175,8 +175,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void build_concatenate_elements() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable var = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable var = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1").assignTo(var, call("__concat").withArgs(constant("Myconst"), arg), new LocationInFile(FILE_KEY, 1,43,1,56))
         .ret(var,new LocationInFile(FILE_KEY, 1,36,1,57)))
@@ -192,9 +192,9 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void build_concatenate_heterogenous_elements() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("__concat").withArgs(constant("\"\""), arg), new LocationInFile(FILE_KEY, 1,43,1,53))
@@ -212,17 +212,17 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void build_primitive_types_to_constants() {
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
-    Expression.Variable aux3 = variableWithId("%3");
-    Expression.Variable aux4 = variableWithId("%4");
-    Expression.Variable aux5 = variableWithId("%5");
-    Expression.Variable s = variableWithId("s");
-    Expression.Variable aux6 = variableWithId("%6");
-    Expression.Variable aux7 = variableWithId("%7");
-    Expression.Variable aux8 = variableWithId("%8");
-    Expression.Variable aux9 = variableWithId("%9");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
+    Expression.Variable aux4 = UCFGBuilder.variableWithId("%4");
+    Expression.Variable aux5 = UCFGBuilder.variableWithId("%5");
+    Expression.Variable s = UCFGBuilder.variableWithId("s");
+    Expression.Variable aux6 = UCFGBuilder.variableWithId("%6");
+    Expression.Variable aux7 = UCFGBuilder.variableWithId("%7");
+    Expression.Variable aux8 = UCFGBuilder.variableWithId("%8");
+    Expression.Variable aux9 = UCFGBuilder.variableWithId("%9");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(ZBCS)Ljava/lang/String;")
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("java.io.PrintStream#print(I)V").withArgs(constant("\"\""), constant("\"\"")), new LocationInFile(FILE_KEY, 7,4,7,26))
@@ -254,10 +254,10 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void build_parameter_annotations() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
 
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("paramAnnotations")
@@ -285,10 +285,10 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void build_two_parameters_annotations() {
-    Expression.Variable arg0 = variableWithId("arg0");
-    Expression.Variable arg1 = variableWithId("arg1");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable arg0 = UCFGBuilder.variableWithId("arg0");
+    Expression.Variable arg1 = UCFGBuilder.variableWithId("arg1");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
 
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/String;").addMethodParam(arg0).addMethodParam(arg1)
       .addBasicBlock(newBasicBlock("paramAnnotations")
@@ -312,11 +312,11 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void build_method_annotations() {
-    Expression.Variable arg0 = variableWithId("arg0");
-    Expression.Variable arg1 = variableWithId("arg1");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
+    Expression.Variable arg0 = UCFGBuilder.variableWithId("arg0");
+    Expression.Variable arg1 = UCFGBuilder.variableWithId("arg1");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
 
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/String;").addMethodParam(arg0).addMethodParam(arg1)
       .addBasicBlock(newBasicBlock("paramAnnotations")
@@ -366,10 +366,10 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void unknown_method() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
 
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/util/Set;)V").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1")
@@ -405,8 +405,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void explicit_usage_of_this() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo()Ljava/lang/String;").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(Expression.THIS), new LocationInFile(FILE_KEY, 3, 11, 3, 26))
@@ -421,8 +421,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void ignore_usage_of_super() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo()Ljava/lang/String;").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(constant("\"\"")), new LocationInFile(FILE_KEY, 3, 11, 3, 27))
@@ -437,11 +437,11 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void create_multiple_auxiliaries_for_same_expression() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
-    Expression.Variable aux3 = variableWithId("%3");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(constant("\"\"")), new LocationInFile(FILE_KEY, 3, 4, 3, 20))
@@ -463,8 +463,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void implicit_usage_of_this() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo()Ljava/lang/String;").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("java.lang.Object#toString()Ljava/lang/String;").withArgs(Expression.THIS), new LocationInFile(FILE_KEY, 3, 11, 3, 21))
@@ -479,8 +479,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void explicit_static_method_call() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Integer;)Ljava/lang/String;")
         .addStartingBlock(
             newBasicBlock("1")
@@ -497,7 +497,7 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void ignore_primitives_and_interfaces() {
-    Expression.Variable arg = variableWithId("foo");
+    Expression.Variable arg = UCFGBuilder.variableWithId("foo");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;)V").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("0")
             .ret(constant("implicit return"), new LocationInFile(FILE_KEY, 7, 2, 7, 3)))
@@ -514,10 +514,10 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void build_assignment_for_object() {
-    Expression.Variable arg1 = variableWithId("arg1");
-    Expression.Variable arg2 = variableWithId("arg2");
-    Expression.Variable var = variableWithId("var");
-    Expression.Variable aux = variableWithId("%0");
+    Expression.Variable arg1 = UCFGBuilder.variableWithId("arg1");
+    Expression.Variable arg2 = UCFGBuilder.variableWithId("arg2");
+    Expression.Variable var = UCFGBuilder.variableWithId("var");
+    Expression.Variable aux = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/String;").addMethodParam(arg1)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(var, call("__id").withArgs(arg1), new LocationInFile(FILE_KEY, 1,50,1,68))
@@ -531,9 +531,9 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void build_assignment_for_string() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable arg2 = variableWithId("arg2");
-    Expression.Variable var1 = variableWithId("var1");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable arg2 = UCFGBuilder.variableWithId("arg2");
+    Expression.Variable var1 = UCFGBuilder.variableWithId("var1");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg).addMethodParam(arg2)
       .addBasicBlock(newBasicBlock("1")
         .assignTo(var1, call("__id").withArgs(arg), new LocationInFile(FILE_KEY, 1,49,1,67))
@@ -545,8 +545,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void variable_declaration_without_initializer() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable var1 = variableWithId("var1");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable var1 = UCFGBuilder.variableWithId("var1");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(var1, call("__id").withArgs(constant("\"\"")), new LocationInFile(FILE_KEY, 1,36,1,48))
@@ -558,7 +558,7 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void constructor_with_return() {
-    Expression.Variable arg = variableWithId("arg");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#<init>(Ljava/lang/String;)V").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1")
         .ret(constant("\"\""), new LocationInFile(FILE_KEY, 3,4,3,11)))
@@ -572,8 +572,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void location_in_source_file_should_be_preserved() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable var = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable var = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1")
         .assignTo(var, call("java.lang.String#toString()Ljava/lang/String;").withArgs(arg), new LocationInFile(FILE_KEY, 2,0,2,14))
@@ -584,7 +584,7 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void basic_block_location() {
-    Expression.Variable arg = variableWithId("arg");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/String;").addMethodParam(arg)
       .addBasicBlock(newBasicBlock("1").ret(arg, new LocationInFile(FILE_KEY, 3,5,3,16)))
       .build();
@@ -595,8 +595,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void string_length_invocation() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable var0 = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable var0 = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)I").addMethodParam(arg)
       .addStartingBlock(newBasicBlock("1").assignTo(var0, call("java.lang.String#length()I").withArgs(arg), new LocationInFile(FILE_KEY, 1,41,1,53))
         .ret(constant("\"\""), new LocationInFile(FILE_KEY, 1,34,1,54)))
@@ -606,8 +606,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void object_to_string_invocation() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable var0 = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable var0 = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Integer;)Ljava/lang/String;").addMethodParam(arg)
       .addStartingBlock(newBasicBlock("1").assignTo(var0, call("java.lang.Integer#toString()Ljava/lang/String;").withArgs(arg), new LocationInFile(FILE_KEY, 1, 45, 1, 59))
         .ret(var0, new LocationInFile(FILE_KEY, 1, 38, 1, 60)))
@@ -617,8 +617,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void static_method_call_without_object() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable var0 = variableWithId("%0");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable var0 = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Integer;)I").addMethodParam(arg)
       .addStartingBlock(
         newBasicBlock("1")
@@ -636,10 +636,10 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void constructor_call_as_initializer() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable instance = variableWithId("instance");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable instance = UCFGBuilder.variableWithId("instance");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
 
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/Integer;").addMethodParam(arg)
       .addStartingBlock(newBasicBlock("1")
@@ -658,12 +658,12 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void constructor_calls_assigned_to_same_local_variable() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable instance = variableWithId("instance");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
-    Expression.Variable aux3 = variableWithId("%3");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable instance = UCFGBuilder.variableWithId("instance");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
 
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/Integer;").addMethodParam(arg)
         .addStartingBlock(newBasicBlock("1")
@@ -688,12 +688,12 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void constructor_call_inside_constructor_call() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable instance = variableWithId("instance");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
-    Expression.Variable aux3 = variableWithId("%3");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable instance = UCFGBuilder.variableWithId("instance");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
 
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/Integer;").addMethodParam(arg)
         .addStartingBlock(newBasicBlock("1")
@@ -714,9 +714,9 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void constructor_call_returned() {
-    Expression.Variable arg = variableWithId("arg");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable arg = UCFGBuilder.variableWithId("arg");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/String;)Ljava/lang/Integer;").addMethodParam(arg)
         .addStartingBlock(newBasicBlock("1")
             .newObject(aux0, "java.lang.Integer", new LocationInFile(FILE_KEY, 3, 15, 3, 22))
@@ -732,14 +732,14 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void method_argument_expressions_get_stored_in_auxiliary_local_variables() {
-    Expression.Variable argument1 = variableWithId("arg1");
-    Expression.Variable argument2 = variableWithId("arg2");
-    Expression.Variable argument3 = variableWithId("arg3");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
-    Expression.Variable aux3 = variableWithId("%3");
-    Expression.Variable aux4 = variableWithId("%4");
+    Expression.Variable argument1 = UCFGBuilder.variableWithId("arg1");
+    Expression.Variable argument2 = UCFGBuilder.variableWithId("arg2");
+    Expression.Variable argument3 = UCFGBuilder.variableWithId("arg3");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
+    Expression.Variable aux4 = UCFGBuilder.variableWithId("%4");
 
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#method(Ljava/lang/Object;[Ljava/lang/String;LA$Foo;)Ljava/lang/String;")
         .addMethodParam(argument1).addMethodParam(argument2).addMethodParam(argument3)
@@ -764,10 +764,10 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void array_getters_and_setters() {
-    Expression.Variable foo = variableWithId("foo");
-    Expression.Variable array = variableWithId("array");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable foo = UCFGBuilder.variableWithId("foo");
+    Expression.Variable array = UCFGBuilder.variableWithId("array");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;[Ljava/lang/String;)Ljava/lang/String;").addMethodParam(foo).addMethodParam(array)
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("__arraySet").withArgs(array, foo), new LocationInFile(FILE_KEY, 3,4,3,18))
@@ -786,14 +786,14 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void array_variable_declaration() {
-    Expression.Variable foo = variableWithId("foo");
-    Expression.Variable array = variableWithId("array");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
-    Expression.Variable aux3 = variableWithId("%3");
-    Expression.Variable aux4 = variableWithId("%4");
-    Expression.Variable aux5 = variableWithId("%5");
+    Expression.Variable foo = UCFGBuilder.variableWithId("foo");
+    Expression.Variable array = UCFGBuilder.variableWithId("array");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
+    Expression.Variable aux4 = UCFGBuilder.variableWithId("%4");
+    Expression.Variable aux5 = UCFGBuilder.variableWithId("%5");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;)[Ljava/lang/String;")
         .addBasicBlock(newBasicBlock("1")
             .newObject(aux0, "$Array", new LocationInFile(FILE_KEY, 3, 21, 3, 28))
@@ -819,14 +819,14 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void array_multidimensional_getters_and_setters() {
-    Expression.Variable foo = variableWithId("foo");
-    Expression.Variable multiDim = variableWithId("multiDim");
-    Expression.Variable array = variableWithId("array");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
-    Expression.Variable aux3 = variableWithId("%3");
-    Expression.Variable aux4 = variableWithId("%4");
+    Expression.Variable foo = UCFGBuilder.variableWithId("foo");
+    Expression.Variable multiDim = UCFGBuilder.variableWithId("multiDim");
+    Expression.Variable array = UCFGBuilder.variableWithId("array");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
+    Expression.Variable aux4 = UCFGBuilder.variableWithId("%4");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo(Ljava/lang/String;[[Ljava/lang/String;[Ljava/lang/String;)Ljava/lang/String;")
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("__arraySet").withArgs(multiDim, array), new LocationInFile(FILE_KEY, 3,4,3,23))
@@ -849,19 +849,19 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void array_getters_and_setters_in_expressions() {
-    Expression.Variable foo = variableWithId("foo");
-    Expression.Variable array = variableWithId("array");
-    Expression.Variable intA = variableWithId("intA");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
-    Expression.Variable aux3 = variableWithId("%3");
-    Expression.Variable aux4 = variableWithId("%4");
-    Expression.Variable aux5 = variableWithId("%5");
-    Expression.Variable aux6 = variableWithId("%6");
-    Expression.Variable aux7 = variableWithId("%7");
-    Expression.Variable aux8 = variableWithId("%8");
-    Expression.Variable s = variableWithId("s");
+    Expression.Variable foo = UCFGBuilder.variableWithId("foo");
+    Expression.Variable array = UCFGBuilder.variableWithId("array");
+    Expression.Variable intA = UCFGBuilder.variableWithId("intA");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
+    Expression.Variable aux4 = UCFGBuilder.variableWithId("%4");
+    Expression.Variable aux5 = UCFGBuilder.variableWithId("%5");
+    Expression.Variable aux6 = UCFGBuilder.variableWithId("%6");
+    Expression.Variable aux7 = UCFGBuilder.variableWithId("%7");
+    Expression.Variable aux8 = UCFGBuilder.variableWithId("%8");
+    Expression.Variable s = UCFGBuilder.variableWithId("s");
     String methodId = "A#foo(Ljava/lang/String;[Ljava/lang/String;[I)Ljava/lang/String;";
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod(methodId)
         .addBasicBlock(newBasicBlock("1")
@@ -889,14 +889,14 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void array_in_expressions_with_multiple_access() {
-    Expression.Variable array = variableWithId("array");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
-    Expression.Variable aux2 = variableWithId("%2");
-    Expression.Variable aux3 = variableWithId("%3");
-    Expression.Variable aux4 = variableWithId("%4");
-    Expression.Variable aux5 = variableWithId("%5");
-    Expression.Variable aux6 = variableWithId("%6");
+    Expression.Variable array = UCFGBuilder.variableWithId("array");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
+    Expression.Variable aux2 = UCFGBuilder.variableWithId("%2");
+    Expression.Variable aux3 = UCFGBuilder.variableWithId("%3");
+    Expression.Variable aux4 = UCFGBuilder.variableWithId("%4");
+    Expression.Variable aux5 = UCFGBuilder.variableWithId("%5");
+    Expression.Variable aux6 = UCFGBuilder.variableWithId("%6");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo([Ljava/lang/String;)Ljava/lang/String;")
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 3,4,3,12))
@@ -918,9 +918,9 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void array_assign_to_array() {
-    Expression.Variable array = variableWithId("array");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable array = UCFGBuilder.variableWithId("array");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo([Ljava/lang/String;)Ljava/lang/String;")
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 3,15,3,23))
@@ -937,8 +937,8 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void array_access_return() {
-    Expression.Variable array = variableWithId("array");
-    Expression.Variable aux0 = variableWithId("%0");
+    Expression.Variable array = UCFGBuilder.variableWithId("array");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo([Ljava/lang/String;)Ljava/lang/String;")
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 3,11,3,19))
@@ -953,9 +953,9 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void array_access_method_call() {
-    Expression.Variable array = variableWithId("array");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable array = UCFGBuilder.variableWithId("array");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
     UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#foo([Ljava/lang/String;)Ljava/lang/String;")
         .addBasicBlock(newBasicBlock("1")
             .assignTo(aux0, call("__arrayGet").withArgs(array), new LocationInFile(FILE_KEY, 3,11,3,19))
@@ -971,10 +971,10 @@ public class UCFGJavaVisitorTest {
 
   @Test
   public void constructor_chaining() {
-    Expression.Variable collection = variableWithId("collection");
-    Expression.Variable s = variableWithId("s");
-    Expression.Variable aux0 = variableWithId("%0");
-    Expression.Variable aux1 = variableWithId("%1");
+    Expression.Variable collection = UCFGBuilder.variableWithId("collection");
+    Expression.Variable s = UCFGBuilder.variableWithId("s");
+    Expression.Variable aux0 = UCFGBuilder.variableWithId("%0");
+    Expression.Variable aux1 = UCFGBuilder.variableWithId("%1");
     UCFG firstConstructor = UCFGBuilder.createUCFGForMethod("A#<init>(Ljava/util/Collection;)V")
         .addStartingBlock(newBasicBlock("1")
             .assignTo(aux0, call("java.util.ArrayList#<init>(Ljava/util/Collection;)V")
