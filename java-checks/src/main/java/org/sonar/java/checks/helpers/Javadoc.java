@@ -243,6 +243,10 @@ public final class Javadoc {
       return Collections.emptyList();
     }
     String trimmedJavadoc = javadoc.trim();
+    if (trimmedJavadoc.length() <= 4) {
+      // Empty or malformed javadoc. for instance: '/**/'
+      return Collections.emptyList();
+    }
     // remove start and end of Javadoc as well as stars
     String[] lines = trimmedJavadoc
       .substring(3, trimmedJavadoc.length() - 2)
