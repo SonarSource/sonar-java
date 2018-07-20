@@ -302,6 +302,31 @@ public class UCFGJavaVisitorTest {
   }
 
   @Test
+  public void field_access_inside_constructor() {
+    Expression.Variable aux0 = variableWithId("%0");
+    UCFG expectedUCFG = UCFGBuilder.createUCFGForMethod("A#<init>(Ljava/lang/String;)V")
+        .addBasicBlock(newBasicBlock("1")
+            .assignTo(new Expression.FieldAccess(variableWithId("foo")), call("__id").withArgs(variableWithId("foo")), new LocationInFile(FILE_KEY, 6,4,6,18))
+            .assignTo(new Expression.FieldAccess(variableWithId("bar")), call("__id").withArgs(variableWithId("foo")), new LocationInFile(FILE_KEY, 7,4,7,13))
+            .assignTo(aux0, call("__id").withArgs(new Expression.FieldAccess(variableWithId("foo"))), new LocationInFile(FILE_KEY, 8,10,8,18))
+            .assignTo(new Expression.FieldAccess(variableWithId("baw")), call("__id").withArgs(aux0), new LocationInFile(FILE_KEY, 8,4,8,18))
+            .jumpTo(UCFGBuilder.createLabel("0")))
+        .addBasicBlock(newBasicBlock("0")
+            .ret(constant("implicit return"), new LocationInFile(FILE_KEY, 9,2,9,3)))
+        .build();
+    assertCodeToUCfg("class A {\n" +
+        "  String foo;\n" +
+        "  String bar;\n" +
+        "  String baw;\n" +
+        "  A(String foo) {\n" +
+        "    this.foo = foo;\n" +
+        "    bar = foo;\n" +
+        "    baw = this.foo;\n" +
+        "  }\n" +
+        "}\n", expectedUCFG);
+  }
+
+  @Test
   public void field_access_on_array_get() {
     Expression.Variable aux0 = variableWithId("%0");
     Expression.Variable aux1 = variableWithId("%1");
