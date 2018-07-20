@@ -408,12 +408,11 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
    * This method should be called for field read access.
    */
   private void buildFieldReadAccessInvocation(BlockBuilder blockBuilder, IdentifierGenerator idGenerator, Tree tree) {
-    Optional<Expression.FieldAccess> fieldAccess = buildFieldAccess(idGenerator, tree);
-    if (fieldAccess.isPresent()) {
+    buildFieldAccess(idGenerator, tree).ifPresent(fieldAccess -> {
       Expression.Variable aux = variableWithId(idGenerator.newId());
-      blockBuilder.assignTo(aux, call("__id").withArgs(fieldAccess.get()), location(tree));
+      blockBuilder.assignTo(aux, call("__id").withArgs(fieldAccess), location(tree));
       idGenerator.varForExpression(tree, aux.id());
-    }
+    });
   }
 
   private static Optional<Expression.FieldAccess> buildFieldAccess(IdentifierGenerator identifierGenerator, Tree tree) {
