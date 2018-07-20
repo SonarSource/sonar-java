@@ -72,8 +72,9 @@ public class CheckstyleSensorTest {
     assertThat(rule.name()).isEqualTo("Array Type Style");
     assertThat(rule.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(rule.severity()).isEqualTo("MINOR");
-    assertThat(rule.htmlDescription()).isEqualTo("Checks the style of array type definitions. Some like Java-style:" +
-      " public static void main(String[] args) and some like C-style: public static void main(String args[])\n\n<p>\n</p>");
+    assertThat(rule.htmlDescription()).isEqualTo(
+      "See description of Checkstyle rule <code>ArrayTypeStyleCheck</code> at the " +
+        "<a href=\"http://checkstyle.sourceforge.net/config_misc.html#ArrayTypeStyle\">Checkstyle website</a>.");
     assertThat(rule.tags()).isEmpty();
     assertThat(rule.debtRemediationFunction().baseEffort()).isEqualTo("5min");
   }

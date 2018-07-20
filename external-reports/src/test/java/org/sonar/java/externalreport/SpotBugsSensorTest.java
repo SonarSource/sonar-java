@@ -72,12 +72,8 @@ public class SpotBugsSensorTest {
     assertThat(rule.name()).isEqualTo("Bad practice - Creates an empty jar file entry");
     assertThat(rule.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(rule.severity()).isEqualTo("MAJOR");
-    assertThat(rule.htmlDescription()).isEqualTo("<p>The code calls <code>putNextEntry()</code>, immediately\n" +
-      "followed by a call to <code>closeEntry()</code>. This results\n" +
-      "in an empty JarFile entry. The contents of the entry\n" +
-      "should be written to the JarFile between the calls to\n" +
-      "<code>putNextEntry()</code> and\n" +
-      "<code>closeEntry()</code>.</p>");
+    assertThat(rule.htmlDescription()).isEqualTo("See description of SpotBugs rule <code>AM_CREATES_EMPTY_JAR_FILE_ENTRY</code> at the " +
+      "<a href=\"https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#AM_CREATES_EMPTY_JAR_FILE_ENTRY\">SpotBugs website</a>.");
     assertThat(rule.tags()).containsExactlyInAnyOrder("bad-practice");
     assertThat(rule.debtRemediationFunction().baseEffort()).isEqualTo("1h");
 

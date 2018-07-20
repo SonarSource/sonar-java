@@ -45,8 +45,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.externalreport.ExternalRulesDefinition;
-import org.sonar.java.externalreport.PmdSensor;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,9 +90,8 @@ public class PmdSensorTest {
     assertThat(rule).isNotNull();
     assertThat(rule.name()).isEqualTo("Equals null");
     assertThat(rule.type()).isEqualTo(RuleType.CODE_SMELL);
-    assertThat(rule.htmlDescription())
-      .contains("Tests for null should not use the equals() method. The '==' operator should be used instead.")
-      .contains("<p>See more at <a href=\"https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#equalsnull\">PMD website</a>.</p>");
+    assertThat(rule.htmlDescription()).isEqualTo(
+      "See description of PMD rule <code>EqualsNull</code> at the <a href=\"https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#equalsnull\">PMD website</a>.");
     assertThat(rule.tags()).isEmpty();
   }
 
