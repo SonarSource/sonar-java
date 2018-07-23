@@ -65,13 +65,13 @@ public class CheckstyleSensorTest {
     assertThat(repository.language()).isEqualTo("java");
     assertThat(repository.isExternal()).isEqualTo(true);
 
-    assertThat(repository.rules().size()).isEqualTo(155);
+    assertThat(repository.rules().size()).isEqualTo(156);
 
     RulesDefinition.Rule rule = repository.rule("ArrayTypeStyleCheck");
     assertThat(rule).isNotNull();
     assertThat(rule.name()).isEqualTo("Array Type Style");
     assertThat(rule.type()).isEqualTo(RuleType.CODE_SMELL);
-    assertThat(rule.severity()).isEqualTo("MINOR");
+    assertThat(rule.severity()).isEqualTo("MAJOR");
     assertThat(rule.htmlDescription()).isEqualTo(
       "See description of Checkstyle rule <code>ArrayTypeStyleCheck</code> at the " +
         "<a href=\"http://checkstyle.sourceforge.net/config_misc.html#ArrayTypeStyle\">Checkstyle website</a>.");
@@ -104,8 +104,8 @@ public class CheckstyleSensorTest {
     assertThat(first.primaryLocation().inputComponent().key()).isEqualTo("checkstyle-project:Main.java");
     assertThat(first.ruleKey().rule()).isEqualTo("javadoc.JavadocPackageCheck");
     assertThat(first.type()).isEqualTo(RuleType.CODE_SMELL);
-    assertThat(first.severity()).isEqualTo(Severity.MINOR);
-    assertThat(first.remediationEffort().longValue()).isEqualTo(30L);
+    assertThat(first.severity()).isEqualTo(Severity.MAJOR);
+    assertThat(first.remediationEffort().longValue()).isEqualTo(5L);
     assertThat(first.primaryLocation().message()).isEqualTo("Missing package-info.java file.");
     assertThat(first.primaryLocation().textRange()).isNull();
 
@@ -113,8 +113,8 @@ public class CheckstyleSensorTest {
     assertThat(second.primaryLocation().inputComponent().key()).isEqualTo("checkstyle-project:Main.java");
     assertThat(second.ruleKey().rule()).isEqualTo("modifier.ModifierOrderCheck");
     assertThat(second.type()).isEqualTo(RuleType.CODE_SMELL);
-    assertThat(second.severity()).isEqualTo(Severity.MINOR);
-    assertThat(second.remediationEffort().longValue()).isEqualTo(10L);
+    assertThat(second.severity()).isEqualTo(Severity.MAJOR);
+    assertThat(second.remediationEffort().longValue()).isEqualTo(5L);
     assertThat(second.primaryLocation().message()).isEqualTo("'static' modifier out of order with the JLS suggestions.");
     assertThat(second.primaryLocation().textRange().start().line()).isEqualTo(2);
 
@@ -123,7 +123,7 @@ public class CheckstyleSensorTest {
     assertThat(third.ruleKey().rule()).isEqualTo("javadoc.JavadocTypeCheck");
     assertThat(third.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(third.severity()).isEqualTo(Severity.MAJOR);
-    assertThat(second.remediationEffort().longValue()).isEqualTo(10L);
+    assertThat(second.remediationEffort().longValue()).isEqualTo(5L);
     assertThat(third.primaryLocation().message()).isEqualTo("Missing a Javadoc comment.");
     assertThat(third.primaryLocation().textRange().start().line()).isEqualTo(1);
 

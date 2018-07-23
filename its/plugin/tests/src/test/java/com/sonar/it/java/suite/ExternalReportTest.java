@@ -53,8 +53,8 @@ public class ExternalReportTest {
       assertThat(issue.ruleKey()).isEqualTo("external_checkstyle:javadoc.JavadocPackageCheck");
       assertThat(issue.line()).isNull();
       assertThat(issue.message()).isEqualTo("Missing package-info.java file.");
-      assertThat(issue.severity()).isEqualTo("MINOR");
-      assertThat(issue.debt()).isEqualTo("30min");
+      assertThat(issue.severity()).isEqualTo("MAJOR");
+      assertThat(issue.debt()).isEqualTo("5min");
     } else {
       assertThat(issues).isEmpty();
     }
@@ -101,7 +101,7 @@ public class ExternalReportTest {
       assertThat(issue.line()).isEqualTo(6);
       assertThat(issue.message()).isEqualTo("org.myapp.Main defines equals and uses Object.hashCode()");
       assertThat(issue.severity()).isEqualTo("MAJOR");
-      assertThat(issue.debt()).isEqualTo("1h");
+      assertThat(issue.debt()).isEqualTo("5min");
     } else {
       assertThat(issues).isEmpty();
     }

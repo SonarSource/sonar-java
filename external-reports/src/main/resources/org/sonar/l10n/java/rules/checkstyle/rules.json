@@ -3,1449 +3,1092 @@
     "key": "ArrayTypeStyleCheck",
     "name": "Array Type Style",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#ArrayTypeStyle",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#ArrayTypeStyle"
   },
   {
     "key": "AvoidEscapedUnicodeCharactersCheck",
     "name": "Avoid Escaped Unicode Characters",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#AvoidEscapedUnicodeCharacters",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#AvoidEscapedUnicodeCharacters"
   },
   {
     "key": "DescendantTokenCheck",
     "name": "Descendant Token",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#DescendantToken",
-    "tags": [],
-    "constantDebtMinutes": 60
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#DescendantToken"
   },
   {
     "key": "FinalParametersCheck",
     "name": "Final Parameters",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#FinalParameters",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#FinalParameters"
   },
   {
     "key": "NewlineAtEndOfFileCheck",
     "name": "Newline At End Of File",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#NewlineAtEndOfFile",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#NewlineAtEndOfFile"
   },
   {
     "key": "OuterTypeFilenameCheck",
     "name": "Outer Type Filename",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#OuterTypeFilename",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#OuterTypeFilename"
   },
   {
-    "key": "SuppressWarningsHolder",
+    "key": "SuppressWarningsHolderCheck",
     "name": "Suppress Warnings Holder",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#SuppressWarningsHolder",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_annotation.html#SuppressWarningsHolder"
   },
   {
     "key": "TodoCommentCheck",
-    "name": "Comment pattern matcher",
+    "name": "Todo Comment",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#TodoComment",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#TodoComment"
   },
   {
     "key": "TrailingCommentCheck",
     "name": "Trailing Comment",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#TrailingComment",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#TrailingComment"
   },
   {
     "key": "TranslationCheck",
     "name": "Translation",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#Translation",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#Translation"
   },
   {
     "key": "UncommentedMainCheck",
     "name": "Uncommented Main",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#UncommentedMain",
-    "tags": [],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#UncommentedMain"
   },
   {
     "key": "UniquePropertiesCheck",
     "name": "Unique Properties",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#UniqueProperties",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#UniqueProperties"
   },
   {
     "key": "UpperEllCheck",
     "name": "Upper Ell",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#UpperEll",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#UpperEll"
   },
   {
     "key": "annotation.AnnotationLocationCheck",
     "name": "Annotation Location",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_annotation.html#AnnotationLocation",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_annotation.html#AnnotationLocation"
   },
   {
     "key": "annotation.AnnotationOnSameLineCheck",
     "name": "Annotation On Same Line",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_annotation.html#AnnotationOnSameLine",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_annotation.html#AnnotationOnSameLine"
   },
   {
     "key": "annotation.AnnotationUseStyleCheck",
     "name": "Annotation Use Style",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_annotation.html#AnnotationUseStyle",
-    "tags": [
-      "formatting"
-    ],
-    "constantDebtMinutes": 15
+    "url": "http://checkstyle.sourceforge.net/config_annotation.html#AnnotationUseStyle"
   },
   {
     "key": "annotation.MissingDeprecatedCheck",
     "name": "Missing Deprecated",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_annotation.html#MissingDeprecated",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_annotation.html#MissingDeprecated"
   },
   {
     "key": "annotation.MissingOverrideCheck",
     "name": "Missing Override",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_annotation.html#MissingOverride",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_annotation.html#MissingOverride"
   },
   {
     "key": "annotation.PackageAnnotationCheck",
     "name": "Package Annotation",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_annotation.html#PackageAnnotation",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_annotation.html#PackageAnnotation"
   },
   {
     "key": "annotation.SuppressWarningsCheck",
     "name": "Suppress Warnings",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_annotation.html#SuppressWarnings",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_annotation.html#SuppressWarnings"
   },
   {
     "key": "blocks.AvoidNestedBlocksCheck",
     "name": "Avoid Nested Blocks",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_blocks.html#AvoidNestedBlocks",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_blocks.html#AvoidNestedBlocks"
   },
   {
     "key": "blocks.EmptyBlockCheck",
     "name": "Empty Block",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_blocks.html#EmptyBlock",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_blocks.html#EmptyBlock"
   },
   {
     "key": "blocks.EmptyCatchBlockCheck",
-    "name": "Empty catch block",
+    "name": "Empty Catch Block",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_blocks.html#EmptyCatchBlock",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_blocks.html#EmptyCatchBlock"
   },
   {
     "key": "blocks.LeftCurlyCheck",
     "name": "Left Curly",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_blocks.html#LeftCurly",
-    "tags": [
-      "formatting"
-    ],
-    "constantDebtMinutes": 1
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_blocks.html#LeftCurly"
   },
   {
     "key": "blocks.NeedBracesCheck",
     "name": "Need Braces",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_blocks.html#NeedBraces",
-    "tags": [
-      "convention"
-    ],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_blocks.html#NeedBraces"
   },
   {
     "key": "blocks.RightCurlyCheck",
     "name": "Right Curly",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_blocks.html#RightCurly",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_blocks.html#RightCurly"
   },
   {
     "key": "coding.ArrayTrailingCommaCheck",
     "name": "Array Trailing Comma",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#ArrayTrailingComma",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#ArrayTrailingComma"
   },
   {
     "key": "coding.AvoidInlineConditionalsCheck",
     "name": "Avoid Inline Conditionals",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#AvoidInlineConditionals",
-    "tags": [],
-    "constantDebtMinutes": 15
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#AvoidInlineConditionals"
   },
   {
     "key": "coding.CovariantEqualsCheck",
     "name": "Covariant Equals",
     "type": "CODE_SMELL",
-    "severity": "CRITICAL",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#CovariantEquals",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#CovariantEquals"
   },
   {
     "key": "coding.DeclarationOrderCheck",
     "name": "Declaration Order",
     "type": "CODE_SMELL",
-    "severity": "INFO",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#DeclarationOrder",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#DeclarationOrder"
   },
   {
     "key": "coding.DefaultComesLastCheck",
     "name": "Default Comes Last",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#DefaultComesLast",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#DefaultComesLast"
   },
   {
     "key": "coding.EmptyStatementCheck",
     "name": "Empty Statement",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#EmptyStatement",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#EmptyStatement"
   },
   {
     "key": "coding.EqualsAvoidNullCheck",
     "name": "Equals Avoid Null",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#EqualsAvoidNull",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#EqualsAvoidNull"
   },
   {
     "key": "coding.EqualsHashCodeCheck",
     "name": "Equals Hash Code",
-    "type": "BUG",
-    "severity": "CRITICAL",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#EqualsHashCode",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#EqualsHashCode"
   },
   {
     "key": "coding.ExplicitInitializationCheck",
     "name": "Explicit Initialization",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#ExplicitInitialization",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#ExplicitInitialization"
   },
   {
     "key": "coding.FallThroughCheck",
     "name": "Fall Through",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#FallThrough",
-    "tags": [],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#FallThrough"
   },
   {
     "key": "coding.FinalLocalVariableCheck",
     "name": "Final Local Variable",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#FinalLocalVariable",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#FinalLocalVariable"
   },
   {
     "key": "coding.HiddenFieldCheck",
     "name": "Hidden Field",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#HiddenField",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#HiddenField"
   },
   {
     "key": "coding.IllegalCatchCheck",
     "name": "Illegal Catch",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalCatch",
-    "tags": [
-      "error-handling"
-    ],
-    "constantDebtMinutes": 15
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalCatch"
   },
   {
     "key": "coding.IllegalInstantiationCheck",
     "name": "Illegal Instantiation",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalInstantiation",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalInstantiation"
   },
   {
     "key": "coding.IllegalThrowsCheck",
     "name": "Illegal Throws",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalThrows",
-    "tags": [
-      "error-handling"
-    ],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalThrows"
   },
   {
     "key": "coding.IllegalTokenCheck",
     "name": "Illegal Token",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalToken",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalToken"
   },
   {
     "key": "coding.IllegalTokenTextCheck",
     "name": "Illegal Token Text",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalTokenText",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalTokenText"
   },
   {
     "key": "coding.IllegalTypeCheck",
     "name": "Illegal Type",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalType",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#IllegalType"
   },
   {
     "key": "coding.InnerAssignmentCheck",
     "name": "Inner Assignment",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#InnerAssignment",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#InnerAssignment"
   },
   {
     "key": "coding.MagicNumberCheck",
     "name": "Magic Number",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#MagicNumber",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#MagicNumber"
   },
   {
     "key": "coding.MissingCtorCheck",
     "name": "Missing Constructor",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#MissingCtor",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#MissingCtor"
   },
   {
     "key": "coding.MissingSwitchDefaultCheck",
     "name": "Missing Switch Default",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#MissingSwitchDefault",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#MissingSwitchDefault"
   },
   {
     "key": "coding.ModifiedControlVariableCheck",
     "name": "Modified Control Variable",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#ModifiedControlVariable",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#ModifiedControlVariable"
   },
   {
     "key": "coding.MultipleStringLiteralsCheck",
     "name": "Multiple String Literals",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#MultipleStringLiterals",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#MultipleStringLiterals"
   },
   {
     "key": "coding.MultipleVariableDeclarationsCheck",
     "name": "Multiple Variable Declarations",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#MultipleVariableDeclarations",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#MultipleVariableDeclarations"
   },
   {
     "key": "coding.NestedForDepthCheck",
     "name": "Nested For Depth",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#NestedForDepth",
-    "tags": [],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#NestedForDepth"
   },
   {
     "key": "coding.NestedIfDepthCheck",
     "name": "Nested If Depth",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#NestedIfDepth",
-    "tags": [],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#NestedIfDepth"
   },
   {
     "key": "coding.NestedTryDepthCheck",
     "name": "Nested Try Depth",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#NestedTryDepth",
-    "tags": [],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#NestedTryDepth"
   },
   {
     "key": "coding.NoCloneCheck",
     "name": "No Clone",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#NoClone",
-    "tags": [],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#NoClone"
   },
   {
     "key": "coding.NoFinalizerCheck",
     "name": "No Finalizer",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#NoFinalizer",
-    "tags": [],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#NoFinalizer"
   },
   {
     "key": "coding.OneStatementPerLineCheck",
     "name": "One Statement Per Line",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#OneStatementPerLine",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#OneStatementPerLine"
   },
   {
     "key": "coding.OverloadMethodsDeclarationOrderCheck",
     "name": "Overload Methods Declaration Order",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#OverloadMethodsDeclarationOrder",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#OverloadMethodsDeclarationOrder"
   },
   {
     "key": "coding.PackageDeclarationCheck",
     "name": "Package Declaration",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#PackageDeclaration",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#PackageDeclaration"
   },
   {
     "key": "coding.ParameterAssignmentCheck",
     "name": "Parameter Assignment",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#ParameterAssignment",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#ParameterAssignment"
   },
   {
     "key": "coding.RequireThisCheck",
     "name": "Require This",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#RequireThis",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#RequireThis"
   },
   {
     "key": "coding.ReturnCountCheck",
     "name": "Return Count",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#ReturnCount",
-    "tags": [],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#ReturnCount"
   },
   {
     "key": "coding.SimplifyBooleanExpressionCheck",
     "name": "Simplify Boolean Expression",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#SimplifyBooleanExpression",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#SimplifyBooleanExpression"
   },
   {
     "key": "coding.SimplifyBooleanReturnCheck",
     "name": "Simplify Boolean Return",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#SimplifyBooleanReturn",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#SimplifyBooleanReturn"
   },
   {
     "key": "coding.StringLiteralEqualityCheck",
     "name": "String Literal Equality",
     "type": "CODE_SMELL",
-    "severity": "CRITICAL",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#StringLiteralEquality",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#StringLiteralEquality"
   },
   {
     "key": "coding.SuperCloneCheck",
     "name": "Super Clone",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#SuperClone",
-    "tags": [],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#SuperClone"
   },
   {
     "key": "coding.SuperFinalizeCheck",
     "name": "Super Finalize",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#SuperFinalize",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#SuperFinalize"
   },
   {
     "key": "coding.UnnecessaryParenthesesCheck",
     "name": "Unnecessary Parentheses",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#UnnecessaryParentheses",
-    "tags": [],
-    "constantDebtMinutes": 1
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#UnnecessaryParentheses"
   },
   {
     "key": "coding.VariableDeclarationUsageDistanceCheck",
     "name": "Variable Declaration Usage Distance",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_coding.html#VariableDeclarationUsageDistance",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_coding.html#VariableDeclarationUsageDistance"
   },
   {
     "key": "design.DesignForExtensionCheck",
     "name": "Design For Extension",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_design.html#DesignForExtension",
-    "tags": [],
-    "constantDebtMinutes": 60
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_design.html#DesignForExtension"
   },
   {
     "key": "design.FinalClassCheck",
     "name": "Final Class",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_design.html#FinalClass",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_design.html#FinalClass"
   },
   {
     "key": "design.HideUtilityClassConstructorCheck",
     "name": "Hide Utility Class Constructor",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_design.html#HideUtilityClassConstructor",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_design.html#HideUtilityClassConstructor"
   },
   {
     "key": "design.InnerTypeLastCheck",
     "name": "Inner Type Last",
     "type": "CODE_SMELL",
-    "severity": "INFO",
-    "url": "http://checkstyle.sourceforge.net/config_design.html#InnerTypeLast",
-    "tags": [],
-    "constantDebtMinutes": 15
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_design.html#InnerTypeLast"
   },
   {
     "key": "design.InterfaceIsTypeCheck",
     "name": "Interface Is Type",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_design.html#InterfaceIsType",
-    "tags": [],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_design.html#InterfaceIsType"
   },
   {
     "key": "design.MutableExceptionCheck",
     "name": "Mutable Exception",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_design.html#MutableException",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_design.html#MutableException"
   },
   {
     "key": "design.OneTopLevelClassCheck",
     "name": "One Top Level Class",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_design.html#OneTopLevelClass",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_design.html#OneTopLevelClass"
   },
   {
     "key": "design.ThrowsCountCheck",
     "name": "Throws Count",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_design.html#ThrowsCount",
-    "tags": [],
-    "constantDebtMinutes": 60
+    "url": "http://checkstyle.sourceforge.net/config_design.html#ThrowsCount"
   },
   {
     "key": "design.VisibilityModifierCheck",
     "name": "Visibility Modifier",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_design.html#VisibilityModifier",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_design.html#VisibilityModifier"
   },
   {
     "key": "header.HeaderCheck",
     "name": "Header",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_header.html#Header",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_header.html#Header"
   },
   {
     "key": "header.RegexpHeaderCheck",
     "name": "Regexp Header",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_header.html#RegexpHeader",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_header.html#RegexpHeader"
   },
   {
     "key": "imports.AvoidStarImportCheck",
     "name": "Avoid Star Import",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_imports.html#AvoidStarImport",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_imports.html#AvoidStarImport"
   },
   {
     "key": "imports.AvoidStaticImportCheck",
     "name": "Avoid Static Import",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_imports.html#AvoidStaticImport",
-    "tags": [],
-    "constantDebtMinutes": 15
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_imports.html#AvoidStaticImport"
   },
   {
     "key": "imports.CustomImportOrderCheck",
     "name": "Custom Import Order",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_imports.html#CustomImportOrder",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_imports.html#CustomImportOrder"
   },
   {
     "key": "imports.IllegalImportCheck",
     "name": "Illegal Import",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_imports.html#IllegalImport",
-    "tags": [],
-    "constantDebtMinutes": 60
+    "url": "http://checkstyle.sourceforge.net/config_imports.html#IllegalImport"
   },
   {
     "key": "imports.ImportControlCheck",
     "name": "Import Control",
     "type": "CODE_SMELL",
-    "severity": "BLOCKER",
-    "url": "http://checkstyle.sourceforge.net/config_imports.html#ImportControl",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_imports.html#ImportControl"
   },
   {
     "key": "imports.ImportOrderCheck",
     "name": "Import Order",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_imports.html#ImportOrder",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_imports.html#ImportOrder"
   },
   {
     "key": "imports.RedundantImportCheck",
-    "name": "Redundant import",
+    "name": "Redundant Import",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_imports.html#RedundantImport",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_imports.html#RedundantImport"
   },
   {
     "key": "imports.UnusedImportsCheck",
     "name": "Unused Imports",
     "type": "CODE_SMELL",
-    "severity": "INFO",
-    "url": "http://checkstyle.sourceforge.net/config_imports.html#UnusedImports",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_imports.html#UnusedImports"
   },
   {
     "key": "indentation.CommentsIndentationCheck",
     "name": "Comments Indentation",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#CommentsIndentation",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#CommentsIndentation"
   },
   {
     "key": "indentation.IndentationCheck",
     "name": "Indentation",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_misc.html#Indentation",
-    "tags": [
-      "formatting"
-    ],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_misc.html#Indentation"
   },
   {
     "key": "javadoc.AtclauseOrderCheck",
     "name": "At-clause Order",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#AtclauseOrder",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#AtclauseOrder"
   },
   {
     "key": "javadoc.JavadocMethodCheck",
     "name": "Javadoc Method",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocMethod",
-    "tags": [
-      "comment"
-    ],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocMethod"
   },
   {
     "key": "javadoc.JavadocPackageCheck",
     "name": "Javadoc Package",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocPackage",
-    "tags": [
-      "comment"
-    ],
-    "constantDebtMinutes": 30
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocPackage"
   },
   {
     "key": "javadoc.JavadocParagraphCheck",
     "name": "Javadoc Paragraph",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocParagraph",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocParagraph"
   },
   {
     "key": "javadoc.JavadocStyleCheck",
     "name": "Javadoc Style",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocStyle",
-    "tags": [
-      "comment"
-    ],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocStyle"
   },
   {
     "key": "javadoc.JavadocTagContinuationIndentationCheck",
     "name": "Javadoc Tag Continuation Indentation",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocTagContinuationIndentation",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocTagContinuationIndentation"
   },
   {
     "key": "javadoc.JavadocTypeCheck",
     "name": "Javadoc Type",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocType",
-    "tags": [
-      "comment"
-    ],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocType"
   },
   {
     "key": "javadoc.JavadocVariableCheck",
     "name": "Javadoc Variable",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocVariable",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#JavadocVariable"
   },
   {
     "key": "javadoc.NonEmptyAtclauseDescriptionCheck",
     "name": "Non Empty At-clause Description",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#NonEmptyAtclauseDescription",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#NonEmptyAtclauseDescription"
   },
   {
     "key": "javadoc.SingleLineJavadocCheck",
     "name": "Single Line Javadoc",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#SingleLineJavadoc",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#SingleLineJavadoc"
   },
   {
     "key": "javadoc.SummaryJavadocCheck",
-    "name": "Javadoc summary",
+    "name": "Summary Javadoc",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#SummaryJavadoc",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#SummaryJavadoc"
   },
   {
     "key": "javadoc.WriteTagCheck",
     "name": "Write Tag",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#WriteTag",
-    "tags": [],
-    "constantDebtMinutes": 30
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_javadoc.html#WriteTag"
   },
   {
     "key": "metrics.BooleanExpressionComplexityCheck",
     "name": "Boolean Expression Complexity",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_metrics.html#BooleanExpressionComplexity",
-    "tags": [
-      "size"
-    ],
-    "constantDebtMinutes": 30
+    "url": "http://checkstyle.sourceforge.net/config_metrics.html#BooleanExpressionComplexity"
   },
   {
     "key": "metrics.ClassDataAbstractionCouplingCheck",
     "name": "Class Data Abstraction Coupling",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_metrics.html#ClassDataAbstractionCoupling",
-    "tags": [],
-    "constantDebtMinutes": 60
+    "url": "http://checkstyle.sourceforge.net/config_metrics.html#ClassDataAbstractionCoupling"
   },
   {
     "key": "metrics.ClassFanOutComplexityCheck",
     "name": "Class Fan Out Complexity",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_metrics.html#ClassFanOutComplexity",
-    "tags": [],
-    "constantDebtMinutes": 120
+    "url": "http://checkstyle.sourceforge.net/config_metrics.html#ClassFanOutComplexity"
   },
   {
     "key": "metrics.CyclomaticComplexityCheck",
     "name": "Cyclomatic Complexity",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_metrics.html#CyclomaticComplexity",
-    "tags": [
-      "size"
-    ],
-    "constantDebtMinutes": 180
+    "url": "http://checkstyle.sourceforge.net/config_metrics.html#CyclomaticComplexity"
   },
   {
     "key": "metrics.JavaNCSSCheck",
-    "name": "JavaNCSS",
+    "name": "Java NCSS",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_metrics.html#JavaNCSS",
-    "tags": [
-      "size"
-    ],
-    "constantDebtMinutes": 180
+    "url": "http://checkstyle.sourceforge.net/config_metrics.html#JavaNCSS"
   },
   {
     "key": "metrics.NPathComplexityCheck",
     "name": "NPath Complexity",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_metrics.html#NPathComplexity",
-    "tags": [
-      "size"
-    ],
-    "constantDebtMinutes": 60
+    "url": "http://checkstyle.sourceforge.net/config_metrics.html#NPathComplexity"
+  },
+  {
+    "key": "modifier.InterfaceMemberImpliedModifierCheck",
+    "name": "Interface Member Implied Modifier",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_modifier.html#InterfaceMemberImpliedModifier"
   },
   {
     "key": "modifier.ModifierOrderCheck",
     "name": "Modifier Order",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_modifier.html#ModifierOrder",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_modifier.html#ModifierOrder"
   },
   {
     "key": "modifier.RedundantModifierCheck",
     "name": "Redundant Modifier",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_modifier.html#RedundantModifier",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_modifier.html#RedundantModifier"
   },
   {
     "key": "naming.AbbreviationAsWordInNameCheck",
     "name": "Abbreviation As Word In Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#AbbreviationAsWordInName",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#AbbreviationAsWordInName"
   },
   {
     "key": "naming.AbstractClassNameCheck",
     "name": "Abstract Class Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#AbstractClassName",
-    "tags": [
-      "naming"
-    ],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#AbstractClassName"
   },
   {
     "key": "naming.CatchParameterNameCheck",
     "name": "Catch Parameter Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#CatchParameterName",
-    "tags": [
-      "naming"
-    ],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#CatchParameterName"
   },
   {
     "key": "naming.ClassTypeParameterNameCheck",
-    "name": "Class Type(Generic) Parameter Name",
+    "name": "Class Type Parameter Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#ClassTypeParameterName",
-    "tags": [
-      "naming"
-    ],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#ClassTypeParameterName"
   },
   {
     "key": "naming.ConstantNameCheck",
     "name": "Constant Name",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#ConstantName",
-    "tags": [
-      "naming"
-    ],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#ConstantName"
   },
   {
     "key": "naming.InterfaceTypeParameterNameCheck",
     "name": "Interface Type Parameter Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#InterfaceTypeParameterName",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#InterfaceTypeParameterName"
   },
   {
     "key": "naming.LambdaParameterNameCheck",
     "name": "Lambda Parameter Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#LambdaParameterName",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#LambdaParameterName"
   },
   {
     "key": "naming.LocalFinalVariableNameCheck",
     "name": "Local Final Variable Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#LocalFinalVariableName",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#LocalFinalVariableName"
   },
   {
     "key": "naming.LocalVariableNameCheck",
     "name": "Local Variable Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#LocalVariableName",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#LocalVariableName"
   },
   {
     "key": "naming.MemberNameCheck",
-    "name": "Member name",
+    "name": "Member Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#MemberName",
-    "tags": [
-      "naming"
-    ],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#MemberName"
   },
   {
     "key": "naming.MethodNameCheck",
     "name": "Method Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#MethodName",
-    "tags": [
-      "naming"
-    ],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#MethodName"
   },
   {
     "key": "naming.MethodTypeParameterNameCheck",
-    "name": "Method Type(Generic) Parameter Name",
+    "name": "Method Type Parameter Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#MethodTypeParameterName",
-    "tags": [
-      "naming"
-    ],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#MethodTypeParameterName"
   },
   {
     "key": "naming.PackageNameCheck",
-    "name": "Package name",
+    "name": "Package Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#PackageName",
-    "tags": [],
-    "constantDebtMinutes": 20
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#PackageName"
   },
   {
     "key": "naming.ParameterNameCheck",
     "name": "Parameter Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#ParameterName",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#ParameterName"
   },
   {
     "key": "naming.StaticVariableNameCheck",
     "name": "Static Variable Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#StaticVariableName",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#StaticVariableName"
   },
   {
     "key": "naming.TypeNameCheck",
     "name": "Type Name",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_naming.html#TypeName",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "url": "http://checkstyle.sourceforge.net/config_naming.html#TypeName"
   },
   {
     "key": "regexp.RegexpCheck",
     "name": "Regexp",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_regexp.html#Regexp",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_regexp.html#Regexp"
   },
   {
     "key": "regexp.RegexpMultilineCheck",
     "name": "Regexp Multiline",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_regexp.html#RegexpMultiline",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_regexp.html#RegexpMultiline"
   },
   {
     "key": "regexp.RegexpOnFilenameCheck",
     "name": "Regexp On Filename",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_regexp.html#RegexpOnFilename",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_regexp.html#RegexpOnFilename"
   },
   {
     "key": "regexp.RegexpSinglelineCheck",
     "name": "Regexp Singleline",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_regexp.html#RegexpSingleline",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_regexp.html#RegexpSingleline"
   },
   {
     "key": "regexp.RegexpSinglelineJavaCheck",
     "name": "Regexp Singleline Java",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_regexp.html#RegexpSinglelineJava",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_regexp.html#RegexpSinglelineJava"
   },
   {
     "key": "sizes.AnonInnerLengthCheck",
     "name": "Anon Inner Length",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_sizes.html#AnonInnerLength",
-    "tags": [
-      "size"
-    ],
-    "constantDebtMinutes": 60
+    "url": "http://checkstyle.sourceforge.net/config_sizes.html#AnonInnerLength"
   },
   {
     "key": "sizes.ExecutableStatementCountCheck",
     "name": "Executable Statement Count",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_sizes.html#ExecutableStatementCount",
-    "tags": [
-      "size"
-    ],
-    "constantDebtMinutes": 60
+    "url": "http://checkstyle.sourceforge.net/config_sizes.html#ExecutableStatementCount"
   },
   {
     "key": "sizes.FileLengthCheck",
     "name": "File Length",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_sizes.html#FileLength",
-    "tags": [
-      "size"
-    ],
-    "constantDebtMinutes": 180
+    "url": "http://checkstyle.sourceforge.net/config_sizes.html#FileLength"
   },
   {
     "key": "sizes.LineLengthCheck",
     "name": "Line Length",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_sizes.html#LineLength",
-    "tags": [
-      "size"
-    ],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_sizes.html#LineLength"
   },
   {
     "key": "sizes.MethodCountCheck",
     "name": "Method Count",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_sizes.html#MethodCount",
-    "tags": [
-      "size"
-    ],
-    "constantDebtMinutes": 60
+    "url": "http://checkstyle.sourceforge.net/config_sizes.html#MethodCount"
   },
   {
     "key": "sizes.MethodLengthCheck",
     "name": "Method Length",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_sizes.html#MethodLength",
-    "tags": [
-      "size"
-    ],
-    "constantDebtMinutes": 60
+    "url": "http://checkstyle.sourceforge.net/config_sizes.html#MethodLength"
   },
   {
     "key": "sizes.OuterTypeNumberCheck",
     "name": "Outer Type Number",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_sizes.html#OuterTypeNumber",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_sizes.html#OuterTypeNumber"
   },
   {
     "key": "sizes.ParameterNumberCheck",
     "name": "Parameter Number",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_sizes.html#ParameterNumber",
-    "tags": [],
-    "constantDebtMinutes": 60
+    "url": "http://checkstyle.sourceforge.net/config_sizes.html#ParameterNumber"
   },
   {
     "key": "whitespace.EmptyForInitializerPadCheck",
     "name": "Empty For Initializer Pad",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#EmptyForInitializerPad",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#EmptyForInitializerPad"
   },
   {
     "key": "whitespace.EmptyForIteratorPadCheck",
     "name": "Empty For Iterator Pad",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#EmptyForIteratorPad",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#EmptyForIteratorPad"
   },
   {
     "key": "whitespace.EmptyLineSeparatorCheck",
     "name": "Empty Line Separator",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#EmptyLineSeparator",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#EmptyLineSeparator"
   },
   {
     "key": "whitespace.FileTabCharacterCheck",
     "name": "File Tab Character",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#FileTabCharacter",
-    "tags": [],
-    "constantDebtMinutes": 10
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#FileTabCharacter"
   },
   {
     "key": "whitespace.GenericWhitespaceCheck",
     "name": "Generic Whitespace",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#GenericWhitespace",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#GenericWhitespace"
   },
   {
     "key": "whitespace.MethodParamPadCheck",
     "name": "Method Param Pad",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#MethodParamPad",
-    "tags": [],
-    "constantDebtMinutes": 1
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#MethodParamPad"
   },
   {
     "key": "whitespace.NoLineWrapCheck",
     "name": "No Line Wrap",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#NoLineWrap",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#NoLineWrap"
   },
   {
     "key": "whitespace.NoWhitespaceAfterCheck",
     "name": "No Whitespace After",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#NoWhitespaceAfter",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#NoWhitespaceAfter"
   },
   {
     "key": "whitespace.NoWhitespaceBeforeCheck",
     "name": "No Whitespace Before",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#NoWhitespaceBefore",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#NoWhitespaceBefore"
   },
   {
     "key": "whitespace.OperatorWrapCheck",
     "name": "Operator Wrap",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#OperatorWrap",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#OperatorWrap"
   },
   {
     "key": "whitespace.ParenPadCheck",
     "name": "Paren Pad",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#ParenPad",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#ParenPad"
   },
   {
     "key": "whitespace.SeparatorWrapCheck",
     "name": "Separator Wrap",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#SeparatorWrap",
-    "tags": [],
-    "constantDebtMinutes": 5
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#SeparatorWrap"
   },
   {
     "key": "whitespace.SingleSpaceSeparatorCheck",
     "name": "Single Space Separator",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#SingleSpaceSeparator",
-    "tags": [],
-    "constantDebtMinutes": 1
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#SingleSpaceSeparator"
   },
   {
     "key": "whitespace.TypecastParenPadCheck",
     "name": "Typecast Paren Pad",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#TypecastParenPad",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#TypecastParenPad"
   },
   {
     "key": "whitespace.WhitespaceAfterCheck",
     "name": "Whitespace After",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#WhitespaceAfter",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#WhitespaceAfter"
   },
   {
     "key": "whitespace.WhitespaceAroundCheck",
     "name": "Whitespace Around",
     "type": "CODE_SMELL",
-    "severity": "MINOR",
-    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#WhitespaceAround",
-    "tags": [],
-    "constantDebtMinutes": 2
+    "severity": "MAJOR",
+    "url": "http://checkstyle.sourceforge.net/config_whitespace.html#WhitespaceAround"
   }
 ]
