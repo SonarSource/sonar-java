@@ -65,28 +65,23 @@ public class SpotBugsSensorTest {
     assertThat(repository.name()).isEqualTo("SpotBugs");
     assertThat(repository.language()).isEqualTo("java");
     assertThat(repository.isExternal()).isEqualTo(true);
-    assertThat(repository.rules().size()).isEqualTo(458);
+    assertThat(repository.rules().size()).isEqualTo(468);
 
     RulesDefinition.Rule rule = repository.rule("AM_CREATES_EMPTY_JAR_FILE_ENTRY");
     assertThat(rule).isNotNull();
     assertThat(rule.name()).isEqualTo("Bad practice - Creates an empty jar file entry");
     assertThat(rule.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(rule.severity()).isEqualTo("MAJOR");
-    assertThat(rule.htmlDescription()).isEqualTo("<p>The code calls <code>putNextEntry()</code>, immediately\n" +
-      "followed by a call to <code>closeEntry()</code>. This results\n" +
-      "in an empty JarFile entry. The contents of the entry\n" +
-      "should be written to the JarFile between the calls to\n" +
-      "<code>putNextEntry()</code> and\n" +
-      "<code>closeEntry()</code>.</p>");
-    assertThat(rule.tags()).containsExactlyInAnyOrder("bad-practice");
-    assertThat(rule.debtRemediationFunction().baseEffort()).isEqualTo("1h");
+    assertThat(rule.htmlDescription()).isEqualTo("See description of SpotBugs rule <code>AM_CREATES_EMPTY_JAR_FILE_ENTRY</code> at the " +
+      "<a href=\"https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#AM_CREATES_EMPTY_JAR_FILE_ENTRY\">SpotBugs website</a>.");
+    assertThat(rule.debtRemediationFunction().baseEffort()).isEqualTo("5min");
 
     RulesDefinition.Repository findsecbugsRepo = context.repository("external_findsecbugs");
     assertThat(findsecbugsRepo.name()).isEqualTo("FindSecBugs");
     assertThat(findsecbugsRepo.language()).isEqualTo("java");
     assertThat(findsecbugsRepo.isExternal()).isEqualTo(true);
     repository = context.repository("external_findsecbugs");
-    assertThat(repository.rules().size()).isEqualTo(104);
+    assertThat(repository.rules().size()).isEqualTo(128);
   }
 
   @Test
@@ -116,7 +111,7 @@ public class SpotBugsSensorTest {
     assertThat(first.ruleKey().repository()).isEqualTo("spotbugs");
     assertThat(first.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(first.severity()).isEqualTo(Severity.MAJOR);
-    assertThat(first.remediationEffort().longValue()).isEqualTo(60L);
+    assertThat(first.remediationEffort().longValue()).isEqualTo(5L);
     assertThat(first.primaryLocation().message()).isEqualTo("org.myapp.Main defines equals and uses Object.hashCode()");
     assertThat(first.primaryLocation().textRange().start().line()).isEqualTo(6);
 
