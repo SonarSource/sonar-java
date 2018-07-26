@@ -7,15 +7,15 @@ class JacksonDeserialization {
 
   public void enableDefaultTyping() {
     ObjectMapper mapper = new ObjectMapper();
-    mapper.enableDefaultTyping(); // Noncompliant [[sc=5;ec=33]] {{Consider using @JsonTypeInfo instead of enabling polymorphic type handling globally}}
+    mapper.enableDefaultTyping(); // Noncompliant [[sc=5;ec=33]] {{Make sure using this Jackson deserialization configuration is safe here.}}
   }
 
 }
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS) // Noncompliant [[sc=21;ec=42]] {{Use @JsonTypeInfo(use = Id.NAME) instead}}
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS) // Noncompliant [[sc=21;ec=42]] {{Make sure using this Jackson deserialization configuration is safe here.}}
 abstract class PhoneNumber {
 
-  @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS) // Noncompliant {{Use @JsonTypeInfo(use = Id.NAME) instead}}
+  @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS) // Noncompliant {{Make sure using this Jackson deserialization configuration is safe here.}}
   String field;
 }
 

@@ -1,5 +1,5 @@
 {
-  "title": "Spring Security's CSRF protection should not be disabled",
+  "title": "Disabling Spring Security's CSRF protection is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {

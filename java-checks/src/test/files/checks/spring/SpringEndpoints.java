@@ -9,7 +9,7 @@ public class SpringEndpoints {
 
   @RequestMapping(path = "/profile", method = RequestMethod.GET)
   @ResponseBody
-  public UserProfile getUserProfile(String name) { // Noncompliant [[sc=22;ec=36]] {{Review this Spring request handler}}
+  public UserProfile getUserProfile(String name) { // Noncompliant [[sc=22;ec=36]] {{Make sure exposing this Spring endpoint is safe here.}}
 
   }
 

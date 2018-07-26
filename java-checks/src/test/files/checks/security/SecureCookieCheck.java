@@ -24,7 +24,7 @@ class A {
   }
 
   Cookie servletCookie(
-      Cookie firstParam, // Noncompliant [[sc=14;ec=24]] {{Add the "secure" attribute to this cookie}}
+      Cookie firstParam, // Noncompliant [[sc=14;ec=24]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
       Cookie secondParam,
       Cookie thirdParam,
       boolean param) {
@@ -38,9 +38,9 @@ class A {
     Cookie cookie = new Cookie("name", "value");
     cookie.setSecure(true);
 
-    Cookie cookie2 = new Cookie("name", "value"); // Noncompliant [[sc=12;ec=19]] {{Add the "secure" attribute to this cookie}}
+    Cookie cookie2 = new Cookie("name", "value"); // Noncompliant [[sc=12;ec=19]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
 
-    Cookie cookie3 = new Cookie("name", "value"); // Noncompliant {{Add the "secure" attribute to this cookie}}
+    Cookie cookie3 = new Cookie("name", "value"); // Noncompliant {{Make sure creating this cookie without the "secure" flag is safe here.}}
     cookie3.setSecure(false);
 
     Cookie cookie5 = new Cookie("name", "value");
@@ -67,7 +67,7 @@ class A {
     c10 = new Cookie("name", "value");
     c10.setSecure(true);
 
-    Object c12;  // Noncompliant [[sc=12;ec=15]] {{Add the "secure" attribute to this cookie}}
+    Object c12;  // Noncompliant [[sc=12;ec=15]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
     c12 = new Cookie("name", "value");
 
     return new Cookie("name", "value"); // Noncompliant
@@ -150,7 +150,7 @@ class A {
         .withPath("x")
         .withDomain("x")
         .withSecure(true)
-        .withSecure(false) // Noncompliant [[sc=20;ec=27]] {{Add the "secure" attribute to this cookie}}
+        .withSecure(false) // Noncompliant [[sc=20;ec=27]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
         .withSecure(true)
         .build();
     play.mvc.Http.Cookie c5 = play.mvc.Http.Cookie.builder("theme", "blue").withSecure(true).build();

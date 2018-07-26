@@ -1,5 +1,5 @@
 {
-  "title": "Cookies should be \"secure\"",
+  "title": "Creating cookies without the \"secure\" flag is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {

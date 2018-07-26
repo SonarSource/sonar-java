@@ -45,7 +45,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2092")
 public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MESSAGE = "Add the \"secure\" attribute to this cookie";
+  private static final String MESSAGE = "Make sure creating this cookie without the \"secure\" flag is safe here.";
 
   private static final String JAX_RS_COOKIE = "javax.ws.rs.core.Cookie";
   private static final String JAX_RS_NEW_COOKIE = "javax.ws.rs.core.NewCookie";

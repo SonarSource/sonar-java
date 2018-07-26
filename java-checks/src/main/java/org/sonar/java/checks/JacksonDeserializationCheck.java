@@ -50,6 +50,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
           .name("enableDefaultTyping")
           .withoutParameter()
       );
+  private static final String MESSAGE = "Make sure using this Jackson deserialization configuration is safe here.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -62,12 +63,12 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
       return;
     }
     if (tree.is(Tree.Kind.METHOD_INVOCATION) && ENABLE_DEFAULT_TYPING.anyMatch((MethodInvocationTree) tree)) {
-      reportIssue(tree, "Consider using @JsonTypeInfo instead of enabling polymorphic type handling globally");
+      reportIssue(tree, MESSAGE);
     } else if (tree.is(Tree.Kind.ANNOTATION)) {
       AnnotationTree annotationTree = (AnnotationTree) tree;
       if (isJsonTypeInfo(annotationTree) && isAnnotationOnClassOrField(annotationTree)) {
         findUseArgument(annotationTree).ifPresent(useAnnotationArgument ->
-            reportIssue(useAnnotationArgument, "Use @JsonTypeInfo(use = Id.NAME) instead"));
+            reportIssue(useAnnotationArgument, MESSAGE));
       }
     }
   }

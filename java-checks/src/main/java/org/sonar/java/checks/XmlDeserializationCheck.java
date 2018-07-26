@@ -37,6 +37,7 @@ public class XmlDeserializationCheck extends AbstractMethodDetection {
 
   private static final MethodMatcher READ_OBJECT = MethodMatcher.create().typeDefinition("java.beans.XMLDecoder")
     .name("readObject").withAnyParameters();
+  private static final String MESSAGE = "Make sure deserializing XML is safe here.";
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -48,9 +49,7 @@ public class XmlDeserializationCheck extends AbstractMethodDetection {
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
     List<JavaFileScannerContext.Location> secondaries = collectSecondaryLocations(newClassTree);
-    reportIssue(newClassTree.identifier(),
-      "Verify the InputStream of XMLDecoder in not corrupted because it is coming from untrusted user input.",
-      secondaries, null);
+    reportIssue(newClassTree.identifier(), MESSAGE, secondaries, null);
   }
 
   private static List<JavaFileScannerContext.Location> collectSecondaryLocations(NewClassTree newClassTree) {

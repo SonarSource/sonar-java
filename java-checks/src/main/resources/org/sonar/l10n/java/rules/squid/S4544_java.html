@@ -5,6 +5,11 @@ may allow an attacker to perform remote code execution. </p>
 <code>org.codehaus.jackson.map.ObjectMapper</code></p>
 <p>- or when the annotation <code>@JsonTypeInfo</code> is set at class or field levels and configured with <code>use = JsonTypeInfo.Id.CLASS)</code>
 or <code>use = Id.MINIMAL_CLASS</code></p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> Consider using @JsonTypeInfo instead of enabling globally PTH </li>
+  <li> Use @JsonTypeInfo(use = Id.NAME) instead </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 ObjectMapper mapper = new ObjectMapper();

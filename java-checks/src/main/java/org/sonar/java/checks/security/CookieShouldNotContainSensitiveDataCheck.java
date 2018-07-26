@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2255")
 public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDetection {
 
-  private static final String MESSAGE = "If the data stored in this cookie is sensitive, it should be stored internally in the user session.";
+  private static final String MESSAGE = "Make sure storing this data in this cookie is safe here.";
 
   private static class ClassName {
     private static final String SERVLET_COOKIE = "javax.servlet.http.Cookie";

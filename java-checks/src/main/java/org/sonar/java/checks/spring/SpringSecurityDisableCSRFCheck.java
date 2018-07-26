@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class SpringSecurityDisableCSRFCheck extends AbstractMethodDetection {
 
   private static final String CSRF_CONFIGURER_CLASS = "org.springframework.security.config.annotation.web.configurers.CsrfConfigurer";
+  private static final String MESSAGE = "Make sure disabling Spring Security's CSRF protection is safe here.";
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -46,7 +47,7 @@ public class SpringSecurityDisableCSRFCheck extends AbstractMethodDetection {
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree selectExpression = (MemberSelectExpressionTree) mit.methodSelect();
       if (selectExpression.expression().symbolType().is(CSRF_CONFIGURER_CLASS)) {
-        reportIssue(selectExpression.identifier(), "Activate Spring Security's CSRF protection.");
+        reportIssue(selectExpression.identifier(), MESSAGE);
       }
     }
   }

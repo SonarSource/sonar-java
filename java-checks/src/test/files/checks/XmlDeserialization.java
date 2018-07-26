@@ -4,7 +4,7 @@ import java.io.*;
 
 class A {
   public void decode(InputStream in) {
-    XMLDecoder xmlDecoder = new XMLDecoder(in); // Noncompliant {{Verify the InputStream of XMLDecoder in not corrupted because it is coming from untrusted user input.}} [[secondary=8]]
+    XMLDecoder xmlDecoder = new XMLDecoder(in); // Noncompliant [[secondary=8]] {{Make sure deserializing XML is safe here.}}
     Object result = xmlDecoder.readObject();
     xmlDecoder.close();
   }

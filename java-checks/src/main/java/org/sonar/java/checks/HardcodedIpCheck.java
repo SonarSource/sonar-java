@@ -20,7 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.base.Splitter;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -29,13 +30,11 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Rule(key = "S1313")
 public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Matcher IP = Pattern.compile("([^\\d.]*\\/)?((?<ip>(?:\\d{1,3}\\.){3}\\d{1,3})(:\\d{1,5})?(?!\\d|\\.))(\\/.*)?").matcher("");
+  private static final String MESSAGE = "Make sure using this hardcoded IP address is safe here.";
 
   private JavaFileScannerContext context;
 
@@ -53,7 +52,7 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
       if (IP.matches()) {
         String ip = IP.group("ip");
         if (areAllBelow256(Splitter.on('.').split(ip))) {
-          context.reportIssue(this, tree, "Make this IP \"" + ip + "\" address configurable.");
+          context.reportIssue(this, tree, MESSAGE);
         }
       }
     }
