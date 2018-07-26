@@ -5,14 +5,13 @@
   <li> it places the responsibility of setting the value to use in production on the shoulders of the developer </li>
   <li> it allows attackers to decompile the code and thereby discover a potentially sensitive address </li>
 </ul>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> make the IP address configurable. </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 String ip = "192.168.12.42"; // Noncompliant
-Socket socket = new Socket(ip, 6667);
-</pre>
-<h2>Compliant Solution</h2>
-<pre>
-String ip = System.getProperty("myapplication.ip");
 Socket socket = new Socket(ip, 6667);
 </pre>
 <h2>Exceptions</h2>

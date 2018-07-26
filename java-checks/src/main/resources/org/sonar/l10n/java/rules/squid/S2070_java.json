@@ -1,5 +1,5 @@
 {
-  "title": "SHA-1 and Message-Digest hash algorithms should not be used",
+  "title": "SHA-1 and Message-Digest hash algorithms should not be used in secure contexts",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {

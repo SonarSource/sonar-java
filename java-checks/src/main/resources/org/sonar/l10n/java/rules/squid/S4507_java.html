@@ -1,8 +1,9 @@
 <p>Spring Security's debug mode is useful during development and debugging, but could expose sensitive information to attackers such as request
 parameters, passwords, tokens or headers and should not be included in production code. </p>
-<p>As a Security Auditor, you have to:</p>
-<p>- check if in the release process there is a step deactivating this debug mode before building the final package</p>
-<p>- check that the code that is going to be actually released in production is not having the debug mode activated</p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> make sure there is a step deactivating this debug mode in the release process before building the final package </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 @Configuration

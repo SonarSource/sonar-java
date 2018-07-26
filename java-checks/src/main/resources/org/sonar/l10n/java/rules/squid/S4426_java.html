@@ -1,7 +1,7 @@
-<p>When generating cryptograpic keys (or key pairs), it is important to use a key length that provides enough entropy against brute-force attacks. For
-the <code>Blowfish</code> algorithm the key should be at least 128 bits long, while for the <code>RSA</code> algorithm it should be at least 2048 bits
-long.</p>
-<p>This rule raises an issue when a Blowfish key generator, or RSA key-pair generator is initialized with too small a length parameter.</p>
+<p>When generating cryptographic keys (or key pairs), it is important to use a key length that provides enough entropy against brute-force attacks.
+For the <code>Blowfish</code> algorithm the key should be at least 128 bits long, while for the <code>RSA</code> algorithm it should be at least 2048
+bits long.</p>
+<p>This rule raises an issue when a Blowfish key generator or RSA key-pair generator is initialized with too small a length parameter.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 KeyGenerator keyGen = KeyGenerator.getInstance("Blowfish");

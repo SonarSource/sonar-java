@@ -1,6 +1,10 @@
 <p>Spring Security is coming out of the box with a protection against CSRF attacks. With 4.0, this protection is even enabled by default. Spring's
 recommendation is to "use CSRF protection for any request that could be processed by a browser by normal users". So there is no reason to disable it
 for standard web applications.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> activate Spring Security's CSRF protection. </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 @EnableWebSecurity

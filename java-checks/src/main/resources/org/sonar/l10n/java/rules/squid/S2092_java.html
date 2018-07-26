@@ -1,5 +1,9 @@
 <p>The "secure" attribute prevents cookies from being sent over plaintext connections such as HTTP, where they would be easily eavesdropped upon.
 Instead, cookies with the secure attribute are only sent over encrypted HTTPS connections.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> call <code>setSecure(true)</code> on the <code>Cookie</code> object </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 Cookie c = new Cookie(SECRET, secret);  // Noncompliant; cookie is not secure
