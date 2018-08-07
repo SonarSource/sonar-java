@@ -19,16 +19,11 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.List;
-import org.apache.commons.lang.StringUtils;
-import org.assertj.core.api.Fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -37,8 +32,6 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -50,7 +43,7 @@ public class FileLinesVisitorTest {
   private File baseDir;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     baseDir = new File("src/test/files/metrics");
   }
   private void checkLines(String filename, FileLinesContext context) {
@@ -63,13 +56,6 @@ public class FileLinesVisitorTest {
 
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new FileLinesVisitor(sonarComponents));
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
-  }
-
-  private int countTrivia(String filename) {
-    TriviaVisitor triviaVisitor = new TriviaVisitor();
-    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, triviaVisitor);
-    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
-    return triviaVisitor.numberTrivia;
   }
 
   @Test
@@ -88,52 +74,7 @@ public class FileLinesVisitorTest {
   }
 
   @Test
-  public void comment_lines_data() {
-    FileLinesContext context = mock(FileLinesContext.class);
-    checkLines("Comments.java", context);
-
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 1, 1);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 2, 1);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 3, 1);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 4, 0);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 5, 1);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 6, 1);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 7, 1);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 8, 0);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 9, 0);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 10, 1);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 11, 1);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 12, 1);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 13, 0);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 14, 1);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 15, 1);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 16, 0);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 17, 0);
-    verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 18, 0);
-
-    verify(context).save();
-  }
-
-  @Test
-  public void comments_full() {
-    String filename = "CommentsFull.java";
-    CommentsVerifier context = new CommentsVerifier();
-    checkLines(filename, context);
-
-    List<Integer> reportedCommentLines = context.commentedLine;
-    CommentsCounter counter = CommentsCounter.getComments(baseDir, filename);
-    assertThatContainsAllLines(counter, reportedCommentLines);
-
-    int expectedNumberComments = counter.numberComments - counter.numberFixme;
-    assertThat(context.numberComments).isEqualTo(expectedNumberComments);
-    assertThat(countTrivia(filename)).isEqualTo(
-      expectedNumberComments
-      // FIXME variable declarations sharing types are using the same type when iterating over the tokens. see line 109
-      + 1);
-  }
-
-  @Test
-  public void executable_lines_should_be_counted_withSQGreaterThan62() throws Exception {
+  public void executable_lines_should_be_counted() {
     FileLinesContext context = mock(FileLinesContext.class);
     checkLines("ExecutableLines.java", context);
     int[] expected = new int[] {0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1,
@@ -144,90 +85,6 @@ public class FileLinesVisitorTest {
       verify(context).setIntValue(CoreMetrics.EXECUTABLE_LINES_DATA_KEY, line, expected[i]);
     }
     verify(context).save();
-  }
-
-  private static void assertThatContainsAllLines(CommentsCounter counter, List<Integer> reportedCommentLines) {
-    for (Integer line : reportedCommentLines) {
-      if (counter.commentedLines.contains(line)) {
-        counter.commentedLines.remove(line);
-      } else {
-        Fail.fail("should not have extra lines");
-      }
-    }
-    assertThat(counter.commentedLines).containsExactly(counter.casesNotCoveredLines.toArray(new Integer[0]));
-  }
-
-  private static class CommentsCounter {
-    private int numberComments = 0;
-    private int numberFixme = 0;
-    private List<Integer> commentedLines = Lists.newLinkedList();
-    private List<Integer> casesNotCoveredLines = Lists.newLinkedList();
-
-    private CommentsCounter() {
-    }
-
-    private static CommentsCounter getComments(File baseDir, String filename) {
-      CommentsCounter counter = new CommentsCounter();
-      try {
-        int lineNumber = 1;
-        for (String line : Files.readLines(new File(baseDir, filename), StandardCharsets.UTF_8)) {
-          int commentCount = StringUtils.countMatches(line, "comment");
-          for (int i = 0; i < commentCount; i++) {
-            counter.commentedLines.add(lineNumber);
-          }
-          counter.numberComments += commentCount;
-          int fixmeCount = StringUtils.countMatches(line, "FIXME");
-          for (int i = 0; i < fixmeCount; i++) {
-            counter.casesNotCoveredLines.add(lineNumber);
-          }
-          counter.numberFixme += fixmeCount;
-          lineNumber++;
-        }
-      } catch (IOException e) {
-        Fail.fail(e.getMessage());
-      }
-      return counter;
-    }
-  }
-
-  private static class CommentsVerifier implements FileLinesContext {
-    private List<Integer> commentedLine = Lists.newLinkedList();
-    private int numberComments = 0;
-
-    @Override
-    public void setStringValue(String metricKey, int line, String value) {
-    }
-
-    @Override
-    public void setIntValue(String metricKey, int line, int value) {
-      if (CoreMetrics.COMMENT_LINES_DATA_KEY.equals(metricKey)) {
-        for (int i = 0; i < value; i++) {
-          commentedLine.add(line);
-        }
-        numberComments += value;
-      }
-    }
-
-    @Override
-    public void save() {
-    }
-
-
-  }
-
-  private static class TriviaVisitor extends SubscriptionVisitor {
-
-    int numberTrivia = 0;
-
-    @Override
-    public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.TRIVIA);
-    }
-
-    @Override
-    public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-      numberTrivia++;
-    }
   }
 
 }
