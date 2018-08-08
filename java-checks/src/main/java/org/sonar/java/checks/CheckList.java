@@ -172,6 +172,7 @@ public final class CheckList {
       .add(BadTypeParameterNameCheck.class)
       .add(BadPackageNameCheck.class)
       .add(MissingCurlyBracesCheck.class)
+      .add(Struts1EndpointCheck.class)
       .add(TooManyStatementsPerLineCheck.class)
       .add(LeftCurlyBraceStartLineCheck.class)
       .add(RightCurlyBraceSameLineAsNextBlockCheck.class)
