@@ -43,7 +43,7 @@ public class Struts1EndpointCheck extends IssuableSubscriptionVisitor {
     MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("perform").parameters(args1),
     MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("perform").parameters(args2),
     MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("execute").parameters(args1),
-    MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("execute").parameters(args1)
+    MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("execute").parameters(args2)
   );
 
   @Override
