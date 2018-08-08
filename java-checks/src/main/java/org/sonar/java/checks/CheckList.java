@@ -200,6 +200,7 @@ public final class CheckList {
       .add(UtilityClassWithPublicConstructorCheck.class)
       .add(StringLiteralInsideEqualsCheck.class)
       .add(ReturnOfBooleanExpressionsCheck.class)
+      .add(AccessibilityChangeCheck.class)
       .add(BooleanLiteralCheck.class)
       .add(ExpressionComplexityCheck.class)
       .add(NestedTryCatchCheck.class)
