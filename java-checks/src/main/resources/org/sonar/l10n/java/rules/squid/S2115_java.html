@@ -1,0 +1,12 @@
+<p>Failure to password-protect a database is so careless or naive as to be almost negligent. Databases should always be password protected, but the
+use of a database connection with an empty password is a clear indication of a database that is not protected.</p>
+<p>This rule flags database connections with empty passwords.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Connection conn = DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", "");
+</pre>
+<h2>See</h2>
+<ul>
+  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+</ul>
+
