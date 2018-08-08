@@ -21,6 +21,11 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.java.SonarComponents;
@@ -34,16 +39,9 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.BLOCK;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.BOOLEAN_LITERAL;
@@ -76,7 +74,6 @@ public class FileLinesVisitor extends SubscriptionVisitor {
 
   private final SonarComponents sonarComponents;
   private final Set<Integer> linesOfCode = new HashSet<>();
-  private final Set<Integer> linesOfComments = new HashSet<>();
   private final Set<Integer> executableLines = new HashSet<>();
 
   public FileLinesVisitor(SonarComponents sonarComponents) {
@@ -102,13 +99,11 @@ public class FileLinesVisitor extends SubscriptionVisitor {
     int fileLength = sonarComponents.fileLength(currentFile);
     for (int line = 1; line <= fileLength; line++) {
       fileLinesContext.setIntValue(CoreMetrics.NCLOC_DATA_KEY, line, linesOfCode.contains(line) ? 1 : 0);
-      fileLinesContext.setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, line, linesOfComments.contains(line) ? 1 : 0);
       fileLinesContext.setIntValue(CoreMetrics.EXECUTABLE_LINES_DATA_KEY, line, executableLines.contains(line) ? 1 : 0);
     }
     fileLinesContext.save();
 
     linesOfCode.clear();
-    linesOfComments.clear();
     executableLines.clear();
   }
 
@@ -203,13 +198,6 @@ public class FileLinesVisitor extends SubscriptionVisitor {
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
     linesOfCode.add(syntaxToken.line());
-    for (SyntaxTrivia trivia : syntaxToken.trivias()) {
-      int baseLine = trivia.startLine();
-      String[] lines = trivia.comment().split("(\r)?\n|\r", -1);
-      for (int i = 0; i < lines.length; i++) {
-        linesOfComments.add(baseLine + i);
-      }
-    }
   }
 
   private static boolean isConstant(VariableTree variableTree) {
