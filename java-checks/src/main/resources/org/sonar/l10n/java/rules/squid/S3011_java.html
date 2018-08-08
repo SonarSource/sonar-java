@@ -1,0 +1,22 @@
+<p><code>private</code> methods were made <code>private</code> for a reason, and the same is true of every other visibility level. Altering or
+bypassing the accessibility of classes, methods, or fields violates the encapsulation principle and could introduce security holes.</p>
+<p>This rule raises an issue when reflection is used to change the visibility of a class, method or field, and when it is used to directly update a
+field value.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public void makeItPublic(String methodName) throws NoSuchMethodException {
+
+  this.getClass().getMethod(methodName).setAccessible(true); // Noncompliant
+}
+
+public void setItAnyway(String fieldName, int value) {
+  this.getClass().getDeclaredField(fieldName).setInt(this, value); // Noncompliant; bypasses controls in setter
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/3YEVAQ">CERT, SEC05-J.</a> - Do not use reflection to increase accessibility of
+  classes, methods, or fields </li>
+</ul>
+
