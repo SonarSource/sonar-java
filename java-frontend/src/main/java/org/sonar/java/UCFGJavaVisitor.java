@@ -540,12 +540,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
   private static boolean isObject(Type type) {
     if (type.isArray()) {
-      Type elementType = ((Type.ArrayType)type).elementType();
-      if (elementType == null) {
-        // SONARJAVA-2835 : the type for multi-dimension array initializers is null
-        return false;
-      }
-      return isObject(elementType);
+      return isObject(((Type.ArrayType)type).elementType());
     }
     return !type.isPrimitive() && !type.isUnknown();
   }

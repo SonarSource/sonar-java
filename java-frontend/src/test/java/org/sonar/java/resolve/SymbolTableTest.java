@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -1169,6 +1170,26 @@ public class SymbolTableTest {
     assertThat(result.symbol("strings3").type.symbol.name).isEqualTo("Array");
     assertThat(result.symbol("strings3").type.toString()).isEqualTo("String[][][]");
     assertThat(result.symbol("objects").type.toString()).isEqualTo("Object[][][]");
+
+    ExpressionTree init = ((VariableTree) result.symbol("strings2").declaration()).initializer();
+    Type initalizerType = init.symbolType();
+    assertThat(initalizerType.isArray()).isTrue();
+    assertThat(((ArrayJavaType) initalizerType).elementType.isArray()).isTrue();
+    assertThat(((ArrayJavaType) ((ArrayJavaType) initalizerType).elementType).elementType.is("java.lang.String")).isTrue();
+
+    init = ((VariableTree) result.symbol("strings3").declaration()).initializer();
+    initalizerType = init.symbolType();
+    assertThat(initalizerType.isArray()).isTrue();
+    assertThat(((ArrayJavaType) initalizerType).elementType.isArray()).isTrue();
+    assertThat(((ArrayJavaType) ((ArrayJavaType) initalizerType).elementType).elementType.isArray()).isTrue();
+    assertThat(((ArrayJavaType) ((ArrayJavaType) ((ArrayJavaType) initalizerType).elementType).elementType).elementType.is("java.lang.String")).isTrue();
+
+    NewArrayTree newStringArray = ((NewArrayTree) ((ReturnStatementTree) ((MethodTree) result.symbol("foo").declaration()).block().body().get(0)).expression());
+    List<Type> initTypes = newStringArray.initializers().stream().map(ExpressionTree::symbolType).collect(Collectors.toList());
+    for (Type initType : initTypes) {
+      assertThat(initType.isArray()).isTrue();
+      assertThat(((Type.ArrayType) initType).elementType().is("java.lang.String")).isTrue();
+    }
   }
 
   @Test

@@ -42,6 +42,7 @@ import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.MethodReferenceTreeImpl;
+import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.resolve.Resolve.Resolution;
@@ -669,6 +670,14 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     scan(tree.dimensions());
     resolveAs((List<? extends Tree>) tree.initializers(), JavaSymbol.VAR);
     JavaType type = getType(tree.type());
+    if (tree.type() == null) {
+      if (((NewArrayTreeImpl) tree).isTypeSet() && tree.symbolType().isArray()) {
+        type = ((ArrayJavaType) tree.symbolType()).elementType;
+      } else {
+        registerType(tree, symbols.deferedType((AbstractTypedTree) tree));
+        return;
+      }
+    }
     int dimensions = tree.dimensions().size();
     // TODO why?
     type = new ArrayJavaType(type, symbols.arrayClass);
@@ -676,6 +685,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       type = new ArrayJavaType(type, symbols.arrayClass);
     }
     registerType(tree, type);
+    for (ExpressionTree expressionTree : tree.initializers()) {
+      if(((JavaType) expressionTree.symbolType()).isTagged(JavaType.DEFERRED)) {
+        setInferedType(((ArrayJavaType) type).elementType, (DeferredType) expressionTree.symbolType());
+      }
+    }
   }
 
   @Override
