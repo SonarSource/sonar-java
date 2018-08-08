@@ -20,23 +20,22 @@
 package org.sonar.java.checks;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.model.ModifiersUtils;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2119")
 public class ReuseRandomCheck extends AbstractMethodDetection {
-
-  private static final Set<Kind> EXPRESSION_PARENT_CONTEXT = EnumSet.of(Kind.METHOD, Kind.CONSTRUCTOR, Kind.CLASS, Kind.ENUM, Kind.INTERFACE);
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -45,24 +44,40 @@ public class ReuseRandomCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    if (isInANonStaticMethod(newClassTree)) {
-      reportIssue(newClassTree.identifier(), "Save and re-use this \"Random\".");
+    Optional<Symbol> variable = lookupInitializedSymbol(newClassTree);
+    if (!variable.isPresent()) {
+      variable = lookupAssignedSymbol(newClassTree);
     }
+    variable
+      .filter(Symbol::isVariableSymbol)
+      .map(Symbol::owner)
+      .filter(Symbol::isMethodSymbol)
+      .filter(ReuseRandomCheck::isNotConstructorOrStaticMain)
+      .ifPresent(owner -> reportIssue(newClassTree.identifier(), "Save and re-use this \"Random\"."));
   }
 
-  private static boolean isInANonStaticMethod(NewClassTree newClassTree) {
-    for (Tree parent = newClassTree.parent(); parent != null; parent = parent.parent()) {
-      if (isNonStaticMethod(parent)) {
-        return true;
-      } else if (EXPRESSION_PARENT_CONTEXT.contains(parent.kind())) {
-        break;
-      }
-    }
-    return false;
+  private static Optional<Symbol> lookupInitializedSymbol(ExpressionTree expression) {
+    return Optional.of(expression)
+      .map(Tree::parent)
+      .filter(tree -> tree.is(Kind.VARIABLE))
+      .map(VariableTree.class::cast)
+      .map(VariableTree::simpleName)
+      .map(IdentifierTree::symbol);
   }
 
-  private static boolean isNonStaticMethod(Tree tree) {
-    return tree.is(Kind.METHOD) && !ModifiersUtils.hasModifier(((MethodTree)tree).modifiers(), Modifier.STATIC);
+  private static Optional<Symbol> lookupAssignedSymbol(ExpressionTree expression) {
+    return Optional.of(expression)
+      .map(Tree::parent)
+      .filter(tree -> tree.is(Kind.ASSIGNMENT))
+      .map(AssignmentExpressionTree.class::cast)
+      .map(AssignmentExpressionTree::variable)
+      .filter(tree -> tree.is(Kind.IDENTIFIER))
+      .map(IdentifierTree.class::cast)
+      .map(IdentifierTree::symbol);
+  }
+
+  private static boolean isNotConstructorOrStaticMain(Symbol symbol) {
+    return !("<init>".equals(symbol.name()) || ("main".equals(symbol.name()) && symbol.isStatic()));
   }
 
 }
