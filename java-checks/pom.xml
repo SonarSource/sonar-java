@@ -405,6 +405,11 @@
                   <artifactId>jackson-core-asl</artifactId>
                   <version>1.9.13</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.commons</groupId>
+                  <artifactId>commons-exec</artifactId>
+                  <version>1.3</version>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>
