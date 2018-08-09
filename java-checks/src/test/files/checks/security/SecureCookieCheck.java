@@ -43,8 +43,8 @@ class A {
     Cookie cookie3 = new Cookie("name", "value"); // Noncompliant {{Make sure creating this cookie without the "secure" flag is safe here.}}
     cookie3.setSecure(false);
 
-    Cookie cookie5 = new Cookie("name", "value");
-    cookie5.setSecure(FALSE_CONSTANT); // FN
+    Cookie cookie5 = new Cookie("name", "value"); // Noncompliant
+    cookie5.setSecure(FALSE_CONSTANT);
 
     Cookie c6 = new Cookie("name", "value");
     if (param) {
@@ -54,9 +54,9 @@ class A {
       c6.setSecure(true);
     }
 
-    Cookie c7 = new Cookie("name", "value");
+    Cookie c7 = new Cookie("name", "value"); // Noncompliant
     boolean b = false;
-    c7.setSecure(b); // FN
+    c7.setSecure(b);
 
     Cookie c8 = new Cookie("name", "value");
     c8.setSecure(param);
@@ -82,8 +82,8 @@ class A {
     HttpCookie c3 = new HttpCookie("name", "value"); // Noncompliant
     c3.setSecure(false);
 
-    HttpCookie c4 = new HttpCookie("name", "value");
-    c4.setSecure(FALSE_CONSTANT); // FN
+    HttpCookie c4 = new HttpCookie("name", "value"); // Noncompliant
+    c4.setSecure(FALSE_CONSTANT);
 
     HttpCookie c5; // Noncompliant
     c5 = new HttpCookie("name", "value");
