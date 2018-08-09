@@ -225,6 +225,7 @@ public final class CheckList {
       .add(ImplementsEnumerationCheck.class)
       .add(CloneMethodCallsSuperCloneCheck.class)
       .add(SwitchCaseTooBigCheck.class)
+      .add(Struts2EndpointCheck.class)
       .add(SwitchCaseWithoutBreakCheck.class)
       .add(CatchUsesExceptionWithContextCheck.class)
       .add(MethodTooBigCheck.class)

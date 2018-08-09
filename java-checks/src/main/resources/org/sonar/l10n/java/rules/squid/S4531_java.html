@@ -1,0 +1,29 @@
+<p>All classes extending <code>com.opensymphony.xwork2.ActionSupport</code> are potentially remotely reachable. An action class extending
+ActionSupport will receive all HTTP parameters sent and these parameters will be automatically mapped to the setters of the Struts 2 action class. One
+should review the use of the fields set by the setters, to be sure they are used safely. By default, they should be considered as untrusted
+inputs.</p>
+<p>This rule is there to allow a security auditor to quickly find some potential hotspots to review.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class AccountBalanceAction extends ActionSupport {
+  private static final long serialVersionUID = 1L;
+  private Integer accountId;
+
+  // this setter might be called with user input
+  public void setAccountId(Integer accountId) {
+    this.accountId = accountId;
+  }
+
+  @Override
+  public String execute() throws Exception {
+    // call a service to get the account's details and its balance
+    [...]
+    return SUCCESS;
+  }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> OWASP Top 10 2017 Category A1 - Injection </li>
+</ul>
+
