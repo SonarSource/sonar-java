@@ -248,6 +248,7 @@ public final class CheckList {
       .add(GarbageCollectorCalledCheck.class)
       .add(ArrayDesignatorOnVariableCheck.class)
       .add(DefaultPackageCheck.class)
+      .add(PopulateBeansCheck.class)
       .add(MethodNamedHashcodeOrEqualCheck.class)
       .add(NestedBlocksCheck.class)
       .add(InterfaceAsConstantContainerCheck.class)
