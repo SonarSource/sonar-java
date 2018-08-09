@@ -24,7 +24,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -157,18 +160,30 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private void checkSecureCall(MethodInvocationTree mit) {
     if (isSetSecureCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree methodObject = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+      Boolean secureArgument = getBooleanValue(mit.arguments().get(0));
+      boolean isFalse = secureArgument != null && !secureArgument;
       if (methodObject.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifierTree = (IdentifierTree) methodObject;
-        if (!LiteralUtils.isFalse(mit.arguments().get(0))) {
+        if (!isFalse) {
           unsecuredCookies.remove(identifierTree.symbol());
         } else if (identifierTree.symbol().owner().isMethodSymbol()) {
           unsecuredCookies.add((Symbol.VariableSymbol) identifierTree.symbol());
         }
-      } else if (LiteralUtils.isFalse(mit.arguments().get(0))) {
+      } else if (isFalse) {
         // builder method
         unsecuredSetters.add(mit);
       }
     }
+  }
+
+  @Nullable
+  private static Boolean getBooleanValue(ExpressionTree expression) {
+    Boolean value = ConstantUtils.resolveAsBooleanConstant(expression);
+    if (value == null && expression.is(Tree.Kind.IDENTIFIER)) {
+      ExpressionTree last = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(expression, ((IdentifierTree) expression).symbol());
+      value = last == null ? null : getBooleanValue(last);
+    }
+    return value;
   }
 
   private void addToUnsecuredReturns(ReturnStatementTree tree) {
