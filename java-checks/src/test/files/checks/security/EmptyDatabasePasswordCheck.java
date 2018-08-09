@@ -1,5 +1,7 @@
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import static org.sonar.java.checks.security.EmptyDatabasePasswordCheckTest.EMPTY_PASSWORD;
+import static org.sonar.java.checks.security.EmptyDatabasePasswordCheckTest.NON_EMPTY_PASSWORD;
 
 class S2115 {
   void foo(Properties connectionProps) throws SQLException {
@@ -17,6 +19,11 @@ class S2115 {
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd3); // Noncompliant
 
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", EMPTY_PASSWORD); // Noncompliant
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", NON_EMPTY_PASSWORD);
+
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", null);
+
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true"); // Noncompliant
 
     DriverManager.getConnection("jdbc:db2://myhost:5021/mydb:user=dbadm;password=foo");
@@ -31,5 +38,11 @@ class S2115 {
     DriverManager.getConnection(string); // Noncompliant
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", ConnectionProps);
+
+    String url = null;
+    DriverManager.getConnection(url);
+    DriverManager.getConnection(null);
+
+
   }
 }

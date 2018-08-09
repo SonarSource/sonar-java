@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -45,7 +45,7 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Collections.singletonList(
       MethodMatcher.create().typeDefinition("java.sql.DriverManager").name("getConnection").withAnyParameters()
     );
   }
@@ -68,11 +68,12 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
 
   @Nullable
   private static String getStringValue(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.IDENTIFIER)) {
+    String value = ConstantUtils.resolveAsStringConstant(expression);
+    if (value == null && expression.is(Tree.Kind.IDENTIFIER)) {
       ExpressionTree last = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(expression, ((IdentifierTree) expression).symbol());
-      return last == null ? null : getStringValue(last);
+      value = last == null ? null : getStringValue(last);
     }
-    return ConstantUtils.resolveAsStringConstant(expression);
+    return value;
   }
 
   private void checkForUrlConnection(ExpressionTree expression) {
@@ -80,6 +81,7 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
     if (url != null && (!url.contains("password") || EMPTY_PASSWORD_PATTERN.matcher(url).matches())) {
       reportIssue(expression, MESSAGE);
     }
+
   }
 
 }
