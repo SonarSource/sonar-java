@@ -44,12 +44,8 @@ public class ReuseRandomCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    Optional<Symbol> variable = lookupInitializedSymbol(newClassTree);
-    if (!variable.isPresent()) {
-      variable = lookupAssignedSymbol(newClassTree);
-    }
-    variable
-      .filter(Symbol::isVariableSymbol)
+    lookupInitializedSymbol(newClassTree)
+      .map(Optional::of).orElseGet(() -> lookupAssignedSymbol(newClassTree))
       .map(Symbol::owner)
       .filter(Symbol::isMethodSymbol)
       .filter(ReuseRandomCheck::isNotConstructorOrStaticMain)
@@ -61,14 +57,13 @@ public class ReuseRandomCheck extends AbstractMethodDetection {
       .map(Tree::parent)
       .filter(tree -> tree.is(Kind.VARIABLE))
       .map(VariableTree.class::cast)
-      .map(VariableTree::simpleName)
-      .map(IdentifierTree::symbol);
+      .map(VariableTree::symbol);
   }
 
   private static Optional<Symbol> lookupAssignedSymbol(ExpressionTree expression) {
     return Optional.of(expression)
       .map(Tree::parent)
-      .filter(tree -> tree.is(Kind.ASSIGNMENT))
+      .filter(tree -> tree.is(Kind.ASSIGNMENT) && tree.parent().is(Kind.EXPRESSION_STATEMENT))
       .map(AssignmentExpressionTree.class::cast)
       .map(AssignmentExpressionTree::variable)
       .filter(tree -> tree.is(Kind.IDENTIFIER))
