@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
@@ -44,35 +43,32 @@ public class ReuseRandomCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    lookupInitializedSymbol(newClassTree)
-      .map(Optional::of).orElseGet(() -> lookupAssignedSymbol(newClassTree))
-      .map(Symbol::owner)
-      .filter(Symbol::isMethodSymbol)
-      .filter(ReuseRandomCheck::isNotConstructorOrStaticMain)
-      .ifPresent(owner -> reportIssue(newClassTree.identifier(), "Save and re-use this \"Random\"."));
+    if (assignedToLocalVariablesNotInConstructorOrStaticMain(newClassTree)) {
+      reportIssue(newClassTree.identifier(), "Save and re-use this \"Random\".");
+    }
   }
 
-  private static Optional<Symbol> lookupInitializedSymbol(ExpressionTree expression) {
-    return Optional.of(expression)
-      .map(Tree::parent)
-      .filter(tree -> tree.is(Kind.VARIABLE))
-      .map(VariableTree.class::cast)
-      .map(VariableTree::symbol);
+  private static boolean assignedToLocalVariablesNotInConstructorOrStaticMain(Tree tree) {
+    Tree parent = tree.parent();
+    if (parent.is(Kind.ASSIGNMENT)) {
+      return isLocalVariableNotInConstructorOrStaticMain(((AssignmentExpressionTree) parent).variable()) &&
+        assignedToLocalVariablesNotInConstructorOrStaticMain(parent);
+    } else if (parent.is(Kind.VARIABLE)) {
+      return isLocalVariableNotInConstructorOrStaticMain(((VariableTree) parent).simpleName());
+    } else if (parent.is(Kind.PARENTHESIZED_EXPRESSION)) {
+      return assignedToLocalVariablesNotInConstructorOrStaticMain(parent);
+    } else {
+      return parent.is(Kind.EXPRESSION_STATEMENT);
+    }
   }
 
-  private static Optional<Symbol> lookupAssignedSymbol(ExpressionTree expression) {
-    return Optional.of(expression)
-      .map(Tree::parent)
-      .filter(tree -> tree.is(Kind.ASSIGNMENT) && tree.parent().is(Kind.EXPRESSION_STATEMENT))
-      .map(AssignmentExpressionTree.class::cast)
-      .map(AssignmentExpressionTree::variable)
-      .filter(tree -> tree.is(Kind.IDENTIFIER))
-      .map(IdentifierTree.class::cast)
-      .map(IdentifierTree::symbol);
-  }
-
-  private static boolean isNotConstructorOrStaticMain(Symbol symbol) {
-    return !("<init>".equals(symbol.name()) || ("main".equals(symbol.name()) && symbol.isStatic()));
+  private static boolean isLocalVariableNotInConstructorOrStaticMain(ExpressionTree expression) {
+    if (expression.is(Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) expression).symbol().owner();
+      return symbol.isMethodSymbol() &&
+        !("<init>".equals(symbol.name()) || ("main".equals(symbol.name()) && symbol.isStatic()));
+    }
+    return false;
   }
 
 }
