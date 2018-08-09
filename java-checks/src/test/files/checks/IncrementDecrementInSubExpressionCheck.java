@@ -14,6 +14,7 @@ class Foo {
     foo[--i] = 0; // Noncompliant
 
     foo[~i] = 0;
+    register(() -> i++);
 
     return i++;
     return ++i;
@@ -21,4 +22,5 @@ class Foo {
     return;
   }
 
+  void register(Runnable runnable) {}
 }
