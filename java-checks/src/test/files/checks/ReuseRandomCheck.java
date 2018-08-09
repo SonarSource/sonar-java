@@ -16,7 +16,7 @@ public class A {
 
     staticField = new Random();
     field = new Random();
-    thid.field = new Random();
+    this.field = new Random();
 
     field = localVar1 = new Random();
     field = (localVar1 = new Random());
