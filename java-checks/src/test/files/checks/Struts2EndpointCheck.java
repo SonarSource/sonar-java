@@ -37,3 +37,11 @@ public class AccountBalanceAction3 extends ActionSupport {
   public void setAccountId(Integer accountId, Object foo) {
   }
 }
+
+public class AccountBalanceAction4 extends ActionSupport {
+  private static final long serialVersionUID = 1L;
+  private Integer accountId;
+
+  public void setAccountId(Integer accountId, Object foo) {
+  }
+}

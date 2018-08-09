@@ -58,6 +58,7 @@ public class Struts2EndpointCheck extends IssuableSubscriptionVisitor {
 
   private static List<JavaFileScannerContext.Location> getSetters(Symbol owner) {
     if (!owner.isTypeSymbol()) {
+      // defensive programing : owner of methodTree should always be a type symbol
       return Collections.emptyList();
     }
     return ((Symbol.TypeSymbol) owner).memberSymbols().stream()
