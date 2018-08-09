@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2245")
 public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MESSAGE = "Use a cryptographically strong random number generator (RNG) like \"java.security.SecureRandom\" in place of this PRNG";
+  private static final String MESSAGE = "Make sure that using this pseudorandom number generator is safe here.";
   private static final MethodMatcher MATH_RANDOM_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Math").name("random").withoutParameter();
 
   @Override
