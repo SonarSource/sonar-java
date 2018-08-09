@@ -1,5 +1,6 @@
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.XMLConstants;
 
 class A {
@@ -10,6 +11,11 @@ class A {
 
   TransformerFactory no_call_to_securing_method() {
     TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant
+    return factory;
+  }
+
+  TransformerFactory no_call_to_sax_securing_method() {
+    TransformerFactory factory = SAXTransformerFactory.newInstance(); // Noncompliant
     return factory;
   }
 
