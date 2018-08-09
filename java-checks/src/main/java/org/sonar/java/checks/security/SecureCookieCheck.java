@@ -161,7 +161,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     if (isSetSecureCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree methodObject = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
       Boolean secureArgument = getBooleanValue(mit.arguments().get(0));
-      Boolean isFalse = secureArgument != null && !secureArgument;
+      boolean isFalse = secureArgument != null && !secureArgument;
       if (methodObject.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifierTree = (IdentifierTree) methodObject;
         if (!isFalse) {

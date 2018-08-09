@@ -70,6 +70,10 @@ class A {
     Object c12;  // Noncompliant [[sc=12;ec=15]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
     c12 = new Cookie("name", "value");
 
+    Cookie c13 = new Cookie("name", "value");
+    boolean value = false;
+    c13.setSecure(!value);
+
     return new Cookie("name", "value"); // Noncompliant
   }
 
