@@ -11,7 +11,7 @@ class S2255 {
 
   void servletCookie(Cookie c){
     Cookie cookie = new Cookie("name", "value"); // Noncompliant [[sc=40;ec=47]] {{Make sure storing this data in this cookie is safe here.}}
-    cookie.setValue("value"); // Noncompliant [[sc=20;ec=29]]
+    cookie.setValue("value"); // Noncompliant [[sc=21;ec=28]]
     String x = "value";
     cookie.setValue(x); // Noncompliant
     cookie.setValue(VALUE); // Noncompliant
@@ -41,6 +41,21 @@ class S2255 {
   void springCookie(Cookie cookie) {
     new SavedCookie(cookie); // Noncompliant
     new SavedCookie("n", "v", "c", "d", 1, "p", true, 1); // Noncompliant
+  }
+
+  void playCookie() {
+    play.mvc.Http.Cookie.builder("name", "value"); // Noncompliant [[sc=42;ec=49]]
+    play.mvc.Http.Cookie.builder("name", "");
+
+    new play.mvc.Http.CookieBuilder()
+      .withName("name")
+      .withValue("value") // Noncompliant [[sc=18;ec=25]]
+      .build();
+
+    new play.mvc.Http.CookieBuilder()
+      .withName("name")
+      .withValue(null)
+      .build();
   }
 
   void foo(HttpServletRequest request, HttpServletResponse response){
