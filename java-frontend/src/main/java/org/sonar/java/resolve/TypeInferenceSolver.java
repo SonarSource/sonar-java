@@ -151,12 +151,6 @@ public class TypeInferenceSolver {
       TypeSubstitution typeSubstitution = new TypeSubstitution();
       typeSubstitution.unchecked = true;
       return typeSubstitution;
-      /*List<JavaType> objectTypes = listOfTypes(symbols.objectType, formalTypeSubstitutedTypes.size());
-      TypeSubstitution newSubstitution = new TypeSubstitution();
-      if (IntStream.range(0, formalTypeSubstitutedTypes.size()).noneMatch(i -> handledFormals.get(formalTypeSubstitutedTypes.get(i)).contains(objectTypes.get(i)))) {
-        newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, objectTypes);
-      }
-      result = mergeTypeSubstitutions(substitution, newSubstitution);*/
     } else if (argType.isSubtypeOf(formalType.erasure()) && argType.isClass()) {
       for (JavaType superType : ((ClassJavaType) argType).superTypes()) {
         if (sameErasure(formalType, superType)) {
@@ -171,14 +165,6 @@ public class TypeInferenceSolver {
 
   private static boolean isRawTypeOfType(JavaType rawType, JavaType type) {
     return rawType == type.erasure();
-  }
-
-  private static List<JavaType> listOfTypes(JavaType type, int size) {
-    List<JavaType> result = new ArrayList<>(size);
-    for (int j = 0; j < size; j++) {
-      result.add(type);
-    }
-    return result;
   }
 
   private static boolean sameErasure(JavaType type1, JavaType type2) {

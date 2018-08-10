@@ -1710,7 +1710,6 @@ public class SymbolTableTest {
     assertThat(res.symbol("<init>", 7).usages()).hasSize(1);
     assertThat(res.symbol("<init>", 17).usages()).hasSize(1);
     assertThat(res.symbol("<init>", 27).usages()).hasSize(1);
-    // this should be of size 1
     assertThat(res.symbol("<init>", 37).usages()).hasSize(1);
   }
 }
