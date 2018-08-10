@@ -20,7 +20,10 @@
 package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
@@ -42,9 +45,17 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
   private static final String BOOLEAN = "boolean";
   private static final String HASHTABLE = "java.util.Hashtable";
 
-  private static final MethodMatcher SET_SSL_ON_CONNECT = MethodMatcher.create()
+  private static final Set<String> ENABLING_SSL_METHOD_NAMES = new HashSet<>(Arrays.asList(
+    "setSSL",
+    "setSSLOnConnect",
+    "setTLS",
+    "setStartTLSEnabled",
+    "setStartTLSRequired"
+  ));
+
+  private static final MethodMatcher ENABLING_SSL_METHODS = MethodMatcher.create()
     .typeDefinition(TypeCriteria.is(APACHE_EMAIL))
-    .name("setSSLOnConnect")
+    .name(ENABLING_SSL_METHOD_NAMES::contains)
     .addParameter(BOOLEAN);
 
   private static final MethodMatcher HASHTABLE_PUT = MethodMatcher.create()
@@ -54,7 +65,7 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(SET_SSL_ON_CONNECT, HASHTABLE_PUT);
+    return ImmutableList.of(ENABLING_SSL_METHODS, HASHTABLE_PUT);
   }
 
   @Override
@@ -62,7 +73,7 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
     MethodTree method = findEnclosingMethod(mit);
     if (method != null) {
       Arguments args = mit.arguments();
-      if (SET_SSL_ON_CONNECT.matches(mit) && LiteralUtils.isTrue(args.get(0))) {
+      if (ENABLING_SSL_METHODS.matches(mit) && LiteralUtils.isTrue(args.get(0))) {
         MethodBodyApacheVisitor apacheVisitor = new MethodBodyApacheVisitor();
         method.accept(apacheVisitor);
         if (!apacheVisitor.isSecured) {

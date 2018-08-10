@@ -47,4 +47,25 @@ public class ApacheEmail {
     email.setSSLOnConnect(flag);  // Compliant
     email.setSSLCheckServerIdentity(true);
   }
+
+  public void foo8() {
+    Email email = new SimpleEmail();
+    email.setSSL(true);   // Noncompliant
+  }
+
+  public void foo9() {
+    Email email = new SimpleEmail();
+    email.setTLS(true);   // Noncompliant
+  }
+
+  public void foo10() {
+    Email email = new SimpleEmail();
+    email.setStartTLSEnabled(true);   // Noncompliant
+  }
+
+  public void foo11() {
+    Email email = new SimpleEmail();
+    email.setStartTLSRequired(true);   // Noncompliant
+  }
+
 }
