@@ -68,7 +68,7 @@ public class JavaPerformanceTest {
     double time = sensorTime(build.getProjectDir(), result.getLogs(), SENSOR_NAME);
 
     double expected = 178;
-    assertThat(time).isEqualTo(expected, offset(expected * 0.04));
+    assertThat(time).isEqualTo(expected, offset(expected * 0.06));
   }
 
   private static double sensorTime(File projectDir, String logs, String sensor) throws IOException {
