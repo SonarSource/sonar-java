@@ -19,38 +19,27 @@
  */
 package org.sonar.java.checks.helpers;
 
-import com.sonar.sslr.api.typed.ActionParser;
+import java.lang.reflect.Constructor;
+import java.util.List;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.lang.reflect.Constructor;
-import java.util.Collections;
-import java.util.List;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ReassignmentFinderTest {
-
-  private final ActionParser<Tree> p = JavaParser.createParser();
+public class ReassignmentFinderTest extends JavaParserHelper {
 
   @Test
   public void private_constructor() throws Exception {
@@ -273,42 +262,6 @@ public class ReassignmentFinderTest {
 
   private static Tree getLastReassignment(List<StatementTree> statements) {
     return ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(statements.get(statements.size() - 1), variableFromLastReturnStatement(statements).symbol());
-  }
-
-  private static IdentifierTree variableFromLastReturnStatement(List<StatementTree> statements) {
-    return (IdentifierTree) ((ReturnStatementTree) statements.get(statements.size() - 1)).expression();
-  }
-
-  private static ExpressionTree assignementExpressionFromStatement(StatementTree statement) {
-    return ((AssignmentExpressionTree) ((ExpressionStatementTree) statement).expression()).expression();
-  }
-
-  private static ExpressionTree initializerFromVariableDeclarationStatement(Tree statement) {
-    return ((VariableTree) statement).initializer();
-  }
-
-  private ClassTree classTree(String classBody) {
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(classBody);
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
-    return (ClassTree) compilationUnitTree.types().get(0);
-  }
-
-  private MethodTree methodTree(String classBody) {
-    ClassTree firstType = classTree(classBody);
-    return (MethodTree) firstType.members().get(0);
-  }
-
-  private List<StatementTree> methodBody(String code) {
-    return methodTree(code).block().body();
-  }
-
-  private static String newCode(String... lines) {
-    String lineSeparator = System.lineSeparator();
-    StringBuilder sb = new StringBuilder("class A {").append(lineSeparator);
-    for (String string : lines) {
-      sb.append(string).append(lineSeparator);
-    }
-    return sb.append("}").append(lineSeparator).toString();
   }
 
 }
