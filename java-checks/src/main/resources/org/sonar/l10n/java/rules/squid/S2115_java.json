@@ -1,0 +1,24 @@
+{
+  "title": "Databases should be password-protected",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "45min"
+  },
+  "tags": [
+    "owasp-a3"
+  ],
+  "standards": [
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-2115",
+  "sqKey": "S2115",
+  "scope": "Main",
+  "securityStandards": {
+    "OWASP": [
+      "A3"
+    ]
+  }
+}

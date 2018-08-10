@@ -48,6 +48,7 @@ import org.sonar.java.checks.security.CookieHttpOnlyCheck;
 import org.sonar.java.checks.security.CookieShouldNotContainSensitiveDataCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.ExecCallCheck;
+import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
@@ -607,6 +608,7 @@ public final class CheckList {
       .add(ObjectDeserializationCheck.class)
       .add(SpringEndpointsCheck.class)
       .add(ExecCallCheck.class)
+      .add(EmptyDatabasePasswordCheck.class)
       .build();
   }
 
