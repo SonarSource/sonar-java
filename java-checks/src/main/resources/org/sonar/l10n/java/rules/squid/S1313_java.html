@@ -15,8 +15,11 @@ String ip = "192.168.12.42"; // Noncompliant
 Socket socket = new Socket(ip, 6667);
 </pre>
 <h2>Exceptions</h2>
+<p>No issue is reported for the following cases because they are not considered as sensitive:</p>
 <ul>
-  <li> No issue is reported for 127.0.0.1 because loopback is not considered as sensitive </li>
+  <li> Loopback addresses 127.0.0.0/8 in CIDR notation (from 127.0.0.0 to 127.255.255.255) </li>
+  <li> Broadcast address 255.255.255.255 </li>
+  <li> Non routable address 0.0.0.0 </li>
 </ul>
 <h2>See</h2>
 <ul>
