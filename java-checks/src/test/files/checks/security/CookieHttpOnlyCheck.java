@@ -39,12 +39,12 @@ class S3330 {
     Cookie c3 = new Cookie("name", "value"); // Noncompliant
     c3.setHttpOnly(false);
 
-    Cookie c4 = new Cookie("name", "value");
-    c4.setHttpOnly(FALSE_CONSTANT); // FN, would require SE
+    Cookie c4 = new Cookie("name", "value"); // Noncompliant
+    c4.setHttpOnly(FALSE_CONSTANT);
 
-    Cookie c5 = new Cookie("name", "value");
-    boolean b = true;
-    c5.setHttpOnly(b); // FN, would require SE
+    Cookie c5 = new Cookie("name", "value"); // Noncompliant
+    boolean b = false;
+    c5.setHttpOnly(b);
 
     Cookie c6 = new Cookie("name", "value");
     c6.setHttpOnly(param);
@@ -69,6 +69,10 @@ class S3330 {
     Cookie c13; // Noncompliant
     c13 = new UnknownCookie("name", "value");
 
+    Cookie c14 = new Cookie("name", "value");
+    boolean bValue = true;
+    c14.setHttpOnly(!bValue);
+
     field4 = new Cookie("name, value"); // FN
 
     X x;
@@ -92,8 +96,8 @@ class S3330 {
     HttpCookie c3 = new HttpCookie("name", "value"); // Noncompliant
     c3.setHttpOnly(false);
 
-    HttpCookie c4 = new HttpCookie("name", "value");
-    c4.setHttpOnly(FALSE_CONSTANT); // FN, would require SE
+    HttpCookie c4 = new HttpCookie("name", "value"); // Noncompliant
+    c4.setHttpOnly(FALSE_CONSTANT);
 
     HttpCookie c5; // Noncompliant
     c5 = new HttpCookie("name", "value");

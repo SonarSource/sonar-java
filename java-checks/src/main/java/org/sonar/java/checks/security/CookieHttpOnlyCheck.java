@@ -24,6 +24,8 @@ import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.IdentifierUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
@@ -242,7 +244,8 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   private static boolean setterArgumentHasCompliantValue(Arguments arguments) {
     ExpressionTree expressionTree = arguments.get(0);
-    return !LiteralUtils.isFalse(expressionTree);
+    Boolean booleanValue = IdentifierUtils.getValue(expressionTree, ConstantUtils::resolveAsBooleanConstant);
+    return booleanValue == null || booleanValue;
   }
 
   private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
