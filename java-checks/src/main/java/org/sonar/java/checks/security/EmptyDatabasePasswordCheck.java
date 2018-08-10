@@ -41,23 +41,23 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   private static final int PASSWORD_ARGUMENT = 2;
   private static final int URL_ARGUMENT = 0;
   private static final Pattern EMPTY_PASSWORD_PATTERN = Pattern.compile(".*password\\s*=\\s*([&;].*|$)");
+  private static final List<MethodMatcher> METHOD_MATCHERS = Collections.singletonList(
+    MethodMatcher.create().typeDefinition("java.sql.DriverManager").name("getConnection").withAnyParameters());
 
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(
-      MethodMatcher.create().typeDefinition("java.sql.DriverManager").name("getConnection").withAnyParameters()
-    );
+    return METHOD_MATCHERS;
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     Arguments args = mit.arguments();
     if (args.size() > 2 && hasEmptyValue(args.get(PASSWORD_ARGUMENT))) {
-      reportIssue(args.get(PASSWORD_ARGUMENT), MESSAGE);
+      reportIssue(mit, MESSAGE);
     }
     if (args.size() == 1) {
-      checkForUrlConnection(args.get(URL_ARGUMENT));
+      checkForUrlConnection(mit);
     }
   }
 
@@ -76,10 +76,11 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
     return value;
   }
 
-  private void checkForUrlConnection(ExpressionTree expression) {
-    String url = getStringValue(expression);
+  private void checkForUrlConnection(MethodInvocationTree mit) {
+    ExpressionTree urlArgument = mit.arguments().get(URL_ARGUMENT);
+    String url = getStringValue(urlArgument);
     if (url != null && (!url.contains("password") || EMPTY_PASSWORD_PATTERN.matcher(url).matches())) {
-      reportIssue(expression, MESSAGE);
+      reportIssue(mit, MESSAGE);
     }
 
   }

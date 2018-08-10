@@ -4,8 +4,8 @@ import static org.sonar.java.checks.security.EmptyDatabasePasswordCheckTest.EMPT
 import static org.sonar.java.checks.security.EmptyDatabasePasswordCheckTest.NON_EMPTY_PASSWORD;
 
 class S2115 {
-  void foo(Properties connectionProps) throws SQLException {
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", ""); // Noncompliant {{Add password protection to this database.}}
+  void foo(Properties connectionProps, String unknown) throws SQLException {
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", ""); // Noncompliant [[sc=5;ec=86]] {{Add password protection to this database.}}
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", "Foo");
 
     String pwd = "";
@@ -19,8 +19,12 @@ class S2115 {
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd3); // Noncompliant
 
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", EMPTY_PASSWORD); // Noncompliant
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", getPassword());
+
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", EMPTY_PASSWORD); // Noncompliant [[sc=5;ec=98]]
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", NON_EMPTY_PASSWORD);
+
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", unknown);
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", null);
 
@@ -43,6 +47,9 @@ class S2115 {
     DriverManager.getConnection(url);
     DriverManager.getConnection(null);
 
+  }
 
+  String getPassword() {
+    return "foo";
   }
 }

@@ -21,8 +21,14 @@ package org.sonar.java.checks.security;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 public class EmptyDatabasePasswordCheckTest {
+  /**
+   * Constants used inside "src/test/files/checks/security/EmptyDatabasePasswordCheck.java" file
+   * in order to test {@link EmptyDatabasePasswordCheck#getStringValue(ExpressionTree)} resolution
+   * of an identifier outside of the compilation unit (static import in this case).
+   */
   public final static String EMPTY_PASSWORD = "";
   public final static String NON_EMPTY_PASSWORD = "foo";
   @Test
