@@ -85,8 +85,8 @@ public class CallSuperMethodFromInnerClassCheck extends IssuableSubscriptionVisi
     }
 
     private boolean isInherited(Symbol symbol) {
-      Type methodOwnerType = symbol.owner().type();
-      Type innerType = classSymbol.type();
+      Type methodOwnerType = symbol.owner().type().erasure();
+      Type innerType = classSymbol.type().erasure();
       return !symbol.isStatic() && innerType.isSubtypeOf(methodOwnerType)
         && !classSymbol.owner().type().equals(methodOwnerType) && !innerType.equals(methodOwnerType);
     }

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TypeSubstitution {
+  public boolean unchecked = false;
   private LinkedHashMap<TypeVariableJavaType, JavaType> substitutions = Maps.newLinkedHashMap();
 
   public TypeSubstitution() {

@@ -394,7 +394,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         identifierTree = (IdentifierTree) tree;
         Resolve.Resolution resolution = resolve.findIdent(resolveEnv, identifierTree.name(), kind);
         resolvedSymbol = resolution.symbol();
-        registerType(tree, resolution.type());
+        JavaType type = resolution.type();
+        if(kind == JavaSymbol.TYP && type.isParameterized()) {
+          type = type.erasure();
+        }
+        registerType(tree, type);
       }
       if(associateReference) {
         associateReference(identifierTree, resolvedSymbol);

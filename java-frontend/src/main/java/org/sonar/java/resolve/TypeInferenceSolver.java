@@ -21,15 +21,13 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
-import org.sonar.plugins.java.api.semantic.Type;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
+import org.sonar.plugins.java.api.semantic.Type;
 
 public class TypeInferenceSolver {
 
@@ -69,7 +67,7 @@ public class TypeInferenceSolver {
 
       substitution = inferTypeSubstitution(method, substitution, formalType, argType, variableArity, remainingArgTypes);
 
-      if (!method.isConstructor() && substitution.typeVariables().containsAll(method.typeVariableTypes)) {
+      if (substitution.unchecked || (!method.isConstructor() && substitution.typeVariables().containsAll(method.typeVariableTypes))) {
         // we found all the substitution
         break;
       }
@@ -150,12 +148,15 @@ public class TypeInferenceSolver {
       }
 
     } else if (isRawTypeOfType(argType, formalType) || isNullType(argType)) {
-      List<JavaType> objectTypes = listOfTypes(symbols.objectType, formalTypeSubstitutedTypes.size());
+      TypeSubstitution typeSubstitution = new TypeSubstitution();
+      typeSubstitution.unchecked = true;
+      return typeSubstitution;
+      /*List<JavaType> objectTypes = listOfTypes(symbols.objectType, formalTypeSubstitutedTypes.size());
       TypeSubstitution newSubstitution = new TypeSubstitution();
       if (IntStream.range(0, formalTypeSubstitutedTypes.size()).noneMatch(i -> handledFormals.get(formalTypeSubstitutedTypes.get(i)).contains(objectTypes.get(i)))) {
         newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, objectTypes);
       }
-      result = mergeTypeSubstitutions(substitution, newSubstitution);
+      result = mergeTypeSubstitutions(substitution, newSubstitution);*/
     } else if (argType.isSubtypeOf(formalType.erasure()) && argType.isClass()) {
       for (JavaType superType : ((ClassJavaType) argType).superTypes()) {
         if (sameErasure(formalType, superType)) {
@@ -199,6 +200,9 @@ public class TypeInferenceSolver {
   }
 
   private static TypeSubstitution mergeTypeSubstitutions(TypeSubstitution currentSubstitution, TypeSubstitution newSubstitution) {
+    if(newSubstitution.unchecked) {
+      return newSubstitution;
+    }
     TypeSubstitution result = new TypeSubstitution();
     for (Map.Entry<TypeVariableJavaType, JavaType> substitution : currentSubstitution.substitutionEntries()) {
       result.add(substitution.getKey(), substitution.getValue());

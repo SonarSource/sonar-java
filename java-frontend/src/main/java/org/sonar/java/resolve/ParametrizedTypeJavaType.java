@@ -34,7 +34,7 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
 
   public ParametrizedTypeJavaType(JavaSymbol.TypeJavaSymbol symbol, TypeSubstitution typeSubstitution, TypeSubstitutionSolver typeSubstitutionSolver) {
     super(PARAMETERIZED, symbol);
-    this.rawType = symbol.getType();
+    this.rawType = symbol.getType().erasure();
     this.typeSubstitution = typeSubstitution;
     this.typeSubstitutionSolver = typeSubstitutionSolver;
   }

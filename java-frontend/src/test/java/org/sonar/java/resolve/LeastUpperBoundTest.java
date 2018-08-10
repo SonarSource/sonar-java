@@ -234,10 +234,12 @@ public class LeastUpperBoundTest {
     a = typesFromInput.get(0);
     b = typesFromInput.get(1);
     lub = leastUpperBound(a, b);
-    assertThat(lub).isSameAs(a);
-    // FIXME : should be the other way around but we don't care about type parameter in lub for now.
-    assertThat(lub).isSameAs(b.symbol().superClass().erasure());
-    assertThat(lub).isNotSameAs(b.symbol().superClass());
+    assertThat(((JavaType) lub).isTagged(JavaType.PARAMETERIZED)).isTrue();
+    assertThat(lub.erasure()).isSameAs(a.erasure());
+    assertThat(((ParametrizedTypeJavaType) lub).typeSubstitution.substitutedTypes()).hasSize(1);
+    WildCardType substituted = (WildCardType) ((ParametrizedTypeJavaType) lub).typeSubstitution.substitutedTypes().get(0);
+    assertThat(substituted.boundType).isSameAs(WildCardType.BoundType.EXTENDS);
+    assertThat(substituted.bound.is("java.lang.Object")).isTrue();
   }
 
   @Test

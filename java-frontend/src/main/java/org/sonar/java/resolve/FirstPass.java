@@ -69,6 +69,7 @@ public class FirstPass extends BaseTreeVisitor {
   private final List<JavaSymbol> uncompleted = Lists.newArrayList();
   private final SecondPass completer;
   private final Symbols symbols;
+  private final ParametrizedTypeCache parametrizedTypeCache;
   private Resolve resolve;
 
   /**
@@ -82,6 +83,7 @@ public class FirstPass extends BaseTreeVisitor {
     this.resolve = resolve;
     this.completer = new SecondPass(semanticModel, symbols, parametrizedTypeCache, typeAndReferenceSolver);
     this.symbols = symbols;
+    this.parametrizedTypeCache = parametrizedTypeCache;
   }
 
   private void restoreEnvironment(Tree tree) {
@@ -247,6 +249,9 @@ public class FirstPass extends BaseTreeVisitor {
       JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(typeParameterTree.identifier().name(), symbol);
       symbol.addTypeParameter((TypeVariableJavaType) typeVariableSymbol.type);
       enterSymbol(typeParameterTree, typeVariableSymbol);
+    }
+    if(!tree.typeParameters().isEmpty()) {
+      symbol.type = parametrizedTypeCache.getParametrizedTypeType(symbol, new TypeSubstitution());
     }
     symbol.typeParameters = env.scope;
     Resolve.Env classEnv = env.dup();

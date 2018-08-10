@@ -195,6 +195,9 @@ public class TypeSubstitutionSolver {
   }
 
   List<JavaType> applySubstitutionToFormalParameters(List<JavaType> types, TypeSubstitution substitution) {
+    if(substitution.unchecked) {
+      return types.stream().map(JavaType::erasure).collect(Collectors.toList());
+    }
     if (substitution.size() == 0 || types.isEmpty()) {
       return types;
     }
