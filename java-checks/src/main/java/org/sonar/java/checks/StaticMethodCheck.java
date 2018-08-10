@@ -205,8 +205,8 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
         return true;
       }
       if (scope.isTypeSymbol() && symbol.isTypeSymbol()) {
-        Type scopeType = scope.type();
-        Type symbolType = symbol.type();
+        Type scopeType = scope.type().erasure();
+        Type symbolType = symbol.type().erasure();
         if (scopeType.isSubtypeOf(symbolType)) {
           return true;
         }

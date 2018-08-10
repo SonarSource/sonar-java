@@ -55,7 +55,7 @@ public class CallSuperMethodFromInnerClassCheck extends IssuableSubscriptionVisi
 
   private static boolean extendsOuterClass(Symbol.TypeSymbol classSymbol) {
     Type superType = classSymbol.superClass();
-    return superType != null && superType.equals(classSymbol.owner().type());
+    return superType != null && superType.erasure().equals(classSymbol.owner().type().erasure());
   }
 
 
