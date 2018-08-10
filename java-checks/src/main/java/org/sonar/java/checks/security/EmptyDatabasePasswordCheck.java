@@ -22,17 +22,14 @@ package org.sonar.java.checks.security;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
-import org.sonar.java.checks.helpers.ReassignmentFinder;
+import org.sonar.java.checks.helpers.IdentifierUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2115")
 public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
@@ -62,23 +59,13 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   }
 
   private static boolean hasEmptyValue(ExpressionTree expression) {
-    String literal = getStringValue(expression);
+    String literal = IdentifierUtils.getValue(expression, ConstantUtils::resolveAsStringConstant);
     return literal != null && literal.trim().isEmpty();
-  }
-
-  @Nullable
-  private static String getStringValue(ExpressionTree expression) {
-    String value = ConstantUtils.resolveAsStringConstant(expression);
-    if (value == null && expression.is(Tree.Kind.IDENTIFIER)) {
-      ExpressionTree last = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(expression, ((IdentifierTree) expression).symbol());
-      value = last == null ? null : getStringValue(last);
-    }
-    return value;
   }
 
   private void checkForUrlConnection(MethodInvocationTree mit) {
     ExpressionTree urlArgument = mit.arguments().get(URL_ARGUMENT);
-    String url = getStringValue(urlArgument);
+    String url = IdentifierUtils.getValue(urlArgument, ConstantUtils::resolveAsStringConstant);
     if (url != null && (!url.contains("password") || EMPTY_PASSWORD_PATTERN.matcher(url).matches())) {
       reportIssue(mit, MESSAGE);
     }
