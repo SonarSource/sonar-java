@@ -51,11 +51,23 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
       IP.reset(value);
       if (IP.matches()) {
         String ip = IP.group("ip");
-        if (areAllBelow256(Splitter.on('.').split(ip))) {
+        if (areAllBelow256(Splitter.on('.').split(ip)) && !isLoopbackAddress(ip) && !isNonRoutableAddress(ip) && !isBroadcastAddress(ip)) {
           context.reportIssue(this, tree, MESSAGE);
         }
       }
     }
+  }
+
+  private static boolean isLoopbackAddress(String ip) {
+    return ip.startsWith("127.");
+  }
+
+  private static boolean isNonRoutableAddress(String ip) {
+    return ip.equals("0.0.0.0");
+  }
+
+  private static boolean isBroadcastAddress(String ip) {
+    return ip.equals("255.255.255.255");
   }
 
   private static boolean areAllBelow256(Iterable<String> numbersAsStrings) {
