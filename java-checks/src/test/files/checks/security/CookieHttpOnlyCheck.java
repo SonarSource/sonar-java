@@ -11,6 +11,7 @@ import play.mvc.Http.CookieBuilder;
 class S3330 {
 
   private static final boolean FALSE_CONSTANT = false;
+  private static final String XSRF_TOKEN = "XSRF-TOKEN";
 
   Cookie field1 = new Cookie("name", "value"); // FN
   HttpCookie field2 = new HttpCookie("name", "value"); // FN
@@ -145,10 +146,10 @@ class S3330 {
   void playFw() {
     play.mvc.Http.Cookie c1 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, false); // Noncompliant
     play.mvc.Http.Cookie c2 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true);
-    CookieBuilder cb1 = Cookie.builder("1", "2");
+    play.mvc.Http.CookieBuilder cb1 = play.mvc.Http.Cookie.builder("1", "2");
     cb1.withHttpOnly(false); // Noncompliant
     cb1.withHttpOnly(true); // is ignored, so above is a FN
-    CookieBuilder cb2 = Cookie.builder("1", "2");
+    play.mvc.Http.CookieBuilder cb2 = play.mvc.Http.Cookie.builder("1", "2");
     cb2.withHttpOnly(true);
     play.mvc.Http.Cookie.builder("1", "2")
         .withMaxAge(1)
@@ -166,6 +167,48 @@ class S3330 {
 
   play.mvc.Http.Cookie getC6() {
     return play.mvc.Http.Cookie.builder("theme", "blue").withHttpOnly(false); // Noncompliant
+  }
+
+  // SONARJAVA-2772
+  Cookie xsfrToken() {
+    String cookieName = "XSRF-TOKEN";
+
+    Cookie xsfrToken = new Cookie("XSRF-TOKEN", "value"); // OK, used to implement XSRF
+    xsfrToken.setHttpOnly(false);
+
+    Cookie xsfrToken2 = new Cookie("XSRF-TOKEN", "value");
+    xsfrToken2.setHttpOnly(true);
+
+    Cookie xsfrToken3 = new Cookie("XSRF-TOKEN", "value");
+
+    Cookie xsfrToken4 = new Cookie(XSRF_TOKEN, "value");
+
+    HttpCookie xsfrToken5 = new HttpCookie("XSRF-TOKEN", "value");
+
+    javax.ws.rs.core.Cookie xsfrToken6 = new javax.ws.rs.core.Cookie("XSRF-TOKEN", "value");
+
+    NewCookie xsfrToken7 = new NewCookie("XSRF-TOKEN", "value", "path", "domain", "comment", 1, true);
+
+    SimpleCookie xsfrToken8 = new SimpleCookie("XSRF-TOKEN");
+
+    play.mvc.Http.Cookie xsfrToken9 = new play.mvc.Http.Cookie("XSRF-TOKEN", "2", 3, "4", "5", true, false);
+
+    play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2")
+      .withMaxAge(1)
+      .withPath("x")
+      .withDomain("x")
+      .withSecure(true)
+      .withHttpOnly(false)
+      .build();
+
+    play.mvc.Http.CookieBuilder xsfrToken10;
+    xsfrToken10 = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2");
+    xsfrToken10.withHttpOnly(false);
+
+    play.mvc.Http.CookieBuilder xsfrToken11 = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2");
+    xsfrToken11.withHttpOnly(false);
+
+    return new Cookie("XSRF-TOKEN", "value");
   }
 
   void compliant(Cookie c1, HttpCookie c2, javax.ws.rs.core.Cookie c3, NewCookie c4, SimpleCookie c5) {
