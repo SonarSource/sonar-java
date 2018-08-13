@@ -105,13 +105,13 @@ public class TypeInferenceSolverTest {
     List<JavaType> args = Lists.<JavaType>newArrayList(aRawType, aRawType);
     TypeSubstitution substitution = typeSubstitutionForTypeParametersWithVarargs(formals, args, T);
     assertThat(substitution.substitutedType(T)).isNull();
-    assertThat(substitution.unchecked).isTrue();
+    assertThat(substitution.isUnchecked()).isTrue();
 
     // raw type with generic type : A, A<String>
     args = Lists.<JavaType>newArrayList(aRawType, parametrizedTypeCache.getParametrizedTypeType(aType.symbol, new TypeSubstitution().add(X, symbols.stringType)));
     substitution = typeSubstitutionForTypeParametersWithVarargs(formals, args, T);
     assertThat(substitution.substitutedType(T)).isNull();
-    assertThat(substitution.unchecked).isTrue();
+    assertThat(substitution.isUnchecked()).isTrue();
   }
 
   @Test

@@ -28,8 +28,14 @@ import java.util.List;
 import java.util.Map;
 
 public class TypeSubstitution {
-  public boolean unchecked = false;
   private LinkedHashMap<TypeVariableJavaType, JavaType> substitutions = Maps.newLinkedHashMap();
+
+  private static final TypeSubstitution UNCHECKED = new TypeSubstitution() {
+    @Override
+    public boolean isUnchecked() {
+      return true;
+    }
+  };
 
   public TypeSubstitution() {
     // default behavior
@@ -38,6 +44,13 @@ public class TypeSubstitution {
   public TypeSubstitution(TypeSubstitution typeSubstitution) {
     // copy the substitution
     this.substitutions = Maps.newLinkedHashMap(typeSubstitution.substitutions);
+  }
+
+  public boolean isUnchecked() {
+    return false;
+  }
+  public static TypeSubstitution uncheckedTypeSubstitution() {
+    return UNCHECKED;
   }
 
   @CheckForNull

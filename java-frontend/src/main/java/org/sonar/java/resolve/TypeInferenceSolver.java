@@ -67,7 +67,7 @@ public class TypeInferenceSolver {
 
       substitution = inferTypeSubstitution(method, substitution, formalType, argType, variableArity, remainingArgTypes);
 
-      if (substitution.unchecked || (!method.isConstructor() && substitution.typeVariables().containsAll(method.typeVariableTypes))) {
+      if (substitution.isUnchecked() || (!method.isConstructor() && substitution.typeVariables().containsAll(method.typeVariableTypes))) {
         // we found all the substitution
         break;
       }
@@ -148,9 +148,7 @@ public class TypeInferenceSolver {
       }
 
     } else if (isRawTypeOfType(argType, formalType) || isNullType(argType)) {
-      TypeSubstitution typeSubstitution = new TypeSubstitution();
-      typeSubstitution.unchecked = true;
-      return typeSubstitution;
+      return TypeSubstitution.uncheckedTypeSubstitution();
     } else if (argType.isSubtypeOf(formalType.erasure()) && argType.isClass()) {
       for (JavaType superType : ((ClassJavaType) argType).superTypes()) {
         if (sameErasure(formalType, superType)) {
@@ -186,7 +184,7 @@ public class TypeInferenceSolver {
   }
 
   private static TypeSubstitution mergeTypeSubstitutions(TypeSubstitution currentSubstitution, TypeSubstitution newSubstitution) {
-    if(newSubstitution.unchecked) {
+    if(newSubstitution.isUnchecked()) {
       return newSubstitution;
     }
     TypeSubstitution result = new TypeSubstitution();
