@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 class A {
+  java.util.logging.Logger loggerField = java.util.logging.Logger.getAnonymousLogger("som.foo.resources.i18n.LogMessages");
   void foo(Calendar c){
     Object myObject;
     double value;
@@ -177,6 +178,21 @@ class A {
     slf4jLog.warn("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.warn("message {}", 1);
     slf4jLog.warn("message");
+
+    java.util.logging.Logger logger2 = java.util.logging.Logger.getLogger("som.foo", "som.foo.resources.i18n.LogMessages");
+    logger2.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
+    getLog().log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
+
+    java.util.logging.Logger logger3;
+    logger3.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
+
+    java.util.logging.Logger logger4 = getLog();
+    logger4.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
+    this.loggerField.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
+  }
+
+  private java.util.logging.Logger getLog() {
+    return null;
   }
 }
 
