@@ -21,6 +21,7 @@ package org.sonar.java.checks.helpers;
 
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -72,6 +73,8 @@ public final class ReassignmentFinder {
     }
     if (tree.is(Tree.Kind.VARIABLE)) {
       return ((VariableTree) tree).initializer();
+    } else if (tree.is(Tree.Kind.ENUM_CONSTANT)) {
+      return ((EnumConstantTree) tree).initializer();
     }
     return ((AssignmentExpressionTree) tree).expression();
   }
