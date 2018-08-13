@@ -48,10 +48,10 @@ public class ConstantUtilsTest {
 
   @Test
   public void literals() {
-    assertThat(resolveAsStrings("literals")).containsExactly("hello", null, null, null, null);
-    assertThat(resolveAsInts("literals")).containsExactly(null, null, 43, null, null);
-    assertThat(resolveAsLongs("literals")).containsExactly(null, null, 43L, 77L, null);
-    assertThat(resolveAsBooleans("literals")).containsExactly(null, true, null, null, null);
+    assertThat(resolveAsStrings("literals")).containsExactly("hello", null, null, null, null, null, null);
+    assertThat(resolveAsInts("literals")).containsExactly(null, null, 43, null, null, 1000, null);
+    assertThat(resolveAsLongs("literals")).containsExactly(null, null, 43L, 77L, null, 1000L, 0x99567L);
+    assertThat(resolveAsBooleans("literals")).containsExactly(null, true, null, null, null, null, null);
   }
 
   @Test
