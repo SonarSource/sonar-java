@@ -37,6 +37,8 @@ public class ClassWithConstants {
     System.out.println(43);
     System.out.println(77L);
     System.out.println(param);
+    System.out.println(1_000);
+    System.out.println(0x99567L);
   }
 
   public void identifiers(String param) {
