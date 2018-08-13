@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -200,6 +201,22 @@ public class ReassignmentFinderTest extends JavaParserHelper {
     List<StatementTree> statements = ((MethodTree) classTree.members().get(1)).block().body();
     ExpressionTree variableDeclaration = ((VariableTree) (classTree.members().get(0))).initializer();
     assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, variableDeclaration);
+  }
+
+  @Test
+  public void in_enum() {
+    String code = newCode(
+      "enum E { E1 {} }",
+      "E foo() {",
+      "  return E.E1;",
+      "}");
+    ClassTree classTree = classTree(code);
+    ClassTree enumClass = (ClassTree) classTree.members().get(0);
+    VariableTree constant = (VariableTree) enumClass.members().get(0);
+    List<StatementTree> statements = ((MethodTree) classTree.members().get(1)).block().body();
+    ReturnStatementTree returnStatement = (ReturnStatementTree) statements.get(0);
+    assertThat(ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(returnStatement.expression(), constant.symbol()))
+      .isEqualTo(constant.initializer());
   }
 
   @Test
