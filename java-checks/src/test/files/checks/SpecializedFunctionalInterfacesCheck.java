@@ -245,5 +245,14 @@ class MySupplier3 implements Supplier<Integer>, Runnable, Consumer<Double> { // 
       }
     }; 
   }
-  
+}
+
+class BooleanFunctions {
+  Function<Boolean, Boolean> a1 = (x) -> true; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<Boolean>'}}
+  Function<A, Boolean> a2 = (x) -> true; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'Predicate<A>'}}
+  Function<Boolean, Integer> a3 = (x) -> null;
+  Function<Boolean, A> a4 = (x) -> null;
+
+  BiFunction<A, A2, Boolean> b1 = (x, y) -> true; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'BiPredicate<A, A2>'}}
+  BiFunction<Boolean, Boolean, Boolean> b2 = (x, y) -> true; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'BinaryOperator<Boolean>'}}
 }
