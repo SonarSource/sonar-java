@@ -56,6 +56,7 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 /**
@@ -242,15 +243,16 @@ public class FirstPass extends BaseTreeVisitor {
     uncompleted.add(symbol);
 
     //Define type parameters:
-    createNewEnvironment(tree.typeParameters());
+    TypeParameters typeParameterTrees = tree.typeParameters();
+    createNewEnvironment(typeParameterTrees);
     // Save current environment to be able to complete class later
     semanticModel.saveEnv(symbol, env);
-    for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
+    for (TypeParameterTree typeParameterTree : typeParameterTrees) {
       JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(typeParameterTree.identifier().name(), symbol);
       symbol.addTypeParameter((TypeVariableJavaType) typeVariableSymbol.type);
       enterSymbol(typeParameterTree, typeVariableSymbol);
     }
-    if(!tree.typeParameters().isEmpty()) {
+    if(!typeParameterTrees.isEmpty()) {
       symbol.type = parametrizedTypeCache.getParametrizedTypeType(symbol, new TypeSubstitution());
     }
     symbol.typeParameters = env.scope;
