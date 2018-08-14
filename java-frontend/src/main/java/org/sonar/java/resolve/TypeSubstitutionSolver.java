@@ -21,12 +21,6 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
-import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
-import org.sonar.plugins.java.api.semantic.Type;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -35,6 +29,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
+import org.sonar.plugins.java.api.semantic.Type;
 
 public class TypeSubstitutionSolver {
 
@@ -233,7 +231,8 @@ public class TypeSubstitutionSolver {
   }
 
   private JavaType substituteInTypeVar(TypeVariableJavaType typevar, TypeSubstitution substitution) {
-    if(typevarExplored.contains(typevar.symbol)) {
+    typevar.symbol.owner().complete();
+    if(typevarExplored.contains(typevar.symbol) || typevar.bounds == null) {
       return typevar;
     }
     typevarExplored.push((JavaSymbol.TypeVariableJavaSymbol) typevar.symbol);

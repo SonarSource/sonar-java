@@ -19,14 +19,12 @@
  */
 package org.sonar.java.resolve;
 
-import java.util.ArrayList;
-import org.sonar.plugins.java.api.semantic.Type;
-
 import java.util.List;
+import org.sonar.plugins.java.api.semantic.Type;
 
 public class TypeVariableJavaType extends JavaType {
 
-  List<JavaType> bounds = new ArrayList<>();
+  List<JavaType> bounds;
 
   public TypeVariableJavaType(JavaSymbol.TypeVariableJavaSymbol symbol) {
     super(TYPEVAR, symbol);
