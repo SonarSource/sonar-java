@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.fs.internal.DefaultTextPointer;
 import org.sonar.api.batch.fs.internal.DefaultTextRange;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
@@ -132,8 +133,10 @@ public class PmdSensorTest {
   public void invalid_text_range() throws IOException {
     List<ExternalIssue> externalIssues = execute(SQ72, "invalid-text-range.xml");
     assertThat(externalIssues).hasSize(2);
-    assertThat(externalIssues.get(1).primaryLocation().textRange()).isEqualTo(
-      new DefaultTextRange(new DefaultTextPointer(4, 0), new DefaultTextPointer(4, 14)));
+    TextRange secondIssueRange = externalIssues.get(1).primaryLocation().textRange();
+    assertThat(secondIssueRange).isNotNull();
+    assertThat(secondIssueRange.start().line()).isEqualTo(4);
+    assertThat(secondIssueRange.end().line()).isEqualTo(4);
     assertThat(logTester.logs(LoggerLevel.WARN).get(0))
       .contains("Can't import issue at line 9")
       .contains("invalid-text-range.xml");
