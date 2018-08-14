@@ -19,9 +19,11 @@
  */
 package org.sonar.java.checks.spring;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -32,6 +34,12 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3749")
 public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscriptionVisitor {
+
+  @RuleProperty(
+    key = "customInjectionAnnotations",
+    description = "comma-separated list of FQDN annotation names to consider as valid",
+    defaultValue = "")
+  public String customInjectionAnnotations = "";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -48,6 +56,7 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
         .map(m -> (VariableTree) m)
         .filter(v -> !v.symbol().isStatic())
         .filter(v -> !isSpringInjectionAnnotated(v.symbol().metadata()))
+        .filter(v -> !isCustomInjectionAnnotated(v.symbol().metadata()))
         .forEach(v -> reportIssue(v.simpleName(), "Annotate this member with \"@Autowired\", \"@Resource\", \"@Inject\", or \"@Value\", or remove it."));
     }
   }
@@ -66,6 +75,13 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
       || metadata.isAnnotatedWith("javax.inject.Inject")
       || metadata.isAnnotatedWith("javax.annotation.Resource")
       || metadata.isAnnotatedWith("org.springframework.beans.factory.annotation.Value");
+  }
+
+  private boolean isCustomInjectionAnnotated(SymbolMetadata metadata) {
+    return Splitter.on(",").trimResults()
+      .splitToList(customInjectionAnnotations)
+      .stream()
+      .anyMatch(metadata::isAnnotatedWith);
   }
 
   private static boolean isSpringComponent(SymbolMetadata clazzMeta) {
