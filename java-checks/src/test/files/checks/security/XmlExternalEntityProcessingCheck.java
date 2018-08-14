@@ -140,3 +140,56 @@ class DocumentBuilderFactoryTest {
 class Foo {
   XMLInputFactory factory = XMLInputFactory.newInstance();
 }
+
+class Validator {
+  void no_property () {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema(); // Noncompliant
+    javax.xml.validation.Validator validator = schema.newValidator();
+  }
+
+  void withAccessExternalDtd() {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator();
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+  }
+
+  void withAccessExternalSchema() {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator();
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+  }
+
+  void withAccessExternalDtdDifferentThatEmptyString() {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema(); // Noncompliant
+    javax.xml.validation.Validator validator = schema.newValidator();
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
+  }
+
+}
+
+class SchemaFactory {
+  void no_property() {
+    javax.xml.validation.SchemaFactory factory = javax.xml.validation.SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema"); // Noncompliant
+    factory.setProperty(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, ""); // Coverage: Setting other property other than ACCESS_EXTERNAL_DTD or ACCESS_EXTERNAL_SCHEMA
+  }
+
+  void withAccessExternalDtd() {
+    javax.xml.validation.SchemaFactory factory = javax.xml.validation.SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+    factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+  }
+
+  void withAccessExternalSchema() {
+    javax.xml.validation.SchemaFactory factory = javax.xml.validation.SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+    factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+  }
+
+  void withAccessExternalDtdDifferentThatEmptyString() {
+    javax.xml.validation.SchemaFactory factory = javax.xml.validation.SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema"); // Noncompliant
+    factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
+  }
+
+}
