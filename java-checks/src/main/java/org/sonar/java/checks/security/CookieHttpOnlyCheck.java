@@ -22,9 +22,10 @@ package org.sonar.java.checks.security;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.helpers.IdentifierUtils;
@@ -54,7 +55,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   private final List<MethodInvocationTree> settersToReport = Lists.newArrayList();
   private final List<NewClassTree> newClassToReport = Lists.newArrayList();
 
-  private static final List<String> IGNORED_COOKIE_NAMES = Collections.singletonList("XSRF-TOKEN");
+  private static final List<String> IGNORED_COOKIE_NAMES = ImmutableList.of("csrf", "xsrf");
 
   private static final String CONSTRUCTOR = "<init>";
   private static final String JAVA_LANG_STRING = "java.lang.String";
@@ -171,20 +172,42 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   private void checkCookieBuilder(AssignmentExpressionTree assignment) {
     if (assignment.expression().is(Tree.Kind.METHOD_INVOCATION)
-      && assignment.variable().is(Tree.Kind.IDENTIFIER)) {
+      && (assignment.variable().is(Tree.Kind.IDENTIFIER) || assignment.variable().is(Tree.Kind.MEMBER_SELECT))) {
       MethodInvocationTree mit = (MethodInvocationTree) assignment.expression();
-      if (PLAY_COOKIE_BUILDER.matches(mit) && isIgnoredCookieName(mit.arguments())) {
-        ignoredVariables.add((VariableSymbol) ((IdentifierTree) assignment.variable()).symbol());
+      VariableSymbol variableSymbol = getVariableSymbol(assignment);
+      if (variableSymbol != null) {
+        addToIgnoredVariables(variableSymbol, mit);
       }
+    }
+  }
+
+  @CheckForNull
+  private static VariableSymbol getVariableSymbol(AssignmentExpressionTree assignment) {
+    VariableSymbol variableSymbol = null;
+    if (assignment.variable().is(Tree.Kind.IDENTIFIER)) {
+      Symbol reference = ((IdentifierTree) assignment.variable()).symbol();
+      if (reference instanceof VariableSymbol) {
+        variableSymbol = (VariableSymbol) ((IdentifierTree) assignment.variable()).symbol();
+      }
+    } else {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) assignment.variable();
+      if (mse.identifier().symbol() instanceof VariableSymbol) {
+        variableSymbol = (VariableSymbol) mse.identifier().symbol();
+      }
+    }
+    return variableSymbol;
+  }
+
+  private void addToIgnoredVariables(VariableSymbol variableSymbol, MethodInvocationTree mit) {
+    if (PLAY_COOKIE_BUILDER.matches(mit) && isIgnoredCookieName(mit.arguments())) {
+      ignoredVariables.add(variableSymbol);
     }
   }
 
   private void checkCookieBuilder(VariableTree declaration) {
     if (declaration.initializer() != null && declaration.initializer().is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) declaration.initializer();
-      if (PLAY_COOKIE_BUILDER.matches(mit) && isIgnoredCookieName(mit.arguments())) {
-        ignoredVariables.add((VariableSymbol) declaration.symbol());
-      }
+      addToIgnoredVariables((VariableSymbol) declaration.symbol(), mit);
     }
   }
 
@@ -246,14 +269,16 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     }
     ExpressionTree nameArgument = arguments.get(COOKIE_NAME_ARGUMENT);
     String name = IdentifierUtils.getValue(nameArgument, ConstantUtils::resolveAsStringConstant);
-    return name != null && IGNORED_COOKIE_NAMES.contains(name);
+    return name != null && IGNORED_COOKIE_NAMES.stream().anyMatch(cookieName -> name.toLowerCase(Locale.ENGLISH).contains(cookieName));
   }
 
   private void checkSetterInvocation(MethodInvocationTree mit) {
     if (isExpectedSetter(mit)) {
       if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        boolean isCalledOnIdentifier = ((MemberSelectExpressionTree) mit.methodSelect()).expression().is(Tree.Kind.IDENTIFIER);
-        if (isCalledOnIdentifier) {
+        ExpressionTree expression = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+        boolean isCalledOnIdentifier = expression.is(Tree.Kind.IDENTIFIER);
+        boolean isCalledOnMemberSelect = expression.is(Tree.Kind.MEMBER_SELECT);
+        if (isCalledOnIdentifier || isCalledOnMemberSelect) {
           updateIssuesToReport(mit);
         } else if (!setterArgumentHasCompliantValue(mit.arguments())) {
           // builder method
@@ -295,7 +320,12 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   private void updateIssuesToReport(MethodInvocationTree mit) {
     MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
-    VariableSymbol reference = (VariableSymbol) ((IdentifierTree) mse.expression()).symbol();
+    VariableSymbol reference;
+    if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
+      reference = (VariableSymbol) ((IdentifierTree) mse.expression()).symbol();
+    } else {
+      reference = (VariableSymbol) ((MemberSelectExpressionTree) mse.expression()).identifier().symbol();
+    }
     if (ignoredVariables.contains(reference)) {
       // ignore XSRF-TOKEN cookies
       return;

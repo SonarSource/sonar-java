@@ -6,12 +6,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.NewCookie;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.security.web.savedrequest.SavedCookie;
-import play.mvc.Http.CookieBuilder;
 
 class S3330 {
 
   private static final boolean FALSE_CONSTANT = false;
   private static final String XSRF_TOKEN = "XSRF-TOKEN";
+  play.mvc.Http.CookieBuilder xsfrTokenProp;
+  play.mvc.Http.CookieBuilder xsfrTokenProp2;
 
   Cookie field1 = new Cookie("name", "value"); // FN
   HttpCookie field2 = new HttpCookie("name", "value"); // FN
@@ -208,7 +209,27 @@ class S3330 {
     play.mvc.Http.CookieBuilder xsfrToken11 = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2");
     xsfrToken11.withHttpOnly(false);
 
+    Cookie xsfrToken12 = new Cookie("CSRFToken", "value");
+    xsfrToken12.setHttpOnly(false);
+
+    Cookie xsfrToken13 = new Cookie("Csrf-token", "value");
+    xsfrToken13.setHttpOnly(false);
+
+    this.xsfrTokenProp = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2");
+    this.xsfrTokenProp.withHttpOnly(false);
+
+    this.getXsfrTokenProp2() = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2");
+    this.getXsfrTokenProp2().withHttpOnly(false);
+
+    this.unknown = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2"); // Coverage
+    unknown = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2"); // Coverage
+    boolean secure = play.mvc.Http.Cookie.secure(); // Coverage
+
     return new Cookie("XSRF-TOKEN", "value");
+  }
+
+  play.mvc.Http.Cookie getXsfrTokenProp2() {
+    return this.xsfrTokenProp2;
   }
 
   void compliant(Cookie c1, HttpCookie c2, javax.ws.rs.core.Cookie c3, NewCookie c4, SimpleCookie c5) {
