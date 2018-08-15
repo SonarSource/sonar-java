@@ -186,12 +186,12 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     VariableSymbol variableSymbol = null;
     if (assignment.variable().is(Tree.Kind.IDENTIFIER)) {
       Symbol reference = ((IdentifierTree) assignment.variable()).symbol();
-      if (reference instanceof VariableSymbol) {
-        variableSymbol = (VariableSymbol) ((IdentifierTree) assignment.variable()).symbol();
+      if (reference.isVariableSymbol()) {
+        variableSymbol = (VariableSymbol) reference;
       }
     } else {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) assignment.variable();
-      if (mse.identifier().symbol() instanceof VariableSymbol) {
+      if (mse.identifier().symbol().isVariableSymbol()) {
         variableSymbol = (VariableSymbol) mse.identifier().symbol();
       }
     }
