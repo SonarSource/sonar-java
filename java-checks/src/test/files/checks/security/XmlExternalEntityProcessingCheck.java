@@ -169,6 +169,13 @@ class Validator {
     validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
   }
 
+  void inlined_value () {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator();
+    validator.setProperty("http://javax.xml.XMLConstants/property/accessExternalDTD", "");
+  }
+
 }
 
 class SchemaFactory {
@@ -190,6 +197,11 @@ class SchemaFactory {
   void withAccessExternalDtdDifferentThatEmptyString() {
     javax.xml.validation.SchemaFactory factory = javax.xml.validation.SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema"); // Noncompliant
     factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
+  }
+
+  void inlinedValue() {
+    javax.xml.validation.SchemaFactory factory = javax.xml.validation.SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+    factory.setProperty("http://javax.xml.XMLConstants/property/accessExternalSchema", "");
   }
 
 }
