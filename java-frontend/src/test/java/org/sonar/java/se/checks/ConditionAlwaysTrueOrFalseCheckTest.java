@@ -19,8 +19,10 @@
  */
 package org.sonar.java.se.checks;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.stream.Collectors;
 import org.junit.Test;
-
 import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.JavaCheckVerifier;
@@ -32,6 +34,14 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+  }
+
+  @Test
+  public void test_without_jsr305() {
+    Collection<File> classpath = JavaCheckVerifier.classpathFromDirectory("target/test-jars").stream()
+      .filter(file -> !(file.getName().startsWith("jsr305-") || file.getName().startsWith("annotations-")))
+      .collect(Collectors.toList());
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseWithoutJSR305.java", new BooleanGratuitousExpressionsCheck(), classpath);
   }
 
   @Test

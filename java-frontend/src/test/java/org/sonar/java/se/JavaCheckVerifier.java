@@ -177,16 +177,20 @@ public class JavaCheckVerifier {
     javaCheckVerifier.scanFile(filename, new JavaFileScanner[] {check});
   }
 
-  public void scanFile(String filename, JavaFileScanner[] checks) {
+  public static Collection<File> classpathFromDirectory(String jarsDirectory) {
     Collection<File> classpath = Lists.newLinkedList();
-    File testJars = new File(testJarsDirectory);
+    File testJars = new File(jarsDirectory);
     if (testJars.exists()) {
       classpath = FileUtils.listFiles(testJars, new String[] {"jar", "zip"}, true);
-    } else if (!DEFAULT_TEST_JARS_DIRECTORY.equals(testJarsDirectory)) {
+    } else if (!DEFAULT_TEST_JARS_DIRECTORY.equals(jarsDirectory)) {
       fail("The directory to be used to extend class path does not exists (" + testJars.getAbsolutePath() + ").");
     }
     classpath.add(new File("target/test-classes"));
-    scanFile(filename, checks, classpath);
+    return classpath;
+  }
+
+  public void scanFile(String filename, JavaFileScanner[] checks) {
+    scanFile(filename, checks, classpathFromDirectory(testJarsDirectory));
   }
 
   private void scanFile(String filename, JavaFileScanner[] checks, Collection<File> classpath) {

@@ -117,6 +117,9 @@ public final class NullableAnnotationUtils {
   }
 
   public static boolean isAnnotatedNonNull(Symbol symbol) {
+    if (isAnnotatedNullable(symbol)) {
+      return false;
+    }
     return isUsingNonNull(symbol) || ((SymbolMetadataResolve) symbol.metadata()).metaAnnotations().stream().anyMatch(NullableAnnotationUtils::isUsingNonNull);
   }
 
