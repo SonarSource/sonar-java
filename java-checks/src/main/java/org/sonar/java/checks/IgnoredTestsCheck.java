@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
@@ -27,7 +27,6 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -42,15 +41,13 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcherCollection ASSUME_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(ORG_JUNIT_ASSUME).name("assumeTrue").parameters(BOOLEAN_TYPE),
-    MethodMatcher.create().typeDefinition(ORG_JUNIT_ASSUME).name("assumeTrue").parameters("java.lang.String", BOOLEAN_TYPE),
-    MethodMatcher.create().typeDefinition(ORG_JUNIT_ASSUME).name("assumeFalse").parameters(BOOLEAN_TYPE),
-    MethodMatcher.create().typeDefinition(ORG_JUNIT_ASSUME).name("assumeFalse").parameters("java.lang.String", BOOLEAN_TYPE)
+    MethodMatcher.create().typeDefinition(ORG_JUNIT_ASSUME).name("assumeFalse").parameters(BOOLEAN_TYPE)
   );
 
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD);
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override
@@ -74,8 +71,7 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean hasConstantOppositeArg(MethodInvocationTree mit) {
-    Arguments args = mit.arguments();
-    Boolean result = ConstantUtils.resolveAsBooleanConstant(args.get(args.size() - 1));
+    Boolean result = ConstantUtils.resolveAsBooleanConstant(mit.arguments().get(0));
     return result != null && !result.equals(mit.symbol().name().contains("True"));
   }
 }

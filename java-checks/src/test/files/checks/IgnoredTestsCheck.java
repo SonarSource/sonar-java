@@ -36,4 +36,8 @@ class MyTest {
   void assume6() {
     Assume.assumeFalse(Boolean.TRUE); // Noncompliant
   }
+
+  public MyTest() {
+    Assume.assumeTrue(false); // Noncompliant
+  }
 }
