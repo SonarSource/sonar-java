@@ -55,6 +55,8 @@ public class ExecCallCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    reportIssue(newClassTree.identifier(), MESSAGE);
+    if (!newClassTree.arguments().isEmpty()) {
+      reportIssue(newClassTree, MESSAGE);
+    }
   }
 }
