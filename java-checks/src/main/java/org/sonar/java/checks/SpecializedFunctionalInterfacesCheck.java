@@ -128,6 +128,12 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     if (firstArgument.paramType.equals(secondArgument.paramType)) {
       return functionalInterfaceName("UnaryOperator<%s>", firstArgument.paramType);
     }
+    if (isBoolean(secondArgument)) {
+      return functionalInterfaceName("Predicate<%s>", firstArgument.paramType);
+    }
+    if (isBoolean(firstArgument)) {
+      return Optional.empty();
+    }
     if (firstArgument.paramTypeName != null && secondArgument.paramTypeName != null) {
       return functionalInterfaceName("%sTo%sFunction", firstArgument.paramTypeName, secondArgument.paramTypeName);
     }
@@ -146,6 +152,9 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     ParameterTypeNameAndTreeType thirdArgument = new ParameterTypeNameAndTreeType(ptjt, 2);
     if (firstArgument.paramType.equals(secondArgument.paramType) && firstArgument.paramType.equals(thirdArgument.paramType)) {
       return functionalInterfaceName("BinaryOperator<%s>", firstArgument.paramType);
+    }
+    if (isBoolean(thirdArgument)) {
+      return functionalInterfaceName("BiPredicate<%s, %s>", firstArgument.paramType, secondArgument.paramType);
     }
     return Optional.empty();
   }
@@ -171,6 +180,10 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
       reportString = report;
       classInterface = interf;
     }
+  }
+
+  private static boolean isBoolean(ParameterTypeNameAndTreeType type) {
+    return "Boolean".equals(type.paramTypeName);
   }
 
   private static class ParameterTypeNameAndTreeType {
