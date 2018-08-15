@@ -32,16 +32,12 @@ import java.util.Enumeration;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.apache.commons.lang.ArrayUtils;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.resolve.Convert;
 
 /**
  * Class loader, which is able to load classes from a list of JAR files and directories.
  */
 public class SquidClassLoader extends ClassLoader implements Closeable {
-
-  private static final Logger LOG = Loggers.get(SquidClassLoader.class);
 
   private final List<Loader> loaders;
 
@@ -111,7 +107,6 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
   public byte[] getBytesForClass(String className) {
     try (InputStream is = getResourceAsStream(Convert.bytecodeName(className) + ".class")) {
       if (is == null) {
-        LOG.debug(".class not found for {}", className);
         return null;
       }
       return ByteStreams.toByteArray(is);
