@@ -31,7 +31,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Rule;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Handle;
@@ -41,8 +40,6 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.util.Printer;
-import org.sonar.api.utils.log.LogTester;
-import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.cfg.testdata.CFGTestData;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -70,9 +67,6 @@ import static org.sonar.java.bytecode.cfg.Instructions.TYPE_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.VAR_INSN;
 
 public class BytecodeCFGBuilderTest {
-
-  @Rule
-  public LogTester logTester = new LogTester();
 
   @Test
   public void test() throws Exception {
@@ -405,7 +399,6 @@ public class BytecodeCFGBuilderTest {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     BytecodeCFG cfg = SETestUtils.bytecodeCFG("nonsense#foo", squidClassLoader);
     assertThat(cfg).isNull();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains(".class not found for nonsense");
   }
 
   private void assertCFGforMethod(String methodName, String expectedCFG) {
