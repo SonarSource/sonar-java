@@ -163,6 +163,12 @@ class SerializableExclusions implements Serializable {
   private void delegateOther() {  // Compliant since other() is not static (although it should...)
     other();
   }
+
+
+  private void readResolve() throws ObjectStreamException {
+    System.out.println("foo");
+  }
+  private Object writeReplace() throws ObjectStreamException { }
 }
 
 static class FooBar {
