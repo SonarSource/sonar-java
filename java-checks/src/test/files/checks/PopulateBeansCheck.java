@@ -12,8 +12,8 @@ class Company {
       String name = (String) names.nextElement();
       map.put(name, request.getParameterValues(name));
     }
-    BeanUtils.populate(bean, map); // Noncompliant {{Validate that properties are not set by user input. Sanitize it if this is the case.}}
-    BeanUtilsBean.populate(bean, map); // Noncompliant {{Validate that properties are not set by user input. Sanitize it if this is the case.}}
-    pa.setPropertyValue("name", bean); // Noncompliant {{Validate that properties are not set by user input. Sanitize it if this is the case.}}
+    BeanUtils.populate(bean, map); // Noncompliant {{Make sure that setting JavaBean properties is safe here.}}
+    BeanUtilsBean.populate(bean, map); // Noncompliant {{Make sure that setting JavaBean properties is safe here.}}
+    pa.setPropertyValue("name", bean); // Noncompliant {{Make sure that setting JavaBean properties is safe here.}}
   }
 }

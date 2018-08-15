@@ -41,7 +41,7 @@ public class PopulateBeansCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(mit, "Validate that properties are not set by user input. Sanitize it if this is the case.");
+    reportIssue(mit, "Make sure that setting JavaBean properties is safe here.");
   }
 
 }
