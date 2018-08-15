@@ -193,3 +193,14 @@ class Test {
       findFirst().orElse("Nothing");
   }
 }
+class SomeClass<T> {}
+class WrongCollectionElement<K> extends ArrayList<SomeClass<K>> {
+  SomeClass<K> field;
+  void foo() {
+    remove(field); // compliant type of collection is SomeClass<K>
+  }
+  @Override
+  public boolean remove(Object o) {
+    return true;
+  }
+}
