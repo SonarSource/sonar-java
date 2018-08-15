@@ -22,16 +22,21 @@ package org.sonar.java.checks;
 import com.google.common.base.Splitter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1313")
@@ -53,6 +58,16 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
   private static final Pattern IP_V6_LOOPBACK = Pattern.compile("[0:]++0*+1");
   private static final Pattern IP_V6_NON_ROUTABLE = Pattern.compile("[0:]++");
 
+  private static final MethodMatcher ASN_1_OID_CONSTRUCTOR_MATCHER = MethodMatcher.create()
+    .typeDefinition(type -> type.name().toUpperCase(Locale.ROOT).contains("ASN1"))
+    .name("<init>")
+    .parameters("java.lang.String");
+
+  private static final MethodMatcher ASN_1_OID_METHOD_MATCHER = MethodMatcher.create()
+    .typeDefinition(TypeCriteria.anyType())
+    .name(name -> name.toUpperCase(Locale.ROOT).contains("ASN1"))
+    .parameters("java.lang.String");
+
   private static final String MESSAGE = "Make sure using this hardcoded IP address is safe here.";
 
   private JavaFileScannerContext context;
@@ -65,12 +80,24 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitLiteral(LiteralTree tree) {
-    if (tree.is(Tree.Kind.STRING_LITERAL)) {
+    if (tree.is(Tree.Kind.STRING_LITERAL) && !isASN1Identifier(tree)) {
       String value = LiteralUtils.trimQuotes(tree.value());
       extractIPV4(value).map(Optional::of).orElseGet(() -> extractIPV6(value))
         .filter(ip -> !isLoopbackAddress(ip) && !isNonRoutableAddress(ip) && !isBroadcastAddress(ip))
         .ifPresent(ip -> context.reportIssue(this, tree, MESSAGE));
     }
+  }
+
+  private static boolean isASN1Identifier(LiteralTree tree) {
+    Tree parent = tree.parent();
+    if (parent.is(Tree.Kind.ARGUMENTS)) {
+      if (parent.parent().is(Tree.Kind.NEW_CLASS)) {
+        return ASN_1_OID_CONSTRUCTOR_MATCHER.matches((NewClassTree) parent.parent());
+      } else if (parent.parent().is(Tree.Kind.METHOD_INVOCATION)) {
+        return ASN_1_OID_METHOD_MATCHER.matches((MethodInvocationTree) parent.parent());
+      }
+    }
+    return false;
   }
 
   private static boolean isLoopbackAddress(String ip) {
