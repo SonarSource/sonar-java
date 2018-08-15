@@ -20,8 +20,9 @@
 package org.sonar.java.se.checks;
 
 import java.io.File;
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector;
 import org.sonar.java.se.CheckerContext;
@@ -38,10 +39,11 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
 
   @Test
   public void test_without_jsr305() {
-    Collection<File> classpath = JavaCheckVerifier.classpathFromDirectory("target/test-jars").stream()
-      .filter(file -> !(file.getName().startsWith("jsr305-") || file.getName().startsWith("annotations-")))
+    List<File> classpath = FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar"}, true).stream()
+      .filter(file -> file.getName().startsWith("spring-core-") || file.getName().startsWith("spring-web-"))
       .collect(Collectors.toList());
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseWithoutJSR305.java", new BooleanGratuitousExpressionsCheck(), classpath);
+    classpath.add(new File("target/test-classes"));
+    JavaCheckVerifier.verify("src/test/files/se/SpringNullableAndNonNullAnnotationsWithoutJSR305.java", new BooleanGratuitousExpressionsCheck(), classpath);
   }
 
   @Test
