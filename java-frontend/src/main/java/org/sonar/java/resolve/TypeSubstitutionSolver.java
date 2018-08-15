@@ -231,6 +231,7 @@ public class TypeSubstitutionSolver {
   }
 
   private JavaType substituteInTypeVar(TypeVariableJavaType typevar, TypeSubstitution substitution) {
+    // completing owner of type var to ensure type var's bounds have been computed
     typevar.symbol.owner().complete();
     if(typevarExplored.contains(typevar.symbol) || typevar.bounds == null) {
       return typevar;

@@ -19,8 +19,9 @@
  */
 package org.sonar.java.resolve;
 
-import java.util.List;
 import org.sonar.plugins.java.api.semantic.Type;
+
+import java.util.List;
 
 public class TypeVariableJavaType extends JavaType {
 
