@@ -1703,4 +1703,13 @@ public class SymbolTableTest {
     JavaSymbol reference = res.reference(3, 5);
     assertThat(reference.owner()).isSameAs(res.symbol("A"));
   }
+
+  @Test
+  public void parameterized_innerclass_constructor_resolution() {
+    Result res = Result.createFor("InnerClassParameterized");
+    assertThat(res.symbol("<init>", 7).usages()).hasSize(1);
+    assertThat(res.symbol("<init>", 17).usages()).hasSize(1);
+    assertThat(res.symbol("<init>", 27).usages()).hasSize(1);
+    assertThat(res.symbol("<init>", 37).usages()).hasSize(1);
+  }
 }

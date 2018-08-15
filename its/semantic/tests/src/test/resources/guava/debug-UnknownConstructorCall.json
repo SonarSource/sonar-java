@@ -23,11 +23,6 @@
 'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
 3892,
 ],
-'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
-2920,
-2924,
-2929,
-],
 'com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java':[
 244,
 ],

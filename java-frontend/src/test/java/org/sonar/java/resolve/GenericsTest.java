@@ -495,7 +495,7 @@ public class GenericsTest {
       "A<? extends T>",
       "A<? super T>");
 
-    Type a = elementTypes.get(0);
+    Type a = elementTypes.get(0).erasure();
     Type aWc = elementTypes.get(1);
     Type aAnimal = elementTypes.get(2);
     Type aCat = elementTypes.get(3);
@@ -655,7 +655,7 @@ public class GenericsTest {
     methodHasUsagesWithSameTypeAs(aType, "f14", "bString");
     methodHasUsagesWithSameTypeAs(aType, "f15", "object");
 
-    methodHasUsagesWithSameTypeAs(aType, "f16", "bObject", "bObject", "bObject", "comparable", "bString");
+    methodHasUsagesWithSameTypeAs(aType, "f16", "bRawType", "bRawType", "bRawType", "comparable", "bString");
 
     methodHasUsagesWithSameTypeAs(aType, "f17", "object");
   }
@@ -877,7 +877,7 @@ public class GenericsTest {
       if (variableName != null) {
         Type methodInvocationType = getMethodInvocationType(method, i);
         Type variableType = getVariableType(type, variableName);
-        assertThat(methodInvocationType).overridingErrorMessage("Type of expression should be the same as type of variable '" + variableName + "'.").isSameAs(variableType);
+        assertThat(methodInvocationType).overridingErrorMessage("Type of expression "+methodInvocationType+" should be the same as type of variable '" + variableName + "'.").isSameAs(variableType);
       }
     }
   }

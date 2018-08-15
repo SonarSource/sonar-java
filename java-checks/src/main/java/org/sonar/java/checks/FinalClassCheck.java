@@ -58,7 +58,7 @@ public class FinalClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isExtended(ClassTree classTree) {
-    IsExtendedVisitor isExtendedVisitor = new IsExtendedVisitor(classTree.symbol().type());
+    IsExtendedVisitor isExtendedVisitor = new IsExtendedVisitor(classTree.symbol().type().erasure());
     classTree.accept(isExtendedVisitor);
     return isExtendedVisitor.isExtended;
   }
@@ -95,7 +95,7 @@ public class FinalClassCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitClass(ClassTree tree) {
       TypeTree superClass = tree.superClass();
-      if (superClass != null && superClass.symbolType() == type) {
+      if (superClass != null && superClass.symbolType().erasure() == type) {
         isExtended = true;
       }
       super.visitClass(tree);

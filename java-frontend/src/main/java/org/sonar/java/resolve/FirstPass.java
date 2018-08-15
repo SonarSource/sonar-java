@@ -56,6 +56,7 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 /**
@@ -69,6 +70,7 @@ public class FirstPass extends BaseTreeVisitor {
   private final List<JavaSymbol> uncompleted = Lists.newArrayList();
   private final SecondPass completer;
   private final Symbols symbols;
+  private final ParametrizedTypeCache parametrizedTypeCache;
   private Resolve resolve;
 
   /**
@@ -82,6 +84,7 @@ public class FirstPass extends BaseTreeVisitor {
     this.resolve = resolve;
     this.completer = new SecondPass(semanticModel, symbols, parametrizedTypeCache, typeAndReferenceSolver);
     this.symbols = symbols;
+    this.parametrizedTypeCache = parametrizedTypeCache;
   }
 
   private void restoreEnvironment(Tree tree) {
@@ -240,13 +243,17 @@ public class FirstPass extends BaseTreeVisitor {
     uncompleted.add(symbol);
 
     //Define type parameters:
-    createNewEnvironment(tree.typeParameters());
+    TypeParameters typeParameterTrees = tree.typeParameters();
+    createNewEnvironment(typeParameterTrees);
     // Save current environment to be able to complete class later
     semanticModel.saveEnv(symbol, env);
-    for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
+    for (TypeParameterTree typeParameterTree : typeParameterTrees) {
       JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(typeParameterTree.identifier().name(), symbol);
       symbol.addTypeParameter((TypeVariableJavaType) typeVariableSymbol.type);
       enterSymbol(typeParameterTree, typeVariableSymbol);
+    }
+    if(!typeParameterTrees.isEmpty()) {
+      symbol.type = parametrizedTypeCache.getParametrizedTypeType(symbol, new TypeSubstitution());
     }
     symbol.typeParameters = env.scope;
     Resolve.Env classEnv = env.dup();
