@@ -12,7 +12,7 @@ public class Foo {
     Runtime r = Runtime.getRuntime();
     r.exec("mv a/ b/"); // Noncompliant {{Make sure that executing this OS command is safe here.}}
 
-    r.exec("cd ../a", new String[] {"foo=bar"}); // Noncompliant
+    r.exec("cd ../a", new String[] {"foo=bar"}); // Noncompliant [[sc=5;ec=48]]
     r.exec("cd ../a", new String[] {"foo=bar"}, new File("../c")); // Noncompliant
     r.exec(new String[] {"cd ../a"}); // Noncompliant
     r.exec(new String[] {"cd ../a"}, new String[] {"foo=bar"}); // Noncompliant
@@ -29,11 +29,13 @@ public class Foo {
   public void processBuilder() {
     List<String> commands = Arrays.asList("myCommand", "myArg1", "myArg2");
     ProcessBuilder pb =
-      new ProcessBuilder("myCommand", "myArg1", "myArg2"); // Noncompliant
+      new ProcessBuilder("myCommand", "myArg1", "myArg2"); // Noncompliant [[sc=7;ec=58]]
     ProcessBuilder pb2 =
       new ProcessBuilder(commands); // Noncompliant
     pb.command();
     pb.command(commands); // Noncompliant
     pb.command("myCommand", "myArg1", "myArg2"); // Noncompliant
+
+    ProcessBuilder pb3 = new ProcessBuilder();
   }
 }
