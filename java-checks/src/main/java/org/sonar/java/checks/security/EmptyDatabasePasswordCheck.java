@@ -21,6 +21,7 @@ package org.sonar.java.checks.security;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
@@ -38,6 +39,8 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   private static final int PASSWORD_ARGUMENT = 2;
   private static final int URL_ARGUMENT = 0;
   private static final Pattern EMPTY_PASSWORD_PATTERN = Pattern.compile(".*password\\s*=\\s*([&;].*|$)");
+  private static final Pattern MYSQL_URL_PATTERN = Pattern.compile("jdbc:mysql://.*:(?<password>.*)@.*");
+  private static final Pattern ORACLE_URL_PATTERN = Pattern.compile("jdbc:oracle:.*:.*/(?<password>.*)@.*");
   private static final List<MethodMatcher> METHOD_MATCHERS = Collections.singletonList(
     MethodMatcher.create().typeDefinition("java.sql.DriverManager").name("getConnection").withAnyParameters());
 
@@ -53,8 +56,8 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
     if (args.size() > 2 && hasEmptyValue(args.get(PASSWORD_ARGUMENT))) {
       reportIssue(mit, MESSAGE);
     }
-    if (args.size() == 1) {
-      checkForUrlConnection(mit);
+    if (args.size() == 1 && urlContainsEmptyPassword(mit)) {
+      reportIssue(mit, MESSAGE);
     }
   }
 
@@ -63,13 +66,18 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
     return literal != null && literal.trim().isEmpty();
   }
 
-  private void checkForUrlConnection(MethodInvocationTree mit) {
+  private static boolean urlContainsEmptyPassword(MethodInvocationTree mit) {
     ExpressionTree urlArgument = mit.arguments().get(URL_ARGUMENT);
     String url = IdentifierUtils.getValue(urlArgument, ConstantUtils::resolveAsStringConstant);
-    if (url != null && (!url.contains("password") || EMPTY_PASSWORD_PATTERN.matcher(url).matches())) {
-      reportIssue(mit, MESSAGE);
-    }
+    return url != null &&
+      (urlContainsEmptyPassword(url, MYSQL_URL_PATTERN) ||
+        urlContainsEmptyPassword(url, ORACLE_URL_PATTERN) ||
+        EMPTY_PASSWORD_PATTERN.matcher(url).matches());
+  }
 
+  private static boolean urlContainsEmptyPassword(String url, Pattern urlPattern) {
+    Matcher matcher = urlPattern.matcher(url);
+    return matcher.matches() && matcher.group("password").trim().isEmpty();
   }
 
 }
