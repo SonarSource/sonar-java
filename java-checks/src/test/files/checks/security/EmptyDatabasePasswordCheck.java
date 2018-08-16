@@ -28,8 +28,6 @@ class S2115 {
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", null);
 
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true"); // Noncompliant
-
     DriverManager.getConnection("jdbc:db2://myhost:5021/mydb:user=dbadm;password=foo");
     DriverManager.getConnection("jdbc:db2://myhost:5021/mydb:user=dbadm;password="); // Noncompliant
     DriverManager.getConnection("jdbc:db2://myhost:5021/mydb:password=;user=dbadm"); // Noncompliant
@@ -58,6 +56,16 @@ class S2115 {
     unknown += "";
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", unknown);
 
+    DriverManager.getConnection(
+      "jdbc:mysql://sandy:secret@[myhost1:1111,address=(host=myhost2)(port=2222)(key2=value2)]/db");
+
+    DriverManager.getConnection("jdbc:oracle:oci8:scott/tiger@myhost");
+
+    DriverManager.getConnection("jdbc:mysql://sandy:@[myhost1:1111,address=(host=myhost2)(port=2222)(key2=value2)]/db"); // Noncompliant
+
+    DriverManager.getConnection("jdbc:oracle:oci8:scott/@myhost"); // Noncompliant
+
+    DriverManager.getConnection("jdbc:oracle:oci8:   /@myhost"); // Noncompliant
   }
 
   String getPassword() {
