@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
@@ -275,7 +276,17 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
 
   private static boolean isConcatenationOnSameLine(ExpressionTree formatStringTree) {
-    return formatStringTree.is(Tree.Kind.PLUS) && operandsAreOnSameLine((BinaryExpressionTree) formatStringTree);
+    return formatStringTree.is(Tree.Kind.PLUS)
+      && operandsAreOnSameLine((BinaryExpressionTree) formatStringTree)
+      && !isCompileTimeConstant(formatStringTree);
+  }
+
+  private static boolean isCompileTimeConstant(ExpressionTree expressionTree) {
+    if (expressionTree instanceof BinaryExpressionTree) {
+      BinaryExpressionTree binary = (BinaryExpressionTree) expressionTree;
+      return isCompileTimeConstant(binary.leftOperand()) && isCompileTimeConstant(binary.rightOperand());
+    }
+    return ConstantUtils.resolveAsConstant(expressionTree) != null;
   }
 
   private static boolean operandsAreOnSameLine(BinaryExpressionTree formatStringTree) {
