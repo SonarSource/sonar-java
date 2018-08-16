@@ -26,14 +26,33 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class IdentifierUtilsTest extends JavaParserHelper {
-
   @Test
   public void simpleAssignment() {
+    String code = newCode( "int foo() {",
+      "boolean a;",
+      "a = true;",
+      "return a;",
+      "}");
+    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(code, true);
+  }
+
+  @Test
+  public void simpleInitializer() {
     String code = newCode( "int foo() {",
       "boolean a = true;",
       "return a;",
       "}");
     assertThatLastReassignmentsOfReturnedVariableIsEqualTo(code, true);
+  }
+
+  @Test
+  public void andAssignement() {
+    String code = newCode( "int foo() {",
+      "boolean a = true;",
+      "a &= false;",
+      "return a;",
+      "}");
+    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(code, null);
   }
 
   @Test

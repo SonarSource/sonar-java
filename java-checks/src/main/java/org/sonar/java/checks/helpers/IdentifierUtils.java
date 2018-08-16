@@ -21,6 +21,7 @@ package org.sonar.java.checks.helpers;
 
 import java.util.function.Function;
 import javax.annotation.CheckForNull;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -35,8 +36,19 @@ public class IdentifierUtils {
     T value = resolver.apply(expression);
     if (value == null && expression.is(Tree.Kind.IDENTIFIER)) {
       ExpressionTree last = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(expression, ((IdentifierTree) expression).symbol());
-      value = last == null || last == expression ? null : getValue(last, resolver);
+      if (last == null || !isStrictAssignmentOrDeclaration(last) || last == expression) {
+        value = null;
+      } else {
+        value = getValue(last, resolver);
+      }
     }
     return value;
+  }
+
+  private static boolean isStrictAssignmentOrDeclaration(ExpressionTree expression) {
+    if (expression.parent() instanceof AssignmentExpressionTree) {
+      return expression.parent().is(Tree.Kind.ASSIGNMENT);
+    }
+    return true;
   }
 }
