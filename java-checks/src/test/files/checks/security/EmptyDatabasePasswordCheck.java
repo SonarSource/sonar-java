@@ -47,6 +47,17 @@ class S2115 {
     DriverManager.getConnection(url);
     DriverManager.getConnection(null);
 
+    String url2 = javax.sql.DataSource.getConnection().getMetadata().getURL();
+    url2 += (";shutdown=true");
+    DriverManager.getConnection(url2);
+
+    String pwd4 = getPassword();
+    pwd4 += "";
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd4);
+
+    unknown += "";
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", unknown);
+
   }
 
   String getPassword() {
