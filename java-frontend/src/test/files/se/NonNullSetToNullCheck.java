@@ -30,7 +30,7 @@ public class MainClass {
     testObject = new Object();
   }
 
-  public MainClass() { // Noncompliant  {{"primary" is marked "javax.annotation.Nonnull" but is not initialized in this constructor.}}
+  public MainClass() { // Noncompliant [[sc=10;ec=19]] {{"primary" is marked "javax.annotation.Nonnull" but is not initialized in this constructor.}}
     return; // Just for coverage
   }
 

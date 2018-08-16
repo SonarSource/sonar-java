@@ -142,7 +142,7 @@ public class NonNullSetToNullCheck extends SECheck {
       return;
     }
     if (isUndefinedOrNull(context, symbol)) {
-      context.reportIssue(tree, this, MessageFormat.format("\"{0}\" is marked \"{1}\" but is not initialized in this constructor.", symbol.name(), nonNullAnnotation));
+      context.reportIssue(tree.simpleName(), this, MessageFormat.format("\"{0}\" is marked \"{1}\" but is not initialized in this constructor.", symbol.name(), nonNullAnnotation));
     }
   }
 
