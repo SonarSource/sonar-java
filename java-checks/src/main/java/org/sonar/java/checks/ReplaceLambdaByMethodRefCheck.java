@@ -19,6 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.model.ExpressionUtils;
@@ -41,13 +46,6 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.IntStream;
 
 @Rule(key = "S1612")
 public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
@@ -173,7 +171,7 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
     MemberSelectExpressionTree mse = getMemberSelect(mit);
     while (mse != null) {
       ExpressionTree expression = mse.expression();
-      if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      if (expression.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
         return true;
       }
       if (expression.is(Tree.Kind.MEMBER_SELECT)) {
