@@ -329,3 +329,19 @@ abstract class ExcludedMethods {
     com.google.common.base.Preconditions.checkNotNull(getMyObject(), "yolo", new Object(), 2); // Compliant
   }
 }
+
+
+public class MultipleConstructors {
+
+  @Nonnull
+  private final String a;
+
+  MultipleConstructors() {
+    this("test");
+  }
+
+  private MultipleConstructors(@Nonnull String b) {
+    this.a = b;
+  }
+
+}
