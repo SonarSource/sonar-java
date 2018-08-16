@@ -31,8 +31,11 @@ public class PopulateBeansCheck extends AbstractMethodDetection {
 
   private static final List<MethodMatcher> METHOD_MATCHERS = Arrays.asList(
     MethodMatcher.create().typeDefinition("org.apache.commons.beanutils.BeanUtils").name("populate").withAnyParameters(),
+    MethodMatcher.create().typeDefinition("org.apache.commons.beanutils.BeanUtils").name("setProperty").withAnyParameters(),
     MethodMatcher.create().typeDefinition("org.apache.commons.beanutils.BeanUtilsBean").name("populate").withAnyParameters(),
-    MethodMatcher.create().typeDefinition("org.springframework.beans.PropertyAccessor").name("setPropertyValue").withAnyParameters());
+    MethodMatcher.create().typeDefinition("org.apache.commons.beanutils.BeanUtilsBean").name("setProperty").withAnyParameters(),
+    MethodMatcher.create().typeDefinition("org.springframework.beans.PropertyAccessor").name("setPropertyValue").withAnyParameters(),
+    MethodMatcher.create().typeDefinition("org.springframework.beans.PropertyAccessor").name("setPropertyValues").withAnyParameters());
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
