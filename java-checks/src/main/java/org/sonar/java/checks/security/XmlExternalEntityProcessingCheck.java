@@ -113,7 +113,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
           MethodVisitor methodVisitor = new MethodVisitor(securingInvocationPredicate);
           enclosingMethod.accept(methodVisitor);
           if (!methodVisitor.isExternalEntityProcessingDisabled) {
-            reportIssue(methodInvocation.methodSelect(), "Disable external entity (XXE) processing.");
+            reportIssue(methodInvocation.methodSelect(), "Disable XML external entity (XXE) processing.");
           }
         }
       }
