@@ -1,4 +1,6 @@
-class A {
+package org.bouncycastle.asn1;
+
+class ASN1ObjectIdentifier {
   String ip = "10.0.0.0"; // Noncompliant [[sc=15;ec=25]] {{Make sure using this hardcoded IP address is safe here.}}
   String ipAndPort = "10.0.0.0:0"; // Noncompliant [[sc=22;ec=34]] {{Make sure using this hardcoded IP address is safe here.}}
   String url = "http://192.168.0.1/admin.html"; // Noncompliant {{Make sure using this hardcoded IP address is safe here.}}
@@ -69,4 +71,28 @@ class A {
 
   String fileName = "v0.0.1.200__do_something.sql"; // Compliant - suffixed and prefixed
   String version = "1.0.0.0-1"; // Compliant - suffixed
+
+  static ASN1ObjectIdentifier asn1Oid = new ASN1ObjectIdentifier("2.5.29.19"); // Compliant - ASN.1 OID
+  static Object asn1OidObject = withASN1ObjectIdentifier("2.5.29.19"); // Compliant - ASN.1 OID
+  static Object ipObject = withIp("2.5.29.19"); // Noncompliant
+
+  public ASN1ObjectIdentifier(String identifier) {
+  }
+
+  static Object withASN1ObjectIdentifier(String identifier) {
+    return null;
+  }
+
+  static Object withIp(String ip) {
+    return null;
+  }
+
+  public @interface IpAddress {
+    String ip();
+  }
+
+  @IpAddress("2.5.29.19") // Noncompliant
+  static class B {
+  }
+
 }
