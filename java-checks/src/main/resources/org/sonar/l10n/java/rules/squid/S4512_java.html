@@ -1,3 +1,7 @@
+<p>Setting JavaBean properties is security sensitive. Doing it with untrusted values has led in the past to the following vulnerability:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-0114">CVE-2014-0114</a> </li>
+</ul>
 <p>JavaBeans can have their properties or nested properties set by population functions. An attacker can leverage this feature to push into the
 JavaBean malicious data that can compromise the software integrity. A typical attack will try to manipulate the ClassLoader and finally execute
 malicious code.</p>
@@ -5,8 +9,21 @@ malicious code.</p>
 <ul>
   <li> BeanUtils.populate(...) or BeanUtilsBean.populate(...) from <a href="http://commons.apache.org/proper/commons-beanutils/">Apache Commons
   BeanUtils</a> are called </li>
-  <li> org.springframework.beans.BeanWrapper.setPropertyValue(...) from Spring is called </li>
+  <li> BeanUtils.setProperty(...) or BeanUtilsBean.setProperty(...) from <a href="http://commons.apache.org/proper/commons-beanutils/">Apache Commons
+  BeanUtils</a> are called </li>
+  <li> org.springframework.beans.BeanWrapper.setPropertyValue(...) or org.springframework.beans.BeanWrapper.setPropertyValues(...) from Spring is
+  called </li>
 </ul>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> the new property values might have been tampered with or provided by an untrusted source. </li>
+  <li> sensitive properties can be modified, for example: <code>class.classLoader</code> </li>
+</ul>
+<p>You are at risk if you answered yes to any of these question.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Sanitize all values used as JavaBean properties.</p>
+<p>Don't set any sensitive properties. Keep full control over which properties are set. If the property names are provided by an unstrusted source,
+filter them with a whitelist.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 Company bean = new Company();

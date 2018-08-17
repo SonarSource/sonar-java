@@ -1,5 +1,5 @@
 {
-  "title": "Accessibility should not be changed",
+  "title": "Changing accessibility is security sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {

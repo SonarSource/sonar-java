@@ -1,6 +1,6 @@
 {
   "title": "\"Random\" objects should be reused",
-  "type": "VULNERABILITY",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

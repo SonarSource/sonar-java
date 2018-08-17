@@ -6,11 +6,11 @@ last one of the <code>switch</code>'s cases.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 switch (param) {
-  default: // default clause should be the last one
-    error();
-    break;
   case 0:
     doSomething();
+    break;
+  default: // default clause should be the last one
+    error();
     break;
   case 1:
     doSomethingElse();

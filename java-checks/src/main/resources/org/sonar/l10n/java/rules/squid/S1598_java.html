@@ -1,5 +1,9 @@
 <p>By convention, a Java class' physical location (source directories) and its logical representation (packages) should be kept in sync. Thus a Java
-file located at "src/org/sonarqube/Foo.java" should have a package of "org.sonarqube". </p>
+file located at <code>"src/org/bar/Foo.java"</code> should have a package of <code>"org.bar"</code>. </p>
 <p>Unfortunately, this convention is not enforced by Java compilers, and nothing prevents a developer from making the "Foo.java" class part of the
 "com.apple" package, which could degrade the maintainability of both the class and its application.</p>
+<p>Similarly, source placed in a folder with dots in its name instead of having the equivalent folder structure will compile but cause problems at run
+time. For instance, code with a package declaration of <code>org.foo.bar</code> that is placed in <code>org/foo.bar</code> will compile, but the
+classloader will always search for the class into the folder based on package structure, and will consequently expect sources to be in
+<code>org/foo/bar</code> folder. <code>foo.bar</code> is therefore not a proper folder name for sources.</p>
 

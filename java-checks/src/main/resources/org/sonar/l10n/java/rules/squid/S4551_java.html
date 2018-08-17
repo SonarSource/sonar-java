@@ -15,11 +15,11 @@ public enum Cake {
 }
 
 public boolean isFruitGrape(Fruit candidateFruit) {
-  return candidateFruit.equals(Fruit.GRAPE); // Noncompliant: this will raise an NPE if candidateFruit is NULL
+  return candidateFruit.equals(Fruit.GRAPE); // Noncompliant; this will raise an NPE if candidateFruit is NULL
 }
 
 public boolean isFruitGrape(Cake candidateFruit) {
-  return candidateFruit.equals(Fruit.GRAPE); // Noncompliant: always returns false
+  return candidateFruit.equals(Fruit.GRAPE); // Noncompliant; always returns false
 }
 
 </pre>
@@ -30,7 +30,7 @@ public boolean isFruitGrape(Fruit candidateFruit) {
 }
 
 public boolean isFruitGrape(Cake candidateFruit) {
-  return candidateFruit == Fruit.GRAPE; // Compliant: compilation time failure
+  return candidateFruit == Fruit.GRAPE; // Compliant; compilation time failure
 }
 </pre>
 <h2>See</h2>
