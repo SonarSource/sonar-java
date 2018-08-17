@@ -22,6 +22,8 @@ package org.sonar.java.resolve;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.TypePath;
+import org.objectweb.asm.TypeReference;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 
 public class BytecodeMethodVisitor extends MethodVisitor {
@@ -63,6 +65,21 @@ public class BytecodeMethodVisitor extends MethodVisitor {
       return new BytecodeAnnotationVisitor(annotationInstance, bytecodeVisitor);
     }
     return null;
+  }
+
+  @Override
+  public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible) {
+    TypeReference typeReference = new TypeReference(typeRef);
+    switch (typeReference.getSort()) {
+      case TypeReference.METHOD_FORMAL_PARAMETER:
+        return visitParameterAnnotation(typeReference.getFormalParameterIndex(), descriptor, visible);
+      case TypeReference.METHOD_RETURN:
+        return visitAnnotation(descriptor, visible);
+      default:
+        // Corner case, limitation: the case METHOD_TYPE_PARAMETER is not yet supported. It happens when an annotation
+        // is set on a type parameter. e.g.: <@Annotation T> Object method()
+        return null;
+    }
   }
 
   @Override

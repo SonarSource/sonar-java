@@ -376,6 +376,38 @@ public class BytecodeCompleterTest {
   }
 
   @Test
+  public void type_annotation_on_members() {
+    JavaSymbol.TypeJavaSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.TypeAnnotationOnMembers");
+    JavaSymbol.VariableJavaSymbol field = (JavaSymbol.VariableJavaSymbol) clazz.members().lookup("field").get(0);
+    JavaSymbol.MethodJavaSymbol method = (JavaSymbol.MethodJavaSymbol) clazz.members().lookup("method").get(0);
+    JavaSymbol.VariableJavaSymbol param1 = (JavaSymbol.VariableJavaSymbol) method.getParameters().scopeSymbols().get(0);
+    JavaSymbol.VariableJavaSymbol param2 = (JavaSymbol.VariableJavaSymbol) method.getParameters().scopeSymbols().get(1);
+    assertTypeAnnotation(field, "f");
+    assertTypeAnnotation(method, "r");
+    assertTypeAnnotation(param1, "p1");
+    assertTypeAnnotation(param2, "p2");
+
+    // Limitation: Annotations on "Type Parameters" are not supported by our byte code visitor in the two following cases:
+    // 1) Annotation @TypeAnnotation("t") is missing on symbol "C" (see {@link BytecodeFieldVisitor#visitTypeAnnotation})
+    JavaSymbol.TypeVariableJavaSymbol typeParameterC = (JavaSymbol.TypeVariableJavaSymbol) clazz.typeParameters().lookup("C").get(0);
+    assertThat(typeParameterC.metadata().isAnnotatedWith("org.sonar.java.resolve.targets.TypeAnnotation")).isFalse();
+    // 2) Annotation @TypeAnnotation("t") is missing on symbol "T" (see {@link BytecodeMethodVisitor#visitTypeAnnotation})
+    Symbol typeParameterTSymbol = ((MethodJavaType) method.getType()).argTypes().get(1).symbol();
+    assertThat(typeParameterTSymbol.name()).isEqualTo("T");
+    assertThat(typeParameterTSymbol.metadata().isAnnotatedWith("org.sonar.java.resolve.targets.TypeAnnotation")).isFalse();
+  }
+
+  private static void assertTypeAnnotation(JavaSymbol symbol, String expectedValue) {
+    SymbolMetadataResolve metadata = symbol.metadata();
+    assertThat(metadata.isAnnotatedWith("org.sonar.java.resolve.targets.TypeAnnotation")).isTrue();
+    List<SymbolMetadata.AnnotationValue> fieldValues = metadata.valuesForAnnotation("org.sonar.java.resolve.targets.TypeAnnotation");
+    assertThat(fieldValues).isNotNull();
+    assertThat(fieldValues.size()).isEqualTo(1);
+    assertThat(fieldValues.get(0).name()).isEqualTo("value");
+    assertThat(fieldValues.get(0).value()).isEqualTo(expectedValue);
+  }
+
+  @Test
   public void super_class_can_be_an_inner_class() {
     JavaSymbol.TypeJavaSymbol innerClassDerivedSymbol = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ParametrizedExtendDerived$InnerClassDerived");
     innerClassDerivedSymbol.complete();
