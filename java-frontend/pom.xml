@@ -255,8 +255,18 @@
                 <artifactItem>
                   <groupId>com.google.guava</groupId>
                   <artifactId>guava</artifactId>
-                  <version>20.0</version>
+                  <version>26.0-jre</version>
                   <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.checkerframework</groupId>
+                  <artifactId>checker-qual</artifactId>
+                  <version>2.5.2</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.checkerframework</groupId>
+                  <artifactId>checker-compat-qual</artifactId>
+                  <version>2.5.2</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>commons-collections</groupId>

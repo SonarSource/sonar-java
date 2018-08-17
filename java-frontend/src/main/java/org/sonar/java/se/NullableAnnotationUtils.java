@@ -49,7 +49,9 @@ public final class NullableAnnotationUtils {
     "javax.annotation.Nullable",
     "org.eclipse.jdt.annotation.Nullable",
     "org.jetbrains.annotations.Nullable",
-    "org.springframework.lang.Nullable");
+    "org.springframework.lang.Nullable",
+    "org.checkerframework.checker.nullness.qual.Nullable",
+    "org.checkerframework.checker.nullness.compatqual.NullableDecl");
   private static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
     "android.support.annotation.NonNull",
     "edu.umd.cs.findbugs.annotations.NonNull",
@@ -58,7 +60,9 @@ public final class NullableAnnotationUtils {
     "lombok.NonNull",
     "org.eclipse.jdt.annotation.NonNull",
     "org.jetbrains.annotations.NotNull",
-    "org.springframework.lang.NonNull");
+    "org.springframework.lang.NonNull",
+    "org.checkerframework.checker.nullness.qual.NonNull",
+    "org.checkerframework.checker.nullness.compatqual.NonNullDecl");
 
   public static boolean isAnnotatedNullable(Symbol symbol) {
     return isUsingNullable(symbol) || ((SymbolMetadataResolve) symbol.metadata()).metaAnnotations().stream().anyMatch(NullableAnnotationUtils::isUsingNullable);
