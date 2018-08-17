@@ -89,7 +89,12 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
     return Optional.of(IP_V4_REGEX.matcher(value))
       .filter(Matcher::matches)
       .map(match -> match.group("ip"))
-      .filter(HardcodedIpCheck::isValidIPV4Parts);
+      .filter(HardcodedIpCheck::isValidIPV4Parts)
+      .filter(ip -> !looksLikeAsn1ObjectIdentifier(ip));
+  }
+
+  private static boolean looksLikeAsn1ObjectIdentifier(String ip) {
+    return ip.startsWith("2.5.");
   }
 
   private static boolean isValidIPV4Parts(String ip) {
