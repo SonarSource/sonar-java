@@ -19,9 +19,11 @@
  */
 package org.sonar.java.resolve;
 
+import javax.annotation.Nullable;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.TypePath;
 import org.sonar.java.resolve.JavaSymbol.VariableJavaSymbol;
 
 public class BytecodeFieldVisitor extends FieldVisitor {
@@ -41,6 +43,16 @@ public class BytecodeFieldVisitor extends FieldVisitor {
     AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve(annotationType.getSymbol());
     fieldSymbol.metadata().addAnnotation(annotationInstance);
     return new BytecodeAnnotationVisitor(annotationInstance, bytecodeVisitor);
+  }
+
+  @Override
+  public AnnotationVisitor visitTypeAnnotation(int typeRef, @Nullable TypePath typePath, String descriptor, boolean visible) {
+    if (typePath == null) {
+      return visitAnnotation(descriptor, visible);
+    }
+    // Corner case, limitation: the case when annotation is not set on a field but on a type parameter of this field is not
+    // yet supported. In this case "typePath" is not null. e.g.: List<@Annotation C> field
+    return null;
   }
 
 }
