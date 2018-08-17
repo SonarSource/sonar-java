@@ -76,6 +76,11 @@ public class NonNullSetToNullCheck extends SECheck {
   }
 
   @Override
+  public void interruptedExecution(CheckerContext context) {
+    methodTrees.pop();
+  }
+
+  @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
     AbstractStatementVisitor visitor = new PreStatementVisitor(context);
     syntaxNode.accept(visitor);
