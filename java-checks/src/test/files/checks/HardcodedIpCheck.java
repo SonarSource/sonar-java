@@ -17,6 +17,10 @@ class A {
   String notAnIp4 = ".10.0.0.0";
   String notAnIp5 = "0.256.0.0";
 
+  String country_oid = "2.5.6.2";
+  String subschema_oid = "2.5.20.1";
+  String not_considered_as_an_oid = "2.51.6.2"; // Noncompliant
+
   String empty = "";
 
   // IPV6 uncompressed format has 8 parts
