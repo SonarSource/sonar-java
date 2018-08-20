@@ -28,7 +28,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
@@ -56,7 +56,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
   private static final String XML_READER_CLASS_NAME = XMLReader.class.getName();
   private static final String DOCUMENT_BUILDER_FACTORY_CLASS_NAME = DocumentBuilderFactory.class.getName();
   private static final String VALIDATOR_CLASS_NAME = Validator.class.getName();
-  private static final String SCHEMA_FACTORY_NAME = SchemaFactory.class.getName();
+  private static final String SCHEMA_CLASS_NAME = Schema.class.getName();
 
 
   private static final MethodMatcher CREATE_XML_READER_MATCHER = MethodMatcher.create()
@@ -64,9 +64,9 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     .name("createXMLReader")
     .withAnyParameters();
 
-  private static final MethodMatcher CREATE_SCHEMA = MethodMatcher.create()
-    .typeDefinition(SCHEMA_FACTORY_NAME)
-    .name("newSchema")
+  private static final MethodMatcher CREATE_VALIDATOR = MethodMatcher.create()
+    .typeDefinition(SCHEMA_CLASS_NAME)
+    .name("newValidator")
     .withAnyParameters();
   private static final String JAVA_LANG_STRING = "java.lang.String";
 
@@ -82,8 +82,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     new XxeCheck(newInstanceMethod(SAX_PARSER_FACTORY_CLASS_NAME), new SecureProcessingFeaturePredicate(SAX_PARSER_FACTORY_CLASS_NAME)),
     new XxeCheck(newInstanceMethod(DOCUMENT_BUILDER_FACTORY_CLASS_NAME), new SecureProcessingFeaturePredicate(DOCUMENT_BUILDER_FACTORY_CLASS_NAME)),
     new XxeCheck(CREATE_XML_READER_MATCHER, new SecureProcessingFeaturePredicate(XML_READER_CLASS_NAME)),
-    new XxeCheck(CREATE_SCHEMA, new AccessExternalDTDOrSchemaPredicate(VALIDATOR_CLASS_NAME)),
-    new XxeCheck(newInstanceMethod(SCHEMA_FACTORY_NAME), new AccessExternalDTDOrSchemaPredicate(SCHEMA_FACTORY_NAME))
+    new XxeCheck(CREATE_VALIDATOR, new AccessExternalDTDOrSchemaPredicate(VALIDATOR_CLASS_NAME))
   );
 
   @Override
