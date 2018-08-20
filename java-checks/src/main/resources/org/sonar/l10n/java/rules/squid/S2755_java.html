@@ -6,14 +6,16 @@ parsed:</p>
 </pre>
 <p>If you must parse untrusted XML, the best way to protect yourself is to use a local, static DTD during parsing and igore any DTD's included in
 included in the document.</p>
-<p>This rule raises an issue when any of the following are used without first disabling external entity processing: JAXP's
-<code>DocumentBuilderFactory</code>, <code>SAXParserFactory</code>, Xerces 1 and Xerces 2 StAX's <code>XMLInputFactory</code> and
-<code>XMLReaderFactory</code>.</p>
+<p>This rule raises an issue when any of the following are used without first disabling external entity processing:
+<code>javax.xml.validation.Validator</code>, JAXP's <code>DocumentBuilderFactory</code>, <code>SAXParserFactory</code>, Xerces 1 and Xerces 2 StAX's
+<code>XMLInputFactory</code> and <code>XMLReaderFactory</code>.</p>
 <p>To disable external entity processing for <code>XMLInputFactory</code>, configure one of the properties
 <code>XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES</code> or <code>XMLInputFactory.SUPPORT_DTD</code> to false.</p>
 <p>To disable external entity processing for <code>SAXParserFactory</code>, <code>XMLReader</code> or <code>DocumentBuilderFactory</code> configure
 one of the properties <code>XMLConstants.FEATURE_SECURE_PROCESSING</code> or <code>"http://apache.org/xml/features/disallow-doctype-decl"</code> to
 true.</p>
+<p>To disable external entity processing for <code>Validator</code> , configure both properties <code>XMLConstants.ACCESS_EXTERNAL_DTD</code>,
+<code>XMLConstants.ACCESS_EXTERNAL_SCHEMA</code> to the empty string <code>""</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 /* Load XML stream and display content */
