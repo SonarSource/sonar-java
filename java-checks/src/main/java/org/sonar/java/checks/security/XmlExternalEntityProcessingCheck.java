@@ -28,7 +28,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
@@ -56,7 +56,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
   private static final String XML_READER_CLASS_NAME = XMLReader.class.getName();
   private static final String DOCUMENT_BUILDER_FACTORY_CLASS_NAME = DocumentBuilderFactory.class.getName();
   private static final String VALIDATOR_CLASS_NAME = Validator.class.getName();
-  private static final String SCHEMA_FACTORY_NAME = SchemaFactory.class.getName();
+  private static final String SCHEMA_CLASS_NAME = Schema.class.getName();
 
 
   private static final MethodMatcher CREATE_XML_READER_MATCHER = MethodMatcher.create()
@@ -64,9 +64,9 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     .name("createXMLReader")
     .withAnyParameters();
 
-  private static final MethodMatcher CREATE_SCHEMA = MethodMatcher.create()
-    .typeDefinition(SCHEMA_FACTORY_NAME)
-    .name("newSchema")
+  private static final MethodMatcher CREATE_VALIDATOR = MethodMatcher.create()
+    .typeDefinition(SCHEMA_CLASS_NAME)
+    .name("newValidator")
     .withAnyParameters();
   private static final String JAVA_LANG_STRING = "java.lang.String";
 
@@ -82,8 +82,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     new XxeCheck(newInstanceMethod(SAX_PARSER_FACTORY_CLASS_NAME), new SecureProcessingFeaturePredicate(SAX_PARSER_FACTORY_CLASS_NAME)),
     new XxeCheck(newInstanceMethod(DOCUMENT_BUILDER_FACTORY_CLASS_NAME), new SecureProcessingFeaturePredicate(DOCUMENT_BUILDER_FACTORY_CLASS_NAME)),
     new XxeCheck(CREATE_XML_READER_MATCHER, new SecureProcessingFeaturePredicate(XML_READER_CLASS_NAME)),
-    new XxeCheck(CREATE_SCHEMA, new AccessExternalDTDOrSchemaPredicate(VALIDATOR_CLASS_NAME)),
-    new XxeCheck(newInstanceMethod(SCHEMA_FACTORY_NAME), new AccessExternalDTDOrSchemaPredicate(SCHEMA_FACTORY_NAME))
+    new XxeCheck(CREATE_VALIDATOR, new AccessExternalDTDOrSchemaPredicate(VALIDATOR_CLASS_NAME))
   );
 
   @Override
@@ -110,6 +109,10 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
       if (triggeringInvocationMatcher.matches(methodInvocation)) {
         MethodTree enclosingMethod = enclosingMethod(methodInvocation);
         if (enclosingMethod != null) {
+          if (securingInvocationPredicate instanceof AccessExternalDTDOrSchemaPredicate) {
+            ((AccessExternalDTDOrSchemaPredicate) securingInvocationPredicate).externalDTDDisabled = false;
+            ((AccessExternalDTDOrSchemaPredicate) securingInvocationPredicate).externalSchemaDisabled = false;
+          }
           MethodVisitor methodVisitor = new MethodVisitor(securingInvocationPredicate);
           enclosingMethod.accept(methodVisitor);
           if (!methodVisitor.isExternalEntityProcessingDisabled) {
@@ -203,6 +206,8 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
   private static class AccessExternalDTDOrSchemaPredicate implements Predicate<MethodInvocationTree> {
 
     private final MethodMatcher methodMatcher;
+    private boolean externalDTDDisabled = false;
+    private boolean externalSchemaDisabled = false;
 
     private AccessExternalDTDOrSchemaPredicate(String className) {
       this.methodMatcher = setPropertyMethodMatcher(className);
@@ -214,8 +219,13 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
         Arguments arguments = methodInvocation.arguments();
         String propertyName = resolveAsStringConstant(arguments.get(0));
         String propertyValue = resolveAsStringConstant(arguments.get(1));
-        return "".equals(propertyValue) &&
-          (XMLConstants.ACCESS_EXTERNAL_DTD.equals(propertyName) || XMLConstants.ACCESS_EXTERNAL_SCHEMA.equals(propertyName));
+        if ("".equals(propertyValue) && XMLConstants.ACCESS_EXTERNAL_DTD.equals(propertyName)) {
+          externalDTDDisabled = true;
+        }
+        if ("".equals(propertyValue) && XMLConstants.ACCESS_EXTERNAL_SCHEMA.equals(propertyName)) {
+          externalSchemaDisabled = true;
+        }
+        return externalDTDDisabled && externalSchemaDisabled;
       }
       return false;
     }
