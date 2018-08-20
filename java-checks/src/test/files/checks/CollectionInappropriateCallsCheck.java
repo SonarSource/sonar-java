@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 class A {
   private void myMethod() {
     List<String> myList = new ArrayList<String>();
+    List<Unknown> unknownList = new ArrayList<Unknown>();
     Set<A> myASet = new HashSet<A>();
     ArrayList<B> myBList = new ArrayList<B>();
     List<Set<Integer>> mySetList = new ArrayList<Set<Integer>>();
@@ -24,6 +25,7 @@ class A {
     Integer[] myArrayInteger = new Integer[] {Integer.valueOf(1)};
 
     myList.contains(myInteger); // Noncompliant [[sc=12;ec=20]] {{A "List<String>" cannot contain a "Integer"}}
+    unknownList.contains(myInteger);
     myList.remove(myInteger); // Noncompliant {{A "List<String>" cannot contain a "Integer"}}
     myList.contains(myString); // Compliant
     myBList.contains(myInteger); // Noncompliant {{A "ArrayList<B>" cannot contain a "Integer"}}
