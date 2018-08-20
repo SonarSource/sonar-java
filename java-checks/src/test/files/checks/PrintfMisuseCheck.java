@@ -17,8 +17,10 @@ class A {
     double value;
     String.format("The value of my integer is %d", "Hello World");
     String.format("First {0} and then {1}", "foo", "bar");  // Noncompliant  {{Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here}}
+    String.format("{1}", "foo", "bar");  // Noncompliant
     String.format("Duke's Birthday year is %tX", 12l);
     String.format("Display %3$d and then %d", 1, 2, 3);   // Noncompliant {{2nd argument is not used.}}
+    String.format("Display %2$d and then %2$d", 1, 2);   // Noncompliant {{first argument is not used.}}
     String.format("Too many arguments %d and %d", 1, 2, 3);  // Noncompliant {{3rd argument is not used.}}
     String.format("Not enough arguments %d and %d", 1);
     String.format("First Line\n %d", 1); // Noncompliant {{%n should be used in place of \n to produce the platform-specific line separator.}}
@@ -27,7 +29,9 @@ class A {
     String.format("First Line%n"); // Compliant
     String.format("%< is equals to %d", 2);
     String.format("Is myObject null ? %b", myObject);   // Noncompliant {{Directly inject the boolean value.}}
+    String.format("boolean are %b, %b, %b and %b", true, Boolean.TRUE, false, Boolean.FALSE);
     String.format("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    String.format((String) "");
     String.format(value + "value is "); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     String.format("value is " + NON_COMPILE_TIME_CONSTANT); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     String.format("value is " + COMPILE_TIME_CONSTANT);

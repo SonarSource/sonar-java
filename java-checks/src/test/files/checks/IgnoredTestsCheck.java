@@ -1,7 +1,7 @@
 import org.junit.Ignore;
 import org.junit.Assume;
 
-class MyTest {
+abstract class MyTest {
   @org.junit.Ignore
   void foo() {} // Noncompliant [[sc=8;ec=11]] {{Fix or remove this skipped unit test}}
 
@@ -15,9 +15,11 @@ class MyTest {
 
   void assume1() {
     Assume.assumeTrue(false); // Noncompliant
+    Assume.assumeTrue(true);
   }
   void assume2() {
     Assume.assumeFalse(true); // Noncompliant
+    Assume.assumeFalse(false);
   }
   void assume3() {
     if(something) {
@@ -40,4 +42,11 @@ class MyTest {
   public MyTest() {
     Assume.assumeTrue(false); // Noncompliant
   }
+
+  abstract void assume7();
+
+  void assume8(boolean var) {
+    Assume.assumeFalse(var); // compliant, "var" is unknown
+  }
+
 }
