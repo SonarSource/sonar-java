@@ -148,17 +148,25 @@ class Validator {
     javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
   }
 
-  void withAccessExternalDtd() {
+  void withAccessExternalDtdAndExternalSchema() {
     javax.xml.validation.SchemaFactory factory;
     javax.xml.validation.Schema schema = factory.newSchema();
     javax.xml.validation.Validator validator = schema.newValidator();
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+  }
+
+  void withAccessExternalDtd() {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
     validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
   }
 
   void withAccessExternalSchema() {
     javax.xml.validation.SchemaFactory factory;
     javax.xml.validation.Schema schema = factory.newSchema();
-    javax.xml.validation.Validator validator = schema.newValidator();
+    javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
     validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
   }
 
@@ -174,6 +182,7 @@ class Validator {
     javax.xml.validation.Schema schema = factory.newSchema();
     javax.xml.validation.Validator validator = schema.newValidator();
     validator.setProperty("http://javax.xml.XMLConstants/property/accessExternalDTD", "");
+    validator.setProperty("http://javax.xml.XMLConstants/property/accessExternalSchema", "");
   }
 
   void noValidator() {
@@ -187,7 +196,7 @@ class Validator {
     javax.xml.validation.SchemaFactory factory;
     javax.xml.validation.Schema schema = factory.newSchema();
     javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
-    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, ""); // // Coverage: Setting other property other than ACCESS_EXTERNAL_DTD or ACCESS_EXTERNAL_SCHEMA
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, ""); // Coverage: Setting other property other than ACCESS_EXTERNAL_DTD or ACCESS_EXTERNAL_SCHEMA
 
   }
 

@@ -109,6 +109,10 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
       if (triggeringInvocationMatcher.matches(methodInvocation)) {
         MethodTree enclosingMethod = enclosingMethod(methodInvocation);
         if (enclosingMethod != null) {
+          if (securingInvocationPredicate instanceof AccessExternalDTDOrSchemaPredicate) {
+            ((AccessExternalDTDOrSchemaPredicate) securingInvocationPredicate).externalDTDDisabled = false;
+            ((AccessExternalDTDOrSchemaPredicate) securingInvocationPredicate).externalSchemaDisabled = false;
+          }
           MethodVisitor methodVisitor = new MethodVisitor(securingInvocationPredicate);
           enclosingMethod.accept(methodVisitor);
           if (!methodVisitor.isExternalEntityProcessingDisabled) {
@@ -202,6 +206,8 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
   private static class AccessExternalDTDOrSchemaPredicate implements Predicate<MethodInvocationTree> {
 
     private final MethodMatcher methodMatcher;
+    private boolean externalDTDDisabled = false;
+    private boolean externalSchemaDisabled = false;
 
     private AccessExternalDTDOrSchemaPredicate(String className) {
       this.methodMatcher = setPropertyMethodMatcher(className);
@@ -213,8 +219,13 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
         Arguments arguments = methodInvocation.arguments();
         String propertyName = resolveAsStringConstant(arguments.get(0));
         String propertyValue = resolveAsStringConstant(arguments.get(1));
-        return "".equals(propertyValue) &&
-          (XMLConstants.ACCESS_EXTERNAL_DTD.equals(propertyName) || XMLConstants.ACCESS_EXTERNAL_SCHEMA.equals(propertyName));
+        if ("".equals(propertyValue) && XMLConstants.ACCESS_EXTERNAL_DTD.equals(propertyName)) {
+          externalDTDDisabled = true;
+        }
+        if ("".equals(propertyValue) && XMLConstants.ACCESS_EXTERNAL_SCHEMA.equals(propertyName)) {
+          externalSchemaDisabled = true;
+        }
+        return externalDTDDisabled && externalSchemaDisabled;
       }
       return false;
     }
