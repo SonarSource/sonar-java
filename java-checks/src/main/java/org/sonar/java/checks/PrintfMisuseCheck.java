@@ -278,15 +278,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   private static boolean isConcatenationOnSameLine(ExpressionTree formatStringTree) {
     return formatStringTree.is(Tree.Kind.PLUS)
       && operandsAreOnSameLine((BinaryExpressionTree) formatStringTree)
-      && !isCompileTimeConstant(formatStringTree);
-  }
-
-  private static boolean isCompileTimeConstant(ExpressionTree expressionTree) {
-    if (expressionTree instanceof BinaryExpressionTree) {
-      BinaryExpressionTree binary = (BinaryExpressionTree) expressionTree;
-      return isCompileTimeConstant(binary.leftOperand()) && isCompileTimeConstant(binary.rightOperand());
-    }
-    return ConstantUtils.resolveAsConstant(expressionTree) != null;
+      && ConstantUtils.resolveAsConstant(formatStringTree) == null;
   }
 
   private static boolean operandsAreOnSameLine(BinaryExpressionTree formatStringTree) {
