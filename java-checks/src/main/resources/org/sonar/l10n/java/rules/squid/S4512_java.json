@@ -1,5 +1,5 @@
 {
-  "title": "User controlled values should not be used to populate JavaBean property names",
+  "title": "Setting JavaBean properties is security sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {

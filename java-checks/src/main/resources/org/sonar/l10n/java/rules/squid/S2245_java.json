@@ -1,6 +1,6 @@
 {
-  "title": "Pseudorandom number generators (PRNGs) should not be used in secure contexts",
-  "type": "VULNERABILITY",
+  "title": "Using pseudorandom number generators (PRNGs) is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -61,6 +61,28 @@ public class ResourceFactory {
     }
 }
 </pre>
+<p>Using "volatile":</p>
+<pre>
+class ResourceFactory {
+  private volatile Resource resource;
+
+  public Resource getResource() {
+    Resource localResource = resource;
+    if (localResource == null) {
+      synchronized (this) {
+        localResource = resource;
+        if (localResource == null) {
+          resource = localResource = new Resource();
+        }
+      }
+    }
+    return localResource;
+  }
+
+  static class Resource {
+  }
+}
+</pre>
 <h2>See</h2>
 <ul>
   <li> <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">The "Double-Checked Locking is Broken" Declaration</a> </li>
@@ -68,5 +90,6 @@ public class ResourceFactory {
   </li>
   <li> <a href="http://cwe.mitre.org/data/definitions/609.html">MITRE, CWE-609</a> - Double-checked locking </li>
   <li> <a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-12.html#jls-12.4">JLS 12.4</a> - Initialization of Classes and Interfaces </li>
+  <li> Wikipedia: <a href="https://en.wikipedia.org/wiki/Double-checked_locking#Usage_in_Java">Double-checked locking</a> </li>
 </ul>
 

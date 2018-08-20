@@ -3,6 +3,17 @@ will be generated, and use this guess to impersonate another user or access sens
 <p>As the <code>java.util.Random</code> class relies on a pseudorandom number generator, this class and relating <code>java.lang.Math.random()</code>
 method should not be used for security-critical applications or for protecting sensitive data. In such context, the
 <code>java.security.SecureRandom</code> class which relies on a cryptographically strong random number generator (RNG) should be used in place.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> the code using the generated value requires it to be unpredictable. It is the case for all encryption mechanisms or when a secret value, such
+  as a password, is hashed. </li>
+  <li> the function you use generates a value which can be predicted (pseudo-random). </li>
+  <li> the generated value is used multiple times. </li>
+  <li> an attacker can access the generated value. </li>
+</ul>
+<p>You are at risk if you answered yes to the first question and any of the following ones.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Use a cryptographically strong random number generator (RNG) like "java.security.SecureRandom" in place of this PRNG.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 Random random = new Random();

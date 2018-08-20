@@ -1,5 +1,5 @@
 {
-  "title": "Struts 1 endpoints should not make web applications vulnerable",
+  "title": "Using Struts 1 ActionForm is security sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
@@ -7,6 +7,7 @@
     "constantCost": "15min"
   },
   "tags": [
+    "cwe",
     "owasp-a1",
     "struts"
   ],

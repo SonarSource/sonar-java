@@ -1,5 +1,5 @@
 {
-  "title": "Struts 2 endpoints should not make web applications vulnerable",
+  "title": "Setters in Struts 2 ActionSupport are security sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
