@@ -67,7 +67,7 @@ public class ConstantUtils {
   }
 
   @CheckForNull
-  private static Object resolveAsConstant(ExpressionTree tree) {
+  public static Object resolveAsConstant(ExpressionTree tree) {
     ExpressionTree expression = tree;
     while (expression.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
       expression = ((ParenthesizedTree) expression).expression();

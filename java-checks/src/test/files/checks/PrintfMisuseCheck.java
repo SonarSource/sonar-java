@@ -7,6 +7,9 @@ import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import static org.sonar.java.checks.PrintfMisuseCheckTest.COMPILE_TIME_CONSTANT;
+import static org.sonar.java.checks.PrintfMisuseCheckTest.NON_COMPILE_TIME_CONSTANT;
+
 class A {
   java.util.logging.Logger loggerField = java.util.logging.Logger.getAnonymousLogger("som.foo.resources.i18n.LogMessages");
   void foo(Calendar c){
@@ -25,6 +28,9 @@ class A {
     String.format("%< is equals to %d", 2);
     String.format("Is myObject null ? %b", myObject);   // Noncompliant {{Directly inject the boolean value.}}
     String.format("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    String.format(value + "value is "); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    String.format("value is " + NON_COMPILE_TIME_CONSTANT); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    String.format("value is " + COMPILE_TIME_CONSTANT);
     String.format("string without arguments"); // Noncompliant {{String contains no format specifiers.}}
 
     PrintWriter pr;
@@ -77,9 +83,9 @@ class A {
     formatter.format("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     formatter.format(loc, "value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
 
-    pr.format("value is "+"asd"); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    pr.format("value is "+"asd");
     pr.format("value is "+
-        "asd"); // Compliant operand not on the same line.
+        value); // Compliant operand not on the same line.
     String.format("value is %d", value); // Compliant
 
     String.format("%0$s", "tmp");

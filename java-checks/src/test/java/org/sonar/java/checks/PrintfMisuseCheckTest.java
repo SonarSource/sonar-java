@@ -19,10 +19,15 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Random;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class PrintfMisuseCheckTest {
+
+  // used inside the tested file
+  public static final String COMPILE_TIME_CONSTANT = "message";
+  public static final String NON_COMPILE_TIME_CONSTANT = "" + new Random().nextInt();
 
   @Test
   public void test() {
