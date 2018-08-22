@@ -1,4 +1,9 @@
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 class TooManyParameters {
@@ -25,6 +30,46 @@ class MethodsUsingSpringRequestMapping {
   void foo(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
 
   @RequestMapping
+  void bar(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+}
+
+class MethodsUsingSpringGetMapping {
+  @org.springframework.web.bind.annotation.GetMapping
+  void foo(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+
+  @GetMapping
+  void bar(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+}
+
+class MethodsUsingSpringPostMapping {
+  @org.springframework.web.bind.annotation.PostMapping
+  void foo(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+
+  @PostMapping
+  void bar(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+}
+
+class MethodsUsingSpringPutMapping {
+  @org.springframework.web.bind.annotation.PutMapping
+  void foo(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+
+  @PutMapping
+  void bar(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+}
+
+class MethodsUsingSpringDeleteMapping {
+  @org.springframework.web.bind.annotation.DeleteMapping
+  void foo(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+
+  @DeleteMapping
+  void bar(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+}
+
+class MethodsUsingSpringPatchMapping {
+  @org.springframework.web.bind.annotation.PatchMapping
+  void foo(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
+
+  @PatchMapping
   void bar(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
 }
 

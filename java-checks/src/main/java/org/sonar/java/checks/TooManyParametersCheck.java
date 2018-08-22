@@ -53,6 +53,11 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
 
   private static final List<String> WHITE_LIST = ImmutableList.of(
     "org.springframework.web.bind.annotation.RequestMapping",
+    "org.springframework.web.bind.annotation.GetMapping",
+    "org.springframework.web.bind.annotation.PostMapping",
+    "org.springframework.web.bind.annotation.PutMapping",
+    "org.springframework.web.bind.annotation.DeleteMapping",
+    "org.springframework.web.bind.annotation.PatchMapping",
     "com.fasterxml.jackson.annotation.JsonCreator");
 
   @Override
