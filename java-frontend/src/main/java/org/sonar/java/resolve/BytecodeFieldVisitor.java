@@ -22,9 +22,10 @@ package org.sonar.java.resolve;
 import javax.annotation.Nullable;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 import org.sonar.java.resolve.JavaSymbol.VariableJavaSymbol;
+
+import static org.sonar.java.resolve.BytecodeCompleter.ASM_API_VERSION;
 
 public class BytecodeFieldVisitor extends FieldVisitor {
 
@@ -32,7 +33,7 @@ public class BytecodeFieldVisitor extends FieldVisitor {
   private final BytecodeVisitor bytecodeVisitor;
 
   BytecodeFieldVisitor(VariableJavaSymbol fieldSymbol, BytecodeVisitor bytecodeVisitor) {
-    super(Opcodes.ASM5);
+    super(ASM_API_VERSION);
     this.fieldSymbol = fieldSymbol;
     this.bytecodeVisitor = bytecodeVisitor;
   }

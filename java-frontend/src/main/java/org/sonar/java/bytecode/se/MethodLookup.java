@@ -29,11 +29,12 @@ import javax.annotation.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.Flags;
+
+import static org.sonar.java.resolve.BytecodeCompleter.ASM_API_VERSION;
 
 public class MethodLookup {
 
@@ -92,7 +93,7 @@ public class MethodLookup {
   public static class LookupMethodVisitor extends MethodVisitor {
 
     public LookupMethodVisitor() {
-      super(Opcodes.ASM5);
+      super(ASM_API_VERSION);
     }
 
     /**
@@ -118,7 +119,7 @@ public class MethodLookup {
     private boolean isVarArgs;
 
     public LookupClassVisitor(LookupMethodVisitor methodVisitor, String targetedMethodSignatures) {
-      super(Opcodes.ASM5);
+      super(ASM_API_VERSION);
       this.methodVisitor = methodVisitor;
       this.methodSignature = targetedMethodSignatures;
     }

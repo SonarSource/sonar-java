@@ -19,16 +19,14 @@
  */
 package org.sonar.java.bytecode.cfg;
 
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.util.Printer;
-import org.sonar.java.resolve.JavaSymbol;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.util.Printer;
+import org.sonar.java.resolve.JavaSymbol;
 
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
@@ -41,13 +39,14 @@ import static org.sonar.java.bytecode.cfg.Instructions.METHOD_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.NO_OPERAND_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.TYPE_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.VAR_INSN;
+import static org.sonar.java.resolve.BytecodeCompleter.ASM_API_VERSION;
 
 public class BytecodeListingParser {
 
 
   public static BytecodeCFG getCFG(String bytecodeInstructions) {
     // Define class and method stub for instructions
-    ClassWriter cw = new ClassWriter(Opcodes.ASM5);
+    ClassWriter cw = new ClassWriter(ASM_API_VERSION);
     cw.visit(V1_8, ACC_PUBLIC, "A", null, "java/lang/Object", null);
     MethodVisitor mv = cw.visitMethod(ACC_PRIVATE, "test", "()V", null, null);
     JavaSymbol.MethodJavaSymbol methodStub = new JavaSymbol.MethodJavaSymbol(0, "test", null);

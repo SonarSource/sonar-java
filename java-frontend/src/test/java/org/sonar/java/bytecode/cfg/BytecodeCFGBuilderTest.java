@@ -43,6 +43,7 @@ import org.objectweb.asm.util.Printer;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.cfg.testdata.CFGTestData;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.resolve.BytecodeCompleter;
 import org.sonar.java.resolve.Convert;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
@@ -149,7 +150,7 @@ public class BytecodeCFGBuilderTest {
     SemanticModel.createFor(tree, squidClassLoader);
     Symbol.TypeSymbol testClazz = ((ClassTree) tree.types().get(0)).symbol();
     ClassReader cr = new ClassReader(squidClassLoader.getResourceAsStream(Convert.bytecodeName(CFGTestData.class.getCanonicalName()) + ".class"));
-    ClassNode classNode = new ClassNode(Opcodes.ASM5);
+    ClassNode classNode = new ClassNode(BytecodeCompleter.ASM_API_VERSION);
     cr.accept(classNode, 0);
     for (MethodNode method : classNode.methods) {
       Multiset<String> opcodes = Arrays.stream(method.instructions.toArray())

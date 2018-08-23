@@ -32,10 +32,10 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.Instruction.FieldOrMethod;
 
 import static org.objectweb.asm.Opcodes.*;
+import static org.sonar.java.resolve.BytecodeCompleter.ASM_API_VERSION;
 
 public class Instructions {
 
@@ -99,7 +99,7 @@ public class Instructions {
     .collect(Collectors.toSet());
 
   public Instructions() {
-    cw = new ClassWriter(Opcodes.ASM5);
+    cw = new ClassWriter(ASM_API_VERSION);
     cw.visit(V1_8, ACC_PUBLIC, "A", null, "java/lang/Object", null);
     mv = cw.visitMethod(ACC_PRIVATE, "test", "()V", null, null);
   }
@@ -283,7 +283,7 @@ public class Instructions {
   static BytecodeCFG getBytecodeCFG(byte[] bytes) {
     ClassReader cr = new ClassReader(bytes);
     BytecodeCFGMethodVisitor cfgMethodVisitor = new BytecodeCFGMethodVisitor();
-    cr.accept(new ClassVisitor(Opcodes.ASM5) {
+    cr.accept(new ClassVisitor(ASM_API_VERSION) {
       @Override
       public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         return cfgMethodVisitor;

@@ -21,10 +21,11 @@ package org.sonar.java.resolve;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 import org.objectweb.asm.TypeReference;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
+
+import static org.sonar.java.resolve.BytecodeCompleter.ASM_API_VERSION;
 
 public class BytecodeMethodVisitor extends MethodVisitor {
 
@@ -40,7 +41,7 @@ public class BytecodeMethodVisitor extends MethodVisitor {
   private int syntheticArgs;
 
   BytecodeMethodVisitor(MethodJavaSymbol methodSymbol, BytecodeVisitor bytecodeVisitor) {
-    super(Opcodes.ASM5);
+    super(ASM_API_VERSION);
     this.methodSymbol = methodSymbol;
     this.bytecodeVisitor = bytecodeVisitor;
     this.syntheticArgs = 0;
@@ -84,7 +85,7 @@ public class BytecodeMethodVisitor extends MethodVisitor {
 
   @Override
   public AnnotationVisitor visitAnnotationDefault() {
-    return new AnnotationVisitor(Opcodes.ASM5) {
+    return new AnnotationVisitor(ASM_API_VERSION) {
       @Override
       public void visit(String name, Object value) {
         methodSymbol.defaultValue = value;
