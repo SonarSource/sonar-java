@@ -104,7 +104,7 @@ public class JavaAstScanner {
       checkInterrupted(e);
       throw new AnalysisException(getAnalysisExceptionMessage(file), e);
     } catch (StackOverflowError error) {
-      LOG.error("A stack overflow error occured while analyzing file: " + file.getAbsolutePath());
+      LOG.error("A stack overflow error occured while analyzing file: " + file.getAbsolutePath(), error);
       throw error;
     }
   }
