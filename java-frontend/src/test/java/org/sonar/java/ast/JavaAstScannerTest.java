@@ -210,12 +210,19 @@ public class JavaAstScannerTest {
     assertThat(sonarComponent.analysisErrors).hasSize(1);
     assertThat(sonarComponent.analysisErrors.get(0).getKind()).isSameAs(AnalysisError.Kind.SE_ERROR);
   }
+
   @Test
   public void should_propagate_SOError() {
     thrown.expect(StackOverflowError.class);
     JavaAstScanner scanner = defaultJavaAstScanner();
     scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingSOError()));
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerNoParseError.txt")));
+
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
+    assertThat(logTester.logs(LoggerLevel.ERROR).get(0))
+      .startsWith("A stack overflow error occured while analyzing file")
+      .contains("java.lang.StackOverflowError: boom")
+      .contains("at org.sonar.java.ast.JavaAstScannerTest");
   }
 
   @Test
@@ -238,7 +245,7 @@ public class JavaAstScannerTest {
 
     @Override
     public void scanFile(JavaFileScannerContext context) {
-      throw new StackOverflowError();
+      throw new StackOverflowError("boom");
     }
   }
   private static class CheckThrowingException implements JavaFileScanner {
