@@ -40,6 +40,8 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 
 public class BytecodeCompleter implements JavaSymbol.Completer {
 
+  public static final int ASM_API_VERSION = Opcodes.ASM7_EXPERIMENTAL;
+
   private Symbols symbols;
   private final ParametrizedTypeCache parametrizedTypeCache;
   private final SquidClassLoader classLoader;
@@ -105,7 +107,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
         Map<String, Object> valuesByFieldName = new HashMap<>();
         ClassReader classReader = new ClassReader(bytes);
         classReader.accept(
-          new ClassVisitor(Opcodes.ASM5) {
+          new ClassVisitor(ASM_API_VERSION) {
             @Override
             public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
               valuesByFieldName.put(name, value);

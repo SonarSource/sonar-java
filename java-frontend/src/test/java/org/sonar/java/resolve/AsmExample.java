@@ -19,17 +19,17 @@
  */
 package org.sonar.java.resolve;
 
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.EnumSet;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.EnumSet;
+import static org.sonar.java.resolve.BytecodeCompleter.ASM_API_VERSION;
 
 public class AsmExample {
   enum Flag {
@@ -56,7 +56,7 @@ public class AsmExample {
   }
 
   public static void main(String[] args) throws Exception {
-    ClassVisitor cv = new ClassVisitor(Opcodes.ASM5) {
+    ClassVisitor cv = new ClassVisitor(ASM_API_VERSION) {
       @Override
       public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         System.out.println("CLASS");

@@ -183,4 +183,16 @@ public class SquidClassLoaderTest {
     assertThat(classNode.version).isEqualTo(Opcodes.V10);
     classLoader.close();
   }
+
+  @Test
+  public void test_loading_java11_class() throws Exception {
+    SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/java11/bin")));
+    byte[] bytes = classLoader.getBytesForClass("org.foo.A");
+    assertThat(bytes).isNotNull();
+    ClassReader cr = new ClassReader(bytes);
+    ClassNode classNode = new ClassNode();
+    cr.accept(classNode, 0);
+    assertThat(classNode.version).isEqualTo(Opcodes.V11);
+    classLoader.close();
+  }
 }
