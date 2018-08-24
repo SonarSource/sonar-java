@@ -749,7 +749,7 @@ public class BytecodeCompleterTest {
     TypeJavaSymbol classSymbol = (TypeJavaSymbol) bytecodeCompleter.loadClass("org.foo.A");
     classSymbol.complete();
     assertThat(classSymbol.getFullyQualifiedName()).isEqualTo("org.foo.A");
-    assertThat(classSymbol.memberSymbols()).hasSize(3);
+    assertThat(classSymbol.memberSymbols()).hasSize(4);
 
     Scope members = classSymbol.members();
     Symbol implicitDefaultConstructor = members.lookup("<init>").get(0);
