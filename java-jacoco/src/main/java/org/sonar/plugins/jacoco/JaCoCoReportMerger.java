@@ -23,8 +23,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
-import org.apache.commons.lang.BooleanUtils;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.ExecutionDataWriter;
 import org.jacoco.core.data.IExecutionDataVisitor;
@@ -49,15 +49,9 @@ public final class JaCoCoReportMerger {
    */
   public static void mergeReports(File reportOverall, File... reports) {
     ExecutionDataVisitor edv = new ExecutionDataVisitor();
-    boolean isCurrentVersionFormat = loadSourceFiles(edv, reports);
-
+    loadSourceFiles(edv, reports);
     try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(reportOverall))) {
-      Object visitor;
-      if (isCurrentVersionFormat) {
-        visitor = new ExecutionDataWriter(outputStream);
-      } else {
-        visitor = new org.jacoco.previous.core.data.ExecutionDataWriter(outputStream);
-      }
+      Object visitor = new ExecutionDataWriter(outputStream);
       for (Map.Entry<String, ExecutionDataStore> entry : edv.getSessions().entrySet()) {
         SessionInfo sessionInfo = new SessionInfo(entry.getKey(), 0, 0);
         ((ISessionInfoVisitor) visitor).visitSessionInfo(sessionInfo);
@@ -68,20 +62,8 @@ public final class JaCoCoReportMerger {
     }
   }
 
-  private static boolean loadSourceFiles(ExecutionDataVisitor executionDataVisitor, File... reports) {
-    Boolean isCurrentVersionFormat = null;
-    for (File report : reports) {
-      if (report.isFile()) {
-        JacocoReportReader jacocoReportReader = new JacocoReportReader(report).readJacocoReport(executionDataVisitor, executionDataVisitor);
-        boolean reportFormatIsCurrent = jacocoReportReader.useCurrentBinaryFormat();
-        if (isCurrentVersionFormat == null) {
-          isCurrentVersionFormat = reportFormatIsCurrent;
-        } else if (!isCurrentVersionFormat.equals(reportFormatIsCurrent)) {
-          throw new IllegalStateException("You are trying to merge two different JaCoCo binary formats. Please use only one version of JaCoCo.");
-        }
-      }
-    }
-    return BooleanUtils.isNotFalse(isCurrentVersionFormat);
+  private static void loadSourceFiles(ExecutionDataVisitor executionDataVisitor, File... reports) {
+    Arrays.stream(reports).filter(File::isFile).forEach(report -> new JacocoReportReader(report).readJacocoReport(executionDataVisitor, executionDataVisitor));
   }
 
 }
