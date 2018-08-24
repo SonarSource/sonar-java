@@ -51,7 +51,14 @@ class A {
     }
 
     Object var;
+
+    // JEP-323 var in lambda parameter definition
+
+    var x = new A();
+    java.util.function.BiConsumer<A, String> lambda = (var l1, var l2) -> l1.process(l2);
   }
+
+  void process(String s) {}
 
   private class B {
     int field1;
