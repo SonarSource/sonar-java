@@ -218,16 +218,6 @@ public class JaCoCoSensorTest {
   }
 
   @Test
-  public void test_read_execution_data_for_lines_covered_by_tests_v0_7_4() throws IOException {
-    testExecutionDataForLinesCoveredByTest("/org/sonar/plugins/jacoco/JaCoCov0_7_4_coverage_per_test/", newArrayList(3, 4, 5, 8, 12));
-  }
-
-  @Test
-  public void test_read_execution_data_for_lines_covered_by_tests_v0_7_4_incompatible() throws IOException {
-    testExecutionDataForLinesCoveredByTest("/org/sonar/plugins/jacoco/JaCoCov0_7_4_incompatible_coverage_per_test/", newArrayList(3, 4, 5, 8, 12));
-  }
-
-  @Test
   public void test_read_execution_data_for_lines_covered_by_tests_v0_7_5_incompatible() throws IOException {
     testExecutionDataForLinesCoveredByTest("/org/sonar/plugins/jacoco/JaCoCov0_7_5_incompatible_coverage_per_test/", newArrayList(3, 4, 5, 8, 9, 10, 13, 16));
   }

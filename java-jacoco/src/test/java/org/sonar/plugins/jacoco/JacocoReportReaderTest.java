@@ -54,9 +54,10 @@ public class JacocoReportReaderTest {
 
   }
   @Test
-  public void not_existing_class_files_should_not_be_analyzed_for_previous() {
+  public void previous_version_should_fail() {
     File report = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCo_incompatible_merge/jacoco-0.7.4.exec");
     Collection<File> classFile = Lists.newArrayList(dummy);
+    expectedException.expect(AnalysisException.class);
     new JacocoReportReader(report).analyzeFiles(null, classFile);
   }
 

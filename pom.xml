@@ -61,7 +61,6 @@
     <module>java-surefire</module>
     <module>java-jacoco</module>
     <module>sonar-jacoco-listeners</module>
-    <module>java-jacoco-previous</module>
     <module>its</module>
   </modules>
 
@@ -89,7 +88,6 @@
     <analyzer.commons.version>1.9.0.327</analyzer.commons.version>
     <orchestrator.version>3.21.0.1721</orchestrator.version>
     <sslr.version>1.22</sslr.version>
-    <jacoco.previous.version>0.7.4.201502262128</jacoco.previous.version>
     <jacoco.version>0.8.2</jacoco.version>
     <asm.version>6.2.1</asm.version>
     <argLine>-Xmx512m</argLine>

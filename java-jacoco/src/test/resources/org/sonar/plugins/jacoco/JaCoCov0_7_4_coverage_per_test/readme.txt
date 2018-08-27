@@ -1,2 +1,0 @@
-coverage generated using  mvn org.jacoco:jacoco-maven-plugin:0.7.4.201502262128:prepare-agent clean install -Pcoverage-per-test on project :
- https://github.com/SonarSource/sonar-examples based on commit https://github.com/SonarSource/sonar-examples/commit/963a92fb03907fb57c666533a0f5b355e1decb48
