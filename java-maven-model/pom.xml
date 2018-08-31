@@ -71,32 +71,39 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>2.2</version>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-xjc-plugin</artifactId>
+        <version>3.2.2</version>
+        <configuration>
+          <extensions>
+            <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.2.2</extension>
+          </extensions>
+        </configuration>
         <executions>
           <execution>
-            <id>xjc</id>
+            <id>generate-sources</id>
+            <phase>generate-sources</phase>
             <goals>
-              <goal>xjc</goal>
+              <goal>xsdtojava</goal>
             </goals>
+            <configuration>
+              <sourceRoot>${targetDir}</sourceRoot>
+              <xsdOptions>
+                <xsdOption>
+                  <xsd>${xsdPath}</xsd>
+                  <bindingFile>${bindingFile}</bindingFile>
+                  <packagename>${javaPackageName}</packagename>
+                  <extension>true</extension>
+                </xsdOption>
+              </xsdOptions>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <extension>true</extension>
-          <packageName>${javaPackageName}</packageName>
-          <xjbSources>
-            <xjbSource>${bindingFile}</xjbSource>
-          </xjbSources>
-          <outputDirectory>${targetDir}</outputDirectory>
-          <encoding>UTF-8</encoding>
-          <sources>
-            <source>${xsdPath}</source>
-          </sources>
-        </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
