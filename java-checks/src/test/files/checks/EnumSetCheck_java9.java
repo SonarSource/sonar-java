@@ -47,7 +47,7 @@ class A {
     Set<COLOR> col6 = ImmutableSet.of(COLOR.RED, COLOR.ORANGE); // Noncompliant
     Set<COLOR> col7 = ImmutableSet.of(COLOR.RED, COLOR.BLUE, COLOR.RED, COLOR.ORANGE, COLOR.GREEN, COLOR.ORANGE, COLOR.BLUE); // Noncompliant
 
-    Set<COLOR> col8 = Set.of(COLOR.RED); // Compliant - not resolved in java versions < 9
+    Set<COLOR> col8 = Set.of(COLOR.RED); // Noncompliant
   }
 
   private Set<COLOR> rgb() {

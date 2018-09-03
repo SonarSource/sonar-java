@@ -21,13 +21,21 @@ package org.sonar.java.checks;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.model.JavaVersionImpl;
 
 public class EnumSetCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EnumSetCheck.java", new EnumSetCheck());
+    int javaVersion = JavaVersionImpl.fromString(System.getProperty("java.specification.version")).asInt();
+    if (javaVersion >= 9) {
+      JavaCheckVerifier.verify("src/test/files/checks/EnumSetCheck_java9.java", new EnumSetCheck());
+    } else {
+      JavaCheckVerifier.verify("src/test/files/checks/EnumSetCheck.java", new EnumSetCheck());
+    }
+
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/EnumSetCheck.java", new EnumSetCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/EnumSetCheck_java9.java", new EnumSetCheck());
   }
 
 }
