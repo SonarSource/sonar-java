@@ -26,6 +26,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -45,7 +46,7 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
    * @param files ordered list of files and directories from which to load classes and resources
    */
   public SquidClassLoader(List<File> files) {
-    super(null);
+    super(computeParent());
     loaders = new ArrayList<>();
     for (File file : files) {
       if (file.exists()) {
@@ -57,6 +58,14 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
           loaders.add(new AarLoader(file));
         }
       }
+    }
+  }
+
+  private static ClassLoader computeParent() {
+    try {
+      return (ClassLoader) ClassLoader.class.getMethod("getPlatformClassLoader").invoke(null);
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      return null;
     }
   }
 
