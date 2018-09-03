@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -34,7 +35,7 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
 
   private static final String JAVA_LANG_REFLECT_FIELD = "java.lang.reflect.Field";
   private static final List<MethodMatcher> METHOD_MATCHERS = Arrays.asList(
-    MethodMatcher.create().typeDefinition("java.lang.reflect.AccessibleObject").name("setAccessible").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.reflect.AccessibleObject")).name("setAccessible").withAnyParameters(),
     MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("set").withAnyParameters(),
     MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("setBoolean").withAnyParameters(),
     MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("setByte").withAnyParameters(),

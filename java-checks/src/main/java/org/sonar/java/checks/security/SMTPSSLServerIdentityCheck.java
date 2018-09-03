@@ -59,7 +59,7 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
     .addParameter(BOOLEAN);
 
   private static final MethodMatcher HASHTABLE_PUT = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.is(HASHTABLE))
+    .typeDefinition(TypeCriteria.subtypeOf(HASHTABLE))
     .name("put")
     .withAnyParameters();
 
