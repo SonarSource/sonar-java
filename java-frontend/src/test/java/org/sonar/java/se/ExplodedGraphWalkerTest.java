@@ -526,8 +526,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   private static MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
-    String signature = ((JavaSymbol.MethodJavaSymbol) symbol).completeSignature();
     boolean varArgs = ((JavaSymbol.MethodJavaSymbol) symbol).isVarArgs();
-    return new MethodBehavior(signature, varArgs);
+    return new MethodBehavior(symbol.signature(), varArgs);
   }
 }

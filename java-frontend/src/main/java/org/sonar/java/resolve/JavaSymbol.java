@@ -538,6 +538,7 @@ public class JavaSymbol implements Symbol {
     MethodTree declaration;
     Object defaultValue;
     String desc;
+    String signature;
 
     public MethodJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner) {
       super(MTH, flags, name, owner);
@@ -551,13 +552,16 @@ public class JavaSymbol implements Symbol {
       this.typeVariableTypes = Lists.newArrayList();
     }
 
-    public String completeSignature(){
-      String sign = "";
-      if(owner != null) {
-        sign += owner.getType().fullyQualifiedName();
+    @Override
+    public String signature() {
+      if (signature == null) {
+        signature = "";
+        if (owner != null) {
+          signature += owner.getType().fullyQualifiedName();
+        }
+        signature += "#" + name + desc();
       }
-      sign += "#" + name + desc();
-      return sign;
+      return signature;
     }
 
     private String desc() {
