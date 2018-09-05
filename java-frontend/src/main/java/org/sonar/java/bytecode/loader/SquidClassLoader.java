@@ -19,7 +19,6 @@
  */
 package org.sonar.java.bytecode.loader;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Iterators;
 import com.google.common.io.ByteStreams;
 import java.io.Closeable;
@@ -33,6 +32,7 @@ import java.util.Enumeration;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.apache.commons.lang.ArrayUtils;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.resolve.Convert;
 
 /**
@@ -120,7 +120,7 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
       }
       return ByteStreams.toByteArray(is);
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new AnalysisException("An IOException occurred in SonarJava classLoader.",e);
     }
   }
 
