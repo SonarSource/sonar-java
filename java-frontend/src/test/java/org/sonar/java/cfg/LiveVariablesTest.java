@@ -154,9 +154,9 @@ public class LiveVariablesTest {
   private void assertFieldsByMethodEntry(String methodCode, String ...inEntryNames) {
     CFG cfg = buildCFG(methodCode);
     LiveVariables liveVariables = LiveVariables.analyzeWithFields(cfg);
-    assertThat(liveVariables.getOut(cfg.entry())).isEmpty();
+    assertThat(liveVariables.getOut(cfg.entryBlock())).isEmpty();
 
-    List<Symbol> in = new ArrayList<>(liveVariables.getIn(cfg.entry()));
+    List<Symbol> in = new ArrayList<>(liveVariables.getIn(cfg.entryBlock()));
     assertThat(in).hasSize(inEntryNames.length);
     in.forEach(symbol -> assertThat(symbol.name()).isIn(inEntryNames));
   }

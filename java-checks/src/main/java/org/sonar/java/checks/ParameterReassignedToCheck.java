@@ -64,7 +64,7 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
     }
     CFG cfg = CFG.build(tree);
     LiveVariables analyze = LiveVariables.analyze(cfg);
-    Set<Symbol> live = analyze.getIn(cfg.entry());
+    Set<Symbol> live = analyze.getIn(cfg.entryBlock());
     for (VariableTree parameterTree : tree.parameters()) {
       if(!live.contains(parameterTree.symbol())) {
         variables.add(parameterTree.symbol());
@@ -86,7 +86,7 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
     if(var.owner().isMethodSymbol()) {
       cfg.setMethodSymbol((Symbol.MethodSymbol) var.owner());
       LiveVariables analyze = LiveVariables.analyze(cfg);
-      Set<Symbol> live = analyze.getIn(cfg.entry());
+      Set<Symbol> live = analyze.getIn(cfg.entryBlock());
       liveVar = live.contains(var);
     }
     if(!liveVar) {

@@ -34,12 +34,12 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -118,13 +118,13 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       types.add(methodSymbol.returnType().type());
     }
     if (tree.block() != null && types.stream().noneMatch(Type::isUnknown)) {
-      CFG cfg = CFG.build(tree);
+      ControlFlowGraph cfg = tree.cfg();
       serializeUCFG(tree, cfg);
     }
   }
 
   @VisibleForTesting
-  protected void serializeUCFG(MethodTree tree, CFG cfg) {
+  protected void serializeUCFG(MethodTree tree, ControlFlowGraph cfg) {
     try {
       UCFG uCFG = buildUCfg(tree, cfg);
       UCFGtoProtobuf.toProtobufFile(uCFG, ucfgFilePath());
@@ -141,7 +141,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     return absolutePath;
   }
 
-  private UCFG buildUCfg(MethodTree methodTree, CFG cfg) {
+  private UCFG buildUCfg(MethodTree methodTree, ControlFlowGraph cfg) {
     String signature = methodTree.symbol().signature();
 
     IdentifierGenerator idGenerator = new IdentifierGenerator(methodTree);
@@ -152,7 +152,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       .map(UCFGBuilder::variableWithId)
       .forEach(builder::addMethodParam);
 
-    BlockBuilder entryBlockBuilder = buildBasicBlock(cfg.entry(), methodTree, idGenerator);
+    BlockBuilder entryBlockBuilder = buildBasicBlock(cfg.entryBlock(), methodTree, idGenerator);
 
     if (hasAnnotatedParameters(methodTree)) {
       builder.addStartingBlock(buildParameterAnnotationsBlock(methodTree, idGenerator, cfg));
@@ -162,19 +162,19 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     }
 
     cfg.blocks().stream()
-      .filter(b -> !b.equals(cfg.entry()))
+      .filter(b -> !b.equals(cfg.entryBlock()))
       .forEach(b -> builder.addBasicBlock(buildBasicBlock(b, methodTree, idGenerator)));
     return builder.build();
   }
 
-  private BlockBuilder buildParameterAnnotationsBlock(MethodTree methodTree, IdentifierGenerator idGenerator, CFG cfg) {
+  private BlockBuilder buildParameterAnnotationsBlock(MethodTree methodTree, IdentifierGenerator idGenerator, ControlFlowGraph cfg) {
     LocationInFile parametersLocation = location(methodTree.openParenToken(), methodTree.closeParenToken());
     UCFGBuilder.BlockBuilder blockBuilder = UCFGBuilder.newBasicBlock("paramAnnotations", parametersLocation);
 
     List<AnnotationTree> methodAnnotations = methodTree.modifiers().annotations();
     getObjectParameters(methodTree).forEach(parameter -> buildBlockForParameter(parameter, methodAnnotations, blockBuilder, idGenerator));
 
-    Label nextBlockLabel = UCFGBuilder.createLabel(Integer.toString(cfg.entry().id()));
+    Label nextBlockLabel = UCFGBuilder.createLabel(Integer.toString(cfg.entryBlock().id()));
     blockBuilder.jumpTo(nextBlockLabel);
     return blockBuilder;
   }
@@ -220,7 +220,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     return methodTree.parameters().stream().filter(parameter -> isObject(parameter.type().symbolType()));
   }
 
-  private UCFGBuilder.BlockBuilder buildBasicBlock(CFG.Block javaBlock, MethodTree methodTree, IdentifierGenerator idGenerator) {
+  private UCFGBuilder.BlockBuilder buildBasicBlock(ControlFlowGraph.Block javaBlock, MethodTree methodTree, IdentifierGenerator idGenerator) {
     UCFGBuilder.BlockBuilder blockBuilder = UCFGBuilder.newBasicBlock(String.valueOf(javaBlock.id()), location(javaBlock));
 
     javaBlock.elements().forEach(e -> buildCall(e, blockBuilder, idGenerator));
@@ -236,7 +236,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
       return blockBuilder;
     }
 
-    Set<CFG.Block> successors = javaBlock.successors();
+    Set<? extends ControlFlowGraph.Block> successors = javaBlock.successors();
     if (!successors.isEmpty()) {
       blockBuilder.jumpTo(successors.stream().map(b -> UCFGBuilder.createLabel(Integer.toString(b.id()))).toArray(Label[]::new));
       return blockBuilder;
@@ -498,7 +498,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   }
 
   @Nullable
-  private LocationInFile location(CFG.Block javaBlock) {
+  private LocationInFile location(ControlFlowGraph.Block javaBlock) {
     Tree firstTree = null;
     List<Tree> elements = javaBlock.elements();
     if (!elements.isEmpty()) {
