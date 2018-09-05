@@ -228,7 +228,7 @@ public class ExplodedGraphWalker {
     programState = ProgramState.EMPTY_STATE;
     steps = 0;
     for (ProgramState startingState : startingStates(tree, programState)) {
-      enqueue(new ProgramPoint(cfg.entry()), startingState);
+      enqueue(new ProgramPoint(cfg.entryBlock()), startingState);
     }
     while (!workList.isEmpty()) {
       steps++;

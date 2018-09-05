@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaSymbol;
@@ -67,6 +68,9 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   private final ListTree<TypeTree> throwsClauses;
   private final SyntaxToken defaultToken;
   private final ExpressionTree defaultValue;
+
+  @Nullable
+  private CFG cfg;
 
   //FIXME nullable if semantic analysis is not set. Should have a default value.
   @Nullable
@@ -224,6 +228,18 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Override
   public int getLine() {
     return parameters.openParenToken().getLine();
+  }
+
+  @Nullable
+  @Override
+  public CFG cfg() {
+    if (block == null) {
+      return null;
+    }
+    if (cfg == null) {
+      cfg = CFG.build(this);
+    }
+    return cfg;
   }
 
   @Override

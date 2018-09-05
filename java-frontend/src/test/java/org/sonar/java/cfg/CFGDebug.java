@@ -109,7 +109,7 @@ public class CFGDebug {
   public static String toString(CFG cfg) {
     StringBuilder buffer = new StringBuilder();
     buffer.append("Starts at B");
-    buffer.append(cfg.entry().id());
+    buffer.append(cfg.entryBlock().id());
     buffer.append('\n');
     buffer.append('\n');
     for (Block block : cfg.blocks()) {

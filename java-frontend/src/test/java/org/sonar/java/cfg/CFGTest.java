@@ -112,7 +112,7 @@ public class CFGTest {
         }
         assertThat(exitBlock.elements()).isEmpty();
         assertThat(exitBlock.successors()).isEmpty();
-        assertThat(cfg.blocks()).as("CFG entry block is no longer in the list of blocks!").contains(cfg.entry());
+        assertThat(cfg.blocks()).as("CFG entry block is no longer in the list of blocks!").contains(cfg.entryBlock());
       } catch (final Throwable e) {
         System.out.println(CFGDebug.toString(cfg));
         throw e;
@@ -443,7 +443,7 @@ public class CFGTest {
     final CFG cfg = buildCFG("void fun() {}");
     final CFGChecker cfgChecker = checker();
     cfgChecker.check(cfg);
-    assertThat(cfg.entry().isMethodExitBlock()).as("entry is an exit").isTrue();
+    assertThat(cfg.entryBlock().isMethodExitBlock()).as("entry is an exit").isTrue();
   }
 
   @Test
@@ -454,7 +454,7 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
-    CFG.Block entry = cfg.entry();
+    CFG.Block entry = cfg.entryBlock();
     assertThat(entry.isMethodExitBlock()).as("1st block is not an exit").isFalse();
     assertThat(entry.successors()).as("number of successors").hasSize(1);
     CFG.Block exit = entry.successors().iterator().next();

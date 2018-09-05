@@ -39,10 +39,10 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -1446,7 +1446,7 @@ public class UCFGJavaVisitorTest {
   public void method_with_unknown_symbol_should_not_produce_ucfg() {
     UCFGJavaVisitor UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot()) {
       @Override
-      protected void serializeUCFG(MethodTree tree, CFG cfg) {
+      protected void serializeUCFG(MethodTree tree, ControlFlowGraph cfg) {
         fail("should not serialize a UCFG of a method with unknown parameters");
       }
     };
@@ -1464,7 +1464,7 @@ public class UCFGJavaVisitorTest {
   public void ucfg_requires_semantic() {
     UCFGJavaVisitor UCFGJavaVisitor = Mockito.spy(new UCFGJavaVisitor(tmp.getRoot()) {
       @Override
-      protected void serializeUCFG(MethodTree tree, CFG cfg) {
+      protected void serializeUCFG(MethodTree tree, ControlFlowGraph cfg) {
         // do nothing
       }
     });
@@ -1484,7 +1484,7 @@ public class UCFGJavaVisitorTest {
   public void no_ucfg_without_semantic() {
     UCFGJavaVisitor UCFGJavaVisitor = new UCFGJavaVisitor(tmp.getRoot()) {
       @Override
-      protected void serializeUCFG(MethodTree tree, CFG cfg) {
+      protected void serializeUCFG(MethodTree tree, ControlFlowGraph cfg) {
         fail("should not serialize a UCFG whout semantic");
       }
     };
