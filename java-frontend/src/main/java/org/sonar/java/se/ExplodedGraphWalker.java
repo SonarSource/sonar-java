@@ -50,7 +50,6 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Types;
@@ -1194,6 +1193,6 @@ public class ExplodedGraphWalker {
 
   @CheckForNull
   protected MethodBehavior peekMethodBehavior(Symbol.MethodSymbol symbol) {
-    return behaviorCache.peek(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature());
+    return behaviorCache.peek(symbol.signature());
   }
 }

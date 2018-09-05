@@ -38,7 +38,6 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.VariableReadExtractor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -143,7 +142,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
   }
 
   private UCFG buildUCfg(MethodTree methodTree, CFG cfg) {
-    String signature = signatureFor(methodTree.symbol());
+    String signature = methodTree.symbol().signature();
 
     IdentifierGenerator idGenerator = new IdentifierGenerator(methodTree);
     UCFGBuilder builder = UCFGBuilder.createUCFGForMethod(signature);
@@ -318,7 +317,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
     arguments.addAll(argumentIds(idGenerator, tree.arguments()));
 
     blockBuilder.assignTo(variableWithId(idGenerator.newId()),
-        UCFGBuilder.call(signatureFor((Symbol.MethodSymbol) constructorSymbol)).withArgs(arguments.toArray(new Expression[0])),
+        UCFGBuilder.call(((Symbol.MethodSymbol) constructorSymbol).signature()).withArgs(arguments.toArray(new Expression[0])),
         location(tree));
   }
 
@@ -400,7 +399,7 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
   private void buildAssignCall(BlockBuilder blockBuilder, IdentifierGenerator idGenerator,  List<Expression> arguments, Tree tree, Symbol.MethodSymbol symbol) {
     String destination = idGenerator.newIdFor(tree);
-    blockBuilder.assignTo(variableWithId(destination), UCFGBuilder.call(signatureFor(symbol)).withArgs(arguments.toArray(new Expression[0])), location(tree));
+    blockBuilder.assignTo(variableWithId(destination), UCFGBuilder.call(symbol.signature()).withArgs(arguments.toArray(new Expression[0])), location(tree));
   }
 
   /**
@@ -496,10 +495,6 @@ public class UCFGJavaVisitor extends BaseTreeVisitor implements JavaFileScanner 
 
   private static UCFGBuilder.CallBuilder concat(Expression... args) {
     return call("__concat").withArgs(args);
-  }
-
-  private static String signatureFor(Symbol.MethodSymbol methodSymbol) {
-    return ((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature();
   }
 
   @Nullable
