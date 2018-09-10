@@ -50,6 +50,7 @@ import static org.mockito.Mockito.mock;
 public class DefaultJavaFileScannerContextTest {
 
   private static final File JAVA_FILE = new File("src/test/files/api/JavaFileScannerContext.java");
+  private static final File WORK_DIR = new File("target");
   private static final int COST = 42;
   private static final JavaCheck CHECK = new JavaCheck() { };
   private static final EndOfAnalysisCheck END_OF_ANALYSIS_CHECK = () -> { };
@@ -152,6 +153,11 @@ public class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.flows).isEmpty();
 
     assertMessagePosition(reportedMessage, 1, 0, 4, 1);
+  }
+
+  @Test
+  public void working_directory() {
+    assertThat(context.getWorkingDirectory()).isNotNull();
   }
 
   @Test
@@ -263,8 +269,10 @@ public class DefaultJavaFileScannerContextTest {
       return null;
     }).when(sonarComponents).addIssue(any(File.class), any(JavaCheck.class), anyInt(), anyString(), any());
 
-    doAnswer(invocation -> new ArrayList()).when(sonarComponents).fileLines(eq(JAVA_FILE));
+    doAnswer(invocation -> new ArrayList<>()).when(sonarComponents).fileLines(eq(JAVA_FILE));
     doAnswer(invocation -> "content").when(sonarComponents).fileContent(eq(JAVA_FILE));
+
+    doAnswer(invocation -> WORK_DIR).when(sonarComponents).workDir();
 
     return sonarComponents;
   }
