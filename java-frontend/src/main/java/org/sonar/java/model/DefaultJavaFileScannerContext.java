@@ -176,6 +176,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   @Override
+  public File getWorkingDirectory() {
+    return sonarComponents.workDir();
+  }
+
+  @Override
   public List<Tree> getComplexityNodes(Tree tree) {
     return complexityVisitor.getNodes(tree);
   }
