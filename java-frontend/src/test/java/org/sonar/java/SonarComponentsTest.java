@@ -73,6 +73,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SonarComponentsTest {
@@ -253,11 +254,13 @@ public class SonarComponentsTest {
     File file = new File("file.java");
     TestInputFileBuilder inputFile = new TestInputFileBuilder("", "file.java");
     inputFile.setLines(45);
-    int[] linesOffset = new int[45];
-    linesOffset[35] = 12;
-    linesOffset[42] = 1;
-    inputFile.setOriginalLineOffsets(linesOffset);
-    inputFile.setLastValidOffset(420);
+    int[] lineStartOffsets = new int[45];
+    lineStartOffsets[35] = 12;
+    lineStartOffsets[42] = 1;
+    int lastValidOffset = 420;
+    inputFile.setOriginalLineStartOffsets(lineStartOffsets);
+    inputFile.setOriginalLineEndOffsets(computeLineEndOffsets(lineStartOffsets, lastValidOffset));
+    inputFile.setLastValidOffset(lastValidOffset);
     fileSystem.add(inputFile.build());
 
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));

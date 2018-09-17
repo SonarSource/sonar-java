@@ -38,6 +38,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
 public class JavaIssueTest {
 
@@ -45,8 +46,11 @@ public class JavaIssueTest {
   public void testIssueCreation() {
     TestInputFileBuilder tifb = new TestInputFileBuilder("module", "relPath");
     tifb.setLines(3);
-    tifb.setOriginalLineOffsets(new int[]{0, 10, 15});
-    tifb.setLastValidOffset(25);
+    int[] lineStartOffsets = {0, 10, 15};
+    int lastValidOffset = 25;
+    tifb.setOriginalLineStartOffsets(lineStartOffsets);
+    tifb.setOriginalLineEndOffsets(computeLineEndOffsets(lineStartOffsets, lastValidOffset));
+    tifb.setLastValidOffset(lastValidOffset);
     DefaultInputFile file = tifb.build();
     RuleKey ruleKey = RuleKey.of("squid", "ruleKey");
     SensorContext sensorContext = mock(SensorContext.class);
@@ -97,8 +101,11 @@ public class JavaIssueTest {
     TestInputFileBuilder tifb = new TestInputFileBuilder("module", "relPath");
     tifb.setModuleBaseDir(new java.io.File("").toPath());
     tifb.setLines(3);
-    tifb.setOriginalLineOffsets(new int[]{0, 10, 15});
-    tifb.setLastValidOffset(25);
+    int[] lineStartOffsets = {0, 10, 15};
+    int lastValidOffset = 25;
+    tifb.setOriginalLineStartOffsets(lineStartOffsets);
+    tifb.setOriginalLineEndOffsets(computeLineEndOffsets(lineStartOffsets, lastValidOffset));
+    tifb.setLastValidOffset(lastValidOffset);
     DefaultInputFile file = tifb.build();
     RuleKey ruleKey = RuleKey.of("squid", "ruleKey");
     SensorContext sensorContext = mock(SensorContext.class);
