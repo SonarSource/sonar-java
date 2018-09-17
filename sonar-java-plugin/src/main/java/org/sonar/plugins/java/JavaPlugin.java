@@ -22,8 +22,11 @@ package org.sonar.plugins.java;
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.Plugin;
 import org.sonar.api.SonarProduct;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.api.utils.Version;
+import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
@@ -36,6 +39,8 @@ import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefireExtensions;
 
 public class JavaPlugin implements Plugin {
+
+  private static final Version ANALYSIS_WARNINGS_MIN_SUPPORTED_SQ_VERSION = Version.create(7, 4);
 
   @Override
   public void define(Context context) {
@@ -82,8 +87,19 @@ public class JavaPlugin implements Plugin {
       JavaSquidSensor.class,
       PostAnalysisIssueFilter.class,
       XmlFileSensor.class);
-    context.addExtensions(builder.build());
 
+    if (isAnalysisWarningsSupported(context.getRuntime())) {
+      builder.add(AnalysisWarningsWrapper.class);
+    }
+
+    context.addExtensions(builder.build());
   }
 
+  /**
+   * Drop this and related when the minimum supported version of SonarJava reaches 7.4.
+   */
+  private static boolean isAnalysisWarningsSupported(SonarRuntime runtime) {
+    return runtime.getApiVersion().isGreaterThanOrEqual(ANALYSIS_WARNINGS_MIN_SUPPORTED_SQ_VERSION)
+      && runtime.getProduct() != SonarProduct.SONARLINT;
+  }
 }

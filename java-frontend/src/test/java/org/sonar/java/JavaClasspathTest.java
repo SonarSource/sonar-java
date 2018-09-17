@@ -33,12 +33,19 @@ import org.sonar.api.utils.log.LoggerLevel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class JavaClasspathTest {
 
-  private DefaultFileSystem fs;
   private MapSettings settings;
+  private DefaultFileSystem fs;
+  private AnalysisWarningsWrapper analysisWarnings;
+
   private JavaClasspath javaClasspath;
+
   @Rule
   public LogTester logTester = new LogTester();
 
@@ -49,7 +56,8 @@ public class JavaClasspathTest {
     inputFile.setLanguage("java");
     inputFile.setType(InputFile.Type.MAIN);
     fs.add(inputFile.build());
-    settings =  new MapSettings();
+    settings = new MapSettings();
+    analysisWarnings = mock(AnalysisWarningsWrapper.class);
   }
 
   /**
@@ -60,8 +68,9 @@ public class JavaClasspathTest {
   @Test
   public void no_interaction_with_FileSystem_at_initialization() {
     fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
-    javaClasspath = new JavaClasspath(settings.asConfig(), fs);
+    javaClasspath = createJavaClasspath();
     Mockito.verifyZeroInteractions(fs);
+    Mockito.verifyZeroInteractions(analysisWarnings);
   }
 
   @Test
@@ -73,6 +82,26 @@ public class JavaClasspathTest {
   public void when_property_not_defined_project_classpath_null_getElements_should_be_empty() {
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).isEmpty();
+  }
+
+  @Test
+  public void register_warning_for_missing_bytecode_when_libraries_empty_and_have_java_sources() {
+    javaClasspath = createJavaClasspath();
+    javaClasspath.init();
+    assertThat(javaClasspath.getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
+    assertThat(javaClasspath.hasJavaSources()).isTrue();
+    String warning = "Bytecode of dependencies was not provided for analysis of source files, " +
+      "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property.";
+    verify(analysisWarnings).addUnique(eq(warning));
+  }
+
+  @Test
+  public void do_not_register_warning_for_missing_bytecode_when_wrapper_not_injected() {
+    javaClasspath = new JavaClasspath(settings.asConfig(), fs);
+    javaClasspath.init();
+    assertThat(javaClasspath.getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
+    assertThat(javaClasspath.hasJavaSources()).isTrue();
+    verifyZeroInteractions(analysisWarnings);
   }
 
   @Test
@@ -315,7 +344,7 @@ public class JavaClasspathTest {
   public void empty_binaries_on_project_with_more_than_one_source_should_fail_on_sonarqube() throws Exception {
     createTwoFilesInFileSystem();
     try {
-      javaClasspath = new JavaClasspath(settings.asConfig(), fs);
+      javaClasspath = createJavaClasspath();
       javaClasspath.getElements();
       fail("Exception should have been raised");
     } catch (AnalysisException ise) {
@@ -389,6 +418,6 @@ public class JavaClasspathTest {
   }
 
   private JavaClasspath createJavaClasspath() {
-    return new JavaClasspath(settings.asConfig(), fs);
+    return new JavaClasspath(settings.asConfig(), fs, analysisWarnings);
   }
 }
