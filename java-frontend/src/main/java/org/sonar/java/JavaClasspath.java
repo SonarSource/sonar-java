@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
@@ -34,8 +35,16 @@ public class JavaClasspath extends AbstractJavaClasspath {
 
   private static final Logger LOG = Loggers.get(JavaClasspath.class);
 
-  public JavaClasspath(Configuration settings, FileSystem fs) {
+  @Nullable
+  private final AnalysisWarningsWrapper analysisWarnings;
+
+  public JavaClasspath(Configuration settings, FileSystem fs, @Nullable AnalysisWarningsWrapper analysisWarnings) {
     super(settings, fs, InputFile.Type.MAIN);
+    this.analysisWarnings = analysisWarnings;
+  }
+
+  public JavaClasspath(Configuration settings, FileSystem fs) {
+    this(settings, fs, null);
   }
 
   @Override
@@ -59,8 +68,12 @@ public class JavaClasspath extends AbstractJavaClasspath {
       }
       elements = new ArrayList<>(binaries);
       if (libraries.isEmpty() && hasJavaSources()) {
-        LOG.warn("Bytecode of dependencies was not provided for analysis of source files, " +
-          "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property");
+        String warning = "Bytecode of dependencies was not provided for analysis of source files, " +
+          "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property.";
+        LOG.warn(warning);
+        if (analysisWarnings != null) {
+          analysisWarnings.addUnique(warning);
+        }
       }
       elements.addAll(libraries);
       profiler.stopInfo();
