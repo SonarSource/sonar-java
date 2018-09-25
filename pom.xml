@@ -87,7 +87,7 @@
     <sonar.version>7.3-alpha1</sonar.version>
     <analyzer.commons.version>1.9.0.327</analyzer.commons.version>
     <orchestrator.version>3.21.0.1721</orchestrator.version>
-    <sslr.version>1.22</sslr.version>
+    <sslr.version>1.23</sslr.version>
     <jacoco.version>0.8.2</jacoco.version>
     <asm.version>6.2.1</asm.version>
     <argLine>-Xmx512m</argLine>
