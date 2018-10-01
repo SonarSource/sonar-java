@@ -26,10 +26,12 @@ import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.java.checks.AtLeastOneConstructorCheck;
+import org.sonar.java.checks.ConstantsShouldBeStaticFinalCheck;
 import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
 import org.sonar.java.checks.PrivateFieldUsedLocallyCheck;
 import org.sonar.java.checks.UtilityClassWithPublicConstructorCheck;
+import org.sonar.java.checks.naming.BadFieldNameCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -46,7 +48,9 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     EqualsNotOverriddenInSubclassCheck.class,
     EqualsNotOverridenWithCompareToCheck.class,
     UtilityClassWithPublicConstructorCheck.class,
-    AtLeastOneConstructorCheck.class);
+    AtLeastOneConstructorCheck.class,
+    BadFieldNameCheck.class,
+    ConstantsShouldBeStaticFinalCheck.class);
 
   private static final List<String> GENERATE_UNUSED_FIELD_RELATED_METHODS = ImmutableList.<String>builder()
     .add("lombok.Getter")
@@ -70,7 +74,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     .add("lombok.Value")
     .build();
 
-  private static final List<String> GENERATE_PRIVATE_CONSTRUCTOR = ImmutableList.<String>builder()
+  private static final List<String> UTILITY_CLASS = ImmutableList.<String>builder()
     .add("lombok.experimental.UtilityClass")
     .build();
 
@@ -111,6 +115,14 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
       acceptLines(tree, UtilityClassWithPublicConstructorCheck.class);
     }
 
+    if (usesAnnotation(tree, UTILITY_CLASS)) {
+      excludeLines(tree, BadFieldNameCheck.class);
+      excludeLines(tree, ConstantsShouldBeStaticFinalCheck.class);
+    } else {
+      acceptLines(tree, BadFieldNameCheck.class);
+      acceptLines(tree, ConstantsShouldBeStaticFinalCheck.class);
+    }
+
     super.visitClass(tree);
   }
 
@@ -125,14 +137,14 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   }
 
   private static boolean generatesPrivateConstructor(ClassTree classTree) {
-    if (usesAnnotation(classTree, GENERATE_PRIVATE_CONSTRUCTOR)) {
+    if (usesAnnotation(classTree, UTILITY_CLASS)) {
       return true;
     }
     SymbolMetadata metadata = classTree.symbol().metadata();
     return GENERATE_CONSTRUCTOR.stream()
-            .map(metadata::valuesForAnnotation)
-            .filter(Objects::nonNull)
-            .anyMatch(LombokFilter::generatesPrivateAccess);
+      .map(metadata::valuesForAnnotation)
+      .filter(Objects::nonNull)
+      .anyMatch(LombokFilter::generatesPrivateAccess);
   }
 
   private static boolean generatesPrivateAccess(List<SymbolMetadata.AnnotationValue> values) {

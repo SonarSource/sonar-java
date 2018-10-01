@@ -177,12 +177,18 @@ static class UtilityClass {
   static class A { // WithIssue
     public static void foo() {
     }
+
+    public final String FINAL_NON_STATIC = "x"; // WithIssue
+    public final String finalNonStatic = "x"; // WithIssue
   }
 
   @lombok.experimental.UtilityClass
   static class B { // NoIssue
     public static void foo() {
     }
+
+    public final String STATIC_FINAL_ALLCAPS = "x"; // NoIssue
+    public final String staticFinalCamelCase = "x"; // NoIssue
   }
 }
 
