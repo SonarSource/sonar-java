@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Rule;
@@ -1711,5 +1712,12 @@ public class SymbolTableTest {
     assertThat(res.symbol("<init>", 17).usages()).hasSize(1);
     assertThat(res.symbol("<init>", 27).usages()).hasSize(1);
     assertThat(res.symbol("<init>", 37).usages()).hasSize(1);
+  }
+  @Test
+  public void interface_cycle() {
+    Result res = Result.createFor("InterfaceCycle");
+    JavaSymbol.TypeJavaSymbol a = (JavaSymbol.TypeJavaSymbol) res.symbol("A");
+    Set<ClassJavaType> superTypes = a.superTypes();
+    assertThat(superTypes).hasSize(3).doesNotContain((ClassJavaType) a.type); // types B, C and Object
   }
 }

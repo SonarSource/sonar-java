@@ -27,6 +27,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -434,13 +437,18 @@ public class JavaSymbol implements Symbol {
 
     private Set<ClassJavaType> interfacesOfType() {
       if (interfaces == null) {
-        ImmutableSet.Builder<ClassJavaType> builder = ImmutableSet.builder();
-        for (JavaType interfaceType : getInterfaces()) {
-          ClassJavaType classType = (ClassJavaType) interfaceType;
-          builder.add(classType);
-          builder.addAll(classType.getSymbol().interfacesOfType());
+        Deque<ClassJavaType> todo = getInterfaces().stream().map(ClassJavaType.class::cast).distinct().collect(Collectors.toCollection(LinkedList::new));
+        Set<ClassJavaType> builder = new LinkedHashSet<>();
+        while (!todo.isEmpty()) {
+          ClassJavaType classType = todo.pop();
+          if(classType == type) {
+            continue;
+          }
+          if (builder.add(classType)) {
+            classType.symbol.getInterfaces().forEach(t -> todo.addLast((ClassJavaType) t));
+          }
         }
-        interfaces = builder.build();
+        interfaces = builder;
       }
       return interfaces;
     }
