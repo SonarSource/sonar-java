@@ -206,9 +206,46 @@ class Fields {
     public int[] getValues6() {
       return PLUS_SIGN; // Noncompliant
     }
+  }
 
+  class ImmutableInsideConstructors {
+    private final List<String> list;
 
+    ImmutableInsideConstructors(List<String> list) {
+      this.list = Collections.unmodifiableList(list);
+    }
 
+    ImmutableInsideConstructors() {
+      this.list = getImmutableCollection();
+    }
+
+    ImmutableInsideConstructors(String element) {
+      this(Arrays.asList(element));
+    }
+
+    public List<String> getList() {
+      return list; // Compliant - field is immutable
+    }
+
+    private static ImmutableCollection getImmutableCollection() {
+      return null;
+    }
+  }
+
+  class ImmutableOnlyInOneConstructor {
+    private final List<String> list;
+
+    ImmutableOnlyInOneConstructor(List<String> list) {
+      this.list = Collections.unmodifiableList(list);
+    }
+
+    ImmutableOnlyInOneConstructor() {
+      this.list = new ArrayList();
+    }
+
+    public List<String> getList() {
+      return list; // Noncompliant
+    }
   }
 
 }
