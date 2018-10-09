@@ -21,3 +21,9 @@ class C {
     return (null); // Noncompliant [[sc=13;ec=17]]
   }
 }
+
+class D {
+  protected Object clone() {
+    return null; // Noncompliant [[sc=12;ec=16]] {{Return a non null object.}}
+  }
+}
