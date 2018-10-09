@@ -1,3 +1,6 @@
+import com.google.auto.value.AutoValue;
+import org.immutables.value.Value;
+
 abstract class A {
   private int b;
 
@@ -51,4 +54,17 @@ public abstract class Car { // Compliant - has private methods
 
   private void turnOnLights() {}
   private void startEngine() {}
+}
+
+@AutoValue
+abstract class Foo { // Compliant
+  static Foo create(String name) {
+    return new AutoValue_Foo(name);
+  }
+  abstract String name();
+}
+
+@Value.Immutable
+abstract class Bar { // Compliant
+  abstract String name();
 }
