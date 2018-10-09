@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class SpringEndpointsCheck extends IssuableSubscriptionVisitor {
 
   private static final String REQUEST_MAPPING_ANNOTATION = "org.springframework.web.bind.annotation.RequestMapping";
-  private static final String MESSAGE = "Make sure exposing this Spring endpoint is safe here.";
+  private static final String MESSAGE = "Make sure that exposing this HTTP endpoint is safe here.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
