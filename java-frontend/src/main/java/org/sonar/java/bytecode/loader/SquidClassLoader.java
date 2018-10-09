@@ -32,6 +32,8 @@ import java.util.Enumeration;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.apache.commons.lang.ArrayUtils;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.resolve.Convert;
 
@@ -39,6 +41,8 @@ import org.sonar.java.resolve.Convert;
  * Class loader, which is able to load classes from a list of JAR files and directories.
  */
 public class SquidClassLoader extends ClassLoader implements Closeable {
+
+  private static final Logger LOG = Loggers.get(SquidClassLoader.class);
 
   private final List<Loader> loaders;
 
@@ -50,12 +54,17 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
     loaders = new ArrayList<>();
     for (File file : files) {
       if (file.exists()) {
-        if (file.isDirectory()) {
-          loaders.add(new FileSystemLoader(file));
-        } else if (file.getName().endsWith(".jar")) {
-          loaders.add(new JarLoader(file));
-        } else if (file.getName().endsWith(".aar")) {
-          loaders.add(new AarLoader(file));
+        try {
+          if (file.isDirectory()) {
+            loaders.add(new FileSystemLoader(file));
+          } else if (file.getName().endsWith(".jar")) {
+            loaders.add(new JarLoader(file));
+          } else if (file.getName().endsWith(".aar")) {
+            loaders.add(new AarLoader(file));
+          }
+        } catch (IllegalStateException e) {
+          LOG.warn("Unable to load classes from '{}'", file.getPath());
+          LOG.debug("{}: {}", e.getMessage(), e.getCause().getMessage());
         }
       }
     }
