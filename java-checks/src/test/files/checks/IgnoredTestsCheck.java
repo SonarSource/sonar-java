@@ -1,5 +1,6 @@
 import org.junit.Ignore;
 import org.junit.Assume;
+import org.junit.jupiter.api.Disabled;
 
 abstract class MyTest {
   @org.junit.Ignore
@@ -8,10 +9,16 @@ abstract class MyTest {
   @Ignore
   void bar() {} // Noncompliant
 
+  @Disabled
+  void disabledJunit5() {} // Noncompliant
+
   void qix() {}
 
   @org.junit.Ignore("withComment") // compliant : explicit comment about why this test is ignored.
   void foo2() {}
+
+  @Disabled("withComment") // compliant : explicit comment about why this test is ignored.
+  void disabledJunit5WithComment() {}
 
   void assume1() {
     Assume.assumeTrue(false); // Noncompliant

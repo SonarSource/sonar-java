@@ -53,8 +53,8 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    List<SymbolMetadata.AnnotationValue> ignoreAnnotationValues = methodTree.symbol().metadata().valuesForAnnotation("org.junit.Ignore");
-    if (ignoreAnnotationValues != null && ignoreAnnotationValues.isEmpty()) {
+    SymbolMetadata symbolMetadata = methodTree.symbol().metadata();
+    if (isSilentlyIgnored(symbolMetadata, "org.junit.Ignore") || isSilentlyIgnored(symbolMetadata, "org.junit.jupiter.api.Disabled")) {
       reportIssue(methodTree.simpleName(), "Fix or remove this skipped unit test");
     }
     BlockTree block = methodTree.block();
@@ -68,6 +68,11 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
         .filter(IgnoredTestsCheck::hasConstantOppositeArg)
         .forEach(mit -> reportIssue(mit.methodSelect(), "Fix or remove this skipped unit test"));
     }
+  }
+
+  private static boolean isSilentlyIgnored(SymbolMetadata symbolMetadata, String annotation) {
+    List<SymbolMetadata.AnnotationValue> annotationValues = symbolMetadata.valuesForAnnotation(annotation);
+    return annotationValues != null && annotationValues.isEmpty();
   }
 
   private static boolean hasConstantOppositeArg(MethodInvocationTree mit) {
