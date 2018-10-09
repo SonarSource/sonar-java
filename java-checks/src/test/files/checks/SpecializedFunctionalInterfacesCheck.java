@@ -247,7 +247,17 @@ class MySupplier3 implements Supplier<Integer>, Runnable, Consumer<Double> { // 
   }
 }
 
-class BooleanFunctions {
+class BooleanFunctions implements Supplier<Boolean>, Consumer<Boolean> { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'BooleanSupplier'}}
+
+  @Override
+  public Boolean get() {
+    return null;
+  }
+
+  @Override
+  public void accept(Boolean t) {
+  }
+
   Function<Boolean, Boolean> a1 = (x) -> true; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<Boolean>'}}
   Function<A, Boolean> a2 = (x) -> true; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'Predicate<A>'}}
   Function<Boolean, Integer> a3 = (x) -> null;
@@ -255,4 +265,11 @@ class BooleanFunctions {
 
   BiFunction<A, A2, Boolean> b1 = (x, y) -> true; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'BiPredicate<A, A2>'}}
   BiFunction<Boolean, Boolean, Boolean> b2 = (x, y) -> true; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'BinaryOperator<Boolean>'}}
+
+  Supplier<Boolean> a = () -> true; // Noncompliant
+  BiConsumer<A, Boolean> b3 = (aaa, bool1) -> {}; // Compliant - there is no ObjBooleanConsumer functional interface
+  Consumer<Boolean> b4 = (bool1) -> {}; // Compliant - there is no BooleanConsumer functional interface
+  Predicate<Boolean> b5 = (bool1) -> true; // Compliant - there is no BooleanPredicate functional interface
+  UnaryOperator<Boolean> b6 = (bool1) -> true; // Compliant - there is no BooleanUnaryOperator functional interface
+  BinaryOperator<Boolean> b7 = (bool1, bool2) -> true; // Compliant - there is no BooleanBinaryOperator functional interface
 }
