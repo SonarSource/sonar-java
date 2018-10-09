@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import org.sonar.java.checks.AtLeastOneConstructorCheck;
 import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
+import org.sonar.java.checks.PrivateFieldUsedLocallyCheck;
 import org.sonar.java.checks.UtilityClassWithPublicConstructorCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -41,6 +42,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
   private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = ImmutableSet.<Class<? extends JavaCheck>>of(
     UnusedPrivateFieldCheck.class,
+    PrivateFieldUsedLocallyCheck.class,
     EqualsNotOverriddenInSubclassCheck.class,
     EqualsNotOverridenWithCompareToCheck.class,
     UtilityClassWithPublicConstructorCheck.class,
@@ -83,8 +85,10 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
     if (generatesEquals || usesAnnotation(tree, GENERATE_UNUSED_FIELD_RELATED_METHODS)) {
       excludeLines(tree, UnusedPrivateFieldCheck.class);
+      excludeLines(tree, PrivateFieldUsedLocallyCheck.class);
     } else {
       acceptLines(tree, UnusedPrivateFieldCheck.class);
+      acceptLines(tree, PrivateFieldUsedLocallyCheck.class);
     }
 
     if (usesAnnotation(tree, GENERATE_CONSTRUCTOR)) {

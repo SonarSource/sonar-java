@@ -237,3 +237,61 @@ static class UtilityClassWithPublicConstructorCheck {
     return lombok.AccessLevel.MODULE;
   }
 }
+
+class PrivateFieldOnlyUsedLocally {
+  private PrivateFieldOnlyUsedLocally() {
+  }
+
+  class A { // WithIssue
+    private int foo; // WithIssue
+    public void bar(int y){
+      foo = y + 5;
+      if (foo == 0) {
+        // ...
+      }
+    }
+  }
+
+  @lombok.Getter
+  class B { // WithIssue
+    private int foo; // NoIssue
+    public void bar(int y){
+      foo = y + 5;
+      if (foo == 0) {
+        // ...
+      }
+    }
+  }
+
+  @lombok.AllArgsConstructor
+  class C { // NoIssue
+    private int foo; // NoIssue
+    public void bar(int y){
+      if (foo == 0) {
+        // ...
+      }
+    }
+  }
+
+  @lombok.Data
+  class D { // WithIssue
+    private int foo; // NoIssue
+    public void bar(int y){
+      foo = y + 5;
+      if (foo == 0) {
+        // ...
+      }
+    }
+  }
+
+  class E { // WithIssue
+    @Getter private int foo; // NoIssue
+    public void bar(int y){
+      foo = y + 5;
+      if (foo == 0) {
+        // ...
+      }
+    }
+  }
+
+}
