@@ -1,5 +1,11 @@
 {
+'jdk6:java/awt/image/renderable/ParameterBlock.java':[
+143,
+],
 'jdk6:java/security/AlgorithmParameters.java':[
 361,
+],
+'jdk6:java/text/Format.java':[
+244,
 ],
 }
