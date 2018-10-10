@@ -104,6 +104,11 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
       return Optional.empty();
     }
     ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) javaType;
+
+    if (hasAnyUnknownParameterType(ptjt)) {
+      return Optional.empty();
+    }
+
     switch (ptjt.getSymbol().getFullyQualifiedName()) {
       case "java.util.function.Function":
         return handleFunctionInterface(ptjt);
@@ -121,6 +126,10 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
       default:
         return Optional.empty();
     }
+  }
+
+  private static boolean hasAnyUnknownParameterType(ParametrizedTypeJavaType ptjt) {
+    return ptjt.typeParameters().stream().map(ptjt::substitution).anyMatch(Type::isUnknown);
   }
 
   private static Optional<String> handleFunctionInterface(ParametrizedTypeJavaType ptjt) {

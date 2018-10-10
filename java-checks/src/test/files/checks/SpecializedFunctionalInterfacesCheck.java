@@ -273,3 +273,20 @@ class BooleanFunctions implements Supplier<Boolean>, Consumer<Boolean> { // Nonc
   UnaryOperator<Boolean> b6 = (bool1) -> true; // Compliant - there is no BooleanUnaryOperator functional interface
   BinaryOperator<Boolean> b7 = (bool1, bool2) -> true; // Compliant - there is no BooleanBinaryOperator functional interface
 }
+
+class UnknownTypes implements Supplier<MyFirstUnknownType> {
+
+  @Override
+  public MyFirstUnknownType get() {
+    return null;
+  }
+
+  Supplier<MyFirstUnknownType> unknownTypeSupplier = () -> new MyFirstUnknownType();
+  BiConsumer<A, MyFirstUnknownType> unknownTypeBiConsumer = (a, ut) -> {};
+  Function<A, MyFirstUnknownType> unknownTypeFunction1 = x -> new MyFirstUnknownType(x);
+  Function<MyFirstUnknownType, A> unknownTypeFunction2 = x -> new A();
+  Function<MyFirstUnknownType, MySecondUnknownType> unknownTypeFunction3 = ut -> new MySecondUnknownType(ut);
+  Function<MyFirstUnknownType, MyFirstUnknownType> unknownTypeFunction4 = ut -> ut;
+  BiFunction<MyFirstUnknownType, MySecondUnknownType, MyThirdUnknownType> unknownTypesBiFunction = (a, b) -> new MyThirdUnknownType(a,b);
+  BiFunction<MyFirstUnknownType, MySecondUnknownType, Boolean> unknownTypesBiFunction2 = (x, y) -> true;
+}
