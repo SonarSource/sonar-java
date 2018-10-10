@@ -23,6 +23,7 @@ import checks.UselessImportCheck.*;              // Noncompliant {{Remove this u
 import checks.UselessImportCheckClose.*;
 import static checks.UselessImportCheck.Foo.*;
 import checks.UselessImportCheck.foo.*;
+import checks.UselessImportCheck.foo.Foo;
 import pkg.NonCompliant1;           // Noncompliant
 import pkg.CompliantClass1;
 import pkg.CompliantClass2;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import javax.annotation.Nonnull;
+import checks.UselessImportCheck.WithPackageAux; // Noncompliant {{Remove this unnecessary import: same package classes are always implicitly imported.}}
 
 class Foo2 extends Foo {
   Bar a = new Baz<String>();

@@ -158,9 +158,9 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
       //strip out .* to compare length with current package.
       importName = reference.substring(0, reference.length() - 2);
     }
-    return !currentPackage.isEmpty() &&
-        importName.startsWith(currentPackage) &&
-        (importName.length() == currentPackage.length() || reference.substring(reference.indexOf(currentPackage)).charAt(0) == '.');
+    return !currentPackage.isEmpty()
+      && (importName.equals(currentPackage)
+          || (reference.startsWith(currentPackage) && reference.charAt(currentPackage.length()) == '.') && reference.indexOf('.', currentPackage.length() + 1) == -1);
   }
 
   private boolean isDuplicatedImport(String reference) {
