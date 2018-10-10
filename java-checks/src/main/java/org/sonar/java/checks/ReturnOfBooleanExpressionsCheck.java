@@ -20,19 +20,22 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import javax.annotation.Nullable;
-
-import java.util.List;
 
 @Rule(key = "S1126")
 public class ReturnOfBooleanExpressionsCheck extends IssuableSubscriptionVisitor {
@@ -47,8 +50,18 @@ public class ReturnOfBooleanExpressionsCheck extends IssuableSubscriptionVisitor
   public void visitNode(Tree tree) {
     IfStatementTree ifStatementTree = (IfStatementTree) tree;
     StatementTree elseStatementOrNextStatement = getStatementTree(ifStatementTree);
-    if (hasOneReturnBoolean(elseStatementOrNextStatement) && hasOneReturnBoolean(ifStatementTree.thenStatement())) {
+    StatementTree thenStatement = ifStatementTree.thenStatement();
+
+    if (hasOneReturnBoolean(elseStatementOrNextStatement) && hasOneReturnBoolean(thenStatement)) {
       reportIssue(ifStatementTree.ifKeyword(), "Replace this if-then-else statement by a single return statement.");
+    } else {
+      Optional<MethodInvocationTree> elseMIT = getMethodInvocation(elseStatementOrNextStatement);
+      Optional<MethodInvocationTree> thenMIT = getMethodInvocation(thenStatement);
+      if (elseMIT.isPresent()
+        && thenMIT.isPresent()
+        && areAllSyntaxicallyEquivallentExceptBoolean(elseMIT.get(), thenMIT.get())) {
+        reportIssue(ifStatementTree.ifKeyword(), "Replace this if-then-else statement by a single method invocation.");
+      }
     }
   }
 
@@ -82,9 +95,59 @@ public class ReturnOfBooleanExpressionsCheck extends IssuableSubscriptionVisitor
 
   private static boolean isReturnBooleanLiteral(StatementTree statementTree) {
     if (statementTree.is(Kind.RETURN_STATEMENT)) {
-      ReturnStatementTree returnStatement = (ReturnStatementTree) statementTree;
-      return returnStatement.expression() != null && returnStatement.expression().is(Kind.BOOLEAN_LITERAL);
+      ExpressionTree expression = ((ReturnStatementTree) statementTree).expression();
+      return expression != null && expression.is(Tree.Kind.BOOLEAN_LITERAL);
     }
     return false;
+  }
+
+  private static Optional<MethodInvocationTree> getMethodInvocation(@Nullable StatementTree statementTree) {
+    if (statementTree == null) {
+      return Optional.empty();
+    }
+    Tree newTree = statementTree;
+    if (newTree.is(Tree.Kind.BLOCK)) {
+      List<StatementTree> body = ((BlockTree) newTree).body();
+      if (body.size() != 1) {
+        return Optional.empty();
+      }
+      newTree = body.get(0);
+    }
+    if (newTree.is(Tree.Kind.RETURN_STATEMENT)) {
+      newTree = ((ReturnStatementTree) newTree).expression();
+    } else if (newTree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+      newTree = ((ExpressionStatementTree) newTree).expression();
+    }
+    if (newTree != null && newTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      return Optional.of((MethodInvocationTree) newTree);
+    }
+    return Optional.empty();
+  }
+
+  private static boolean areAllSyntaxicallyEquivallentExceptBoolean(MethodInvocationTree mit1, MethodInvocationTree mit2) {
+    if (mit1.parent().kind() != mit2.parent().kind()) {
+      // requires to have on both side a return statement, or on both side an expression statement.
+      return false;
+    }
+    if (!SyntacticEquivalence.areEquivalent(mit1.methodSelect(), mit2.methodSelect())) {
+      return false;
+    }
+    List<? extends Tree> mit1Args = mit1.arguments();
+    List<? extends Tree> mit2Args = mit2.arguments();
+    if (mit1Args.size() != mit2Args.size()) {
+      return false;
+    }
+    boolean containsBooleanLiteral = false;
+    for (int i = 0; i < mit1Args.size(); i++) {
+      Tree arg1 = mit1Args.get(i);
+      Tree arg2 = mit2Args.get(i);
+      boolean arg1IsBooleanLiteral = arg1.is(Tree.Kind.BOOLEAN_LITERAL);
+      boolean arg2IsBooleanLiteral = arg2.is(Tree.Kind.BOOLEAN_LITERAL);
+      if (!SyntacticEquivalence.areEquivalent(arg1, arg2) && !(arg1IsBooleanLiteral && arg2IsBooleanLiteral)) {
+        return false;
+      }
+      containsBooleanLiteral |= arg1IsBooleanLiteral || arg2IsBooleanLiteral;
+    }
+    return containsBooleanLiteral;
   }
 }
