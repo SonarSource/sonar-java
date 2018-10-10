@@ -55,7 +55,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     }
     if (tree.is(Tree.Kind.CLASS)) {
       checkClassInterfaces(((ClassTree) tree));
-    } else if (tree.is(Tree.Kind.VARIABLE)) {
+    } else {
       checkVariableTypeAndInitializer((VariableTree) tree);
     }
   }
@@ -122,7 +122,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
       case "java.util.function.Predicate":
       case "java.util.function.UnaryOperator":
       case "java.util.function.BinaryOperator":
-        return Optional.ofNullable(new ParameterTypeNameAndTreeType(ptjt, 0).paramTypeName).map(s -> s + javaType.name());
+        return handleSingleParameterFunctions(ptjt);
       default:
         return Optional.empty();
     }
@@ -130,6 +130,10 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
 
   private static boolean hasAnyUnknownParameterType(ParametrizedTypeJavaType ptjt) {
     return ptjt.typeParameters().stream().map(ptjt::substitution).anyMatch(Type::isUnknown);
+  }
+
+  private static Optional<String> handleSingleParameterFunctions(ParametrizedTypeJavaType ptjt) {
+    return Optional.ofNullable(new ParameterTypeNameAndTreeType(ptjt, 0).paramTypeName).map(s -> s + ptjt.name());
   }
 
   private static Optional<String> handleFunctionInterface(ParametrizedTypeJavaType ptjt) {
@@ -186,9 +190,8 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     ParameterTypeNameAndTreeType supplierParamType = new ParameterTypeNameAndTreeType(ptjt, 0);
     if (isBoolean(supplierParamType)) {
       return Optional.of("BooleanSupplier");
-    } else {
-      return Optional.ofNullable(supplierParamType.paramTypeName).map(s -> s + "Supplier");
     }
+    return Optional.ofNullable(supplierParamType.paramTypeName).map(s -> s + "Supplier");
   }
 
   private static class InterfaceTreeAndStringPairReport {
@@ -221,11 +224,11 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     private static String returnStringFromJavaObject(Type argType) {
       if (argType.is("java.lang.Integer")) {
         return "Int";
-      } else if (argType.is("java.lang.Double") || argType.is("java.lang.Long")) {
-        return argType.name();
-      } else {
-        return null;
       }
+      if (argType.is("java.lang.Double") || argType.is("java.lang.Long")) {
+        return argType.name();
+      }
+      return null;
     }
   }
 }
