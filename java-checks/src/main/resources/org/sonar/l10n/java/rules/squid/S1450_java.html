@@ -3,17 +3,20 @@ information. Therefore, it should become a local variable in the relevant method
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class Foo {
-  private int singularField;
+  private int a;
+  private int b;
 
   public void doSomething(int y) {
-    singularField = y + 5;
+    a = y + 5;
     ...
-    if(singularField == 0 {...}
+    if(a == 0) {
+      ...
+    }
     ...
   }
 
   public void doSomethingElse(int y) {
-    singularField = y + 3;
+    b = y + 3;
     ...
   }
 }
@@ -23,12 +26,15 @@ public class Foo {
 public class Foo {
 
   public void doSomething(int y) {
-    int singularField = y + 5;
+    int a = y + 5;
     ...
+    if(a == 0) {
+      ...
+    }
   }
 
   public void doSomethingElse(int y) {
-    int singularField = y + 3;
+    int b = y + 3;
     ...
   }
 }

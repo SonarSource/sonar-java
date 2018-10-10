@@ -1,10 +1,18 @@
-<p>Hardcoding an IP address into source code is a bad idea for several reasons:</p>
+<p>Hardcoding IP addresses is security-sensitive. It has led in the past to the following vulnerabilities:</p>
 <ul>
-  <li> a recompile is required if the address changes </li>
-  <li> it forces the same address to be used in every environment (dev, sys, qa, prod) </li>
-  <li> it places the responsibility of setting the value to use in production on the shoulders of the developer </li>
-  <li> it allows attackers to decompile the code and thereby discover a potentially sensitive address </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-5901">CVE-2006-5901</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2005-3725">CVE-2005-3725</a> </li>
 </ul>
+<p>Today's services have an ever-changing architecture due to their scaling and redundancy needs. It is a mistake to think that a service will always
+have the same IP address. When it does change, the hardcoded IP will have to be modified too. This will have an impact on the product development,
+delivery and deployment:</p>
+<ul>
+  <li> The developers will have to do a rapid fix every time this happens, instead of having an operation team change a configuration file. </li>
+  <li> It forces the same address to be used in every environment (dev, sys, qa, prod). </li>
+</ul>
+<p>Last but not least it has an effect on application security. Attackers might be able to decompile the code and thereby discover a potentially
+sensitive address. They can perform a Denial of Service attack on the service at this address or spoof the IP address. Such an attack is always
+possible, but in the case of a hardcoded IP address the fix will be much slower, which will increase an attack's impact.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
   <li> make the IP address configurable. </li>
@@ -15,11 +23,13 @@ String ip = "192.168.12.42"; // Noncompliant
 Socket socket = new Socket(ip, 6667);
 </pre>
 <h2>Exceptions</h2>
-<p>No issue is reported for the following cases because they are not considered as sensitive:</p>
+<p>No issue is reported for the following cases because they are not considered sensitive:</p>
 <ul>
   <li> Loopback addresses 127.0.0.0/8 in CIDR notation (from 127.0.0.0 to 127.255.255.255) </li>
   <li> Broadcast address 255.255.255.255 </li>
   <li> Non routable address 0.0.0.0 </li>
+  <li> Strings of the form <code>2.5.&lt;number&gt;.&lt;number&gt;</code> as they <a href="http://www.oid-info.com/introduction.htm">often match
+  Object Identifiers</a> (OID). </li>
 </ul>
 <h2>See</h2>
 <ul>
