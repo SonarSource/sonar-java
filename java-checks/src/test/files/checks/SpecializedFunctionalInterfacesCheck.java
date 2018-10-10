@@ -18,7 +18,7 @@ class A implements Supplier<Integer> { // Noncompliant [[sc=7;ec=8]] {{Refactor 
   }
 
   private class AA implements Consumer<Long> { // Noncompliant
-    
+
     Consumer<Integer> a1 = new Consumer<Integer>() { // Noncompliant [[sc=5;ec=22]] {{Refactor this code to use the more specialised Functional Interface 'IntConsumer'}}
       @Override
       public void accept(Integer t) {
@@ -55,6 +55,7 @@ class A implements Supplier<Integer> { // Noncompliant [[sc=7;ec=8]] {{Refactor 
         return 1.0;
       }
     };
+    Function<A, Double> a17_2 = a17; // Compliant
     Function<Integer, A> a18 = (int1) -> new A(); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntFunction<A>'}}
     Function<Long, A> a19 = (long1) -> new A(); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'LongFunction<A>'}}
     Function<Double, A2> a20 = (double1) -> new A2(); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'DoubleFunction<A2>'}}
@@ -69,8 +70,7 @@ class A implements Supplier<Integer> { // Noncompliant [[sc=7;ec=8]] {{Refactor 
     BiFunction<String, Integer, Double> a40 = (x, y) -> 2.0; // Compliant
     BiFunction<String, String, Integer> a42 = (x, y) -> 1; // Compliant
     BiFunction<String, Double, Double> a43 = (x,y) -> 2.0; // Compliant
-    
-    
+
     BiFunction<String, String, String> bi = (x, y) -> { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'BinaryOperator<String>'}}
       return x + y;
     };
@@ -153,7 +153,7 @@ class A3 {
     public Entry<String, LinkedHashMap<String, Long>> apply(Entry<String, LinkedHashMap<String, Long>> t) {
       return null;
     }
-    
+
     private static String getDetails(Function<? super Integer, ? super Integer> function, Integer... inT) { // Compliant
       Function<?, String> a; // Compliant
       Function<? super A, ? super A> foo1 = new Function() { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<? super A>'}}
@@ -225,11 +225,11 @@ class MySupplier3 implements Supplier<Integer>, Runnable, Consumer<Double> { // 
   @Override
   public void accept(Double t) {
   }
-  
+
   @Override
   public void run() {
   }
-  
+
   void foo4() {
     BiFunction<Integer[][][], Integer[][][], Integer[][][]> myBiFunc = new BiFunction<Integer[][][], Integer[][][], Integer[][][]>() { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'BinaryOperator<Integer[][][]>'}}
       @Override
@@ -237,13 +237,13 @@ class MySupplier3 implements Supplier<Integer>, Runnable, Consumer<Double> { // 
         return null;
       }
     };
-  
+
     com.google.common.base.Function<Integer, String> ff = new com.google.common.base.Function<Integer, String>(){ // Compliant
       @Override
       public String apply(Integer a) {
         return null;
       }
-    }; 
+    };
   }
 }
 
@@ -272,4 +272,21 @@ class BooleanFunctions implements Supplier<Boolean>, Consumer<Boolean> { // Nonc
   Predicate<Boolean> b5 = (bool1) -> true; // Compliant - there is no BooleanPredicate functional interface
   UnaryOperator<Boolean> b6 = (bool1) -> true; // Compliant - there is no BooleanUnaryOperator functional interface
   BinaryOperator<Boolean> b7 = (bool1, bool2) -> true; // Compliant - there is no BooleanBinaryOperator functional interface
+}
+
+class UnknownTypes implements Supplier<MyFirstUnknownType> {
+
+  @Override
+  public MyFirstUnknownType get() {
+    return null;
+  }
+
+  Supplier<MyFirstUnknownType> unknownTypeSupplier = () -> new MyFirstUnknownType();
+  BiConsumer<A, MyFirstUnknownType> unknownTypeBiConsumer = (a, ut) -> {};
+  Function<A, MyFirstUnknownType> unknownTypeFunction1 = x -> new MyFirstUnknownType(x);
+  Function<MyFirstUnknownType, A> unknownTypeFunction2 = x -> new A();
+  Function<MyFirstUnknownType, MySecondUnknownType> unknownTypeFunction3 = ut -> new MySecondUnknownType(ut);
+  Function<MyFirstUnknownType, MyFirstUnknownType> unknownTypeFunction4 = ut -> ut;
+  BiFunction<MyFirstUnknownType, MySecondUnknownType, MyThirdUnknownType> unknownTypesBiFunction = (a, b) -> new MyThirdUnknownType(a,b);
+  BiFunction<MyFirstUnknownType, MySecondUnknownType, Boolean> unknownTypesBiFunction2 = (x, y) -> true;
 }
