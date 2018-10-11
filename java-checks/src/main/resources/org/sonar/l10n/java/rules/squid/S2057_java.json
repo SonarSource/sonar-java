@@ -1,5 +1,5 @@
 {
-  "title": "\"Serializable\" classes should have a version id",
+  "title": "\"Serializable\" classes should have a \"serialVersionUID\"",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

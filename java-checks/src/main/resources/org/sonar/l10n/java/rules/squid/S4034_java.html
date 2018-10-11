@@ -8,24 +8,24 @@ also avoid creating unnecessary temporary objects.</p>
       <th>Preferred</th>
     </tr>
     <tr>
-      <td>{code}stream.filter(predicate).findFirst().isPresent(){code}</td>
-      <td>{code}stream.anyMatch(predicate){code}</td>
+      <td><code>stream.filter(predicate).findFirst().isPresent()</code></td>
+      <td><code>stream.anyMatch(predicate)</code></td>
     </tr>
     <tr>
-      <td>{code}stream.filter(predicate).findAny().isPresent(){code}</td>
-      <td>{code}stream.anyMatch(predicate){code}</td>
+      <td><code>stream.filter(predicate).findAny().isPresent()</code></td>
+      <td><code>stream.anyMatch(predicate)</code></td>
     </tr>
     <tr>
-      <td>{code}!stream.anyMatch(predicate){code}</td>
-      <td>{code}stream.noneMatch(predicate){code}</td>
+      <td><code>!stream.anyMatch(predicate)</code></td>
+      <td><code>stream.noneMatch(predicate)</code></td>
     </tr>
     <tr>
-      <td>{code}!stream.anyMatch(x -&gt; !(...)){code}</td>
-      <td>{code}stream.allMatch(...){code}</td>
+      <td><code>!stream.anyMatch(x -&gt; !(...))</code></td>
+      <td><code>stream.allMatch(...)</code></td>
     </tr>
     <tr>
-      <td>{code}stream.map(mapper).anyMatch(Boolean::booleanValue){code}</td>
-      <td>{code}stream.anyMatch(predicate){code}</td>
+      <td><code>stream.map(mapper).anyMatch(Boolean::booleanValue)</code></td>
+      <td><code>stream.anyMatch(predicate)</code></td>
     </tr>
   </tbody>
 </table>

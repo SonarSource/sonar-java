@@ -1,5 +1,5 @@
 {
-  "title": "Setters in Struts 2 ActionSupport are security sensitive",
+  "title": "Using setters in Struts 2 ActionSupport is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {

@@ -1,6 +1,7 @@
-<p>A <code>serialVersionUID</code> field is required in all <code>Serializable</code> classes. If you do not provide one, one will be calculated for
-you by the compiler. The danger in not explicitly choosing the value is that when the class changes, the compiler will generate an entirely new id,
-and you will be suddenly unable to deserialize (read from file) objects that were serialized with the previous version of the class.</p>
+<p>A <code>serialVersionUID</code> field is strongly recommended in all <code>Serializable</code> classes. If you do not provide one, one will be
+calculated for you by the compiler. The danger in not explicitly choosing the value is that when the class changes, the compiler will generate an
+entirely new id, and you will be suddenly unable to deserialize (read from file) objects that were serialized with the previous version of the
+class.</p>
 <p><code>serialVersionUID</code>'s should be declared with all of these modifiers: <code>static final long</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

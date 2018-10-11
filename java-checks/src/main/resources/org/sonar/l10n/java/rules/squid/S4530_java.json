@@ -1,5 +1,5 @@
 {
-  "title": "Using Struts 1 ActionForm is security sensitive",
+  "title": "Using Struts 1 ActionForm is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
