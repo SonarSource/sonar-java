@@ -1,14 +1,28 @@
 <p>Return of boolean literal statements wrapped into <code>if-then-else</code> ones should be simplified.</p>
+<p>Similarly, method invocations wrapped into <code>if-then-else</code> differing only from boolean literals should be simplified into a single
+invocation.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-if (expression) {
-  return true;
-} else {
-  return false;
+boolean foo(Object param) {
+  if (expression) { // Noncompliant
+    bar(param, true, "qix");
+  } else {
+    bar(param, false, "qix");
+  }
+
+  if (expression) {  // Noncompliant
+    return true;
+  } else {
+    return false;
+  }
 }
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-return expression;
+boolean foo(Object param) {
+  foo(param, expression, "bar");
+
+  return expression;
+}
 </pre>
 
