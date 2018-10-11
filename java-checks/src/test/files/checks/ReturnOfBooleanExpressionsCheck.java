@@ -125,7 +125,7 @@ abstract class B {
     if (foo() == null) { // Noncompliant {{Replace this if-then-else statement by a single method invocation.}}
       return bar(foo(), "foo", true);
     } else {
-      return bar(foo(), "foo", false);
+      return (bar(foo(), "foo", false));
     }
   }
 
