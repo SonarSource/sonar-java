@@ -609,6 +609,7 @@ public final class CheckList {
       .add(SpringEndpointsCheck.class)
       .add(ExecCallCheck.class)
       .add(EmptyDatabasePasswordCheck.class)
+      .add(StreamPeekCheck.class)
       .build();
   }
 
