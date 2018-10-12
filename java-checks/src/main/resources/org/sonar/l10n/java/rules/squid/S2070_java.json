@@ -1,5 +1,5 @@
 {
-  "title": "SHA-1 and Message-Digest hash algorithms should not be used",
+  "title": "SHA-1 and Message-Digest hash algorithms should not be used in secure contexts",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
@@ -8,6 +8,7 @@
   },
   "tags": [
     "cwe",
+    "spring",
     "owasp-a6",
     "sans-top25-porous"
   ],
@@ -19,5 +20,14 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2070",
   "sqKey": "S2070",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      328,
+      327
+    ],
+    "OWASP": [
+      "A6"
+    ]
+  }
 }

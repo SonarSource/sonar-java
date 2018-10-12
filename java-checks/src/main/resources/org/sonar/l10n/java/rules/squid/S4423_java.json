@@ -1,5 +1,5 @@
 {
-  "title": "Weak SSLContexts should not be used",
+  "title": "Weak SSL protocols should not be used",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
@@ -20,5 +20,15 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-4423",
   "sqKey": "S4423",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      327,
+      326
+    ],
+    "OWASP": [
+      "A3",
+      "A6"
+    ]
+  }
 }

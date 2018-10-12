@@ -2,6 +2,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.Context;
+import javax.xml.XMLConstants;
 
 class S4433 {
 
@@ -13,6 +14,7 @@ class S4433 {
   void method2() {
     Hashtable<String, String> env = new Hashtable<>();
     env.put(Context.SECURITY_AUTHENTICATION, "none"); // Noncompliant
+    env.put(XMLConstants.FEATURE_SECURE_PROCESSING, "none");
   }
 
   void method3(java.util.Properties props) {

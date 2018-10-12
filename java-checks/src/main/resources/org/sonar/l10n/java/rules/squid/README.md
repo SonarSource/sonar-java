@@ -11,7 +11,7 @@ If you want to:
 * adjust rule metadata;
 * etc.
 
-Then, please reach us though our mailing list to discuss the issue, using our [SonarQube Google Group](https://groups.google.com/forum/#!forum/sonarqube), prior to submitting any code change.
+Then, please reach us though our mailing list to discuss the issue, using our [SonarQube Community Forum](https://community.sonarsource.com/), prior to submitting any code change.
 
 Thanks,
 *The SonarJava Team*

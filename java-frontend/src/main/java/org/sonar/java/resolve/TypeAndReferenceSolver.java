@@ -42,6 +42,7 @@ import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.MethodReferenceTreeImpl;
+import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.resolve.Resolve.Resolution;
@@ -56,6 +57,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
@@ -79,6 +81,7 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeArguments;
@@ -391,7 +394,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         identifierTree = (IdentifierTree) tree;
         Resolve.Resolution resolution = resolve.findIdent(resolveEnv, identifierTree.name(), kind);
         resolvedSymbol = resolution.symbol();
-        registerType(tree, resolution.type());
+        JavaType type = resolution.type();
+        if(kind == JavaSymbol.TYP && type.isParameterized()) {
+          type = type.erasure();
+        }
+        registerType(tree, type);
       }
       if(associateReference) {
         associateReference(identifierTree, resolvedSymbol);
@@ -625,11 +632,56 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   @Override
+  public void visitCaseLabel(CaseLabelTree tree) {
+    ExpressionTree labelExpression = tree.expression();
+    if (labelExpression == null) {
+      // for 'default' case
+      return;
+    }
+    ExpressionTree enumExpression = enumExpressionFromSwitchOnEnum(tree);
+    if (enumExpression != null) {
+      // JLS10 § 14.11. : If the type of the switch statement's Expression is an enum type, then every case constant associated
+      // with the switch statement must be an enum constant of that type.
+      resolveEnumConstant(enumExpression, (IdentifierTree) labelExpression);
+    } else {
+      scan(tree.expression());
+    }
+  }
+
+  @CheckForNull
+  private static ExpressionTree enumExpressionFromSwitchOnEnum(CaseLabelTree tree) {
+    Tree parent = tree.parent();
+    while (!parent.is(Tree.Kind.SWITCH_STATEMENT)) {
+      parent = parent.parent();
+    }
+    ExpressionTree enumExpression = ((SwitchStatementTree) parent).expression();
+    return enumExpression.symbolType().symbol().isEnum() ? enumExpression : null;
+  }
+
+  private void resolveEnumConstant(ExpressionTree enumExpression, IdentifierTree enumConstant) {
+    Resolve.Env enumEnv = semanticModel.getEnv(enumExpression);
+    JavaSymbol.TypeJavaSymbol enumSymbol = (JavaSymbol.TypeJavaSymbol) enumExpression.symbolType().symbol();
+    Resolve.Resolution res = resolve.findIdentInType(enumEnv, enumSymbol, enumConstant.name(), JavaSymbol.VAR);
+    if (!res.symbol().isUnknown()) {
+      registerType(enumConstant, res.type());
+      associateReference(enumConstant, res.symbol());
+    }
+  }
+
+  @Override
   public void visitNewArray(NewArrayTree tree) {
     resolveAs(tree.type(), JavaSymbol.TYP);
     scan(tree.dimensions());
     resolveAs((List<? extends Tree>) tree.initializers(), JavaSymbol.VAR);
     JavaType type = getType(tree.type());
+    if (tree.type() == null) {
+      if (((NewArrayTreeImpl) tree).isTypeSet() && tree.symbolType().isArray()) {
+        type = ((ArrayJavaType) tree.symbolType()).elementType;
+      } else {
+        registerType(tree, symbols.deferedType((AbstractTypedTree) tree));
+        return;
+      }
+    }
     int dimensions = tree.dimensions().size();
     // TODO why?
     type = new ArrayJavaType(type, symbols.arrayClass);
@@ -637,6 +689,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       type = new ArrayJavaType(type, symbols.arrayClass);
     }
     registerType(tree, type);
+    for (ExpressionTree expressionTree : tree.initializers()) {
+      if(((JavaType) expressionTree.symbolType()).isTagged(JavaType.DEFERRED)) {
+        setInferedType(((ArrayJavaType) type).elementType, (DeferredType) expressionTree.symbolType());
+      }
+    }
   }
 
   @Override
@@ -812,6 +869,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     Resolve.Resolution resolution = resolve.findMethod(methodEnv, (JavaType) type, "<init>", argTypes, typeArgumentsTypes);
     JavaSymbol symbol = resolution.symbol();
     inferArgumentTypes(argTypes, resolution);
+    ((IdentifierTreeImpl) identifier).setSymbol(symbol);
     associateReference(identifier, symbol);
     return resolution;
   }
@@ -981,15 +1039,44 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitTypeCast(TypeCastTree tree) {
-    // FIXME SONARJAVA-2724: should be the intersection of the type with its bounds
     resolveAs(tree.type(), JavaSymbol.TYP);
+    for (Tree bound : tree.bounds()) {
+      resolveAs(bound, JavaSymbol.TYP);
+    }
     resolveAs(tree.expression(), JavaSymbol.VAR);
-    JavaType castType = getType(tree.type());
+    JavaType castType = intersectionType(getType(tree.type()), tree.bounds().stream().map(b -> ((JavaType) ((ExpressionTree) b).symbolType())).collect(Collectors.toSet()), tree);
     Type expressionType = tree.expression().symbolType();
     if(expressionType instanceof DeferredType) {
       setInferedType(castType, (DeferredType) expressionType);
     }
     registerType(tree, castType);
+  }
+
+  /**
+   * JLS8 4.9 Intersection types
+   */
+  private JavaType intersectionType(JavaType type, Set<JavaType> interfaces, Tree tree) {
+    if (interfaces.isEmpty()) {
+      return type;
+    }
+    List<String> names = new ArrayList<>();
+    names.add(type.name());
+    names.addAll(interfaces.stream().map(JavaType::name).collect(Collectors.toSet()));
+    JavaSymbol.TypeJavaSymbol typeJavaSymbol = new JavaSymbol.TypeJavaSymbol(0, "<intersectionType of "+names.stream().collect(Collectors.joining(" & ")) + ">",
+      semanticModel.getEnv(tree).packge);
+
+    typeJavaSymbol.members = new Scope(typeJavaSymbol);
+    IntersectionType intersectionType = new IntersectionType(typeJavaSymbol);
+    typeJavaSymbol.type = intersectionType;
+    Set<JavaType> superInterfaces =  new HashSet<>(interfaces);
+    if(type.symbol.isInterface()) {
+      superInterfaces.add(type);
+      intersectionType.supertype = symbols.objectType;
+    } else {
+      intersectionType.supertype = type;
+    }
+    intersectionType.interfaces = ImmutableList.<JavaType>builder().addAll(superInterfaces).build();
+    return intersectionType;
   }
 
   @Override

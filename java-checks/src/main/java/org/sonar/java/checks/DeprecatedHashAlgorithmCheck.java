@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -38,6 +39,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorithm.MD2;
@@ -48,6 +50,8 @@ import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorit
 public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final String GET_INSTANCE = "getInstance";
+  private static final String CONSTRUCTOR = "<init>";
 
   enum InsecureAlgorithm {
     MD2, MD4, MD5, MD6, RIPEMD160,
@@ -68,6 +72,39 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     boolean match(String algorithm) {
       String normalizedName = algorithm.replaceAll("-", "").toLowerCase(Locale.ENGLISH);
       return normalizedName.contains(name().toLowerCase(Locale.ENGLISH));
+    }
+  }
+
+  private enum DeprecatedSpringPasswordEncoder {
+    MD5("org.springframework.security.authentication.encoding.Md5PasswordEncoder", CONSTRUCTOR),
+    SHA("org.springframework.security.authentication.encoding.ShaPasswordEncoder", CONSTRUCTOR),
+    LDAP("org.springframework.security.crypto.password.LdapShaPasswordEncoder", CONSTRUCTOR),
+    MD4("org.springframework.security.crypto.password.Md4PasswordEncoder", CONSTRUCTOR),
+    MESSAGE_DIGEST("org.springframework.security.crypto.password.MessageDigestPasswordEncoder", CONSTRUCTOR),
+    STANDARD("org.springframework.security.crypto.password.StandardPasswordEncoder", CONSTRUCTOR),
+    NO_OP("org.springframework.security.crypto.password.NoOpPasswordEncoder", GET_INSTANCE);
+
+    private static final String MESSAGE_FORMAT = "Don't rely on %s because it is deprecated and use a stronger hashing algorithm.";
+    protected static final Map<String, String> MESSAGE_PER_CLASS;
+    static {
+      MESSAGE_PER_CLASS = new HashMap<>();
+      MESSAGE_PER_CLASS.put(MD5.classFqn, "Use a stronger hashing algorithm than MD5.");
+      MESSAGE_PER_CLASS.put(SHA.classFqn, "Don't rely on " + SHA.className + " because it is deprecated.");
+      MESSAGE_PER_CLASS.put(LDAP.classFqn, String.format(MESSAGE_FORMAT, LDAP.className));
+      MESSAGE_PER_CLASS.put(MD4.classFqn, String.format(MESSAGE_FORMAT, MD4.className));
+      MESSAGE_PER_CLASS.put(MESSAGE_DIGEST.classFqn, String.format(MESSAGE_FORMAT, MESSAGE_DIGEST.className));
+      MESSAGE_PER_CLASS.put(NO_OP.classFqn, "Use a stronger hashing algorithm than this fake one.");
+      MESSAGE_PER_CLASS.put(STANDARD.classFqn, "Use a stronger hashing algorithm.");
+    }
+
+    private final String classFqn;
+    private final String methodName;
+    private final String className;
+    DeprecatedSpringPasswordEncoder(String fqn, String methodName) {
+      this.classFqn = fqn;
+      this.methodName = methodName;
+      String[] fqnParts = fqn.split("\\.");
+      this.className = fqnParts[fqnParts.length - 1];
     }
   }
 
@@ -119,13 +156,16 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
       builder
         .add(MethodMatcher.create()
           .typeDefinition(cryptoApi)
-          .name("getInstance")
+          .name(GET_INSTANCE)
           .addParameter(JAVA_LANG_STRING))
         .add(MethodMatcher.create()
           .typeDefinition(cryptoApi)
-          .name("getInstance")
+          .name(GET_INSTANCE)
           .addParameter(JAVA_LANG_STRING)
           .addParameter(TypeCriteria.anyType()));
+    }
+    for (DeprecatedSpringPasswordEncoder pe : DeprecatedSpringPasswordEncoder.values()) {
+      builder.add(MethodMatcher.create().typeDefinition(pe.classFqn).name(pe.methodName).withAnyParameters());
     }
     for (String methodName : ImmutableList.of("md5", "sha1")) {
       builder.add(MethodMatcher.create()
@@ -139,6 +179,11 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     IdentifierTree methodName = ExpressionUtils.methodName(mit);
+    String message = DeprecatedSpringPasswordEncoder.MESSAGE_PER_CLASS.get(methodName.symbol().owner().type().fullyQualifiedName());
+    if (message != null) {
+      reportIssue(methodName, message);
+      return;
+    }
     InsecureAlgorithm algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName.name());
     if (algorithm == null) {
       algorithm = algorithm(mit.arguments().get(0)).orElse(null);
@@ -146,6 +191,12 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     if (algorithm != null) {
       reportIssue(methodName, "Use a stronger hashing algorithm than " + algorithm.toString() + ".");
     }
+  }
+
+  @Override
+  protected void onConstructorFound(NewClassTree newClassTree) {
+    String message = DeprecatedSpringPasswordEncoder.MESSAGE_PER_CLASS.get(newClassTree.identifier().symbolType().fullyQualifiedName());
+    reportIssue(newClassTree.identifier(), message);
   }
 
   private static Optional<InsecureAlgorithm> algorithm(ExpressionTree invocationArgument) {

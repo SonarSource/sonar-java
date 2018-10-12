@@ -18,5 +18,13 @@
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-4434",
   "sqKey": "S4434",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      502
+    ],
+    "OWASP": [
+      "A8"
+    ]
+  }
 }

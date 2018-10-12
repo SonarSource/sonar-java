@@ -1,0 +1,25 @@
+{
+  "title": "Persistent entities should not be used as arguments of \"@RequestMapping\" methods",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "cwe",
+    "spring"
+  ],
+  "standards": [
+    "CWE"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4684",
+  "sqKey": "S4684",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      915
+    ]
+  }
+}

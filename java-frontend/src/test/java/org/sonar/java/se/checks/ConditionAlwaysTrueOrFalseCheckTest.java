@@ -19,8 +19,11 @@
  */
 package org.sonar.java.se.checks;
 
+import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-
 import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.JavaCheckVerifier;
@@ -32,6 +35,15 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+  }
+
+  @Test
+  public void test_without_jsr305() {
+    List<File> classpath = FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar"}, true).stream()
+      .filter(file -> file.getName().startsWith("spring-core-") || file.getName().startsWith("spring-web-"))
+      .collect(Collectors.toList());
+    classpath.add(new File("target/test-classes"));
+    JavaCheckVerifier.verify("src/test/files/se/SpringNullableAndNonNullAnnotationsWithoutJSR305.java", new BooleanGratuitousExpressionsCheck(), classpath);
   }
 
   @Test

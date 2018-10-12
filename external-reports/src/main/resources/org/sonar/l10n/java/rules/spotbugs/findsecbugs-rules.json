@@ -1,0 +1,770 @@
+[
+  {
+    "key": "ANDROID_BROADCAST",
+    "name": "Broadcast (Android)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#ANDROID_BROADCAST"
+  },
+  {
+    "key": "ANDROID_EXTERNAL_FILE_ACCESS",
+    "name": "External file access (Android)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#ANDROID_EXTERNAL_FILE_ACCESS"
+  },
+  {
+    "key": "ANDROID_GEOLOCATION",
+    "name": "WebView with geolocation activated (Android)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#ANDROID_GEOLOCATION"
+  },
+  {
+    "key": "ANDROID_WEB_VIEW_JAVASCRIPT",
+    "name": "WebView with JavaScript enabled (Android)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#ANDROID_WEB_VIEW_JAVASCRIPT"
+  },
+  {
+    "key": "ANDROID_WEB_VIEW_JAVASCRIPT_INTERFACE",
+    "name": "WebView with JavaScript interface (Android)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#ANDROID_WEB_VIEW_JAVASCRIPT_INTERFACE"
+  },
+  {
+    "key": "ANDROID_WORLD_WRITABLE",
+    "name": "World writable file (Android)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#ANDROID_WORLD_WRITABLE"
+  },
+  {
+    "key": "AWS_QUERY_INJECTION",
+    "name": "AWS Query Injection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#AWS_QUERY_INJECTION"
+  },
+  {
+    "key": "BAD_HEXA_CONVERSION",
+    "name": "Bad hexadecimal concatenation",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#BAD_HEXA_CONVERSION"
+  },
+  {
+    "key": "BEAN_PROPERTY_INJECTION",
+    "name": "JavaBeans Property Injection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#BEAN_PROPERTY_INJECTION"
+  },
+  {
+    "key": "BLOWFISH_KEY_SIZE",
+    "name": "Blowfish usage with short key",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#BLOWFISH_KEY_SIZE"
+  },
+  {
+    "key": "CIPHER_INTEGRITY",
+    "name": "Cipher with no integrity",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#CIPHER_INTEGRITY"
+  },
+  {
+    "key": "COMMAND_INJECTION",
+    "name": "Potential Command Injection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#COMMAND_INJECTION"
+  },
+  {
+    "key": "COOKIE_PERSISTENT",
+    "name": "Persistent Cookie Usage",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#COOKIE_PERSISTENT"
+  },
+  {
+    "key": "COOKIE_USAGE",
+    "name": "Potentially sensitive data in a cookie",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#COOKIE_USAGE"
+  },
+  {
+    "key": "CRLF_INJECTION_LOGS",
+    "name": "Potential CRLF Injection for logs",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#CRLF_INJECTION_LOGS"
+  },
+  {
+    "key": "CUSTOM_INJECTION",
+    "name": "Potential injection (custom)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#CUSTOM_INJECTION"
+  },
+  {
+    "key": "CUSTOM_MESSAGE_DIGEST",
+    "name": "Message digest is custom",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#CUSTOM_MESSAGE_DIGEST"
+  },
+  {
+    "key": "DEFAULT_HTTP_CLIENT",
+    "name": "DefaultHttpClient with default constructor is not compatible with TLS 1.2",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#DEFAULT_HTTP_CLIENT"
+  },
+  {
+    "key": "DESERIALIZATION_GADGET",
+    "name": "This class could be used as deserialization gadget",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#DESERIALIZATION_GADGET"
+  },
+  {
+    "key": "DES_USAGE",
+    "name": "DES is insecure",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#DES_USAGE"
+  },
+  {
+    "key": "ECB_MODE",
+    "name": "ECB mode is insecure",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#ECB_MODE"
+  },
+  {
+    "key": "EL_INJECTION",
+    "name": "Potential code injection when using Expression Language (EL)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#EL_INJECTION"
+  },
+  {
+    "key": "ESAPI_ENCRYPTOR",
+    "name": "Use of ESAPI Encryptor",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#ESAPI_ENCRYPTOR"
+  },
+  {
+    "key": "EXTERNAL_CONFIG_CONTROL",
+    "name": "Potential external control of configuration",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#EXTERNAL_CONFIG_CONTROL"
+  },
+  {
+    "key": "FILE_UPLOAD_FILENAME",
+    "name": "Tainted filename read",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#FILE_UPLOAD_FILENAME"
+  },
+  {
+    "key": "FORMAT_STRING_MANIPULATION",
+    "name": "Format String Manipulation",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#FORMAT_STRING_MANIPULATION"
+  },
+  {
+    "key": "HARD_CODE_KEY",
+    "name": "Hard Coded Key",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#HARD_CODE_KEY"
+  },
+  {
+    "key": "HARD_CODE_PASSWORD",
+    "name": "Hard Coded Password",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#HARD_CODE_PASSWORD"
+  },
+  {
+    "key": "HAZELCAST_SYMMETRIC_ENCRYPTION",
+    "name": "Hazelcast symmetric encryption",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#HAZELCAST_SYMMETRIC_ENCRYPTION"
+  },
+  {
+    "key": "HTTPONLY_COOKIE",
+    "name": "Cookie without the HttpOnly flag",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#HTTPONLY_COOKIE"
+  },
+  {
+    "key": "HTTP_PARAMETER_POLLUTION",
+    "name": "HTTP Parameter Pollution",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#HTTP_PARAMETER_POLLUTION"
+  },
+  {
+    "key": "HTTP_RESPONSE_SPLITTING",
+    "name": "Potential HTTP Response Splitting",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#HTTP_RESPONSE_SPLITTING"
+  },
+  {
+    "key": "INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE",
+    "name": "Information Exposure Through An Error Message",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE"
+  },
+  {
+    "key": "INSECURE_COOKIE",
+    "name": "Cookie without the secure flag",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#INSECURE_COOKIE"
+  },
+  {
+    "key": "INSECURE_SMTP_SSL",
+    "name": "Insecure SMTP SSL connection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#INSECURE_SMTP_SSL"
+  },
+  {
+    "key": "JACKSON_UNSAFE_DESERIALIZATION",
+    "name": "Unsafe Jackson deserialization configuration",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#JACKSON_UNSAFE_DESERIALIZATION"
+  },
+  {
+    "key": "JAXRS_ENDPOINT",
+    "name": "Found JAX-RS REST endpoint",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#JAXRS_ENDPOINT"
+  },
+  {
+    "key": "JAXWS_ENDPOINT",
+    "name": "Found JAX-WS SOAP endpoint",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#JAXWS_ENDPOINT"
+  },
+  {
+    "key": "JSP_INCLUDE",
+    "name": "Dynamic JSP inclusion",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#JSP_INCLUDE"
+  },
+  {
+    "key": "JSP_JSTL_OUT",
+    "name": "Escaping of special XML characters is disabled",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#JSP_JSTL_OUT"
+  },
+  {
+    "key": "JSP_SPRING_EVAL",
+    "name": "Dynamic variable in Spring expression",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#JSP_SPRING_EVAL"
+  },
+  {
+    "key": "JSP_XSLT",
+    "name": "A malicious XSLT could be provided",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#JSP_XSLT"
+  },
+  {
+    "key": "LDAP_ANONYMOUS",
+    "name": "Anonymous LDAP bind",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#LDAP_ANONYMOUS"
+  },
+  {
+    "key": "LDAP_ENTRY_POISONING",
+    "name": "LDAP Entry Poisoning",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#LDAP_ENTRY_POISONING"
+  },
+  {
+    "key": "LDAP_INJECTION",
+    "name": "Potential LDAP Injection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#LDAP_INJECTION"
+  },
+  {
+    "key": "MALICIOUS_XSLT",
+    "name": "A malicious XSLT could be provided",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#MALICIOUS_XSLT"
+  },
+  {
+    "key": "NULL_CIPHER",
+    "name": "NullCipher is insecure",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#NULL_CIPHER"
+  },
+  {
+    "key": "OBJECT_DESERIALIZATION",
+    "name": "Object deserialization is used in {1}",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#OBJECT_DESERIALIZATION"
+  },
+  {
+    "key": "OGNL_INJECTION",
+    "name": "Potential code injection when using OGNL expression",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#OGNL_INJECTION"
+  },
+  {
+    "key": "PADDING_ORACLE",
+    "name": "Cipher is susceptible to Padding Oracle",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#PADDING_ORACLE"
+  },
+  {
+    "key": "PATH_TRAVERSAL_IN",
+    "name": "Potential Path Traversal (file read)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#PATH_TRAVERSAL_IN"
+  },
+  {
+    "key": "PATH_TRAVERSAL_OUT",
+    "name": "Potential Path Traversal (file write)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#PATH_TRAVERSAL_OUT"
+  },
+  {
+    "key": "PERMISSIVE_CORS",
+    "name": "Overly permissive CORS policy",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#PERMISSIVE_CORS"
+  },
+  {
+    "key": "PLAY_UNVALIDATED_REDIRECT",
+    "name": "Unvalidated Redirect (Play Framework)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#PLAY_UNVALIDATED_REDIRECT"
+  },
+  {
+    "key": "PREDICTABLE_RANDOM",
+    "name": "Predictable pseudorandom number generator",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#PREDICTABLE_RANDOM"
+  },
+  {
+    "key": "PREDICTABLE_RANDOM_SCALA",
+    "name": "Predictable pseudorandom number generator (Scala)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#PREDICTABLE_RANDOM_SCALA"
+  },
+  {
+    "key": "REDOS",
+    "name": "Regex DOS (ReDOS)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#REDOS"
+  },
+  {
+    "key": "REQUESTDISPATCHER_FILE_DISCLOSURE",
+    "name": "RequestDispatcher File Disclosure",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#REQUESTDISPATCHER_FILE_DISCLOSURE"
+  },
+  {
+    "key": "RSA_KEY_SIZE",
+    "name": "RSA usage with short key",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#RSA_KEY_SIZE"
+  },
+  {
+    "key": "RSA_NO_PADDING",
+    "name": "RSA with no padding is insecure",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#RSA_NO_PADDING"
+  },
+  {
+    "key": "SCALA_COMMAND_INJECTION",
+    "name": "Potential Command Injection (Scala)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SCALA_COMMAND_INJECTION"
+  },
+  {
+    "key": "SCALA_PATH_TRAVERSAL_IN",
+    "name": "Potential Path Traversal (file read)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SCALA_PATH_TRAVERSAL_IN"
+  },
+  {
+    "key": "SCALA_PLAY_SSRF",
+    "name": "Scala Play Server-Side Request Forgery (SSRF)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SCALA_PLAY_SSRF"
+  },
+  {
+    "key": "SCALA_SENSITIVE_DATA_EXPOSURE",
+    "name": "Potential information leakage in Scala Play",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SCALA_SENSITIVE_DATA_EXPOSURE"
+  },
+  {
+    "key": "SCALA_SQL_INJECTION_ANORM",
+    "name": "Potential Scala Anorm Injection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SCALA_SQL_INJECTION_ANORM"
+  },
+  {
+    "key": "SCALA_SQL_INJECTION_SLICK",
+    "name": "Potential Scala Slick Injection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SCALA_SQL_INJECTION_SLICK"
+  },
+  {
+    "key": "SCALA_XSS_MVC_API",
+    "name": "Potential XSS in Scala MVC API engine",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SCALA_XSS_MVC_API"
+  },
+  {
+    "key": "SCALA_XSS_TWIRL",
+    "name": "Potential XSS in Scala Twirl template engine",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SCALA_XSS_TWIRL"
+  },
+  {
+    "key": "SCRIPT_ENGINE_INJECTION",
+    "name": "Potential code injection when using Script Engine",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SCRIPT_ENGINE_INJECTION"
+  },
+  {
+    "key": "SEAM_LOG_INJECTION",
+    "name": "Potential code injection in Seam logging call",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SEAM_LOG_INJECTION"
+  },
+  {
+    "key": "SERVLET_CONTENT_TYPE",
+    "name": "Untrusted Content-Type header",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SERVLET_CONTENT_TYPE"
+  },
+  {
+    "key": "SERVLET_HEADER",
+    "name": "HTTP headers untrusted",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SERVLET_HEADER"
+  },
+  {
+    "key": "SERVLET_HEADER_REFERER",
+    "name": "Untrusted Referer header",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SERVLET_HEADER_REFERER"
+  },
+  {
+    "key": "SERVLET_HEADER_USER_AGENT",
+    "name": "Untrusted User-Agent header",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SERVLET_HEADER_USER_AGENT"
+  },
+  {
+    "key": "SERVLET_PARAMETER",
+    "name": "Untrusted servlet parameter",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SERVLET_PARAMETER"
+  },
+  {
+    "key": "SERVLET_QUERY_STRING",
+    "name": "Untrusted query string",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SERVLET_QUERY_STRING"
+  },
+  {
+    "key": "SERVLET_SERVER_NAME",
+    "name": "Untrusted Hostname header",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SERVLET_SERVER_NAME"
+  },
+  {
+    "key": "SERVLET_SESSION_ID",
+    "name": "Untrusted session cookie value",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SERVLET_SESSION_ID"
+  },
+  {
+    "key": "SMTP_HEADER_INJECTION",
+    "name": "SMTP Header Injection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SMTP_HEADER_INJECTION"
+  },
+  {
+    "key": "SPEL_INJECTION",
+    "name": "Potential code injection when using Spring Expression",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SPEL_INJECTION"
+  },
+  {
+    "key": "SPRING_CSRF_PROTECTION_DISABLED",
+    "name": "Spring CSRF protection disabled",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SPRING_CSRF_PROTECTION_DISABLED"
+  },
+  {
+    "key": "SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING",
+    "name": "Spring CSRF unrestricted RequestMapping",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"
+  },
+  {
+    "key": "SPRING_ENDPOINT",
+    "name": "Found Spring endpoint",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SPRING_ENDPOINT"
+  },
+  {
+    "key": "SPRING_FILE_DISCLOSURE",
+    "name": "Spring File Disclosure",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SPRING_FILE_DISCLOSURE"
+  },
+  {
+    "key": "SPRING_UNVALIDATED_REDIRECT",
+    "name": "Spring Unvalidated Redirect",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SPRING_UNVALIDATED_REDIRECT"
+  },
+  {
+    "key": "SQL_INJECTION",
+    "name": "Potential SQL Injection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SQL_INJECTION"
+  },
+  {
+    "key": "SQL_INJECTION_ANDROID",
+    "name": "Potential Android SQL Injection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SQL_INJECTION_ANDROID"
+  },
+  {
+    "key": "SQL_INJECTION_HIBERNATE",
+    "name": "Potential SQL/HQL Injection (Hibernate)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SQL_INJECTION_HIBERNATE"
+  },
+  {
+    "key": "SQL_INJECTION_JDBC",
+    "name": "Potential JDBC Injection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SQL_INJECTION_JDBC"
+  },
+  {
+    "key": "SQL_INJECTION_JDO",
+    "name": "Potential SQL/JDOQL Injection (JDO)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SQL_INJECTION_JDO"
+  },
+  {
+    "key": "SQL_INJECTION_JPA",
+    "name": "Potential SQL/JPQL Injection (JPA)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SQL_INJECTION_JPA"
+  },
+  {
+    "key": "SQL_INJECTION_SPRING_JDBC",
+    "name": "Potential JDBC Injection (Spring JDBC)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SQL_INJECTION_SPRING_JDBC"
+  },
+  {
+    "key": "SQL_INJECTION_TURBINE",
+    "name": "Potential SQL Injection with Turbine",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SQL_INJECTION_TURBINE"
+  },
+  {
+    "key": "SSL_CONTEXT",
+    "name": "Weak SSLContext",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#SSL_CONTEXT"
+  },
+  {
+    "key": "STATIC_IV",
+    "name": "Static IV",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#STATIC_IV"
+  },
+  {
+    "key": "STRUTS1_ENDPOINT",
+    "name": "Found Struts 1 endpoint",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#STRUTS1_ENDPOINT"
+  },
+  {
+    "key": "STRUTS2_ENDPOINT",
+    "name": "Found Struts 2 endpoint",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#STRUTS2_ENDPOINT"
+  },
+  {
+    "key": "STRUTS_FILE_DISCLOSURE",
+    "name": "Struts File Disclosure",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#STRUTS_FILE_DISCLOSURE"
+  },
+  {
+    "key": "STRUTS_FORM_VALIDATION",
+    "name": "Struts Form without input validation",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#STRUTS_FORM_VALIDATION"
+  },
+  {
+    "key": "TAPESTRY_ENDPOINT",
+    "name": "Found Tapestry page",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#TAPESTRY_ENDPOINT"
+  },
+  {
+    "key": "TDES_USAGE",
+    "name": "DESede is insecure",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#TDES_USAGE"
+  },
+  {
+    "key": "TEMPLATE_INJECTION_FREEMARKER",
+    "name": "Potential template injection with Freemarker",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#TEMPLATE_INJECTION_FREEMARKER"
+  },
+  {
+    "key": "TEMPLATE_INJECTION_VELOCITY",
+    "name": "Potential template injection with Velocity",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#TEMPLATE_INJECTION_VELOCITY"
+  },
+  {
+    "key": "TRUST_BOUNDARY_VIOLATION",
+    "name": "Trust Boundary Violation",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#TRUST_BOUNDARY_VIOLATION"
+  },
+  {
+    "key": "UNENCRYPTED_SERVER_SOCKET",
+    "name": "Unencrypted Server Socket",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#UNENCRYPTED_SERVER_SOCKET"
+  },
+  {
+    "key": "UNENCRYPTED_SOCKET",
+    "name": "Unencrypted Socket",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#UNENCRYPTED_SOCKET"
+  },
+  {
+    "key": "UNSAFE_HASH_EQUALS",
+    "name": "Unsafe hash equals",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#UNSAFE_HASH_EQUALS"
+  },
+  {
+    "key": "UNVALIDATED_REDIRECT",
+    "name": "Unvalidated Redirect",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#UNVALIDATED_REDIRECT"
+  },
+  {
+    "key": "URLCONNECTION_SSRF_FD",
+    "name": "URLConnection Server-Side Request Forgery (SSRF) and File Disclosure",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#URLCONNECTION_SSRF_FD"
+  },
+  {
+    "key": "URL_REWRITING",
+    "name": "URL rewriting method",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#URL_REWRITING"
+  },
+  {
+    "key": "WEAK_FILENAMEUTILS",
+    "name": "FilenameUtils not filtering null bytes",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#WEAK_FILENAMEUTILS"
+  },
+  {
+    "key": "WEAK_HOSTNAME_VERIFIER",
+    "name": "HostnameVerifier that accept any signed certificates",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#WEAK_HOSTNAME_VERIFIER"
+  },
+  {
+    "key": "WEAK_MESSAGE_DIGEST_MD5",
+    "name": "MD2, MD4 and MD5 are weak hash functions",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#WEAK_MESSAGE_DIGEST_MD5"
+  },
+  {
+    "key": "WEAK_MESSAGE_DIGEST_SHA1",
+    "name": "SHA-1 is a weak hash function",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#WEAK_MESSAGE_DIGEST_SHA1"
+  },
+  {
+    "key": "WEAK_TRUST_MANAGER",
+    "name": "TrustManager that accept any certificates",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#WEAK_TRUST_MANAGER"
+  },
+  {
+    "key": "WICKET_ENDPOINT",
+    "name": "Found Wicket WebPage",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#WICKET_ENDPOINT"
+  },
+  {
+    "key": "XML_DECODER",
+    "name": "XMLDecoder usage",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XML_DECODER"
+  },
+  {
+    "key": "XPATH_INJECTION",
+    "name": "Potential XPath Injection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XPATH_INJECTION"
+  },
+  {
+    "key": "XSS_JSP_PRINT",
+    "name": "Potential XSS in JSP",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XSS_JSP_PRINT"
+  },
+  {
+    "key": "XSS_REQUEST_WRAPPER",
+    "name": "XSSRequestWrapper is a weak XSS protection",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XSS_REQUEST_WRAPPER"
+  },
+  {
+    "key": "XSS_SERVLET",
+    "name": "Potential XSS in Servlet",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XSS_SERVLET"
+  },
+  {
+    "key": "XXE_DOCUMENT",
+    "name": "XML parsing vulnerable to XXE (DocumentBuilder)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XXE_DOCUMENT"
+  },
+  {
+    "key": "XXE_DTD_TRANSFORM_FACTORY",
+    "name": "XML parsing vulnerable to XXE (TransformerFactory)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XXE_DTD_TRANSFORM_FACTORY"
+  },
+  {
+    "key": "XXE_SAXPARSER",
+    "name": "XML parsing vulnerable to XXE (SAXParser)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XXE_SAXPARSER"
+  },
+  {
+    "key": "XXE_XMLREADER",
+    "name": "XML parsing vulnerable to XXE (XMLReader)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XXE_XMLREADER"
+  },
+  {
+    "key": "XXE_XMLSTREAMREADER",
+    "name": "XML parsing vulnerable to XXE (XMLStreamReader)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XXE_XMLSTREAMREADER"
+  },
+  {
+    "key": "XXE_XPATH",
+    "name": "XML parsing vulnerable to XXE (XPathExpression)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XXE_XPATH"
+  },
+  {
+    "key": "XXE_XSLT_TRANSFORM_FACTORY",
+    "name": "XSLT parsing vulnerable to XXE (TransformerFactory)",
+    "type": "VULNERABILITY",
+    "url": "https://find-sec-bugs.github.io/bugs.htm#XXE_XSLT_TRANSFORM_FACTORY"
+  }
+]

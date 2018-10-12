@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 http://pmd.sourceforge.net/report_2_0_0.xsd"
+     version="6.5.0" timestamp="2018-07-10T11:57:14.997">
+  <file name="file1.java">
+    <violation beginline="3" endline="3" begincolumn="35" endcolumn="38" rule="UnusedFormalParameter" ruleset="Best Practices" class="ConstructorCallsOverridableMethod1" method="ConstructorCallsOverridableMethod1" variable="errorText" externalInfoUrl="https://pmd.github.io/pmd/pmd_rules_java_bestpractices.html#unusedformalparameter" priority="3">
+      Avoid unused constructor parameters such as 'arg2'.
+    </violation>
+    <violation beginline="4" endline="5" begincolumn="9" endcolumn="10" rule="UnusedLocalVariable" ruleset="Best Practices" class="A" method="method" variable="argStr" externalInfoUrl="https://pmd.github.io/pmd/pmd_rules_java_bestpractices.html#unusedlocalvariable" priority="3">
+      Avoid unused local variables such as 'x'.
+    </violation>
+  </file>
+  <file name="file2.java">
+    <violation beginline="5" endline="6" begincolumn="3" endcolumn="3" rule="UnusedPrivateMethod" ruleset="Best Practices" class="A" method="privateTransactionalMethod" externalInfoUrl="https://pmd.github.io/pmd/pmd_rules_java_bestpractices.html#unusedprivatemethod" priority="2">
+      Avoid unused private methods such as 'privateMethod()'.
+    </violation>
+  </file>
+  <file name="unknown-file.java">
+    <violation beginline="5" endline="6" begincolumn="3" endcolumn="3" rule="UnusedPrivateMethod" ruleset="Best Practices" class="A" method="privateTransactionalMethod" externalInfoUrl="https://pmd.github.io/pmd/pmd_rules_java_bestpractices.html#unusedprivatemethod" priority="3">
+      Avoid unused private methods such as 'privateMethod()'.
+    </violation>
+  </file>
+</pmd>

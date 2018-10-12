@@ -52,7 +52,7 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
     List<CaseGroupTree> caseGroupTrees = switchStatementTree.cases();
     CFG cfg = CFG.buildCFG(Collections.singletonList(tree), true);
-    Set<CFG.Block> switchSuccessors = cfg.entry().successors();
+    Set<CFG.Block> switchSuccessors = cfg.entryBlock().successors();
 
     Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap = createMapping(switchSuccessors, caseGroupTrees);
     switchSuccessors.stream()

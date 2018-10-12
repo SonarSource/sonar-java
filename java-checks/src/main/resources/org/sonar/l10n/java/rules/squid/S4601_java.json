@@ -1,0 +1,25 @@
+{
+  "title": "\"HttpSecurity\" URL patterns should be correctly ordered",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "spring",
+    "owasp-a6"
+  ],
+  "standards": [
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4601",
+  "sqKey": "S4601",
+  "scope": "Main",
+  "securityStandards": {
+    "OWASP": [
+      "A6"
+    ]
+  }
+}

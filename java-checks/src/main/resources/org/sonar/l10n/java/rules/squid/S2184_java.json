@@ -21,5 +21,10 @@
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2184",
   "sqKey": "S2184",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CWE": [
+      190
+    ]
+  }
 }

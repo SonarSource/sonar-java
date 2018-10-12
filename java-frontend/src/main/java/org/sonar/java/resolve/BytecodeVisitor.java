@@ -41,6 +41,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.sonar.java.resolve.BytecodeCompleter.ASM_API_VERSION;
+
 public class BytecodeVisitor extends ClassVisitor {
 
   private static final Logger LOG = Loggers.get(BytecodeVisitor.class);
@@ -54,7 +56,7 @@ public class BytecodeVisitor extends ClassVisitor {
   private String className;
 
   BytecodeVisitor(BytecodeCompleter bytecodeCompleter, Symbols symbols, JavaSymbol.TypeJavaSymbol classSymbol, ParametrizedTypeCache parametrizedTypeCache) {
-    super(Opcodes.ASM5);
+    super(ASM_API_VERSION);
     this.bytecodeCompleter = bytecodeCompleter;
     this.symbols = symbols;
     this.classSymbol = classSymbol;
@@ -348,7 +350,7 @@ public class BytecodeVisitor extends ClassVisitor {
     ImmutableList.Builder<JavaType> interfaces;
 
     public ReadGenericSignature() {
-      super(Opcodes.ASM5);
+      super(ASM_API_VERSION);
       interfaces = ImmutableList.builder();
     }
 
@@ -435,7 +437,7 @@ public class BytecodeVisitor extends ClassVisitor {
     private final JavaSymbol symbol;
 
     public TypeParameterDeclaration(JavaSymbol symbol) {
-      super(Opcodes.ASM5);
+      super(ASM_API_VERSION);
       this.symbol = symbol;
       if(symbol.isTypeSymbol()) {
         ((JavaSymbol.TypeJavaSymbol) symbol).typeParameters = new Scope(symbol);
@@ -469,7 +471,7 @@ public class BytecodeVisitor extends ClassVisitor {
     List<JavaType> bounds;
 
     public ReadMethodSignature(JavaSymbol.MethodJavaSymbol methodSymbol) {
-      super(Opcodes.ASM5);
+      super(ASM_API_VERSION);
       this.methodSymbol = methodSymbol;
       ((MethodJavaType) methodSymbol.type).argTypes = Lists.newArrayList();
     }
@@ -559,20 +561,29 @@ public class BytecodeVisitor extends ClassVisitor {
     @Nullable
     private final JavaSymbol.MethodJavaSymbol methodSymbol;
     JavaType typeRead;
+    String bytecodeName;
     List<JavaType> typeArguments = Lists.newArrayList();
 
     public ReadType() {
-      super(Opcodes.ASM5);
+      super(ASM_API_VERSION);
       this.methodSymbol = null;
     }
 
     public ReadType(@Nullable JavaSymbol.MethodJavaSymbol methodSymbol) {
-      super(Opcodes.ASM5);
+      super(ASM_API_VERSION);
       this.methodSymbol = methodSymbol;
     }
 
     @Override
+    public void visitInnerClassType(String name) {
+      bytecodeName += "$" + name;
+      typeRead = getClassSymbol(bytecodeName).type;
+      typeArguments = Lists.newArrayList();
+    }
+
+    @Override
     public void visitClassType(String name) {
+      bytecodeName = name;
       typeRead = getClassSymbol(name).type;
     }
 

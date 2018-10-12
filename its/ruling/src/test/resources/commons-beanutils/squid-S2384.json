@@ -9,9 +9,6 @@
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/MethodUtils.java':[
 1335,
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/SuppressPropertiesBeanIntrospector.java':[
-79,
-],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/converters/ArrayConverter.java':[
 202,
 ],

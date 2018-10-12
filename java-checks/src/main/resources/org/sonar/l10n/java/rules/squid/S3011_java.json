@@ -1,0 +1,26 @@
+{
+  "title": "Changing or bypassing accessibility is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "cert",
+    "owasp-a3"
+  ],
+  "standards": [
+    "CERT",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-3011",
+  "sqKey": "S3011",
+  "scope": "Main",
+  "securityStandards": {
+    "OWASP": [
+      "A3"
+    ]
+  }
+}

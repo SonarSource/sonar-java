@@ -1,0 +1,16 @@
+{
+  "title": "String offset-based methods should be preferred for finding substrings from offsets",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "performance"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4635",
+  "sqKey": "S4635",
+  "scope": "All"
+}

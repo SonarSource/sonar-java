@@ -42,6 +42,15 @@ class ParametrizedExtend<S> {
   }
 }
 
+class ParametrizedExtendDerived<S> extends ParametrizedExtend<S> {
+  class InnerClassDerived extends ParametrizedExtend<S>.InnerClass {
+    @Override
+    S innerMethod(){
+      return null;
+    }
+  }
+}
+
 interface ParametrizedInterface1<U> {}
 interface ParametrizedInterface2<V> {}
 

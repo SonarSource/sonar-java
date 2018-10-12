@@ -129,16 +129,11 @@ public class Java10SemanticTest {
     Type type = var.symbol().type();
     assertThat(type).isEqualTo(var.type().symbolType());
 
-    // FIXME SONARJAVA-2724: type of cast expression with bounds is currently resolved only to its first type,
     // instead of the intersection type (JLS10 - §4.9).
-
-    // this assertion should fail, the type should be a subtype of CharSequence
-    assertThat(type).is("java.lang.CharSequence");
-
+    assertThat(type).isNot("java.lang.CharSequence");
     assertThat(type).isSubtypeOf("java.lang.CharSequence");
     assertThat(type).isNot("java.lang.Comparable");
-    // this assertion should fail, the type should be a subtype of Comparable
-    assertThat(type).isNotSubtypeOf("java.lang.Comparable");
+    assertThat(type).isSubtypeOf("java.lang.Comparable");
   }
 
   @Test

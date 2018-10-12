@@ -1,6 +1,10 @@
 <p>The use of a non-standard algorithm is dangerous because a determined attacker may be able to break the algorithm and compromise whatever data has
 been protected. Standard algorithms like <code>SHA-256</code>, <code>SHA-384</code>, <code>SHA-512</code>, ... should be used instead.</p>
 <p>This rule tracks creation of <code>java.security.MessageDigest</code> subclasses.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> use a standard algorithm instead of creating a custom one. </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 MyCryptographicAlgorithm extends MessageDigest {
@@ -11,7 +15,7 @@ MyCryptographicAlgorithm extends MessageDigest {
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/327.html">CWE-327</a> - Use of a Broken or Risky Cryptographic Algorithm </li>
   <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
-  <li> <a href="http://www.sans.org/top25-software-errors/">SANS Top 25</a> - Porous Defenses </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
   <li> Derived from FindSecBugs rule <a href="http://h3xstream.github.io/find-sec-bugs/bugs.htm#CUSTOM_MESSAGE_DIGEST">MessageDigest is Custom</a>
   </li>
 </ul>

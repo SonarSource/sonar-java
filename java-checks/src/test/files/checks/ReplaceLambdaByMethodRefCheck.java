@@ -147,3 +147,15 @@ class C extends B {
     System.out.println(s.get()); // WORLD
   }
 }
+
+public class D {
+
+  D(Object o) { /* ... */ }
+  String foo() { return ""; }
+  void bar(java.util.function.Supplier<String> supplier) { /* ... */ }
+
+  void test(Object param) {
+    bar(() -> new D(param).foo()); // Compliant - this is not equivalent to the next line
+    bar(new D(param)::foo);
+  }
+}

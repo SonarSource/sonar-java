@@ -60,6 +60,8 @@ public class JavaPlugin implements Plugin {
         .description("when set to true, if an exception is thrown by the analyzer, feedback will be collected and sent to server")
         .build());
       builder.add(JavaMetricDefinition.class);
+
+      ExternalReportExtensions.define(context);
     }
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
@@ -81,6 +83,7 @@ public class JavaPlugin implements Plugin {
       PostAnalysisIssueFilter.class,
       XmlFileSensor.class);
     context.addExtensions(builder.build());
+
   }
 
 }

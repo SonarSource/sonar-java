@@ -22,6 +22,9 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -32,16 +35,12 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 @Rule(key = "TrailingCommentCheck")
 @RspecKey("S139")
 public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_LEGAL_COMMENT_PATTERN = "^\\s*+[^\\s]++$";
-  private static final Set<String> EXCLUDED_PATTERNS = ImmutableSet.of("NOSONAR", "NOPMD", "CHECKSTYLE:");
+  private static final Set<String> EXCLUDED_PATTERNS = ImmutableSet.of("NOSONAR", "NOPMD", "CHECKSTYLE:", "$NON-NLS");
 
   @RuleProperty(
     key = "legalTrailingCommentPattern",

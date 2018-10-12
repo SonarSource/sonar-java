@@ -22,7 +22,7 @@ package org.sonar.java;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;

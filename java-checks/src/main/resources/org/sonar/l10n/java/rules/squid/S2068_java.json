@@ -21,5 +21,14 @@
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2068",
   "sqKey": "S2068",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      798,
+      259
+    ],
+    "OWASP": [
+      "A2"
+    ]
+  }
 }

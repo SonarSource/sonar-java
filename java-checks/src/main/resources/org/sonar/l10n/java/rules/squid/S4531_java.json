@@ -1,0 +1,25 @@
+{
+  "title": "Using setters in Struts 2 ActionSupport is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "owasp-a1",
+    "struts"
+  ],
+  "standards": [
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4531",
+  "sqKey": "S4531",
+  "scope": "Main",
+  "securityStandards": {
+    "OWASP": [
+      "A1"
+    ]
+  }
+}

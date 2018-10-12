@@ -23,7 +23,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
@@ -35,12 +40,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -130,10 +129,10 @@ public class MethodJavaSymbolTest {
         public void visitNode(Tree tree) {
           Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) ((MethodInvocationTree) tree).symbol();
           if(methodSymbol.name().equals("test")) {
-            assertThat(((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature())
+            assertThat(methodSymbol.signature())
               .isEqualTo("org.sonar.java.resolve.targets.MethodCompleteSignature#test(SJZI[BLjava/lang/Object;CFDLjava/lang/String;)V");
           } else {
-            assertThat(((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature())
+            assertThat(methodSymbol.signature())
               .isEqualTo("org.sonar.java.resolve.targets.MethodCompleteSignature#test2([Lorg/sonar/java/resolve/targets/MethodCompleteSignature;)[Lorg/sonar/java/resolve/targets/MethodCompleteSignature;");
           }
         }

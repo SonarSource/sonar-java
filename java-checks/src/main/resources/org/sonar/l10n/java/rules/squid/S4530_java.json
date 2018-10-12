@@ -1,0 +1,26 @@
+{
+  "title": "Using Struts 1 ActionForm is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a1",
+    "struts"
+  ],
+  "standards": [
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4530",
+  "sqKey": "S4530",
+  "scope": "Main",
+  "securityStandards": {
+    "OWASP": [
+      "A1"
+    ]
+  }
+}

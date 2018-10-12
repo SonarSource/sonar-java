@@ -202,7 +202,7 @@ public class JavaCheckVerifier {
   private static SonarComponents sonarComponents(File file) {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     context.setSettings(new MapSettings().setProperty("sonar.java.failOnException", true));
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null) {
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, File file) {
         return false;

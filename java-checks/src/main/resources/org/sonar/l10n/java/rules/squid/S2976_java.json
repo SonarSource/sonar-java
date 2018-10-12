@@ -15,5 +15,10 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2976",
   "sqKey": "S2976",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "OWASP": [
+      "A9"
+    ]
+  }
 }

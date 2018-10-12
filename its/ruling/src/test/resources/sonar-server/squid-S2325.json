@@ -26,6 +26,9 @@
 122,
 354,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureJsonWriter.java':[
+85,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/PlatformServletContextListener.java':[
 56,
 ],

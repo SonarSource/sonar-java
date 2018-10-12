@@ -31,7 +31,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Rule;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Handle;
@@ -41,13 +40,11 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.util.Printer;
-import org.sonar.api.utils.log.LogTester;
-import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.cfg.testdata.CFGTestData;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.resolve.BytecodeCompleter;
 import org.sonar.java.resolve.Convert;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -70,9 +67,6 @@ import static org.sonar.java.bytecode.cfg.Instructions.TYPE_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.VAR_INSN;
 
 public class BytecodeCFGBuilderTest {
-
-  @Rule
-  public LogTester logTester = new LogTester();
 
   @Test
   public void test() throws Exception {
@@ -144,7 +138,7 @@ public class BytecodeCFGBuilderTest {
     SemanticModel.createFor(tree, squidClassLoader);
     Symbol.TypeSymbol innerClass = ((Symbol.TypeSymbol) ((ClassTree) tree.types().get(0)).symbol().lookupSymbols("InnerClass").iterator().next());
     Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) innerClass.lookupSymbols(methodName).iterator().next();
-    return SETestUtils.bytecodeCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
+    return SETestUtils.bytecodeCFG(symbol.signature(), squidClassLoader);
   }
 
   @Test
@@ -155,7 +149,7 @@ public class BytecodeCFGBuilderTest {
     SemanticModel.createFor(tree, squidClassLoader);
     Symbol.TypeSymbol testClazz = ((ClassTree) tree.types().get(0)).symbol();
     ClassReader cr = new ClassReader(squidClassLoader.getResourceAsStream(Convert.bytecodeName(CFGTestData.class.getCanonicalName()) + ".class"));
-    ClassNode classNode = new ClassNode(Opcodes.ASM5);
+    ClassNode classNode = new ClassNode(BytecodeCompleter.ASM_API_VERSION);
     cr.accept(classNode, 0);
     for (MethodNode method : classNode.methods) {
       Multiset<String> opcodes = Arrays.stream(method.instructions.toArray())
@@ -165,7 +159,7 @@ public class BytecodeCFGBuilderTest {
         .collect(Collectors.toCollection(HashMultiset::create));
 
       Symbol methodSymbol = Iterables.getOnlyElement(testClazz.lookupSymbols(method.name));
-      BytecodeCFG bytecodeCFG = SETestUtils.bytecodeCFG(((JavaSymbol.MethodJavaSymbol) methodSymbol).completeSignature(), squidClassLoader);
+      BytecodeCFG bytecodeCFG = SETestUtils.bytecodeCFG(((Symbol.MethodSymbol) methodSymbol).signature(), squidClassLoader);
       Multiset<String> cfgOpcodes = cfgOpcodes(bytecodeCFG);
       assertThat(cfgOpcodes).isEqualTo(opcodes);
     }
@@ -405,7 +399,6 @@ public class BytecodeCFGBuilderTest {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     BytecodeCFG cfg = SETestUtils.bytecodeCFG("nonsense#foo", squidClassLoader);
     assertThat(cfg).isNull();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains(".class not found for nonsense");
   }
 
   private void assertCFGforMethod(String methodName, String expectedCFG) {
@@ -427,7 +420,7 @@ public class BytecodeCFGBuilderTest {
       .filter(s -> methodName.equals(s.name()))
       .findFirst()
       .orElseThrow(IllegalStateException::new);
-    return SETestUtils.bytecodeCFG(((JavaSymbol.MethodJavaSymbol) symbol).completeSignature(), squidClassLoader);
+    return SETestUtils.bytecodeCFG(symbol.signature(), squidClassLoader);
   }
 
   private void tryCatch() {

@@ -47,6 +47,7 @@ public class JavaType implements Type {
   public static final int WILDCARD = 16;
   public static final int DEFERRED = 17;
   public static final int PARAMETERIZED = 18;
+  public static final int INTERSECTION = 19;
 
   int tag;
 

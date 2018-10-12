@@ -38,14 +38,14 @@ public class UnclosedResourcesCheckTest {
 
   @Test
   public void spring() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SpringResource.java", new UnclosedResourcesCheck());
+    JavaCheckVerifier.verify("src/test/files/se/SpringResource.java", new UnclosedResourcesCheck());
   }
 
   @Test
   public void streams() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/StreamResource.java", new UnclosedResourcesCheck());
   }
-  
+
   @Test
   public void testWithExcludedTypes() {
     UnclosedResourcesCheck unclosedResourcesCheck = new UnclosedResourcesCheck();

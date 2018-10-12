@@ -15,6 +15,7 @@ class Foo {
   int h = 0; // CHECKSTYLE:OFF
   int l = 0; // checkstyle:off
   int m = 0; // checkstyle:off explanation
+  String s = "Hello" + "World"; //$NON-NLS-1$ //$NON-NLS-2$
 
   void foo() {
     int[] m = new int[2];

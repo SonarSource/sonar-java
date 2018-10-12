@@ -27,8 +27,8 @@ public abstract class Apple<E extends Enum<E>> extends Fruit<E> {
 
 public abstract class Fruit<E extends Enum<E>> {
 
-  public interface Builder<T extends Fruit<E>, B extends Fruit.Builder<T, B, E>, E extends Enum<E>> {
-    default T build() {
+  public interface Builder<W extends Fruit<X>, Y extends Fruit.Builder<W, Y, X>, X extends Enum<X>> {
+    default W build() {
       return null;
     }
   }

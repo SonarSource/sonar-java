@@ -136,3 +136,68 @@ class DocumentBuilderFactoryTest {
   }
 
 }
+
+class Foo {
+  XMLInputFactory factory = XMLInputFactory.newInstance();
+}
+
+class Validator {
+  void no_property () {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
+  }
+
+  void withAccessExternalDtdAndExternalSchema() {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator();
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+  }
+
+  void withAccessExternalDtd() {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+  }
+
+  void withAccessExternalSchema() {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+  }
+
+  void withAccessExternalDtdDifferentThatEmptyString() {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
+  }
+
+  void inlined_value () {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator();
+    validator.setProperty("http://javax.xml.XMLConstants/property/accessExternalDTD", "");
+    validator.setProperty("http://javax.xml.XMLConstants/property/accessExternalSchema", "");
+  }
+
+  void noValidator() {
+    javax.xml.validation.SchemaFactory factory = javax.xml.validation.SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+    factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    javax.xml.validation.Schema schema = factory.newSchema();
+  }
+
+  void otherProperty() {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
+    validator.setProperty(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, ""); // Coverage: Setting other property other than ACCESS_EXTERNAL_DTD or ACCESS_EXTERNAL_SCHEMA
+
+  }
+
+}

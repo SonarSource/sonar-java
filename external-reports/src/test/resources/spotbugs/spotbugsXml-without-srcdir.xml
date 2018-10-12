@@ -1,0 +1,6 @@
+<BugCollection>
+    <BugInstance type='HE_EQUALS_USE_HASHCODE'>
+        <LongMessage>org.myapp.Main defines equals and uses Object.hashCode()</LongMessage>
+        <SourceLine start='6' end='6' sourcepath='org/myapp/Main.java' startBytecode='0' />
+    </BugInstance>
+</BugCollection>

@@ -1,0 +1,25 @@
+{
+  "title": "Exposing Spring endpoints is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "spring",
+    "owasp-a1"
+  ],
+  "standards": [
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4529",
+  "sqKey": "S4529",
+  "scope": "Main",
+  "securityStandards": {
+    "OWASP": [
+      "A1"
+    ]
+  }
+}

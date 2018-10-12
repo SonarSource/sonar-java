@@ -20,18 +20,17 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.nio.file.Paths;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.java.model.VisitorsBridge;
 
-import java.io.File;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,9 +43,8 @@ public class DefaultJavaResourceLocatorTest {
     JavaClasspath javaClasspath = mock(JavaClasspath.class);
     when(javaClasspath.getBinaryDirs()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
     when(javaClasspath.getElements()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
-    SensorContext sensorContext = mock(SensorContext.class);
+    SensorContext sensorContext = SensorContextTester.create(Paths.get("."));
     File file = new File("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java");
-    when(sensorContext.getResource(any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create(file.getPath()));
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     fs.add(new TestInputFileBuilder("", file.getPath()).build());
     DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(fs, javaClasspath);

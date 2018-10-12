@@ -22,15 +22,16 @@ package org.sonar.java.resolve;
 import com.google.common.collect.Lists;
 import java.util.List;
 import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+
+import static org.sonar.java.resolve.BytecodeCompleter.ASM_API_VERSION;
 
 public class BytecodeAnnotationVisitor extends AnnotationVisitor {
   private final AnnotationInstanceResolve annotationInstance;
   private final BytecodeVisitor bytecodeVisitor;
 
   public BytecodeAnnotationVisitor(AnnotationInstanceResolve annotationInstance, BytecodeVisitor bytecodeVisitor) {
-    super(Opcodes.ASM5);
+    super(ASM_API_VERSION);
     this.annotationInstance = annotationInstance;
     this.bytecodeVisitor = bytecodeVisitor;
   }
@@ -70,7 +71,7 @@ public class BytecodeAnnotationVisitor extends AnnotationVisitor {
   public AnnotationVisitor visitArray(final String name) {
     final List<Object> valuesList = Lists.newArrayList();
     // TODO handle arrays of annotation
-    return new AnnotationVisitor(Opcodes.ASM5, this) {
+    return new AnnotationVisitor(ASM_API_VERSION, this) {
       @Override
       public void visit(String name, Object value) {
         valuesList.add(value);

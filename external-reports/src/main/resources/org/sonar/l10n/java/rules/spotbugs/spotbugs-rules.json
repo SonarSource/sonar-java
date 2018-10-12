@@ -1,0 +1,3276 @@
+[
+  {
+    "key": "AM_CREATES_EMPTY_JAR_FILE_ENTRY",
+    "name": "Bad practice - Creates an empty jar file entry",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#AM_CREATES_EMPTY_JAR_FILE_ENTRY"
+  },
+  {
+    "key": "AM_CREATES_EMPTY_ZIP_FILE_ENTRY",
+    "name": "Bad practice - Creates an empty zip file entry",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#AM_CREATES_EMPTY_ZIP_FILE_ENTRY"
+  },
+  {
+    "key": "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION",
+    "name": "Multi-threading - Sequence of calls to concurrent abstraction may not be atomic",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"
+  },
+  {
+    "key": "BAC_BAD_APPLET_CONSTRUCTOR",
+    "name": "Correctness - Bad Applet Constructor relies on uninitialized AppletStub",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BAC_BAD_APPLET_CONSTRUCTOR"
+  },
+  {
+    "key": "BC_BAD_CAST_TO_ABSTRACT_COLLECTION",
+    "name": "Style - Questionable cast to abstract collection ",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_BAD_CAST_TO_ABSTRACT_COLLECTION"
+  },
+  {
+    "key": "BC_BAD_CAST_TO_CONCRETE_COLLECTION",
+    "name": "Style - Questionable cast to concrete collection",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_BAD_CAST_TO_CONCRETE_COLLECTION"
+  },
+  {
+    "key": "BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS",
+    "name": "Bad practice - Equals method should not assume anything about the type of its argument",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS"
+  },
+  {
+    "key": "BC_IMPOSSIBLE_CAST",
+    "name": "Correctness - Impossible cast",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_IMPOSSIBLE_CAST"
+  },
+  {
+    "key": "BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY",
+    "name": "Correctness - Impossible cast involving primitive array",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY"
+  },
+  {
+    "key": "BC_IMPOSSIBLE_DOWNCAST",
+    "name": "Correctness - Impossible downcast",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_IMPOSSIBLE_DOWNCAST"
+  },
+  {
+    "key": "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY",
+    "name": "Correctness - Impossible downcast of toArray() result",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY"
+  },
+  {
+    "key": "BC_IMPOSSIBLE_INSTANCEOF",
+    "name": "Correctness - instanceof will always return false",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_IMPOSSIBLE_INSTANCEOF"
+  },
+  {
+    "key": "BC_NULL_INSTANCEOF",
+    "name": "Correctness - A known null value is checked to see if it is an instance of a type",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_NULL_INSTANCEOF"
+  },
+  {
+    "key": "BC_UNCONFIRMED_CAST",
+    "name": "Style - Unchecked/unconfirmed cast",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_UNCONFIRMED_CAST"
+  },
+  {
+    "key": "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE",
+    "name": "Style - Unchecked/unconfirmed cast of return value from method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_UNCONFIRMED_CAST_OF_RETURN_VALUE"
+  },
+  {
+    "key": "BC_VACUOUS_INSTANCEOF",
+    "name": "Style - instanceof will always return true",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BC_VACUOUS_INSTANCEOF"
+  },
+  {
+    "key": "BIT_ADD_OF_SIGNED_BYTE",
+    "name": "Correctness - Bitwise add of signed byte value",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BIT_ADD_OF_SIGNED_BYTE"
+  },
+  {
+    "key": "BIT_AND",
+    "name": "Correctness - Incompatible bit masks",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BIT_AND"
+  },
+  {
+    "key": "BIT_AND_ZZ",
+    "name": "Correctness - Check to see if ((...) \u0026 0) \u003d\u003d 0",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BIT_AND_ZZ"
+  },
+  {
+    "key": "BIT_IOR",
+    "name": "Correctness - Incompatible bit masks",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BIT_IOR"
+  },
+  {
+    "key": "BIT_IOR_OF_SIGNED_BYTE",
+    "name": "Correctness - Bitwise OR of signed byte value",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BIT_IOR_OF_SIGNED_BYTE"
+  },
+  {
+    "key": "BIT_SIGNED_CHECK",
+    "name": "Bad practice - Check for sign of bitwise operation",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BIT_SIGNED_CHECK"
+  },
+  {
+    "key": "BIT_SIGNED_CHECK_HIGH_BIT",
+    "name": "Correctness - Check for sign of bitwise operation involving negative number",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BIT_SIGNED_CHECK_HIGH_BIT"
+  },
+  {
+    "key": "BOA_BADLY_OVERRIDDEN_ADAPTER",
+    "name": "Correctness - Class overrides a method implemented in super class Adapter wrongly",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BOA_BADLY_OVERRIDDEN_ADAPTER"
+  },
+  {
+    "key": "BRSA_BAD_RESULTSET_ACCESS",
+    "name": "Correctness - Method attempts to access a result set field with index 0",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BRSA_BAD_RESULTSET_ACCESS"
+  },
+  {
+    "key": "BSHIFT_WRONG_ADD_PRIORITY",
+    "name": "Correctness - Possible bad parsing of shift operation",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BSHIFT_WRONG_ADD_PRIORITY"
+  },
+  {
+    "key": "BX_BOXING_IMMEDIATELY_UNBOXED",
+    "name": "Performance - Primitive value is boxed and then immediately unboxed",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BX_BOXING_IMMEDIATELY_UNBOXED"
+  },
+  {
+    "key": "BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION",
+    "name": "Performance - Primitive value is boxed then unboxed to perform primitive coercion",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION"
+  },
+  {
+    "key": "BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR",
+    "name": "Performance - Primitive value is unboxed and coerced for ternary operator",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR"
+  },
+  {
+    "key": "BX_UNBOXING_IMMEDIATELY_REBOXED",
+    "name": "Performance - Boxed value is unboxed and then immediately reboxed",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#BX_UNBOXING_IMMEDIATELY_REBOXED"
+  },
+  {
+    "key": "CAA_COVARIANT_ARRAY_ELEMENT_STORE",
+    "name": "Correctness - Possibly incompatible element is stored in covariant array",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CAA_COVARIANT_ARRAY_ELEMENT_STORE"
+  },
+  {
+    "key": "CAA_COVARIANT_ARRAY_FIELD",
+    "name": "Style - Covariant array assignment to a field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CAA_COVARIANT_ARRAY_FIELD"
+  },
+  {
+    "key": "CAA_COVARIANT_ARRAY_LOCAL",
+    "name": "Style - Covariant array assignment to a local variable",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CAA_COVARIANT_ARRAY_LOCAL"
+  },
+  {
+    "key": "CAA_COVARIANT_ARRAY_RETURN",
+    "name": "Style - Covariant array is returned from the method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CAA_COVARIANT_ARRAY_RETURN"
+  },
+  {
+    "key": "CD_CIRCULAR_DEPENDENCY",
+    "name": "Style - Test for circular dependencies among classes",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CD_CIRCULAR_DEPENDENCY"
+  },
+  {
+    "key": "CI_CONFUSED_INHERITANCE",
+    "name": "Style - Class is final but declares protected field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CI_CONFUSED_INHERITANCE"
+  },
+  {
+    "key": "CNT_ROUGH_CONSTANT_VALUE",
+    "name": "Bad practice - Rough value of known constant found",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CNT_ROUGH_CONSTANT_VALUE"
+  },
+  {
+    "key": "CN_IDIOM",
+    "name": "Bad practice - Class implements Cloneable but does not define or use clone method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CN_IDIOM"
+  },
+  {
+    "key": "CN_IDIOM_NO_SUPER_CALL",
+    "name": "Bad practice - clone method does not call super.clone()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CN_IDIOM_NO_SUPER_CALL"
+  },
+  {
+    "key": "CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE",
+    "name": "Bad practice - Class defines clone() but doesn\u0027t implement Cloneable",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"
+  },
+  {
+    "key": "CO_ABSTRACT_SELF",
+    "name": "Bad practice - Abstract class defines covariant compareTo() method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CO_ABSTRACT_SELF"
+  },
+  {
+    "key": "CO_COMPARETO_INCORRECT_FLOATING",
+    "name": "Bad practice - compareTo()/compare() incorrectly handles float or double value",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CO_COMPARETO_INCORRECT_FLOATING"
+  },
+  {
+    "key": "CO_COMPARETO_RESULTS_MIN_VALUE",
+    "name": "Bad practice - compareTo()/compare() returns Integer.MIN_VALUE",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CO_COMPARETO_RESULTS_MIN_VALUE"
+  },
+  {
+    "key": "CO_SELF_NO_OBJECT",
+    "name": "Bad practice - Covariant compareTo() method defined",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#CO_SELF_NO_OBJECT"
+  },
+  {
+    "key": "DB_DUPLICATE_BRANCHES",
+    "name": "Style - Method uses the same code for two branches",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DB_DUPLICATE_BRANCHES"
+  },
+  {
+    "key": "DB_DUPLICATE_SWITCH_CLAUSES",
+    "name": "Style - Method uses the same code for two switch clauses",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DB_DUPLICATE_SWITCH_CLAUSES"
+  },
+  {
+    "key": "DC_DOUBLECHECK",
+    "name": "Multi-threading - Possible double check of field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DC_DOUBLECHECK"
+  },
+  {
+    "key": "DC_PARTIALLY_CONSTRUCTED",
+    "name": "Multi-threading - Possible exposure of partially initialized object",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DC_PARTIALLY_CONSTRUCTED"
+  },
+  {
+    "key": "DE_MIGHT_DROP",
+    "name": "Bad practice - Method might drop exception",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DE_MIGHT_DROP"
+  },
+  {
+    "key": "DE_MIGHT_IGNORE",
+    "name": "Bad practice - Method might ignore exception",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DE_MIGHT_IGNORE"
+  },
+  {
+    "key": "DLS_DEAD_LOCAL_INCREMENT_IN_RETURN",
+    "name": "Correctness - Useless increment in return statement",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DLS_DEAD_LOCAL_INCREMENT_IN_RETURN"
+  },
+  {
+    "key": "DLS_DEAD_LOCAL_STORE",
+    "name": "Style - Dead store to local variable",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DLS_DEAD_LOCAL_STORE"
+  },
+  {
+    "key": "DLS_DEAD_LOCAL_STORE_IN_RETURN",
+    "name": "Style - Useless assignment in return statement",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DLS_DEAD_LOCAL_STORE_IN_RETURN"
+  },
+  {
+    "key": "DLS_DEAD_LOCAL_STORE_OF_NULL",
+    "name": "Style - Dead store of null to local variable",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DLS_DEAD_LOCAL_STORE_OF_NULL"
+  },
+  {
+    "key": "DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD",
+    "name": "Style - Dead store to local variable that shadows field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD"
+  },
+  {
+    "key": "DLS_DEAD_STORE_OF_CLASS_LITERAL",
+    "name": "Correctness - Dead store of class literal",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DLS_DEAD_STORE_OF_CLASS_LITERAL"
+  },
+  {
+    "key": "DLS_OVERWRITTEN_INCREMENT",
+    "name": "Correctness - Overwritten increment",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DLS_OVERWRITTEN_INCREMENT"
+  },
+  {
+    "key": "DL_SYNCHRONIZATION_ON_BOOLEAN",
+    "name": "Multi-threading - Synchronization on Boolean",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DL_SYNCHRONIZATION_ON_BOOLEAN"
+  },
+  {
+    "key": "DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE",
+    "name": "Multi-threading - Synchronization on boxed primitive",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE"
+  },
+  {
+    "key": "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT",
+    "name": "Multi-threading - Synchronization on interned String ",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DL_SYNCHRONIZATION_ON_SHARED_CONSTANT"
+  },
+  {
+    "key": "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE",
+    "name": "Multi-threading - Synchronization on boxed primitive values",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE"
+  },
+  {
+    "key": "DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION",
+    "name": "Correctness - Can\u0027t use reflection to check for presence of annotation without runtime retention",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION"
+  },
+  {
+    "key": "DMI_ARGUMENTS_WRONG_ORDER",
+    "name": "Correctness - Reversed method arguments",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_ARGUMENTS_WRONG_ORDER"
+  },
+  {
+    "key": "DMI_BAD_MONTH",
+    "name": "Correctness - Bad constant value for month",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_BAD_MONTH"
+  },
+  {
+    "key": "DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE",
+    "name": "Correctness - BigDecimal constructed from double that isn\u0027t represented precisely",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE"
+  },
+  {
+    "key": "DMI_BLOCKING_METHODS_ON_URL",
+    "name": "Performance - The equals and hashCode methods of URL are blocking",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_BLOCKING_METHODS_ON_URL"
+  },
+  {
+    "key": "DMI_CALLING_NEXT_FROM_HASNEXT",
+    "name": "Correctness - hasNext method invokes next",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_CALLING_NEXT_FROM_HASNEXT"
+  },
+  {
+    "key": "DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES",
+    "name": "Correctness - Collections should not contain themselves",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES"
+  },
+  {
+    "key": "DMI_COLLECTION_OF_URLS",
+    "name": "Performance - Maps and sets of URLs can be performance hogs",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_COLLECTION_OF_URLS"
+  },
+  {
+    "key": "DMI_CONSTANT_DB_PASSWORD",
+    "name": "Security - Hardcoded constant database password",
+    "type": "VULNERABILITY",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_CONSTANT_DB_PASSWORD"
+  },
+  {
+    "key": "DMI_DOH",
+    "name": "Correctness - D\u0027oh! A nonsensical method invocation",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_DOH"
+  },
+  {
+    "key": "DMI_EMPTY_DB_PASSWORD",
+    "name": "Security - Empty database password",
+    "type": "VULNERABILITY",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_EMPTY_DB_PASSWORD"
+  },
+  {
+    "key": "DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS",
+    "name": "Bad practice - Adding elements of an entry set may fail due to reuse of Entry objects",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS"
+  },
+  {
+    "key": "DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR",
+    "name": "Correctness - Futile attempt to change max pool size of ScheduledThreadPoolExecutor",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR"
+  },
+  {
+    "key": "DMI_HARDCODED_ABSOLUTE_FILENAME",
+    "name": "Style - Code contains a hard coded reference to an absolute pathname",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_HARDCODED_ABSOLUTE_FILENAME"
+  },
+  {
+    "key": "DMI_INVOKING_HASHCODE_ON_ARRAY",
+    "name": "Correctness - Invocation of hashCode on an array",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_INVOKING_HASHCODE_ON_ARRAY"
+  },
+  {
+    "key": "DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY",
+    "name": "Correctness - Invocation of toString on an unnamed array",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY"
+  },
+  {
+    "key": "DMI_INVOKING_TOSTRING_ON_ARRAY",
+    "name": "Correctness - Invocation of toString on an array",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_INVOKING_TOSTRING_ON_ARRAY"
+  },
+  {
+    "key": "DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT",
+    "name": "Correctness - Double.longBitsToDouble invoked on an int",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT"
+  },
+  {
+    "key": "DMI_NONSERIALIZABLE_OBJECT_WRITTEN",
+    "name": "Style - Non serializable object written to ObjectOutput",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_NONSERIALIZABLE_OBJECT_WRITTEN"
+  },
+  {
+    "key": "DMI_RANDOM_USED_ONLY_ONCE",
+    "name": "Bad practice - Random object created and used only once",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_RANDOM_USED_ONLY_ONCE"
+  },
+  {
+    "key": "DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS",
+    "name": "Correctness - Creation of ScheduledThreadPoolExecutor with zero core threads",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS"
+  },
+  {
+    "key": "DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED",
+    "name": "Style - Thread passed where Runnable expected",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED"
+  },
+  {
+    "key": "DMI_UNSUPPORTED_METHOD",
+    "name": "Style - Call to unsupported method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_UNSUPPORTED_METHOD"
+  },
+  {
+    "key": "DMI_USELESS_SUBSTRING",
+    "name": "Style - Invocation of substring(0), which returns the original value",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_USELESS_SUBSTRING"
+  },
+  {
+    "key": "DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION",
+    "name": "Bad practice - Don\u0027t use removeAll to clear a collection",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION"
+  },
+  {
+    "key": "DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD",
+    "name": "Correctness - Useless/vacuous call to EasyMock method",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD"
+  },
+  {
+    "key": "DMI_VACUOUS_SELF_COLLECTION_CALL",
+    "name": "Correctness - Vacuous call to collections",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DMI_VACUOUS_SELF_COLLECTION_CALL"
+  },
+  {
+    "key": "DM_BOOLEAN_CTOR",
+    "name": "Performance - Method invokes inefficient Boolean constructor; use Boolean.valueOf(...) instead",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_BOOLEAN_CTOR"
+  },
+  {
+    "key": "DM_BOXED_PRIMITIVE_FOR_COMPARE",
+    "name": "Performance - Boxing a primitive to compare",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_BOXED_PRIMITIVE_FOR_COMPARE"
+  },
+  {
+    "key": "DM_BOXED_PRIMITIVE_FOR_PARSING",
+    "name": "Performance - Boxing/unboxing to parse a primitive",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_BOXED_PRIMITIVE_FOR_PARSING"
+  },
+  {
+    "key": "DM_BOXED_PRIMITIVE_TOSTRING",
+    "name": "Performance - Method allocates a boxed primitive just to call toString",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_BOXED_PRIMITIVE_TOSTRING"
+  },
+  {
+    "key": "DM_CONVERT_CASE",
+    "name": "Internationalization - Consider using Locale parameterized version of invoked method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_CONVERT_CASE"
+  },
+  {
+    "key": "DM_DEFAULT_ENCODING",
+    "name": "Internationalization - Reliance on default encoding",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_DEFAULT_ENCODING"
+  },
+  {
+    "key": "DM_EXIT",
+    "name": "Bad practice - Method invokes System.exit(...)",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_EXIT"
+  },
+  {
+    "key": "DM_FP_NUMBER_CTOR",
+    "name": "Performance - Method invokes inefficient floating-point Number constructor; use static valueOf instead",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_FP_NUMBER_CTOR"
+  },
+  {
+    "key": "DM_GC",
+    "name": "Performance - Explicit garbage collection; extremely dubious except in benchmarking code",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_GC"
+  },
+  {
+    "key": "DM_INVALID_MIN_MAX",
+    "name": "Correctness - Incorrect combination of Math.max and Math.min",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_INVALID_MIN_MAX"
+  },
+  {
+    "key": "DM_MONITOR_WAIT_ON_CONDITION",
+    "name": "Multi-threading - Monitor wait() called on Condition",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_MONITOR_WAIT_ON_CONDITION"
+  },
+  {
+    "key": "DM_NEW_FOR_GETCLASS",
+    "name": "Performance - Method allocates an object, only to get the class object",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_NEW_FOR_GETCLASS"
+  },
+  {
+    "key": "DM_NEXTINT_VIA_NEXTDOUBLE",
+    "name": "Performance - Use the nextInt method of Random rather than nextDouble to generate a random integer",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_NEXTINT_VIA_NEXTDOUBLE"
+  },
+  {
+    "key": "DM_NUMBER_CTOR",
+    "name": "Performance - Method invokes inefficient Number constructor; use static valueOf instead",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_NUMBER_CTOR"
+  },
+  {
+    "key": "DM_RUN_FINALIZERS_ON_EXIT",
+    "name": "Bad practice - Method invokes dangerous method runFinalizersOnExit",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_RUN_FINALIZERS_ON_EXIT"
+  },
+  {
+    "key": "DM_STRING_CTOR",
+    "name": "Performance - Method invokes inefficient new String(String) constructor",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_STRING_CTOR"
+  },
+  {
+    "key": "DM_STRING_TOSTRING",
+    "name": "Performance - Method invokes toString() method on a String",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_STRING_TOSTRING"
+  },
+  {
+    "key": "DM_STRING_VOID_CTOR",
+    "name": "Performance - Method invokes inefficient new String() constructor",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_STRING_VOID_CTOR"
+  },
+  {
+    "key": "DM_USELESS_THREAD",
+    "name": "Multi-threading - A thread was created using the default empty run method",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DM_USELESS_THREAD"
+  },
+  {
+    "key": "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED",
+    "name": "Malicious code - Classloaders should only be created inside doPrivileged block",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"
+  },
+  {
+    "key": "DP_DO_INSIDE_DO_PRIVILEDGED",
+    "name": "Method invoked that should be only be invoked inside a doPrivileged block",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DP_DO_INSIDE_DO_PRIVILEDGED"
+  },
+  {
+    "key": "DP_DO_INSIDE_DO_PRIVILEGED",
+    "name": "Malicious code - Method invoked that should be only be invoked inside a doPrivileged block",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#DP_DO_INSIDE_DO_PRIVILEGED"
+  },
+  {
+    "key": "EC_ARRAY_AND_NONARRAY",
+    "name": "Correctness - equals() used to compare array and nonarray",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EC_ARRAY_AND_NONARRAY"
+  },
+  {
+    "key": "EC_BAD_ARRAY_COMPARE",
+    "name": "Correctness - Invocation of equals() on an array, which is equivalent to \u003d\u003d",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EC_BAD_ARRAY_COMPARE"
+  },
+  {
+    "key": "EC_INCOMPATIBLE_ARRAY_COMPARE",
+    "name": "Correctness - equals(...) used to compare incompatible arrays",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EC_INCOMPATIBLE_ARRAY_COMPARE"
+  },
+  {
+    "key": "EC_NULL_ARG",
+    "name": "Correctness - Call to equals(null)",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EC_NULL_ARG"
+  },
+  {
+    "key": "EC_UNRELATED_CLASS_AND_INTERFACE",
+    "name": "Correctness - Call to equals() comparing unrelated class and interface",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EC_UNRELATED_CLASS_AND_INTERFACE"
+  },
+  {
+    "key": "EC_UNRELATED_INTERFACES",
+    "name": "Correctness - Call to equals() comparing different interface types",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EC_UNRELATED_INTERFACES"
+  },
+  {
+    "key": "EC_UNRELATED_TYPES",
+    "name": "Correctness - Call to equals() comparing different types",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EC_UNRELATED_TYPES"
+  },
+  {
+    "key": "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY",
+    "name": "Correctness - Using pointer equality to compare different types",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
+  },
+  {
+    "key": "EI_EXPOSE_REP",
+    "name": "Malicious code - May expose internal representation by returning reference to mutable object",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EI_EXPOSE_REP"
+  },
+  {
+    "key": "EI_EXPOSE_REP2",
+    "name": "Malicious code - May expose internal representation by incorporating reference to mutable object",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EI_EXPOSE_REP2"
+  },
+  {
+    "key": "EI_EXPOSE_STATIC_REP2",
+    "name": "Malicious code - May expose internal static state by storing a mutable object into a static field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EI_EXPOSE_STATIC_REP2"
+  },
+  {
+    "key": "EQ_ABSTRACT_SELF",
+    "name": "Bad practice - Abstract class defines covariant equals() method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_ABSTRACT_SELF"
+  },
+  {
+    "key": "EQ_ALWAYS_FALSE",
+    "name": "Correctness - equals method always returns false",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_ALWAYS_FALSE"
+  },
+  {
+    "key": "EQ_ALWAYS_TRUE",
+    "name": "Correctness - equals method always returns true",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_ALWAYS_TRUE"
+  },
+  {
+    "key": "EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS",
+    "name": "Bad practice - Equals checks for incompatible operand",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"
+  },
+  {
+    "key": "EQ_COMPARETO_USE_OBJECT_EQUALS",
+    "name": "Bad practice - Class defines compareTo(...) and uses Object.equals()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_COMPARETO_USE_OBJECT_EQUALS"
+  },
+  {
+    "key": "EQ_COMPARING_CLASS_NAMES",
+    "name": "Correctness - equals method compares class names rather than class objects",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_COMPARING_CLASS_NAMES"
+  },
+  {
+    "key": "EQ_DOESNT_OVERRIDE_EQUALS",
+    "name": "Style - Class doesn\u0027t override equals in superclass",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_DOESNT_OVERRIDE_EQUALS"
+  },
+  {
+    "key": "EQ_DONT_DEFINE_EQUALS_FOR_ENUM",
+    "name": "Correctness - Covariant equals() method defined for enum",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_DONT_DEFINE_EQUALS_FOR_ENUM"
+  },
+  {
+    "key": "EQ_GETCLASS_AND_CLASS_CONSTANT",
+    "name": "Bad practice - equals method fails for subtypes",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_GETCLASS_AND_CLASS_CONSTANT"
+  },
+  {
+    "key": "EQ_OTHER_NO_OBJECT",
+    "name": "Correctness - equals() method defined that doesn\u0027t override equals(Object)",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_OTHER_NO_OBJECT"
+  },
+  {
+    "key": "EQ_OTHER_USE_OBJECT",
+    "name": "Correctness - equals() method defined that doesn\u0027t override Object.equals(Object)",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_OTHER_USE_OBJECT"
+  },
+  {
+    "key": "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC",
+    "name": "Correctness - equals method overrides equals in superclass and may not be symmetric",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC"
+  },
+  {
+    "key": "EQ_SELF_NO_OBJECT",
+    "name": "Bad practice - Covariant equals() method defined",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_SELF_NO_OBJECT"
+  },
+  {
+    "key": "EQ_SELF_USE_OBJECT",
+    "name": "Correctness - Covariant equals() method defined, Object.equals(Object) inherited",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_SELF_USE_OBJECT"
+  },
+  {
+    "key": "EQ_UNUSUAL",
+    "name": "Style - Unusual equals method ",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#EQ_UNUSUAL"
+  },
+  {
+    "key": "ES_COMPARING_PARAMETER_STRING_WITH_EQ",
+    "name": "Bad practice - Comparison of String parameter using \u003d\u003d or !\u003d",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ES_COMPARING_PARAMETER_STRING_WITH_EQ"
+  },
+  {
+    "key": "ES_COMPARING_STRINGS_WITH_EQ",
+    "name": "Bad practice - Comparison of String objects using \u003d\u003d or !\u003d",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ES_COMPARING_STRINGS_WITH_EQ"
+  },
+  {
+    "key": "ESync_EMPTY_SYNC",
+    "name": "Multi-threading - Empty synchronized block",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ESync_EMPTY_SYNC"
+  },
+  {
+    "key": "FB_MISSING_EXPECTED_WARNING",
+    "name": "Correctness - Missing expected or desired warning from SpotBugs",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FB_MISSING_EXPECTED_WARNING"
+  },
+  {
+    "key": "FB_UNEXPECTED_WARNING",
+    "name": "Correctness - Unexpected/undesired warning from SpotBugs",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FB_UNEXPECTED_WARNING"
+  },
+  {
+    "key": "FE_FLOATING_POINT_EQUALITY",
+    "name": "Style - Test for floating point equality",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FE_FLOATING_POINT_EQUALITY"
+  },
+  {
+    "key": "FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER",
+    "name": "Correctness - Doomed test for equality to NaN",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER"
+  },
+  {
+    "key": "FI_EMPTY",
+    "name": "Bad practice - Empty finalizer should be deleted",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FI_EMPTY"
+  },
+  {
+    "key": "FI_EXPLICIT_INVOCATION",
+    "name": "Bad practice - Explicit invocation of finalizer",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FI_EXPLICIT_INVOCATION"
+  },
+  {
+    "key": "FI_FINALIZER_NULLS_FIELDS",
+    "name": "Bad practice - Finalizer nulls fields",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FI_FINALIZER_NULLS_FIELDS"
+  },
+  {
+    "key": "FI_FINALIZER_ONLY_NULLS_FIELDS",
+    "name": "Bad practice - Finalizer only nulls fields",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FI_FINALIZER_ONLY_NULLS_FIELDS"
+  },
+  {
+    "key": "FI_MISSING_SUPER_CALL",
+    "name": "Bad practice - Finalizer does not call superclass finalizer",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FI_MISSING_SUPER_CALL"
+  },
+  {
+    "key": "FI_NULLIFY_SUPER",
+    "name": "Bad practice - Finalizer nullifies superclass finalizer",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FI_NULLIFY_SUPER"
+  },
+  {
+    "key": "FI_PUBLIC_SHOULD_BE_PROTECTED",
+    "name": "Malicious code - Finalizer should be protected, not public",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FI_PUBLIC_SHOULD_BE_PROTECTED"
+  },
+  {
+    "key": "FI_USELESS",
+    "name": "Bad practice - Finalizer does nothing but call superclass finalizer",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FI_USELESS"
+  },
+  {
+    "key": "FL_MATH_USING_FLOAT_PRECISION",
+    "name": "Correctness - Method performs math using floating point precision",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#FL_MATH_USING_FLOAT_PRECISION"
+  },
+  {
+    "key": "GC_UNCHECKED_TYPE_IN_GENERIC_CALL",
+    "name": "Bad practice - Unchecked type in generic call",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#GC_UNCHECKED_TYPE_IN_GENERIC_CALL"
+  },
+  {
+    "key": "GC_UNRELATED_TYPES",
+    "name": "Correctness - No relationship between generic parameter and method argument",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#GC_UNRELATED_TYPES"
+  },
+  {
+    "key": "HE_EQUALS_NO_HASHCODE",
+    "name": "Bad practice - Class defines equals() but not hashCode()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#HE_EQUALS_NO_HASHCODE"
+  },
+  {
+    "key": "HE_EQUALS_USE_HASHCODE",
+    "name": "Bad practice - Class defines equals() and uses Object.hashCode()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#HE_EQUALS_USE_HASHCODE"
+  },
+  {
+    "key": "HE_HASHCODE_NO_EQUALS",
+    "name": "Bad practice - Class defines hashCode() but not equals()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#HE_HASHCODE_NO_EQUALS"
+  },
+  {
+    "key": "HE_HASHCODE_USE_OBJECT_EQUALS",
+    "name": "Bad practice - Class defines hashCode() and uses Object.equals()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#HE_HASHCODE_USE_OBJECT_EQUALS"
+  },
+  {
+    "key": "HE_INHERITS_EQUALS_USE_HASHCODE",
+    "name": "Bad practice - Class inherits equals() and uses Object.hashCode()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#HE_INHERITS_EQUALS_USE_HASHCODE"
+  },
+  {
+    "key": "HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS",
+    "name": "Correctness - Signature declares use of unhashable class in hashed construct",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS"
+  },
+  {
+    "key": "HE_USE_OF_UNHASHABLE_CLASS",
+    "name": "Correctness - Use of class without a hashCode() method in a hashed data structure",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#HE_USE_OF_UNHASHABLE_CLASS"
+  },
+  {
+    "key": "HRS_REQUEST_PARAMETER_TO_COOKIE",
+    "name": "Security - HTTP cookie formed from untrusted input",
+    "type": "VULNERABILITY",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#HRS_REQUEST_PARAMETER_TO_COOKIE"
+  },
+  {
+    "key": "HRS_REQUEST_PARAMETER_TO_HTTP_HEADER",
+    "name": "Security - HTTP Response splitting vulnerability",
+    "type": "VULNERABILITY",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#HRS_REQUEST_PARAMETER_TO_HTTP_HEADER"
+  },
+  {
+    "key": "HSC_HUGE_SHARED_STRING_CONSTANT",
+    "name": "Performance - Huge string constants is duplicated across multiple class files",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#HSC_HUGE_SHARED_STRING_CONSTANT"
+  },
+  {
+    "key": "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD",
+    "name": "Style - Potentially ambiguous invocation of either an inherited or outer method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"
+  },
+  {
+    "key": "ICAST_BAD_SHIFT_AMOUNT",
+    "name": "Correctness - 32 bit int shifted by an amount not in the range -31..31",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ICAST_BAD_SHIFT_AMOUNT"
+  },
+  {
+    "key": "ICAST_IDIV_CAST_TO_DOUBLE",
+    "name": "Style - Integral division result cast to double or float",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ICAST_IDIV_CAST_TO_DOUBLE"
+  },
+  {
+    "key": "ICAST_INTEGER_MULTIPLY_CAST_TO_LONG",
+    "name": "Style - Result of integer multiplication cast to long",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ICAST_INTEGER_MULTIPLY_CAST_TO_LONG"
+  },
+  {
+    "key": "ICAST_INT_2_LONG_AS_INSTANT",
+    "name": "Correctness - int value converted to long and used as absolute time",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ICAST_INT_2_LONG_AS_INSTANT"
+  },
+  {
+    "key": "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL",
+    "name": "Correctness - Integral value cast to double and then passed to Math.ceil",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL"
+  },
+  {
+    "key": "ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND",
+    "name": "Correctness - int value cast to float and then passed to Math.round",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"
+  },
+  {
+    "key": "ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT",
+    "name": "Style - Unsigned right shift cast to short/byte",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT"
+  },
+  {
+    "key": "IC_INIT_CIRCULARITY",
+    "name": "Style - Initialization circularity",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IC_INIT_CIRCULARITY"
+  },
+  {
+    "key": "IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION",
+    "name": "Bad practice - Superclass uses subclass during initialization",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION"
+  },
+  {
+    "key": "IIL_ELEMENTS_GET_LENGTH_IN_LOOP",
+    "name": "Performance - NodeList.getLength() called in a loop",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IIL_ELEMENTS_GET_LENGTH_IN_LOOP"
+  },
+  {
+    "key": "IIL_PATTERN_COMPILE_IN_LOOP",
+    "name": "Performance - Method calls Pattern.compile in a loop",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IIL_PATTERN_COMPILE_IN_LOOP"
+  },
+  {
+    "key": "IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT",
+    "name": "Performance - Method compiles the regular expression in a loop",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT"
+  },
+  {
+    "key": "IIL_PREPARE_STATEMENT_IN_LOOP",
+    "name": "Performance - Method calls prepareStatement in a loop",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IIL_PREPARE_STATEMENT_IN_LOOP"
+  },
+  {
+    "key": "IIO_INEFFICIENT_INDEX_OF",
+    "name": "Performance - Inefficient use of String.indexOf(String)",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IIO_INEFFICIENT_INDEX_OF"
+  },
+  {
+    "key": "IIO_INEFFICIENT_LAST_INDEX_OF",
+    "name": "Performance - Inefficient use of String.lastIndexOf(String)",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IIO_INEFFICIENT_LAST_INDEX_OF"
+  },
+  {
+    "key": "IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD",
+    "name": "Correctness - JUnit assertion in run method will not be noticed by JUnit",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD"
+  },
+  {
+    "key": "IJU_BAD_SUITE_METHOD",
+    "name": "Correctness - TestCase declares a bad suite method ",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IJU_BAD_SUITE_METHOD"
+  },
+  {
+    "key": "IJU_NO_TESTS",
+    "name": "Correctness - TestCase has no tests",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IJU_NO_TESTS"
+  },
+  {
+    "key": "IJU_SETUP_NO_SUPER",
+    "name": "Correctness - TestCase defines setUp that doesn\u0027t call super.setUp()",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IJU_SETUP_NO_SUPER"
+  },
+  {
+    "key": "IJU_SUITE_NOT_STATIC",
+    "name": "Correctness - TestCase implements a non-static suite method ",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IJU_SUITE_NOT_STATIC"
+  },
+  {
+    "key": "IJU_TEARDOWN_NO_SUPER",
+    "name": "Correctness - TestCase defines tearDown that doesn\u0027t call super.tearDown()",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IJU_TEARDOWN_NO_SUPER"
+  },
+  {
+    "key": "IL_CONTAINER_ADDED_TO_ITSELF",
+    "name": "Correctness - A collection is added to itself",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IL_CONTAINER_ADDED_TO_ITSELF"
+  },
+  {
+    "key": "IL_INFINITE_LOOP",
+    "name": "Correctness - An apparent infinite loop",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IL_INFINITE_LOOP"
+  },
+  {
+    "key": "IL_INFINITE_RECURSIVE_LOOP",
+    "name": "Correctness - An apparent infinite recursive loop",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IL_INFINITE_RECURSIVE_LOOP"
+  },
+  {
+    "key": "IMA_INEFFICIENT_MEMBER_ACCESS",
+    "name": "Performance - Method accesses a private member variable of owning class",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IMA_INEFFICIENT_MEMBER_ACCESS"
+  },
+  {
+    "key": "IMSE_DONT_CATCH_IMSE",
+    "name": "Bad practice - Dubious catching of IllegalMonitorStateException",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IMSE_DONT_CATCH_IMSE"
+  },
+  {
+    "key": "IM_AVERAGE_COMPUTATION_COULD_OVERFLOW",
+    "name": "Style - Computation of average could overflow",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IM_AVERAGE_COMPUTATION_COULD_OVERFLOW"
+  },
+  {
+    "key": "IM_BAD_CHECK_FOR_ODD",
+    "name": "Style - Check for oddness that won\u0027t work for negative numbers ",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD"
+  },
+  {
+    "key": "IM_MULTIPLYING_RESULT_OF_IREM",
+    "name": "Correctness - Integer multiply of result of integer remainder",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IM_MULTIPLYING_RESULT_OF_IREM"
+  },
+  {
+    "key": "INT_BAD_COMPARISON_WITH_INT_VALUE",
+    "name": "Correctness - Bad comparison of int value with long constant",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#INT_BAD_COMPARISON_WITH_INT_VALUE"
+  },
+  {
+    "key": "INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE",
+    "name": "Correctness - Bad comparison of nonnegative value with negative constant or zero",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE"
+  },
+  {
+    "key": "INT_BAD_COMPARISON_WITH_SIGNED_BYTE",
+    "name": "Correctness - Bad comparison of signed byte",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#INT_BAD_COMPARISON_WITH_SIGNED_BYTE"
+  },
+  {
+    "key": "INT_BAD_REM_BY_1",
+    "name": "Style - Integer remainder modulo 1",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#INT_BAD_REM_BY_1"
+  },
+  {
+    "key": "INT_VACUOUS_BIT_OPERATION",
+    "name": "Style - Vacuous bit mask operation on integer value",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#INT_VACUOUS_BIT_OPERATION"
+  },
+  {
+    "key": "INT_VACUOUS_COMPARISON",
+    "name": "Style - Vacuous comparison of integer value",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#INT_VACUOUS_COMPARISON"
+  },
+  {
+    "key": "IO_APPENDING_TO_OBJECT_OUTPUT_STREAM",
+    "name": "Correctness - Doomed attempt to append to an object output stream",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IO_APPENDING_TO_OBJECT_OUTPUT_STREAM"
+  },
+  {
+    "key": "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN",
+    "name": "Correctness - A parameter is dead upon entry to a method but overwritten",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN"
+  },
+  {
+    "key": "IS2_INCONSISTENT_SYNC",
+    "name": "Multi-threading - Inconsistent synchronization",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IS2_INCONSISTENT_SYNC"
+  },
+  {
+    "key": "ISC_INSTANTIATE_STATIC_CLASS",
+    "name": "Bad practice - Needless instantiation of class that only supplies static methods",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ISC_INSTANTIATE_STATIC_CLASS"
+  },
+  {
+    "key": "IS_FIELD_NOT_GUARDED",
+    "name": "Multi-threading - Field not guarded against concurrent access",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IS_FIELD_NOT_GUARDED"
+  },
+  {
+    "key": "IS_INCONSISTENT_SYNC",
+    "name": "Multi-threading - Inconsistent synchronization",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IS_INCONSISTENT_SYNC"
+  },
+  {
+    "key": "ITA_INEFFICIENT_TO_ARRAY",
+    "name": "Performance - Method uses toArray() with zero-length array argument",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ITA_INEFFICIENT_TO_ARRAY"
+  },
+  {
+    "key": "IT_NO_SUCH_ELEMENT",
+    "name": "Bad practice - Iterator next() method can\u0027t throw NoSuchElementException",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IT_NO_SUCH_ELEMENT"
+  },
+  {
+    "key": "J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION",
+    "name": "Bad practice - Store of non serializable object into HttpSession",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION"
+  },
+  {
+    "key": "JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS",
+    "name": "Bad practice - Fields of immutable classes should be final",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS"
+  },
+  {
+    "key": "JLM_JSR166_LOCK_MONITORENTER",
+    "name": "Multi-threading - Synchronization performed on Lock",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#JLM_JSR166_LOCK_MONITORENTER"
+  },
+  {
+    "key": "JLM_JSR166_UTILCONCURRENT_MONITORENTER",
+    "name": "Multi-threading - Synchronization performed on util.concurrent instance",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#JLM_JSR166_UTILCONCURRENT_MONITORENTER"
+  },
+  {
+    "key": "JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT",
+    "name": "Multi-threading - Using monitor style wait methods on util.concurrent abstraction",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT"
+  },
+  {
+    "key": "LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE",
+    "name": "Experimental - Potential lost logger changes due to weak reference in OpenJDK",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"
+  },
+  {
+    "key": "LI_LAZY_INIT_INSTANCE",
+    "name": "Multi-threading - Incorrect lazy initialization of instance field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#LI_LAZY_INIT_INSTANCE"
+  },
+  {
+    "key": "LI_LAZY_INIT_STATIC",
+    "name": "Multi-threading - Incorrect lazy initialization of static field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#LI_LAZY_INIT_STATIC"
+  },
+  {
+    "key": "LI_LAZY_INIT_UPDATE_STATIC",
+    "name": "Multi-threading - Incorrect lazy initialization and update of static field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#LI_LAZY_INIT_UPDATE_STATIC"
+  },
+  {
+    "key": "ME_ENUM_FIELD_SETTER",
+    "name": "Bad practice - Public enum method unconditionally sets its field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ME_ENUM_FIELD_SETTER"
+  },
+  {
+    "key": "ME_MUTABLE_ENUM_FIELD",
+    "name": "Bad practice - Enum field is public and mutable",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ME_MUTABLE_ENUM_FIELD"
+  },
+  {
+    "key": "MF_CLASS_MASKS_FIELD",
+    "name": "Correctness - Class defines field that masks a superclass field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MF_CLASS_MASKS_FIELD"
+  },
+  {
+    "key": "MF_METHOD_MASKS_FIELD",
+    "name": "Correctness - Method defines a variable that obscures a field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MF_METHOD_MASKS_FIELD"
+  },
+  {
+    "key": "ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD",
+    "name": "Multi-threading - Synchronization on field in futile attempt to guard that field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD"
+  },
+  {
+    "key": "ML_SYNC_ON_UPDATED_FIELD",
+    "name": "Multi-threading - Method synchronizes on an updated field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ML_SYNC_ON_UPDATED_FIELD"
+  },
+  {
+    "key": "MSF_MUTABLE_SERVLET_FIELD",
+    "name": "Multi-threading - Mutable servlet field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MSF_MUTABLE_SERVLET_FIELD"
+  },
+  {
+    "key": "MS_CANNOT_BE_FINAL",
+    "name": "Malicious code - Field isn\u0027t final and can\u0027t be protected from malicious code",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MS_CANNOT_BE_FINAL"
+  },
+  {
+    "key": "MS_EXPOSE_REP",
+    "name": "Malicious code - Public static method may expose internal representation by returning array",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MS_EXPOSE_REP"
+  },
+  {
+    "key": "MS_FINAL_PKGPROTECT",
+    "name": "Malicious code - Field should be both final and package protected",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MS_FINAL_PKGPROTECT"
+  },
+  {
+    "key": "MS_MUTABLE_ARRAY",
+    "name": "Malicious code - Field is a mutable array",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MS_MUTABLE_ARRAY"
+  },
+  {
+    "key": "MS_MUTABLE_COLLECTION",
+    "name": "Malicious code - Field is a mutable collection",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MS_MUTABLE_COLLECTION"
+  },
+  {
+    "key": "MS_MUTABLE_COLLECTION_PKGPROTECT",
+    "name": "Malicious code - Field is a mutable collection which should be package protected",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MS_MUTABLE_COLLECTION_PKGPROTECT"
+  },
+  {
+    "key": "MS_MUTABLE_HASHTABLE",
+    "name": "Malicious code - Field is a mutable Hashtable",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MS_MUTABLE_HASHTABLE"
+  },
+  {
+    "key": "MS_OOI_PKGPROTECT",
+    "name": "Malicious code - Field should be moved out of an interface and made package protected",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MS_OOI_PKGPROTECT"
+  },
+  {
+    "key": "MS_PKGPROTECT",
+    "name": "Malicious code - Field should be package protected",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MS_PKGPROTECT"
+  },
+  {
+    "key": "MS_SHOULD_BE_FINAL",
+    "name": "Malicious code - Field isn\u0027t final but should be",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MS_SHOULD_BE_FINAL"
+  },
+  {
+    "key": "MS_SHOULD_BE_REFACTORED_TO_BE_FINAL",
+    "name": "Malicious code - Field isn\u0027t final but should be refactored to be so",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MS_SHOULD_BE_REFACTORED_TO_BE_FINAL"
+  },
+  {
+    "key": "MTIA_SUSPECT_SERVLET_INSTANCE_FIELD",
+    "name": "Style - Class extends Servlet class and uses instance variables",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MTIA_SUSPECT_SERVLET_INSTANCE_FIELD"
+  },
+  {
+    "key": "MTIA_SUSPECT_STRUTS_INSTANCE_FIELD",
+    "name": "Style - Class extends Struts Action class and uses instance variables",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MTIA_SUSPECT_STRUTS_INSTANCE_FIELD"
+  },
+  {
+    "key": "MWN_MISMATCHED_NOTIFY",
+    "name": "Multi-threading - Mismatched notify()",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MWN_MISMATCHED_NOTIFY"
+  },
+  {
+    "key": "MWN_MISMATCHED_WAIT",
+    "name": "Multi-threading - Mismatched wait()",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#MWN_MISMATCHED_WAIT"
+  },
+  {
+    "key": "NM_BAD_EQUAL",
+    "name": "Correctness - Class defines equal(Object); should it be equals(Object)?",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_BAD_EQUAL"
+  },
+  {
+    "key": "NM_CLASS_NAMING_CONVENTION",
+    "name": "Bad practice - Class names should start with an upper case letter",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_CLASS_NAMING_CONVENTION"
+  },
+  {
+    "key": "NM_CLASS_NOT_EXCEPTION",
+    "name": "Bad practice - Class is not derived from an Exception, even though it is named as such",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_CLASS_NOT_EXCEPTION"
+  },
+  {
+    "key": "NM_CONFUSING",
+    "name": "Bad practice - Confusing method names",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_CONFUSING"
+  },
+  {
+    "key": "NM_FIELD_NAMING_CONVENTION",
+    "name": "Bad practice - Field names should start with a lower case letter",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_FIELD_NAMING_CONVENTION"
+  },
+  {
+    "key": "NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER",
+    "name": "Bad practice - Use of identifier that is a keyword in later versions of Java",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER"
+  },
+  {
+    "key": "NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER",
+    "name": "Bad practice - Use of identifier that is a keyword in later versions of Java",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER"
+  },
+  {
+    "key": "NM_LCASE_HASHCODE",
+    "name": "Correctness - Class defines hashcode(); should it be hashCode()?",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_LCASE_HASHCODE"
+  },
+  {
+    "key": "NM_LCASE_TOSTRING",
+    "name": "Correctness - Class defines tostring(); should it be toString()?",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_LCASE_TOSTRING"
+  },
+  {
+    "key": "NM_METHOD_CONSTRUCTOR_CONFUSION",
+    "name": "Correctness - Apparent method/constructor confusion",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_METHOD_CONSTRUCTOR_CONFUSION"
+  },
+  {
+    "key": "NM_METHOD_NAMING_CONVENTION",
+    "name": "Bad practice - Method names should start with a lower case letter",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_METHOD_NAMING_CONVENTION"
+  },
+  {
+    "key": "NM_SAME_SIMPLE_NAME_AS_INTERFACE",
+    "name": "Bad practice - Class names shouldn\u0027t shadow simple name of implemented interface",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_SAME_SIMPLE_NAME_AS_INTERFACE"
+  },
+  {
+    "key": "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS",
+    "name": "Bad practice - Class names shouldn\u0027t shadow simple name of superclass",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"
+  },
+  {
+    "key": "NM_VERY_CONFUSING",
+    "name": "Correctness - Very confusing method names",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_VERY_CONFUSING"
+  },
+  {
+    "key": "NM_VERY_CONFUSING_INTENTIONAL",
+    "name": "Bad practice - Very confusing method names (but perhaps intentional)",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_VERY_CONFUSING_INTENTIONAL"
+  },
+  {
+    "key": "NM_WRONG_PACKAGE",
+    "name": "Correctness - Method doesn\u0027t override method in superclass due to wrong package for parameter",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_WRONG_PACKAGE"
+  },
+  {
+    "key": "NM_WRONG_PACKAGE_INTENTIONAL",
+    "name": "Bad practice - Method doesn\u0027t override method in superclass due to wrong package for parameter",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NM_WRONG_PACKAGE_INTENTIONAL"
+  },
+  {
+    "key": "NN_NAKED_NOTIFY",
+    "name": "Multi-threading - Naked notify",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NN_NAKED_NOTIFY"
+  },
+  {
+    "key": "NOISE_FIELD_REFERENCE",
+    "name": "Bogus random noise - Bogus warning about a field reference",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NOISE_FIELD_REFERENCE"
+  },
+  {
+    "key": "NOISE_METHOD_CALL",
+    "name": "Bogus random noise - Bogus warning about a method call",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NOISE_METHOD_CALL"
+  },
+  {
+    "key": "NOISE_NULL_DEREFERENCE",
+    "name": "Bogus random noise - Bogus warning about a null pointer dereference",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NOISE_NULL_DEREFERENCE"
+  },
+  {
+    "key": "NOISE_OPERATION",
+    "name": "Bogus random noise - Bogus warning about an operation",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NOISE_OPERATION"
+  },
+  {
+    "key": "NO_NOTIFY_NOT_NOTIFYALL",
+    "name": "Multi-threading - Using notify() rather than notifyAll()",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NO_NOTIFY_NOT_NOTIFYALL"
+  },
+  {
+    "key": "NP_ALWAYS_NULL",
+    "name": "Correctness - Null pointer dereference",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_ALWAYS_NULL"
+  },
+  {
+    "key": "NP_ALWAYS_NULL_EXCEPTION",
+    "name": "Correctness - Null pointer dereference in method on exception path",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_ALWAYS_NULL_EXCEPTION"
+  },
+  {
+    "key": "NP_ARGUMENT_MIGHT_BE_NULL",
+    "name": "Correctness - Method does not check for null argument",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_ARGUMENT_MIGHT_BE_NULL"
+  },
+  {
+    "key": "NP_BOOLEAN_RETURN_NULL",
+    "name": "Bad practice - Method with Boolean return type returns explicit null",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_BOOLEAN_RETURN_NULL"
+  },
+  {
+    "key": "NP_CLONE_COULD_RETURN_NULL",
+    "name": "Bad practice - Clone method may return null",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_CLONE_COULD_RETURN_NULL"
+  },
+  {
+    "key": "NP_CLOSING_NULL",
+    "name": "Correctness - close() invoked on a value that is always null",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_CLOSING_NULL"
+  },
+  {
+    "key": "NP_DEREFERENCE_OF_READLINE_VALUE",
+    "name": "Style - Dereference of the result of readLine() without nullcheck",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_DEREFERENCE_OF_READLINE_VALUE"
+  },
+  {
+    "key": "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT",
+    "name": "Bad practice - equals() method does not check for null argument",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT"
+  },
+  {
+    "key": "NP_GUARANTEED_DEREF",
+    "name": "Correctness - Null value is guaranteed to be dereferenced",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_GUARANTEED_DEREF"
+  },
+  {
+    "key": "NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH",
+    "name": "Correctness - Value is null and guaranteed to be dereferenced on exception path",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH"
+  },
+  {
+    "key": "NP_IMMEDIATE_DEREFERENCE_OF_READLINE",
+    "name": "Style - Immediate dereference of the result of readLine()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_IMMEDIATE_DEREFERENCE_OF_READLINE"
+  },
+  {
+    "key": "NP_LOAD_OF_KNOWN_NULL_VALUE",
+    "name": "Style - Load of known null value",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_LOAD_OF_KNOWN_NULL_VALUE"
+  },
+  {
+    "key": "NP_METHOD_PARAMETER_RELAXING_ANNOTATION",
+    "name": "Style - Method tightens nullness annotation on parameter",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_METHOD_PARAMETER_RELAXING_ANNOTATION"
+  },
+  {
+    "key": "NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION",
+    "name": "Style - Method tightens nullness annotation on parameter",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION"
+  },
+  {
+    "key": "NP_METHOD_RETURN_RELAXING_ANNOTATION",
+    "name": "Style - Method relaxes nullness annotation on return value",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_METHOD_RETURN_RELAXING_ANNOTATION"
+  },
+  {
+    "key": "NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
+    "name": "Correctness - Non-null field is not initialized",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"
+  },
+  {
+    "key": "NP_NONNULL_PARAM_VIOLATION",
+    "name": "Correctness - Method call passes null to a non-null parameter ",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_NONNULL_PARAM_VIOLATION"
+  },
+  {
+    "key": "NP_NONNULL_RETURN_VIOLATION",
+    "name": "Correctness - Method may return null, but is declared @Nonnull",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_NONNULL_RETURN_VIOLATION"
+  },
+  {
+    "key": "NP_NULL_INSTANCEOF",
+    "name": "Correctness - A known null value is checked to see if it is an instance of a type",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_NULL_INSTANCEOF"
+  },
+  {
+    "key": "NP_NULL_ON_SOME_PATH",
+    "name": "Correctness - Possible null pointer dereference",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_NULL_ON_SOME_PATH"
+  },
+  {
+    "key": "NP_NULL_ON_SOME_PATH_EXCEPTION",
+    "name": "Correctness - Possible null pointer dereference in method on exception path",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_NULL_ON_SOME_PATH_EXCEPTION"
+  },
+  {
+    "key": "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE",
+    "name": "Style - Possible null pointer dereference due to return value of called method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"
+  },
+  {
+    "key": "NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE",
+    "name": "Style - Possible null pointer dereference on branch that might be infeasible",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE"
+  },
+  {
+    "key": "NP_NULL_PARAM_DEREF",
+    "name": "Correctness - Method call passes null for non-null parameter",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_NULL_PARAM_DEREF"
+  },
+  {
+    "key": "NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS",
+    "name": "Correctness - Method call passes null for non-null parameter",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS"
+  },
+  {
+    "key": "NP_NULL_PARAM_DEREF_NONVIRTUAL",
+    "name": "Correctness - Non-virtual method call passes null for non-null parameter",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_NULL_PARAM_DEREF_NONVIRTUAL"
+  },
+  {
+    "key": "NP_OPTIONAL_RETURN_NULL",
+    "name": "Correctness - Method with Optional return type returns explicit null",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_OPTIONAL_RETURN_NULL"
+  },
+  {
+    "key": "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE",
+    "name": "Style - Parameter must be non-null but is marked as nullable",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"
+  },
+  {
+    "key": "NP_STORE_INTO_NONNULL_FIELD",
+    "name": "Correctness - Store of null value into field annotated @Nonnull",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_STORE_INTO_NONNULL_FIELD"
+  },
+  {
+    "key": "NP_SYNC_AND_NULL_CHECK_FIELD",
+    "name": "Multi-threading - Synchronize and null check on the same field.",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_SYNC_AND_NULL_CHECK_FIELD"
+  },
+  {
+    "key": "NP_TOSTRING_COULD_RETURN_NULL",
+    "name": "Bad practice - toString method may return null",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_TOSTRING_COULD_RETURN_NULL"
+  },
+  {
+    "key": "NP_UNWRITTEN_FIELD",
+    "name": "Correctness - Read of unwritten field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_UNWRITTEN_FIELD"
+  },
+  {
+    "key": "NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD",
+    "name": "Style - Read of unwritten public or protected field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"
+  },
+  {
+    "key": "NS_DANGEROUS_NON_SHORT_CIRCUIT",
+    "name": "Style - Potentially dangerous use of non-short-circuit logic",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NS_DANGEROUS_NON_SHORT_CIRCUIT"
+  },
+  {
+    "key": "NS_NON_SHORT_CIRCUIT",
+    "name": "Style - Questionable use of non-short-circuit logic",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#NS_NON_SHORT_CIRCUIT"
+  },
+  {
+    "key": "OBL_UNSATISFIED_OBLIGATION",
+    "name": "Experimental - Method may fail to clean up stream or resource",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#OBL_UNSATISFIED_OBLIGATION"
+  },
+  {
+    "key": "OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE",
+    "name": "Experimental - Method may fail to clean up stream or resource on checked exception",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE"
+  },
+  {
+    "key": "ODR_OPEN_DATABASE_RESOURCE",
+    "name": "Bad practice - Method may fail to close database resource",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ODR_OPEN_DATABASE_RESOURCE"
+  },
+  {
+    "key": "ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH",
+    "name": "Bad practice - Method may fail to close database resource on exception",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH"
+  },
+  {
+    "key": "OS_OPEN_STREAM",
+    "name": "Bad practice - Method may fail to close stream",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#OS_OPEN_STREAM"
+  },
+  {
+    "key": "OS_OPEN_STREAM_EXCEPTION_PATH",
+    "name": "Bad practice - Method may fail to close stream on exception",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#OS_OPEN_STREAM_EXCEPTION_PATH"
+  },
+  {
+    "key": "PS_PUBLIC_SEMAPHORES",
+    "name": "Style - Class exposes synchronization and semaphores in its public interface",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#PS_PUBLIC_SEMAPHORES"
+  },
+  {
+    "key": "PT_ABSOLUTE_PATH_TRAVERSAL",
+    "name": "Security - Absolute path traversal in servlet",
+    "type": "VULNERABILITY",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#PT_ABSOLUTE_PATH_TRAVERSAL"
+  },
+  {
+    "key": "PT_RELATIVE_PATH_TRAVERSAL",
+    "name": "Security - Relative path traversal in servlet",
+    "type": "VULNERABILITY",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#PT_RELATIVE_PATH_TRAVERSAL"
+  },
+  {
+    "key": "PZLA_PREFER_ZERO_LENGTH_ARRAYS",
+    "name": "Style - Consider returning a zero length array rather than null",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#PZLA_PREFER_ZERO_LENGTH_ARRAYS"
+  },
+  {
+    "key": "PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS",
+    "name": "Bad practice - Don\u0027t reuse entry objects in iterators",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS"
+  },
+  {
+    "key": "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT",
+    "name": "Correctness - Method assigns boolean literal in boolean expression",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT"
+  },
+  {
+    "key": "QF_QUESTIONABLE_FOR_LOOP",
+    "name": "Style - Complicated, subtle or wrong increment in for-loop ",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#QF_QUESTIONABLE_FOR_LOOP"
+  },
+  {
+    "key": "RANGE_ARRAY_INDEX",
+    "name": "Correctness - Array index is out of bounds",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RANGE_ARRAY_INDEX"
+  },
+  {
+    "key": "RANGE_ARRAY_LENGTH",
+    "name": "Correctness - Array length is out of bounds",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RANGE_ARRAY_LENGTH"
+  },
+  {
+    "key": "RANGE_ARRAY_OFFSET",
+    "name": "Correctness - Array offset is out of bounds",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RANGE_ARRAY_OFFSET"
+  },
+  {
+    "key": "RANGE_STRING_INDEX",
+    "name": "Correctness - String index is out of bounds",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RANGE_STRING_INDEX"
+  },
+  {
+    "key": "RCN_REDUNDANT_CHECKED_NULL_COMPARISON",
+    "name": "Redundant comparison to null of previously checked value",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RCN_REDUNDANT_CHECKED_NULL_COMPARISON"
+  },
+  {
+    "key": "RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE",
+    "name": "Style - Redundant comparison of non-null value to null",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE"
+  },
+  {
+    "key": "RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES",
+    "name": "Style - Redundant comparison of two null values",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES"
+  },
+  {
+    "key": "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE",
+    "name": "Style - Redundant nullcheck of value known to be non-null",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"
+  },
+  {
+    "key": "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE",
+    "name": "Style - Redundant nullcheck of value known to be null",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE"
+  },
+  {
+    "key": "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE",
+    "name": "Correctness - Nullcheck of value previously dereferenced",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"
+  },
+  {
+    "key": "RC_REF_COMPARISON",
+    "name": "Correctness - Suspicious reference comparison",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RC_REF_COMPARISON"
+  },
+  {
+    "key": "RC_REF_COMPARISON_BAD_PRACTICE",
+    "name": "Bad practice - Suspicious reference comparison to constant",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RC_REF_COMPARISON_BAD_PRACTICE"
+  },
+  {
+    "key": "RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN",
+    "name": "Bad practice - Suspicious reference comparison of Boolean values",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN"
+  },
+  {
+    "key": "REC_CATCH_EXCEPTION",
+    "name": "Style - Exception is caught when Exception is not thrown",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#REC_CATCH_EXCEPTION"
+  },
+  {
+    "key": "RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION",
+    "name": "Correctness - Invalid syntax for regular expression",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION"
+  },
+  {
+    "key": "RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION",
+    "name": "Correctness - File.separator used for regular expression",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION"
+  },
+  {
+    "key": "RE_POSSIBLE_UNINTENDED_PATTERN",
+    "name": "Correctness - \".\" or \"|\" used for regular expression",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RE_POSSIBLE_UNINTENDED_PATTERN"
+  },
+  {
+    "key": "RI_REDUNDANT_INTERFACES",
+    "name": "Style - Class implements same interface as superclass",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RI_REDUNDANT_INTERFACES"
+  },
+  {
+    "key": "RR_NOT_CHECKED",
+    "name": "Bad practice - Method ignores results of InputStream.read()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RR_NOT_CHECKED"
+  },
+  {
+    "key": "RS_READOBJECT_SYNC",
+    "name": "Multi-threading - Class\u0027s readObject() method is synchronized",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RS_READOBJECT_SYNC"
+  },
+  {
+    "key": "RU_INVOKE_RUN",
+    "name": "Multi-threading - Invokes run on a thread (did you mean to start it instead?)",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RU_INVOKE_RUN"
+  },
+  {
+    "key": "RV_01_TO_INT",
+    "name": "Correctness - Random value from 0 to 1 is coerced to the integer 0",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_01_TO_INT"
+  },
+  {
+    "key": "RV_ABSOLUTE_VALUE_OF_HASHCODE",
+    "name": "Correctness - Bad attempt to compute absolute value of signed 32-bit hashcode ",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_ABSOLUTE_VALUE_OF_HASHCODE"
+  },
+  {
+    "key": "RV_ABSOLUTE_VALUE_OF_RANDOM_INT",
+    "name": "Correctness - Bad attempt to compute absolute value of signed random integer",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_ABSOLUTE_VALUE_OF_RANDOM_INT"
+  },
+  {
+    "key": "RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE",
+    "name": "Correctness - Code checks for specific values returned by compareTo",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE"
+  },
+  {
+    "key": "RV_CHECK_FOR_POSITIVE_INDEXOF",
+    "name": "Style - Method checks to see if result of String.indexOf is positive",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_CHECK_FOR_POSITIVE_INDEXOF"
+  },
+  {
+    "key": "RV_DONT_JUST_NULL_CHECK_READLINE",
+    "name": "Style - Method discards result of readLine after checking if it is non-null",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_DONT_JUST_NULL_CHECK_READLINE"
+  },
+  {
+    "key": "RV_EXCEPTION_NOT_THROWN",
+    "name": "Correctness - Exception created and dropped rather than thrown",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_EXCEPTION_NOT_THROWN"
+  },
+  {
+    "key": "RV_NEGATING_RESULT_OF_COMPARETO",
+    "name": "Bad practice - Negating the result of compareTo()/compare()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_NEGATING_RESULT_OF_COMPARETO"
+  },
+  {
+    "key": "RV_REM_OF_HASHCODE",
+    "name": "Style - Remainder of hashCode could be negative",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_REM_OF_HASHCODE"
+  },
+  {
+    "key": "RV_REM_OF_RANDOM_INT",
+    "name": "Style - Remainder of 32-bit signed random integer",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_REM_OF_RANDOM_INT"
+  },
+  {
+    "key": "RV_RETURN_VALUE_IGNORED",
+    "name": "Correctness - Method ignores return value",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_RETURN_VALUE_IGNORED"
+  },
+  {
+    "key": "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE",
+    "name": "Bad practice - Method ignores exceptional return value",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"
+  },
+  {
+    "key": "RV_RETURN_VALUE_IGNORED_INFERRED",
+    "name": "Style - Method ignores return value, is this OK?",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_RETURN_VALUE_IGNORED_INFERRED"
+  },
+  {
+    "key": "RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT",
+    "name": "Style - Return value of method without side effect is ignored",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT"
+  },
+  {
+    "key": "RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED",
+    "name": "Multi-threading - Return value of putIfAbsent ignored, value passed to putIfAbsent reused",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED"
+  },
+  {
+    "key": "RpC_REPEATED_CONDITIONAL_TEST",
+    "name": "Correctness - Repeated conditional tests",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#RpC_REPEATED_CONDITIONAL_TEST"
+  },
+  {
+    "key": "SA_FIELD_DOUBLE_ASSIGNMENT",
+    "name": "Style - Double assignment of field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SA_FIELD_DOUBLE_ASSIGNMENT"
+  },
+  {
+    "key": "SA_FIELD_SELF_ASSIGNMENT",
+    "name": "Correctness - Self assignment of field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SA_FIELD_SELF_ASSIGNMENT"
+  },
+  {
+    "key": "SA_FIELD_SELF_COMPARISON",
+    "name": "Correctness - Self comparison of field with itself",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SA_FIELD_SELF_COMPARISON"
+  },
+  {
+    "key": "SA_FIELD_SELF_COMPUTATION",
+    "name": "Correctness - Nonsensical self computation involving a field (e.g., x \u0026 x)",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SA_FIELD_SELF_COMPUTATION"
+  },
+  {
+    "key": "SA_LOCAL_DOUBLE_ASSIGNMENT",
+    "name": "Style - Double assignment of local variable ",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SA_LOCAL_DOUBLE_ASSIGNMENT"
+  },
+  {
+    "key": "SA_LOCAL_SELF_ASSIGNMENT",
+    "name": "Style - Self assignment of local variable",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SA_LOCAL_SELF_ASSIGNMENT"
+  },
+  {
+    "key": "SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD",
+    "name": "Correctness - Self assignment of local rather than assignment to field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD"
+  },
+  {
+    "key": "SA_LOCAL_SELF_COMPARISON",
+    "name": "Correctness - Self comparison of value with itself",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SA_LOCAL_SELF_COMPARISON"
+  },
+  {
+    "key": "SA_LOCAL_SELF_COMPUTATION",
+    "name": "Correctness - Nonsensical self computation involving a variable (e.g., x \u0026 x)",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SA_LOCAL_SELF_COMPUTATION"
+  },
+  {
+    "key": "SBSC_USE_STRINGBUFFER_CONCATENATION",
+    "name": "Performance - Method concatenates strings using + in a loop",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SBSC_USE_STRINGBUFFER_CONCATENATION"
+  },
+  {
+    "key": "SC_START_IN_CTOR",
+    "name": "Multi-threading - Constructor invokes Thread.start()",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SC_START_IN_CTOR"
+  },
+  {
+    "key": "SE_BAD_FIELD",
+    "name": "Bad practice - Non-transient non-serializable instance field in serializable class",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_BAD_FIELD"
+  },
+  {
+    "key": "SE_BAD_FIELD_INNER_CLASS",
+    "name": "Bad practice - Non-serializable class has a serializable inner class",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_BAD_FIELD_INNER_CLASS"
+  },
+  {
+    "key": "SE_BAD_FIELD_STORE",
+    "name": "Bad practice - Non-serializable value stored into instance field of a serializable class",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_BAD_FIELD_STORE"
+  },
+  {
+    "key": "SE_COMPARATOR_SHOULD_BE_SERIALIZABLE",
+    "name": "Bad practice - Comparator doesn\u0027t implement Serializable",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"
+  },
+  {
+    "key": "SE_INNER_CLASS",
+    "name": "Bad practice - Serializable inner class",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_INNER_CLASS"
+  },
+  {
+    "key": "SE_METHOD_MUST_BE_PRIVATE",
+    "name": "Correctness - Method must be private in order for serialization to work",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_METHOD_MUST_BE_PRIVATE"
+  },
+  {
+    "key": "SE_NONFINAL_SERIALVERSIONID",
+    "name": "Bad practice - serialVersionUID isn\u0027t final",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_NONFINAL_SERIALVERSIONID"
+  },
+  {
+    "key": "SE_NONLONG_SERIALVERSIONID",
+    "name": "Bad practice - serialVersionUID isn\u0027t long",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_NONLONG_SERIALVERSIONID"
+  },
+  {
+    "key": "SE_NONSTATIC_SERIALVERSIONID",
+    "name": "Bad practice - serialVersionUID isn\u0027t static",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_NONSTATIC_SERIALVERSIONID"
+  },
+  {
+    "key": "SE_NO_SERIALVERSIONID",
+    "name": "Bad practice - Class is Serializable, but doesn\u0027t define serialVersionUID",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_NO_SERIALVERSIONID"
+  },
+  {
+    "key": "SE_NO_SUITABLE_CONSTRUCTOR",
+    "name": "Bad practice - Class is Serializable but its superclass doesn\u0027t define a void constructor",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_NO_SUITABLE_CONSTRUCTOR"
+  },
+  {
+    "key": "SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION",
+    "name": "Bad practice - Class is Externalizable but doesn\u0027t define a void constructor",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION"
+  },
+  {
+    "key": "SE_PRIVATE_READ_RESOLVE_NOT_INHERITED",
+    "name": "Style - Private readResolve method not inherited by subclasses",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_PRIVATE_READ_RESOLVE_NOT_INHERITED"
+  },
+  {
+    "key": "SE_READ_RESOLVE_IS_STATIC",
+    "name": "Correctness - The readResolve method must not be declared as a static method.  ",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_READ_RESOLVE_IS_STATIC"
+  },
+  {
+    "key": "SE_READ_RESOLVE_MUST_RETURN_OBJECT",
+    "name": "Bad practice - The readResolve method must be declared with a return type of Object. ",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_READ_RESOLVE_MUST_RETURN_OBJECT"
+  },
+  {
+    "key": "SE_TRANSIENT_FIELD_NOT_RESTORED",
+    "name": "Bad practice - Transient field that isn\u0027t set by deserialization. ",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_TRANSIENT_FIELD_NOT_RESTORED"
+  },
+  {
+    "key": "SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS",
+    "name": "Style - Transient field of class that isn\u0027t Serializable. ",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS"
+  },
+  {
+    "key": "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH",
+    "name": "Correctness - Dead store due to switch statement fall through",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH"
+  },
+  {
+    "key": "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW",
+    "name": "Correctness - Dead store due to switch statement fall through to throw",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW"
+  },
+  {
+    "key": "SF_SWITCH_FALLTHROUGH",
+    "name": "Style - Switch statement found where one case falls through to the next case",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SF_SWITCH_FALLTHROUGH"
+  },
+  {
+    "key": "SF_SWITCH_NO_DEFAULT",
+    "name": "Style - Switch statement found where default case is missing",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SF_SWITCH_NO_DEFAULT"
+  },
+  {
+    "key": "SIC_INNER_SHOULD_BE_STATIC",
+    "name": "Performance - Should be a static inner class",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SIC_INNER_SHOULD_BE_STATIC"
+  },
+  {
+    "key": "SIC_INNER_SHOULD_BE_STATIC_ANON",
+    "name": "Performance - Could be refactored into a named static inner class",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SIC_INNER_SHOULD_BE_STATIC_ANON"
+  },
+  {
+    "key": "SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS",
+    "name": "Performance - Could be refactored into a static inner class",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS"
+  },
+  {
+    "key": "SIC_THREADLOCAL_DEADLY_EMBRACE",
+    "name": "Correctness - Deadly embrace of non-static inner class and thread local",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SIC_THREADLOCAL_DEADLY_EMBRACE"
+  },
+  {
+    "key": "SIO_SUPERFLUOUS_INSTANCEOF",
+    "name": "Correctness - Unnecessary type check done using instanceof operator",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SIO_SUPERFLUOUS_INSTANCEOF"
+  },
+  {
+    "key": "SI_INSTANCE_BEFORE_FINALS_ASSIGNED",
+    "name": "Bad practice - Static initializer creates instance before all static final fields assigned",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SI_INSTANCE_BEFORE_FINALS_ASSIGNED"
+  },
+  {
+    "key": "SKIPPED_CLASS_TOO_BIG",
+    "name": "Experimental - Class too big for analysis",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SKIPPED_CLASS_TOO_BIG"
+  },
+  {
+    "key": "SP_SPIN_ON_FIELD",
+    "name": "Multi-threading - Method spins on field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SP_SPIN_ON_FIELD"
+  },
+  {
+    "key": "SQL_BAD_PREPARED_STATEMENT_ACCESS",
+    "name": "Correctness - Method attempts to access a prepared statement parameter with index 0",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SQL_BAD_PREPARED_STATEMENT_ACCESS"
+  },
+  {
+    "key": "SQL_BAD_RESULTSET_ACCESS",
+    "name": "Correctness - Method attempts to access a result set field with index 0",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SQL_BAD_RESULTSET_ACCESS"
+  },
+  {
+    "key": "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+    "name": "Security - Nonconstant string passed to execute or addBatch method on an SQL statement",
+    "type": "VULNERABILITY",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"
+  },
+  {
+    "key": "SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING",
+    "name": "Security - A prepared statement is generated from a nonconstant String",
+    "type": "VULNERABILITY",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"
+  },
+  {
+    "key": "SR_NOT_CHECKED",
+    "name": "Bad practice - Method ignores results of InputStream.skip()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SR_NOT_CHECKED"
+  },
+  {
+    "key": "SS_SHOULD_BE_STATIC",
+    "name": "Performance - Unread field: should this field be static?",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SS_SHOULD_BE_STATIC"
+  },
+  {
+    "key": "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE",
+    "name": "Multi-threading - Call to static Calendar",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE"
+  },
+  {
+    "key": "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE",
+    "name": "Multi-threading - Call to static DateFormat",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE"
+  },
+  {
+    "key": "STCAL_STATIC_CALENDAR_INSTANCE",
+    "name": "Multi-threading - Static Calendar field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#STCAL_STATIC_CALENDAR_INSTANCE"
+  },
+  {
+    "key": "STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE",
+    "name": "Multi-threading - Static DateFormat",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE"
+  },
+  {
+    "key": "STI_INTERRUPTED_ON_CURRENTTHREAD",
+    "name": "Correctness - Unneeded use of currentThread() call, to call interrupted() ",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#STI_INTERRUPTED_ON_CURRENTTHREAD"
+  },
+  {
+    "key": "STI_INTERRUPTED_ON_UNKNOWNTHREAD",
+    "name": "Correctness - Static Thread.interrupted() method invoked on thread instance",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#STI_INTERRUPTED_ON_UNKNOWNTHREAD"
+  },
+  {
+    "key": "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD",
+    "name": "Style - Write to static field from instance method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"
+  },
+  {
+    "key": "SWL_SLEEP_WITH_LOCK_HELD",
+    "name": "Multi-threading - Method calls Thread.sleep() with a lock held",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SWL_SLEEP_WITH_LOCK_HELD"
+  },
+  {
+    "key": "SW_SWING_METHODS_INVOKED_IN_SWING_THREAD",
+    "name": "Bad practice - Certain swing methods needs to be invoked in Swing thread",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#SW_SWING_METHODS_INVOKED_IN_SWING_THREAD"
+  },
+  {
+    "key": "TESTING",
+    "name": "Experimental - Testing",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TESTING"
+  },
+  {
+    "key": "TESTING1",
+    "name": "Experimental - Testing 1 ",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TESTING1"
+  },
+  {
+    "key": "TESTING2",
+    "name": "Experimental - Testing 2",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TESTING2"
+  },
+  {
+    "key": "TESTING3",
+    "name": "Experimental - Testing 3",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TESTING3"
+  },
+  {
+    "key": "TLW_TWO_LOCK_NOTIFY",
+    "name": "Multi-threading - Notify with two locks held",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TLW_TWO_LOCK_NOTIFY"
+  },
+  {
+    "key": "TLW_TWO_LOCK_WAIT",
+    "name": "Multi-threading - Wait with two locks held",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TLW_TWO_LOCK_WAIT"
+  },
+  {
+    "key": "TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED",
+    "name": "Correctness - Value annotated as carrying a type qualifier used where a value that must not carry that qualifier is required",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED"
+  },
+  {
+    "key": "TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS",
+    "name": "Correctness - Comparing values with incompatible type qualifiers",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS"
+  },
+  {
+    "key": "TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK",
+    "name": "Style - Value required to have type qualifier, but marked as unknown",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK"
+  },
+  {
+    "key": "TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK",
+    "name": "Style - Value required to not have type qualifier, but marked as unknown",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK"
+  },
+  {
+    "key": "TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK",
+    "name": "Correctness - Value that might not carry a type qualifier is always used in a way requires that type qualifier",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK"
+  },
+  {
+    "key": "TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK",
+    "name": "Correctness - Value that might carry a type qualifier is always used in a way prohibits it from having that type qualifier",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK"
+  },
+  {
+    "key": "TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED",
+    "name": "Correctness - Value annotated as never carrying a type qualifier used where value carrying that qualifier is required",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED"
+  },
+  {
+    "key": "TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED",
+    "name": "Correctness - Value without a type qualifier used where a value is required to have that qualifier",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED"
+  },
+  {
+    "key": "UCF_USELESS_CONTROL_FLOW",
+    "name": "Style - Useless control flow",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UCF_USELESS_CONTROL_FLOW"
+  },
+  {
+    "key": "UCF_USELESS_CONTROL_FLOW_NEXT_LINE",
+    "name": "Style - Useless control flow to next line",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UCF_USELESS_CONTROL_FLOW_NEXT_LINE"
+  },
+  {
+    "key": "UC_USELESS_CONDITION",
+    "name": "Style - Condition has no effect",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UC_USELESS_CONDITION"
+  },
+  {
+    "key": "UC_USELESS_CONDITION_TYPE",
+    "name": "Style - Condition has no effect due to the variable type",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UC_USELESS_CONDITION_TYPE"
+  },
+  {
+    "key": "UC_USELESS_OBJECT",
+    "name": "Style - Useless object created",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UC_USELESS_OBJECT"
+  },
+  {
+    "key": "UC_USELESS_OBJECT_STACK",
+    "name": "Style - Useless object created on stack",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UC_USELESS_OBJECT_STACK"
+  },
+  {
+    "key": "UC_USELESS_VOID_METHOD",
+    "name": "Style - Useless non-empty void method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UC_USELESS_VOID_METHOD"
+  },
+  {
+    "key": "UG_SYNC_SET_UNSYNC_GET",
+    "name": "Multi-threading - Unsynchronized get method, synchronized set method",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UG_SYNC_SET_UNSYNC_GET"
+  },
+  {
+    "key": "UI_INHERITANCE_UNSAFE_GETRESOURCE",
+    "name": "Bad practice - Usage of GetResource may be unsafe if class is extended",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UI_INHERITANCE_UNSAFE_GETRESOURCE"
+  },
+  {
+    "key": "UL_UNRELEASED_LOCK",
+    "name": "Multi-threading - Method does not release lock on all paths",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UL_UNRELEASED_LOCK"
+  },
+  {
+    "key": "UL_UNRELEASED_LOCK_EXCEPTION_PATH",
+    "name": "Multi-threading - Method does not release lock on all exception paths",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UL_UNRELEASED_LOCK_EXCEPTION_PATH"
+  },
+  {
+    "key": "UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
+    "name": "Correctness - Uncallable method defined in anonymous class",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"
+  },
+  {
+    "key": "UM_UNNECESSARY_MATH",
+    "name": "Performance - Method calls static Math class method on a constant value",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UM_UNNECESSARY_MATH"
+  },
+  {
+    "key": "UNKNOWN",
+    "name": "Experimental - Unknown bug pattern",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UNKNOWN"
+  },
+  {
+    "key": "UPM_UNCALLED_PRIVATE_METHOD",
+    "name": "Performance - Private method is never called",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UPM_UNCALLED_PRIVATE_METHOD"
+  },
+  {
+    "key": "URF_UNREAD_FIELD",
+    "name": "Performance - Unread field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#URF_UNREAD_FIELD"
+  },
+  {
+    "key": "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD",
+    "name": "Style - Unread public/protected field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"
+  },
+  {
+    "key": "UR_UNINIT_READ",
+    "name": "Correctness - Uninitialized read of field in constructor",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UR_UNINIT_READ"
+  },
+  {
+    "key": "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR",
+    "name": "Correctness - Uninitialized read of field method called from constructor of superclass",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR"
+  },
+  {
+    "key": "USM_USELESS_ABSTRACT_METHOD",
+    "name": "Style - Abstract Method is already defined in implemented interface",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#USM_USELESS_ABSTRACT_METHOD"
+  },
+  {
+    "key": "USM_USELESS_SUBCLASS_METHOD",
+    "name": "Style - Method superfluously delegates to parent class method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#USM_USELESS_SUBCLASS_METHOD"
+  },
+  {
+    "key": "UUF_UNUSED_FIELD",
+    "name": "Performance - Unused field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UUF_UNUSED_FIELD"
+  },
+  {
+    "key": "UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD",
+    "name": "Style - Unused public or protected field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"
+  },
+  {
+    "key": "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
+    "name": "Style - Field not initialized in constructor but dereferenced without null check",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"
+  },
+  {
+    "key": "UWF_NULL_FIELD",
+    "name": "Correctness - Field only ever set to null",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UWF_NULL_FIELD"
+  },
+  {
+    "key": "UWF_UNWRITTEN_FIELD",
+    "name": "Correctness - Unwritten field",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UWF_UNWRITTEN_FIELD"
+  },
+  {
+    "key": "UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD",
+    "name": "Style - Unwritten public or protected field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"
+  },
+  {
+    "key": "UW_UNCOND_WAIT",
+    "name": "Multi-threading - Unconditional wait",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#UW_UNCOND_WAIT"
+  },
+  {
+    "key": "VA_FORMAT_STRING_ARG_MISMATCH",
+    "name": "Correctness - Number of format-string arguments does not correspond to number of placeholders",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_FORMAT_STRING_ARG_MISMATCH"
+  },
+  {
+    "key": "VA_FORMAT_STRING_BAD_ARGUMENT",
+    "name": "Correctness - Format string placeholder incompatible with passed argument",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_FORMAT_STRING_BAD_ARGUMENT"
+  },
+  {
+    "key": "VA_FORMAT_STRING_BAD_CONVERSION",
+    "name": "Correctness - The type of a supplied argument doesn\u0027t match format specifier",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_FORMAT_STRING_BAD_CONVERSION"
+  },
+  {
+    "key": "VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY",
+    "name": "Correctness - Array formatted in useless way using format string",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY"
+  },
+  {
+    "key": "VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN",
+    "name": "Style - Non-Boolean argument formatted using %b format specifier",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN"
+  },
+  {
+    "key": "VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED",
+    "name": "Correctness - MessageFormat supplied where printf style format expected",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED"
+  },
+  {
+    "key": "VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED",
+    "name": "Correctness - More arguments are passed than are actually used in the format string",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED"
+  },
+  {
+    "key": "VA_FORMAT_STRING_ILLEGAL",
+    "name": "Correctness - Illegal format string",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_FORMAT_STRING_ILLEGAL"
+  },
+  {
+    "key": "VA_FORMAT_STRING_MISSING_ARGUMENT",
+    "name": "Correctness - Format string references missing argument",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_FORMAT_STRING_MISSING_ARGUMENT"
+  },
+  {
+    "key": "VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT",
+    "name": "Correctness - No previous argument for format string",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT"
+  },
+  {
+    "key": "VA_FORMAT_STRING_USES_NEWLINE",
+    "name": "Bad practice - Format string should use %n rather than \\n",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_FORMAT_STRING_USES_NEWLINE"
+  },
+  {
+    "key": "VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG",
+    "name": "Correctness - Primitive array passed to function expecting a variable number of object arguments",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"
+  },
+  {
+    "key": "VO_VOLATILE_INCREMENT",
+    "name": "Multi-threading - An increment to a volatile field isn\u0027t atomic",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VO_VOLATILE_INCREMENT"
+  },
+  {
+    "key": "VO_VOLATILE_REFERENCE_TO_ARRAY",
+    "name": "Multi-threading - A volatile reference to an array doesn\u0027t treat the array elements as volatile",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VO_VOLATILE_REFERENCE_TO_ARRAY"
+  },
+  {
+    "key": "VR_UNRESOLVABLE_REFERENCE",
+    "name": "Correctness - Class makes reference to unresolvable class or method",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#VR_UNRESOLVABLE_REFERENCE"
+  },
+  {
+    "key": "WA_AWAIT_NOT_IN_LOOP",
+    "name": "Multi-threading - Condition.await() not in loop ",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#WA_AWAIT_NOT_IN_LOOP"
+  },
+  {
+    "key": "WA_NOT_IN_LOOP",
+    "name": "Multi-threading - Wait not in loop ",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#WA_NOT_IN_LOOP"
+  },
+  {
+    "key": "WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL",
+    "name": "Multi-threading - Synchronization on getClass rather than class literal",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL"
+  },
+  {
+    "key": "WMI_WRONG_MAP_ITERATOR",
+    "name": "Performance - Inefficient use of keySet iterator instead of entrySet iterator",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#WMI_WRONG_MAP_ITERATOR"
+  },
+  {
+    "key": "WS_WRITEOBJECT_SYNC",
+    "name": "Multi-threading - Class\u0027s writeObject() method is synchronized but nothing else is",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#WS_WRITEOBJECT_SYNC"
+  },
+  {
+    "key": "XFB_XML_FACTORY_BYPASS",
+    "name": "Style - Method directly allocates a specific implementation of xml interfaces",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#XFB_XML_FACTORY_BYPASS"
+  },
+  {
+    "key": "XSS_REQUEST_PARAMETER_TO_JSP_WRITER",
+    "name": "Security - JSP reflected cross site scripting vulnerability",
+    "type": "VULNERABILITY",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#XSS_REQUEST_PARAMETER_TO_JSP_WRITER"
+  },
+  {
+    "key": "XSS_REQUEST_PARAMETER_TO_SEND_ERROR",
+    "name": "Security - Servlet reflected cross site scripting vulnerability in error page",
+    "type": "VULNERABILITY",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#XSS_REQUEST_PARAMETER_TO_SEND_ERROR"
+  },
+  {
+    "key": "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER",
+    "name": "Security - Servlet reflected cross site scripting vulnerability",
+    "type": "VULNERABILITY",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER"
+  }
+]

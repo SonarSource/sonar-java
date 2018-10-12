@@ -393,7 +393,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Rule(key = "ConstantJSON")
-  private static class FakeVisitor extends IssuableSubscriptionVisitor {
+  static class FakeVisitor extends IssuableSubscriptionVisitor {
 
     Multimap<Integer, String> issues = LinkedListMultimap.create();
     Multimap<Integer, AnalyzerMessage> preciseIssues = LinkedListMultimap.create();
@@ -420,12 +420,12 @@ public class JavaCheckVerifierTest {
       return this;
     }
 
-    private FakeVisitor withIssue(int line, String message) {
+    protected FakeVisitor withIssue(int line, String message) {
       issues.put(line, message);
       return this;
     }
 
-    private FakeVisitor withoutIssue(int line) {
+    protected FakeVisitor withoutIssue(int line) {
       issues.removeAll(line);
       preciseIssues.removeAll(line);
       return this;

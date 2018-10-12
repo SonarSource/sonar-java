@@ -24,7 +24,6 @@ import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.MavenLocation;
-import com.sonar.orchestrator.locator.MavenLocator;
 import java.io.File;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -63,7 +62,7 @@ public class JavaClasspathTest {
     MavenLocation guava = MavenLocation.of("com.google.guava", "guava", "10.0.1");
     File subFolder = new File(tmp.getRoot(), "subFolder");
     File subSubFolder = new File(subFolder, "subSubFolder");
-    new MavenLocator(ORCHESTRATOR.getConfiguration()).copyToDirectory(guava, subSubFolder);
+    ORCHESTRATOR.getConfiguration().locators().copyToDirectory(guava, subSubFolder);
 
     aarPath = new File(new File(TestUtils.projectDir("using-aar-dep"), "lib"), "cache-1.3.0.aar").getAbsolutePath();
     guavaJarPath = new File(subSubFolder.getAbsolutePath(), guava.getFilename()).getAbsolutePath();

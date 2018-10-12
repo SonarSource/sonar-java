@@ -54,8 +54,6 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.internal.SonarRuntimeImpl;
-import org.sonar.api.issue.Issuable;
-import org.sonar.api.issue.Issue;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
@@ -218,8 +216,6 @@ public class SonarComponentsTest {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
-    Issuable issuable = mock(Issuable.class);
-
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(null);
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null, null, checkFactory, new CheckRegistrar[] {
       expectedRegistrar
@@ -227,7 +223,7 @@ public class SonarComponentsTest {
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(new File(""), expectedCheck, 0, "message", null);
-    verify(issuable, never()).addIssue(any(Issue.class));
+    verify(context, never()).newIssue();
   }
 
   @Test
@@ -323,7 +319,7 @@ public class SonarComponentsTest {
 
   @Test
   public void cancellation() {
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     SensorContextTester context = SensorContextTester.create(new File(""));
     sonarComponents.setSensorContext(context);
 
@@ -349,7 +345,7 @@ public class SonarComponentsTest {
     DefaultFileSystem fileSystem = context.fileSystem();
     fileSystem.add(inputFile);
     fileSystem.setEncoding(StandardCharsets.ISO_8859_1);
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null);
 
     context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
     sonarComponents.setSensorContext(context);
@@ -370,7 +366,7 @@ public class SonarComponentsTest {
     DefaultFileSystem fileSystem = context.fileSystem();
     fileSystem.add(new TestInputFileBuilder("", "unknown_file.java").setCharset(StandardCharsets.UTF_8).build());
     context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
-    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null);
     sonarComponents.setSensorContext(context);
 
     File unknownFile = new File("unknown_file.java");

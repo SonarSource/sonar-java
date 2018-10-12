@@ -86,3 +86,10 @@ public final class Fruit4 extends Food {
     }
   }
 }
+final class Foo<T> {
+  public boolean equals(Object o) {
+    if(o instanceof Foo) {
+
+    }
+  }
+}

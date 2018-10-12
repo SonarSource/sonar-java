@@ -21,6 +21,8 @@ package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
 import java.text.MessageFormat;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -61,11 +63,21 @@ public class NonNullSetToNullCheck extends SECheck {
     "javax.persistence.MappedSuperclass"
   };
 
-  private MethodTree methodTree;
+  private Deque<MethodTree> methodTrees = new ArrayDeque<>();
 
   @Override
   public void init(MethodTree tree, CFG cfg) {
-    methodTree = tree;
+    methodTrees.push(tree);
+  }
+
+  @Override
+  public void checkEndOfExecution(CheckerContext context) {
+    methodTrees.pop();
+  }
+
+  @Override
+  public void interruptedExecution(CheckerContext context) {
+    methodTrees.pop();
   }
 
   @Override
@@ -84,6 +96,7 @@ public class NonNullSetToNullCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
+    MethodTree methodTree = methodTrees.peek();
     if (methodTree.is(Tree.Kind.CONSTRUCTOR)
       && !isDefaultConstructorForJpa(methodTree)
       && !callsThisConstructor(methodTree)
@@ -134,7 +147,7 @@ public class NonNullSetToNullCheck extends SECheck {
       return;
     }
     if (isUndefinedOrNull(context, symbol)) {
-      context.reportIssue(tree, this, MessageFormat.format("\"{0}\" is marked \"{1}\" but is not initialized in this constructor.", symbol.name(), nonNullAnnotation));
+      context.reportIssue(tree.simpleName(), this, MessageFormat.format("\"{0}\" is marked \"{1}\" but is not initialized in this constructor.", symbol.name(), nonNullAnnotation));
     }
   }
 

@@ -44,11 +44,10 @@ public class JacocoReportReader {
 
   @Nullable
   private final File jacocoExecutionData;
-  private final boolean useCurrentBinaryFormat;
 
   public JacocoReportReader(@Nullable File jacocoExecutionData) {
+    checkCurrentReportFormat(jacocoExecutionData);
     this.jacocoExecutionData = jacocoExecutionData;
-    this.useCurrentBinaryFormat = isCurrentReportFormat(jacocoExecutionData);
   }
 
   /**
@@ -65,44 +64,31 @@ public class JacocoReportReader {
 
     LOG.info("Analysing {}", jacocoExecutionData);
     try (InputStream inputStream = new BufferedInputStream(new FileInputStream(jacocoExecutionData))) {
-      if (useCurrentBinaryFormat) {
-        ExecutionDataReader reader = new ExecutionDataReader(inputStream);
-        reader.setSessionInfoVisitor(sessionInfoStore);
-        reader.setExecutionDataVisitor(executionDataVisitor);
-        reader.read();
-      } else {
-        org.jacoco.previous.core.data.ExecutionDataReader reader = new org.jacoco.previous.core.data.ExecutionDataReader(inputStream);
-        reader.setSessionInfoVisitor(sessionInfoStore);
-        reader.setExecutionDataVisitor(executionDataVisitor);
-        reader.read();
-      }
+      ExecutionDataReader reader = new ExecutionDataReader(inputStream);
+      reader.setSessionInfoVisitor(sessionInfoStore);
+      reader.setExecutionDataVisitor(executionDataVisitor);
+      reader.read();
     } catch (IOException e) {
       throw new AnalysisException(String.format("Unable to read %s", jacocoExecutionData.getAbsolutePath()), e);
     }
     return this;
   }
 
-  private static boolean isCurrentReportFormat(@Nullable File jacocoExecutionData) {
+  private static void checkCurrentReportFormat(@Nullable File jacocoExecutionData) {
     if (jacocoExecutionData == null) {
-      return true;
+      return;
     }
     try (DataInputStream dis = new DataInputStream(new FileInputStream(jacocoExecutionData))) {
       byte firstByte = dis.readByte();
       Preconditions.checkState(firstByte == ExecutionDataWriter.BLOCK_HEADER);
       Preconditions.checkState(dis.readChar() == ExecutionDataWriter.MAGIC_NUMBER);
       char version = dis.readChar();
-      boolean isCurrentFormat = version == ExecutionDataWriter.FORMAT_VERSION;
-      if (!isCurrentFormat) {
-        LOG.warn("You are not using the latest JaCoCo binary format version, please consider upgrading to latest JaCoCo version.");
+      if (version != ExecutionDataWriter.FORMAT_VERSION) {
+        throw new AnalysisException("You are not using the latest JaCoCo binary format version, please consider upgrading to latest JaCoCo version.");
       }
-      return isCurrentFormat;
     } catch (IOException | IllegalStateException e) {
       throw new AnalysisException(String.format("Unable to read %s to determine JaCoCo binary format.", jacocoExecutionData.getAbsolutePath()), e);
     }
-  }
-
-  public boolean useCurrentBinaryFormat() {
-    return this.useCurrentBinaryFormat;
   }
 
   /**
@@ -110,16 +96,9 @@ public class JacocoReportReader {
    */
   public CoverageBuilder analyzeFiles(ExecutionDataStore executionDataStore, Collection<File> classFiles) {
     CoverageBuilder coverageBuilder = new CoverageBuilder();
-    if (useCurrentBinaryFormat) {
-      Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
-      for (File classFile : classFiles) {
-        analyzeClassFile(analyzer, classFile);
-      }
-    } else {
-      org.jacoco.previous.core.analysis.Analyzer analyzer = new org.jacoco.previous.core.analysis.Analyzer(executionDataStore, coverageBuilder);
-      for (File classFile : classFiles) {
-        analyzeClassFile(analyzer, classFile);
-      }
+    Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
+    for (File classFile : classFiles) {
+      analyzeClassFile(analyzer, classFile);
     }
     logNoMatchClasses(coverageBuilder.getNoMatchClasses());
     return coverageBuilder;
@@ -136,17 +115,6 @@ public class JacocoReportReader {
     LOG.warn("In order to have accurate coverage measures, the same class files must be used as at runtime for report generation.");
   }
 
-  /**
-   * Caller must guarantee that {@code classFile} is actually class file.
-   */
-  private static void analyzeClassFile(org.jacoco.previous.core.analysis.Analyzer analyzer, File classFile) {
-    try (InputStream inputStream = new FileInputStream(classFile)) {
-      analyzer.analyzeClass(inputStream, classFile.getPath());
-    } catch (IOException e) {
-      // (Godin): in fact JaCoCo includes name into exception
-      LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
-    }
-  }
 
   private static void analyzeClassFile(Analyzer analyzer, File classFile) {
     try (InputStream inputStream = new FileInputStream(classFile)) {

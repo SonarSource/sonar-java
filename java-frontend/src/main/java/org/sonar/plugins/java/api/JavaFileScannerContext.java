@@ -21,17 +21,14 @@ package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
-
+import java.io.File;
+import java.util.List;
+import java.util.Objects;
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Context injected in check classes and used to report issues.
@@ -99,6 +96,12 @@ public interface JavaFileScannerContext {
    * @return the currently analysed file.
    */
   File getFile();
+
+  /**
+   * The working directory used by the analysis.
+   * @return the current working directory.
+   */
+  File getWorkingDirectory();
 
   /**
    * Java version defined for the analysis using sonar.java.version parameter.

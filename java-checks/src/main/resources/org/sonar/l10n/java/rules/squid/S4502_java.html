@@ -1,0 +1,30 @@
+<p>Spring Security is coming out of the box with a protection against CSRF attacks. With 4.0, this protection is even enabled by default. Spring's
+recommendation is to "use CSRF protection for any request that could be processed by a browser by normal users". So there is no reason to disable it
+for standard web applications.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> activate Spring Security's CSRF protection. </li>
+</ul>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+	  http.csrf().disable(); // Noncompliant
+	}
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://cwe.mitre.org/data/definitions/352.html">MITRE, CWE-352</a> - Cross-Site Request Forgery (CSRF) </li>
+  <li> OWASP Top 10 2017 Category A6 - Security Misconfiguration </li>
+  <li> <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29">OWASP: Cross-Site Request Forgery</a> </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat1">SANS Top 25</a> - Insecure Interaction Between Components </li>
+  <li> Derived from FindSecBugs rule <a
+  href="https://find-sec-bugs.github.io/bugs.htm#SPRING_CSRF_PROTECTION_DISABLED">SPRING_CSRF_PROTECTION_DISABLED</a> </li>
+  <li> <a href="https://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html#when-to-use-csrf-protection">Spring Security
+  Official Documentation: When to use CSRF protection</a> </li>
+</ul>
+

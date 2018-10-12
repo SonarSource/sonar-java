@@ -1,0 +1,40 @@
+<p>Changing or bypassing accessibility is security-sensitive. For example, it has led in the past to the following vulnerability:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-4681">CVE-2012-4681</a> </li>
+</ul>
+<p><code>private</code> methods were made <code>private</code> for a reason, and the same is true of every other visibility level. Altering or
+bypassing the accessibility of classes, methods, or fields violates the encapsulation principle and could introduce security holes.</p>
+<p>This rule raises an issue when reflection is used to change the visibility of a class, method or field, and when it is used to directly update a
+field value.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> there is a good reason to override the existing accessibility level of the method/field. This is very rarely the case. Accessing hidden fields
+  and methods will make your code unstable as they are not part of the public API and may change in future versions. </li>
+  <li> this method is called by untrusted code. <strong>*</strong> </li>
+  <li> it is possible to modify or bypass the accessibility of sensitive methods or fields using this code. <strong>*</strong> </li>
+  <li> untrusted code can access the java reflection API. <strong>*</strong> </li>
+</ul>
+<p><strong>*</strong> You are at risk if you answered yes to those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Don't change or bypass the accessibility of any method or field if possible.</p>
+<p>If untrusted code can execute this method, make sure that it cannot decide which method or field's accessibility can be modified or bypassed.</p>
+<p>Untrusted code should never have direct access to the java Reflection API. If this method can do it, make sure that it is an exception. Use
+ClassLoaders and SecurityManagers in order to sandbox any untrusted code and forbid access to the Reflection API.</p>
+<h2>Questionable Code Example</h2>
+<pre>
+public void makeItPublic(String methodName) throws NoSuchMethodException {
+
+  this.getClass().getMethod(methodName).setAccessible(true); // Questionable
+}
+
+public void setItAnyway(String fieldName, int value) {
+  this.getClass().getDeclaredField(fieldName).setInt(this, value); // Questionable; bypasses controls in setter
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/3YEVAQ">CERT, SEC05-J.</a> - Do not use reflection to increase accessibility of
+  classes, methods, or fields </li>
+</ul>
+

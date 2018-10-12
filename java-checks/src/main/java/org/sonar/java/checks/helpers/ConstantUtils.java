@@ -67,7 +67,7 @@ public class ConstantUtils {
   }
 
   @CheckForNull
-  private static Object resolveAsConstant(ExpressionTree tree) {
+  public static Object resolveAsConstant(ExpressionTree tree) {
     ExpressionTree expression = tree;
     while (expression.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
       expression = ((ParenthesizedTree) expression).expression();
@@ -85,11 +85,10 @@ public class ConstantUtils {
       return LiteralUtils.trimQuotes(((LiteralTree) expression).value());
     }
     if (tree.is(Tree.Kind.INT_LITERAL)) {
-      return Integer.valueOf(((LiteralTree) tree).value());
+      return LiteralUtils.intLiteralValue(tree);
     }
     if (tree.is(Tree.Kind.LONG_LITERAL)) {
-      String value = ((LiteralTree) tree).value();
-      return Long.valueOf(value.substring(0, value.length() - 1));
+      return LiteralUtils.longLiteralValue(tree);
     }
     if (expression.is(Tree.Kind.PLUS)) {
       return resolvePlus((BinaryExpressionTree) expression);

@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -606,6 +607,18 @@ public class TypeAndReferenceSolverTest {
 
     assertThat(identifierType).isInstanceOf(MethodJavaType.class);
     assertThat(((MethodJavaType) identifierType).argTypes.get(0).is("java.lang.String")).isTrue();
+  }
+
+  @Test
+  public void visit_other() {
+    SemanticModel semanticModel = mock(SemanticModel.class);
+    when(semanticModel.getEnv(any(Tree.class))).thenReturn(env);
+    TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache), parametrizedTypeCache);
+
+    JavaTree.NotImplementedTreeImpl notImplementedTree = new JavaTree.NotImplementedTreeImpl();
+    notImplementedTree.accept(visitor);
+
+    assertThat(visitor.getType(notImplementedTree)).isEqualTo(Symbols.unknownType);
   }
 
   private static final String CHAR = "(char) 42";

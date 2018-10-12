@@ -1,0 +1,25 @@
+<BugCollection>
+    <Project>
+        <SrcDir>${PROJECT_DIR}src/main/java</SrcDir>
+    </Project>
+    <other>
+        <SrcDir></SrcDir>
+    </other>
+    <other><other><other></other></other></other>
+    <BugInstance></BugInstance>
+    <BugInstance type='UNKNOWN_RULE'>
+        <LongMessage>Message for unknown rule.</LongMessage>
+        <SourceLine sourcepath='org/myapp/Main.java' />
+    </BugInstance>
+    <BugInstance type='HE_EQUALS_USE_HASHCODE'>
+        <LongMessage>Not existing file.</LongMessage>
+        <SourceLine start='6' end='6' sourcepath='org/myapp/not-existing-file.java' startBytecode='0' />
+    </BugInstance>
+    <BugInstance type='HE_EQUALS_USE_HASHCODE'>
+        <LongMessage>No file.</LongMessage>
+        <SourceLine start='6' end='6' />
+    </BugInstance>
+    <BugInstance type='NO_MESSAGE'>
+        <SourceLine sourcepath='org/myapp/Main.java' />
+    </BugInstance>
+</BugCollection>

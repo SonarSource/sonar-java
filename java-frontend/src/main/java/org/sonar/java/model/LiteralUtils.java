@@ -53,7 +53,7 @@ public class LiteralUtils {
     if (literalValue.startsWith("0b") || literalValue.startsWith("0B")) {
       return Integer.valueOf(literalValue.substring(2), 2);
     }
-    return Integer.decode(literalValue);
+    return Long.decode(literalValue).intValue();
   }
 
   @CheckForNull

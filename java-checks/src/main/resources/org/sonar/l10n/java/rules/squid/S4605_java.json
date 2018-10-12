@@ -1,0 +1,17 @@
+{
+  "title": "Spring beans should be considered by \"@ComponentScan\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring",
+    "pitfall"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4605",
+  "sqKey": "S4605",
+  "scope": "Main"
+}

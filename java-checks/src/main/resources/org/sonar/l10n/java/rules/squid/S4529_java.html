@@ -1,0 +1,16 @@
+<p>All methods of a <code>@Controller</code> object annotated with <code>@RequestMapping</code> (or all its variants such as <code>@GetMapping</code>,
+<code>@PostMapping</code>, <code>@PutMapping</code>, <code>@PatchMapping</code> and <code>@DeleteMapping</code>) are remotely reachable. One should
+review these exposed methods to be sure no attackers will be able to abuse them.</p>
+<p>This rule is there to allow a security auditor to quickly find some potential hotspots to review.</p>
+<h1>Noncompliant Code Example</h1>
+<pre>
+@RequestMapping(path = "/profile", method = RequestMethod.GET) // Noncompliant
+public UserProfile getUserProfile(String name) {
+...
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> OWASP Top 10 2017 Category A1 - Injection </li>
+</ul>
+

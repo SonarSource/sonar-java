@@ -1,0 +1,45 @@
+<p>Setting JavaBean properties is security sensitive. Doing it with untrusted values has led in the past to the following vulnerability:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-0114">CVE-2014-0114</a> </li>
+</ul>
+<p>JavaBeans can have their properties or nested properties set by population functions. An attacker can leverage this feature to push into the
+JavaBean malicious data that can compromise the software integrity. A typical attack will try to manipulate the ClassLoader and finally execute
+malicious code.</p>
+<p>This rule raises an issue when:</p>
+<ul>
+  <li> BeanUtils.populate(...) or BeanUtilsBean.populate(...) from <a href="http://commons.apache.org/proper/commons-beanutils/">Apache Commons
+  BeanUtils</a> are called </li>
+  <li> BeanUtils.setProperty(...) or BeanUtilsBean.setProperty(...) from <a href="http://commons.apache.org/proper/commons-beanutils/">Apache Commons
+  BeanUtils</a> are called </li>
+  <li> org.springframework.beans.BeanWrapper.setPropertyValue(...) or org.springframework.beans.BeanWrapper.setPropertyValues(...) from Spring is
+  called </li>
+</ul>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> the new property values might have been tampered with or provided by an untrusted source. </li>
+  <li> sensitive properties can be modified, for example: <code>class.classLoader</code> </li>
+</ul>
+<p>You are at risk if you answered yes to any of these question.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Sanitize all values used as JavaBean properties.</p>
+<p>Don't set any sensitive properties. Keep full control over which properties are set. If the property names are provided by an unstrusted source,
+filter them with a whitelist.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Company bean = new Company();
+HashMap map = new HashMap();
+Enumeration names = request.getParameterNames();
+while (names.hasMoreElements()) {
+    String name = (String) names.nextElement();
+    map.put(name, request.getParameterValues(name));
+}
+BeanUtils.populate(bean, map); // Noncompliant; "map" is populated with data coming from user input, here "request.getParameterNames()"
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/15.html">MITRE, CWE-15</a> - External Control of System or Configuration Setting </li>
+  <li> OWASP Top 10 2017 Category A1 - Injection </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/VwAZAg">CERT, MSC61-J.</a> - Do not use insecure or weak cryptographic algorithms </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#BEAN_PROPERTY_INJECTION">BEAN_PROPERTY_INJECTION</a> </li>
+</ul>
+

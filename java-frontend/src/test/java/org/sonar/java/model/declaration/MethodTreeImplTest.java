@@ -20,16 +20,17 @@
 package org.sonar.java.model.declaration;
 
 import com.sonar.sslr.api.typed.ActionParser;
+import java.util.Collections;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-
-import java.util.Collections;
+import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -114,6 +115,18 @@ public class MethodTreeImplTest {
     CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A { String toString(){return \"\";}}");
     MethodTreeImpl methodTree = (MethodTreeImpl) ((ClassTree) cut.types().get(0)).members().get(0);
     assertThat(methodTree.isOverriding()).isNull();
+  }
+
+  @Test
+  public void compute_cfg() {
+    MethodTree methodWithoutBody = getUniqueMethod("interface A { void foo(int arg) throws Exception; }");
+    ControlFlowGraph cfg = methodWithoutBody.cfg();
+    assertThat(cfg).isNull();
+
+    MethodTree method = getUniqueMethod("class A { void foo(int arg) throws Exception { }}");
+    cfg = method.cfg();
+    assertThat(cfg).isNotNull();
+    assertThat(method.cfg()).isSameAs(cfg);
   }
 
   @Test

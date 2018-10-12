@@ -22,7 +22,15 @@ package org.sonar.java.model;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
+import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.IntFunction;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javax.annotation.Nullable;
 import org.assertj.core.api.Fail;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,15 +46,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import javax.annotation.Nullable;
-import java.io.File;
-import java.text.DecimalFormat;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.IntFunction;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -127,7 +126,7 @@ public class VisitorsBridgeTest {
     JavaFileScanner visitor = c -> {throw npe;};
     File currentFile = new File("");
     SensorContextTester sensorContextTester = SensorContextTester.create(currentFile);
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
     VisitorsBridge visitorsBridge = new VisitorsBridge(Collections.singleton(visitor), new ArrayList<>(), sonarComponents);
     visitorsBridge.setCurrentFile(currentFile);

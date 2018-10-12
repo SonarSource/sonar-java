@@ -17,5 +17,10 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-1114",
   "sqKey": "ObjectFinalizeOverridenCallsSuperFinalizeCheck",
-  "scope": "All"
+  "scope": "All",
+  "securityStandards": {
+    "CWE": [
+      568
+    ]
+  }
 }

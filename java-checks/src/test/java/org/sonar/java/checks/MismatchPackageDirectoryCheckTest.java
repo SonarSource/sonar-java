@@ -39,4 +39,9 @@ public class MismatchPackageDirectoryCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/mismatchPackage/Mismatch.java", new MismatchPackageDirectoryCheck());
   }
 
+  @Test
+  public void mismatchWithDots() {
+    JavaCheckVerifier.verify("src/test/files/checks/mismatchPackage/with.dots/PackageWithDots.java", new MismatchPackageDirectoryCheck());
+  }
+
 }

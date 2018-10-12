@@ -127,6 +127,7 @@ class ParametrizedMethodsWithTypeInference {
   D dType;
   A aType;
   B<Comparable<? extends Comparable>> comparable;
+  B bRawType;
 
   interface I {
   }

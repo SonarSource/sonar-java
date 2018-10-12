@@ -166,12 +166,20 @@ public class JavaClasspathTest {
   public void libraries_should_accept_relative_paths_with_wildcard() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/**/lib");
     javaClasspath = createJavaClasspath();
-    assertThat(javaClasspath.getElements()).hasSize(6);
+    assertThat(javaClasspath.getElements()).hasSize(8);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
-    assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "lib", "lib", "hello.jar", "oklog-1.0.1.aar");
+    assertThat(javaClasspath.getElements()).extracting("name").containsExactlyInAnyOrder(
+      "hello.jar",
+      "hello.jar",
+      "world.jar",
+      "emptyFile.jar",
+      "emptyArchive.jar",
+      "lib",
+      "lib",
+      "oklog-1.0.1.aar");
   }
-  
+
   @Test
   public void should_not_scan_target_classes() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/classpath/lib/target/classes");

@@ -4,10 +4,10 @@ method inherited from <code>Object</code> has not been overridden. In this case 
 suspicious uses of <code>==</code> and <code>!=</code> operators on objects whose <code>equals</code> methods are overridden.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-String firstName = getFirstName();   //String overrides equals
+String firstName = getFirstName(); // String overrides equals
 String lastName = getLastName();
 
-if (firstName == lastName) { ... };   // Non-compliant; false even if the strings have the same value
+if (firstName == lastName) { ... }; // Non-compliant; false even if the strings have the same value
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
@@ -17,10 +17,19 @@ String lastName = getLastName();
 if (firstName != null &amp;&amp; firstName.equals(lastName)) { ... };
 </pre>
 <h2>Exceptions</h2>
-<p>Comparing two instances of the <code>Class</code> object will not raise an issue.</p>
+<p>Comparing two instances of the <code>Class</code> object will not raise an issue:</p>
 <pre>
 Class c;
-if(c == Integer.class) { //No issue raised
+if(c == Integer.class) { // No issue raised
+}
+</pre>
+<p>Comparing <code>Enum</code>s will not raise an issue:</p>
+<pre>
+public enum Fruit {
+   APPLE, BANANA, GRAPE
+}
+public boolean isFruitGrape(Fruit candidateFruit) {
+  return candidateFruit == Fruit.GRAPE; // it's recommended to activate S4551 to enforce comparison of Enums using ==
 }
 </pre>
 <h2>See</h2>

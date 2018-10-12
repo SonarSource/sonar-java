@@ -55,7 +55,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     }
     if (tree.is(Tree.Kind.CLASS)) {
       checkClassInterfaces(((ClassTree) tree));
-    } else if (tree.is(Tree.Kind.VARIABLE)) {
+    } else {
       checkVariableTypeAndInitializer((VariableTree) tree);
     }
   }
@@ -104,6 +104,11 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
       return Optional.empty();
     }
     ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) javaType;
+
+    if (hasAnyUnknownParameterType(ptjt)) {
+      return Optional.empty();
+    }
+
     switch (ptjt.getSymbol().getFullyQualifiedName()) {
       case "java.util.function.Function":
         return handleFunctionInterface(ptjt);
@@ -112,14 +117,23 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
       case "java.util.function.BiConsumer":
         return handleBiConsumerInterface(ptjt);
       case "java.util.function.Supplier":
+        return handleSupplier(ptjt);
       case "java.util.function.Consumer":
       case "java.util.function.Predicate":
       case "java.util.function.UnaryOperator":
       case "java.util.function.BinaryOperator":
-        return Optional.ofNullable(new ParameterTypeNameAndTreeType(ptjt, 0).paramTypeName).map(s -> s + javaType.name());
+        return handleSingleParameterFunctions(ptjt);
       default:
         return Optional.empty();
     }
+  }
+
+  private static boolean hasAnyUnknownParameterType(ParametrizedTypeJavaType ptjt) {
+    return ptjt.typeParameters().stream().map(ptjt::substitution).anyMatch(Type::isUnknown);
+  }
+
+  private static Optional<String> handleSingleParameterFunctions(ParametrizedTypeJavaType ptjt) {
+    return Optional.ofNullable(new ParameterTypeNameAndTreeType(ptjt, 0).paramTypeName).map(s -> s + ptjt.name());
   }
 
   private static Optional<String> handleFunctionInterface(ParametrizedTypeJavaType ptjt) {
@@ -127,6 +141,12 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(ptjt, 1);
     if (firstArgument.paramType.equals(secondArgument.paramType)) {
       return functionalInterfaceName("UnaryOperator<%s>", firstArgument.paramType);
+    }
+    if (isBoolean(secondArgument)) {
+      return functionalInterfaceName("Predicate<%s>", firstArgument.paramType);
+    }
+    if (isBoolean(firstArgument)) {
+      return Optional.empty();
     }
     if (firstArgument.paramTypeName != null && secondArgument.paramTypeName != null) {
       return functionalInterfaceName("%sTo%sFunction", firstArgument.paramTypeName, secondArgument.paramTypeName);
@@ -147,6 +167,9 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     if (firstArgument.paramType.equals(secondArgument.paramType) && firstArgument.paramType.equals(thirdArgument.paramType)) {
       return functionalInterfaceName("BinaryOperator<%s>", firstArgument.paramType);
     }
+    if (isBoolean(thirdArgument)) {
+      return functionalInterfaceName("BiPredicate<%s, %s>", firstArgument.paramType, secondArgument.paramType);
+    }
     return Optional.empty();
   }
 
@@ -163,6 +186,14 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     return Optional.empty();
   }
 
+  private static Optional<String> handleSupplier(ParametrizedTypeJavaType ptjt) {
+    ParameterTypeNameAndTreeType supplierParamType = new ParameterTypeNameAndTreeType(ptjt, 0);
+    if (isBoolean(supplierParamType)) {
+      return Optional.of("BooleanSupplier");
+    }
+    return Optional.ofNullable(supplierParamType.paramTypeName).map(s -> s + "Supplier");
+  }
+
   private static class InterfaceTreeAndStringPairReport {
     final String reportString;
     final TypeTree classInterface;
@@ -171,6 +202,10 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
       reportString = report;
       classInterface = interf;
     }
+  }
+
+  private static boolean isBoolean(ParameterTypeNameAndTreeType type) {
+    return type.paramType.is("java.lang.Boolean");
   }
 
   private static class ParameterTypeNameAndTreeType {
@@ -189,11 +224,11 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     private static String returnStringFromJavaObject(Type argType) {
       if (argType.is("java.lang.Integer")) {
         return "Int";
-      } else if (argType.is("java.lang.Boolean") || argType.is("java.lang.Double") || argType.is("java.lang.Long")) {
-        return argType.name();
-      } else {
-        return null;
       }
+      if (argType.is("java.lang.Double") || argType.is("java.lang.Long")) {
+        return argType.name();
+      }
+      return null;
     }
   }
 }

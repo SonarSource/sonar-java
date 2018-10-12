@@ -52,7 +52,7 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
   private void checkClassTree(ClassTree tree) {
     IdentifierTree simpleName = tree.simpleName();
-    if (simpleName != null && !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT) && !isEJBAnnotated(tree.symbol())) {
+    if (simpleName != null && !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT) && isNotEJBAnnotated(tree.symbol())) {
       List<JavaFileScannerContext.Location> uninitializedVariables = new ArrayList<>();
       for (Tree member : tree.members()) {
         if (member.is(Kind.CONSTRUCTOR)) {
@@ -70,11 +70,16 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
   private static boolean requiresInitialization(VariableTree variable) {
     Symbol symbol = variable.symbol();
-    return variable.initializer() == null && symbol.isPrivate() && !symbol.isStatic() && !isEJBAnnotated(symbol);
+    return variable.initializer() == null && symbol.isPrivate() && !symbol.isStatic() && isNotEJBAnnotated(symbol) &&!isAutowired(symbol);
   }
 
-  private static boolean isEJBAnnotated(Symbol symbol) {
-    return symbol.metadata().annotations().stream().anyMatch(a -> a.symbol().owner().name().equals("javax.ejb"));
+  private static boolean isAutowired(Symbol symbol) {
+    return symbol.metadata().isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired") ||
+      symbol.metadata().isAnnotatedWith("javax.inject.Inject");
+  }
+
+  private static boolean isNotEJBAnnotated(Symbol symbol) {
+    return symbol.metadata().annotations().stream().noneMatch(a -> a.symbol().owner().name().equals("javax.ejb"));
   }
 
 }

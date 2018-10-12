@@ -1,0 +1,16 @@
+{
+  "title": "Methods should not call same-class methods with incompatible \"@Transactional\" values",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-2229",
+  "sqKey": "S2229",
+  "scope": "Main"
+}

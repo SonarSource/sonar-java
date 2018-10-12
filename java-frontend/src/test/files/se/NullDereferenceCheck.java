@@ -797,3 +797,15 @@ abstract class NonNullAnnotationOnForEach {
 
   abstract Object qix(String s);
 }
+
+class SpringAnnotations {
+  void foo(@org.springframework.lang.Nullable Object o) {
+    o.toString(); // Noncompliant
+  }
+
+  void bar(@org.springframework.lang.NonNull Object o) {
+    if (o == null) {
+      o.toString(); // Compliant - unreachable
+    }
+  }
+}

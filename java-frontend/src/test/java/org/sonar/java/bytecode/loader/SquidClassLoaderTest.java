@@ -23,6 +23,7 @@ import com.google.common.collect.Iterators;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Rule;
@@ -31,6 +32,8 @@ import org.junit.rules.ExpectedException;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +41,9 @@ public class SquidClassLoaderTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
+
+  @Rule
+  public LogTester logTester = new LogTester();
 
   private SquidClassLoader classLoader;
 
@@ -71,7 +77,7 @@ public class SquidClassLoaderTest {
     thrown.expect(ClassNotFoundException.class);
     classLoader.loadClass("foo.Unknown");
   }
-  
+
   @Test
   public void createFromAar() throws Exception {
     File jar = new File("src/test/files/classpath/lib/oklog-1.0.1.aar");
@@ -101,6 +107,40 @@ public class SquidClassLoaderTest {
   public void not_jar_is_ignored() throws Exception {
     File jar = new File("src/test/files/bytecode/src/tags/TagName.java");
     classLoader = new SquidClassLoader(Arrays.asList(jar));
+  }
+
+  @Test
+  public void empty_archive_should_not_fail() throws Exception {
+    File jar = new File("src/test/files/bytecode/lib/emptyArchive.jar");
+    classLoader = new SquidClassLoader(Arrays.asList(jar));
+
+    assertThat(classLoader.getResource("dummy.class")).isNull();
+
+    assertThat(logTester.logs()).isEmpty();
+
+    classLoader.close();
+  }
+
+  @Test
+  public void empty_file_should_not_fail_but_log_warning() {
+    File jar = new File("src/test/files/bytecode/lib/emptyFile.jar");
+    classLoader = new SquidClassLoader(Arrays.asList(jar));
+
+    assertThat(classLoader.getResource("dummy.class")).isNull();
+
+    assertThat(logTester.logs()).hasSize(2);
+    List<String> warnings = logTester.logs(LoggerLevel.WARN);
+    assertThat(warnings).hasSize(1);
+    assertThat(warnings.get(0))
+      .startsWith("Unable to load classes from '")
+      .endsWith("emptyFile.jar\'");
+    List<String> debugs = logTester.logs(LoggerLevel.DEBUG);
+    assertThat(debugs).hasSize(1);
+    assertThat(debugs.get(0))
+      .startsWith("Unable to open")
+      .endsWith("emptyFile.jar: zip file is empty");
+
+    classLoader.close();
   }
 
   @Test
@@ -181,6 +221,18 @@ public class SquidClassLoaderTest {
     ClassNode classNode = new ClassNode();
     cr.accept(classNode, 0);
     assertThat(classNode.version).isEqualTo(Opcodes.V10);
+    classLoader.close();
+  }
+
+  @Test
+  public void test_loading_java11_class() throws Exception {
+    SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/java11/bin")));
+    byte[] bytes = classLoader.getBytesForClass("org.foo.A");
+    assertThat(bytes).isNotNull();
+    ClassReader cr = new ClassReader(bytes);
+    ClassNode classNode = new ClassNode();
+    cr.accept(classNode, 0);
+    assertThat(classNode.version).isEqualTo(Opcodes.V11);
     classLoader.close();
   }
 }

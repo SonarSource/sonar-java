@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<checkstyle version="4.3">
+<file></file>
+<other><other><other></other></other></other>
+<file name="${PROJECT_DIR}not-existing-file.java">
+	<error line="4" column="2" severity="info" message="Message for not-existing-file." source="com.puppycrawl.tools.checkstyle.checks.ArrayTypeStyleCheck" />
+</file>
+<file name="${PROJECT_DIR}Main.java">
+	<error line="2" column="2" severity="info" source="com.puppycrawl.tools.checkstyle.checks.ArrayTypeStyleCheck" />
+</file>
+<file name="Main.java">
+	<error message="Error at file level with an unknown rule key." source="com.puppycrawl.tools.checkstyle.checks.UnknownRuleKey" />
+</file>
+<file name="${PROJECT_DIR}A.java">
+	<error line="1" column="1" severity="error" message="Unsupported rule key format." source="invalid-format" />
+</file>
+</checkstyle>

@@ -1,0 +1,16 @@
+{
+  "title": "\"Random\" objects should be reused",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2119",
+  "sqKey": "S2119",
+  "scope": "All"
+}

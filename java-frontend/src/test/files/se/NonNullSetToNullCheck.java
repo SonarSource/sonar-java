@@ -30,7 +30,7 @@ public class MainClass {
     testObject = new Object();
   }
 
-  public MainClass() { // Noncompliant  {{"primary" is marked "javax.annotation.Nonnull" but is not initialized in this constructor.}}
+  public MainClass() { // Noncompliant [[sc=10;ec=19]] {{"primary" is marked "javax.annotation.Nonnull" but is not initialized in this constructor.}}
     return; // Just for coverage
   }
 
@@ -328,4 +328,20 @@ abstract class ExcludedMethods {
     com.google.common.base.Preconditions.checkNotNull(getMyObject(), "yolo"); // Compliant
     com.google.common.base.Preconditions.checkNotNull(getMyObject(), "yolo", new Object(), 2); // Compliant
   }
+}
+
+
+public class MultipleConstructors {
+
+  @Nonnull
+  private final String a;
+
+  MultipleConstructors() {
+    this("test");
+  }
+
+  private MultipleConstructors(@Nonnull String b) {
+    this.a = b;
+  }
+
 }

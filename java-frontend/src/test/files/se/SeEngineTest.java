@@ -211,4 +211,16 @@ class ResetFieldValue {
     // could modify internal state of o
   }
 
+  public static String divisionResultCanBeZero(long millis) {
+    if (millis <= 0) {
+      return "goodbye";
+    }
+    long seconds = millis / 1000;
+    long minutes = seconds / 60;
+    if (minutes == 0) { // minutes can be zero due to 'long' division
+      return "zero";
+    }
+    return "non-zero";
+  }
+
 }

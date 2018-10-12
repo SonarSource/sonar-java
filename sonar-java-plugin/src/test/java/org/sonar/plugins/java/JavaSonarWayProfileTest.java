@@ -23,6 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
+import org.sonar.api.SonarQubeVersion;
+import org.sonar.api.SonarRuntime;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.api.utils.ValidationMessages;
 
@@ -34,7 +37,7 @@ public class JavaSonarWayProfileTest {
   public void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
 
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(SonarVersion.SQ_73_RUNTIME);
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
@@ -54,6 +57,26 @@ public class JavaSonarWayProfileTest {
 
     // Check that we use severity from the read rule and not default one.
     assertThat(activeRules.get(0).overriddenSeverity()).isNull();
+  }
+
+  @Test
+  public void should_activate_hotspots_when_supported() {
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(SonarVersion.SQ_73_RUNTIME);
+    BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
+    profileDef.define(context);
+    BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
+    BuiltInQualityProfilesDefinition.BuiltInActiveRule rule = profile.rule(RuleKey.of("squid", "S2092"));
+    assertThat(rule).isNotNull();
+  }
+
+  @Test
+  public void should_not_activate_hotspots_when_not_supported() {
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(SonarVersion.SQ_67_RUNTIME);
+    BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
+    profileDef.define(context);
+    BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
+    BuiltInQualityProfilesDefinition.BuiltInActiveRule rule = profile.rule(RuleKey.of("squid", "S2092"));
+    assertThat(rule).isNull();
   }
 
 }

@@ -1,0 +1,1730 @@
+[
+  {
+    "key": "AbstractClassWithoutAbstractMethod",
+    "name": "Abstract class without abstract method",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#abstractclasswithoutabstractmethod"
+  },
+  {
+    "key": "AbstractClassWithoutAnyMethod",
+    "name": "Abstract class without any method",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#abstractclasswithoutanymethod"
+  },
+  {
+    "key": "AbstractNaming",
+    "name": "Abstract naming",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#abstractnaming"
+  },
+  {
+    "key": "AccessorClassGeneration",
+    "name": "Accessor class generation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#accessorclassgeneration"
+  },
+  {
+    "key": "AccessorMethodGeneration",
+    "name": "Accessor method generation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#accessormethodgeneration"
+  },
+  {
+    "key": "AddEmptyString",
+    "name": "Add empty string",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#addemptystring"
+  },
+  {
+    "key": "AppendCharacterWithChar",
+    "name": "Append character with char",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#appendcharacterwithchar"
+  },
+  {
+    "key": "ArrayIsStoredDirectly",
+    "name": "Array is stored directly",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#arrayisstoreddirectly"
+  },
+  {
+    "key": "AssignmentInOperand",
+    "name": "Assignment in operand",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#assignmentinoperand"
+  },
+  {
+    "key": "AssignmentToNonFinalStatic",
+    "name": "Assignment to non final static",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#assignmenttononfinalstatic"
+  },
+  {
+    "key": "AtLeastOneConstructor",
+    "name": "At least one constructor",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#atleastoneconstructor"
+  },
+  {
+    "key": "AvoidAccessibilityAlteration",
+    "name": "Avoid accessibility alteration",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidaccessibilityalteration"
+  },
+  {
+    "key": "AvoidArrayLoops",
+    "name": "Avoid array loops",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#avoidarrayloops"
+  },
+  {
+    "key": "AvoidAssertAsIdentifier",
+    "name": "Avoid assert as identifier",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidassertasidentifier"
+  },
+  {
+    "key": "AvoidBranchingStatementAsLastInLoop",
+    "name": "Avoid branching statement as last in loop",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidbranchingstatementaslastinloop"
+  },
+  {
+    "key": "AvoidCallingFinalize",
+    "name": "Avoid calling finalize",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidcallingfinalize"
+  },
+  {
+    "key": "AvoidCatchingGenericException",
+    "name": "Avoid catching generic exception",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#avoidcatchinggenericexception"
+  },
+  {
+    "key": "AvoidCatchingNPE",
+    "name": "Avoid catching NPE",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidcatchingnpe"
+  },
+  {
+    "key": "AvoidCatchingThrowable",
+    "name": "Avoid catching throwable",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidcatchingthrowable"
+  },
+  {
+    "key": "AvoidDecimalLiteralsInBigDecimalConstructor",
+    "name": "Avoid decimal literals in big decimal constructor",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoiddecimalliteralsinbigdecimalconstructor"
+  },
+  {
+    "key": "AvoidDeeplyNestedIfStmts",
+    "name": "Avoid deeply nested if stmts",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#avoiddeeplynestedifstmts"
+  },
+  {
+    "key": "AvoidDollarSigns",
+    "name": "Avoid dollar signs",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#avoiddollarsigns"
+  },
+  {
+    "key": "AvoidDuplicateLiterals",
+    "name": "Avoid duplicate literals",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidduplicateliterals"
+  },
+  {
+    "key": "AvoidEnumAsIdentifier",
+    "name": "Avoid enum as identifier",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidenumasidentifier"
+  },
+  {
+    "key": "AvoidFieldNameMatchingMethodName",
+    "name": "Avoid field name matching method name",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidfieldnamematchingmethodname"
+  },
+  {
+    "key": "AvoidFieldNameMatchingTypeName",
+    "name": "Avoid field name matching type name",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidfieldnamematchingtypename"
+  },
+  {
+    "key": "AvoidFileStream",
+    "name": "Avoid file stream",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#avoidfilestream"
+  },
+  {
+    "key": "AvoidFinalLocalVariable",
+    "name": "Avoid final local variable",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#avoidfinallocalvariable"
+  },
+  {
+    "key": "AvoidInstanceofChecksInCatchClause",
+    "name": "Avoid instanceof checks in catch clause",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidinstanceofchecksincatchclause"
+  },
+  {
+    "key": "AvoidInstantiatingObjectsInLoops",
+    "name": "Avoid instantiating objects in loops",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#avoidinstantiatingobjectsinloops"
+  },
+  {
+    "key": "AvoidLiteralsInIfCondition",
+    "name": "Avoid literals in if condition",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidliteralsinifcondition"
+  },
+  {
+    "key": "AvoidLosingExceptionInformation",
+    "name": "Avoid losing exception information",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidlosingexceptioninformation"
+  },
+  {
+    "key": "AvoidMultipleUnaryOperators",
+    "name": "Avoid multiple unary operators",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidmultipleunaryoperators"
+  },
+  {
+    "key": "AvoidPrefixingMethodParameters",
+    "name": "Avoid prefixing method parameters",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#avoidprefixingmethodparameters"
+  },
+  {
+    "key": "AvoidPrintStackTrace",
+    "name": "Avoid print stack trace",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#avoidprintstacktrace"
+  },
+  {
+    "key": "AvoidProtectedFieldInFinalClass",
+    "name": "Avoid protected field in final class",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#avoidprotectedfieldinfinalclass"
+  },
+  {
+    "key": "AvoidProtectedMethodInFinalClassNotExtending",
+    "name": "Avoid protected method in final class not extending",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#avoidprotectedmethodinfinalclassnotextending"
+  },
+  {
+    "key": "AvoidReassigningParameters",
+    "name": "Avoid reassigning parameters",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#avoidreassigningparameters"
+  },
+  {
+    "key": "AvoidRethrowingException",
+    "name": "Avoid rethrowing exception",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#avoidrethrowingexception"
+  },
+  {
+    "key": "AvoidStringBufferField",
+    "name": "Avoid string buffer field",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#avoidstringbufferfield"
+  },
+  {
+    "key": "AvoidSynchronizedAtMethodLevel",
+    "name": "Avoid synchronized at method level",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_multithreading.html#avoidsynchronizedatmethodlevel"
+  },
+  {
+    "key": "AvoidThreadGroup",
+    "name": "Avoid thread group",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_multithreading.html#avoidthreadgroup"
+  },
+  {
+    "key": "AvoidThrowingNewInstanceOfSameException",
+    "name": "Avoid throwing new instance of same exception",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#avoidthrowingnewinstanceofsameexception"
+  },
+  {
+    "key": "AvoidThrowingNullPointerException",
+    "name": "Avoid throwing null pointer exception",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#avoidthrowingnullpointerexception"
+  },
+  {
+    "key": "AvoidThrowingRawExceptionTypes",
+    "name": "Avoid throwing raw exception types",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#avoidthrowingrawexceptiontypes"
+  },
+  {
+    "key": "AvoidUsingHardCodedIP",
+    "name": "Avoid using hard coded IP",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#avoidusinghardcodedip"
+  },
+  {
+    "key": "AvoidUsingNativeCode",
+    "name": "Avoid using native code",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#avoidusingnativecode"
+  },
+  {
+    "key": "AvoidUsingOctalValues",
+    "name": "Avoid using octal values",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#avoidusingoctalvalues"
+  },
+  {
+    "key": "AvoidUsingShortType",
+    "name": "Avoid using short type",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#avoidusingshorttype"
+  },
+  {
+    "key": "AvoidUsingVolatile",
+    "name": "Avoid using volatile",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_multithreading.html#avoidusingvolatile"
+  },
+  {
+    "key": "BadComparison",
+    "name": "Bad comparison",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#badcomparison"
+  },
+  {
+    "key": "BeanMembersShouldSerialize",
+    "name": "Bean members should serialize",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#beanmembersshouldserialize"
+  },
+  {
+    "key": "BigIntegerInstantiation",
+    "name": "Big integer instantiation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#bigintegerinstantiation"
+  },
+  {
+    "key": "BooleanGetMethodName",
+    "name": "Boolean get method name",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#booleangetmethodname"
+  },
+  {
+    "key": "BooleanInstantiation",
+    "name": "Boolean instantiation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#booleaninstantiation"
+  },
+  {
+    "key": "BrokenNullCheck",
+    "name": "Broken null check",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#brokennullcheck"
+  },
+  {
+    "key": "ByteInstantiation",
+    "name": "Byte instantiation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#byteinstantiation"
+  },
+  {
+    "key": "CallSuperFirst",
+    "name": "Call super first",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#callsuperfirst"
+  },
+  {
+    "key": "CallSuperInConstructor",
+    "name": "Call super in constructor",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#callsuperinconstructor"
+  },
+  {
+    "key": "CallSuperLast",
+    "name": "Call super last",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#callsuperlast"
+  },
+  {
+    "key": "CheckResultSet",
+    "name": "Check result set",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#checkresultset"
+  },
+  {
+    "key": "CheckSkipResult",
+    "name": "Check skip result",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#checkskipresult"
+  },
+  {
+    "key": "ClassCastExceptionWithToArray",
+    "name": "Class cast exception with to array",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#classcastexceptionwithtoarray"
+  },
+  {
+    "key": "ClassNamingConventions",
+    "name": "Class naming conventions",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#classnamingconventions"
+  },
+  {
+    "key": "ClassWithOnlyPrivateConstructorsShouldBeFinal",
+    "name": "Class with only private constructors should be final",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#classwithonlyprivateconstructorsshouldbefinal"
+  },
+  {
+    "key": "CloneMethodMustBePublic",
+    "name": "Clone method must be public",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#clonemethodmustbepublic"
+  },
+  {
+    "key": "CloneMethodMustImplementCloneable",
+    "name": "Clone method must implement cloneable",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#clonemethodmustimplementcloneable"
+  },
+  {
+    "key": "CloneMethodReturnTypeMustMatchClassName",
+    "name": "Clone method return type must match class name",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#clonemethodreturntypemustmatchclassname"
+  },
+  {
+    "key": "CloneThrowsCloneNotSupportedException",
+    "name": "Clone throws clone not supported exception",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#clonethrowsclonenotsupportedexception"
+  },
+  {
+    "key": "CloseResource",
+    "name": "Close resource",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#closeresource"
+  },
+  {
+    "key": "CollapsibleIfStatements",
+    "name": "Collapsible if statements",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#collapsibleifstatements"
+  },
+  {
+    "key": "CommentContent",
+    "name": "Comment content",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_documentation.html#commentcontent"
+  },
+  {
+    "key": "CommentDefaultAccessModifier",
+    "name": "Comment default access modifier",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#commentdefaultaccessmodifier"
+  },
+  {
+    "key": "CommentRequired",
+    "name": "Comment required",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_documentation.html#commentrequired"
+  },
+  {
+    "key": "CommentSize",
+    "name": "Comment size",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_documentation.html#commentsize"
+  },
+  {
+    "key": "CompareObjectsWithEquals",
+    "name": "Compare objects with equals",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#compareobjectswithequals"
+  },
+  {
+    "key": "ConfusingTernary",
+    "name": "Confusing ternary",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#confusingternary"
+  },
+  {
+    "key": "ConsecutiveAppendsShouldReuse",
+    "name": "Consecutive appends should reuse",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#consecutiveappendsshouldreuse"
+  },
+  {
+    "key": "ConsecutiveLiteralAppends",
+    "name": "Consecutive literal appends",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#consecutiveliteralappends"
+  },
+  {
+    "key": "ConstantsInInterface",
+    "name": "Constants in interface",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#constantsininterface"
+  },
+  {
+    "key": "ConstructorCallsOverridableMethod",
+    "name": "Constructor calls overridable method",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#constructorcallsoverridablemethod"
+  },
+  {
+    "key": "ControlStatementBraces",
+    "name": "Control statement braces",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#controlstatementbraces"
+  },
+  {
+    "key": "CouplingBetweenObjects",
+    "name": "Coupling between objects",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#couplingbetweenobjects"
+  },
+  {
+    "key": "CyclomaticComplexity",
+    "name": "Cyclomatic complexity",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#cyclomaticcomplexity"
+  },
+  {
+    "key": "DataClass",
+    "name": "Data class",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#dataclass"
+  },
+  {
+    "key": "DataflowAnomalyAnalysis",
+    "name": "Dataflow anomaly analysis",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#dataflowanomalyanalysis"
+  },
+  {
+    "key": "DefaultLabelNotLastInSwitchStmt",
+    "name": "Default label not last in switch stmt",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#defaultlabelnotlastinswitchstmt"
+  },
+  {
+    "key": "DefaultPackage",
+    "name": "Default package",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#defaultpackage"
+  },
+  {
+    "key": "DoNotCallGarbageCollectionExplicitly",
+    "name": "Do not call garbage collection explicitly",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#donotcallgarbagecollectionexplicitly"
+  },
+  {
+    "key": "DoNotCallSystemExit",
+    "name": "Do not call system exit",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#donotcallsystemexit"
+  },
+  {
+    "key": "DoNotExtendJavaLangError",
+    "name": "Do not extend java lang error",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#donotextendjavalangerror"
+  },
+  {
+    "key": "DoNotExtendJavaLangThrowable",
+    "name": "Do not extend java lang throwable",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#donotextendjavalangthrowable"
+  },
+  {
+    "key": "DoNotHardCodeSDCard",
+    "name": "Do not hard code SDCard",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#donothardcodesdcard"
+  },
+  {
+    "key": "DoNotThrowExceptionInFinally",
+    "name": "Do not throw exception in finally",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#donotthrowexceptioninfinally"
+  },
+  {
+    "key": "DoNotUseThreads",
+    "name": "Do not use threads",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_multithreading.html#donotusethreads"
+  },
+  {
+    "key": "DontCallThreadRun",
+    "name": "Dont call thread run",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_multithreading.html#dontcallthreadrun"
+  },
+  {
+    "key": "DontImportJavaLang",
+    "name": "Dont import java lang",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#dontimportjavalang"
+  },
+  {
+    "key": "DontImportSun",
+    "name": "Dont import sun",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#dontimportsun"
+  },
+  {
+    "key": "DontUseFloatTypeForLoopIndices",
+    "name": "Dont use float type for loop indices",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#dontusefloattypeforloopindices"
+  },
+  {
+    "key": "DoubleCheckedLocking",
+    "name": "Double checked locking",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_multithreading.html#doublecheckedlocking"
+  },
+  {
+    "key": "DuplicateImports",
+    "name": "Duplicate imports",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#duplicateimports"
+  },
+  {
+    "key": "EmptyCatchBlock",
+    "name": "Empty catch block",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#emptycatchblock"
+  },
+  {
+    "key": "EmptyFinalizer",
+    "name": "Empty finalizer",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#emptyfinalizer"
+  },
+  {
+    "key": "EmptyFinallyBlock",
+    "name": "Empty finally block",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#emptyfinallyblock"
+  },
+  {
+    "key": "EmptyIfStmt",
+    "name": "Empty if stmt",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#emptyifstmt"
+  },
+  {
+    "key": "EmptyInitializer",
+    "name": "Empty initializer",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#emptyinitializer"
+  },
+  {
+    "key": "EmptyMethodInAbstractClassShouldBeAbstract",
+    "name": "Empty method in abstract class should be abstract",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#emptymethodinabstractclassshouldbeabstract"
+  },
+  {
+    "key": "EmptyStatementBlock",
+    "name": "Empty statement block",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#emptystatementblock"
+  },
+  {
+    "key": "EmptyStatementNotInLoop",
+    "name": "Empty statement not in loop",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#emptystatementnotinloop"
+  },
+  {
+    "key": "EmptySwitchStatements",
+    "name": "Empty switch statements",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#emptyswitchstatements"
+  },
+  {
+    "key": "EmptySynchronizedBlock",
+    "name": "Empty synchronized block",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#emptysynchronizedblock"
+  },
+  {
+    "key": "EmptyTryBlock",
+    "name": "Empty try block",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#emptytryblock"
+  },
+  {
+    "key": "EmptyWhileStmt",
+    "name": "Empty while stmt",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#emptywhilestmt"
+  },
+  {
+    "key": "EqualsNull",
+    "name": "Equals null",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#equalsnull"
+  },
+  {
+    "key": "ExceptionAsFlowControl",
+    "name": "Exception as flow control",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#exceptionasflowcontrol"
+  },
+  {
+    "key": "ExcessiveClassLength",
+    "name": "Excessive class length",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#excessiveclasslength"
+  },
+  {
+    "key": "ExcessiveImports",
+    "name": "Excessive imports",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#excessiveimports"
+  },
+  {
+    "key": "ExcessiveMethodLength",
+    "name": "Excessive method length",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#excessivemethodlength"
+  },
+  {
+    "key": "ExcessiveParameterList",
+    "name": "Excessive parameter list",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#excessiveparameterlist"
+  },
+  {
+    "key": "ExcessivePublicCount",
+    "name": "Excessive public count",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#excessivepubliccount"
+  },
+  {
+    "key": "ExtendsObject",
+    "name": "Extends object",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#extendsobject"
+  },
+  {
+    "key": "FieldDeclarationsShouldBeAtStartOfClass",
+    "name": "Field declarations should be at start of class",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#fielddeclarationsshouldbeatstartofclass"
+  },
+  {
+    "key": "FinalFieldCouldBeStatic",
+    "name": "Final field could be static",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#finalfieldcouldbestatic"
+  },
+  {
+    "key": "FinalizeDoesNotCallSuperFinalize",
+    "name": "Finalize does not call super finalize",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#finalizedoesnotcallsuperfinalize"
+  },
+  {
+    "key": "FinalizeOnlyCallsSuperFinalize",
+    "name": "Finalize only calls super finalize",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#finalizeonlycallssuperfinalize"
+  },
+  {
+    "key": "FinalizeOverloaded",
+    "name": "Finalize overloaded",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#finalizeoverloaded"
+  },
+  {
+    "key": "FinalizeShouldBeProtected",
+    "name": "Finalize should be protected",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#finalizeshouldbeprotected"
+  },
+  {
+    "key": "ForLoopCanBeForeach",
+    "name": "For loop can be foreach",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#forloopcanbeforeach"
+  },
+  {
+    "key": "ForLoopShouldBeWhileLoop",
+    "name": "For loop should be while loop",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#forloopshouldbewhileloop"
+  },
+  {
+    "key": "ForLoopsMustUseBraces",
+    "name": "For loops must use braces",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#forloopsmustusebraces"
+  },
+  {
+    "key": "GenericsNaming",
+    "name": "Generics naming",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#genericsnaming"
+  },
+  {
+    "key": "GodClass",
+    "name": "God class",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#godclass"
+  },
+  {
+    "key": "GuardLogStatement",
+    "name": "Guard log statement",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#guardlogstatement"
+  },
+  {
+    "key": "HardCodedCryptoKey",
+    "name": "Hard coded crypto key",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_security.html#hardcodedcryptokey"
+  },
+  {
+    "key": "IdempotentOperations",
+    "name": "Idempotent operations",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#idempotentoperations"
+  },
+  {
+    "key": "IdenticalCatchBranches",
+    "name": "Identical catch branches",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#identicalcatchbranches"
+  },
+  {
+    "key": "IfElseStmtsMustUseBraces",
+    "name": "If else stmts must use braces",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#ifelsestmtsmustusebraces"
+  },
+  {
+    "key": "IfStmtsMustUseBraces",
+    "name": "If stmts must use braces",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#ifstmtsmustusebraces"
+  },
+  {
+    "key": "ImmutableField",
+    "name": "Immutable field",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#immutablefield"
+  },
+  {
+    "key": "ImportFromSamePackage",
+    "name": "Import from same package",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#importfromsamepackage"
+  },
+  {
+    "key": "InefficientEmptyStringCheck",
+    "name": "Inefficient empty string check",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#inefficientemptystringcheck"
+  },
+  {
+    "key": "InefficientStringBuffering",
+    "name": "Inefficient string buffering",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#inefficientstringbuffering"
+  },
+  {
+    "key": "InsecureCryptoIv",
+    "name": "Insecure crypto iv",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_security.html#insecurecryptoiv"
+  },
+  {
+    "key": "InstantiationToGetClass",
+    "name": "Instantiation to get class",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#instantiationtogetclass"
+  },
+  {
+    "key": "InsufficientStringBufferDeclaration",
+    "name": "Insufficient string buffer declaration",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#insufficientstringbufferdeclaration"
+  },
+  {
+    "key": "IntegerInstantiation",
+    "name": "Integer instantiation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#integerinstantiation"
+  },
+  {
+    "key": "InvalidSlf4jMessageFormat",
+    "name": "Invalid slf4j message format",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#invalidslf4jmessageformat"
+  },
+  {
+    "key": "JUnit4SuitesShouldUseSuiteAnnotation",
+    "name": "JUnit4Suites should use suite annotation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#junit4suitesshouldusesuiteannotation"
+  },
+  {
+    "key": "JUnit4TestShouldUseAfterAnnotation",
+    "name": "JUnit4Test should use after annotation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#junit4testshoulduseafterannotation"
+  },
+  {
+    "key": "JUnit4TestShouldUseBeforeAnnotation",
+    "name": "JUnit4Test should use before annotation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#junit4testshouldusebeforeannotation"
+  },
+  {
+    "key": "JUnit4TestShouldUseTestAnnotation",
+    "name": "JUnit4Test should use test annotation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#junit4testshouldusetestannotation"
+  },
+  {
+    "key": "JUnitAssertionsShouldIncludeMessage",
+    "name": "JUnit assertions should include message",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#junitassertionsshouldincludemessage"
+  },
+  {
+    "key": "JUnitSpelling",
+    "name": "JUnit spelling",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#junitspelling"
+  },
+  {
+    "key": "JUnitStaticSuite",
+    "name": "JUnit static suite",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#junitstaticsuite"
+  },
+  {
+    "key": "JUnitTestContainsTooManyAsserts",
+    "name": "JUnit test contains too many asserts",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#junittestcontainstoomanyasserts"
+  },
+  {
+    "key": "JUnitTestsShouldIncludeAssert",
+    "name": "JUnit tests should include assert",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#junittestsshouldincludeassert"
+  },
+  {
+    "key": "JUnitUseExpected",
+    "name": "JUnit use expected",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#junituseexpected"
+  },
+  {
+    "key": "JumbledIncrementer",
+    "name": "Jumbled incrementer",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#jumbledincrementer"
+  },
+  {
+    "key": "LawOfDemeter",
+    "name": "Law of demeter",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#lawofdemeter"
+  },
+  {
+    "key": "LocalHomeNamingConvention",
+    "name": "Local home naming convention",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#localhomenamingconvention"
+  },
+  {
+    "key": "LocalInterfaceSessionNamingConvention",
+    "name": "Local interface session naming convention",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#localinterfacesessionnamingconvention"
+  },
+  {
+    "key": "LocalVariableCouldBeFinal",
+    "name": "Local variable could be final",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#localvariablecouldbefinal"
+  },
+  {
+    "key": "LoggerIsNotStaticFinal",
+    "name": "Logger is not static final",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#loggerisnotstaticfinal"
+  },
+  {
+    "key": "LogicInversion",
+    "name": "Logic inversion",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#logicinversion"
+  },
+  {
+    "key": "LongInstantiation",
+    "name": "Long instantiation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#longinstantiation"
+  },
+  {
+    "key": "LongVariable",
+    "name": "Long variable",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#longvariable"
+  },
+  {
+    "key": "LooseCoupling",
+    "name": "Loose coupling",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#loosecoupling"
+  },
+  {
+    "key": "LoosePackageCoupling",
+    "name": "Loose package coupling",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#loosepackagecoupling"
+  },
+  {
+    "key": "MDBAndSessionBeanNamingConvention",
+    "name": "MDB and session bean naming convention",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#mdbandsessionbeannamingconvention"
+  },
+  {
+    "key": "MIsLeadingVariableName",
+    "name": "Misleading variable name",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#misleadingvariablename"
+  },
+  {
+    "key": "MethodArgumentCouldBeFinal",
+    "name": "Method argument could be final",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#methodargumentcouldbefinal"
+  },
+  {
+    "key": "MethodNamingConventions",
+    "name": "Method naming conventions",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#methodnamingconventions"
+  },
+  {
+    "key": "MethodReturnsInternalArray",
+    "name": "Method returns internal array",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#methodreturnsinternalarray"
+  },
+  {
+    "key": "MethodWithSameNameAsEnclosingClass",
+    "name": "Method with same name as enclosing class",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#methodwithsamenameasenclosingclass"
+  },
+  {
+    "key": "MisplacedNullCheck",
+    "name": "Misplaced null check",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#misplacednullcheck"
+  },
+  {
+    "key": "MissingBreakInSwitch",
+    "name": "Missing break in switch",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#missingbreakinswitch"
+  },
+  {
+    "key": "MissingOverride",
+    "name": "Missing override",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#missingoverride"
+  },
+  {
+    "key": "MissingSerialVersionUID",
+    "name": "Missing serial version UID",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#missingserialversionuid"
+  },
+  {
+    "key": "MissingStaticMethodInNonInstantiatableClass",
+    "name": "Missing static method in non instantiatable class",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#missingstaticmethodinnoninstantiatableclass"
+  },
+  {
+    "key": "ModifiedCyclomaticComplexity",
+    "name": "Modified cyclomatic complexity",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#modifiedcyclomaticcomplexity"
+  },
+  {
+    "key": "MoreThanOneLogger",
+    "name": "More than one logger",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#morethanonelogger"
+  },
+  {
+    "key": "NPathComplexity",
+    "name": "NPath complexity",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#npathcomplexity"
+  },
+  {
+    "key": "NcssConstructorCount",
+    "name": "Ncss constructor count",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#ncssconstructorcount"
+  },
+  {
+    "key": "NcssCount",
+    "name": "Ncss count",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#ncsscount"
+  },
+  {
+    "key": "NcssMethodCount",
+    "name": "Ncss method count",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#ncssmethodcount"
+  },
+  {
+    "key": "NcssTypeCount",
+    "name": "Ncss type count",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#ncsstypecount"
+  },
+  {
+    "key": "NoPackage",
+    "name": "No package",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#nopackage"
+  },
+  {
+    "key": "NonCaseLabelInSwitchStatement",
+    "name": "Non case label in switch statement",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#noncaselabelinswitchstatement"
+  },
+  {
+    "key": "NonStaticInitializer",
+    "name": "Non static initializer",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#nonstaticinitializer"
+  },
+  {
+    "key": "NonThreadSafeSingleton",
+    "name": "Non thread safe singleton",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_multithreading.html#nonthreadsafesingleton"
+  },
+  {
+    "key": "NullAssignment",
+    "name": "Null assignment",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#nullassignment"
+  },
+  {
+    "key": "OneDeclarationPerLine",
+    "name": "One declaration per line",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#onedeclarationperline"
+  },
+  {
+    "key": "OnlyOneReturn",
+    "name": "Only one return",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#onlyonereturn"
+  },
+  {
+    "key": "OptimizableToArrayCall",
+    "name": "Optimizable to array call",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#optimizabletoarraycall"
+  },
+  {
+    "key": "OverrideBothEqualsAndHashcode",
+    "name": "Override both equals and hashcode",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#overridebothequalsandhashcode"
+  },
+  {
+    "key": "PackageCase",
+    "name": "Package case",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#packagecase"
+  },
+  {
+    "key": "PositionLiteralsFirstInCaseInsensitiveComparisons",
+    "name": "Position literals first in case insensitive comparisons",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#positionliteralsfirstincaseinsensitivecomparisons"
+  },
+  {
+    "key": "PositionLiteralsFirstInComparisons",
+    "name": "Position literals first in comparisons",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#positionliteralsfirstincomparisons"
+  },
+  {
+    "key": "PrematureDeclaration",
+    "name": "Premature declaration",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#prematuredeclaration"
+  },
+  {
+    "key": "PreserveStackTrace",
+    "name": "Preserve stack trace",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#preservestacktrace"
+  },
+  {
+    "key": "ProperCloneImplementation",
+    "name": "Proper clone implementation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#propercloneimplementation"
+  },
+  {
+    "key": "ProperLogger",
+    "name": "Proper logger",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#properlogger"
+  },
+  {
+    "key": "RedundantFieldInitializer",
+    "name": "Redundant field initializer",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#redundantfieldinitializer"
+  },
+  {
+    "key": "RemoteInterfaceNamingConvention",
+    "name": "Remote interface naming convention",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#remoteinterfacenamingconvention"
+  },
+  {
+    "key": "RemoteSessionInterfaceNamingConvention",
+    "name": "Remote session interface naming convention",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#remotesessioninterfacenamingconvention"
+  },
+  {
+    "key": "ReplaceEnumerationWithIterator",
+    "name": "Replace enumeration with iterator",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#replaceenumerationwithiterator"
+  },
+  {
+    "key": "ReplaceHashtableWithMap",
+    "name": "Replace hashtable with map",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#replacehashtablewithmap"
+  },
+  {
+    "key": "ReplaceVectorWithList",
+    "name": "Replace vector with list",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#replacevectorwithlist"
+  },
+  {
+    "key": "ReturnEmptyArrayRatherThanNull",
+    "name": "Return empty array rather than null",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#returnemptyarrayratherthannull"
+  },
+  {
+    "key": "ReturnFromFinallyBlock",
+    "name": "Return from finally block",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#returnfromfinallyblock"
+  },
+  {
+    "key": "ShortClassName",
+    "name": "Short class name",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#shortclassname"
+  },
+  {
+    "key": "ShortInstantiation",
+    "name": "Short instantiation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#shortinstantiation"
+  },
+  {
+    "key": "ShortMethodName",
+    "name": "Short method name",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#shortmethodname"
+  },
+  {
+    "key": "ShortVariable",
+    "name": "Short variable",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#shortvariable"
+  },
+  {
+    "key": "SignatureDeclareThrowsException",
+    "name": "Signature declare throws exception",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#signaturedeclarethrowsexception"
+  },
+  {
+    "key": "SimpleDateFormatNeedsLocale",
+    "name": "Simple date format needs locale",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#simpledateformatneedslocale"
+  },
+  {
+    "key": "SimplifiedTernary",
+    "name": "Simplified ternary",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#simplifiedternary"
+  },
+  {
+    "key": "SimplifyBooleanAssertion",
+    "name": "Simplify boolean assertion",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#simplifybooleanassertion"
+  },
+  {
+    "key": "SimplifyBooleanExpressions",
+    "name": "Simplify boolean expressions",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#simplifybooleanexpressions"
+  },
+  {
+    "key": "SimplifyBooleanReturns",
+    "name": "Simplify boolean returns",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#simplifybooleanreturns"
+  },
+  {
+    "key": "SimplifyConditional",
+    "name": "Simplify conditional",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#simplifyconditional"
+  },
+  {
+    "key": "SimplifyStartsWith",
+    "name": "Simplify starts with",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#simplifystartswith"
+  },
+  {
+    "key": "SingleMethodSingleton",
+    "name": "Single method singleton",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#singlemethodsingleton"
+  },
+  {
+    "key": "SingletonClassReturningNewInstance",
+    "name": "Singleton class returning new instance",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#singletonclassreturningnewinstance"
+  },
+  {
+    "key": "SingularField",
+    "name": "Singular field",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#singularfield"
+  },
+  {
+    "key": "StaticEJBFieldShouldBeFinal",
+    "name": "Static EJB field should be final",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#staticejbfieldshouldbefinal"
+  },
+  {
+    "key": "StdCyclomaticComplexity",
+    "name": "Std cyclomatic complexity",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#stdcyclomaticcomplexity"
+  },
+  {
+    "key": "StringBufferInstantiationWithChar",
+    "name": "String buffer instantiation with char",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#stringbufferinstantiationwithchar"
+  },
+  {
+    "key": "StringInstantiation",
+    "name": "String instantiation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#stringinstantiation"
+  },
+  {
+    "key": "StringToString",
+    "name": "String to string",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#stringtostring"
+  },
+  {
+    "key": "SuspiciousConstantFieldName",
+    "name": "Suspicious constant field name",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#suspiciousconstantfieldname"
+  },
+  {
+    "key": "SuspiciousEqualsMethodName",
+    "name": "Suspicious equals method name",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#suspiciousequalsmethodname"
+  },
+  {
+    "key": "SuspiciousHashcodeMethodName",
+    "name": "Suspicious hashcode method name",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#suspicioushashcodemethodname"
+  },
+  {
+    "key": "SuspiciousOctalEscape",
+    "name": "Suspicious octal escape",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#suspiciousoctalescape"
+  },
+  {
+    "key": "SwitchDensity",
+    "name": "Switch density",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#switchdensity"
+  },
+  {
+    "key": "SwitchStmtsShouldHaveDefault",
+    "name": "Switch stmts should have default",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#switchstmtsshouldhavedefault"
+  },
+  {
+    "key": "SystemPrintln",
+    "name": "System println",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#systemprintln"
+  },
+  {
+    "key": "TestClassWithoutTestCases",
+    "name": "Test class without test cases",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#testclasswithouttestcases"
+  },
+  {
+    "key": "TooFewBranchesForASwitchStatement",
+    "name": "Too few branches for a switch statement",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#toofewbranchesforaswitchstatement"
+  },
+  {
+    "key": "TooManyFields",
+    "name": "Too many fields",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#toomanyfields"
+  },
+  {
+    "key": "TooManyMethods",
+    "name": "Too many methods",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#toomanymethods"
+  },
+  {
+    "key": "TooManyStaticImports",
+    "name": "Too many static imports",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#toomanystaticimports"
+  },
+  {
+    "key": "UncommentedEmptyConstructor",
+    "name": "Uncommented empty constructor",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_documentation.html#uncommentedemptyconstructor"
+  },
+  {
+    "key": "UncommentedEmptyMethodBody",
+    "name": "Uncommented empty method body",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_documentation.html#uncommentedemptymethodbody"
+  },
+  {
+    "key": "UnconditionalIfStatement",
+    "name": "Unconditional if statement",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#unconditionalifstatement"
+  },
+  {
+    "key": "UnnecessaryAnnotationValueElement",
+    "name": "Unnecessary annotation value element",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#unnecessaryannotationvalueelement"
+  },
+  {
+    "key": "UnnecessaryBooleanAssertion",
+    "name": "Unnecessary boolean assertion",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#unnecessarybooleanassertion"
+  },
+  {
+    "key": "UnnecessaryCaseChange",
+    "name": "Unnecessary case change",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#unnecessarycasechange"
+  },
+  {
+    "key": "UnnecessaryConstructor",
+    "name": "Unnecessary constructor",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#unnecessaryconstructor"
+  },
+  {
+    "key": "UnnecessaryConversionTemporary",
+    "name": "Unnecessary conversion temporary",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#unnecessaryconversiontemporary"
+  },
+  {
+    "key": "UnnecessaryFullyQualifiedName",
+    "name": "Unnecessary fully qualified name",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname"
+  },
+  {
+    "key": "UnnecessaryLocalBeforeReturn",
+    "name": "Unnecessary local before return",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#unnecessarylocalbeforereturn"
+  },
+  {
+    "key": "UnnecessaryModifier",
+    "name": "Unnecessary modifier",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#unnecessarymodifier"
+  },
+  {
+    "key": "UnnecessaryReturn",
+    "name": "Unnecessary return",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#unnecessaryreturn"
+  },
+  {
+    "key": "UnnecessaryWrapperObjectCreation",
+    "name": "Unnecessary wrapper object creation",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#unnecessarywrapperobjectcreation"
+  },
+  {
+    "key": "UnsynchronizedStaticDateFormatter",
+    "name": "Unsynchronized static date formatter",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_multithreading.html#unsynchronizedstaticdateformatter"
+  },
+  {
+    "key": "UnusedFormalParameter",
+    "name": "Unused formal parameter",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#unusedformalparameter"
+  },
+  {
+    "key": "UnusedImports",
+    "name": "Unused imports",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#unusedimports"
+  },
+  {
+    "key": "UnusedLocalVariable",
+    "name": "Unused local variable",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#unusedlocalvariable"
+  },
+  {
+    "key": "UnusedNullCheckInEquals",
+    "name": "Unused null check in equals",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#unusednullcheckinequals"
+  },
+  {
+    "key": "UnusedPrivateField",
+    "name": "Unused private field",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#unusedprivatefield"
+  },
+  {
+    "key": "UnusedPrivateMethod",
+    "name": "Unused private method",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#unusedprivatemethod"
+  },
+  {
+    "key": "UseArrayListInsteadOfVector",
+    "name": "Use array list instead of vector",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#usearraylistinsteadofvector"
+  },
+  {
+    "key": "UseArraysAsList",
+    "name": "Use arrays as list",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#usearraysaslist"
+  },
+  {
+    "key": "UseAssertEqualsInsteadOfAssertTrue",
+    "name": "Use assert equals instead of assert true",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#useassertequalsinsteadofasserttrue"
+  },
+  {
+    "key": "UseAssertNullInsteadOfAssertTrue",
+    "name": "Use assert null instead of assert true",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#useassertnullinsteadofasserttrue"
+  },
+  {
+    "key": "UseAssertSameInsteadOfAssertTrue",
+    "name": "Use assert same instead of assert true",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#useassertsameinsteadofasserttrue"
+  },
+  {
+    "key": "UseAssertTrueInsteadOfAssertEquals",
+    "name": "Use assert true instead of assert equals",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#useasserttrueinsteadofassertequals"
+  },
+  {
+    "key": "UseCollectionIsEmpty",
+    "name": "Use collection is empty",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#usecollectionisempty"
+  },
+  {
+    "key": "UseConcurrentHashMap",
+    "name": "Use concurrent hash map",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_multithreading.html#useconcurrenthashmap"
+  },
+  {
+    "key": "UseCorrectExceptionLogging",
+    "name": "Use correct exception logging",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#usecorrectexceptionlogging"
+  },
+  {
+    "key": "UseEqualsToCompareStrings",
+    "name": "Use equals to compare strings",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#useequalstocomparestrings"
+  },
+  {
+    "key": "UseIndexOfChar",
+    "name": "Use index of char",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#useindexofchar"
+  },
+  {
+    "key": "UseLocaleWithCaseConversions",
+    "name": "Use locale with case conversions",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#uselocalewithcaseconversions"
+  },
+  {
+    "key": "UseNotifyAllInsteadOfNotify",
+    "name": "Use notify all instead of notify",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_multithreading.html#usenotifyallinsteadofnotify"
+  },
+  {
+    "key": "UseObjectForClearerAPI",
+    "name": "Use object for clearer API",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#useobjectforclearerapi"
+  },
+  {
+    "key": "UseProperClassLoader",
+    "name": "Use proper class loader",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#useproperclassloader"
+  },
+  {
+    "key": "UseStringBufferForStringAppends",
+    "name": "Use string buffer for string appends",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#usestringbufferforstringappends"
+  },
+  {
+    "key": "UseStringBufferLength",
+    "name": "Use string buffer length",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#usestringbufferlength"
+  },
+  {
+    "key": "UseUtilityClass",
+    "name": "Use utility class",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#useutilityclass"
+  },
+  {
+    "key": "UseVarargs",
+    "name": "Use varargs",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_bestpractices.html#usevarargs"
+  },
+  {
+    "key": "UselessOperationOnImmutable",
+    "name": "Useless operation on immutable",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_errorprone.html#uselessoperationonimmutable"
+  },
+  {
+    "key": "UselessOverridingMethod",
+    "name": "Useless overriding method",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_design.html#uselessoverridingmethod"
+  },
+  {
+    "key": "UselessParentheses",
+    "name": "Useless parentheses",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#uselessparentheses"
+  },
+  {
+    "key": "UselessQualifiedThis",
+    "name": "Useless qualified this",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#uselessqualifiedthis"
+  },
+  {
+    "key": "UselessStringValueOf",
+    "name": "Useless string value of",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_performance.html#uselessstringvalueof"
+  },
+  {
+    "key": "VariableNamingConventions",
+    "name": "Variable naming conventions",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#variablenamingconventions"
+  },
+  {
+    "key": "WhileLoopsMustUseBraces",
+    "name": "While loops must use braces",
+    "type": "CODE_SMELL",
+    "url": "https://pmd.github.io/pmd-6.5.0/pmd_rules_java_codestyle.html#whileloopsmustusebraces"
+  }
+]

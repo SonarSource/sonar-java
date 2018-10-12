@@ -34,7 +34,7 @@ import java.util.List;
 @Rule(key = "S2225")
 public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
 
-  private boolean insideToString = false;
+  private String interestingMethodName = null;
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -44,11 +44,15 @@ public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD)) {
-      insideToString = isToStringDeclaration((MethodTree) tree);
-    } else if (insideToString) {
+      interestingMethodName = interestingMethodName((MethodTree) tree);
+    } else if (interestingMethodName != null) {
       ExpressionTree returnExpression = ExpressionUtils.skipParentheses(((ReturnStatementTree) tree).expression());
       if (returnExpression.is(Kind.NULL_LITERAL)) {
-        reportIssue(returnExpression, "Return empty string instead.");
+        if (interestingMethodName.equals("toString")) {
+          reportIssue(returnExpression, "Return empty string instead.");
+        } else {
+          reportIssue(returnExpression, "Return a non null object.");
+        }
       }
     }
   }
@@ -56,12 +60,16 @@ public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD)) {
-      insideToString = false;
+      interestingMethodName = null;
     }
   }
 
-  private static boolean isToStringDeclaration(MethodTree method) {
-    return "toString".equals(method.simpleName().name()) && method.parameters().isEmpty();
+  private static String interestingMethodName(MethodTree method) {
+    String methodName = method.simpleName().name();
+    if (method.parameters().isEmpty() && ("toString".equals(methodName) || "clone".equals(methodName))) {
+      return methodName;
+    }
+    return null;
   }
 
 }

@@ -1,6 +1,7 @@
+import org.springframework.beans.factory.annotation.Autowired;
 import java.lang.Object;
-
-class A { // Noncompliant [[sc=7;ec=8;secondary=4]] {{Add a constructor to the class, or provide default values.}}
+import javax.inject.Inject;
+class A { // Noncompliant [[sc=7;ec=8;secondary=5]] {{Add a constructor to the class, or provide default values.}}
   private int field;
 }
 
@@ -22,7 +23,7 @@ class C {
   }
 }
 
-enum Enum { // Noncompliant [[secondary=27]] {{Add a constructor to the enum, or provide default values.}}
+enum Enum { // Noncompliant [[secondary=28]] {{Add a constructor to the enum, or provide default values.}}
   A;
   private int field;
 }
@@ -45,3 +46,23 @@ class EJB2 {
   private Object someObject;
 }
 
+class MyService {}
+class Spring1 {
+  @Autowired
+  private MyService myService;
+}
+class Spring2 { // Noncompliant [[secondary=57]]
+  @Autowired
+  private MyService myService;
+  private MyService myService2;
+}
+
+class Inject1 {
+  @Inject
+  private MyService myService;
+}
+class Inject2 { // Noncompliant [[secondary=67]]
+  @Inject
+  private MyService myService;
+  private MyService myService2;
+}

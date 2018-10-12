@@ -53,15 +53,15 @@ public class JaCoCoReportMergerTest {
 
   @Test
   public void merge_different_format_should_fail() {
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("You are trying to merge two different JaCoCo binary formats. Please use only one version of JaCoCo.");
+    exception.expect(AnalysisException.class);
+    exception.expectMessage("You are not using the latest JaCoCo binary format version, please consider upgrading to latest JaCoCo version.");
     merge("jacoco-0.7.5.exec", "jacoco-it-0.7.4.exec");
   }
 
   @Test
   public void merge_different_format_should_fail_() {
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("You are trying to merge two different JaCoCo binary formats. Please use only one version of JaCoCo.");
+    exception.expect(AnalysisException.class);
+    exception.expectMessage("You are not using the latest JaCoCo binary format version, please consider upgrading to latest JaCoCo version.");
     merge("jacoco-0.7.4.exec", "jacoco-it-0.7.5.exec");
   }
 

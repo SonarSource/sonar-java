@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -101,12 +102,14 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
 
   @Nullable
   private static Type getTypeParameter(Type collectionType) {
-    if (collectionType instanceof ParametrizedTypeJavaType) {
+    if (collectionType.is("java.util.Collection") && collectionType instanceof ParametrizedTypeJavaType) {
       ParametrizedTypeJavaType parametrizedType = (ParametrizedTypeJavaType) collectionType;
       TypeVariableJavaType first = Iterables.getFirst(parametrizedType.typeParameters(), null);
       if (first != null) {
         return parametrizedType.substitution(first);
       }
+    } else if (collectionType instanceof ParametrizedTypeJavaType) {
+      return ((JavaType) collectionType).directSuperTypes().stream().map(CollectionInappropriateCallsCheck::getTypeParameter).filter(Objects::nonNull).findFirst().orElse(null);
     }
     return null;
   }

@@ -1,0 +1,59 @@
+<p>When using Spring proxies, calling a method in the same class (e.g. <code>this.aMethod()</code>) with an incompatible <code>@Transactional</code>
+requirement will result in runtime exceptions because Spring only "sees" the caller and makes no provisions for properly invoking the callee. </p>
+<p>Therefore, certain calls should never be made within the same class:</p>
+<table>
+  <tbody>
+    <tr>
+      <th>From</th>
+      <th>To</th>
+    </tr>
+    <tr>
+      <td> non-<code>@Transactional</code> </td>
+      <td> MANDATORY, NESTED, REQUIRED, REQUIRES_NEW </td>
+    </tr>
+    <tr>
+      <td> MANDATORY </td>
+      <td> NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW </td>
+    </tr>
+    <tr>
+      <td> NESTED </td>
+      <td> NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW </td>
+    </tr>
+    <tr>
+      <td> NEVER </td>
+      <td> MANDATORY, NESTED, REQUIRED, REQUIRES_NEW </td>
+    </tr>
+    <tr>
+      <td> NOT_SUPPORTED </td>
+      <td> MANDATORY, NESTED, REQUIRED, REQUIRES_NEW </td>
+    </tr>
+    <tr>
+      <td> REQUIRED or <code>@Transactional</code> </td>
+      <td> NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW </td>
+    </tr>
+    <tr>
+      <td> REQUIRES_NEW </td>
+      <td> NESTED, NEVER, NOT_SUPPORTED, REQUIRES_NEW </td>
+    </tr>
+    <tr>
+      <td> SUPPORTS </td>
+      <td> MANDATORY, NESTED, NEVER, NOT_SUPPORTED, REQUIRED, REQUIRES_NEW </td>
+    </tr>
+  </tbody>
+</table>
+<h2>Noncompliant Code Example</h2>
+<pre>
+
+@Override
+public void doTheThing() {
+  // ...
+  actuallyDoTheThing();  // Noncompliant
+}
+
+@Override
+@Transactional
+public void actuallyDoTheThing() {
+  // ...
+}
+</pre>
+

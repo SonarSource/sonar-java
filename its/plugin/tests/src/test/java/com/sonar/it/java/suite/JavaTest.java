@@ -25,7 +25,6 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
-import com.sonar.orchestrator.locator.MavenLocator;
 import java.io.File;
 import java.util.List;
 import org.junit.Before;
@@ -43,7 +42,6 @@ import static com.sonar.it.java.suite.JavaTestSuite.getComponent;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasure;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assume.assumeTrue;
 
 public class JavaTest {
 
@@ -103,8 +101,6 @@ public class JavaTest {
 
   @Test
   public void should_create_issue_pom_xml() {
-    assumeTrue(orchestrator.getServer().version().isGreaterThanOrEquals("6.3"));
-    
     orchestrator.getServer().restoreProfile(FileLocation.ofClasspath("/profile-pom-xml.xml"));
     orchestrator.getServer().provisionProject("org.sonarsource.java:test-project", "Test Project");
     orchestrator.getServer().associateProjectToQualityProfile("org.sonarsource.java:test-project", "java", "java-pom-xml");
@@ -202,7 +198,7 @@ public class JavaTest {
   @Test
   public void should_execute_rule_on_test() throws Exception {
     MavenLocation junit_4_11 = MavenLocation.of("junit", "junit", "4.11");
-    new MavenLocator(orchestrator.getConfiguration()).copyToDirectory(junit_4_11, tmp.getRoot());
+    orchestrator.getConfiguration().locators().copyToDirectory(junit_4_11, tmp.getRoot());
     MavenBuild build = MavenBuild.create()
       .setPom(TestUtils.projectPom("java-inner-classes"))
       .setProperty("sonar.profile", "ignored-test-check")

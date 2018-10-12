@@ -3,7 +3,7 @@
 Contributions are welcome!
 
 **Before spending lots of time on something, ask for feedback on your idea first.**
-Reach out to the [Google Group](https://groups.google.com/forum/#!forum/sonarqube) to ask if we would be interested in your contribution.
+Reach out to the [SonarQube Community Forum](https://community.sonarsource.com/) to ask if we would be interested in your contribution.
 Please search issues on our [Jira](http://jira.sonarsource.com/browse/SONARJAVA).
  
 To avoid frustration, please discuss before submitting any contributions.

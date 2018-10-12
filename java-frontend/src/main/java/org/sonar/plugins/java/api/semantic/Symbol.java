@@ -194,6 +194,11 @@ public interface Symbol {
     @Override
     MethodTree declaration();
 
+    /**
+     * Compute the signature as identified from bytecode point of view. Will be unique for each method.
+     * @return the signature of the method, as String
+     */
+    String signature();
   }
 
   /**

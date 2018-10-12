@@ -3,13 +3,13 @@ import java.util.Observable;
 
 class A { // Compliant
   void foo() {
-    MessageDigest md = new MessageDigest() { // Noncompliant [[sc=28;ec=41]] {{Use a standard algorithm instead of creating a custom one.}}
+    MessageDigest md = new MessageDigest() { // Noncompliant [[sc=28;ec=41]] {{Make sure using a non-standard cryptographic algorithm is safe here.}}
 
     };
   }
 }
 
-abstract class B extends MessageDigest { // Noncompliant [[sc=16;ec=17]] {{Use a standard algorithm instead of creating a custom one.}}
+abstract class B extends MessageDigest { // Noncompliant [[sc=16;ec=17]] {{Make sure using a non-standard cryptographic algorithm is safe here.}}
   protected B(String algorithm) {
     super(algorithm);
   }

@@ -1,0 +1,41 @@
+<p>Testing equality of an enum value with <code>equals</code> is perfectly valid because an enum is an Object and every Java developer knows "=="
+should not be used to compare the content of an Object. At the same time, using "==" on enums:</p>
+<p>- provides the same expected comparison (content) as <code>equals</code></p>
+<p>- is more null-safe than equals()</p>
+<p>- provides compile-time (static) checking rather than runtime checking</p>
+<p>For these reasons, use of "==" should be preferred to <code>equals</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public enum Fruit {
+   APPLE, BANANA, GRAPE
+}
+
+public enum Cake {
+  LEMON_TART, CHEESE_CAKE
+}
+
+public boolean isFruitGrape(Fruit candidateFruit) {
+  return candidateFruit.equals(Fruit.GRAPE); // Noncompliant; this will raise an NPE if candidateFruit is NULL
+}
+
+public boolean isFruitGrape(Cake candidateFruit) {
+  return candidateFruit.equals(Fruit.GRAPE); // Noncompliant; always returns false
+}
+
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public boolean isFruitGrape(Fruit candidateFruit) {
+  return candidateFruit == Fruit.GRAPE; // Compliant; there is only one instance of Fruit.GRAPE - if candidateFruit is a GRAPE it will have the same reference as Fruit.GRAPE
+}
+
+public boolean isFruitGrape(Cake candidateFruit) {
+  return candidateFruit == Fruit.GRAPE; // Compliant; compilation time failure
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.javaworld.com/article/2074292/core-java/use-----or-----to-compare-java-enums.html">Use == (or !=) to Compare Java
+  Enums</a> </li>
+</ul>
+

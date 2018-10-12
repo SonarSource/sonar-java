@@ -19,13 +19,13 @@
  */
 package org.sonar.java.bytecode.loader;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Iterators;
 import com.google.common.io.ByteStreams;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -34,6 +34,7 @@ import javax.annotation.CheckForNull;
 import org.apache.commons.lang.ArrayUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.resolve.Convert;
 
 /**
@@ -49,18 +50,31 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
    * @param files ordered list of files and directories from which to load classes and resources
    */
   public SquidClassLoader(List<File> files) {
-    super(null);
+    super(computeParent());
     loaders = new ArrayList<>();
     for (File file : files) {
       if (file.exists()) {
-        if (file.isDirectory()) {
-          loaders.add(new FileSystemLoader(file));
-        } else if (file.getName().endsWith(".jar")) {
-          loaders.add(new JarLoader(file));
-        } else if (file.getName().endsWith(".aar")) {
-          loaders.add(new AarLoader(file));
+        try {
+          if (file.isDirectory()) {
+            loaders.add(new FileSystemLoader(file));
+          } else if (file.getName().endsWith(".jar")) {
+            loaders.add(new JarLoader(file));
+          } else if (file.getName().endsWith(".aar")) {
+            loaders.add(new AarLoader(file));
+          }
+        } catch (IllegalStateException e) {
+          LOG.warn("Unable to load classes from '{}'", file.getPath());
+          LOG.debug("{}: {}", e.getMessage(), e.getCause().getMessage());
         }
       }
+    }
+  }
+
+  private static ClassLoader computeParent() {
+    try {
+      return (ClassLoader) ClassLoader.class.getMethod("getPlatformClassLoader").invoke(null);
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      return null;
     }
   }
 
@@ -111,12 +125,11 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
   public byte[] getBytesForClass(String className) {
     try (InputStream is = getResourceAsStream(Convert.bytecodeName(className) + ".class")) {
       if (is == null) {
-        LOG.debug(".class not found for {}", className);
         return null;
       }
       return ByteStreams.toByteArray(is);
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new AnalysisException("An IOException occurred in SonarJava classLoader.",e);
     }
   }
 

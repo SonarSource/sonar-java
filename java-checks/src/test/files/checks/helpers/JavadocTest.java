@@ -36,6 +36,38 @@ class A<B, C, E> {
     return 0;
   }
 
+  /**/
+  private int emptyJavadoc1(int a) {
+    return 0;
+  }
+
+  /***/
+  private int emptyJavadoc2(int a) {
+    return 0;
+  }
+
+  /*
+   */
+  private int emptyJavadoc3(int a) {
+    return 0;
+  }
+
+  /**
+   */
+  private int emptyJavadoc4(int a) {
+    return 0;
+  }
+
+  //
+  private int emptyJavadoc5(int a) {
+    return 0;
+  }
+
+  //*/
+  private int emptyJavadoc6(int a) {
+    return 0;
+  }
+
   /**
    *
    * FIXME

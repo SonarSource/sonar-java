@@ -27,6 +27,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -434,13 +437,18 @@ public class JavaSymbol implements Symbol {
 
     private Set<ClassJavaType> interfacesOfType() {
       if (interfaces == null) {
-        ImmutableSet.Builder<ClassJavaType> builder = ImmutableSet.builder();
-        for (JavaType interfaceType : getInterfaces()) {
-          ClassJavaType classType = (ClassJavaType) interfaceType;
-          builder.add(classType);
-          builder.addAll(classType.getSymbol().interfacesOfType());
+        Deque<ClassJavaType> todo = getInterfaces().stream().map(ClassJavaType.class::cast).distinct().collect(Collectors.toCollection(LinkedList::new));
+        Set<ClassJavaType> builder = new LinkedHashSet<>();
+        while (!todo.isEmpty()) {
+          ClassJavaType classType = todo.pop();
+          if(classType == type) {
+            continue;
+          }
+          if (builder.add(classType)) {
+            classType.symbol.getInterfaces().forEach(t -> todo.addLast((ClassJavaType) t));
+          }
         }
-        interfaces = builder.build();
+        interfaces = builder;
       }
       return interfaces;
     }
@@ -538,6 +546,7 @@ public class JavaSymbol implements Symbol {
     MethodTree declaration;
     Object defaultValue;
     String desc;
+    String signature;
 
     public MethodJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner) {
       super(MTH, flags, name, owner);
@@ -551,13 +560,16 @@ public class JavaSymbol implements Symbol {
       this.typeVariableTypes = Lists.newArrayList();
     }
 
-    public String completeSignature(){
-      String sign = "";
-      if(owner != null) {
-        sign += owner.getType().fullyQualifiedName();
+    @Override
+    public String signature() {
+      if (signature == null) {
+        signature = "";
+        if (owner != null) {
+          signature += owner.getType().fullyQualifiedName();
+        }
+        signature += "#" + name + desc();
       }
-      sign += "#" + name + desc();
-      return sign;
+      return signature;
     }
 
     private String desc() {

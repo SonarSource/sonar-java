@@ -21,6 +21,7 @@ package org.sonar.java.checks.helpers;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ public class JavadocTest {
   private static CompilationUnitTree tree;
   private static Javadoc fooJavadoc;
   private static Javadoc barJavadoc;
+  private static List<Javadoc> emptyJavadocs;
   private static Javadoc emptyDescriptionJavadoc;
   private static Javadoc fullParamsDescriptionJavadoc;
   private static Javadoc genericExceptionThrownJavadoc;
@@ -62,6 +64,12 @@ public class JavadocTest {
     fullParamsDescriptionJavadoc = new Javadoc(methods.get("fullParamsDescription"));
     genericExceptionThrownJavadoc = new Javadoc(methods.get("genericExceptionThrown"));
     genericExceptionThrownUndocumented = new Javadoc(methods.get("genericExceptionThrownUndocumented"));
+
+    emptyJavadocs = methods.keySet().stream()
+      .filter(name -> name.startsWith("emptyJavadoc"))
+      .map(methods::get)
+      .map(Javadoc::new)
+      .collect(Collectors.toList());
   }
 
   @Test
@@ -72,6 +80,7 @@ public class JavadocTest {
     assertThat(fullParamsDescriptionJavadoc.noMainDescription()).isTrue();
     assertThat(genericExceptionThrownJavadoc.noMainDescription()).isTrue();
     assertThat(genericExceptionThrownUndocumented.noMainDescription()).isTrue();
+    assertThat(emptyJavadocs.stream().map(Javadoc::noMainDescription)).hasSize(6).allMatch(Boolean.TRUE::equals);
   }
 
   @Test
@@ -82,6 +91,7 @@ public class JavadocTest {
     assertThat(fullParamsDescriptionJavadoc.noReturnDescription()).isTrue();
     assertThat(genericExceptionThrownJavadoc.noReturnDescription()).isTrue();
     assertThat(genericExceptionThrownUndocumented.noReturnDescription()).isTrue();
+    assertThat(emptyJavadocs.stream().map(Javadoc::noReturnDescription)).hasSize(6).allMatch(Boolean.TRUE::equals);
   }
 
   @Test
@@ -92,6 +102,7 @@ public class JavadocTest {
     assertThat(fullParamsDescriptionJavadoc.undocumentedParameters()).isEmpty();
     assertThat(genericExceptionThrownJavadoc.undocumentedParameters()).isEmpty();
     assertThat(genericExceptionThrownUndocumented.undocumentedParameters()).isEmpty();
+    assertThat(emptyJavadocs.stream().map(Javadoc::undocumentedParameters)).hasSize(6).allMatch(p -> p.size() == 1 && "a".equals(p.get(0)));
   }
 
   @Test
@@ -102,6 +113,7 @@ public class JavadocTest {
     assertThat(fullParamsDescriptionJavadoc.undocumentedThrownExceptions()).isEmpty();
     assertThat(genericExceptionThrownJavadoc.undocumentedThrownExceptions()).containsExactlyInAnyOrder("ObjectStreamException", "InvalidObjectException");
     assertThat(genericExceptionThrownUndocumented.undocumentedThrownExceptions()).containsExactlyInAnyOrder("Exception");
+    assertThat(emptyJavadocs.stream().map(Javadoc::undocumentedThrownExceptions)).hasSize(6).allMatch(List::isEmpty);
   }
 
   @Test

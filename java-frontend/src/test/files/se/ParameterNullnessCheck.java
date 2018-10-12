@@ -37,6 +37,32 @@ abstract class A {
       null); // flow@checkNotNull [[order=1]] {{Argument can be null.}}
   }
 
+  boolean checkerFrameworkNullableAnnotations(
+    @Nullable String javaxNullable,
+    @org.checkerframework.checker.nullness.qual.NonNull Object qualNonNull,
+    @org.checkerframework.checker.nullness.qual.Nullable Object qualNullable,
+    @org.checkerframework.checker.nullness.compatqual.NonNullDecl Object compatQualNonNull,
+    @org.checkerframework.checker.nullness.compatqual.NullableDecl Object compatQualNullable
+  ) {
+    checkerFrameworkQualNonNull(javaxNullable); // Noncompliant
+    checkerFrameworkQualNullable(javaxNullable);
+    checkerFrameworkCompatQualNonNull(javaxNullable); // Noncompliant
+    checkerFrameworkCompatQualNullable(javaxNullable);
+
+    foo(qualNonNull);
+    foo(qualNullable); // Noncompliant
+    foo(compatQualNonNull);
+    foo(compatQualNullable); // Noncompliant
+
+    // "Strings.isNullOrEmpty" parameter is annotated by @org.checkerframework.checker.nullness.qual.Nullable
+    return com.google.common.base.Strings.isNullOrEmpty(javaxNullable);
+  }
+
+  abstract void checkerFrameworkQualNonNull(@org.checkerframework.checker.nullness.qual.NonNull Object param);
+  abstract void checkerFrameworkQualNullable(@org.checkerframework.checker.nullness.qual.Nullable Object param);
+  abstract void checkerFrameworkCompatQualNonNull(@org.checkerframework.checker.nullness.compatqual.NonNullDecl Object param);
+  abstract void checkerFrameworkCompatQualNullable(@org.checkerframework.checker.nullness.compatqual.NullableDecl Object param);
+
   @Override
   public boolean equals(Object obj) {
     return super.equals(obj);

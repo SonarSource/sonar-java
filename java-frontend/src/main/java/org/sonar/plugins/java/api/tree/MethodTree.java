@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 import java.util.List;
 import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 /**
@@ -95,4 +96,12 @@ public interface MethodTree extends Tree {
    */
   @Nullable
   Boolean isOverriding();
+
+  /**
+   * Compute a CFG for a given method.
+   *
+   * @return null if the method as no body. Otherwise the corresponding CFG.
+   */
+  @Nullable
+  ControlFlowGraph cfg();
 }

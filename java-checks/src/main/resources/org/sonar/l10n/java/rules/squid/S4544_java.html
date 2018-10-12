@@ -1,0 +1,40 @@
+<p>When Jackson is configured to allow Polymorphic Type Handling (aka PTH), formerly known as Polymorphic Deserialization, "deserialization gadgets"
+may allow an attacker to perform remote code execution. </p>
+<p>This rule raises an issue when:</p>
+<p>- <code>enableDefaultTyping()</code> is called on an instance of <code>com.fasterxml.jackson.databind.ObjectMapper</code> or
+<code>org.codehaus.jackson.map.ObjectMapper</code></p>
+<p>- or when the annotation <code>@JsonTypeInfo</code> is set at class or field levels and configured with <code>use = JsonTypeInfo.Id.CLASS)</code>
+or <code>use = Id.MINIMAL_CLASS</code></p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> Consider using @JsonTypeInfo instead of enabling globally PTH </li>
+  <li> Use @JsonTypeInfo(use = Id.NAME) instead </li>
+</ul>
+<h2>Noncompliant Code Example</h2>
+<pre>
+ObjectMapper mapper = new ObjectMapper();
+mapper.enableDefaultTyping(); // Noncompliant
+</pre>
+<pre>
+@JsonTypeInfo(use = Id.CLASS) // Noncompliant
+abstract class PhoneNumber {
+}
+</pre>
+<h2>Compliant Solution</h2>
+<p>- use the latest patch versions of <code>jackson-databind</code> blocking the already discovered "deserialization gadgets"</p>
+<p>- avoid using the default typing configuration: <code>ObjectMapper.enableDefaultTyping()</code></p>
+<p>- use <code>@JsonTypeInfo(use = Id.NAME)</code> instead of <code>@JsonTypeInfo(use = Id.CLASS)</code> or <code>@JsonTypeInfo(use = Id.
+MINIMAL_CLASS)</code> and so rely on <code>@JsonTypeName</code> and <code>@JsonSubTypes</code></p>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://cwe.mitre.org/data/definitions/502.html">MITRE, CWE-502</a> - Deserialization of Untrusted Data </li>
+  <li> OWASP Top 10 2017 Category A8 - Insecure Deserialization </li>
+  <li> <a href="https://www.owasp.org/index.php/Deserialization_of_untrusted_data">OWASP Deserialization of untrusted data</a> </li>
+  <li> <a href="https://medium.com/@cowtowncoder/on-jackson-cves-dont-panic-here-is-what-you-need-to-know-54cd0d6e8062">On Jackson CVEs: Don’t
+  Panic</a> </li>
+  <li> <a href="https://nvd.nist.gov/vuln/detail/CVE-2017-15095">CVE-2017-1509</a> </li>
+  <li> <a href="https://nvd.nist.gov/vuln/detail/CVE-2017-7525">CVE-2017-7525</a> </li>
+  <li> Derived from FindSecBugs rule <a
+  href="https://find-sec-bugs.github.io/bugs.htm#JACKSON_UNSAFE_DESERIALIZATION">JACKSON_UNSAFE_DESERIALIZATION</a> </li>
+</ul>
+

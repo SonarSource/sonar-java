@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>java</artifactId>
-    <version>5.4.0-SNAPSHOT</version>
+    <version>5.9.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>sonar-java-plugin</artifactId>
@@ -40,6 +40,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>java-checks</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>external-reports</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -107,8 +112,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>8200000</maxsize>
-                  <minsize>4500000</minsize>
+                  <maxsize>9300000</maxsize>
+                  <minsize>8800000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>

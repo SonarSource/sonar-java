@@ -14,6 +14,11 @@
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1104",
-  "sqKey": "S1104",
-  "scope": "Main"
+  "sqKey": "ClassVariableVisibilityCheck",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      493
+    ]
+  }
 }

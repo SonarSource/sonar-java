@@ -20,9 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,7 +33,6 @@ import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -50,14 +47,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
   private static final Predicate<JavaSymbol> NON_DEFAULT_METHOD_PREDICATE = symbol -> !symbol.isDefault();
-
-  private Set<Tree> excluded = Sets.newHashSet();
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
-    excluded.clear();
-  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -153,6 +142,10 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   private static boolean isUnnecessaryLambdaCast(Type childType, Type parentType) {
     if (parentType.isSubtypeOf(childType)) {
       return true;
+    }
+    // intersection type on lambda should not raise an issue : required to make lambda serializable for instance
+    if (((JavaType) childType).isTagged(JavaType.INTERSECTION)) {
+      return false;
     }
 
     List<MethodJavaSymbol> childMethods = getMethodSymbolsOf(childType).collect(Collectors.toList());

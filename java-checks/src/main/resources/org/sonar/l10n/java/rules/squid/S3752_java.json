@@ -1,0 +1,32 @@
+{
+  "title": "\"@RequestMapping\" methods should specify HTTP method",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "spring",
+    "sans-top25-insecure",
+    "owasp-a6"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten",
+    "SANS Top 25"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-3752",
+  "sqKey": "S3752",
+  "scope": "All",
+  "securityStandards": {
+    "CWE": [
+      352
+    ],
+    "OWASP": [
+      "A6"
+    ]
+  }
+}

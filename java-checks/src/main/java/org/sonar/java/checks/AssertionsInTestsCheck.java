@@ -103,7 +103,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     method(TypeCriteria.subtypeOf("org.jmock.Mockery"), "assertIsSatisfied").withAnyParameters(),
     // WireMock
     method("com.github.tomakehurst.wiremock.client.WireMock", VERIFY).withAnyParameters(),
-
+    method("com.github.tomakehurst.wiremock.WireMockServer", VERIFY).withAnyParameters(),
     // Eclipse Vert.x
     method("io.vertx.ext.unit.TestContext", STARTS_WITH_ASSERT).withAnyParameters(),
     method("io.vertx.ext.unit.TestContext", STARTS_WITH_FAIL).withAnyParameters());

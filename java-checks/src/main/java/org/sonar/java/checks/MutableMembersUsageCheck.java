@@ -138,7 +138,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     }
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expression;
-      if (identifierTree.symbol().isPrivate() && !isImmutableConstant((Symbol.VariableSymbol) identifierTree.symbol())) {
+      if (identifierTree.symbol().isPrivate() && !isImmutableFinalVariable((Symbol.VariableSymbol) identifierTree.symbol())) {
         context.reportIssue(this, identifierTree, "Return a copy of \"" + identifierTree.name() + "\".");
       }
     }
@@ -148,8 +148,8 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     return expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).name().equals("this");
   }
 
-  private static boolean isImmutableConstant(Symbol.VariableSymbol symbol) {
-    if (symbol.isStatic() && symbol.isFinal()) {
+  private static boolean isImmutableFinalVariable(Symbol.VariableSymbol symbol) {
+    if (symbol.isFinal()) {
       VariableTree declaration = symbol.declaration();
       // symbol is private, so declaration can only be null if assignment is done in static block
       ExpressionTree initializer = declaration.initializer();

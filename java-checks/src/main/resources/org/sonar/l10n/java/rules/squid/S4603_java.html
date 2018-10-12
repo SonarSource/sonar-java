@@ -1,0 +1,41 @@
+<p><code>@ComponentScan</code> is used to find which Spring <code>@Component</code> beans (<code>@Service</code> or <code>@Repository</code> or
+<code>Controller</code>) are available in the classpath so they can be used in the application context. This is a convenient feature especially when
+you begin a new project but it comes with the drawback of slowing down the application start-up time especially when the application becomes bigger
+(ie: it references a large JAR file, or it references a significant number of JAR files, or the base-package refers to a large amount of .class
+files).</p>
+<p><code>@ComponentScan</code> should be replaced by an explicit list of Spring beans loaded by <code>@Import</code>.</p>
+<p>The interface <code>@SpringBootApplication</code> is also considered by this rule because it is annotated with <code>@ComponentScan</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@ComponentScan
+public class MyApplication {
+...
+}
+
+@SpringBootApplication
+public class MyApplication {
+...
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@Configuration
+@Import({
+        DispatcherServletAutoConfiguration.class,
+        ErrorMvcAutoConfiguration.class,
+        HttpEncodingAutoConfiguration.class,
+        HttpMessageConvertersAutoConfiguration.class,
+        MultipartAutoConfiguration.class,
+        ServerPropertiesAutoConfiguration.class,
+        PropertyPlaceholderAutoConfiguration.class,
+        WebMvcAutoConfiguration.class
+})
+public class MyApplication {
+...
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://cloud.google.com/appengine/articles/spring_optimization">Optimizing Spring Framework for App Engine Applications</a> </li>
+</ul>
+

@@ -1325,6 +1325,18 @@ class SuperClass {
     return new Class1().method();
   }
 
+  private void annotationWithNullableAndNonnullReturn() {
+    Object foo = annotationWithNullableAndNonnull();
+    if(foo == null) { // compliant, nullable wins
+    }
+  }
+
+  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
+  private Object annotationWithNullableAndNonnull() {
+    return hashCode() == 0 ? this : null;
+  }
+
   static void fromEntryArray(boolean foo) {
     Entry entry = new Object();
     printState();

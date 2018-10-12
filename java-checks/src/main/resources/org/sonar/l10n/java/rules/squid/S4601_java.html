@@ -1,0 +1,36 @@
+<p>URL patterns configured on a <code>HttpSecurity.authorizeRequests()</code> method are considered in the order they were declared. It's easy to do a
+mistake and to declare a less restrictive configuration before a more restrictive one. Therefore, it's required to review the order of the
+"antMatchers" declarations. The <code>/**</code> one should be the last one if it is declared.</p>
+<p>This rule raises an issue when:</p>
+<p>- A pattern is preceded by another that ends with <code>**</code> and has the same beginning. E.g.: <code>/page*-admin/db/**</code> is after
+<code>/page*-admin/**</code></p>
+<p>- A pattern without wildcard characters is preceded by another that matches. E.g.: <code>/page-index/db</code> is after <code>/page*/**</code></p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+  protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+      .antMatchers("/resources/**", "/signup", "/about").permitAll() // Compliant
+      .antMatchers("/admin/**").hasRole("ADMIN")
+      .antMatchers("/admin/login").permitAll() // Noncompliant; the pattern "/admin/login" should occurs before "/admin/**"
+      .antMatchers("/**", "/home").permitAll()
+      .antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')") // Noncompliant; the pattern "/db/**" should occurs before "/**"
+      .and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
+  }
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+  protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+      .antMatchers("/resources/**", "/signup", "/about").permitAll() // Compliant
+      .antMatchers("/admin/login").permitAll()
+      .antMatchers("/admin/**").hasRole("ADMIN") // Compliant
+      .antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')")
+      .antMatchers("/**", "/home").permitAll() // Compliant; "/**" is the last one
+      .and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
+  }
+</pre>
+<h2>See</h2>
+<ul>
+  <li> OWASP Top 10 2017 Category A6 - Security Misconfiguration </li>
+</ul>
+

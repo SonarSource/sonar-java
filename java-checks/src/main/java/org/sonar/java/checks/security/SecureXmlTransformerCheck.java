@@ -46,7 +46,7 @@ public class SecureXmlTransformerCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Collections.singletonList(
       MethodMatcher.create()
-        .typeDefinition(TRANSFORMER_FACTORY_CLASS_NAME)
+        .typeDefinition(subtypeOf(TRANSFORMER_FACTORY_CLASS_NAME))
         .name("newInstance")
         .withAnyParameters());
   }

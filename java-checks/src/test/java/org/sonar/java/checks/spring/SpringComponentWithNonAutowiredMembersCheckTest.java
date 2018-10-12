@@ -23,10 +23,20 @@ import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SpringComponentWithNonAutowiredMembersCheckTest {
+
+  private String basePath = "src/test/files/checks/spring/SpringComponentWithNonAutowiredMembersCheck/";
+  private SpringComponentWithNonAutowiredMembersCheck check = new SpringComponentWithNonAutowiredMembersCheck();
+
   @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringComponentWithNonAutowiredMembersCheck.java", new SpringComponentWithNonAutowiredMembersCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringComponentWithNonAutowiredMembersCheck.java",
-      new SpringComponentWithNonAutowiredMembersCheck());
+  public void default_annotations() {
+    JavaCheckVerifier.verify(basePath + "DefaultAnnotations.java", check);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(basePath + "DefaultAnnotations.java", check);
   }
+
+  @Test
+  public void custom_annotations() {
+    check.customInjectionAnnotations = "com.mycompany.myproject.MyController$MyInjectionAnnotation ,,";
+    JavaCheckVerifier.verify(basePath + "CustomAnnotations.java", check);
+  }
+
 }

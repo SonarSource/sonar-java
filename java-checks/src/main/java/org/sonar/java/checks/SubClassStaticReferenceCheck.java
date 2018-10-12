@@ -120,7 +120,7 @@ public class SubClassStaticReferenceCheck extends IssuableSubscriptionVisitor {
       if (type instanceof MethodJavaType) {
         type = ((MethodJavaType) type).resultType();
       }
-      if (!sameErasure(type) && type.isSubtypeOf(classType)) {
+      if (!sameErasure(type) && type.isSubtypeOf(classType.erasure())) {
         reportIssue(tree, String.format("Remove this reference to \"%s\".", type.symbol().name()));
       }
     }

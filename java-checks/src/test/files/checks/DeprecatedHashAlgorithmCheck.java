@@ -1,8 +1,16 @@
 import java.security.MessageDigest;
 import java.security.Provider;
 import java.util.Properties;
-
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
+import org.springframework.security.crypto.password.Md4PasswordEncoder;
+import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
+
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 class A {
@@ -97,5 +105,21 @@ class CryptoAPIs {
     java.security.KeyPairGenerator.getInstance("DiffieHellman");
     java.security.KeyFactory.getInstance("DSA"); // Noncompliant {{Use a stronger hashing algorithm than DSA.}}
     java.security.KeyFactory.getInstance("DiffieHellman");
+  }
+}
+
+class DeprecatedSpring {
+  void foo() {
+    new ShaPasswordEncoder(); // Noncompliant {{Don't rely on ShaPasswordEncoder because it is deprecated.}}
+    new ShaPasswordEncoder(512); // Noncompliant {{Don't rely on ShaPasswordEncoder because it is deprecated.}}
+    new Md5PasswordEncoder(); // Noncompliant {{Use a stronger hashing algorithm than MD5.}}
+    new LdapShaPasswordEncoder(); // Noncompliant {{Don't rely on LdapShaPasswordEncoder because it is deprecated and use a stronger hashing algorithm.}}
+    new LdapShaPasswordEncoder(org.springframework.security.crypto.keygen.KeyGenerators.secureRandom()); // Noncompliant
+    new Md4PasswordEncoder(); // Noncompliant {{Don't rely on Md4PasswordEncoder because it is deprecated and use a stronger hashing algorithm.}}
+    new MessageDigestPasswordEncoder("algo"); // Noncompliant {{Don't rely on MessageDigestPasswordEncoder because it is deprecated and use a stronger hashing algorithm.}}
+    NoOpPasswordEncoder.getInstance(); // Noncompliant {{Use a stronger hashing algorithm than this fake one.}}
+    new StandardPasswordEncoder(); // Noncompliant {{Use a stronger hashing algorithm.}}
+    new StandardPasswordEncoder("foo"); // Noncompliant {{Use a stronger hashing algorithm.}}
+    new BCryptPasswordEncoder();
   }
 }

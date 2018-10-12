@@ -37,3 +37,8 @@ class C {
 }
 
 class D extends C { }
+
+public class V<T>  {
+  private static class VSub extends V {}
+  static V V1 = new VSub(); // Noncompliant
+}

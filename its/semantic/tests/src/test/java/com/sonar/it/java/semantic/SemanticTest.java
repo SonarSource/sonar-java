@@ -29,6 +29,7 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.container.Server;
 import com.sonar.orchestrator.locator.FileLocation;
 
+import com.sonar.orchestrator.locator.MavenLocation;
 import org.assertj.core.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -63,8 +64,8 @@ public class SemanticTest {
 
   static {
     OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
-      .setOrchestratorProperty("litsVersion", "0.6")
-      .addPlugin("lits")
+      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[6.7]"))
+      .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin","sonar-lits-plugin", "0.6"))
       .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
       .addPlugin(FileLocation.of(debuggingPlugin()))
       .restoreProfileAtStartup(FileLocation.of("src/test/resources/profile-java-semantic.xml"));

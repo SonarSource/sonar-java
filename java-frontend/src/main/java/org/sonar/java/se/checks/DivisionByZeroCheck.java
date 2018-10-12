@@ -235,7 +235,8 @@ public class DivisionByZeroCheck extends SECheck {
       } else if (isZero(leftOp)) {
         reuseSymbolicValue(leftOp);
       } else if (isNonZero(leftOp) && isNonZero(rightOp)) {
-        deferConstraint(tree.is(Tree.Kind.DIVIDE, Tree.Kind.DIVIDE_ASSIGNMENT) ? ZeroConstraint.NON_ZERO : null);
+        // result of 'integer' can be zero or non-zero, depending of operands (for instance: '1 / 2 == 0')
+        deferConstraint(null);
       } else if (hasNoConstraint(rightOp)) {
         ProgramState exceptionalState = programState
           .addConstraint(rightOp, ZeroConstraint.ZERO)

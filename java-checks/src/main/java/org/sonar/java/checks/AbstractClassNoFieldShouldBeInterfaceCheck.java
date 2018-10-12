@@ -27,11 +27,13 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S1610")
 public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -57,7 +59,11 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (classTree.superClass() == null && classIsAbstract(classTree) && classHasNoFieldAndProtectedMethod(classTree) && supportPrivateMethod(classTree)) {
+    if (classTree.superClass() == null
+            && classIsAbstract(classTree)
+            && classHasNoFieldAndProtectedMethod(classTree)
+            && classHasNoAutoValueOrImmutableAnnotation(classTree)
+            && supportPrivateMethod(classTree)) {
       IdentifierTree simpleName = classTree.simpleName();
       reportIssue(
         simpleName,
@@ -84,15 +90,18 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
   }
 
   private static boolean classHasNoFieldAndProtectedMethod(ClassTree tree) {
-    for (Tree member : tree.members()) {
-      if (member.is(Tree.Kind.VARIABLE) || (member.is(Tree.Kind.METHOD) && isProtectedOrOverriding((MethodTree) member))) {
-        return false;
-      }
-    }
-    return true;
+    return tree.members().stream()
+      .noneMatch(member -> member.is(Tree.Kind.VARIABLE) || (member.is(Tree.Kind.METHOD) && isProtectedOrOverriding((MethodTree) member)));
   }
 
   private static boolean isProtectedOrOverriding(MethodTree member) {
     return ModifiersUtils.hasModifier(member.modifiers(), Modifier.PROTECTED) || !Boolean.FALSE.equals(member.isOverriding());
+  }
+
+  private static boolean classHasNoAutoValueOrImmutableAnnotation(ClassTree tree) {
+    return tree.modifiers().annotations().stream()
+      .map(AnnotationTree::annotationType)
+      .map(TypeTree::symbolType)
+      .noneMatch(type -> type.is("com.google.auto.value.AutoValue") || type.is("org.immutables.value.Value$Immutable"));
   }
 }

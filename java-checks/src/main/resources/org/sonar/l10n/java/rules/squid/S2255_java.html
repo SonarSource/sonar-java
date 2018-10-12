@@ -5,6 +5,10 @@ session, and should never be sent to the client. In a very few corner cases, coo
 longer than the user session.</p>
 <p>This rule raises an issue when data is stored in a cookie. Issues raised are intended to be reviewed by a security auditor as the false-positive
 rate will be high. It's indeed impossible to statically check if the data stored in the cookie is sensitive or not. </p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> store the sensitive data in the user session </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 void aServiceMethodSettingCookie(HttpServletRequest request, HttpServletResponse response){

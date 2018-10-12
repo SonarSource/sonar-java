@@ -37,6 +37,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -79,7 +80,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
-public class CFG {
+public class CFG implements ControlFlowGraph {
 
   private final boolean ignoreBreakAndContinue;
   private Symbol.MethodSymbol methodSymbol;
@@ -134,6 +135,7 @@ public class CFG {
     computePredecessors(blocks);
   }
 
+  @Override
   public Block exitBlock() {
     return exitBlocks.peek();
   }
@@ -142,10 +144,12 @@ public class CFG {
     return methodSymbol;
   }
 
-  public Block entry() {
+  @Override
+  public Block entryBlock() {
     return currentBlock;
   }
 
+  @Override
   public List<Block> blocks() {
     return Lists.reverse(blocks);
   }
@@ -163,7 +167,7 @@ public class CFG {
     Set<? extends IBlock<T>> successors();
   }
 
-  public static class Block implements IBlock<Tree> {
+  public static class Block implements IBlock<Tree>, ControlFlowGraph.Block {
     public static final Predicate<Block> IS_CATCH_BLOCK = Block::isCatchBlock;
     private int id;
     private final List<Tree> elements = new ArrayList<>();
@@ -185,6 +189,7 @@ public class CFG {
       this.id = id;
     }
 
+    @Override
     public int id() {
       return id;
     }
@@ -242,6 +247,7 @@ public class CFG {
       return predecessors;
     }
 
+    @Override
     public Set<Block> successors() {
       return successors;
     }
@@ -250,6 +256,7 @@ public class CFG {
       return exceptions;
     }
 
+    @Override
     @CheckForNull
     public Tree terminator() {
       return terminator;
@@ -728,7 +735,7 @@ public class CFG {
       CaseGroupTree firstCase = switchStatementTree.cases().get(0);
       for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
         build(caseGroupTree.body());
-        caseGroupTree.labels().forEach(l -> {
+        Lists.reverse(caseGroupTree.labels()).forEach(l -> {
           if (l.expression() != null) {
             build(l.expression());
           }

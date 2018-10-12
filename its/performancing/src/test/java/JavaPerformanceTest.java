@@ -17,36 +17,33 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 import com.google.common.base.Preconditions;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.FileLocation;
-
+import java.io.File;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.ClassRule;
 import org.junit.Test;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 
 public class JavaPerformanceTest {
 
-  private static final String SENSOR_NAME = "JavaSquidSensor";
-
   @ClassRule
   public static final Orchestrator ORCHESTRATOR = Orchestrator.builderEnv()
+    .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[6.7]"))
     .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
     .restoreProfileAtStartup(FileLocation.of("src/test/profile.xml"))
     .build();
 
   @Test
-  public void perform() throws IOException {
+  public void perform() {
     ORCHESTRATOR.getServer().provisionProject("project", "project");
     ORCHESTRATOR.getServer().associateProjectToQualityProfile("project", "java", "no-rules");
     SonarScanner build = SonarScanner.create(FileLocation.of("../sources/jdk6").getFile())
@@ -54,7 +51,6 @@ public class JavaPerformanceTest {
       .setProperty("sonar.importSources", "false")
       // Dummy sonar.java.binaries to pass validation
       .setProperty("sonar.java.binaries", "launcher")
-      .setProperty("sonar.showProfiling", "true")
       .setProperty("sonar.preloadFileMetadata", "true")
       .setProjectKey("project")
       .setProjectName("project")
@@ -64,28 +60,21 @@ public class JavaPerformanceTest {
 
     BuildResult result = ORCHESTRATOR.executeBuild(build);
 
-    double time = sensorTime(build.getProjectDir(), result.getLogs(), SENSOR_NAME);
+    double time = sensorTime(result.getLogs());
 
     double expected = 178;
-    assertThat(time).isEqualTo(expected, offset(expected * 0.04));
+    assertThat(time).isEqualTo(expected, offset(expected * 0.06));
   }
 
-  private static double sensorTime(File projectDir, String logs, String sensor) throws IOException {
-    File profilingFile = new File(projectDir, ".sonar/profiling/project-profiler.properties");
-    Preconditions.checkArgument(profilingFile.isFile(), "Cannot find profiling file to extract time for sensor " + sensor + ": " + profilingFile.getAbsolutePath());
-    return getTimeValue(profilingFile, sensor);
-  }
 
-  private static double getTimeValue(File profilingFile, String sensor) throws IOException {
-    Properties properties = new Properties();
-    properties.load(new FileInputStream(profilingFile));
-    String time = properties.getProperty(sensor);
-    Preconditions.checkNotNull(time, "Could not find a value for property : " + sensor);
-    return toMilliseconds(time);
-  }
+  private static double sensorTime(String logs) {
+    Pattern pattern = Pattern.compile("Sensor JavaSquidSensor \\[java\\] \\(done\\) \\| time=(\\d++)ms");
+    Matcher matcher = pattern.matcher(logs);
 
-  private static double toMilliseconds(String time) {
-    return TimeUnit.MILLISECONDS.toSeconds(Integer.parseInt(time));
+    Preconditions.checkArgument(matcher.find(), "Unable to extract the timing of sensor \"JavaSquidSensor\" from the logs");
+    double result = (double) TimeUnit.MILLISECONDS.toSeconds(Integer.parseInt(matcher.group(1)));
+    Preconditions.checkArgument(!matcher.find(), "Found several potential timings of sensor \"JavaSquidSensor\" in the logs");
+    return result;
   }
 
 }

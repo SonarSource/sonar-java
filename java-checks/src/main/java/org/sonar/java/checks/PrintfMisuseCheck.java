@@ -25,22 +25,32 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.ArrayJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3457")
 public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   private static final MethodMatcher TO_STRING = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("toString").withoutParameter();
+  private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final MethodMatcherCollection GET_LOGGER = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition("java.util.logging.Logger").name("getLogger").parameters(JAVA_LANG_STRING, JAVA_LANG_STRING),
+    MethodMatcher.create().typeDefinition("java.util.logging.Logger").name("getAnonymousLogger").parameters(JAVA_LANG_STRING)
+    );
 
 
   @Override
@@ -52,7 +62,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     }
     if (!isMessageFormat) {
       isMessageFormat = JAVA_UTIL_LOGGER.matches(mit);
-      if (isMessageFormat && mit.arguments().get(mit.arguments().size() - 1).symbolType().isSubtypeOf("java.lang.Throwable")) {
+      if (isMessageFormat && (mit.arguments().get(mit.arguments().size() - 1).symbolType().isSubtypeOf("java.lang.Throwable") || hasResourceBundle(mit))) {
         // ignore formatting issues when last argument is a throwable
         return;
       }
@@ -67,6 +77,30 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     checkFormatting(mit, isMessageFormat);
   }
 
+  private static boolean hasResourceBundle(MethodInvocationTree mit) {
+    Tree id;
+    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      id = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+    } else {
+      // defensive programming : cannot be reached : log methods are not static
+      return false;
+    }
+    if (id.is(Tree.Kind.MEMBER_SELECT)) {
+      id = ((MemberSelectExpressionTree) id).identifier();
+    }
+    if (id.is(Tree.Kind.IDENTIFIER)) {
+      Tree decl = ((IdentifierTree) id).symbol().declaration();
+      if (decl != null && decl.is(Tree.Kind.VARIABLE)) {
+        VariableTree var = ((VariableTree) decl);
+        ExpressionTree init = var.initializer();
+        if (init != null && init.is(Tree.Kind.METHOD_INVOCATION)) {
+          return GET_LOGGER.anyMatch((MethodInvocationTree) init);
+        }
+      }
+    }
+    return false;
+  }
+
   private void checkFormatting(MethodInvocationTree mit, boolean isMessageFormat) {
     if (mit.arguments().stream().map(ExpressionTree::symbolType).anyMatch(Type::isUnknown)) {
       // method resolved but not all the parameters are
@@ -75,7 +109,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     ExpressionTree formatStringTree;
     List<ExpressionTree> args;
     // Check type of first argument:
-    if (mit.arguments().get(0).symbolType().is("java.lang.String")) {
+    if (mit.arguments().get(0).symbolType().is(JAVA_LANG_STRING)) {
       formatStringTree = mit.arguments().get(0);
       args = mit.arguments().subList(1, mit.arguments().size());
     } else {
@@ -193,7 +227,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       .filter(Type::isArray)
       .map(ArrayJavaType.class::cast)
       .map(ArrayJavaType::elementType)
-      .filter(type -> type.is("java.lang.String"))
+      .filter(type -> type.is(JAVA_LANG_STRING))
       .isPresent();
   }
 
@@ -242,7 +276,9 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
 
   private static boolean isConcatenationOnSameLine(ExpressionTree formatStringTree) {
-    return formatStringTree.is(Tree.Kind.PLUS) && operandsAreOnSameLine((BinaryExpressionTree) formatStringTree);
+    return formatStringTree.is(Tree.Kind.PLUS)
+      && operandsAreOnSameLine((BinaryExpressionTree) formatStringTree)
+      && ConstantUtils.resolveAsConstant(formatStringTree) == null;
   }
 
   private static boolean operandsAreOnSameLine(BinaryExpressionTree formatStringTree) {

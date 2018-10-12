@@ -7,14 +7,20 @@ import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import static org.sonar.java.checks.PrintfMisuseCheckTest.COMPILE_TIME_CONSTANT;
+import static org.sonar.java.checks.PrintfMisuseCheckTest.NON_COMPILE_TIME_CONSTANT;
+
 class A {
+  java.util.logging.Logger loggerField = java.util.logging.Logger.getAnonymousLogger("som.foo.resources.i18n.LogMessages");
   void foo(Calendar c){
     Object myObject;
     double value;
     String.format("The value of my integer is %d", "Hello World");
     String.format("First {0} and then {1}", "foo", "bar");  // Noncompliant  {{Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here}}
+    String.format("{1}", "foo", "bar");  // Noncompliant
     String.format("Duke's Birthday year is %tX", 12l);
     String.format("Display %3$d and then %d", 1, 2, 3);   // Noncompliant {{2nd argument is not used.}}
+    String.format("Display %2$d and then %2$d", 1, 2);   // Noncompliant {{first argument is not used.}}
     String.format("Too many arguments %d and %d", 1, 2, 3);  // Noncompliant {{3rd argument is not used.}}
     String.format("Not enough arguments %d and %d", 1);
     String.format("First Line\n %d", 1); // Noncompliant {{%n should be used in place of \n to produce the platform-specific line separator.}}
@@ -23,7 +29,12 @@ class A {
     String.format("First Line%n"); // Compliant
     String.format("%< is equals to %d", 2);
     String.format("Is myObject null ? %b", myObject);   // Noncompliant {{Directly inject the boolean value.}}
+    String.format("boolean are %b, %b, %b and %b", true, Boolean.TRUE, false, Boolean.FALSE);
     String.format("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    String.format((String) "");
+    String.format(value + "value is "); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    String.format("value is " + NON_COMPILE_TIME_CONSTANT); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    String.format("value is " + COMPILE_TIME_CONSTANT);
     String.format("string without arguments"); // Noncompliant {{String contains no format specifiers.}}
 
     PrintWriter pr;
@@ -76,9 +87,9 @@ class A {
     formatter.format("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     formatter.format(loc, "value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
 
-    pr.format("value is "+"asd"); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    pr.format("value is "+"asd");
     pr.format("value is "+
-        "asd"); // Compliant operand not on the same line.
+        value); // Compliant operand not on the same line.
     String.format("value is %d", value); // Compliant
 
     String.format("%0$s", "tmp");
@@ -177,6 +188,21 @@ class A {
     slf4jLog.warn("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.warn("message {}", 1);
     slf4jLog.warn("message");
+
+    java.util.logging.Logger logger2 = java.util.logging.Logger.getLogger("som.foo", "som.foo.resources.i18n.LogMessages");
+    logger2.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
+    getLog().log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
+
+    java.util.logging.Logger logger3;
+    logger3.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
+
+    java.util.logging.Logger logger4 = getLog();
+    logger4.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
+    this.loggerField.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
+  }
+
+  private java.util.logging.Logger getLog() {
+    return null;
   }
 }
 

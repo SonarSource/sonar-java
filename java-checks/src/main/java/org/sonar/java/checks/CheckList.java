@@ -47,10 +47,14 @@ import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
 import org.sonar.java.checks.security.CookieShouldNotContainSensitiveDataCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
+import org.sonar.java.checks.security.ExecCallCheck;
+import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.security.LDAPDeserializationCheck;
+import org.sonar.java.checks.security.SMTPSSLServerIdentityCheck;
+import org.sonar.java.checks.security.SecureCookieCheck;
 import org.sonar.java.checks.security.SecureXmlTransformerCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
 import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
@@ -62,9 +66,23 @@ import org.sonar.java.checks.serialization.SerializableComparatorCheck;
 import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassCheck;
 import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
+import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
+import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
 import org.sonar.java.checks.spring.RequestMappingMethodPublicCheck;
+import org.sonar.java.checks.spring.SpringAntMatcherOrderCheck;
+import org.sonar.java.checks.spring.SpringAutoConfigurationCheck;
+import org.sonar.java.checks.spring.SpringBeansShouldBeAccessibleCheck;
+import org.sonar.java.checks.spring.SpringComponentScanCheck;
 import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.spring.SpringComponentWithWrongScopeCheck;
+import org.sonar.java.checks.spring.SpringComposedRequestMappingCheck;
+import org.sonar.java.checks.spring.SpringConfigurationWithAutowiredFieldsCheck;
+import org.sonar.java.checks.spring.SpringEndpointsCheck;
+import org.sonar.java.checks.spring.SpringIncompatibleTransactionalCheck;
+import org.sonar.java.checks.spring.SpringRequestMappingMethodCheck;
+import org.sonar.java.checks.spring.SpringScanDefaultPackageCheck;
+import org.sonar.java.checks.spring.SpringSecurityDebugModeCheck;
+import org.sonar.java.checks.spring.SpringSecurityDisableCSRFCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
 import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
@@ -88,6 +106,7 @@ import org.sonar.java.checks.xml.maven.DeprecatedPomPropertiesCheck;
 import org.sonar.java.checks.xml.maven.DisallowedDependenciesCheck;
 import org.sonar.java.checks.xml.maven.GroupIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
+import org.sonar.java.checks.xml.spring.DefaultMessageListenerContainerCheck;
 import org.sonar.java.checks.xml.spring.SingleConnectionFactoryCheck;
 import org.sonar.java.checks.xml.struts.ActionNumberCheck;
 import org.sonar.java.checks.xml.struts.FormNameDuplicationCheck;
@@ -154,6 +173,7 @@ public final class CheckList {
       .add(BadTypeParameterNameCheck.class)
       .add(BadPackageNameCheck.class)
       .add(MissingCurlyBracesCheck.class)
+      .add(Struts1EndpointCheck.class)
       .add(TooManyStatementsPerLineCheck.class)
       .add(LeftCurlyBraceStartLineCheck.class)
       .add(RightCurlyBraceSameLineAsNextBlockCheck.class)
@@ -182,6 +202,8 @@ public final class CheckList {
       .add(UtilityClassWithPublicConstructorCheck.class)
       .add(StringLiteralInsideEqualsCheck.class)
       .add(ReturnOfBooleanExpressionsCheck.class)
+      .add(ReuseRandomCheck.class)
+      .add(AccessibilityChangeCheck.class)
       .add(BooleanLiteralCheck.class)
       .add(ExpressionComplexityCheck.class)
       .add(NestedTryCatchCheck.class)
@@ -205,6 +227,7 @@ public final class CheckList {
       .add(ImplementsEnumerationCheck.class)
       .add(CloneMethodCallsSuperCloneCheck.class)
       .add(SwitchCaseTooBigCheck.class)
+      .add(Struts2EndpointCheck.class)
       .add(SwitchCaseWithoutBreakCheck.class)
       .add(CatchUsesExceptionWithContextCheck.class)
       .add(MethodTooBigCheck.class)
@@ -227,6 +250,7 @@ public final class CheckList {
       .add(GarbageCollectorCalledCheck.class)
       .add(ArrayDesignatorOnVariableCheck.class)
       .add(DefaultPackageCheck.class)
+      .add(PopulateBeansCheck.class)
       .add(MethodNamedHashcodeOrEqualCheck.class)
       .add(NestedBlocksCheck.class)
       .add(InterfaceAsConstantContainerCheck.class)
@@ -523,8 +547,21 @@ public final class CheckList {
       .add(BooleanMethodNameCheck.class)
       .add(StaticFieldUpdateInConstructorCheck.class)
       .add(NestedTernaryOperatorsCheck.class)
+      .add(ControllerWithSessionAttributesCheck.class)
+      .add(SpringAntMatcherOrderCheck.class)
+      .add(SpringAutoConfigurationCheck.class)
+      .add(SpringComponentScanCheck.class)
+      .add(SpringBeansShouldBeAccessibleCheck.class)
       .add(SpringComponentWithNonAutowiredMembersCheck.class)
+      .add(SpringConfigurationWithAutowiredFieldsCheck.class)
+      .add(SpringIncompatibleTransactionalCheck.class)
       .add(SpringComponentWithWrongScopeCheck.class)
+      .add(SpringComposedRequestMappingCheck.class)
+      .add(SpringRequestMappingMethodCheck.class)
+      .add(SpringScanDefaultPackageCheck.class)
+      .add(SpringSecurityDebugModeCheck.class)
+      .add(SpringSecurityDisableCSRFCheck.class)
+      .add(PersistentEntityUsedAsRequestParameterCheck.class)
       .add(RequestMappingMethodPublicCheck.class)
       .add(BooleanGratuitousExpressionsCheck.class)
       .add(AllBranchesAreIdenticalCheck.class)
@@ -563,6 +600,15 @@ public final class CheckList {
       .add(IndentationAfterConditionalCheck.class)
       .add(CipherBlockChainingCheck.class)
       .add(CryptographicKeySizeCheck.class)
+      .add(SMTPSSLServerIdentityCheck.class)
+      .add(StringOffsetMethodsCheck.class)
+      .add(EnumEqualCheck.class)
+      .add(XmlDeserializationCheck.class)
+      .add(JacksonDeserializationCheck.class)
+      .add(ObjectDeserializationCheck.class)
+      .add(SpringEndpointsCheck.class)
+      .add(ExecCallCheck.class)
+      .add(EmptyDatabasePasswordCheck.class)
       .build();
   }
 
@@ -600,6 +646,7 @@ public final class CheckList {
       .add(DefaultInterceptorsLocationCheck.class)
       .add(InterceptorExclusionsCheck.class)
       .add(SingleConnectionFactoryCheck.class)
+      .add(DefaultMessageListenerContainerCheck.class)
       .add(SecurityConstraintsInWebXmlCheck.class)
       .add(ValidationFiltersCheck.class)
       .add(ActionNumberCheck.class)

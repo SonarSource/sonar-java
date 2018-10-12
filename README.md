@@ -21,21 +21,22 @@ Useful links
 * [Project homepage](https://redirect.sonarsource.com/plugins/java.html)
 * [Issue tracking](https://jira.sonarsource.com/browse/SONARJAVA/)
 * [Available rules](https://rules.sonarsource.com/java)
-* [Google Group for feedback](https://groups.google.com/forum/#!forum/sonarqube)
+* [SonarQube Community Forum](https://community.sonarsource.com/)
 * [Demo project analysis](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.sonarqube%3Asonarqube)
 
 Have question or feedback?
 --------------------------
 
-To provide feedback (request a feature, report a bug etc.) use the [SonarQube Google Group](https://groups.google.com/forum/#!forum/sonarqube). Please do not forget to specify the language (Java!), plugin version and SonarQube version.
-If you have a question on how to use plugin (and the [docs](https://docs.sonarqube.org/display/PLUG/SonarJava) don't help you) direct it to [Stack Overflow](https://stackoverflow.com/questions/tagged/sonarqube+java) tagged both `sonarqube` and `java`.
+To provide feedback (request a feature, report a bug etc.) use the [SonarQube Community Forum](https://community.sonarsource.com/). Please do not forget to specify the language (Java!), plugin version and SonarQube version.
+
+If you have a question on how to use plugin (and the [docs](https://docs.sonarqube.org/display/PLUG/SonarJava) don't help you), we also encourage you to use the community forum.
 
 Contributing
 ------------
 
-### Topic in SonarQube Google Group
+### Topic in SonarQube Community Forum
 
-To request a new feature, please create a new thread in [SonarQube Google Group](https://groups.google.com/forum/#!forum/sonarqube). Even if you plan to implement it yourself and submit it back to the community, please start a new thread first to be sure that we can use it.
+To request a new feature, please create a new thread in [SonarQube Community Forum](https://community.sonarsource.com/). Even if you plan to implement it yourself and submit it back to the community, please start a new thread first to be sure that we can use it.
 
 ### Pull Request (PR)
 

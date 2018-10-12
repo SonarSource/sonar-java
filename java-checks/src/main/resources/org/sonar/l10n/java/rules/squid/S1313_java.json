@@ -1,6 +1,6 @@
 {
-  "title": "IP addresses should not be hardcoded",
-  "type": "VULNERABILITY",
+  "title": "Using hardcoded IP addresses is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

@@ -1,0 +1,29 @@
+{
+  "title": "SMTP SSL connection should check server identity",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a3"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4499",
+  "sqKey": "S4499",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      297
+    ],
+    "OWASP": [
+      "A3"
+    ]
+  }
+}

@@ -29,9 +29,15 @@ import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.CheckList;
+import org.sonar.java.checks.ServletMethodsExceptionsThrownCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JavaRulesDefinitionTest {
 
@@ -44,7 +50,7 @@ public class JavaRulesDefinitionTest {
 
   @Test
   public void test_creation_of_rules() {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_73_RUNTIME);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -82,7 +88,7 @@ public class JavaRulesDefinitionTest {
     Locale defaultLocale = Locale.getDefault();
     Locale trlocale= Locale.forLanguageTag("tr-TR");
     Locale.setDefault(trlocale);
-    JavaRulesDefinition definition = new JavaRulesDefinition();
+    JavaRulesDefinition definition = new JavaRulesDefinition(SonarVersion.SQ_73_RUNTIME);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -97,7 +103,7 @@ public class JavaRulesDefinitionTest {
   public void debug_rules() {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.debug", true);
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings.asConfig());
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings.asConfig(), SonarVersion.SQ_73_RUNTIME);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -112,7 +118,7 @@ public class JavaRulesDefinitionTest {
     RulesDefinition.Context context = new RulesDefinition.Context();
     RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
     newRepository.createRule("correctRule");
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_73_RUNTIME);
     JavaSonarWayProfile.Profile profile = new JavaSonarWayProfile.Profile();
     profile.ruleKeys = new ArrayList<>();
     try {
@@ -135,6 +141,53 @@ public class JavaRulesDefinitionTest {
     // no metadata defined, does not fail on registration of rule
     definition.newRule(CorrectRule.class, newRepository, profile);
 
+  }
+
+  @Test
+  public void test_security_hotspot() throws Exception {
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_73_RUNTIME);
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    RulesDefinition.Repository repository = context.repository("squid");
+
+    RulesDefinition.Rule hardcodedCredentialsRule = repository.rule("S1313");
+    assertThat(hardcodedCredentialsRule.type()).isEqualTo(RuleType.SECURITY_HOTSPOT);
+    assertThat(hardcodedCredentialsRule.activatedByDefault()).isFalse();
+  }
+
+  @Test
+  public void test_security_hotspot_lts() throws Exception {
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_67_RUNTIME);
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    RulesDefinition.Repository repository = context.repository("squid");
+
+    RulesDefinition.Rule hardcodedCredentialsRule = repository.rule("S1313");
+    assertThat(hardcodedCredentialsRule.type()).isEqualTo(RuleType.VULNERABILITY);
+    assertThat(hardcodedCredentialsRule.activatedByDefault()).isFalse();
+  }
+
+  @Test
+  public void test_security_standards() throws Exception {
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_73_RUNTIME);
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    RulesDefinition.Repository repository = context.repository("squid");
+
+    RulesDefinition.Rule rule = repository.rule("S1989");
+    assertThat(rule.securityStandards()).containsExactlyInAnyOrder("cwe:600", "owaspTop10:a3");
+  }
+
+  @Test
+  public void test_security_standards_not_set_when_unsupported() throws Exception {
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_67_RUNTIME);
+    RulesDefinition.NewRepository repository = mock(RulesDefinition.NewRepository.class);
+    RulesDefinition.NewRule newRule = mock(RulesDefinition.NewRule.class);
+    when(repository.rule(any())).thenReturn(newRule);
+    definition.newRule(ServletMethodsExceptionsThrownCheck.class, repository, JavaSonarWayProfile.readProfile());
+
+    verify(newRule, never()).addOwaspTop10();
+    verify(newRule, never()).addCwe();
   }
 
   private class CheckWithNoAnnotation implements JavaCheck {

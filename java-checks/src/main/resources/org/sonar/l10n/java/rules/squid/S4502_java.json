@@ -1,0 +1,32 @@
+{
+  "title": "Disabling Spring Security's CSRF protection is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "spring",
+    "sans-top25-insecure",
+    "owasp-a6"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten",
+    "SANS Top 25"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4502",
+  "sqKey": "S4502",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      352
+    ],
+    "OWASP": [
+      "A6"
+    ]
+  }
+}

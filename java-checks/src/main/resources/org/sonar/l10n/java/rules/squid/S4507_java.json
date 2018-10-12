@@ -1,0 +1,31 @@
+{
+  "title": "Delivering a Spring application in production with Spring Security's debug mode activated is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1min"
+  },
+  "tags": [
+    "cwe",
+    "spring",
+    "owasp-a3"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4507",
+  "sqKey": "S4507",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      489,
+      215
+    ],
+    "OWASP": [
+      "A3"
+    ]
+  }
+}

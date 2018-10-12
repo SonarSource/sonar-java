@@ -1,0 +1,27 @@
+<p>Failure to password-protect a database is so careless or naive as to be almost negligent. Databases should always be password protected, but the
+use of a database connection with an empty password is a clear indication of a database that is not protected.</p>
+<p>This rule flags database connections with empty passwords.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Connection conn = DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", "");
+Connection conn2 = DriverManager.getConnection("jdbc:derby:memory:myDB;create=true?user=user&amp;password=");
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+DriverManager.getConnection("jdbc:derby:memory:myDB;create=true?user=user&amp;password=password");
+
+DriverManager.getConnection("jdbc:mysql://address=(host=myhost1)(port=1111)(key1=value1)(user=sandy)(password=secret),address=(host=myhost2)(port=2222)(key2=value2)(user=sandy)(password=secret)/db");
+
+DriverManager.getConnection("jdbc:mysql://sandy:secret@[myhost1:1111,myhost2:2222]/db");
+
+String url = "jdbc:postgresql://localhost/test";
+Properties props = new Properties();
+props.setProperty("user", "fred");
+props.setProperty("password", "secret");
+DriverManager.getConnection(url, props);
+</pre>
+<h2>See</h2>
+<ul>
+  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+</ul>
+

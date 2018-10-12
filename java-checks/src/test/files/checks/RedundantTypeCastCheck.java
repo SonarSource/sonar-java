@@ -313,3 +313,7 @@ class AWT {
     a = (byte) -a; // FP, cast is required
   }
 }
+
+class CastIntersectionType {
+  public static final Comparator<Object> UNIQUE_ID_COMPARATOR =  (Comparator<Object> & java.io.Serializable) (o1, o2) -> o1.toString().compareTo(o2.toString());
+}

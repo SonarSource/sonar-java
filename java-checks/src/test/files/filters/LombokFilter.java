@@ -1,3 +1,5 @@
+import static lombok.AccessLevel.PRIVATE;
+
 class Fields {
   @lombok.Getter
   class Getter { // WithIssue
@@ -175,11 +177,127 @@ static class UtilityClass {
   static class A { // WithIssue
     public static void foo() {
     }
+
+    public final String FINAL_NON_STATIC = "x"; // WithIssue
+    public final String finalNonStatic = "x"; // WithIssue
   }
 
   @lombok.experimental.UtilityClass
   static class B { // NoIssue
     public static void foo() {
     }
+
+    public final String STATIC_FINAL_ALLCAPS = "x"; // NoIssue
+    public final String staticFinalCamelCase = "x"; // NoIssue
   }
+}
+
+static class UtilityClassWithPublicConstructorCheck {
+  private UtilityClassWithPublicConstructorCheck() {
+  }
+
+  static class A { // WithIssue
+  }
+
+  @lombok.NoArgsConstructor
+  public static class B { // WithIssue
+  }
+
+  @lombok.RequiredArgsConstructor
+  public static class C { // WithIssue
+  }
+
+  @lombok.AllArgsConstructor
+  public static class D { // WithIssue
+  }
+
+  @lombok.NoArgsConstructor(staticName = "yolo", access = lombok.AccessLevel.PRIVATE)
+  public static class E { // NoIssue
+  }
+
+  @lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+  public static class F { // NoIssue
+  }
+
+  @lombok.AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+  public static class G { // NoIssue
+  }
+
+  @lombok.NoArgsConstructor(access = PRIVATE)
+  public static class H { // NoIssue
+  }
+
+  @lombok.NoArgsConstructor(access = lombok.AccessLevel.NONE)
+  public static class I { // WithIssue
+  }
+
+  @lombok.NoArgsConstructor()
+  public static class J { // WithIssue
+  }
+
+  @lombok.NoArgsConstructor(access = getValue()) // does not compile - for coverage only
+  public static class K { // NoIssue
+  }
+
+  public static lombok.AccessLevel getValue() {
+    return lombok.AccessLevel.MODULE;
+  }
+}
+
+class PrivateFieldOnlyUsedLocally {
+  private PrivateFieldOnlyUsedLocally() {
+  }
+
+  class A { // WithIssue
+    private int foo; // WithIssue
+    public void bar(int y){
+      foo = y + 5;
+      if (foo == 0) {
+        // ...
+      }
+    }
+  }
+
+  @lombok.Getter
+  class B { // WithIssue
+    private int foo; // NoIssue
+    public void bar(int y){
+      foo = y + 5;
+      if (foo == 0) {
+        // ...
+      }
+    }
+  }
+
+  @lombok.AllArgsConstructor
+  class C { // NoIssue
+    private int foo; // NoIssue
+    public void bar(int y){
+      if (foo == 0) {
+        // ...
+      }
+    }
+  }
+
+  @lombok.Data
+  class D { // WithIssue
+    private int foo; // NoIssue
+    public void bar(int y){
+      foo = y + 5;
+      if (foo == 0) {
+        // ...
+      }
+    }
+  }
+
+  class E { // WithIssue
+    @Getter private int foo; // NoIssue
+    public void bar(int y){
+      foo = y + 5;
+      if (foo == 0) {
+        // ...
+      }
+    }
+  }
+
 }

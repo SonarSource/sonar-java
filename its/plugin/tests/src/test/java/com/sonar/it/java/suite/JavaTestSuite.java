@@ -51,7 +51,9 @@ import static java.util.Collections.singletonList;
   JavaClasspathTest.class,
   JaCoCoControllerTest.class,
   SuppressWarningTest.class,
-  SonarLintTest.class
+  SonarLintTest.class,
+  ExternalReportTest.class,
+  DuplicationTest.class
 })
 public class JavaTestSuite {
 
@@ -62,6 +64,7 @@ public class JavaTestSuite {
 
   static {
     OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
+      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE[6.7]"))
       .addPlugin(JAVA_PLUGIN_LOCATION)
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-extension.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-version-aware-visitor.xml"))

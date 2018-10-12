@@ -1,0 +1,58 @@
+<p>"@EnableAutoConfiguration" is a convenient feature to configure the Spring Application Context by attempting to guess the beans that you are likely
+to need. The drawback is that it may load and configure beans the application will never use and therefore consume more CPU and RAM than really
+required. <code>@EnableAutoConfiguration</code> should be configured to exclude all the beans not required by the application. Alternatively, use the
+<code>@Import</code> annotation instead of <code>@EnableAutoConfiguration</code>, to explicitly import the useful AutoConfiguration classes.</p>
+<p>This rule applies for <code>@SpringBootApplication</code> as well.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@SpringBootApplication
+public class MyApplication {
+...
+}
+</pre>
+<pre>
+@Configuration
+@EnableAutoConfiguration
+public class MyApplication {
+...
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@SpringBootApplication(exclude = {
+  MultipartAutoConfiguration.class,
+  JmxAutoConfiguration.class,
+})
+public class MyApplication {
+...
+}
+</pre>
+<pre>
+@Configuration
+@EnableAutoConfiguration(exclude = {
+  MultipartAutoConfiguration.class,
+  JmxAutoConfiguration.class,
+})
+public class MyApplication {
+...
+}
+</pre>
+<pre>
+@Configuration
+@Import({
+        DispatcherServletAutoConfiguration.class,
+        EmbeddedServletContainerAutoConfiguration.class,
+        ErrorMvcAutoConfiguration.class,
+        HttpEncodingAutoConfiguration.class,
+        HttpMessageConvertersAutoConfiguration.class,
+        JacksonAutoConfiguration.class,
+        ServerPropertiesAutoConfiguration.class,
+        PropertyPlaceholderAutoConfiguration.class,
+        ThymeleafAutoConfiguration.class,
+        WebMvcAutoConfiguration.class
+})
+public class MyApplication {
+...
+}
+</pre>
+

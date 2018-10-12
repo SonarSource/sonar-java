@@ -37,6 +37,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisError;
+import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.java.JavaVersionAwareVisitor;
@@ -58,7 +59,6 @@ public class VisitorsBridge {
 
   private static final Logger LOG = Loggers.get(VisitorsBridge.class);
 
-  private final List<JavaFileScanner> scanners;
   private final BehaviorCache behaviorCache;
   private List<JavaFileScanner> executableScanners;
   private final SonarComponents sonarComponents;
@@ -86,8 +86,7 @@ public class VisitorsBridge {
         scannersBuilder.add((JavaFileScanner) visitor);
       }
     }
-    this.scanners = scannersBuilder.build();
-    this.executableScanners = scanners;
+    this.executableScanners = scannersBuilder.build();
     this.sonarComponents = sonarComponents;
     this.classLoader = ClassLoaderBuilder.create(projectClasspath);
     this.symbolicExecutionEnabled = symbolicExecutionMode.isEnabled();
@@ -96,7 +95,7 @@ public class VisitorsBridge {
 
   public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
-    this.executableScanners = executableScanners(scanners, javaVersion);
+    this.executableScanners = executableScanners(executableScanners, javaVersion);
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
@@ -212,7 +211,7 @@ public class VisitorsBridge {
     addAnalysisError(e, file.getPath(), AnalysisError.Kind.PARSE_ERROR);
     if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, file)) {
       this.visitFile(null);
-      scanners.stream()
+      executableScanners.stream()
         .filter(scanner -> scanner instanceof ExceptionHandler)
         .forEach(scanner -> ((ExceptionHandler) scanner).processRecognitionException(e));
     }
@@ -231,6 +230,10 @@ public class VisitorsBridge {
       }
       LOG.warn("Classes not found during the analysis : [{}{}]", classesNotFound.stream().limit(50).collect(Collectors.joining(", ")), message);
     }
+    executableScanners.stream()
+      .filter(s -> s instanceof EndOfAnalysisCheck)
+      .map(EndOfAnalysisCheck.class::cast)
+      .forEach(EndOfAnalysisCheck::endOfAnalysis);
     classLoader.close();
   }
 }

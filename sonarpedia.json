@@ -3,5 +3,9 @@
   "languages": [
     "JAVA"
   ],
-  "latest-update": "2018-05-25T07:48:22.519Z"
+  "latest-update": "2018-10-10T13:55:47.181Z",
+  "options": {
+    "no-language-in-filenames": false,
+    "preserve-filenames": false
+  }
 }
