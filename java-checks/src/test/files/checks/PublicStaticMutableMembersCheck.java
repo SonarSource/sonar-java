@@ -28,6 +28,7 @@ public class A {
   public static java.awt.Point point; // Noncompliant
 
   public static final Integer integer = 5;
+  public static final Integer integer2 = integer;
 
   public static final Hashtable h = new Hashtable(); // Noncompliant
 
@@ -43,12 +44,15 @@ public class A {
   public static final int[] EMPTY_DATA_1 = new int[0]; // Compliant
   public static final int[] EMPTY_DATA_2 = {}; // Compliant
   public static final int[] EMPTY_DATA_3 = new int[]{}; // Compliant
+  public static final int[] EMPTY_DATA_4 = EMPTY_DATA_3; // Compliant
   public static final int[] NON_EMPTY_DATA_1 = new int[]{ 0 }; // Noncompliant - dim 1 array
   public static final int[][] NON_EMPTY_DATA_2 = {new int[0], {}}; // Noncompliant - you can still modify sub array
+  public static final int[] NON_EMPTY_DATA_3 = NON_EMPTY_DATA_1; // Noncompliant
 
   public static int[] data2 = new int[5]; // Noncompliant
 
   public static Point p = new Point(); // Noncompliant
+  public static Point p2 = p; // Noncompliant
 
   public static final List EMPTY_LIST = Arrays.asList();
 
