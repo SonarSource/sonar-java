@@ -24,6 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -255,7 +256,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (!isGetter(tree)) {
+      if (!isGetter(tree) && !isAnnotationMethod(tree)) {
         shouldReport = true;
         hasMethodInvocation = true;
       }
@@ -264,6 +265,11 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
     private static boolean isGetter(MethodInvocationTree tree) {
       String methodName = tree.symbol().name();
       return methodName != null && (methodName.startsWith("get") || methodName.startsWith("is"));
+    }
+
+    private static boolean isAnnotationMethod(MethodInvocationTree tree) {
+      Symbol owner = tree.symbol().owner();
+      return owner.isTypeSymbol() && ((JavaSymbol.TypeJavaSymbol) owner).isAnnotation();
     }
 
     @Override
