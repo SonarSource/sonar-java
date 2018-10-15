@@ -1,0 +1,21 @@
+{
+  "title": "\"ThreadGroup\" should not be used",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "45min"
+  },
+  "tags": [
+    "design",
+    "cert",
+    "suspicious"
+  ],
+  "standards": [
+    "CERT"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-3014",
+  "sqKey": "S3014",
+  "scope": "Main"
+}
