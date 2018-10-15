@@ -170,6 +170,9 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
       return returnValueIsMutable((MethodInvocationTree) expression);
     } else if (expression.is(Tree.Kind.NEW_CLASS)) {
       return !isAcceptedType(expression.symbolType(), ACCEPTED_NEW_TYPES);
+    } else if (expression.is(Tree.Kind.IDENTIFIER)) {
+      Symbol assigned = ((IdentifierTree) expression).symbol();
+      return !IMMUTABLE_CANDIDATES.contains(assigned);
     }
     return true;
   }

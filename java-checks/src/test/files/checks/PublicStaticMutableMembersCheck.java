@@ -28,6 +28,7 @@ public class A {
   public static java.awt.Point point; // Noncompliant
 
   public static final Integer integer = 5;
+  public static final Integer integer2 = integer;
 
   public static final Hashtable h = new Hashtable(); // Noncompliant
 
@@ -43,12 +44,15 @@ public class A {
   public static final int[] EMPTY_DATA_1 = new int[0]; // Compliant
   public static final int[] EMPTY_DATA_2 = {}; // Compliant
   public static final int[] EMPTY_DATA_3 = new int[]{}; // Compliant
+  public static final int[] EMPTY_DATA_4 = EMPTY_DATA_3; // Compliant
   public static final int[] NON_EMPTY_DATA_1 = new int[]{ 0 }; // Noncompliant - dim 1 array
   public static final int[][] NON_EMPTY_DATA_2 = {new int[0], {}}; // Noncompliant - you can still modify sub array
+  public static final int[] NON_EMPTY_DATA_3 = NON_EMPTY_DATA_1; // Noncompliant
 
   public static int[] data2 = new int[5]; // Noncompliant
 
   public static Point p = new Point(); // Noncompliant
+  public static Point p2 = p; // Noncompliant
 
   public static final List EMPTY_LIST = Arrays.asList();
 
@@ -65,6 +69,7 @@ public class A {
   public static final Set PROPER_SET = Collections.unmodifiableSet(new HashSet(Arrays.asList("a")));
 
   public static final Map MAP = new HashMap(); // Noncompliant
+  public static final Map otherMap = MAP; // Noncompliant
 
   static {
     MAP.put("a", "b");
@@ -94,11 +99,16 @@ public class A {
   public static final Set<String> immutableSet = ImmutableSet.of("a");
   public static final Map<String, String> immutableMap = ImmutableMap.of("a", "a");
 
+  public static final Set<String> otherImmutableSet = immutableSet;
+  public static final Map<String, String> otherImmutableMap = immutableMap;
+
   // apache commons collections 4.x
   public static final List<String> immutableListApacheNew = new org.apache.commons.collections4.list.UnmodifiableList(new ArrayList<>());
   public static final List<String> immutableListApache = org.apache.commons.collections4.list.UnmodifiableList.unmodifiableList(new ArrayList<String>());
   public static final Set<String> immutableSetApache = org.apache.commons.collections4.set.UnmodifiableSet.unmodifiableSet(new HashSet<String>());
   public static final Map<String, String> immutableMapApache = org.apache.commons.collections4.map.UnmodifiableMap.unmodifiableMap(new HashMap<String, String>());
+
+  public static final List<String> otherImmutableListApache = immutableListApache;
 
   public static final List noInitializer;
   // we don't know the type of foo
@@ -146,11 +156,13 @@ interface I {
   public static MyImmutableCollection<String> immutableList2; //Compliant : immutable collection
 
   public static Point p = new Point(); // Noncompliant
+  public static Point otherP = p; // Noncompliant
 
   // guava
   public static final List<String> immutableList3 = ImmutableList.of("a");
   public static final Set<String> immutableSet2 = ImmutableSet.of("a");
   public static final Map<String, String> immutableMap2 = ImmutableMap.of("a", "a");
+  public static final Set otherImmutableSet2 = immutableSet2;
 
   // apache commons collections 4.x
   public static final List<String> immutableListApacheNew = new org.apache.commons.collections4.list.UnmodifiableList(new ArrayList<>());
