@@ -611,6 +611,7 @@ public final class CheckList {
       .add(ExecCallCheck.class)
       .add(EmptyDatabasePasswordCheck.class)
       .add(StreamPeekCheck.class)
+      .add(GetClassLoaderCheck.class)
       .build();
   }
 

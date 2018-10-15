@@ -1,0 +1,11 @@
+<p>Using the standard <code>getClassLoader()</code> may not return the <em>right</em> class loader in a JEE context. Instead, go through the
+<code>currentThread</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+ClassLoader cl = this.getClass().getClassLoader();  // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+ClassLoader cl = Thread.currentThread().getContextClassLoader();
+</pre>
+
