@@ -1,0 +1,11 @@
+<p>According to the JavaDocs <code>java.util.Stream.peek</code> is only meant to be used for debugging purposes and should not be used in
+production.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+Stream.of("one", "two", "three", "four")
+         .filter(e -&gt; e.length() &gt; 3)
+         .peek(e -&gt; System.out.println("Filtered value: " + e)); // Noncompliant
+</pre>
+<h2>See</h2>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#peek-java.util.function.Consumer-">Java 8 API Documentation</a></p>
+
