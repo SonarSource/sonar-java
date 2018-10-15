@@ -48,3 +48,8 @@ public class MyServlet extends HttpServlet {
   @javax.ejb.EJB
   private MyObject myObject;
 }
+
+public class MyServletAutowired extends HttpServlet {
+  @org.springframework.beans.factory.annotation.Autowired
+  private javax.sql.DataSource myDB; // compliant annotated with autowired
+}
