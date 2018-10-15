@@ -100,6 +100,8 @@ public class NullDereferenceCheck extends SECheck {
         return checkConstraint(context, arrayAccessNode, arrayAccessSV);
       case MEMBER_SELECT:
         return checkMemberSelect(context, (MemberSelectExpressionTree) syntaxNode, context.getState().peekValue());
+      case SYNCHRONIZED_STATEMENT:
+        return checkConstraint(context, syntaxNode, context.getState().peekValue());
       default:
         // ignore
     }
