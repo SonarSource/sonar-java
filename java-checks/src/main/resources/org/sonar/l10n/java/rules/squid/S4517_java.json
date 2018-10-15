@@ -1,0 +1,16 @@
+{
+  "title": "InputSteam.read() implementation should not return a signed byte",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10 mn"
+  },
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4517",
+  "sqKey": "S4517",
+  "scope": "All"
+}
