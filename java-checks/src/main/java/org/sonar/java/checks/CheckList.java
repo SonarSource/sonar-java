@@ -158,6 +158,7 @@ public final class CheckList {
       .add(UndocumentedApiCheck.class)
       .add(NoSonarCheck.class)
       .add(CommentedOutCodeLineCheck.class)
+      .add(InputStreamReadCheck.class)
       .add(EmptyFileCheck.class)
       .add(EmptyBlockCheck.class)
       .add(TooManyLinesOfCodeInFileCheck.class)
