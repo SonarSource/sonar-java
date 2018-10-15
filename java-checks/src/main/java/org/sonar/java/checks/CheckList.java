@@ -100,6 +100,7 @@ import org.sonar.java.checks.unused.UnusedThrowableCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
 import org.sonar.java.checks.xml.ejb.DefaultInterceptorsLocationCheck;
 import org.sonar.java.checks.xml.ejb.InterceptorExclusionsCheck;
+import org.sonar.java.checks.xml.hibernate.DatabaseSchemaUpdateCheck;
 import org.sonar.java.checks.xml.maven.ArtifactIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.DependencyWithSystemScopeCheck;
 import org.sonar.java.checks.xml.maven.DeprecatedPomPropertiesCheck;
@@ -654,6 +655,7 @@ public final class CheckList {
       .add(ValidationFiltersCheck.class)
       .add(ActionNumberCheck.class)
       .add(FormNameDuplicationCheck.class)
+      .add(DatabaseSchemaUpdateCheck.class)
       .build();
   }
 
