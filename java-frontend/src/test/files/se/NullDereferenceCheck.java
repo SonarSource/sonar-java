@@ -809,3 +809,12 @@ class SpringAnnotations {
     }
   }
 }
+
+class SynchronizedStatementTest {
+  void test(Object obj) {
+    if (obj == null) {
+      synchronized (obj) { // Noncompliant {{A "NullPointerException" could be thrown; "obj" is nullable here.}}
+      }
+    }
+  }
+}
