@@ -157,3 +157,13 @@ class constantInlining {
     logger.warn(MY_CONST + MY_CONST, answer);
   }
 }
+
+class AnnotationMethods {
+  Logger logger = LoggerFactory.getLogger(AnnotationMethods.class);
+  @interface MyAnnotation {
+    String someOtherValue();
+  }
+  void foo(MyAnnotation annotation){
+    logger.info("Caching on disk @ {}", annotation.someOtherValue()); // Compliant - annotation methods are OK
+  }
+}

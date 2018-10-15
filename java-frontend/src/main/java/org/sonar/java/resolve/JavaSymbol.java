@@ -205,6 +205,10 @@ public class JavaSymbol implements Symbol {
     return isFlag(Flags.INTERFACE);
   }
 
+  public boolean isAnnotation() {
+    return isFlag(Flags.ANNOTATION);
+  }
+
   @Override
   public boolean isAbstract() {
     return isFlag(Flags.ABSTRACT);
