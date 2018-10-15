@@ -97,7 +97,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   private void checkClass(ClassTree classTree) {
     if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
       Symbol.TypeSymbol classSymbol = classTree.symbol();
-      Stream<Symbol.MethodSymbol> members = getAllMembers(classSymbol);
+      Stream<Symbol.MethodSymbol> members = getAllMembers(classSymbol, checkRunWith(classSymbol, "Enclosed.class"));
       IdentifierTree simpleName = classTree.simpleName();
       if (classSymbol.metadata().isAnnotatedWith("org.testng.annotations.Test")) {
         checkTestNGmembers(simpleName, members);
@@ -136,6 +136,14 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     return checkRunWith(symbol, "Cucumber.class","Suite.class", "Theories.class");
   }
 
+  private static boolean isNested (Symbol s) {
+    return s.isTypeSymbol() && s.metadata().isAnnotatedWith("org.junit.jupiter.api.Nested");
+  }
+
+  private static final boolean isPublicStaticConcrete(Symbol s) {
+    return isPublicStaticClass(s) && !s.isAbstract();
+  }
+
   protected static boolean checkRunWith(Symbol.TypeSymbol symbol, String... runnerClasses) {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbol.metadata().valuesForAnnotation("org.junit.runner.RunWith");
     if (annotationValues != null && annotationValues.size() == 1) {
@@ -159,26 +167,24 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     });
   }
 
-  private static Stream<Symbol.MethodSymbol> getAllMembers(Symbol.TypeSymbol symbol) {
+  private static Stream<Symbol.MethodSymbol> getAllMembers(Symbol.TypeSymbol symbol, boolean isEnclosed) {
     if ("java.lang.Object".equals(symbol.type().fullyQualifiedName())) {
       return Stream.empty();
     }
     Stream<Symbol.MethodSymbol> members = Stream.empty();
-    if (!checkRunWith(symbol, "Enclosed.class")) {
+    if (!isEnclosed) {
       members = symbol.memberSymbols().stream().filter(Symbol::isMethodSymbol).map(Symbol.MethodSymbol.class::cast);
     }
     Type superClass = symbol.superClass();
     if (superClass != null) {
-      members = Stream.concat(members, getAllMembers(superClass.symbol()));
+      members = Stream.concat(members, getAllMembers(superClass.symbol(), isEnclosed));
     }
     Stream<Symbol.MethodSymbol> defaultMethodsFromInterfaces = symbol.interfaces().stream()
-      .flatMap(i -> getAllMembers(i.symbol()))
+      .flatMap(i -> getAllMembers(i.symbol(), false))
       .filter(m -> ((JavaSymbol.MethodJavaSymbol) m).isDefault());
     for (Symbol s : symbol.memberSymbols()) {
-      if (s.isTypeSymbol() && s.metadata().isAnnotatedWith("org.junit.jupiter.api.Nested")) {
-        members = Stream.concat(members, getAllMembers((Symbol.TypeSymbol) s));
-      } else if (checkRunWith(symbol, "Enclosed.class") && isPublicStaticClass(s) && !s.isAbstract()) {
-        members = Stream.concat(members, getAllMembers((Symbol.TypeSymbol) s));
+      if (isNested(s) || isPublicStaticConcrete(s)) {
+        members = Stream.concat(members, getAllMembers((Symbol.TypeSymbol) s, false));
       }
     }
     members = Stream.concat(members, defaultMethodsFromInterfaces);

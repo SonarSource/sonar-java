@@ -56,3 +56,50 @@ class EnclosedWithStaticInnerClassTest { // Noncompliant {{Add some tests to thi
     }
   }
 }
+
+@RunWith(Enclosed.class)
+class EnclosedExtendsTestClassTest extends SimpleTest { // Noncompliant
+}
+
+@RunWith(Enclosed.class)
+class EnclosedWithInnerStaticClassExtendsTestClass { // no issue
+  public static class InnerClass extends SimpleTest {
+  }
+}
+
+@RunWith(Enclosed.class)
+class EnclosedWithInnerClassExtendsTest { // Noncompliant
+  class InnerClass extends SimpleTest {
+  }
+}
+
+@RunWith(Enclosed.class)
+class EnclosedExtendsWithInnerPublicClassTest extends TestsWithInnerPublicTest { // Compliant
+}
+
+@RunWith(Enclosed.class)
+class EnclosedExtendsWithInnerClassTest extends TestsWithInnerTest { // Noncompliant
+}
+
+
+class SimpleTest {
+  @Test
+  public void test() {
+  }
+}
+
+class TestsWithInnerPublicTest {
+  public static class InnerClass {
+    @Test
+    public void test() {
+    }
+  }
+}
+
+class TestsWithInnerTest { // Noncompliant
+  static class InnerClass {
+    @Test
+    public void test() {
+    }
+  }
+}
