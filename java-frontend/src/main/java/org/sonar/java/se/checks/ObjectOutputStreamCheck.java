@@ -19,12 +19,16 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.ImmutableSet;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.Flow;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -38,39 +42,55 @@ public class ObjectOutputStreamCheck extends SECheck {
     .name("newOutputStream")
     .withAnyParameters();
 
-  public enum FileOutputStreamConstraint implements Constraint {
-    APPEND
+  private static class FileOutputStreamAppendConstraint implements Constraint {
+    private final Tree node;
+
+    FileOutputStreamAppendConstraint(Tree node) {
+      this.node = node;
+    }
   }
 
   @Override
   public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
     ProgramState programState = context.getState();
-    if (syntaxNode.is(Tree.Kind.NEW_CLASS)) {
-      NewClassTree newClassTree = (NewClassTree) syntaxNode;
-      if (newClassTree.symbolType().is("java.io.FileOutputStream") && newClassTree.arguments().size() == 2) {
-        ProgramState psBeforeInvocation = context.getNode().programState;
-        BooleanConstraint argConstraint = psBeforeInvocation.getConstraint(psBeforeInvocation.peekValue(), BooleanConstraint.class);
-        if (argConstraint == BooleanConstraint.TRUE) {
-          programState = programState.addConstraint(programState.peekValue(), FileOutputStreamConstraint.APPEND);
-        }
-      }
-    } else if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
-      if (FILES_NEW_OUTPUT_STREAM.matches(mit)) {
-        ProgramState psBeforeInvocation = context.getNode().programState;
-        int optionsNumber = mit.arguments().size() - 1/*skip Path argument*/;
-        for (int i = 0; i < optionsNumber; i++) {
-          FileOutputStreamConstraint argConstraint = psBeforeInvocation.getConstraint(psBeforeInvocation.peekValue(i), FileOutputStreamConstraint.class);
-          if (argConstraint == FileOutputStreamConstraint.APPEND) {
-            programState = programState.addConstraint(programState.peekValue(), FileOutputStreamConstraint.APPEND);
+    switch (syntaxNode.kind()) {
+      case NEW_CLASS:
+        NewClassTree newClassTree = (NewClassTree) syntaxNode;
+        if (newClassTree.symbolType().is("java.io.FileOutputStream") && newClassTree.arguments().size() == 2) {
+          ProgramState psBeforeInvocation = context.getNode().programState;
+          BooleanConstraint argConstraint = psBeforeInvocation.getConstraint(psBeforeInvocation.peekValue(), BooleanConstraint.class);
+          if (argConstraint == BooleanConstraint.TRUE) {
+            programState = programState.addConstraint(programState.peekValue(), new FileOutputStreamAppendConstraint(newClassTree));
           }
         }
-      }
-    } else if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree member = (MemberSelectExpressionTree) syntaxNode;
-      if (member.symbolType().is("java.nio.file.StandardOpenOption") && "APPEND".equals(member.identifier().name())) {
-        programState = programState.addConstraint(programState.peekValue(), FileOutputStreamConstraint.APPEND);
-      }
+        break;
+      case METHOD_INVOCATION:
+        MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
+        if (FILES_NEW_OUTPUT_STREAM.matches(mit)) {
+          ProgramState psBeforeInvocation = context.getNode().programState;
+          int optionsNumber = mit.arguments().size() - 1;
+          for (int i = 0; i < optionsNumber; i++) {
+            FileOutputStreamAppendConstraint argConstraint = psBeforeInvocation.getConstraint(psBeforeInvocation.peekValue(i), FileOutputStreamAppendConstraint.class);
+            if (argConstraint != null) {
+              programState = programState.addConstraint(programState.peekValue(), new FileOutputStreamAppendConstraint(mit));
+              break;
+            }
+          }
+        }
+        break;
+      case MEMBER_SELECT:
+        programState = handleOpenOptionAppend(programState, ((MemberSelectExpressionTree) syntaxNode).identifier());
+        break;
+      case IDENTIFIER:
+        programState = handleOpenOptionAppend(programState, (IdentifierTree) syntaxNode);
+        break;
+    }
+    return programState;
+  }
+
+  private static ProgramState handleOpenOptionAppend(ProgramState programState, IdentifierTree identifier) {
+    if (identifier.symbolType().is("java.nio.file.StandardOpenOption") && "APPEND".equals(identifier.name())) {
+      return programState.addConstraint(programState.peekValue(), new FileOutputStreamAppendConstraint(identifier));
     }
     return programState;
   }
@@ -79,11 +99,15 @@ public class ObjectOutputStreamCheck extends SECheck {
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
     if (syntaxNode.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) syntaxNode;
-      if (newClassTree.symbolType().is("java.io.ObjectOutputStream")) {
+      if (newClassTree.symbolType().is("java.io.ObjectOutputStream") && newClassTree.arguments().size() == 1) {
         ProgramState programState = context.getState();
-        FileOutputStreamConstraint constraint = programState.getConstraint(programState.peekValue(), FileOutputStreamConstraint.class);
-        if (constraint == FileOutputStreamConstraint.APPEND) {
-          context.reportIssue(syntaxNode, this, "This file was opened in append mode.");
+        FileOutputStreamAppendConstraint constraint = programState.getConstraint(programState.peekValue(), FileOutputStreamAppendConstraint.class);
+        if (constraint != null) {
+          context.reportIssue(
+            newClassTree.arguments().get(0),
+            this,
+            "Do not use a FileOutputStream in append mode.",
+            ImmutableSet.of(Flow.of(new JavaFileScannerContext.Location("FileOutputStream created here.", constraint.node))));
         }
       }
     }
