@@ -1,0 +1,22 @@
+<p>The use of any value but <code>"validate"</code> for <code>hibernate.hbm2ddl.auto</code> may cause the database schema used by your application to
+be changed, dropped, or cleaned of all data. In short, the use of this property is risky, and should only be used in production with the
+<code>"validate"</code> option, if it is used at all.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+&lt;session-factory&gt;
+  &lt;property name="hibernate.hbm2ddl.auto"&gt;update&lt;/property&gt;  &lt;!-- Noncompliant --&gt;
+&lt;/session-factory&gt;
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+&lt;session-factory&gt;
+  &lt;property name="hibernate.hbm2ddl.auto"&gt;validate&lt;/property&gt;  &lt;!-- Compliant --&gt;
+&lt;/session-factory&gt;
+</pre>
+<p>or</p>
+<pre>
+&lt;session-factory&gt;
+  &lt;!-- Property deleted --&gt;
+&lt;/session-factory&gt;
+</pre>
+

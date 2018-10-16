@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+  "-//Hibernate/Hibernate Configuration DTD//EN"
+  "http://hibernate.sourceforge.net/hibernate-configuration.dtd">
+<hibernate-configuration>
+  <property name="hibernate.hbm2ddl.auto">update</property>   <!-- Noncompliant {{Use "validate" or remove this property.}} -->
+  <property name="hibernate.hbm2ddl.auto">validate</property> <!-- Compliant -->
+  <session-factory name="">
+    <property name="hibernate.hbm2ddl.auto">update</property>   <!-- Noncompliant {{Use "validate" or remove this property.}} -->
+    <property name="hibernate.hbm2ddl.auto">validate</property> <!-- Compliant -->
+    <mapping />
+  </session-factory>
+</hibernate-configuration>
