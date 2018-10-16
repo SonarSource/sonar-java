@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
@@ -77,7 +78,20 @@ public class NoWayOutLoopCheck extends SECheck {
 
   @Override
   public void checkEndOfExecution(CheckerContext context) {
+    context.alwaysTrueOrFalseExpressions().alwaysTrue().forEach(tree -> {
+      Tree statementParent = firstStatementParent(tree);
+      if (statementParent.is(Tree.Kind.WHILE_STATEMENT)) {
+        checkLoopWithAlwaysTrueCondition(context, statementParent);
+      }
+    });
     contexts.pop();
+  }
+
+  private void checkLoopWithAlwaysTrueCondition(CheckerContext context, Tree statementParent) {
+    CFGLoop loopBlocks = contexts.peek().getLoop(statementParent);
+    if (loopBlocks != null && loopBlocks.hasNoWayOut()) {
+      context.reportIssue(statementParent, NoWayOutLoopCheck.this, "Add an end condition to this loop.");
+    }
   }
 
   @Override
@@ -97,20 +111,14 @@ public class NoWayOutLoopCheck extends SECheck {
     @Override
     public void visitWhileStatement(WhileStatementTree tree) {
       if (LiteralUtils.isTrue(tree.condition())) {
-        CFGLoop loopBlocks = contexts.peek().getLoop(tree);
-        if (loopBlocks != null && loopBlocks.hasNoWayOut()) {
-          context.reportIssue(tree, NoWayOutLoopCheck.this, "Add an end condition to this loop.");
-        }
+        checkLoopWithAlwaysTrueCondition(context, tree);
       }
     }
 
     @Override
     public void visitForStatement(ForStatementTree tree) {
       if (tree.condition() == null) {
-        CFGLoop loopBlocks = contexts.peek().getLoop(tree);
-        if (loopBlocks != null && loopBlocks.hasNoWayOut()) {
-          context.reportIssue(tree, NoWayOutLoopCheck.this, "Add an end condition to this loop.");
-        }
+        checkLoopWithAlwaysTrueCondition(context, tree);
       } else if (isConditionUnreachable(tree)) {
         context.reportIssue(tree, NoWayOutLoopCheck.this, "Correct this loop's end condition.");
       }
@@ -236,6 +244,16 @@ public class NoWayOutLoopCheck extends SECheck {
     @Override
     public Iterator<Update> iterator() {
       return updates.iterator();
+    }
+  }
+
+  private static Tree firstStatementParent(Tree node) {
+    Tree current = node;
+    while (true) {
+      if (current instanceof StatementTree) {
+        return current;
+      }
+      current = current.parent();
     }
   }
 

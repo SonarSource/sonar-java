@@ -33,6 +33,14 @@ public class NoWayOutLoop {
     }
   }
 
+  void badWhileLoopWithVariable() {
+    boolean condition = true;
+    if (condition) {
+    }
+    while((condition)) { // Noncompliant
+    }
+  }
+
   void okWhileLoop() {
     int j = 0;
     while (true) { // Compliant: explicit exit
@@ -40,6 +48,13 @@ public class NoWayOutLoop {
       if (canExit()) {
         break;
       }
+    }
+  }
+
+  void okWhileLoopWithVariable() {
+    boolean condition = true;
+    while(condition) {
+      condition = false;
     }
   }
 
@@ -253,7 +268,7 @@ public class Coverage {
   
   static void whileVariable() {
     boolean condition = true;
-    while(condition) {
+    while(condition) { // Noncompliant
       doSomething();
     }
   }
