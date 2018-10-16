@@ -42,6 +42,7 @@ import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.MapComputeIfAbsentOrPresentCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.checks.ObjectOutputStreamCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.ParameterNullnessCheck;
 import org.sonar.java.se.checks.RedundantAssignmentsCheck;
@@ -456,6 +457,7 @@ public class ExplodedGraphWalkerTest {
       InvariantReturnCheck.class,
       StreamNotConsumedCheck.class,
       MapComputeIfAbsentOrPresentCheck.class,
+      ObjectOutputStreamCheck.class,
       DebugMethodYieldsCheck.class,
       ParameterNullnessCheck.class
       )

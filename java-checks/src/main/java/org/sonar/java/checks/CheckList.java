@@ -123,6 +123,7 @@ import org.sonar.java.se.checks.MapComputeIfAbsentOrPresentCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.checks.ObjectOutputStreamCheck;
 import org.sonar.java.se.checks.OptionalGetBeforeIsPresentCheck;
 import org.sonar.java.se.checks.ParameterNullnessCheck;
 import org.sonar.java.se.checks.RedundantAssignmentsCheck;
@@ -614,6 +615,7 @@ public final class CheckList {
       .add(EmptyDatabasePasswordCheck.class)
       .add(StreamPeekCheck.class)
       .add(GetClassLoaderCheck.class)
+      .add(ObjectOutputStreamCheck.class)
       .build();
   }
 
