@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
@@ -59,6 +60,8 @@ public class NullDereferenceCheck extends SECheck {
     "\"NullPointerException\" will be thrown when invoking method \"%s()\".");
 
   private static final String JAVA_LANG_NPE = "java.lang.NullPointerException";
+  private static final MethodMatcher OPTIONAL_OR_ELSE_GET_MATCHER = MethodMatcher.create().typeDefinition("java.util.Optional").name("orElseGet")
+    .addParameter("java.util.function.Supplier");
 
   private static class NullDereferenceIssue {
     final ExplodedGraph.Node node;
@@ -81,7 +84,8 @@ public class NullDereferenceCheck extends SECheck {
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
-    if (context.getState().peekValue() == null) {
+    SymbolicValue peekValue = context.getState().peekValue();
+    if (peekValue == null) {
       // stack is empty, nothing to do.
       return context.getState();
     }
@@ -89,9 +93,16 @@ public class NullDereferenceCheck extends SECheck {
       case METHOD_INVOCATION:
         MethodInvocationTree methodInvocation = (MethodInvocationTree) syntaxNode;
         ExpressionTree methodSelect = methodInvocation.methodSelect();
+        ProgramState ps = context.getState();
+        if (OPTIONAL_OR_ELSE_GET_MATCHER.matches(methodInvocation)) {
+          ps = checkConstraint(context, methodInvocation.arguments().get(0), peekValue);
+          if (ps == null) {
+            return ps;
+          }
+        }
         if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
           SymbolicValue dereferencedSV = context.getState().peekValue(methodInvocation.arguments().size());
-          return checkConstraint(context, methodSelect, dereferencedSV);
+          return checkConstraint(ps, context, methodSelect, dereferencedSV);
         }
         break;
       case ARRAY_ACCESS_EXPRESSION:
@@ -99,9 +110,9 @@ public class NullDereferenceCheck extends SECheck {
         SymbolicValue arrayAccessSV = context.getState().peekValue(1);
         return checkConstraint(context, arrayAccessNode, arrayAccessSV);
       case MEMBER_SELECT:
-        return checkMemberSelect(context, (MemberSelectExpressionTree) syntaxNode, context.getState().peekValue());
+        return checkMemberSelect(context, (MemberSelectExpressionTree) syntaxNode, peekValue);
       case SYNCHRONIZED_STATEMENT:
-        return checkConstraint(context, syntaxNode, context.getState().peekValue());
+        return checkConstraint(context, syntaxNode, peekValue);
       default:
         // ignore
     }
@@ -117,7 +128,10 @@ public class NullDereferenceCheck extends SECheck {
   }
 
   private ProgramState checkConstraint(CheckerContext context, Tree syntaxNode, SymbolicValue currentVal) {
-    ProgramState programState = context.getState();
+    return checkConstraint(context.getState(), context, syntaxNode, currentVal);
+  }
+
+  private ProgramState checkConstraint(ProgramState programState, CheckerContext context, Tree syntaxNode, SymbolicValue currentVal) {
     ObjectConstraint constraint = programState.getConstraint(currentVal, ObjectConstraint.class);
     if (constraint != null && constraint.isNull()) {
       NullDereferenceIssue issue = new NullDereferenceIssue(context.getNode(), currentVal, syntaxNode);

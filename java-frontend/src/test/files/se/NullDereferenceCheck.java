@@ -818,3 +818,17 @@ class SynchronizedStatementTest {
     }
   }
 }
+
+class OptionalOfNullableOrElseGet {
+  void test() {
+    java.util.function.Supplier<String> supplier = null;
+    java.util.Optional<String> value = java.util.Optional.empty();
+    java.util.function.Supplier<String> supplier2 = () -> "someString";
+    System.out.println(value.orElseGet(supplier2)); // compliant
+    System.out.println(value.orElseGet(supplier)); // Noncompliant NPE will be raised at runtime
+  }
+  void test2() {
+    java.util.Optional<String> value = java.util.Optional.empty();
+    System.out.println(value.orElseGet(null)); // Noncompliant NPE will be raised at runtime
+  }
+}
