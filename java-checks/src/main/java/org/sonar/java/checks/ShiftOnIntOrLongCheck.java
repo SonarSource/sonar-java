@@ -51,9 +51,13 @@ public class ShiftOnIntOrLongCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     shiftTrees.clear();
-    super.scanFile(context);
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
     for (int i = 0; i < shiftTrees.size(); i++) {
       checkShiftTree(shiftTrees.get(i), i);
     }

@@ -46,8 +46,7 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
   private final Deque<Tree> methods = new LinkedList<>();
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
+  public void leaveFile(JavaFileScannerContext context) {
     returnStatementCounter.clear();
   }
 

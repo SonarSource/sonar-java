@@ -39,10 +39,10 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
   private int lastVarLine;
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     lastVarLine = -1;
     varSameDeclaration = false;
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override

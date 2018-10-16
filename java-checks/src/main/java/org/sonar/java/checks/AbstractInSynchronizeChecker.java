@@ -35,9 +35,13 @@ public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetecti
   private Deque<Boolean> withinSynchronizedBlock = Lists.newLinkedList();
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     withinSynchronizedBlock.push(false);
-    super.scanFile(context);
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
     withinSynchronizedBlock.clear();
   }
 

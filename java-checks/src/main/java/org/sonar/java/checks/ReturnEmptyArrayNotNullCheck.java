@@ -119,8 +119,7 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
+  public void leaveFile(JavaFileScannerContext context) {
     returnType.clear();
   }
 

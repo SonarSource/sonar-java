@@ -109,13 +109,17 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(CONSTRUCTOR).parameters(JAVA_LANG_STRING));
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     compliantConstructorInitializations.clear();
     ignoredVariables.clear();
     variablesToReport.clear();
     settersToReport.clear();
     newClassToReport.clear();
-    super.scanFile(context);
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
     for (VariableSymbol var : variablesToReport) {
       VariableTree declaration = var.declaration();
       if (declaration != null) {

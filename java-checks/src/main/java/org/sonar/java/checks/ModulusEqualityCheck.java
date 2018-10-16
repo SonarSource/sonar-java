@@ -45,8 +45,7 @@ public class ModulusEqualityCheck extends IssuableSubscriptionVisitor {
   private List<Symbol> methodParams = Lists.newArrayList();
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
+  public void leaveFile(JavaFileScannerContext context) {
     methodParams.clear();
   }
 

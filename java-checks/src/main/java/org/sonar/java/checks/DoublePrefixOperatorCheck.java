@@ -43,9 +43,9 @@ public class DoublePrefixOperatorCheck extends IssuableSubscriptionVisitor {
   private Set<ExpressionTree> prefixSet = new HashSet<>();
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     prefixSet.clear();
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override

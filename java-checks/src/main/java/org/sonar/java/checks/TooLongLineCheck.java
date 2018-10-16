@@ -56,11 +56,10 @@ public class TooLongLineCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.context = context;
+  public void setContext(JavaFileScannerContext context) {
     ignoredLines.clear();
     ignoreLines(context.getTree());
-    super.scanFile(context);
+    super.setContext(context);
     visitFile();
   }
 

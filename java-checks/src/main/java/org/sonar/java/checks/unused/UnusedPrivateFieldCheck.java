@@ -74,8 +74,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
+  public void leaveFile(JavaFileScannerContext context) {
     if (!hasNativeMethod) {
       classes.forEach(this::checkClassFields);
     }

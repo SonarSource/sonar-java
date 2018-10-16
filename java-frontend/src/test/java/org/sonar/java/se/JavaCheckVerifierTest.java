@@ -545,8 +545,8 @@ public class JavaCheckVerifierTest {
     }
 
     @Override
-    public void scanFile(JavaFileScannerContext context) {
-      super.scanFile(context);
+    public void setContext(JavaFileScannerContext context) {
+      super.setContext(context);
       for (Integer line : issues.keySet()) {
         for (String message : issues.get(line)) {
           addIssue(line, message);

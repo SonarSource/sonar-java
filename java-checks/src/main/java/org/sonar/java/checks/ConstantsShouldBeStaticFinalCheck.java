@@ -50,9 +50,9 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     nestedClassesLevel = 0;
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override

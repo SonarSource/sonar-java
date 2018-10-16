@@ -113,8 +113,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   private Set<Tree> excluded = Sets.newHashSet();
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
+  public void leaveFile(JavaFileScannerContext context) {
     excluded.clear();
   }
 

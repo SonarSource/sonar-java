@@ -43,9 +43,9 @@ public class InstanceofUsedOnExceptionCheck extends IssuableSubscriptionVisitor 
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     caughtVariables.clear();
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override

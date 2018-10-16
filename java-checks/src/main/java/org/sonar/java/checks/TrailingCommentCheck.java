@@ -61,11 +61,17 @@ public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     previousTokenLine = -1;
-    pattern = Pattern.compile(legalCommentPattern);
+    if (pattern == null) {
+      pattern = Pattern.compile(legalCommentPattern);
+    }
     visitedTokens = Sets.newHashSet();
-    super.scanFile(context);
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
     visitedTokens.clear();
   }
 

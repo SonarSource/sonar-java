@@ -52,9 +52,13 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     methodInvocationVisitor = new MethodInvocationVisitor();
-    super.scanFile(context);
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
     methodInvocationVisitor.checkUsages();
     methodInvocationVisitor = null;
   }

@@ -46,9 +46,9 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     javaVersionAsInt = context.getJavaVersion().asInt();
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override

@@ -95,7 +95,8 @@ public class Measurer extends SubscriptionVisitor {
     complexityInMethods = 0;
     classes = 0;
     methodComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_METHODS);
-    super.scanFile(context);
+    super.setContext(context);
+    scanTree(context.getTree());
     //leave file.
     int fileComplexity = context.getComplexityNodes(context.getTree()).size();
     saveMetricOnFile(CoreMetrics.CLASSES, classes);

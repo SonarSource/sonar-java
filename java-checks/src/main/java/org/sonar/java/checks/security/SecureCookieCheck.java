@@ -103,11 +103,15 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     unsecuredCookies.clear();
     unsecuredReturns.clear();
     unsecuredSetters.clear();
-    super.scanFile(context);
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
     unsecuredCookies.forEach(v -> reportIssue(v.declaration().simpleName(), MESSAGE));
     unsecuredReturns.forEach(r -> reportIssue(r, MESSAGE));
     unsecuredSetters.forEach(m -> reportIssue(m.arguments(), MESSAGE));

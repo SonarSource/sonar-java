@@ -44,9 +44,9 @@ public class AssertsOnParametersOfPublicMethodCheck extends IssuableSubscription
   private Set<AssertStatementTree> assertReported = new HashSet<>();
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     assertReported.clear();
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override

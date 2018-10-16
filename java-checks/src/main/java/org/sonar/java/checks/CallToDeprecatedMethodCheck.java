@@ -39,11 +39,7 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
   private int nestedDeprecationLevel = 0;
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    if (context.getSemanticModel() == null) {
-      return;
-    }
-    super.scanFile(context);
+  public void leaveFile(JavaFileScannerContext context) {
     nestedDeprecationLevel = 0;
   }
 
@@ -54,6 +50,9 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     if (nestedDeprecationLevel == 0) {
       if (tree.is(Tree.Kind.IDENTIFIER)) {
         checkIdentifierIssue((IdentifierTree) tree);

@@ -54,9 +54,9 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     parametersByMethod.clear();
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override

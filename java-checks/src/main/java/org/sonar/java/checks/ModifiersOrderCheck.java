@@ -44,9 +44,9 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
   private Set<Tree> alreadyReported = Sets.newHashSet();
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     alreadyReported.clear();
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override
