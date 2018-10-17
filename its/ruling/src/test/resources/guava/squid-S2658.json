@@ -1,13 +1,4 @@
 {
-'com.google.guava:guava:src/com/google/common/base/FinalizableReferenceQueue.java':[
-264,
-300,
-344,
-],
-'com.google.guava:guava:src/com/google/common/base/Throwables.java':[
-334,
-369,
-],
 'com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java':[
 446,
 ],
@@ -19,9 +10,5 @@
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/FuturesGetChecked.java':[
 190,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java':[
-777,
-798,
 ],
 }

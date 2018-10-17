@@ -52,9 +52,6 @@
 1400,
 1417,
 ],
-'jdk6:java/net/ProxySelector.java':[
-51,
-],
 'jdk6:java/net/URL.java':[
 1140,
 1144,
@@ -68,9 +65,6 @@
 ],
 'jdk6:java/nio/channels/spi/SelectorProvider.java':[
 77,
-],
-'jdk6:java/nio/charset/Charset.java':[
-400,
 ],
 'jdk6:java/rmi/activation/ActivationID.java':[
 254,
@@ -97,14 +91,10 @@
 ],
 'jdk6:java/security/Security.java':[
 640,
-782,
 ],
 'jdk6:java/sql/DriverManager.java':[
 477,
 527,
-],
-'jdk6:java/util/Currency.java':[
-128,
 ],
 'jdk6:java/util/ResourceBundle.java':[
 435,

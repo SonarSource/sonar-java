@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -41,7 +42,10 @@ public class DynamicClassLoadCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(ExpressionUtils.methodName(mit), "Remove this use of dynamic class loading.");
+    String stringConstant = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
+    if(stringConstant == null) {
+      reportIssue(ExpressionUtils.methodName(mit), "Remove this use of dynamic class loading.");
+    }
   }
 
 }
