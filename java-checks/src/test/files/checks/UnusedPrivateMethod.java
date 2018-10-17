@@ -182,3 +182,17 @@ class KillTheNoiseUnresolvedMethodCall {
     }
   }
 }
+public class Bar {
+  public void print() {
+    java.util.List<String> list = java.util.Arrays.asList("x", "y", "z");
+    java.util.List<Foo> foos = list.stream().map(Foo::new).collect(Collectors.toList());
+    System.out.println(foos.get(0).foo);
+  }
+
+  public class Foo {
+    private String foo;
+    private Foo(String foo) {
+      this.foo = foo;
+    }
+  }
+}

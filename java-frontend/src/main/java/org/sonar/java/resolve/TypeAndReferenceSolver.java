@@ -1166,6 +1166,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     JavaType methodRefType = (JavaType) methodRefTree.symbolType();
     JavaType samReturnType = (JavaType) samMethod.returnType().type();
     List<JavaType> samMethodArgs = resolve.findSamMethodArgs(methodRefType);
+    if (JavaKeyword.NEW.getValue().equals(methodRefTree.method().name())) {
+      Type constructorType = ((AbstractTypedTree) methodRefTree.expression()).symbolType();
+      samMethodArgs = addImplicitOuterClassParameter(samMethodArgs, (JavaSymbol.TypeJavaSymbol) constructorType.symbol());
+    }
     Resolution resolution = resolve.findMethodReference(semanticModel.getEnv(methodRefTree), samMethodArgs, methodRefTree);
     JavaSymbol methodSymbol = resolution.symbol();
     if (methodSymbol.isMethodSymbol()) {

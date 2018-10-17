@@ -66,6 +66,8 @@ public class MethodReferenceResolutionTest {
     assertThat(((JavaType) returnStatementType).isParameterized()).isTrue();
     assertThat(((ParametrizedTypeJavaType) returnStatementType).typeSubstitution.substitutedTypes()).hasSize(1);
     assertThat(((ParametrizedTypeJavaType) returnStatementType).typeSubstitution.substitutedTypes().get(0).is("java.util.LinkedHashSet")).isTrue();
+
+    assertThat(result.symbol("<init>", 32).usages()).hasSize(1);
   }
 
 
