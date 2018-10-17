@@ -54,7 +54,13 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
   private static final String CONSTRUCTOR = "<init>";
 
   enum InsecureAlgorithm {
-    MD2, MD4, MD5, MD6, RIPEMD160,
+    MD2, MD4, MD5, MD6, RIPEMD,
+    HAVAL128 {
+      @Override
+      public String toString() {
+        return "HAVAL-128";
+      }
+    },
     SHA1 {
       @Override
       public String toString() {

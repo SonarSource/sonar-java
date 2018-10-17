@@ -17,11 +17,16 @@ class A {
   void myMethod(String algorithm, Provider provider, Properties props) {
     MessageDigest md = null;
     md = MessageDigest.getInstance("MD2"); // Noncompliant [[sc=24;ec=35]] {{Use a stronger hashing algorithm than MD2.}}
-    md = MessageDigest.getInstance("MD5"); // Noncompliant [[sc=24;ec=35]] {{Use a stronger hashing algorithm than MD5.}}
-    md = MessageDigest.getInstance("SHA-1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
     md = MessageDigest.getInstance("MD4"); // Noncompliant {{Use a stronger hashing algorithm than MD4.}}
     md = MessageDigest.getInstance("MD6"); // Noncompliant {{Use a stronger hashing algorithm than MD6.}}
-    md = MessageDigest.getInstance("RIPEMD160"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD160.}}
+    md = MessageDigest.getInstance("MD5"); // Noncompliant [[sc=24;ec=35]] {{Use a stronger hashing algorithm than MD5.}}
+    md = MessageDigest.getInstance("SHA-1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
+    md = MessageDigest.getInstance("HAVAL-128"); // Noncompliant {{Use a stronger hashing algorithm than HAVAL-128.}}
+    md = MessageDigest.getInstance("HMAC-MD5"); // Noncompliant {{Use a stronger hashing algorithm than MD5.}}
+    md = MessageDigest.getInstance("RIPEMD"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD.}}
+    md = MessageDigest.getInstance("RIPEMD-128"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD.}}
+    md = MessageDigest.getInstance("RIPEMD160"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD.}}
+    md = MessageDigest.getInstance("HMACRIPEMD160"); // Noncompliant {{Use a stronger hashing algorithm than RIPEMD.}}
     md = MessageDigest.getInstance("SHA-256");
     md = org.apache.commons.codec.digest.DigestUtils.getDigest("MD2"); // Noncompliant
     md = org.apache.commons.codec.digest.DigestUtils.getDigest("MD5"); // Noncompliant
