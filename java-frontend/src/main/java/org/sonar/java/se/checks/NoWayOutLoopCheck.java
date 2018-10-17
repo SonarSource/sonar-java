@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGLoop;
@@ -80,7 +81,7 @@ public class NoWayOutLoopCheck extends SECheck {
   public void checkEndOfExecution(CheckerContext context) {
     context.alwaysTrueOrFalseExpressions().alwaysTrue().forEach(tree -> {
       Tree statementParent = firstStatementParent(tree);
-      if (statementParent.is(Tree.Kind.WHILE_STATEMENT)) {
+      if (statementParent != null && statementParent.is(Tree.Kind.WHILE_STATEMENT)) {
         checkLoopWithAlwaysTrueCondition(context, statementParent);
       }
     });
@@ -247,14 +248,16 @@ public class NoWayOutLoopCheck extends SECheck {
     }
   }
 
+  @CheckForNull
   private static Tree firstStatementParent(Tree node) {
-    Tree current = node;
-    while (true) {
+    Tree current = node.parent();
+    while (current != null) {
       if (current instanceof StatementTree) {
-        return current;
+        break;
       }
       current = current.parent();
     }
+    return current;
   }
 
   private static class MethodContext {
