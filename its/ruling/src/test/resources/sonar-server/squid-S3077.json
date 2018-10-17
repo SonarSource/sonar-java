@@ -1,0 +1,8 @@
+{
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/app/EmbeddedTomcat.java':[
+37,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java':[
+44,
+],
+}
