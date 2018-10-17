@@ -104,7 +104,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    if (isPublic(tree.modifiers())) {
+    if (isPublic(tree.modifiers()) && Boolean.FALSE.equals(tree.isOverriding())) {
       checkIfAllowed(tree.returnType(), "The return type of this method ");
       for (VariableTree variableTree : tree.parameters()) {
         checkIfAllowed(variableTree.type(), "The type of the \"" + variableTree.simpleName() + "\" object ");

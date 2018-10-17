@@ -40,3 +40,14 @@ public class Employees {
     return employees;
   }
 }
+
+class A {
+  public void foo(HashMap<String, String> map) { // Noncompliant
+  }
+}
+
+class B extends A {
+  @Override
+  public void foo(HashMap<String, String> map) { // Compliant method is inherited
+  }
+}
