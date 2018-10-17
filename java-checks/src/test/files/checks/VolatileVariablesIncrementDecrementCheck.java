@@ -11,13 +11,13 @@ class A {
   private boolean boo2 = false;
 
   public void incrementCounts() {
-    count1++; // Noncompliant {{Use an "AtomicInteger" for this field; its increments are atomic.}}
-    ++this.count1; // Noncompliant {{Use an "AtomicInteger" for this field; its increments are atomic.}}
-    (count2)++; // Noncompliant {{Use an "AtomicLong" for this field; its increments are atomic.}}
-    (++count2); // Noncompliant {{Use an "AtomicLong" for this field; its increments are atomic.}}
-    count3++; // Noncompliant {{Use an "AtomicInteger" for this field; its increments are atomic.}}
+    count1++; // Noncompliant {{Use an "AtomicInteger" for this field; its operations are atomic.}}
+    ++this.count1; // Noncompliant {{Use an "AtomicInteger" for this field; its operations are atomic.}}
+    (count2)++; // Noncompliant {{Use an "AtomicLong" for this field; its operations are atomic.}}
+    (++count2); // Noncompliant {{Use an "AtomicLong" for this field; its operations are atomic.}}
+    count3++; // Noncompliant {{Use an "AtomicInteger" for this field; its operations are atomic.}}
     ++count3; // Noncompliant
-    count4++; // Noncompliant {{Use an "AtomicLong" for this field; its increments are atomic.}}
+    count4++; // Noncompliant {{Use an "AtomicLong" for this field; its operations are atomic.}}
     ++count4; // Noncompliant
     nonVolatileCount1++;
     ++nonVolatileCount1;
@@ -28,9 +28,9 @@ class A {
   }
 
   public void decrementCounts() {
-    count1--; // Noncompliant {{Use an "AtomicInteger" for this field; its decrements are atomic.}}
+    count1--; // Noncompliant {{Use an "AtomicInteger" for this field; its operations are atomic.}}
     --count1; // Noncompliant
-    (count2)--; // Noncompliant {{Use an "AtomicLong" for this field; its decrements are atomic.}}
+    (count2)--; // Noncompliant {{Use an "AtomicLong" for this field; its operations are atomic.}}
     (--count2); // Noncompliant
     count3--; // Noncompliant
     --count3; // Noncompliant
@@ -56,5 +56,18 @@ class A {
     boo1 = !true;
     bool1 = boo2 = !false;
     return !boo1;
+  }
+
+  void binaryOperations() {
+    count1 *= 1; // Noncompliant
+    count1 /= 1; // Noncompliant
+    count1 %= 1; // Noncompliant
+    count1 += 1; // Noncompliant
+    count1 -= 1; // Noncompliant
+    count1 <<= 1; // Noncompliant
+    count1 >>= 1; // Noncompliant
+    count1 >>>= 1; // Noncompliant
+    count1 ^= 1; // Noncompliant
+    count1 |= 1; // Noncompliant
   }
 }

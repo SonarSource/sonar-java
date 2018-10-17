@@ -1,4 +1,12 @@
 {
+'jdk6:java/awt/Toolkit.java':[
+2005,
+],
+'jdk6:java/nio/Bits.java':[
+618,
+633,
+640,
+],
 'jdk6:java/util/HashMap.java':[
 384,
 401,

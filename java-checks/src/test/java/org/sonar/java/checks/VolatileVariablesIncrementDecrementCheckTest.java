@@ -29,4 +29,9 @@ public class VolatileVariablesIncrementDecrementCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/VolatileVariablesIncrementDecrementCheck.java", new VolatileVariablesIncrementDecrementCheck());
   }
 
+  @Test
+  public void test_noSemantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/VolatileVariablesIncrementDecrementCheck.java", new VolatileVariablesIncrementDecrementCheck());
+  }
+
 }
