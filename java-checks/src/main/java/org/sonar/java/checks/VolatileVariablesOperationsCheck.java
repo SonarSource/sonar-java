@@ -24,20 +24,22 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 @Rule(key = "S3078")
 public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisitor {
-
-  private static final String MESSAGE_TEMPLATE = "Use an \"%s\" for this field; its operations are atomic.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -99,7 +101,7 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
     } else if (parent.is(Tree.Kind.ASSIGNMENT)) {
       IdentifierTree variableIdentifier = getVariableIdentifier(((AssignmentExpressionTree) parent).variable());
       if (variableIdentifier != null && identifierSymbol.equals(variableIdentifier.symbol())) {
-        reportIssue(parent, "Use an \"AtomicBoolean\" for this field");
+        reportIssueIfNotInExcludedContext(tree, "AtomicBoolean");
       }
     }
   }
@@ -107,10 +109,36 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
   private void checkIncrementDecrement(Tree tree, IdentifierTree identifier) {
     Type symbolType = identifier.symbol().type();
     if (symbolType.is("int") || symbolType.is("java.lang.Integer")) {
-      reportIssue(tree, String.format(MESSAGE_TEMPLATE, "AtomicInteger"));
+      reportIssueIfNotInExcludedContext(tree, "AtomicInteger");
     } else if (symbolType.is("long") || symbolType.is("java.lang.Long")) {
-      reportIssue(tree, String.format(MESSAGE_TEMPLATE, "AtomicLong"));
+      reportIssueIfNotInExcludedContext(tree, "AtomicLong");
     }
+  }
+
+  private void reportIssueIfNotInExcludedContext(Tree tree, String recommendedType) {
+    Tree current = tree.parent();
+    boolean foundClass = false;
+    while (!foundClass) {
+      switch (current.kind()) {
+        case LAMBDA_EXPRESSION:
+        case SYNCHRONIZED_STATEMENT:
+          return;
+        case METHOD:
+          if (ModifiersUtils.hasModifier(((MethodTree) current).modifiers(), Modifier.SYNCHRONIZED)) {
+            return;
+          }
+          break;
+        case CLASS:
+          if (((ClassTree) current).simpleName() == null) {
+            return;
+          }
+          // we got to a non anonymous class, we can safely raise an issue
+          foundClass = true;
+          break;
+      }
+      current = current.parent();
+    }
+    reportIssue(tree, String.format("Use an \"%s\" for this field; its operations are atomic.", recommendedType));
   }
 
 }

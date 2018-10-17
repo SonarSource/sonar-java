@@ -1,3 +1,5 @@
+import java.util.function.ObjIntConsumer;
+
 class A {
   private volatile int count1 = 0;
   private volatile long count2 = 0L;
@@ -45,7 +47,7 @@ class A {
   }
 
   public boolean toggleBooleans(){
-    boo1 = !boo1;  // Noncompliant {{Use an "AtomicBoolean" for this field}}
+    boo1 = !boo1;  // Noncompliant {{Use an "AtomicBoolean" for this field; its operations are atomic.}}
     boo1 = (!boo1);  // Noncompliant
     boo1 = !(boo1);  // Noncompliant
     this.boo1 = (!this.boo1);  // Noncompliant
@@ -69,5 +71,29 @@ class A {
     count1 >>>= 1; // Noncompliant
     count1 ^= 1; // Noncompliant
     count1 |= 1; // Noncompliant
+  }
+
+  synchronized void synchronizedMethod() {
+    boo1 = !boo1;
+    count1++;
+  }
+  void synchronizedBlock() {
+    synchronized (this) {
+      boo1 = !boo1;
+      count1++;
+    }
+  }
+  void exclusions() {
+    ObjIntConsumer<Integer> consumer = new ObjIntConsumer<Integer>() {
+      @Override
+      public void accept(Integer integer, int value) {
+        boo1 = !boo1;
+        count1++;
+      }
+    };
+    ObjIntConsumer<Integer> consumer2 = (integer, value) -> {
+      boo1 = !boo1;
+      count1++;
+    };
   }
 }
