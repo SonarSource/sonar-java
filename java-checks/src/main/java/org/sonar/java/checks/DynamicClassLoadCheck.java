@@ -43,7 +43,7 @@ public class DynamicClassLoadCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String stringConstant = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
-    if(stringConstant == null) {
+    if (stringConstant == null) {
       reportIssue(ExpressionUtils.methodName(mit), "Remove this use of dynamic class loading.");
     }
   }
