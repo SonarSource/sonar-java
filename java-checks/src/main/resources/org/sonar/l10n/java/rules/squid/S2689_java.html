@@ -1,0 +1,16 @@
+<p><code>ObjectOutputStream</code>s are used with serialization, and the first thing an <code>ObjectOutputStream</code> writes is the serialization
+stream header. This header should appear once per file, at the beginning. Pass a file opened in append mode into an <code>ObjectOutputStream</code>
+constructor and the serialization stream header will be added to the end of the file before your object is then also appended.</p>
+<p>When you're trying to read your object(s) back from the file, only the first one will be read successfully, and a
+<code>StreamCorruptedException</code> will be thrown after that.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+FileOutputStream fos = new FileOutputStream (fileName , true);  // fos opened in append mode
+ObjectOutputStream out = new ObjectOutputStream(fos);  // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+FileOutputStream fos = new FileOutputStream (fileName);
+ObjectOutputStream out = new ObjectOutputStream(fos);
+</pre>
+
