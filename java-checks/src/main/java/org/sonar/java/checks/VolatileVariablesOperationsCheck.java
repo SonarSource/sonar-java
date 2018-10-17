@@ -122,12 +122,14 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
       switch (current.kind()) {
         case LAMBDA_EXPRESSION:
         case SYNCHRONIZED_STATEMENT:
+        case COMPILATION_UNIT:
           return;
         case METHOD:
           if (ModifiersUtils.hasModifier(((MethodTree) current).modifiers(), Modifier.SYNCHRONIZED)) {
             return;
           }
           break;
+        case ENUM:
         case CLASS:
           if (((ClassTree) current).simpleName() == null) {
             return;

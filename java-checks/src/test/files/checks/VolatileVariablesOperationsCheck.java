@@ -97,3 +97,13 @@ class A {
     };
   }
 }
+
+enum anEnum {
+  VAL;
+
+  volatile int value;
+
+  void method() {
+    value++; // Noncompliant
+  }
+}
