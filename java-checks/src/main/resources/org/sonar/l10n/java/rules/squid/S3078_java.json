@@ -1,5 +1,5 @@
 {
-  "title": "\"volatile\" variables should not be incremented using increment operator",
+  "title": "\"volatile\" variables should not be used with compound operators",
   "type": "BUG",
   "status": "ready",
   "remediation": {
