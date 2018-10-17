@@ -22,16 +22,16 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class VolatileVariablesIncrementDecrementCheckTest {
+public class VolatileVariablesOperationsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/VolatileVariablesIncrementDecrementCheck.java", new VolatileVariablesIncrementDecrementCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/VolatileVariablesOperationsCheck.java", new VolatileVariablesOperationsCheck());
   }
 
   @Test
   public void test_noSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/VolatileVariablesIncrementDecrementCheck.java", new VolatileVariablesIncrementDecrementCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/VolatileVariablesOperationsCheck.java", new VolatileVariablesOperationsCheck());
   }
 
 }

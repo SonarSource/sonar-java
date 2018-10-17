@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 @Rule(key = "S3078")
-public class VolatileVariablesIncrementDecrementCheck extends IssuableSubscriptionVisitor {
+public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE_TEMPLATE = "Use an \"%s\" for this field; its operations are atomic.";
 

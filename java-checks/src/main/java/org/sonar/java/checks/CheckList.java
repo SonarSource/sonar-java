@@ -616,7 +616,7 @@ public final class CheckList {
       .add(StreamPeekCheck.class)
       .add(GetClassLoaderCheck.class)
       .add(ObjectOutputStreamCheck.class)
-      .add(VolatileVariablesIncrementDecrementCheck.class)
+      .add(VolatileVariablesOperationsCheck.class)
       .build();
   }
 
