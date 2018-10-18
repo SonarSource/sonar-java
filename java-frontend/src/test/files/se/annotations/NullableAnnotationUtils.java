@@ -18,6 +18,8 @@ interface A {
   @MyNullableAnnotation Object nullable8();
   @MyOtherNullableAnnotation Object nullable9();
   @MayBeNullAnnotation Object nullable10();
+  @Nullable Object nullable11(); // android annotation
+  @android.support.annotation.Nullable Object nullable12(); // android annotation
 
   @javax.annotation.Nonnull Object nonnull1();
   @javax.validation.constraints.NotNull Object nonnull2();
@@ -32,6 +34,9 @@ interface A {
 
 // fake 'android.support.annotation.NonNull' annotation
 @interface NonNull { }
+
+// fake 'android.support.annotation.Nullable' annotation
+@interface Nullable { }
 
 @javax.annotation.Nullable
 @interface MyNullableAnnotation { }
