@@ -44,6 +44,8 @@ public final class NullableAnnotationUtils {
   private static final String ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT = "org.eclipse.jdt.annotation.NonNullByDefault";
 
   private static final Set<String> NULLABLE_ANNOTATIONS = ImmutableSet.of(
+    "android.support.annotation.Nullable",
+    "androidx.annotation.Nullable",
     "edu.umd.cs.findbugs.annotations.Nullable",
     "javax.annotation.CheckForNull",
     "javax.annotation.Nullable",
@@ -54,6 +56,7 @@ public final class NullableAnnotationUtils {
     "org.checkerframework.checker.nullness.compatqual.NullableDecl");
   private static final Set<String> NONNULL_ANNOTATIONS = ImmutableSet.of(
     "android.support.annotation.NonNull",
+    "androidx.annotation.NonNull",
     "edu.umd.cs.findbugs.annotations.NonNull",
     "javax.annotation.Nonnull",
     "javax.validation.constraints.NotNull",

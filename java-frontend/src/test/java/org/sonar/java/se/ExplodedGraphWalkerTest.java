@@ -305,6 +305,11 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void androidx_nullness_annotations() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/annotations/AndroidXAnnotations.java", seChecks());
+  }
+
+  @Test
   public void xproc_usage_of_method_behaviors() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/XProcMethodBehavior.java", seChecks());
   }
