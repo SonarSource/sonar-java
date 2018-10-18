@@ -77,6 +77,14 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     method(IO_RESTASSURED, NameCriteria.startsWith("cookie")).withAnyParameters(),
     method(IO_RESTASSURED, NameCriteria.startsWith("spec")).withAnyParameters(),
 
+    // ReactiveX
+    // 2.x
+    method(TypeCriteria.subtypeOf("io.reactivex.observers.BaseTestConsumer"), STARTS_WITH_ASSERT).withAnyParameters(),
+    // 1.x
+    method(TypeCriteria.subtypeOf("rx.observers.TestObserver"), STARTS_WITH_ASSERT).withAnyParameters(),
+    method(TypeCriteria.subtypeOf("rx.observers.TestSubscriber"), STARTS_WITH_ASSERT).withAnyParameters(),
+    method(TypeCriteria.is("rx.observers.AssertableSubscriber"), STARTS_WITH_ASSERT).withAnyParameters(),
+
     // assertJ
     method(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert"), ANY_NAME).withAnyParameters(),
     method(ORG_ASSERTJ_FAIL, STARTS_WITH_FAIL).withAnyParameters(),

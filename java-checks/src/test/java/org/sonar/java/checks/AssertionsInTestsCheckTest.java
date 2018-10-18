@@ -42,6 +42,8 @@ public class AssertionsInTestsCheckTest {
       {"Spring"},
       {"EasyMock"},
       {"Truth"},
+      {"ReactiveX1"},
+      {"ReactiveX2"},
       {"RestAssured"},
       {"Mockito"},
       {"JMock"},
