@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 import java.io.File;
 import java.util.List;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,8 +46,8 @@ public class AbstractMethodDetectionTest {
       ));
     JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
-    assertThat(visitor.lines).hasSize(2);
-    assertThat(visitor.lines).containsExactly(15, 17);
+    assertThat(visitor.lines).hasSize(3);
+    assertThat(visitor.lines).containsExactly(15, 17, 19);
   }
 
   @Test
@@ -56,7 +57,7 @@ public class AbstractMethodDetectionTest {
       ));
     JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
-    assertThat(visitor.lines).containsExactly(14, 15, 16, 17);
+    assertThat(visitor.lines).containsExactly(14, 15, 16, 17, 19);
 
   }
 
@@ -90,6 +91,10 @@ public class AbstractMethodDetectionTest {
       lines.add(((JavaTree) tree).getLine());
     }
 
+    @Override
+    protected void onMethodReferenceFound(MethodReferenceTree methodReferenceTree) {
+      lines.add(((JavaTree) methodReferenceTree).getLine());
+    }
   }
 
 }

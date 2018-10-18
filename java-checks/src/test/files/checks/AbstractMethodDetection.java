@@ -1,11 +1,11 @@
 import java.lang.String;
 
 class A{
-  void method();
+  void method(){}
   void method(int a){}
   void method(String a){}
   void method(String[] a){}
-  void method2(int a);
+  void method2(int a){}
 }
 
 class B{
@@ -16,5 +16,6 @@ class B{
     a.method("");
     a.method(new String[]{""});
     a.method2(1);
+    java.util.function.IntConsumer c = a::method;
   }
 }

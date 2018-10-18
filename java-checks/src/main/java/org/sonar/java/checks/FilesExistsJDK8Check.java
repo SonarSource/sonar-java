@@ -30,6 +30,7 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 
 @Rule(key = "S3725")
 public class FilesExistsJDK8Check extends AbstractMethodDetection implements JavaVersionAwareVisitor {
@@ -63,5 +64,11 @@ public class FilesExistsJDK8Check extends AbstractMethodDetection implements Jav
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String methodName = mit.symbol().name();
     reportIssue(ExpressionUtils.methodName(mit), "Replace this with a call to the \"toFile()." + messageParam.get(methodName) + "()\" method");
+  }
+
+  @Override
+  protected void onMethodReferenceFound(MethodReferenceTree methodReferenceTree) {
+    String methodName = methodReferenceTree.method().symbol().name();
+    reportIssue(methodReferenceTree.method(), "Replace this with a call to the \"toFile()." + messageParam.get(methodName) + "()\" method");
   }
 }
