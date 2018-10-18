@@ -103,3 +103,15 @@ class TestsWithInnerTest { // Noncompliant
     }
   }
 }
+
+@RunWith(Enclosed.class)
+class EnclosedExtendsWithInnerClassTest2 extends TestsWithInnerTest2 {
+}
+
+class TestsWithInnerTest2 {
+  public static class InnerClass extends TestsWithInnerTest2 {
+    @Test
+    public void test() {
+    }
+  }
+}
