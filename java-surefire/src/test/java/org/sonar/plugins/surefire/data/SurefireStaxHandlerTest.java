@@ -125,6 +125,13 @@ public class SurefireStaxHandlerTest {
     assertThat(publicClass.getTests(), is(4));
   }
 
+  @Test
+  public void output_of_junit_5_2_test_without_display_name() throws XMLStreamException {
+    parse("TEST-#29.xml");
+    assertThat(index.get(")").getTests(), is(1));
+  }
+
+
   private void parse(String path) throws XMLStreamException {
     StaxParser parser = new StaxParser(index);
     File xmlFile;
