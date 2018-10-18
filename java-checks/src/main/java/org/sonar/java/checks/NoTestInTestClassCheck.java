@@ -49,29 +49,6 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   private final Set<String> testAnnotations = new HashSet<>();
   private final Set<String> seenAnnotations = new HashSet<>();
 
-  private boolean isTestAnnotation(Type type) {
-    return testAnnotations.contains(type.fullyQualifiedName()) || isJUnitTestableMetaAnnotated(type);
-  }
-
-  private boolean isJUnitTestableMetaAnnotated(Type type) {
-    if (seenAnnotations.contains(type.fullyQualifiedName())) {
-      return false;
-    }
-    seenAnnotations.add(type.fullyQualifiedName());
-    SymbolMetadata metadata = type.symbol().metadata();
-    if (metadata.isAnnotatedWith("org.junit.platform.commons.annotation.Testable")) {
-      testAnnotations.add(type.fullyQualifiedName());
-      return true;
-    }
-    for (SymbolMetadata.AnnotationInstance annotation : metadata.annotations()) {
-      if (isJUnitTestableMetaAnnotated(annotation.symbol().type())) {
-        testAnnotations.add(type.fullyQualifiedName());
-        return true;
-      }
-    }
-    return false;
-  }
-
   @Override
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(Kind.COMPILATION_UNIT);
@@ -136,15 +113,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     return checkRunWith(symbol, "Cucumber.class","Suite.class", "Theories.class");
   }
 
-  private static boolean isNested (Symbol s) {
-    return s.isTypeSymbol() && s.metadata().isAnnotatedWith("org.junit.jupiter.api.Nested");
-  }
-
-  private static final boolean isPublicStaticConcrete(Symbol s) {
-    return isPublicStaticClass(s) && !s.isAbstract();
-  }
-
-  protected static boolean checkRunWith(Symbol.TypeSymbol symbol, String... runnerClasses) {
+  private static boolean checkRunWith(Symbol.TypeSymbol symbol, String... runnerClasses) {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbol.metadata().valuesForAnnotation("org.junit.runner.RunWith");
     if (annotationValues != null && annotationValues.size() == 1) {
       Object value = annotationValues.get(0).value();
@@ -165,6 +134,29 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
       Type type = input.symbol().type();
       return type.isUnknown() || isTestAnnotation(type);
     });
+  }
+
+  private boolean isTestAnnotation(Type type) {
+    return testAnnotations.contains(type.fullyQualifiedName()) || isJUnitTestableMetaAnnotated(type);
+  }
+
+  private boolean isJUnitTestableMetaAnnotated(Type type) {
+    if (seenAnnotations.contains(type.fullyQualifiedName())) {
+      return false;
+    }
+    seenAnnotations.add(type.fullyQualifiedName());
+    SymbolMetadata metadata = type.symbol().metadata();
+    if (metadata.isAnnotatedWith("org.junit.platform.commons.annotation.Testable")) {
+      testAnnotations.add(type.fullyQualifiedName());
+      return true;
+    }
+    for (SymbolMetadata.AnnotationInstance annotation : metadata.annotations()) {
+      if (isJUnitTestableMetaAnnotated(annotation.symbol().type())) {
+        testAnnotations.add(type.fullyQualifiedName());
+        return true;
+      }
+    }
+    return false;
   }
 
   private static Stream<Symbol.MethodSymbol> getAllMembers(Symbol.TypeSymbol symbol, boolean isEnclosed) {
@@ -189,6 +181,14 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     }
     members = Stream.concat(members, defaultMethodsFromInterfaces);
     return members;
+  }
+
+  private static boolean isNested (Symbol s) {
+    return s.isTypeSymbol() && s.metadata().isAnnotatedWith("org.junit.jupiter.api.Nested");
+  }
+
+  private static boolean isPublicStaticConcrete(Symbol s) {
+    return isPublicStaticClass(s) && !s.isAbstract();
   }
 
   private static boolean isPublicStaticClass(Symbol symbol) {
