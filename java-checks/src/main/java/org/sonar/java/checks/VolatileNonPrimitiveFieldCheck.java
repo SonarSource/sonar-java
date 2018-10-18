@@ -54,12 +54,12 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
 
   private static String getMessage(VariableTree variableTree) {
     Type varType = variableTree.type().symbolType();
-    if(varType.isArray()) {
+    if (varType.isArray()) {
       String atomicType = "Reference";
       Type elementType = ((Type.ArrayType) varType).elementType();
-      if(elementType.isPrimitive(Type.Primitives.LONG)) {
+      if (elementType.isPrimitive(Type.Primitives.LONG)) {
         atomicType = "Long";
-      } else if(elementType.isPrimitive(Type.Primitives.INT)) {
+      } else if (elementType.isPrimitive(Type.Primitives.INT)) {
         atomicType = "Integer";
       }
       return String.format(ARRAY_MESSAGE, atomicType);
