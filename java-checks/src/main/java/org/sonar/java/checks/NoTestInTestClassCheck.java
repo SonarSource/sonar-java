@@ -160,7 +160,11 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Stream<Symbol.MethodSymbol> getAllMembers(Symbol.TypeSymbol symbol, boolean isEnclosed) {
-    if ("java.lang.Object".equals(symbol.type().fullyQualifiedName())) {
+    return getAllMembers(symbol, isEnclosed, new HashSet<>());
+  }
+
+  private static Stream<Symbol.MethodSymbol> getAllMembers(Symbol.TypeSymbol symbol, boolean isEnclosed, Set<Symbol> visitedSymbols) {
+    if (!visitedSymbols.add(symbol) || symbol.type().is("java.lang.Object")) {
       return Stream.empty();
     }
     Stream<Symbol.MethodSymbol> members = Stream.empty();
@@ -169,17 +173,17 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     }
     Type superClass = symbol.superClass();
     if (superClass != null) {
-      members = Stream.concat(members, getAllMembers(superClass.symbol(), isEnclosed));
+      members = Stream.concat(members, getAllMembers(superClass.symbol(), isEnclosed, visitedSymbols));
     }
     Stream<Symbol.MethodSymbol> defaultMethodsFromInterfaces = symbol.interfaces().stream()
       .flatMap(i -> getAllMembers(i.symbol(), false))
       .filter(m -> ((JavaSymbol.MethodJavaSymbol) m).isDefault());
+    members = Stream.concat(members, defaultMethodsFromInterfaces);
     for (Symbol s : symbol.memberSymbols()) {
       if (isNested(s) || isPublicStaticConcrete(s)) {
-        members = Stream.concat(members, getAllMembers((Symbol.TypeSymbol) s, false));
+        members = Stream.concat(members, getAllMembers((Symbol.TypeSymbol) s, false, visitedSymbols));
       }
     }
-    members = Stream.concat(members, defaultMethodsFromInterfaces);
     return members;
   }
 
