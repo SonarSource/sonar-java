@@ -12,4 +12,6 @@ class A {
     if(Files.isDirectory(path)) { // Noncompliant {{Replace this with a call to the "toFile().isDirectory()" method}}
     }
   }
+  java.util.function.Predicate<java.nio.file.Path> p1 = f -> Files.isRegularFile(f); // Noncompliant
+  java.util.function.Predicate<java.nio.file.Path> p2 = Files::isRegularFile; // Noncompliant [[sc=64;ec=77]]
 }

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -34,7 +35,7 @@ public abstract class AbstractMethodDetection extends IssuableSubscriptionVisito
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_REFERENCE);
   }
 
   @Override
@@ -57,6 +58,11 @@ public abstract class AbstractMethodDetection extends IssuableSubscriptionVisito
       if (invocationMatcher.matches(newClassTree)) {
         onConstructorFound(newClassTree);
       }
+    } else if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
+      MethodReferenceTree methodReferenceTree = (MethodReferenceTree) tree;
+      if (invocationMatcher.matches(methodReferenceTree.method().symbol())) {
+        onMethodReferenceFound(methodReferenceTree);
+      }
     }
   }
 
@@ -67,6 +73,10 @@ public abstract class AbstractMethodDetection extends IssuableSubscriptionVisito
   }
 
   protected void onConstructorFound(NewClassTree newClassTree) {
+    // Do nothing by default
+  }
+
+  protected void onMethodReferenceFound(MethodReferenceTree methodReferenceTree) {
     // Do nothing by default
   }
 
