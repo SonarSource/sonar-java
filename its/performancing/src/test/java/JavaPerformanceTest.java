@@ -63,7 +63,7 @@ public class JavaPerformanceTest {
 
     double time = sensorTime(result.getLogs());
 
-    double expected = 178;
+    double expected = 170;
     assertThat(time).isEqualTo(expected, offset(expected * 0.06));
   }
 
