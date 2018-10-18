@@ -1,0 +1,36 @@
+<p>Using compound operators as well as increments and decrements (and toggling, in the case of <code>boolean</code>s) on primitive fields are not
+atomic operations. That is, they don't happen in a single step. For instance, when a <code>volatile</code> primitive field is incremented or
+decremented you run the risk of data loss if threads interleave in the steps of the update. Instead, use a guaranteed-atomic class such as
+<code>AtomicInteger</code>, or synchronize the access.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+private volatile int count = 0;
+private volatile boolean boo = false;
+
+public void incrementCount() {
+  count++;  // Noncompliant
+}
+
+public void toggleBoo(){
+  boo = !boo;  // Noncompliant
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+private AtomicInteger count = 0;
+private boolean boo = false;
+
+public void incrementCount() {
+  count.incrementAndGet();
+}
+
+public synchronized void toggleBoo() {
+  boo = !boo;
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/RIFJAg">CERT, VNA02-J.</a> - Ensure that compound operations on shared variables are
+  atomic </li>
+</ul>
+
