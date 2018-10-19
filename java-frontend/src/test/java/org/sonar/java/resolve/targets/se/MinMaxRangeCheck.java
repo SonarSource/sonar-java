@@ -58,6 +58,34 @@ class MinMaxRangeCheck {
     return Math.min(LOWER_INT, result); // Noncompliant {{Change these chained min/max methods invocations, as final results will always be the lower bound.}}
   }
 
+  public int doRangeCheckNOK6(int num) {
+    int upper = 1837;
+    int lower = -496;
+    int result = Math.min(lower, num);
+    return Math.max(result, upper); // Noncompliant
+  }
+
+  public double doRangeCheckNOK7(double num) {
+    double upper = 18.37;
+    double lower = -4.96;
+    double result = Math.min(lower, num);
+    return Math.max(result, upper); // Compliant - FN
+  }
+
+  public double doRangeCheckNOK8(float num) {
+    float upper = 18.37f;
+    float lower = -4.96f;
+    float result = Math.min(lower, num);
+    return Math.max(result, upper); // Compliant - FN
+  }
+
+  public double doRangeCheckNOK9(long num) {
+    long upper = 1837L;
+    long lower = -496L;
+    long result = Math.min(lower, num);
+    return Math.max(result, upper); // Noncompliant
+  }
+
   public int doRangeCheckOK1(int num) { // Let's say num = 12
     int result = Math.min(UPPER_INT, num); // result = 12
     return Math.max(LOWER_INT, result); // Compliant; result is still 12
@@ -81,6 +109,13 @@ class MinMaxRangeCheck {
   public int doRangeCheckOK5(int num) { // using both time same range
     int result = Math.min(LOWER_INT, num);
     return Math.max(LOWER_INT, result);
+  }
+
+  public int doRangeCheckOK6(int num) { // do not handle arithmetic
+    int upper = 1837 + 14;
+    int lower = -496 * 42;
+    int result = Math.min(lower, num);
+    return Math.max(result, upper);
   }
 
   public void foo() {
