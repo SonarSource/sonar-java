@@ -85,6 +85,28 @@ public class NullableAnnotationUtilsTest {
     getMethods(semanticModel, "org.foo.qix.A").forEach(NullableAnnotationUtilsTest::testMethods);
   }
 
+  @Test
+  public void testSpringIsPackageAnnotatedNonNull() {
+    List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
+    classPath.add(new File("target/test-classes"));
+    // adding the class corresponding to package-info having @NonNullApi and @NonNullFields annotations
+    classPath.add(new File("src/test/files/se/annotations/springframework"));
+
+    SemanticModel semanticModel = getSemanticModel("src/test/files/se/annotations/springframework/org/foo/bar/Spring.java", classPath);
+    getMethods(semanticModel, "org.foo.bar.A").forEach(NullableAnnotationUtilsTest::testMethods);
+    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.B", "field"))).isFalse();
+    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.B", "field"))).isNull();
+    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isFalse();
+    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.bar.C", "getStringNullable"))).isNull();
+
+    semanticModel = getSemanticModel("src/test/files/se/annotations/springframework/org/foo/foo/Spring.java", classPath);
+    getMethods(semanticModel, "org.foo.foo.A").forEach(NullableAnnotationUtilsTest::testMethods);
+    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.foo.B", "field1"))).isTrue();
+    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.foo.B", "field1"))).isEqualTo("org.springframework.lang.NonNullFields");
+    assertThat(isAnnotatedNonNull(getSymbol(semanticModel, "org.foo.foo.B", "field2"))).isFalse();
+    assertThat(nonNullAnnotation(getSymbol(semanticModel, "org.foo.foo.B", "field2"))).isNull();
+  }
+
   private static SemanticModel getSemanticModel(String fileName, List<File> classPath) {
     CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(new File(fileName));
     SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(classPath));
