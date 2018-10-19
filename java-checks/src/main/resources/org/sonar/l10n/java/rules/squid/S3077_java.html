@@ -1,0 +1,22 @@
+<p>Marking an array <code>volatile</code> means that the array itself will always be read fresh and never thread cached, but the items <em>in</em> the
+array will not be. Similarly, marking a mutable object field <code>volatile</code> means the object <em>reference</em> is <code>volatile</code> but
+the object itself is not, and other threads may not see updates to the object state.</p>
+<p>This can be salvaged with arrays by using the relevant AtomicArray class, such as <code>AtomicIntegerArray</code>, instead. For mutable objects,
+the <code>volatile</code> should be removed, and some other method should be used to ensure thread-safety, such as synchronization, or ThreadLocal
+storage.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+private volatile int [] vInts;  // Noncompliant
+private volatile MyObj myObj;  // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+private AtomicIntegerArray vInts;
+private MyObj myObj;
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/twD1AQ">CERT, CON50-J.</a> - Do not assume that declaring a reference volatile
+  guarantees safe publication of the members of the referenced object </li>
+</ul>
+

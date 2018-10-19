@@ -614,6 +614,7 @@ public final class CheckList {
       .add(ExecCallCheck.class)
       .add(EmptyDatabasePasswordCheck.class)
       .add(StreamPeekCheck.class)
+      .add(VolatileNonPrimitiveFieldCheck.class)
       .add(GetClassLoaderCheck.class)
       .add(ObjectOutputStreamCheck.class)
       .add(VolatileVariablesOperationsCheck.class)
