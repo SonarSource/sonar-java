@@ -42,6 +42,8 @@ public final class NullableAnnotationUtils {
 
   private static final String JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT = "javax.annotation.ParametersAreNonnullByDefault";
   private static final String ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT = "org.eclipse.jdt.annotation.NonNullByDefault";
+  private static final String ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API = "org.springframework.lang.NonNullApi";
+  private static final String ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS = "org.springframework.lang.NonNullFields";
 
   private static final Set<String> NULLABLE_ANNOTATIONS = ImmutableSet.of(
     "android.support.annotation.Nullable",
@@ -135,11 +137,31 @@ public final class NullableAnnotationUtils {
       return false;
     }
     SymbolMetadata metadata = symbol.metadata();
-    return NONNULL_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith) || isMethodAnnotatedWithEclipseNonNullReturnType(symbol);
+    return NONNULL_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith)
+      || nonNullReturnTypeAnnotation(symbol) != null
+      || nonNullFieldAnnotation(symbol) != null;
   }
 
-  private static boolean isMethodAnnotatedWithEclipseNonNullReturnType(Symbol symbol) {
-    return symbol.isMethodSymbol() && !isUsingNullable(symbol) && isGloballyAnnotatedWithEclipseNonNullByDefault((Symbol.MethodSymbol) symbol, "RETURN_TYPE");
+  @CheckForNull
+  private static String nonNullFieldAnnotation(Symbol symbol) {
+    if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !isUsingNullable(symbol)
+      && valuesForGlobalAnnotation((JavaSymbol) symbol, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS) != null) {
+      return ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS;
+    }
+    return null;
+  }
+
+  @CheckForNull
+  private static String nonNullReturnTypeAnnotation(Symbol symbol) {
+    if (symbol.isMethodSymbol() && !isUsingNullable(symbol)) {
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+      if (isGloballyAnnotatedWithEclipseNonNullByDefault(methodSymbol, "RETURN_TYPE")) {
+        return ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT;
+      } else if (valuesForGlobalAnnotation(methodSymbol, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API) != null) {
+        return ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API;
+      }
+    }
+    return null;
   }
 
   @CheckForNull
@@ -152,10 +174,11 @@ public final class NullableAnnotationUtils {
     if (result.isPresent()) {
       return result.get();
     }
-    if (isMethodAnnotatedWithEclipseNonNullReturnType(symbol)) {
-      return ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT;
+    String nonNullReturnAnnotation = nonNullReturnTypeAnnotation(symbol);
+    if (nonNullReturnAnnotation != null) {
+      return nonNullReturnAnnotation;
     }
-    return null;
+    return nonNullFieldAnnotation(symbol);
   }
 
   public static boolean isGloballyAnnotatedParameterNullable(Symbol.MethodSymbol method) {
@@ -170,8 +193,9 @@ public final class NullableAnnotationUtils {
   public static String nonNullAnnotationOnParameters(Symbol.MethodSymbol method) {
     if (valuesForGlobalAnnotation(method, JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT) != null) {
       return JAVAX_ANNOTATION_PARAMETERS_ARE_NONNULL_BY_DEFAULT;
-    }
-    if (isGloballyAnnotatedWithEclipseNonNullByDefault(method, "PARAMETER")) {
+    } else if (valuesForGlobalAnnotation(method, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API) != null) {
+      return ORG_SPRINGFRAMEWORK_LANG_NON_NULL_API;
+    } else if (isGloballyAnnotatedWithEclipseNonNullByDefault(method, "PARAMETER")) {
       return ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT;
     }
     return null;
@@ -179,7 +203,12 @@ public final class NullableAnnotationUtils {
 
   @CheckForNull
   private static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(Symbol.MethodSymbol method, String annotation) {
-    return Arrays.asList(method, method.enclosingClass(), ((JavaSymbol.MethodJavaSymbol) method).packge()).stream()
+    return valuesForGlobalAnnotation((JavaSymbol) method, annotation);
+  }
+
+  @CheckForNull
+  private static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(JavaSymbol method, String annotation) {
+    return Arrays.asList(method, method.enclosingClass(), method.packge()).stream()
       .map(symbol -> symbol.metadata().valuesForAnnotation(annotation))
       .filter(Objects::nonNull)
       .findFirst()
