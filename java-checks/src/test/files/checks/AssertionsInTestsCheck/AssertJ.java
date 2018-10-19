@@ -37,6 +37,11 @@ public class AssertionsInTestsCheckAssertJ {
   }
 
   @Test
+  public void assertions_assertThat_method_ref() {
+    new java.util.ArrayList<Boolean>().forEach(Assertions::assertThat);
+  }
+
+  @Test
   public void assertions_fail() {
     Assertions.fail("a");
   }

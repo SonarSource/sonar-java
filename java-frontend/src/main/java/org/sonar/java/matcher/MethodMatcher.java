@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
@@ -162,6 +163,7 @@ public class MethodMatcher {
     return symbol.isMethodSymbol() && isSearchedMethod((MethodSymbol) symbol, callSiteType);
   }
 
+  @CheckForNull
   private static Type getCallSiteType(MethodReferenceTree referenceTree) {
     Tree expression = referenceTree.expression();
     if(expression instanceof ExpressionTree) {
@@ -170,6 +172,7 @@ public class MethodMatcher {
     return null;
   }
 
+  @CheckForNull
   private static Type getCallSiteType(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     // methodSelect can only be Tree.Kind.IDENTIFIER or Tree.Kind.MEMBER_SELECT

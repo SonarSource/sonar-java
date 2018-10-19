@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 
@@ -150,6 +151,15 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   public void visitMethodInvocation(MethodInvocationTree mit) {
     super.visitMethodInvocation(mit);
     if (!methodContainsAssertion.peek() && inUnitTest.peek() && ASSERTION_INVOCATION_MATCHERS.anyMatch(mit)) {
+      methodContainsAssertion.pop();
+      methodContainsAssertion.push(true);
+    }
+  }
+
+  @Override
+  public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
+    super.visitMethodReference(methodReferenceTree);
+    if (!methodContainsAssertion.peek() && inUnitTest.peek() && ASSERTION_INVOCATION_MATCHERS.anyMatch(methodReferenceTree)) {
       methodContainsAssertion.pop();
       methodContainsAssertion.push(true);
     }
