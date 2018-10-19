@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
@@ -85,6 +86,13 @@ public class MethodMatcherCollectionTest {
     when(matcher2.matches(any(NewClassTree.class))).thenReturn(true);
     assertThat(MethodMatcherCollection.create(matcher1, matcher2).anyMatch(mock(NewClassTree.class))).isTrue();
     assertThat(MethodMatcherCollection.create(matcher1).anyMatch(mock(NewClassTree.class))).isFalse();
+
+    matcher1 = mock(MethodMatcher.class);
+    when(matcher1.matches(any(MethodReferenceTree.class))).thenReturn(false);
+    matcher2 = mock(MethodMatcher.class);
+    when(matcher2.matches(any(MethodReferenceTree.class))).thenReturn(true);
+    assertThat(MethodMatcherCollection.create(matcher1, matcher2).anyMatch(mock(MethodReferenceTree.class))).isTrue();
+    assertThat(MethodMatcherCollection.create(matcher1).anyMatch(mock(MethodReferenceTree.class))).isFalse();
   }
 
   @Test
