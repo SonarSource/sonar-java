@@ -66,6 +66,7 @@ public class VisitorsBridge {
   private static final Logger LOG = Loggers.get(VisitorsBridge.class);
 
   private final BehaviorCache behaviorCache;
+  private final List<JavaFileScanner> allScanners;
   private List<JavaFileScanner> executableScanners;
   private final SonarComponents sonarComponents;
   private final boolean symbolicExecutionEnabled;
@@ -88,24 +89,25 @@ public class VisitorsBridge {
   }
 
   public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
-    ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
+    this.allScanners = new ArrayList<>();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
-        scannersBuilder.add((JavaFileScanner) visitor);
+        allScanners.add((JavaFileScanner) visitor);
       }
     }
-    this.executableScanners = scannersBuilder.build();
+    this.executableScanners = allScanners.stream().filter(isIssuableSubscriptionVisitor.negate()).collect(Collectors.toList());
+    this.scannerRunner = new ScannerRunner(allScanners);
     this.sonarComponents = sonarComponents;
     this.classLoader = ClassLoaderBuilder.create(projectClasspath);
     this.symbolicExecutionEnabled = symbolicExecutionMode.isEnabled();
     this.behaviorCache = new BehaviorCache(classLoader, symbolicExecutionMode.isCrossFileEnabled());
-    scannerRunner = new ScannerRunner(executableScanners);
   }
 
   public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
-    this.executableScanners = executableScanners(executableScanners, javaVersion);
-    scannerRunner = new ScannerRunner(executableScanners);
+    List<JavaFileScanner> scannersForJavaVersion = executableScanners(allScanners, javaVersion);
+    this.executableScanners = scannersForJavaVersion.stream().filter(isIssuableSubscriptionVisitor.negate()).collect(Collectors.toList());
+    this.scannerRunner = new ScannerRunner(scannersForJavaVersion);
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
@@ -134,73 +136,10 @@ public class VisitorsBridge {
       runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache), AnalysisError.Kind.SE_ERROR);
       behaviorCache.cleanup();
     }
-    executableScanners.stream()
-      .filter(isIssuableSubscriptionVisitor.negate())
-      .forEach(scanner -> runScanner(javaFileScannerContext, scanner, AnalysisError.Kind.CHECK_ERROR));
+    executableScanners.forEach(scanner -> runScanner(javaFileScannerContext, scanner, AnalysisError.Kind.CHECK_ERROR));
     scannerRunner.run(javaFileScannerContext);
     if (semanticModel != null) {
       classesNotFound.addAll(semanticModel.classesNotFound());
-    }
-  }
-
-  private static class ScannerRunner {
-    private EnumMap<Tree.Kind, List<SubscriptionVisitor>> checks;
-    private List<SubscriptionVisitor> subscriptionVisitors;
-
-    public ScannerRunner(List<JavaFileScanner> executableScanners) {
-      checks = new EnumMap<>(Tree.Kind.class);
-      subscriptionVisitors = executableScanners.stream()
-        .filter(isIssuableSubscriptionVisitor)
-        .map(s -> (SubscriptionVisitor) s)
-        .collect(Collectors.toList());
-      subscriptionVisitors.forEach(s -> s.nodesToVisit().forEach(k -> {
-        if (!checks.containsKey(k)) {
-          checks.put(k, new ArrayList<>());
-        }
-        checks.get(k).add(s);
-      })
-      );
-    }
-
-
-    public void run(JavaFileScannerContext javaFileScannerContext) {
-      subscriptionVisitors.forEach(s -> s.setContext(javaFileScannerContext));
-      visit(javaFileScannerContext.getTree());
-      subscriptionVisitors.forEach(s -> s.leaveFile(javaFileScannerContext));
-    }
-
-    private void visitChildren(Tree tree) {
-      JavaTree javaTree = (JavaTree) tree;
-      if (!javaTree.isLeaf()) {
-        for (Tree next : javaTree.getChildren()) {
-          if (next != null) {
-            visit(next);
-          }
-        }
-      }
-    }
-
-    private void visit(Tree tree) {
-      Consumer<SubscriptionVisitor> callback;
-      boolean isToken = tree.kind() == Tree.Kind.TOKEN;
-      if (isToken) {
-        callback = s -> {
-          SyntaxToken syntaxToken = (SyntaxToken) tree;
-          s.visitToken(syntaxToken);
-        };
-      } else {
-        callback = s -> s.visitNode(tree);
-      }
-      List<SubscriptionVisitor> subscribed = checks.getOrDefault(tree.kind(), Collections.emptyList());
-      subscribed.forEach(callback);
-      if (isToken) {
-        checks.getOrDefault(Tree.Kind.TRIVIA, Collections.emptyList()).forEach(s -> ((SyntaxToken) tree).trivias().forEach(s::visitTrivia));
-      } else {
-        visitChildren(tree);
-      }
-      if(!isToken) {
-        subscribed.forEach(s -> s.leaveNode(tree));
-      }
     }
   }
 
@@ -304,10 +243,65 @@ public class VisitorsBridge {
       }
       LOG.warn("Classes not found during the analysis : [{}{}]", classesNotFound.stream().limit(50).collect(Collectors.joining(", ")), message);
     }
-    executableScanners.stream()
+    allScanners.stream()
       .filter(s -> s instanceof EndOfAnalysisCheck)
       .map(EndOfAnalysisCheck.class::cast)
       .forEach(EndOfAnalysisCheck::endOfAnalysis);
     classLoader.close();
+  }
+
+  private static class ScannerRunner {
+    private EnumMap<Tree.Kind, List<SubscriptionVisitor>> checks;
+    private List<SubscriptionVisitor> subscriptionVisitors;
+
+    ScannerRunner(List<JavaFileScanner> executableScanners) {
+      checks = new EnumMap<>(Tree.Kind.class);
+      subscriptionVisitors = executableScanners.stream()
+        .filter(isIssuableSubscriptionVisitor)
+        .map(s -> (SubscriptionVisitor) s)
+        .collect(Collectors.toList());
+      subscriptionVisitors.forEach(s -> s.nodesToVisit().forEach(k -> checks.computeIfAbsent(k, key -> new ArrayList<>()).add(s))
+      );
+    }
+
+    public void run(JavaFileScannerContext javaFileScannerContext) {
+      subscriptionVisitors.forEach(s -> s.setContext(javaFileScannerContext));
+      visit(javaFileScannerContext.getTree());
+      subscriptionVisitors.forEach(s -> s.leaveFile(javaFileScannerContext));
+    }
+
+    private void visitChildren(Tree tree) {
+      JavaTree javaTree = (JavaTree) tree;
+      if (!javaTree.isLeaf()) {
+        for (Tree next : javaTree.getChildren()) {
+          if (next != null) {
+            visit(next);
+          }
+        }
+      }
+    }
+
+    private void visit(Tree tree) {
+      Consumer<SubscriptionVisitor> callback;
+      boolean isToken = tree.kind() == Tree.Kind.TOKEN;
+      if (isToken) {
+        callback = s -> {
+          SyntaxToken syntaxToken = (SyntaxToken) tree;
+          s.visitToken(syntaxToken);
+        };
+      } else {
+        callback = s -> s.visitNode(tree);
+      }
+      List<SubscriptionVisitor> subscribed = checks.getOrDefault(tree.kind(), Collections.emptyList());
+      subscribed.forEach(callback);
+      if (isToken) {
+        checks.getOrDefault(Tree.Kind.TRIVIA, Collections.emptyList()).forEach(s -> ((SyntaxToken) tree).trivias().forEach(s::visitTrivia));
+      } else {
+        visitChildren(tree);
+      }
+      if(!isToken) {
+        subscribed.forEach(s -> s.leaveNode(tree));
+      }
+    }
   }
 }
