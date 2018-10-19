@@ -27,6 +27,7 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 
 @Rule(key = "S1844")
 public class WaitOnConditionCheck extends AbstractMethodDetection {
@@ -44,5 +45,10 @@ public class WaitOnConditionCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     reportIssue(ExpressionUtils.methodName(mit), "The \"Condition.await(...)\" method should be used instead of \"Object.wait(...)\"");
+  }
+
+  @Override
+  protected void onMethodReferenceFound(MethodReferenceTree methodReferenceTree) {
+    reportIssue(methodReferenceTree.method(), "The \"Condition.await(...)\" method should be used instead of \"Object.wait(...)\"");
   }
 }
