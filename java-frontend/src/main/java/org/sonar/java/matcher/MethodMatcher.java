@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -30,11 +31,10 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
 
 public class MethodMatcher {
 
@@ -150,12 +150,24 @@ public class MethodMatcher {
     return enclosingClass != null && matches(symbol, enclosingClass.type());
   }
 
+  public boolean matches(MethodReferenceTree methodReferenceTree) {
+    return matches(methodReferenceTree.method().symbol(), getCallSiteType(methodReferenceTree));
+  }
+
   public boolean matches(Symbol symbol) {
     return matches(symbol, null);
   }
 
   private boolean matches(Symbol symbol, @Nullable Type callSiteType) {
     return symbol.isMethodSymbol() && isSearchedMethod((MethodSymbol) symbol, callSiteType);
+  }
+
+  private static Type getCallSiteType(MethodReferenceTree referenceTree) {
+    Tree expression = referenceTree.expression();
+    if(expression instanceof ExpressionTree) {
+      return ((ExpressionTree) expression).symbolType();
+    }
+    return null;
   }
 
   private static Type getCallSiteType(MethodInvocationTree mit) {

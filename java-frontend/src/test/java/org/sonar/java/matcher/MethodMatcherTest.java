@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -223,13 +224,13 @@ public class MethodMatcherTest {
       new File("src/test/files/matcher/Test.java"),
       new VisitorsBridge(Collections.singletonList(new Visitor(matches)), new ArrayList<>(), null));
 
-    assertThat(matches.get(objectToString)).containsExactly(6, 19, 27);
+    assertThat(matches.get(objectToString)).containsExactly(6, 19, 27, 39, 40);
     assertThat(matches.get(objectToStringWithIntParam)).containsExactly(10);
     assertThat(matches.get(objectToStringWithStringParam)).containsExactly(11, 14);
-    assertThat(matches.get(objectToStringWithAnyParam)).containsExactly(6, 10, 11, 14);
+    assertThat(matches.get(objectToStringWithAnyParam)).containsExactly(6, 10, 11, 14, 39);
     assertThat(matches.get(integerToString)).containsExactly(19);
     assertThat(matches.get(foo)).containsExactly(35, 36);
-    assertThat(matches.get(callSiteIsTest)).containsExactly(6, 10, 11, 14, 18, 22);
+    assertThat(matches.get(callSiteIsTest)).containsExactly(6, 10, 11, 14, 18, 22, 38, 39);
   }
 
   @Test
@@ -272,7 +273,7 @@ public class MethodMatcherTest {
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+      return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_REFERENCE);
     }
 
     @Override
@@ -301,6 +302,8 @@ public class MethodMatcherTest {
           }
         } else if (tree.is(Tree.Kind.NEW_CLASS)) {
           match = matcher.matches((NewClassTree) tree);
+        } else if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
+          match = matcher.matches((MethodReferenceTree) tree);
         }
         if (match) {
           entry.getValue().add(((JavaTree) tree).getLine());
