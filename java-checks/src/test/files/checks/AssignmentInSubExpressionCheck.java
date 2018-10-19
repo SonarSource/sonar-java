@@ -53,6 +53,9 @@ class Foo {
 
     while (null != (foo = bar())) { // Compliant
     }
+
+    if ((a += b) > 0) { // Noncompliant
+    }
   }
 
   boolean field;
@@ -88,4 +91,12 @@ class Foo {
     char[] buf = lineBuffer = new char[128];
   }
 
+  class SonarJava2821 {
+    private int field = 0;
+    void fun(List<Integer> list) {
+      list.forEach(e -> field += e); // Compliant : ignore assignment expression in lambda
+      list.forEach(e -> field.intValue() &= e); // Compliant : ignore assignment expression in lambda
+      list.forEach(e -> field = field + e); // Compliant : ignore assignment expression in lambda
+    }
+  }
 }

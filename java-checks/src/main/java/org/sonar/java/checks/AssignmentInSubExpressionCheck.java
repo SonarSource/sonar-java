@@ -42,6 +42,20 @@ import javax.annotation.Nullable;
 @RspecKey("S1121")
 public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final Kind[] ASSIGNMENT_EXPRESSIONS = new Kind[]{
+    Kind.AND_ASSIGNMENT,
+    Kind.ASSIGNMENT,
+    Kind.DIVIDE_ASSIGNMENT,
+    Kind.LEFT_SHIFT_ASSIGNMENT,
+    Kind.RIGHT_SHIFT_ASSIGNMENT,
+    Kind.MINUS_ASSIGNMENT,
+    Kind.MULTIPLY_ASSIGNMENT,
+    Kind.OR_ASSIGNMENT,
+    Kind.PLUS_ASSIGNMENT,
+    Kind.REMAINDER_ASSIGNMENT,
+    Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
+    Kind.XOR_ASSIGNMENT};
+
   private JavaFileScannerContext context;
 
   @Override
@@ -60,7 +74,7 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
     //skip lambda if body is an assignment
-    if(!lambdaExpressionTree.body().is(Kind.ASSIGNMENT)) {
+    if(!lambdaExpressionTree.body().is(ASSIGNMENT_EXPRESSIONS)) {
       super.visitLambdaExpression(lambdaExpressionTree);
     }
   }
