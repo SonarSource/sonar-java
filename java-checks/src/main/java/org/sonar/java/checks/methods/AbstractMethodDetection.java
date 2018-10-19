@@ -60,7 +60,7 @@ public abstract class AbstractMethodDetection extends IssuableSubscriptionVisito
       }
     } else if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
       MethodReferenceTree methodReferenceTree = (MethodReferenceTree) tree;
-      if (invocationMatcher.matches(methodReferenceTree.method().symbol())) {
+      if (invocationMatcher.matches(methodReferenceTree)) {
         onMethodReferenceFound(methodReferenceTree);
       }
     }

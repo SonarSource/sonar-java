@@ -35,4 +35,8 @@ class Test extends Object {
   public int foo() {
     return foo();
   }
+  void test() {
+    java.util.function.Supplier<String> s1 = this::toString;
+    java.util.function.Supplier<String> s2 = Object::toString;
+  }
 }
