@@ -46,6 +46,9 @@ public class BehaviorCache {
 
   // methods known to be well covered using bytecode-generated behavior
   private static final Set<String> WHITELIST = ImmutableSet.of(
+    "java.lang.Math#max",
+    "java.lang.Math#min",
+
     "java.util.Objects#requireNonNull",
     "java.util.Objects#nonNull",
     "java.util.Objects#isNull",

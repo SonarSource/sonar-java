@@ -21,7 +21,6 @@ package org.sonar.java.se.checks;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -183,25 +182,7 @@ public class MinMaxRangeCheck extends SECheck {
 
     checkRangeInconsistencies(context, syntaxNode, constraintsByArgs);
 
-    // min()/max() methods can produce either a or b
-    SymbolicValue minMaxResult = programState.peekValue();
-    List<ProgramState> nexts = constraintsByArgs.stream()
-      .filter(Objects::nonNull)
-      .map(argConstraints -> programState.addConstraints(minMaxResult, argConstraints))
-      .collect(Collectors.toList());
-
-    if (nexts.isEmpty()) {
-      return programState;
-    }
-    if (nexts.size() == 1) {
-      // one result necessarily have previous known constraint
-      context.addTransition(nexts.get(0));
-      // other is unknown
-      return programState;
-    }
-    // both constraints are propagated
-    context.addTransition(nexts.get(1));
-    return nexts.get(0);
+    return context.getState();
   }
 
   private void checkRangeInconsistencies(CheckerContext context, MethodInvocationTree syntaxNode, List<ConstraintsByDomain> constraintsByArgs) {
