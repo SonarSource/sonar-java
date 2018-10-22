@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.spring;
+package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
@@ -33,9 +33,9 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4507")
-public class SpringSecurityDebugModeCheck extends IssuableSubscriptionVisitor {
+public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MESSAGE = "Make sure this debug mode is deactivated before delivering the code in production.";
+  private static final String MESSAGE = "Make sure this debug feature is deactivated before delivering the code in production.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -47,7 +47,7 @@ public class SpringSecurityDebugModeCheck extends IssuableSubscriptionVisitor {
     AnnotationTree annotation = (AnnotationTree) tree;
     if (annotation.symbolType().is("org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")) {
       annotation.arguments().stream()
-        .map(SpringSecurityDebugModeCheck::getDebugArgument)
+        .map(DebugFeatureEnabledCheck::getDebugArgument)
         .filter(Objects::nonNull)
         .findFirst()
         .filter(assignment -> Boolean.TRUE.equals(ConstantUtils.resolveAsBooleanConstant(assignment.expression())))

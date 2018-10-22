@@ -1,5 +1,5 @@
 {
-  "title": "Delivering a Spring application in production with Spring Security's debug mode activated is security-sensitive",
+  "title": "Delivering code in production with debug features activated is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
