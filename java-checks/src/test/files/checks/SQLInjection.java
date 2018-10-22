@@ -20,7 +20,7 @@ class A {
       Connection conn = DriverManager.getConnection("url", "user1", "password");
       Statement stmt = conn.createStatement();
       ResultSet rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = 2001");
-      rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant [[sc=30;ec=79]] {{Use a variable binding mechanism to construct this query instead of concatenation.}}
+      rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant [[sc=30;ec=79]] {{Ensure that string concatenation is required and safe for this SQL query.}}
       String query = "SELECT Lname FROM Customers WHERE Snum = "+param;
       rs = stmt.executeQuery(query); // Noncompliant
 
