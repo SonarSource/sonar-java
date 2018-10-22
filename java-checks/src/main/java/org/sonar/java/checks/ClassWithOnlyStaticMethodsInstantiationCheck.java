@@ -46,9 +46,9 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscr
   private SemanticModel semanticModel;
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     semanticModel = (SemanticModel) context.getSemanticModel();
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override

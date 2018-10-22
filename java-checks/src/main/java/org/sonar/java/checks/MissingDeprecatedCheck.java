@@ -42,9 +42,9 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
   private boolean isJava9 = false;
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     isJava9 = context.getJavaVersion().asInt() >= 9;
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override

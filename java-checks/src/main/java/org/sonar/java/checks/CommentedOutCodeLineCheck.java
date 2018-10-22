@@ -45,7 +45,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 
   private final CodeRecognizer codeRecognizer;
 
-  private List<SyntaxTrivia> comments;
+  private List<SyntaxTrivia> comments = new ArrayList<>();
 
   public CommentedOutCodeLineCheck() {
     codeRecognizer = new CodeRecognizer(THRESHOLD, new JavaFootprint());
@@ -54,13 +54,6 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.TRIVIA);
-  }
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    comments = Lists.newArrayList();
-    super.scanFile(context);
-    leaveFile();
   }
 
   @Override
@@ -82,7 +75,8 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   /**
    * Detects commented-out code in remaining candidates.
    */
-  private void leaveFile() {
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
     List<Integer> commentedOutCodeLines = Lists.newArrayList();
     for (SyntaxTrivia syntaxTrivia : comments) {
       commentedOutCodeLines.addAll(handleCommentsForTrivia(syntaxTrivia));
@@ -98,7 +92,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
       prev = commentedOutCodeLine;
     }
 
-    comments = null;
+    comments.clear();
   }
 
   private List<Integer> handleCommentsForTrivia(SyntaxTrivia syntaxTrivia) {

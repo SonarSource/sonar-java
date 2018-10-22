@@ -57,10 +57,18 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
     //default behaviour is to do nothing
   }
 
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     this.context = context;
     semanticModel = (SemanticModel) context.getSemanticModel();
+  }
+
+  public void leaveFile(JavaFileScannerContext context) {
+    //default behaviour is to do nothing
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    setContext(context);
     scanTree(context.getTree());
   }
 

@@ -119,9 +119,9 @@ public class JavaVersionAwareVisitorTest {
     }
 
     @Override
-    public void scanFile(JavaFileScannerContext context) {
+    public void setContext(JavaFileScannerContext context) {
       this.javaVersion = context.getJavaVersion();
-      super.scanFile(context);
+      super.setContext(context);
     }
 
     @Override

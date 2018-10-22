@@ -21,10 +21,15 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -37,12 +42,6 @@ import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Rule(key = "UselessImportCheck")
 @RspecKey("S1128")
@@ -204,7 +203,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     return firstIndexOfDot == -1 ? reference : reference.substring(0, firstIndexOfDot);
   }
 
-  private static class CommentVisitor extends IssuableSubscriptionVisitor {
+  private static class CommentVisitor extends SubscriptionVisitor {
     private Set<String> pendingImports;
 
     @Override
@@ -223,13 +222,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     }
 
     private void updatePendingImportsForComments(String comment) {
-      Iterator<String> it = pendingImports.iterator();
-      while (it.hasNext()) {
-        String pendingImport = it.next();
-        if (comment.contains(extractLastClassName(pendingImport))) {
-          it.remove();
-        }
-      }
+      pendingImports.removeIf(pendingImport -> comment.contains(extractLastClassName(pendingImport)));
     }
 
     private static String extractLastClassName(String reference) {

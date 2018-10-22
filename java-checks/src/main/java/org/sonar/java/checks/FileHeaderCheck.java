@@ -59,7 +59,7 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     super.context = context;
     if (isRegularExpression) {
       if (searchPattern == null) {

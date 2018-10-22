@@ -38,7 +38,7 @@ public class TabCharacterCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     super.context = context;
     List<String> lines = context.getFileLines();
     for (String line : lines) {

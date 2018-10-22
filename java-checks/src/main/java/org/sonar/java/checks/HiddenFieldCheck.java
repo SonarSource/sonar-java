@@ -63,17 +63,18 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     fields.clear();
     excludedVariables.clear();
     flattenExcludedVariables.clear();
-    if (context.getSemanticModel() != null) {
-      super.scanFile(context);
-    }
+    super.setContext(context);
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     if (isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
       ImmutableMap.Builder<String, VariableTree> builder = ImmutableMap.builder();
@@ -133,6 +134,9 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     if (isClassTree(tree)) {
       fields.pop();
       flattenExcludedVariables.removeAll(excludedVariables.pop());

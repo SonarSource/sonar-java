@@ -42,9 +42,9 @@ public class ConditionalOnNewLineCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     previousToken = null;
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override

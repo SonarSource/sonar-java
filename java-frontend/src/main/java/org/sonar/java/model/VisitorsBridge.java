@@ -27,9 +27,12 @@ import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.AnnotationUtils;
@@ -43,16 +46,19 @@ import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.xproc.BehaviorCache;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class VisitorsBridge {
@@ -60,6 +66,7 @@ public class VisitorsBridge {
   private static final Logger LOG = Loggers.get(VisitorsBridge.class);
 
   private final BehaviorCache behaviorCache;
+  private final List<JavaFileScanner> allScanners;
   private List<JavaFileScanner> executableScanners;
   private final SonarComponents sonarComponents;
   private final boolean symbolicExecutionEnabled;
@@ -68,6 +75,8 @@ public class VisitorsBridge {
   protected JavaVersion javaVersion;
   private Set<String> classesNotFound = new TreeSet<>();
   private final SquidClassLoader classLoader;
+  private ScannerRunner scannerRunner;
+  private static Predicate<JavaFileScanner> isIssuableSubscriptionVisitor = s -> s instanceof IssuableSubscriptionVisitor;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -80,13 +89,14 @@ public class VisitorsBridge {
   }
 
   public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
-    ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
+    this.allScanners = new ArrayList<>();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
-        scannersBuilder.add((JavaFileScanner) visitor);
+        allScanners.add((JavaFileScanner) visitor);
       }
     }
-    this.executableScanners = scannersBuilder.build();
+    this.executableScanners = allScanners.stream().filter(isIssuableSubscriptionVisitor.negate()).collect(Collectors.toList());
+    this.scannerRunner = new ScannerRunner(allScanners);
     this.sonarComponents = sonarComponents;
     this.classLoader = ClassLoaderBuilder.create(projectClasspath);
     this.symbolicExecutionEnabled = symbolicExecutionMode.isEnabled();
@@ -95,7 +105,9 @@ public class VisitorsBridge {
 
   public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
-    this.executableScanners = executableScanners(executableScanners, javaVersion);
+    List<JavaFileScanner> scannersForJavaVersion = executableScanners(allScanners, javaVersion);
+    this.executableScanners = scannersForJavaVersion.stream().filter(isIssuableSubscriptionVisitor.negate()).collect(Collectors.toList());
+    this.scannerRunner = new ScannerRunner(scannersForJavaVersion);
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
@@ -125,6 +137,7 @@ public class VisitorsBridge {
       behaviorCache.cleanup();
     }
     executableScanners.forEach(scanner -> runScanner(javaFileScannerContext, scanner, AnalysisError.Kind.CHECK_ERROR));
+    scannerRunner.run(javaFileScannerContext);
     if (semanticModel != null) {
       classesNotFound.addAll(semanticModel.classesNotFound());
     }
@@ -230,10 +243,65 @@ public class VisitorsBridge {
       }
       LOG.warn("Classes not found during the analysis : [{}{}]", classesNotFound.stream().limit(50).collect(Collectors.joining(", ")), message);
     }
-    executableScanners.stream()
+    allScanners.stream()
       .filter(s -> s instanceof EndOfAnalysisCheck)
       .map(EndOfAnalysisCheck.class::cast)
       .forEach(EndOfAnalysisCheck::endOfAnalysis);
     classLoader.close();
+  }
+
+  private static class ScannerRunner {
+    private EnumMap<Tree.Kind, List<SubscriptionVisitor>> checks;
+    private List<SubscriptionVisitor> subscriptionVisitors;
+
+    ScannerRunner(List<JavaFileScanner> executableScanners) {
+      checks = new EnumMap<>(Tree.Kind.class);
+      subscriptionVisitors = executableScanners.stream()
+        .filter(isIssuableSubscriptionVisitor)
+        .map(s -> (SubscriptionVisitor) s)
+        .collect(Collectors.toList());
+      subscriptionVisitors.forEach(s -> s.nodesToVisit().forEach(k -> checks.computeIfAbsent(k, key -> new ArrayList<>()).add(s))
+      );
+    }
+
+    public void run(JavaFileScannerContext javaFileScannerContext) {
+      subscriptionVisitors.forEach(s -> s.setContext(javaFileScannerContext));
+      visit(javaFileScannerContext.getTree());
+      subscriptionVisitors.forEach(s -> s.leaveFile(javaFileScannerContext));
+    }
+
+    private void visitChildren(Tree tree) {
+      JavaTree javaTree = (JavaTree) tree;
+      if (!javaTree.isLeaf()) {
+        for (Tree next : javaTree.getChildren()) {
+          if (next != null) {
+            visit(next);
+          }
+        }
+      }
+    }
+
+    private void visit(Tree tree) {
+      Consumer<SubscriptionVisitor> callback;
+      boolean isToken = tree.kind() == Tree.Kind.TOKEN;
+      if (isToken) {
+        callback = s -> {
+          SyntaxToken syntaxToken = (SyntaxToken) tree;
+          s.visitToken(syntaxToken);
+        };
+      } else {
+        callback = s -> s.visitNode(tree);
+      }
+      List<SubscriptionVisitor> subscribed = checks.getOrDefault(tree.kind(), Collections.emptyList());
+      subscribed.forEach(callback);
+      if (isToken) {
+        checks.getOrDefault(Tree.Kind.TRIVIA, Collections.emptyList()).forEach(s -> ((SyntaxToken) tree).trivias().forEach(s::visitTrivia));
+      } else {
+        visitChildren(tree);
+      }
+      if(!isToken) {
+        subscribed.forEach(s -> s.leaveNode(tree));
+      }
+    }
   }
 }

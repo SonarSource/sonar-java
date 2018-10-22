@@ -52,9 +52,11 @@ public class BadTypeParameterNameCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    pattern = Pattern.compile(format, Pattern.DOTALL);
-    super.scanFile(context);
+  public void setContext(JavaFileScannerContext context) {
+    if(pattern == null) {
+      pattern = Pattern.compile(format, Pattern.DOTALL);
+    }
+    super.setContext(context);
   }
 
   @Override

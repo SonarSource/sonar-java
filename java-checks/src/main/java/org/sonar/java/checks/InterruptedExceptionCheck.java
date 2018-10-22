@@ -58,15 +58,15 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    if(context.getSemanticModel() != null) {
-      super.scanFile(context);
-    }
+  public void leaveFile(JavaFileScannerContext context) {
     withinInterruptingFinally.clear();
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     TryStatementTree tryStatementTree = (TryStatementTree) tree;
     withinInterruptingFinally.addFirst(isFinallyInterrupting(tryStatementTree.finallyBlock()));
     for (CatchTree catchTree : tryStatementTree.catches()) {
@@ -106,6 +106,9 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     withinInterruptingFinally.removeFirst();
   }
 

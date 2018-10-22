@@ -58,16 +58,15 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    if(context.getSemanticModel() == null) {
-      return;
-    }
-    super.scanFile(context);
+  public void leaveFile(JavaFileScannerContext context) {
     reportIssuesOnVariable();
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     if (tree.is(Kind.METHOD) && isServletInit((MethodTree) tree)) {
       tree.accept(new AssignmentVisitor());
     } else if (tree.is(Kind.VARIABLE)) {

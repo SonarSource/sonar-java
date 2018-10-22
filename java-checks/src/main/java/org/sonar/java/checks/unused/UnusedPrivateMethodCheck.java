@@ -58,8 +58,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
+  public void leaveFile(JavaFileScannerContext context) {
     reportUnusedPrivateMethods();
     unusedPrivateMethods.clear();
     unresolvedMethodNames.clear();

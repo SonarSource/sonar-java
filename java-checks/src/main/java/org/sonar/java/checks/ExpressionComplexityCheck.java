@@ -47,12 +47,12 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
   private final Deque<Integer> level = new LinkedList<>();
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     count.clear();
     level.clear();
     level.push(0);
     count.push(0);
-    super.scanFile(context);
+    super.setContext(context);
   }
 
   @Override

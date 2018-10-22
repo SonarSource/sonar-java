@@ -99,8 +99,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
+  public void leaveFile(JavaFileScannerContext context) {
     CLASS_IMMUTABLE_CANDIDATES.clear();
   }
 

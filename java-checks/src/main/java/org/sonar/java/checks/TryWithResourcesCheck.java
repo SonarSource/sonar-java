@@ -41,8 +41,7 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
   private final Deque<List<Tree>> toReport = new LinkedList<>();
 
   @Override
-  protected void scanTree(Tree tree) {
-    super.scanTree(tree);
+  public void leaveFile(JavaFileScannerContext context) {
     withinTry.clear();
     toReport.clear();
   }
@@ -56,7 +55,7 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.TRY_STATEMENT)) {
       withinTry.push((TryStatementTree) tree);
-      toReport.push(new ArrayList<Tree>());
+      toReport.push(new ArrayList<>());
     } else if (withinStandardTryWithFinally() && ((NewClassTree) tree).symbolType().isSubtypeOf("java.lang.AutoCloseable")) {
       toReport.peek().add(tree);
     }

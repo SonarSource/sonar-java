@@ -22,9 +22,11 @@ package org.sonar.plugins.java.api;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class IssuableSubscriptionVisitorTest {
 
@@ -41,6 +44,16 @@ public class IssuableSubscriptionVisitorTest {
     JavaAstScanner.scanSingleFileForTests(new File("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(7);
+  }
+
+  @Test
+  public void check_issuable_subscription_visitor_does_not_visit_tree_on_its_own() {
+    try {
+      new CustomRule().scanTree(Mockito.mock(CompilationUnitTree.class));
+      fail("Analysis should have failed");
+    } catch (UnsupportedOperationException e) {
+      assertThat(e).hasMessage("IssuableSubscriptionVisitor should not drive visit of AST.");
+    }
   }
 
   private static class CustomRule extends IssuableSubscriptionVisitor {

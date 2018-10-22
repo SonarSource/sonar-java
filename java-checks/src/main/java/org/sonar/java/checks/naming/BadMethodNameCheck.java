@@ -51,11 +51,11 @@ public class BadMethodNameCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
+  public void setContext(JavaFileScannerContext context) {
     if (pattern == null) {
       pattern = Pattern.compile(format, Pattern.DOTALL);
     }
-    super.scanFile(context);
+    super.setContext(context);
   }
 
 
