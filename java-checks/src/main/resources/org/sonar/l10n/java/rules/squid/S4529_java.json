@@ -1,5 +1,5 @@
 {
-  "title": "Exposing Spring endpoints is security-sensitive",
+  "title": "Exposing HTTP endpoints is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
@@ -7,19 +7,35 @@
     "constantCost": "15min"
   },
   "tags": [
+    "cwe",
     "spring",
-    "owasp-a1"
+    "owasp-a1",
+    "sans-top25-insecure",
+    "sans-top25-risky",
+    "sans-top25-porous",
+    "owasp-a7",
+    "owasp-a3"
   ],
   "standards": [
-    "OWASP Top Ten"
+    "CWE",
+    "OWASP Top Ten",
+    "SANS Top 25"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-4529",
   "sqKey": "S4529",
   "scope": "Main",
   "securityStandards": {
+    "CWE": [
+      20,
+      22,
+      79,
+      352
+    ],
     "OWASP": [
-      "A1"
+      "A1",
+      "A3",
+      "A7"
     ]
   }
 }
