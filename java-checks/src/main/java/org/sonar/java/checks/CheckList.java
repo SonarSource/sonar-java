@@ -54,6 +54,7 @@ import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.security.LDAPDeserializationCheck;
+import org.sonar.java.checks.security.RegexHotspotCheck;
 import org.sonar.java.checks.security.SMTPSSLServerIdentityCheck;
 import org.sonar.java.checks.security.SecureCookieCheck;
 import org.sonar.java.checks.security.SecureXmlTransformerCheck;
@@ -618,6 +619,7 @@ public final class CheckList {
       .add(GetClassLoaderCheck.class)
       .add(ObjectOutputStreamCheck.class)
       .add(VolatileVariablesOperationsCheck.class)
+      .add(RegexHotspotCheck.class)
       .build();
   }
 
