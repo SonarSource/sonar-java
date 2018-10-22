@@ -45,6 +45,7 @@ import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.CommandLineArgumentsCheck;
+import org.sonar.java.checks.security.ControllingPermissionsCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
 import org.sonar.java.checks.security.CookieShouldNotContainSensitiveDataCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
@@ -360,6 +361,7 @@ public final class CheckList {
       .add(ForLoopIncrementSignCheck.class)
       .add(ForLoopFalseConditionCheck.class)
       .add(DeprecatedHashAlgorithmCheck.class)
+      .add(ControllingPermissionsCheck.class)
       .add(NullCipherCheck.class)
       .add(GetRequestedSessionIdCheck.class)
       .add(CollectionMethodsWithLinearComplexityCheck.class)

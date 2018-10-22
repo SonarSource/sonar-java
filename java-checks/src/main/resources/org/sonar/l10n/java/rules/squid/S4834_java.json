@@ -1,0 +1,21 @@
+{
+  "title": "Controlling permissions is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "tags": [
+    "sans-top25-porous",
+    "owasp-a5"
+  ],
+  "standards": [
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4834",
+  "sqKey": "S4834",
+  "scope": "Main",
+  "securityStandards": {
+    "OWASP": [
+      "A5"
+    ]
+  }
+}
