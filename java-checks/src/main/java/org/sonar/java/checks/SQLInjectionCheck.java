@@ -91,7 +91,7 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
         .filter(arg -> arg.symbolType().is("java.lang.String"))
         .findFirst();
       sqlStringArg.filter(arg -> isDynamicString(tree, arg, null, true))
-        .ifPresent(arg -> reportIssue(arg, "Use a variable binding mechanism to construct this query instead of concatenation."));
+        .ifPresent(arg -> reportIssue(arg, "Ensure that string concatenation is required and safe for this SQL query."));
     }
   }
 
