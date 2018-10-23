@@ -21,9 +21,11 @@ package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -77,8 +79,12 @@ public class CommandLineArgumentsCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkMainMethodArgsUsage(MethodTree mainMethod) {
-    List<IdentifierTree> argsUsages = mainMethod.parameters().get(0).symbol().usages();
-    argsUsages.forEach(usage -> reportIssue(usage, MESSAGE));
+    VariableTree commandLineParameters = mainMethod.parameters().get(0);
+    List<IdentifierTree> argsUsages = commandLineParameters.symbol().usages();
+    if (!argsUsages.isEmpty()) {
+      List<JavaFileScannerContext.Location> secondaries = argsUsages.stream().map(usage -> new JavaFileScannerContext.Location("", usage)).collect(Collectors.toList());
+      reportIssue(commandLineParameters, MESSAGE, secondaries, null);
+    }
   }
 
 }

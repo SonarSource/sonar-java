@@ -1,7 +1,7 @@
 import org.kohsuke.args4j.Option;
 
 class A {
-  public static void main(String[] arguments) { // Compliant - arguments no used
+  public static void main(String[] arguments) { // Compliant - arguments not used
     String b = "arguments";
   }
 
@@ -17,10 +17,10 @@ class B {
 }
 
 class C {
-  public static void main(String[] arguments) {
-    String[] b = arguments; // Noncompliant [[sc=18;ec=27]] {{Make sure that command line arguments are used safely here.}}
+  public static void main(String[] arguments) { // Noncompliant [sc=27;ec=45;secondary=21,23] {{Make sure that command line arguments are used safely here.}}
+    String[] b = arguments;
     // ...
-    doStuff(arguments); // Noncompliant [[sc=13;ec=22]] {{Make sure that command line arguments are used safely here.}}
+    doStuff(arguments);
   }
 
   private static void doStuff(String[] args) { }
