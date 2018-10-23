@@ -27,19 +27,17 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S4834")
-public class ControllingPermissionsCheck extends BaseTreeVisitor implements JavaFileScanner {
-  private static final String MUTABLE_ACL_SERVICE = "org.springframework.security.acls.model.MutableAclService";
+public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Make sure that Permissions are controlled safely here.";
 
@@ -67,75 +65,93 @@ public class ControllingPermissionsCheck extends BaseTreeVisitor implements Java
 
   private static final List<String> CLASSES = Collections.singletonList("org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration");
 
+  private static final String MUTABLE_ACL_SERVICE = "org.springframework.security.acls.model.MutableAclService";
   private static final MethodMatcherCollection METHOD_MATCHERS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(MUTABLE_ACL_SERVICE).name("createAcl").withAnyParameters(),
     MethodMatcher.create().typeDefinition(MUTABLE_ACL_SERVICE).name("deleteAcl").withAnyParameters(),
     MethodMatcher.create().typeDefinition(MUTABLE_ACL_SERVICE).name("updateAcl").withAnyParameters(),
     MethodMatcher.create().typeDefinition("org.springframework.security.config.annotation.web.builders.HttpSecurity").name("authorizeRequests").withAnyParameters());
 
-  private JavaFileScannerContext context;
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    if (context.getSemanticModel() == null) {
-      return;
-    }
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(
+      Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE,
+      Tree.Kind.NEW_CLASS,
+      Tree.Kind.METHOD,
+      Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
+  public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
+    switch (tree.kind()) {
+      case CLASS:
+      case ENUM:
+      case INTERFACE:
+        handleClassTree((ClassTree) tree);
+        break;
+      case NEW_CLASS:
+        handleNewClassTree((NewClassTree) tree);
+        break;
+      case METHOD:
+        handleMethodTree((MethodTree) tree);
+        break;
+      case METHOD_INVOCATION:
+        handleMethodInvocationTree((MethodInvocationTree) tree);
+        break;
+      default:
+        // do nothing - not subscribed
+        break;
+    }
+  }
+
+  public void handleClassTree(ClassTree tree) {
     if (!tree.symbol().isInterface()) {
       tree.superInterfaces().forEach(superInterface -> {
         Type interfaceType = superInterface.symbolType();
         if (INTERFACES.stream().anyMatch(interfaceType::is)) {
-          context.reportIssue(this, superInterface, MESSAGE);
+          reportIssue(superInterface, MESSAGE);
         }
       });
       TypeTree superClass = tree.superClass();
       if (superClass != null && CLASSES.stream().anyMatch(superClass.symbolType()::is)) {
-        context.reportIssue(this, superClass, MESSAGE);
+        reportIssue(superClass, MESSAGE);
       }
     }
     tree.modifiers().annotations().forEach(annotationTree -> {
       Type annotationType = annotationTree.symbolType();
       if (JSR_250_ANNOTATIONS.stream().anyMatch(annotationType::is)) {
-        context.reportIssue(this, annotationTree, MESSAGE);
+        reportIssue(annotationTree, MESSAGE);
       }
     });
-    super.visitClass(tree);
   }
 
-  @Override
-  public void visitNewClass(NewClassTree tree) {
+  public void handleNewClassTree(NewClassTree tree) {
     if (tree.classBody() != null) {
       Type newClassType = tree.symbolType();
       // only target anonymous classes
       if (INTERFACES.stream().anyMatch(newClassType::isSubtypeOf)
         || CLASSES.stream().anyMatch(newClassType::isSubtypeOf)) {
-        context.reportIssue(this, tree.newKeyword(), tree.arguments(), MESSAGE);
+        reportIssue(tree.newKeyword(), tree.arguments(), MESSAGE);
       }
     }
-    super.visitNewClass(tree);
   }
 
-  @Override
-  public void visitMethod(MethodTree tree) {
+  public void handleMethodTree(MethodTree tree) {
     tree.modifiers().annotations().forEach(annotationTree -> {
       Type annotationType = annotationTree.symbolType();
       if (Stream.concat(ANNOTATIONS.stream(), JSR_250_ANNOTATIONS.stream()).anyMatch(annotationType::is)) {
-        context.reportIssue(this, annotationTree, MESSAGE);
+        reportIssue(annotationTree, MESSAGE);
       }
     });
-    super.visitMethod(tree);
   }
 
-  @Override
-  public void visitMethodInvocation(MethodInvocationTree tree) {
+  public void handleMethodInvocationTree(MethodInvocationTree tree) {
     if (METHOD_MATCHERS.anyMatch(tree)) {
-      context.reportIssue(this, ExpressionUtils.methodName(tree), tree.arguments(), MESSAGE);
+      reportIssue(ExpressionUtils.methodName(tree), tree.arguments(), MESSAGE);
     }
-    super.visitMethodInvocation(tree);
   }
 }
