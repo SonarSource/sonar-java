@@ -51,6 +51,7 @@ import org.sonar.java.checks.security.CookieShouldNotContainSensitiveDataCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.DataEncryptionCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
+import org.sonar.java.checks.security.DynamicCodeCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.ExecCallCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
@@ -623,6 +624,7 @@ public final class CheckList {
       .add(EmptyDatabasePasswordCheck.class)
       .add(StreamPeekCheck.class)
       .add(VolatileNonPrimitiveFieldCheck.class)
+      .add(DynamicCodeCheck.class)
       .add(GetClassLoaderCheck.class)
       .add(ObjectOutputStreamCheck.class)
       .add(VolatileVariablesOperationsCheck.class)

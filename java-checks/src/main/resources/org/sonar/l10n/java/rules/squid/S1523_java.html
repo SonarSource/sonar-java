@@ -1,0 +1,63 @@
+<p>Executing code dynamically is security-sensitive. It has led in the past to the following vulnerabilities:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-9807">CVE-2017-9807</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-9802">CVE-2017-9802</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-9182">CVE-2016-9182</a> </li>
+</ul>
+<p>It is dangerous to let external sources:</p>
+<ul>
+  <li> execute unknown code in your process. Such <a href="https://www.owasp.org/index.php/Code_Injection">Injected Code</a> can either run on the
+  server or in the client (exemple: XSS attack). </li>
+  <li> select the code which will be executed via reflection. </li>
+</ul>
+<p>This rule marks for review each occurence of such dynamic code execution. The goal is to guide security code reviews.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> the executed code may come from a untrusted source and hasn't been sanitized. </li>
+  <li> the code to run is dynamically chosen via reflection, and an untrusted source can use it to choose which code to run. For example a class could
+  be retrieved by its name and this name comes from a user input. </li>
+</ul>
+<p>You are at risk if you answered yes to any of these questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Regarding the execution of unknown code, the best solution is to not run code provided by an untrusted source. If you really need to do it, run the
+code in a <a href="https://en.wikipedia.org/wiki/Sandbox_(computer_security)">sandboxed</a> environment. Use jails, firewalls and whatever means your
+operating system and programming language provide (example: <a
+href="https://wiki.sei.cmu.edu/confluence/display/java/SEC54-J.+Create+a+secure+sandbox+using+a+security+manager">Security Managers</a> in java, <a
+href="https://www.w3schools.com/tags/att_iframe_sandbox.asp">iframes</a> and <a href="https://en.wikipedia.org/wiki/Same-origin_policy">same-origin
+policy</a> for javascript in a web browser).</p>
+<p>Do not try to create a blacklist of dangerous code. It is impossible to cover all attacks that way.</p>
+<p>As for the use of reflection, it should be strictly controlled as it can lead to many vulnerabilities. Never let an untrusted source decide what
+code to run. If you have to do it anyway, create a list of allowed code and choose among this list.</p>
+<h2>Questionable Code Example</h2>
+<pre>
+public class Reflection {
+
+    public static void run(java.lang.ClassLoader loader, String className, String methodName, String fieldName,
+            Class&lt;?&gt; parameterTypes)
+            throws NoSuchMethodException, SecurityException, ClassNotFoundException, NoSuchFieldException {
+
+        Class&lt;?&gt; clazz = Class.forName(className); // Questionable
+        clazz.getMethod(methodName, parameterTypes); // Questionable
+        clazz.getMethods(); // Questionable
+        clazz.getField(fieldName); // Questionable
+        clazz.getFields(); // Questionable
+        clazz.getDeclaredField(fieldName); // Questionable
+        clazz.getDeclaredFields(); // Questionable
+        clazz.getDeclaredClasses(); // Questionable
+
+        loader.loadClass(className); // Questionable
+    }
+}
+</pre>
+<h2>Exceptions</h2>
+<p>Calling reflection methods with a hard-coded type name, method name or field name will not raise an issue.</p>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/95.html">MITRE CWE-95</a> - Improper Neutralization of Directives in Dynamically Evaluated Code
+  ('Eval Injection') </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/470.html">MITRE CWE-470</a> - Use of Externally-Controlled Input to Select Classes or Code
+  ('Unsafe Reflection') </li>
+  <li> OWASP Top 10 2017 Category A1 - Injection </li>
+  <li> OWASP Top 10 2017 Category A7 - Cross-Site Scripting (XSS) </li>
+</ul>
+
