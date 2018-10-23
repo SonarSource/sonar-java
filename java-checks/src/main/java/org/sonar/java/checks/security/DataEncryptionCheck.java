@@ -24,7 +24,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
@@ -35,11 +34,11 @@ public class DataEncryptionCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
       MethodMatcher.create()
-        .typeDefinition(TypeCriteria.is("javax.crypto.Cipher"))
+        .typeDefinition("javax.crypto.Cipher")
         .name("getInstance")
         .withAnyParameters(),
       MethodMatcher.create()
-        .typeDefinition(TypeCriteria.is("org.apache.commons.crypto.utils.Utils"))
+        .typeDefinition("org.apache.commons.crypto.utils.Utils")
         .name("getCipherInstance")
         .withAnyParameters());
   }
