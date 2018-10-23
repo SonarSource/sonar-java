@@ -22,12 +22,11 @@ package org.sonar.java.checks.security;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -58,23 +57,19 @@ public class CommandLineArgumentsCheck extends IssuableSubscriptionVisitor {
         if (methodTree.isMainMethod()) {
           checkMainMethodArgsUsage(methodTree);
         } else {
-          checkArgs4J(methodTree);
+          checkArgs4JAnnotation(methodTree.simpleName(), methodTree.symbol());
+          methodTree.parameters().forEach(p -> checkArgs4JAnnotation(p, p.symbol()));
         }
       } else if (member.is(Tree.Kind.VARIABLE)) {
-        checkArgs4JAnnotation(((VariableTree) member).modifiers().annotations().stream());
+        checkArgs4JAnnotation(member, ((VariableTree) member).symbol());
       }
     }
   }
 
-  private void checkArgs4J(MethodTree methodTree) {
-    checkArgs4JAnnotation(methodTree.modifiers().annotations().stream());
-    checkArgs4JAnnotation(methodTree.parameters().stream().flatMap(p -> p.modifiers().annotations().stream()));
-  }
-
-  private void checkArgs4JAnnotation(Stream<AnnotationTree> annotationTrees) {
-    annotationTrees
-      .filter(annotation -> annotation.symbolType().is(ARGS4J_ANNOTATION))
-      .forEach(annotation -> reportIssue(annotation, MESSAGE));
+  private void checkArgs4JAnnotation(Tree tree, Symbol symbol) {
+    if (symbol.metadata().isAnnotatedWith(ARGS4J_ANNOTATION)) {
+      reportIssue(tree, MESSAGE);
+    }
   }
 
   private void checkMainMethodArgsUsage(MethodTree mainMethod) {

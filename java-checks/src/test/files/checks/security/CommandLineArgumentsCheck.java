@@ -29,11 +29,12 @@ class C {
 }
 
 class D {
-  @Option(name="-name",usage="Sets a name") // Noncompliant [[sc=3;ec=44]] {{Make sure that command line arguments are used safely here.}}
+  @Option(name="-name",usage="Sets a name") // Noncompliant {{Make sure that command line arguments are used safely here.}}
   public String name;
 
-  @Option(name="-file") // Noncompliant
-  public void setFile(File f, @Option(name="-other") String other) { } // Noncompliant [[sc=31;ec=53]]
+  @Option(name="-file")
+  public void setFile(File f, // Noncompliant [[sc=15;ec=22]]
+                      @Option(name="-other") String other) { } // Noncompliant [[sc=23;ec=58]]
 
   public void setOtherArgs(@org.kohsuke.args4j.Option(name="-another1") String other1, // Noncompliant
                            @Option(name="-another2") String other2) // Noncompliant
