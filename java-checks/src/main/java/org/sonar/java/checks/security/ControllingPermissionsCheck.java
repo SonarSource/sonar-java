@@ -22,24 +22,22 @@ package org.sonar.java.checks.security;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S4834")
 public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
-
-  private static final String MESSAGE = "Make sure that Permissions are controlled safely here.";
 
   private static final List<String> ANNOTATIONS = Collections.unmodifiableList(Arrays.asList(
     "org.springframework.security.access.prepost.PostAuthorize",
@@ -63,7 +61,7 @@ public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
     "org.springframework.security.core.GrantedAuthority",
     "org.springframework.security.acls.model.PermissionGrantingStrategy"));
 
-  private static final List<String> CLASSES = Collections.singletonList("org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration");
+  private static final String GLOBAL_METHOD_SECURITY_CONFIGURATION = "org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration";
 
   private static final String MUTABLE_ACL_SERVICE = "org.springframework.security.acls.model.MutableAclService";
   private static final MethodMatcherCollection METHOD_MATCHERS = MethodMatcherCollection.create(
@@ -71,7 +69,6 @@ public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
     MethodMatcher.create().typeDefinition(MUTABLE_ACL_SERVICE).name("deleteAcl").withAnyParameters(),
     MethodMatcher.create().typeDefinition(MUTABLE_ACL_SERVICE).name("updateAcl").withAnyParameters(),
     MethodMatcher.create().typeDefinition("org.springframework.security.config.annotation.web.builders.HttpSecurity").name("authorizeRequests").withAnyParameters());
-
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -108,50 +105,47 @@ public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  public void handleClassTree(ClassTree tree) {
-    if (!tree.symbol().isInterface()) {
-      tree.superInterfaces().forEach(superInterface -> {
-        Type interfaceType = superInterface.symbolType();
-        if (INTERFACES.stream().anyMatch(interfaceType::is)) {
-          reportIssue(superInterface, MESSAGE);
-        }
-      });
-      TypeTree superClass = tree.superClass();
-      if (superClass != null && CLASSES.stream().anyMatch(superClass.symbolType()::is)) {
-        reportIssue(superClass, MESSAGE);
-      }
+  private void handleMethodTree(MethodTree tree) {
+    ModifiersTree modifiers = tree.modifiers();
+    checkAnnotations(modifiers, ANNOTATIONS);
+    checkAnnotations(modifiers, JSR_250_ANNOTATIONS);
+  }
+
+  private void handleClassTree(ClassTree tree) {
+    tree.superInterfaces().stream()
+      .filter(superInterface -> INTERFACES.stream().anyMatch(superInterface.symbolType()::is))
+      .forEach(this::reportIssue);
+
+    TypeTree superClass = tree.superClass();
+    if (superClass != null && superClass.symbolType().is(GLOBAL_METHOD_SECURITY_CONFIGURATION)) {
+      reportIssue(superClass);
     }
-    tree.modifiers().annotations().forEach(annotationTree -> {
-      Type annotationType = annotationTree.symbolType();
-      if (JSR_250_ANNOTATIONS.stream().anyMatch(annotationType::is)) {
-        reportIssue(annotationTree, MESSAGE);
-      }
-    });
+
+    checkAnnotations(tree.modifiers(), JSR_250_ANNOTATIONS);
   }
 
-  public void handleNewClassTree(NewClassTree tree) {
-    if (tree.classBody() != null) {
-      Type newClassType = tree.symbolType();
-      // only target anonymous classes
-      if (INTERFACES.stream().anyMatch(newClassType::isSubtypeOf)
-        || CLASSES.stream().anyMatch(newClassType::isSubtypeOf)) {
-        reportIssue(tree.newKeyword(), tree.arguments(), MESSAGE);
-      }
+  private void checkAnnotations(ModifiersTree modifiers, List<String> annotations) {
+    modifiers.annotations().stream()
+      .filter(annotationTree -> annotations.stream().anyMatch(annotationTree.symbolType()::is))
+      .forEach(this::reportIssue);
+  }
+
+  private void handleNewClassTree(NewClassTree tree) {
+    // only target anonymous classes
+    if (tree.classBody() != null
+      && ((JavaType) tree.symbolType()).directSuperTypes().stream()
+      .anyMatch(dst -> INTERFACES.stream().anyMatch(dst::is) || dst.is(GLOBAL_METHOD_SECURITY_CONFIGURATION))) {
+      reportIssue(tree.identifier());
     }
   }
 
-  public void handleMethodTree(MethodTree tree) {
-    tree.modifiers().annotations().forEach(annotationTree -> {
-      Type annotationType = annotationTree.symbolType();
-      if (Stream.concat(ANNOTATIONS.stream(), JSR_250_ANNOTATIONS.stream()).anyMatch(annotationType::is)) {
-        reportIssue(annotationTree, MESSAGE);
-      }
-    });
-  }
-
-  public void handleMethodInvocationTree(MethodInvocationTree tree) {
+  private void handleMethodInvocationTree(MethodInvocationTree tree) {
     if (METHOD_MATCHERS.anyMatch(tree)) {
-      reportIssue(ExpressionUtils.methodName(tree), tree.arguments(), MESSAGE);
+      reportIssue(ExpressionUtils.methodName(tree));
     }
+  }
+
+  private void reportIssue(Tree tree) {
+    reportIssue(tree, "Make sure that Permissions are controlled safely here.");
   }
 }

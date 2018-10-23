@@ -33,7 +33,7 @@ abstract class D implements PermissionEvaluator {}             // Noncompliant
 abstract class E implements SecurityExpressionOperations {}    // Noncompliant
 abstract class F implements MethodSecurityExpressionHandler {} // Noncompliant
 abstract class G implements GrantedAuthority {}                // Noncompliant
-abstract class H implements PermissionGrantingStrategy {}      // Noncompliant
+interface H extends PermissionGrantingStrategy {}              // Noncompliant
 abstract class I implements MyInterface {}
 
 abstract class J extends GlobalMethodSecurityConfiguration {}  // Noncompliant
@@ -69,7 +69,7 @@ class Whatever {
     mas.readAclById(o); // Compliant
     foo();
 
-    GrantedAuthority myGrantedAuthority = new GrantedAuthority() { // Noncompliant [[sc=43;ec=65]] {{Make sure that Permissions are controlled safely here.}}
+    GrantedAuthority myGrantedAuthority = new GrantedAuthority() { // Noncompliant [[sc=47;ec=63]] {{Make sure that Permissions are controlled safely here.}}
       @Override
       public String getAuthority() {
         return "hello";
@@ -78,7 +78,7 @@ class Whatever {
 
     GrantedAuthority myOtherGrantedAuthority = new SimpleGrantedAuthority("foo");
 
-    AccessDecisionManager myAccessDecisionManager = new AccessDecisionManager() { // Noncompliant [[sc=53;ec=80]] {{Make sure that Permissions are controlled safely here.}}
+    AccessDecisionManager myAccessDecisionManager = new AccessDecisionManager() { // Noncompliant [[sc=57;ec=78]] {{Make sure that Permissions are controlled safely here.}}
       @Override
       public void decide(Authentication authentication, Object object, Collection<ConfigAttribute> configAttributes) throws AccessDeniedException, InsufficientAuthenticationException { }
       @Override
@@ -96,7 +96,7 @@ class Whatever {
 
 @RolesAllowed("jsr250") // Noncompliant
 class JSR_250 {
-  @RolesAllowed(value = "foo") // Noncompliant 
+  @RolesAllowed(value = "foo") // Noncompliant [[sc=3;ec=31]] {{Make sure that Permissions are controlled safely here.}}
   void foo() { }
 
   @PermitAll // Noncompliant
