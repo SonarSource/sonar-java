@@ -1,6 +1,8 @@
 import org.kohsuke.args4j.Option;
 
 class A {
+  interface Foo {} // for coverage
+
   public static void main(String[] arguments) { // Compliant - arguments not used
     String b = "arguments";
   }

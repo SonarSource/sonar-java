@@ -19,9 +19,10 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -41,7 +42,7 @@ public class CommandLineArgumentsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS);
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override
@@ -60,22 +61,20 @@ public class CommandLineArgumentsCheck extends IssuableSubscriptionVisitor {
           checkArgs4J(methodTree);
         }
       } else if (member.is(Tree.Kind.VARIABLE)) {
-        checkArgs4JAnnotation(((VariableTree) member).modifiers().annotations());
+        checkArgs4JAnnotation(((VariableTree) member).modifiers().annotations().stream());
       }
     }
   }
 
   private void checkArgs4J(MethodTree methodTree) {
-    checkArgs4JAnnotation(methodTree.modifiers().annotations());
-    methodTree.parameters().forEach(param -> checkArgs4JAnnotation(param.modifiers().annotations()));
+    checkArgs4JAnnotation(methodTree.modifiers().annotations().stream());
+    checkArgs4JAnnotation(methodTree.parameters().stream().flatMap(p -> p.modifiers().annotations().stream()));
   }
 
-  private void checkArgs4JAnnotation(List<AnnotationTree> annotationTrees) {
-    for (AnnotationTree annotationTree : annotationTrees) {
-      if (annotationTree.symbolType().is(ARGS4J_ANNOTATION)) {
-        reportIssue(annotationTree, MESSAGE);
-      }
-    }
+  private void checkArgs4JAnnotation(Stream<AnnotationTree> annotationTrees) {
+    annotationTrees
+      .filter(annotation -> annotation.symbolType().is(ARGS4J_ANNOTATION))
+      .forEach(annotation -> reportIssue(annotation, MESSAGE));
   }
 
   private void checkMainMethodArgsUsage(MethodTree mainMethod) {

@@ -11,7 +11,7 @@ passing sensitive information via command line arguments should be considered as
 <h2>Ask Yourself Whether</h2>
 <ul>
   <li> any of the command line arguments are used without being sanitized first. </li>
-  <li> your application accept sensitive information via command line arguments. </li>
+  <li> your application accepts sensitive information via command line arguments. </li>
 </ul>
 <p>If you answered yes to any of these questions you are at risk.</p>
 <h2>Recommended Secure Coding Practices</h2>
@@ -19,6 +19,73 @@ passing sensitive information via command line arguments should be considered as
 <p>Any user or application can list running processes and see the command line arguments they were started with. There are safer ways of providing
 sensitive information to an application than exposing them in the command line. It is common to write them on the process' standard input, or give the
 path to a file containing the information.</p>
+<h2>Questionable Code Example</h2>
+<p>This rule raises an issue as soon as there is a reference to argv, be it for direct use or via a CLI library like JCommander, GetOpt or Apache
+CLI.</p>
+<pre>
+public class Main {
+&nbsp;&nbsp;&nbsp; public static void main (String[] argv) {
+&nbsp; &nbsp; &nbsp; &nbsp; String option = argv[0]; &nbsp;// Questionable: check how the argument is used
+&nbsp;&nbsp;&nbsp; }
+}
+</pre>
+<pre>
+// === JCommander ===
+import&nbsp;com.beust.jcommander.*;
+
+public class Main {
+&nbsp;&nbsp;&nbsp; public static void main (String[] argv) {
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Main main = new Main();
+&nbsp; &nbsp; &nbsp; &nbsp; JCommander.newBuilder()
+&nbsp; &nbsp; &nbsp; &nbsp; .addObject(main)
+&nbsp; &nbsp; &nbsp; &nbsp; .build()
+&nbsp; &nbsp; &nbsp; &nbsp; .parse(argv); // Questionable
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;main.run();
+&nbsp;&nbsp; &nbsp;}
+}
+</pre>
+<pre>
+// === GNU Getopt ===
+import gnu.getopt.Getopt;
+
+public class Main {
+&nbsp;&nbsp;&nbsp; public static void main (String[] argv) {
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;Getopt g = new Getopt("myprog", argv, "ab"); // Questionable
+&nbsp;&nbsp;&nbsp; }
+}
+</pre>
+<pre>
+// === Apache CLI ===
+import org.apache.commons.cli.*;
+
+public class Main {
+&nbsp;&nbsp;&nbsp; public static void main (String[] argv) {
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;Options options = new Options();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; CommandLineParser parser = new DefaultParser();
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;try {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;  CommandLine line = parser.parse(options, argv); // Questionable
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; }
+&nbsp;&nbsp;&nbsp; }
+}
+</pre>
+<p>In the case of Arg4J, an issue is created whenever <code>org.kohsuke.argv4j.Option</code> is used.</p>
+<pre>
+// === argv4J ===
+import org.kohsuke.argv4j.Option;
+
+public class Main {
+&nbsp;&nbsp; &nbsp;// Questionable: This is coming from the command line
+&nbsp;&nbsp; &nbsp;@Option(name="-myarg",usage="An argument")
+&nbsp;&nbsp; &nbsp;public String myarg;
+
+&nbsp;&nbsp; &nbsp;public void run() {
+&nbsp;&nbsp; &nbsp;}
+}
+</pre>
+<h2>Exceptions</h2>
+<p>The support of Argv4J without the use of <code>org.kohsuke.argv4j.Option</code> is out of scope as there is no way to know which Bean will be used
+as the mainclass.</p>
+<p>No issue will be raised on <code>public static void main(String[] argv)</code> if <code>argv</code> is not referenced in the method.</p>
 <h2>See</h2>
 <ul>
   <li> <a href="https://cwe.mitre.org/data/definitions/88.html">MITRE, CWE-88</a> - Argument Injection or Modification </li>
