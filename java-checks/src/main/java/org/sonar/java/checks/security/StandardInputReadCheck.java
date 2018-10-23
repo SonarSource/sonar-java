@@ -76,7 +76,7 @@ public class StandardInputReadCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private boolean isClosingStream(Tree parentExpression) {
+  private static boolean isClosingStream(Tree parentExpression) {
     if (parentExpression.is(Tree.Kind.PARENTHESIZED_EXPRESSION) || parentExpression.is(Tree.Kind.MEMBER_SELECT)) {
       return isClosingStream(parentExpression.parent());
     } else if (parentExpression.is(Tree.Kind.METHOD_INVOCATION)) {
@@ -89,7 +89,6 @@ public class StandardInputReadCheck extends IssuableSubscriptionVisitor {
 
   private void reportIssue(Tree tree) {
     reportIssue(tree, "Make sure that reading the standard input is safe here.");
-
   }
 
 }
