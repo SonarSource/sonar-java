@@ -10,12 +10,13 @@ class S2255 {
   private static final String VALUE = "value";
 
   void servletCookie(Cookie c){
-    Cookie cookie = new Cookie("name", "value"); // Noncompliant [[sc=40;ec=47]] {{Make sure storing this data in this cookie is safe here.}}
+    Cookie cookie = new Cookie("name", "value"); // Noncompliant [[sc=40;ec=47]] {{Make sure that this cookie is used safely.}}
     cookie.setValue("value"); // Noncompliant [[sc=21;ec=28]]
     String x = "value";
     cookie.setValue(x); // Noncompliant
     cookie.setValue(VALUE); // Noncompliant
     c.setValue("x"); // Noncompliant
+    cookie.getValue(); // Noncompliant [[sc=12;ec=20]]
   }
 
   void jaxRsCookie() {
@@ -24,26 +25,30 @@ class S2255 {
     new NewCookie("name", "value", "path", "domain", "comment", 1, true); // Noncompliant
     new NewCookie(cookie, "comment", 2, true); // Noncompliant
     new NewCookie(cookie); // Noncompliant
+    cookie.getValue(); // Noncompliant [[sc=12;ec=20]]
   }
 
   void httpCookie(HttpCookie hc) {
     HttpCookie cookie = new HttpCookie("name", "value"); // Noncompliant
     cookie.setValue("value"); // Noncompliant
     hc.setValue("x"); // Noncompliant
+    cookie.getValue(); // Noncompliant [[sc=12;ec=20]]
   }
 
   void shiroCookie(SimpleCookie cookie) {
     SimpleCookie sc = new SimpleCookie(cookie); // Noncompliant
     cookie.setValue("value"); // Noncompliant
     sc.setValue("value"); // Noncompliant
+    cookie.getValue(); // Noncompliant [[sc=12;ec=20]]
   }
 
-  void springCookie(Cookie cookie) {
-    new SavedCookie(cookie); // Noncompliant
+  void springCookie(Cookie c, SavedCookie cookie) {
+    new SavedCookie(c); // Noncompliant
     new SavedCookie("n", "v", "c", "d", 1, "p", true, 1); // Noncompliant
+    cookie.getValue(); // Noncompliant [[sc=12;ec=20]]
   }
 
-  void playCookie() {
+  void playCookie(play.mvc.Http.Cookie cookie) {
     play.mvc.Http.Cookie.builder("name", "value"); // Noncompliant [[sc=42;ec=49]]
     play.mvc.Http.Cookie.builder("name", "");
 
@@ -56,6 +61,7 @@ class S2255 {
       .withName("name")
       .withValue(null)
       .build();
+    cookie.value(); // Noncompliant [[sc=12;ec=17]]
   }
 
   void foo(HttpServletRequest request, HttpServletResponse response){
@@ -63,12 +69,12 @@ class S2255 {
   }
 
   void compliant(Cookie c1, HttpCookie c2, javax.ws.rs.core.Cookie c3, NewCookie c4, SimpleCookie c5, SavedCookie c6) {
-    c1.getValue();
-    c2.getValue();
-    c3.getValue();
-    c4.getValue();
-    c5.getValue();
-    c6.getValue();
+    c1.getValue(); // Noncompliant
+    c2.getValue(); // Noncompliant
+    c3.getValue(); // Noncompliant
+    c4.getValue(); // Noncompliant
+    c5.getValue(); // Noncompliant
+    c6.getValue(); // Noncompliant
     c1.setValue(null);
     c1.setValue("");
     c1.setValue("   ");

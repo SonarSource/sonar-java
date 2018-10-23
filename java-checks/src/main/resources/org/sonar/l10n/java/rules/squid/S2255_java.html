@@ -1,25 +1,110 @@
-<p>Attackers can use widely-available tools to view cookies and read any sensitive information they may contain. Even if the information is encoded in
-a way that is not human-readable, certain techniques could determine which encoding is being used, then decode the information.</p>
-<p>Moreover, cookies should be used only to manage the user session. All information relating to the user should be associated internally to the user
-session, and should never be sent to the client. In a very few corner cases, cookies can be used for non-sensitive information that needs to live
-longer than the user session.</p>
-<p>This rule raises an issue when data is stored in a cookie. Issues raised are intended to be reviewed by a security auditor as the false-positive
-rate will be high. It's indeed impossible to statically check if the data stored in the cookie is sensitive or not. </p>
-<h2>Recommended Secure Coding Practices</h2>
+<p>Using cookies is security-sensitive. It has led in the past to the following vulnerabilities:</p>
 <ul>
-  <li> store the sensitive data in the user session </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-7772">CVE-2018-7772</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-10085">CVE-2018-10085</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-6537">CVE-2016-6537</a> </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<p>Attackers can use widely-available tools to read and modify cookies, thus:</p>
+<ul>
+  <li> sensitive information written by the server will be exposed. </li>
+  <li> cookies sent by the client can be crafted to attack server vulnerabilities. </li>
+</ul>
+<p>This rule flags code that reads or writes cookies.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> sensitive information is stored inside the cookie. </li>
+  <li> cookie values are used without being first sanitized. </li>
+</ul>
+<p>You are at risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Cookies should only be used to manage the user session. The best practice is to keep all user-related information server-side and link them to the
+user session, never sending them to the client. In a very few corner cases, cookies can be used for non-sensitive information that need to live longer
+than the user session.</p>
+<p>Do not try to encode sensitive information in a non human-readable format before writing them in a cookie. The encoding can be reverted and the
+original information will be exposed.</p>
+<p><a href="https://www.owasp.org/index.php/Input_Validation_Cheat_Sheet">Sanitize</a> every information read from a cookie before using them.</p>
+<p>Using cookies only for session IDs doesn't make them secure. Follow <a
+href="https://www.owasp.org/index.php/Session_Management_Cheat_Sheet#Cookies">OWASP best practices</a> when you configure your cookies.</p>
+<h2>Questionable Code Example</h2>
 <pre>
-void aServiceMethodSettingCookie(HttpServletRequest request, HttpServletResponse response){
-    Cookie cookie = new Cookie("userAccountID", acctID);
-    response.addCookie(cookie);
+// === javax.servlet ===
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
+
+void aServiceMethodSettingCookie(HttpServletRequest request, HttpServletResponse response) {
+    Cookie cookie = new Cookie("userAccountID", acctID);  // Questionable
+    response.addCookie(cookie);  // Questionable
+
+    cookie.getValue();  // Questionable. Check how the value is used.
+}
+
+// === javax.ws ===
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.NewCookie;
+
+void jaxRsCookie() {
+    Cookie cookie= new Cookie("name", "value”);  // Questionable
+    cookie.getValue();  // Questionable
+
+    new NewCookie(...);  // Questionable
+}
+
+
+// === java.net ===
+import java.net.HttpCookie;
+
+void httpCookie(HttpCookie hc) {
+    HttpCookie cookie = new HttpCookie("name", "value");  // Questionable
+    cookie.setValue("value");  // Questionable
+    cookie.getValue();  // Questionable
+}
+
+// === apache.shiro ===
+import org.apache.shiro.web.servlet.SimpleCookie;
+
+void shiroCookie(SimpleCookie cookie) {
+    SimpleCookie sc = new SimpleCookie(cookie);  // Questionable
+    cookie.setValue("value");  // Questionable
+    cookie.getValue();  // Questionable
+}
+
+// === spring ===
+import org.springframework.security.web.savedrequest.SavedCookie;
+import org.springframework.web.bind.annotation.CookieValue;
+
+@RequestMapping(“/mypage.html”)
+// Questionable. “myCookie” value is read from a cookie.
+public String myPage(@CookieValue(“cookieName”) String myCookie) {
+    // ...
+}
+
+void springCookie(Cookie cookie) {
+    SavedCookie cookie = new SavedCookie(cookie);  // Questionable
+    cookie.getValue();  // Questionable
+}
+
+// === Play ===
+import play.mvc.Http.Cookie;
+import play.mvc.Http.CookieBuilder;
+
+void playCookie(Cookie cookie) {
+    cookie.value();  // Questionable
+
+    Cookie.builder("name", "value”);  // Questionable
+    new CookieBuilder()
+      .withName("name")
+      .withValue("value”)  // Questionable
+      .build();
 }
 </pre>
 <h2>See</h2>
 <ul>
-  <li> <a href="http://cwe.mitre.org/data/definitions/312.html">CWE-312</a> - Cleartext Storage of Sensitive Information </li>
-  <li> <a href="http://cwe.mitre.org/data/definitions/315.html">CWE-315</a> - Cleartext Storage of Sensitive Information in a Cookie </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/312.html">MITRE, CWE-312</a> - Cleartext Storage of Sensitive Information </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/315.html">MITRE, CWE-315</a> - Cleartext Storage of Sensitive Information in a Cookie </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/565.html">MITRE CWE-565</a> - Reliance on Cookies without Validation and Integrity Checking
+  </li>
+  <li> OWASP Top 10 2017 Category A1 - Injection </li>
   <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/FIO52-J.+Do+not+store+unencrypted+sensitive+information+on+the+client+side">CERT,
   FIO52-J.</a> - Do not store unencrypted sensitive information on the client side </li>
