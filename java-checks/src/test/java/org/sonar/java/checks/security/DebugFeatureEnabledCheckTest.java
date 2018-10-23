@@ -17,17 +17,17 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.spring;
+package org.sonar.java.checks.security;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SpringSecurityDebugModeCheckTest {
+public class DebugFeatureEnabledCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringSecurityDebugModeCheck.java", new SpringSecurityDebugModeCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringSecurityDebugModeCheck.java", new SpringSecurityDebugModeCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/security/DebugFeatureEnabledCheck.java", new DebugFeatureEnabledCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/DebugFeatureEnabledCheck.java", new DebugFeatureEnabledCheck());
   }
 
 }

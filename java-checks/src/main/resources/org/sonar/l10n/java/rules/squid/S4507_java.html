@@ -1,23 +1,44 @@
-<p>Spring Security's debug mode is useful during development and debugging, but could expose sensitive information to attackers such as request
-parameters, passwords, tokens or headers and should not be included in production code. </p>
-<h2>Recommended Secure Coding Practices</h2>
+<p>Delivering code in production with debug features activated is security-sensitive. It has led in the past to the following vulnerabilities:</p>
 <ul>
-  <li> make sure there is a step deactivating this debug mode in the release process before building the final package </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1999007">CVE-2018-1999007</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-5306">CVE-2015-5306</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2006">CVE-2013-2006</a> </li>
 </ul>
+<p>An application's debug features enable developers to find bugs more easily. It often gives access to detailed information on both the system
+running the application and users. Sometime it even enables the execution of custom commands. Thus deploying on production servers an application
+which has debug features activated is extremely dangerous.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> the code or configuration enabling the application debug features is deployed on production servers. </li>
+  <li> the application runs by default with debug features activated. </li>
+</ul>
+<p>You are at risk if you answered yes to any of these questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>The application should run by default in the most secure mode, i.e. as on production servers. This is to prevent any mistake. Enabling debug
+features should be explicitly asked via a command line argument, an environment variable or a configuration file.</p>
+<p>Check that every debug feature is controlled by only very few configuration variables: logging, exception/error handling, access control, etc... It
+is otherwise very easy to forget one of them.</p>
+<p>Do not enable debug features on production servers.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+
 @Configuration
 @EnableWebSecurity(debug = true) // Noncompliant
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-...
+  // ...
 }
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+
 @Configuration
 @EnableWebSecurity(debug = false) // Compliant
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-...
+  // ...
 }
 </pre>
 <h2>See</h2>

@@ -47,6 +47,7 @@ import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
 import org.sonar.java.checks.security.CookieShouldNotContainSensitiveDataCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
+import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.ExecCallCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
@@ -81,7 +82,6 @@ import org.sonar.java.checks.spring.SpringEndpointsCheck;
 import org.sonar.java.checks.spring.SpringIncompatibleTransactionalCheck;
 import org.sonar.java.checks.spring.SpringRequestMappingMethodCheck;
 import org.sonar.java.checks.spring.SpringScanDefaultPackageCheck;
-import org.sonar.java.checks.spring.SpringSecurityDebugModeCheck;
 import org.sonar.java.checks.spring.SpringSecurityDisableCSRFCheck;
 import org.sonar.java.checks.synchronization.DoubleCheckedLockingCheck;
 import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
@@ -563,7 +563,7 @@ public final class CheckList {
       .add(SpringComposedRequestMappingCheck.class)
       .add(SpringRequestMappingMethodCheck.class)
       .add(SpringScanDefaultPackageCheck.class)
-      .add(SpringSecurityDebugModeCheck.class)
+      .add(DebugFeatureEnabledCheck.class)
       .add(SpringSecurityDisableCSRFCheck.class)
       .add(PersistentEntityUsedAsRequestParameterCheck.class)
       .add(RequestMappingMethodPublicCheck.class)
