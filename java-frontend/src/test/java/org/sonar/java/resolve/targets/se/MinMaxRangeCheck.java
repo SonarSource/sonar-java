@@ -26,6 +26,7 @@ class MinMaxRangeCheck {
   private static final int UPPER_INT = 20;
   private static final int LOWER_INT = 0;
 
+  private static final float UPPER_FLOAT = 20.0432f;
   private static final double UPPER_DOUBLE = 20.0432;
   private static final double LOWER_DOUBLE = -15.1728;
 
@@ -120,5 +121,11 @@ class MinMaxRangeCheck {
 
   public void foo() {
     foo();
+  }
+
+  void coverage() {
+    int iValue = +UPPER_INT;
+    double fValue = -UPPER_FLOAT;
+    double dValue = -UPPER_DOUBLE;
   }
 }
