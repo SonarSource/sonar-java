@@ -121,6 +121,7 @@ import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.InvariantReturnCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.MapComputeIfAbsentOrPresentCheck;
+import org.sonar.java.se.checks.MinMaxRangeCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
@@ -434,6 +435,7 @@ public final class CheckList {
       .add(SynchronizedFieldAssignmentCheck.class)
       .add(NullDereferenceCheck.class)
       .add(InvariantReturnCheck.class)
+      .add(MinMaxRangeCheck.class)
       .add(ConditionalUnreachableCodeCheck.class)
       .add(UnclosedResourcesCheck.class)
       .add(CustomUnclosedResourcesCheck.class)

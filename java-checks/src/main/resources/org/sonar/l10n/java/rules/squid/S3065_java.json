@@ -1,0 +1,16 @@
+{
+  "title": "Min and max used in combination should not always return the same value",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3065",
+  "sqKey": "S3065",
+  "scope": "Main"
+}

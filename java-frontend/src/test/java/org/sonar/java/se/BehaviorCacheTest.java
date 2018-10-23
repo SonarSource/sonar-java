@@ -126,6 +126,11 @@ public class BehaviorCacheTest {
   }
 
   @Test
+  public void java_lang_math_methods_should_be_handled() throws Exception {
+    verifyNoIssueOnFile("src/test/files/se/JavaLangMathMethods.java");
+  }
+
+  @Test
   public void commons_lang3_string_utils_method_should_be_handled() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/CommonsLang3StringUtilsMethods.java");
   }
