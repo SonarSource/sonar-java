@@ -1,0 +1,68 @@
+<p>Controlling permissions is security-sensitive. It has led in the past to the following vulnerabilities:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12999">CVE-2018-12999</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-10285">CVE-2018-10285</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7455">CVE-2017-7455</a> </li>
+</ul>
+<p>Attackers can only damage what they have access to. Thus limiting their access is a good way to prevent them from wreaking havoc, but it has to be
+done properly.</p>
+<p>This rule flags code that controls the access to resources and actions. The goal is to guide security code reviews.</p>
+<p>More specifically it will raise issues on the following Spring code:</p>
+<ul>
+  <li> The definition of any class implementing interfaces </li>
+</ul>
+<p> <strong></strong> <code>org.springframework.security.access.AccessDecisionVoter</code></p>
+<p> <strong></strong> <code>org.springframework.security.access.AccessDecisionManager</code></p>
+<p> <strong></strong> <code>org.springframework.security.access.AfterInvocationProvider</code></p>
+<p> <strong></strong> <code>org.springframework.security.access.PermissionEvaluator</code></p>
+<p> <strong></strong> <code>org.springframework.security.access.expression.SecurityExpressionOperations</code></p>
+<p> <strong></strong> <code>org.springframework.security.access.expression.method.MethodSecurityExpressionHandler</code></p>
+<p> <strong></strong> <code>org.springframework.security.core.GrantedAuthority</code></p>
+<p> <strong></strong> <code>org.springframework.security.acls.model.PermissionGrantingStrategy</code></p>
+<ul>
+  <li> The definition of any class extending class </li>
+</ul>
+<p> <strong></strong> <code>org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration</code></p>
+<ul>
+  <li> Any method annotated with </li>
+</ul>
+<p> <strong></strong> Pre-post annotations: <code>@PreAuthorize</code>, <code>@PreFilter</code>, <code>@PostAuthorize</code> or
+<code>@PostFilter</code> from <code>org.springframework.security.access.prepost</code> package.</p>
+<p> <strong></strong> <code>@org.springframework.security.access.annotation.Secured</code></p>
+<ul>
+  <li> Calls to any of the following methods </li>
+</ul>
+<p> <strong></strong> <code>org.springframework.security.acls.model.MutableAclService</code>: <code>createAcl</code>, <code>deleteAcl</code>,
+<code>updateAcl</code></p>
+<p> <strong></strong> <code>org.springframework.security.config.annotation.web.builders.HttpSecurity</code>: <code>authorizeRequests</code></p>
+<ul>
+  <li> The instantiation of </li>
+</ul>
+<p> <strong></strong> <code>org.springframework.security.core.GrantedAuthority</code></p>
+<p>It will also raise issue on JSR-250 annotations <code>@RolesAllowed</code>, <code>@PermitAll</code> and <code>@DenyAll</code> from
+<code>javax.annotation</code> package.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> at least one accessed action or resource is security-sensitive. </li>
+  <li> there is no access control in place or it does not cover all sensitive actions and resources. </li>
+  <li> users have permissions they don't need. </li>
+  <li> the access control is based on a user input or on some other unsafe data. </li>
+  <li> permissions are difficult to remove or take a long time to be updated. </li>
+</ul>
+<p>You are at risk if you answered yes to the first question and any of the following ones.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>The first step is to restrict all sensitive actions to authenticated users.</p>
+<p>Each user should have the lowest privileges possible. The access control granularity should match the sensitivity of each resource or action. The
+more sensitive it is, the less people should have access to it. </p>
+<p>Do not base the access control on a user input or on a value which might have been tampered with. For example, the developer should not read a
+user's permissions from an HTTP cookie as it can be modified client-side.</p>
+<p>Check that the access to each action and resource is properly restricted.</p>
+<p>Enable administrators to swiftly remove permissions when necessary. This enables them to reduce the time an attacker can have access to your
+systems when a breach occurs.</p>
+<p>Log and monitor refused access requests as they can reveal an attack.</p>
+<h2>See</h2>
+<ul>
+  <li> OWASP Top 10 2017 Category A5 - Broken Access Control </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+</ul>
+
