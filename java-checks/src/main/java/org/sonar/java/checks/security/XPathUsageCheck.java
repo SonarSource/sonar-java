@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S4817")
@@ -68,7 +69,7 @@ public class XPathUsageCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(mit, MESSAGE);
+    reportIssue(ExpressionUtils.methodName(mit), MESSAGE);
   }
 
 }
