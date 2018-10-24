@@ -29,4 +29,9 @@ public class SocketUsageCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/security/SocketUsageCheck.java", new SocketUsageCheck());
   }
 
+  @Test
+  public void noSemantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/SocketUsageCheck.java", new SocketUsageCheck());
+  }
+
 }

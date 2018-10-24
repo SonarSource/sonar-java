@@ -36,6 +36,7 @@ public class SocketUsageCheck extends AbstractMethodDetection {
   private static final String MESSAGE = "Make sure that sockets are used safely here.";
   private static final String JAVAX_NET_SOCKET_FACTORY = "javax.net.SocketFactory";
   private static final String INIT = "<init>";
+  private static final String OPEN_METHOD = "open";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -52,10 +53,10 @@ public class SocketUsageCheck extends AbstractMethodDetection {
       MethodMatcher.create().typeDefinition(JAVAX_NET_SOCKET_FACTORY).name("createSocket").withAnyParameters(),
 
       // === java.nio.channels ===
-      MethodMatcher.create().typeDefinition("java.nio.channels.AsynchronousServerSocketChannel").name("open").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.nio.channels.AsynchronousSocketChannel").name("open").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.nio.channels.SocketChannel").name("open").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.nio.channels.ServerSocketChannel").name("open").withAnyParameters(),
+      MethodMatcher.create().typeDefinition("java.nio.channels.AsynchronousServerSocketChannel").name(OPEN_METHOD).withAnyParameters(),
+      MethodMatcher.create().typeDefinition("java.nio.channels.AsynchronousSocketChannel").name(OPEN_METHOD).withAnyParameters(),
+      MethodMatcher.create().typeDefinition("java.nio.channels.SocketChannel").name(OPEN_METHOD).withAnyParameters(),
+      MethodMatcher.create().typeDefinition("java.nio.channels.ServerSocketChannel").name(OPEN_METHOD).withAnyParameters(),
 
       // === Netty ===
       MethodMatcher.create().typeDefinition("io.netty.channel.ChannelInitializer").name(INIT).withAnyParameters());
@@ -63,6 +64,10 @@ public class SocketUsageCheck extends AbstractMethodDetection {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
+
     if (tree.is(Tree.Kind.CLASS)) {
       checkExtensions(((ClassTree) tree));
     } else {
