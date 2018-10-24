@@ -27,6 +27,6 @@ public class DataEncryptionCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/security/DataEncryptionCheck.java", new DataEncryptionCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/DataEncryptionCheck.java", new RegexHotspotCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/DataEncryptionCheck.java", new DataEncryptionCheck());
   }
 }
