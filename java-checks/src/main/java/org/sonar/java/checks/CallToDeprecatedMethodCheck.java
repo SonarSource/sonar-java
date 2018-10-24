@@ -67,6 +67,9 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     if (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree)) {
       nestedDeprecationLevel--;
     }
