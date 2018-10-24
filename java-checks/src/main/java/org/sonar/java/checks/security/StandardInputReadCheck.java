@@ -20,14 +20,13 @@
 package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -35,7 +34,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4829")
 public class StandardInputReadCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<MethodMatcher> METHOD_MATCHERS = Arrays.asList(
+  private static final MethodMatcherCollection METHOD_MATCHERS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition("java.lang.System").name("setIn").withAnyParameters(),
     MethodMatcher.create().typeDefinition("java.io.Console").name(NameCriteria.startsWith("read")).withAnyParameters());
 
@@ -43,7 +42,7 @@ public class StandardInputReadCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD_REFERENCE, Tree.Kind.MEMBER_SELECT);
+    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD_REFERENCE, Tree.Kind.IDENTIFIER);
   }
 
   @Override
@@ -52,27 +51,22 @@ public class StandardInputReadCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      checkMethod(tree, methodMatcher -> methodMatcher.matches((MethodInvocationTree) tree));
-    } else if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
-      checkMethod(tree, methodMatcher -> methodMatcher.matches((MethodReferenceTree) tree));
-    } else {
-      checkMemberSelect((MemberSelectExpressionTree) tree);
-    }
-  }
-
-  private void checkMethod(Tree tree, Predicate<MethodMatcher> predicate) {
-    if (METHOD_MATCHERS.stream().anyMatch(predicate)) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION) && METHOD_MATCHERS.anyMatch((MethodInvocationTree) tree)) {
       reportIssue(tree);
+    } else if (tree.is(Tree.Kind.METHOD_REFERENCE) && METHOD_MATCHERS.anyMatch((MethodReferenceTree) tree)) {
+      reportIssue(tree);
+    } else if (tree.is(Tree.Kind.IDENTIFIER)) {
+      checkIdentifier((IdentifierTree) tree);
     }
   }
 
-  private void checkMemberSelect(MemberSelectExpressionTree memberSelectExpression) {
-    if (memberSelectExpression.expression().symbolType().is("java.lang.System")
-      && memberSelectExpression.symbolType().is("java.io.InputStream")
-      && memberSelectExpression.identifier().name().equals("in")
-      && !isClosingStream(memberSelectExpression)) {
-      reportIssue(memberSelectExpression);
+  private void checkIdentifier(IdentifierTree identifier) {
+    if (identifier.symbol().enclosingClass() != null
+      && identifier.symbol().enclosingClass().type().is("java.lang.System")
+      && identifier.symbolType().is("java.io.InputStream")
+      && identifier.name().equals("in")
+      && !isClosingStream(identifier.parent())) {
+      reportIssue(identifier);
     }
   }
 

@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
+import static java.lang.System.in;
+
 abstract static class A {
 
   @FunctionalInterface
@@ -54,5 +56,16 @@ abstract static class A {
   abstract void doSomethingElse(Consumer<InputStream> methodReference);
 
   abstract void doAnotherThing(ClosableFunctionalInterface customInterface);
+
+}
+
+abstract static class B {
+  public void foo() throws IOException {
+    in.read(); // Noncompliant
+    in.close();
+    doSomething(in); // Noncompliant
+  }
+
+  abstract void doSomething(java.io.InputStream inputStream);
 
 }
