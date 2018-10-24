@@ -39,10 +39,10 @@ public class CheckstyleSensor implements Sensor {
 
   private static final Logger LOG = Loggers.get(CheckstyleSensor.class);
 
-  private static final String LINTER_KEY = "checkstyle";
   private static final String LINTER_NAME = "Checkstyle";
   private static final String LANGUAGE_KEY = "java";
   public static final String REPORT_PROPERTY_KEY = "sonar.java.checkstyle.reportPaths";
+  public static final String LINTER_KEY = "checkstyle";
 
   public static final ExternalRuleLoader RULE_LOADER = new ExternalRuleLoader(
     CheckstyleSensor.LINTER_KEY,

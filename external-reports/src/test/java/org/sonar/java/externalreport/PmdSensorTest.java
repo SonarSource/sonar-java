@@ -77,7 +77,7 @@ public class PmdSensorTest {
   @Test
   public void pmd_rules_definition() {
     RulesDefinition.Context context = new RulesDefinition.Context();
-    new ExternalRulesDefinition(PmdSensor.RULE_LOADER).define(context);
+    new ExternalRulesDefinition(PmdSensor.RULE_LOADER, PmdSensor.LINTER_KEY).define(context);
 
     assertThat(context.repositories()).hasSize(1);
     RulesDefinition.Repository repository = context.repository("external_pmd");
