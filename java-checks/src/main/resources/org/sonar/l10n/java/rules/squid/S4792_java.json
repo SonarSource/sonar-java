@@ -1,0 +1,30 @@
+{
+  "title": "Configuring loggers is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "tags": [
+    "cwe",
+    "owasp-a10",
+    "sans-top25-porous",
+    "owasp-a3"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-4792",
+  "sqKey": "S4792",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      532,
+      117,
+      778
+    ],
+    "OWASP": [
+      "A3",
+      "A10"
+    ]
+  }
+}

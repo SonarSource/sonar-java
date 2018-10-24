@@ -1,0 +1,146 @@
+<p>Configuring loggers is security-sensitive. It has led in the past to the following vulnerabilities:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0285">CVE-2018-0285</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2000-1127">CVE-2000-1127</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-15113">CVE-2017-15113</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-5742">CVE-2015-5742</a> </li>
+</ul>
+<p>Logs are useful before, during and after a security incident.</p>
+<ul>
+  <li> Attackers will most of the time start their nefarious work by probing the system for vulnerabilities. Monitoring this activity and stopping it
+  is the first step to prevent an attack from ever happening. </li>
+  <li> In case of a successful attack, logs should contain enough information to understand what damage an attacker may have inflicted. </li>
+</ul>
+<p>Logs are also a target for attackers because they might contain sensitive information. Configuring loggers has an impact on the type of information
+logged and how they are logged.</p>
+<p>This rule flags for review code that initiates loggers configuration. The goal is to guide security code reviews.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> unauthorized users might have access to the logs, either because they are stored in an insecure location or because the application gives
+  access to them. </li>
+  <li> the logs contain sensitive information on a production server. This can happen when the logger is in debug mode. </li>
+  <li> the log can grow without limit. This can happen when additional information is written into logs every time a user performs an action and the
+  user can perform the action as many times as he/she wants. </li>
+  <li> the logs do not contain enough information to understand the damage an attacker might have inflicted. The loggers mode (info, warn, error)
+  might filter out important information. They might not print contextual information like the precise time of events or the server hostname. </li>
+  <li> the logs are only stored locally instead of being backuped or replicated. </li>
+</ul>
+<p>You are at risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> Check that your production deployment doesn't have its loggers in "debug" mode as it might write sensitive information in logs. </li>
+  <li> Production logs should be stored in a secure location which is only accessible to system administrators. </li>
+  <li> Configure the loggers to display all warnings, info and error messages. Write relevant information such as the precise time of events and the
+  hostname. </li>
+  <li> Choose log format which is easy to parse and process automatically. It is important to process logs rapidly in case of an attack so that the
+  impact is known and limited. </li>
+  <li> Check that the permissions of the log files are correct. If you index the logs in some other service, make sure that the transfer and the
+  service are secure too. </li>
+  <li> Add limits to the size of the logs and make sure that no user can fill the disk with logs. This can happen even when the user does not control
+  the logged information. An attacker could just repeat a logged action many times. </li>
+</ul>
+<p>Remember that configuring loggers properly doesn't make them bullet-proof. Here is a list of recommendations explaining on how to use your
+logs:</p>
+<ul>
+  <li> Don't log any sensitive information. This obviously includes passwords and credit card numbers but also any personal information such as user
+  names, locations, etc... Usually any information which is protected by law is good candidate for removal. </li>
+  <li> Sanitize all user inputs before writing them in the logs. This includes checking its size, content, encoding, syntax, etc... As for any user
+  input, validate using whitelists whenever possible. Enabling users to write what they want in your logs can have many impacts. It could for example
+  use all your storage space or compromise your log indexing service. </li>
+  <li> Log enough information to monitor suspicious activities and evaluate the impact an attacker might have on your systems. Register events such as
+  failed logins, successful logins, server side input validation failures, access denials and any important transaction. </li>
+  <li> Monitor the logs for any suspicious activity. </li>
+</ul>
+<p>See</p>
+<ul>
+  <li> <a href="https://cwe.mitre.org/data/definitions/532.html">MITRE, CWE-532</a> - Information Exposure Through Log Files </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/117.html">MITRE, CWE-117</a> - Improper Output Neutralization for Logs </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/778.html">MITRE, CWE-778</a> - Insufficient Logging </li>
+  <li> [OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+  <li> [OWASP Top 10 2017 Category A10 - Insufficient Logging &amp; Monitoring </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+</ul>
+<h2>Questionable Code Example</h2>
+<p>This rule supports the following libraries: Log4J, <code>java.util.logging</code> and Logback</p>
+<pre>
+// === Log4J 2 ===
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.*;
+import org.apache.logging.log4j.core.config.*;
+
+// Questionable: creating a new custom configuration
+abstract class CustomConfigFactory extends ConfigurationFactory {
+    // ...
+}
+
+class A {
+    void foo(Configuration config, LoggerContext context, java.util.Map&lt;String, Level&gt; levelMap,
+            Appender appender, java.io.InputStream stream, java.net.URI uri,
+            java.io.File file, java.net.URL url, String source, ClassLoader loader, Level level, Filter filter)
+            throws java.io.IOException {
+        // Creating a new custom configuration
+        ConfigurationBuilderFactory.newConfigurationBuilder();  // Questionable
+
+        // Setting loggers level can result in writing sensitive information in production
+        Configurator.setAllLevels("com.example", Level.DEBUG);  // Questionable
+        Configurator.setLevel("com.example", Level.DEBUG);  // Questionable
+        Configurator.setLevel(levelMap);  // Questionable
+        Configurator.setRootLevel(Level.DEBUG);  // Questionable
+
+        config.addAppender(appender); // Questionable: this modifies the configuration
+
+        LoggerConfig loggerConfig = config.getRootLogger();
+        loggerConfig.addAppender(appender, level, filter); // Questionable
+        loggerConfig.setLevel(level); // Questionable
+
+        context.setConfigLocation(uri); // Questionable
+
+        // Load the configuration from a stream or file
+        new ConfigurationSource(stream);  // Questionable
+        new ConfigurationSource(stream, file);  // Questionable
+        new ConfigurationSource(stream, url);  // Questionable
+        ConfigurationSource.fromResource(source, loader);  // Questionable
+        ConfigurationSource.fromUri(uri);  // Questionable
+    }
+}
+
+
+
+</pre>
+<pre>
+// === java.util.logging ===
+import java.util.logging.*;
+
+class M {
+    void foo(LogManager logManager, Logger logger, java.io.InputStream is, Handler handler)
+            throws SecurityException, java.io.IOException {
+        logManager.readConfiguration(is); // Questionable
+
+        logger.setLevel(Level.FINEST); // Questionable
+        logger.addHandler(handler); // Questionable
+    }
+}
+</pre>
+<pre>
+// === Logback ===
+import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.Appender;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.*;
+
+class M {
+    void foo(Logger logger, Appender&lt;ILoggingEvent&gt; fileAppender) {
+        System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "config.xml"); // Questionable
+        JoranConfigurator configurator = new JoranConfigurator(); // Questionable
+
+        logger.addAppender(fileAppender); // Questionable
+        logger.setLevel(Level.DEBUG); // Questionable
+    }
+}
+</pre>
+<h2>Exceptions</h2>
+<p>Log4J 1.x is not covered as it has reached <a href="https://blogs.apache.org/foundation/entry/apache_logging_services_project_announces">end of
+life</a>.</p>
+
