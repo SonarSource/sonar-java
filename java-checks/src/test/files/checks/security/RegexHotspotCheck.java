@@ -10,10 +10,10 @@ class A {
     pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);  // Noncompliant
 
     String replacement = "test";
-    input.replaceAll(regex, replacement);  // Noncompliant
+    input.replaceAll(regex, replacement);  // Noncompliant [[sc=22;ec=27]]
     input.replaceFirst(regex, replacement);  // Noncompliant
-    input.split(regex);  // Noncompliant
-    input.split(regex, 3);  // Noncompliant
+    input.split(regex);  // compliant
+    input.split(regex, 3);  // compliant
 
     pattern.split("foo"); //compliant, excluded
     pattern.split("foo", 12); //compliant, excluded
@@ -27,7 +27,6 @@ class A {
   void methodRef() {
     java.util.function.BiFunction<String, String, String> replaceAll = input::replaceAll; // Noncompliant [[sc=79;ec=89]] {{Make sure that using a regular expression is safe here.}}
     java.util.function.BiFunction<String, String, String> replaceFirst = input::replaceFirst; // Noncompliant
-    java.util.function.Function<String, String[]> stringFunction = input::split; // Noncompliant
   }
 }
 
