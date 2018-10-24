@@ -64,6 +64,7 @@ import org.sonar.java.checks.security.SMTPSSLServerIdentityCheck;
 import org.sonar.java.checks.security.SecureCookieCheck;
 import org.sonar.java.checks.security.SecureXmlTransformerCheck;
 import org.sonar.java.checks.security.StandardInputReadCheck;
+import org.sonar.java.checks.security.SocketUsageCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
 import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
@@ -634,6 +635,7 @@ public final class CheckList {
       .add(DataEncryptionCheck.class)
       .add(CommandLineArgumentsCheck.class)
       .add(StandardInputReadCheck.class)
+      .add(SocketUsageCheck.class)
       .build();
   }
 
