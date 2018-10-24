@@ -1,0 +1,11 @@
+{
+'jdk6:java/io/ObjectStreamClass.java':[
+1754,
+],
+'jdk6:java/rmi/dgc/VMID.java':[
+140,
+],
+'jdk6:java/util/UUID.java':[
+180,
+],
+}

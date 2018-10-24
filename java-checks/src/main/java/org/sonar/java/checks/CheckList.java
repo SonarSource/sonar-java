@@ -50,6 +50,7 @@ import org.sonar.java.checks.security.CookieHttpOnlyCheck;
 import org.sonar.java.checks.security.CookieShouldNotContainSensitiveDataCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.DataEncryptionCheck;
+import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
 import org.sonar.java.checks.security.DynamicCodeCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
@@ -632,6 +633,7 @@ public final class CheckList {
       .add(VolatileVariablesOperationsCheck.class)
       .add(RegexHotspotCheck.class)
       .add(DataEncryptionCheck.class)
+      .add(DataHashingCheck.class)
       .add(CommandLineArgumentsCheck.class)
       .add(StandardInputReadCheck.class)
       .build();
