@@ -15,5 +15,9 @@ class Reflection {
     clazz.getDeclaredClasses(); // Noncompliant
 
     loader.loadClass(className); // Noncompliant
+
+    // Exceptions
+    loader.loadClass("MyClassName");
+    clazz.getField("MyClassName");
   }
 }

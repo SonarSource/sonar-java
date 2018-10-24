@@ -22,9 +22,11 @@ package org.sonar.java.checks.security;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S1523")
@@ -48,6 +50,10 @@ public class DynamicCodeCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(ExpressionUtils.methodName(mit), "Make sure that encrypting data is safe here.");
+    Arguments arguments = mit.arguments();
+    // if at least one argument is provided the first argument is always the name
+    if (arguments.isEmpty() || ConstantUtils.resolveAsStringConstant(arguments.get(0)) == null) {
+      reportIssue(ExpressionUtils.methodName(mit), "Make sure that encrypting data is safe here.");
+    }
   }
 }
