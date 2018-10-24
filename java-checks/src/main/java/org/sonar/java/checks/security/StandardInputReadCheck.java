@@ -26,6 +26,7 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
@@ -61,8 +62,9 @@ public class StandardInputReadCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkIdentifier(IdentifierTree identifier) {
-    if (identifier.symbol().enclosingClass() != null
-      && identifier.symbol().enclosingClass().type().is("java.lang.System")
+    Symbol.TypeSymbol enclosingClass = identifier.symbol().enclosingClass();
+    if (enclosingClass != null
+      && enclosingClass.type().is("java.lang.System")
       && identifier.symbolType().is("java.io.InputStream")
       && identifier.name().equals("in")
       && !isClosingStream(identifier.parent())) {
