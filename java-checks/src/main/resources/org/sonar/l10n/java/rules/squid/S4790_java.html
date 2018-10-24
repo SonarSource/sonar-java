@@ -1,0 +1,157 @@
+<p>Hashing data is security-sensitive. It has led in the past to the following vulnerabilities:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-9233">CVE-2018-9233</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-5097">CVE-2013-5097</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2007-1051">CVE-2007-1051</a> </li>
+</ul>
+<p>Cryptographic hash functions are used to uniquely identify information without storing their original form. When not done properly, an attacker can
+steal the original information by guessing it (ex: with a <a href="https://en.wikipedia.org/wiki/Rainbow_table">rainbow table</a>), or replace the
+original data with another one having the same hash.</p>
+<p>This rule flags code that initiates hashing.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> the hashed value is used for security purpose. </li>
+  <li> the hashing algorithm you are using is known to have vulnerabilities. </li>
+  <li> a <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">"salt"</a> is not added to the input before hashing. </li>
+  <li> the salt value is always the same, or it is not random, or it is reused. </li>
+  <li> the salt is shorter than the resulting hash value. </li>
+</ul>
+<p>You are at risk if you answered yes to the first question and any of the following ones.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> use only hashing algorithms which are <a href="https://en.wikipedia.org/wiki/Hash_function_security_summary">known to be strong</a>. Check
+  regularly that this is still the case as hashing algorithms strength change with time. </li>
+  <li> generate a long random salt. </li>
+  <li> the salt is at least as long as the resulting hash value. </li>
+  <li> append the value being hashed to the salt and pass the whole thing into a standard hash function such as SHA256. </li>
+  <li> save both the salt and the hashed value in the relevant database record; during future validation operations, the salt and hash can then be
+  retrieved from the database. The hash is recalculated with the stored salt and the value being validated, and the result compared to the stored
+  hash. </li>
+</ul>
+<h2>Questionable Code Example</h2>
+<pre>
+// === MessageDigest ===
+import java.security.MessageDigest;
+import java.security.Provider;
+
+class A {
+    void foo(String algorithm, String providerStr, Provider provider) throws Exception {
+        MessageDigest.getInstance(algorithm); // Questionable
+        MessageDigest.getInstance(algorithm, providerStr); // Questionable
+        MessageDigest.getInstance(algorithm, provider); // Questionable
+    }
+}
+</pre>
+<p>Regarding <code>SecretKeyFactory</code>. Any call to <code>SecretKeyFactory.getInstance("...")</code> with an argument starting by
+<code>"PBKDF2"</code> will be highlighted. See <a href="https://www.owasp.org/index.php/Hashing_Java">OWASP guidelines</a>, list of <a
+href="https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#SecretKeyFactory">standard algorithms</a> and <a
+href="https://developer.android.com/reference/javax/crypto/SecretKeyFactory">algorithms on android</a>.</p>
+<pre>
+// === javax.crypto ===
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.SecretKeyFactory;
+
+class A {
+    void foo(char[] password, byte[] salt, int iterationCount, int keyLength) throws Exception {
+        // Questionable. Review this, even if it is the way recommended by OWASP
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+        PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keyLength);
+        factory.generateSecret(spec).getEncoded();
+    }
+}
+</pre>
+<p>Regarding Guava, only the hashing functions which are usually misused for sensitive data will raise an issue, i.e. <code>md5</code> and
+<code>sha*</code>.</p>
+<pre>
+// === Guava ===
+import com.google.common.hash.Hashing;
+
+class A {
+    void foo() {
+        Hashing.md5(); // Questionable
+        Hashing.sha1(); // Questionable
+        Hashing.sha256(); // Questionable
+        Hashing.sha384(); // Questionable
+        Hashing.sha512(); // Questionable
+    }
+}
+</pre>
+<pre>
+// === org.apache.commons ===
+import org.apache.commons.codec.digest.DigestUtils;
+
+class A {
+    void foo(String strName, byte[] data, String str, java.io.InputStream stream) throws Exception {
+        new DigestUtils(strName); // Questionable
+        new DigestUtils(); // Questionable
+
+        DigestUtils.getMd2Digest(); // Questionable
+        DigestUtils.getMd5Digest(); // Questionable
+        DigestUtils.getShaDigest(); // Questionable
+        DigestUtils.getSha1Digest(); // Questionable
+        DigestUtils.getSha256Digest(); // Questionable
+        DigestUtils.getSha384Digest(); // Questionable
+        DigestUtils.getSha512Digest(); // Questionable
+
+
+        DigestUtils.md2(data); // Questionable
+        DigestUtils.md2(stream); // Questionable
+        DigestUtils.md2(str); // Questionable
+        DigestUtils.md2Hex(data); // Questionable
+        DigestUtils.md2Hex(stream); // Questionable
+        DigestUtils.md2Hex(str); // Questionable
+
+        DigestUtils.md5(data); // Questionable
+        DigestUtils.md5(stream); // Questionable
+        DigestUtils.md5(str); // Questionable
+        DigestUtils.md5Hex(data); // Questionable
+        DigestUtils.md5Hex(stream); // Questionable
+        DigestUtils.md5Hex(str); // Questionable
+
+        DigestUtils.sha(data); // Questionable
+        DigestUtils.sha(stream); // Questionable
+        DigestUtils.sha(str); // Questionable
+        DigestUtils.shaHex(data); // Questionable
+        DigestUtils.shaHex(stream); // Questionable
+        DigestUtils.shaHex(str); // Questionable
+
+        DigestUtils.sha1(data); // Questionable
+        DigestUtils.sha1(stream); // Questionable
+        DigestUtils.sha1(str); // Questionable
+        DigestUtils.sha1Hex(data); // Questionable
+        DigestUtils.sha1Hex(stream); // Questionable
+        DigestUtils.sha1Hex(str); // Questionable
+
+        DigestUtils.sha256(data); // Questionable
+        DigestUtils.sha256(stream); // Questionable
+        DigestUtils.sha256(str); // Questionable
+        DigestUtils.sha256Hex(data); // Questionable
+        DigestUtils.sha256Hex(stream); // Questionable
+        DigestUtils.sha256Hex(str); // Questionable
+
+        DigestUtils.sha384(data); // Questionable
+        DigestUtils.sha384(stream); // Questionable
+        DigestUtils.sha384(str); // Questionable
+        DigestUtils.sha384Hex(data); // Questionable
+        DigestUtils.sha384Hex(stream); // Questionable
+        DigestUtils.sha384Hex(str); // Questionable
+
+        DigestUtils.sha512(data); // Questionable
+        DigestUtils.sha512(stream); // Questionable
+        DigestUtils.sha512(str); // Questionable
+        DigestUtils.sha512Hex(data); // Questionable
+        DigestUtils.sha512Hex(stream); // Questionable
+        DigestUtils.sha512Hex(str); // Questionable
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://cwe.mitre.org/data/definitions/916.html">MITRE, CWE-916</a> - Use of Password Hash With Insufficient Computational Effort
+  </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/759.html">MITRE, CWE-759</a> - Use of a One-Way Hash without a Salt </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/760.html">MITRE, CWE-760</a> - Use of a One-Way Hash with a Predictable Salt </li>
+  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+</ul>
+
