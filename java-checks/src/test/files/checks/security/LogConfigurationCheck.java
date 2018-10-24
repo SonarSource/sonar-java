@@ -1,5 +1,7 @@
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
@@ -41,6 +43,13 @@ class Log4J2 {
     new ConfigurationSource(stream, url);// Noncompliant
     ConfigurationSource.fromResource("source", loader);// Noncompliant
     ConfigurationSource.fromUri(uri);// Noncompliant
+
+    org.apache.logging.log4j.Level level;
+    Filter filter;
+    LoggerConfig loggerConfig = config.getRootLogger();
+    loggerConfig.addAppender(appender, level, filter); // Noncompliant
+    loggerConfig.setLevel(level); // Noncompliant
+
   }
 }
 
