@@ -41,32 +41,32 @@ alphanumeric character because it has no anchors.</p>
 <pre>
 import java.util.regex.Pattern;
 
-class A {
+class BasePattern {
   String regex; // a regular expression
   String input; // a user input
 
-  void foo() {
+  void foo(CharSequence htmlString) {
     input.matches(regex);  // Questionable
-    Pattern pattern = Pattern.compile(regex);  // Questionable
-    Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);  // Questionable
+    Pattern.compile(regex);  // Questionable
+    Pattern.compile(regex, Pattern.CASE_INSENSITIVE);  // Questionable
 
     String replacement = "test";
     input.replaceAll(regex, replacement);  // Questionable
     input.replaceFirst(regex, replacement);  // Questionable
-    input.split(regex);  // Questionable
-    input.split(regex, 3);  // Questionable
 
-    !Pattern.matches(".*&lt;script&gt;.*", htmlString); // Questionable, even if the pattern is hard-coded
+    if (!Pattern.matches(".*&lt;script&gt;.*", htmlString)) { // Questionable, even if the pattern is hard-coded
+    }
   }
 }
 </pre>
 <p>This also applies for bean validation, where regexp can be specified:</p>
 <pre>
+import java.io.Serializable;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Email;
 import org.hibernate.validator.constraints.URL;
 
-public class Test implements Serializable {
+class BeansRegex implements Serializable {
   @Pattern(regexp=".+@.+")  // Questionable
   private String email;
 
@@ -81,6 +81,8 @@ public class Test implements Serializable {
 <h2>Exceptions</h2>
 <p>Calls to <code>java.util.regex.Pattern.matcher(...)</code>, <code>java.util.regex.Pattern.split(...)</code> and all methods of
 <code>java.util.regex.Matcher</code> are not highlighted as the pattern compilation is already highlighted.</p>
+<p>Calls to <code>String.split(regex)</code> and <code>String.split(regex, limit)</code> will not raise an exception despite their use of a regular
+expression. These methods are used most of the time to split on a single character, which doesn't create any vulnerability.</p>
 <h2>See</h2>
 <ul>
   <li> <a href="https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS">MITRA, CWE-624</a> - Executable Regular Expression Error

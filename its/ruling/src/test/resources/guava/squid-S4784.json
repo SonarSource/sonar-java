@@ -11,13 +11,6 @@
 'com.google.guava:guava:src/com/google/common/io/PatternFilenameFilter.java':[
 48,
 ],
-'com.google.guava:guava:src/com/google/common/net/InetAddresses.java':[
-205,
-224,
-],
-'com.google.guava:guava:src/com/google/common/net/InternetDomainName.java':[
-510,
-],
 'com.google.guava:guava:src/com/google/common/net/PercentEscaper.java':[
 100,
 ],
