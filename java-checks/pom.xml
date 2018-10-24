@@ -93,6 +93,24 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>xalan</groupId>
+                  <artifactId>xalan</artifactId>
+                  <version>2.7.2</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.santuario</groupId>
+                  <artifactId>xmlsec</artifactId>
+                  <version>2.1.2</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>commons-jxpath</groupId>
+                  <artifactId>commons-jxpath</artifactId>
+                  <version>1.3</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>args4j</groupId>
                   <artifactId>args4j</artifactId>
                   <version>2.33</version>

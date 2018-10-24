@@ -68,6 +68,7 @@ import org.sonar.java.checks.security.SecureXmlTransformerCheck;
 import org.sonar.java.checks.security.StandardInputReadCheck;
 import org.sonar.java.checks.security.SocketUsageCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
+import org.sonar.java.checks.security.XPathUsageCheck;
 import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
@@ -640,6 +641,7 @@ public final class CheckList {
       .add(StandardInputReadCheck.class)
       .add(FileHandlingCheck.class)
       .add(SocketUsageCheck.class)
+      .add(XPathUsageCheck.class)
       .build();
   }
 

@@ -1,0 +1,104 @@
+<p>Executing XPATH expressions is security-sensitive. It has led in the past to the following vulnerabilities:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-6272">CVE-2016-6272</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-9149">CVE-2016-9149</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-4837">CVE-2012-4837</a> </li>
+</ul>
+<p>User provided data such as URL parameters should always be considered as untrusted and tainted. Constructing XPath expressions directly from
+tainted data enables attackers to inject specially crafted values that changes the initial meaning of the expression itself. Successful XPath
+injections attacks can read sensitive information from the XML document.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> the XPATH expression might contain some unsafe input coming from a user. </li>
+</ul>
+<p>You are at risk if you answered yes to this question.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Sanitize any user input before using it in an XPATH expression.</p>
+<h2>Questionable Code Example</h2>
+<pre>
+// === javax.xml.xpath.XPath ===
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+
+import org.xml.sax.InputSource;
+
+class M {
+    void foo(XPath xpath, String expression, InputSource source, QName returnType, Object item) throws Exception {
+        xpath.compile(expression); // Questionable
+        xpath.evaluate(expression, source); // Questionable
+        xpath.evaluate(expression, source, returnType); // Questionable
+        xpath.evaluate(expression, item); // Questionable
+        xpath.evaluate(expression, item, returnType); // Questionable
+    }
+}
+</pre>
+<pre>
+// === Apache XML Security ===
+import org.apache.xml.utils.PrefixResolver;
+import org.apache.xml.security.utils.XPathAPI;
+import org.w3c.dom.Node;
+
+class M {
+    void foo(XPathAPI api, Node contextNode, String str, Node namespaceNode, PrefixResolver prefixResolver,
+            Node xpathnode) throws Exception {
+        api.evaluate(contextNode, xpathnode, str, namespaceNode); // Questionable
+        api.selectNodeList(contextNode, xpathnode, str, namespaceNode); // Questionable
+    }
+}
+</pre>
+<pre>
+// === Apache Xalan ===
+import org.apache.xml.utils.PrefixResolver;
+import org.apache.xpath.XPathAPI;
+import org.w3c.dom.Node;
+
+class M {
+    void foo(XPathAPI api, Node contextNode, String str, Node namespaceNode, PrefixResolver prefixResolver)
+            throws Exception {
+        XPathAPI.eval(contextNode, str); // Questionable
+        XPathAPI.eval(contextNode, str, namespaceNode); // Questionable
+        XPathAPI.eval(contextNode, str, prefixResolver); // Questionable
+        XPathAPI.selectNodeIterator(contextNode, str); // Questionable
+        XPathAPI.selectNodeIterator(contextNode, str, namespaceNode); // Questionable
+        XPathAPI.selectNodeList(contextNode, str); // Questionable
+        XPathAPI.selectNodeList(contextNode, str, namespaceNode); // Questionable
+        XPathAPI.selectSingleNode(contextNode, str); // Questionable
+        XPathAPI.selectSingleNode(contextNode, str, namespaceNode); // Questionable
+    }
+}
+</pre>
+<pre>
+// === org.apache.commons.jxpath ===
+import org.apache.commons.jxpath.JXPathContext;
+
+abstract class A extends JXPathContext{
+    A(JXPathContext compilationContext, Object contextBean) {
+        super(compilationContext, contextBean);
+    }
+
+
+    void foo(JXPathContext context, String str, Object obj, Class&lt;?&gt; requiredType) {
+        JXPathContext.compile(str); // Questionable
+        this.compilePath(str); // Questionable
+        context.createPath(str); // Questionable
+        context.createPathAndSetValue(str, obj); // Questionable
+        context.getPointer(str); // Questionable
+        context.getValue(str); // Questionable
+        context.getValue(str, requiredType); // Questionable
+        context.iterate(str); // Questionable
+        context.iteratePointers(str); // Questionable
+        context.removeAll(str); // Questionable
+        context.removePath(str); // Questionable
+        context.selectNodes(str); // Questionable
+        context.selectSingleNode(str); // Questionable
+        context.setValue(str, obj); // Questionable
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/643">MITRE, CWE-643</a> - Improper Neutralization of Data within XPath Expressions </li>
+  <li> OWASP Top 10 2017 Category A1 - Injection </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/BwLEAw">CERT, IDS53-J.</a> - Prevent XPath Injection </li>
+</ul>
+
