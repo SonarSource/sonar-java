@@ -28,18 +28,8 @@ original data with another one having the same hash.</p>
   retrieved from the database. The hash is recalculated with the stored salt and the value being validated, and the result compared to the stored
   hash. </li>
 </ul>
-<p>See</p>
-<ul>
-  <li> <a href="https://cwe.mitre.org/data/definitions/916.html">MITRE, CWE-916</a> - Use of Password Hash With Insufficient Computational Effort
-  </li>
-  <li> <a href="http://cwe.mitre.org/data/definitions/759.html">MITRE, CWE-759</a> - Use of a One-Way Hash without a Salt </li>
-  <li> <a href="http://cwe.mitre.org/data/definitions/760.html">MITRE, CWE-760</a> - Use of a One-Way Hash with a Predictable Salt </li>
-  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
-  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
-</ul>
 <h2>Questionable Code Example</h2>
 <pre>
-
 // === MessageDigest ===
 import java.security.MessageDigest;
 import java.security.Provider;
@@ -155,4 +145,13 @@ class A {
     }
 }
 </pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://cwe.mitre.org/data/definitions/916.html">MITRE, CWE-916</a> - Use of Password Hash With Insufficient Computational Effort
+  </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/759.html">MITRE, CWE-759</a> - Use of a One-Way Hash without a Salt </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/760.html">MITRE, CWE-760</a> - Use of a One-Way Hash with a Predictable Salt </li>
+  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+</ul>
 

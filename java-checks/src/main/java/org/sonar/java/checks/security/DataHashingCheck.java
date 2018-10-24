@@ -46,12 +46,13 @@ public class DataHashingCheck extends AbstractMethodDetection {
     matchers.add(MethodMatcher.create().typeDefinition(DIGEST_UTILS).name("<init>").withAnyParameters());
     matchers.addAll(
       Stream.of("Md2", "Md5", "Sha", "Sha1", "Sha256", "Sha384", "Sha512")
-      .flatMap(alg -> Stream.of("get" + alg + "Digest", alg.toLowerCase(Locale.ENGLISH), alg.toLowerCase(Locale.ENGLISH)+"Hex"))
-      .map(name -> MethodMatcher.create().typeDefinition(DIGEST_UTILS).name(name).withAnyParameters())
-      .collect(Collectors.toList()));
-    matchers.addAll(Stream.of("md5", "sha1", "sha256", "sha384", "sha512").map(alg ->
-      MethodMatcher.create().typeDefinition("com.google.common.hash.Hashing").name(alg).withoutParameter()
-    ).collect(Collectors.toList()));
+        .flatMap(alg -> Stream.of("get" + alg + "Digest", alg.toLowerCase(Locale.ENGLISH), alg.toLowerCase(Locale.ENGLISH) + "Hex"))
+        .map(name -> MethodMatcher.create().typeDefinition(DIGEST_UTILS).name(name).withAnyParameters())
+        .collect(Collectors.toList()));
+    matchers.addAll(
+      Stream.of("md5", "sha1", "sha256", "sha384", "sha512")
+        .map(alg -> MethodMatcher.create().typeDefinition("com.google.common.hash.Hashing").name(alg).withoutParameter())
+        .collect(Collectors.toList()));
     matchers.add(MethodMatcher.create().typeDefinition(SECRET_KEY_FACTORY).name("getInstance").withAnyParameters());
     return matchers;
   }
@@ -60,7 +61,7 @@ public class DataHashingCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (mit.symbol().owner().type().is(SECRET_KEY_FACTORY)) {
       String algorithm = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
-      if(algorithm == null || !algorithm.startsWith("PBKDF2")) {
+      if (algorithm == null || !algorithm.startsWith("PBKDF2")) {
         return;
       }
     }
