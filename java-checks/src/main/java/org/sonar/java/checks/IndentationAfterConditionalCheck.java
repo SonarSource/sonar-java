@@ -79,7 +79,7 @@ public class IndentationAfterConditionalCheck extends BaseTreeVisitor implements
   private void checkForReport(StatementTree statement, Tree startTree, Tree endTree, String name) {
     if (!(statement.is(Tree.Kind.BLOCK) || statement.firstToken().column() > startTree.firstToken().column())) {
       context.reportIssue(this, startTree, endTree,
-        "Use curly braces or indentation to denote the code conditionally executed by this \"" + name + "\".",
+        "Use indentation to denote the code conditionally executed by this \"" + name + "\".",
         Collections.singletonList(new JavaFileScannerContext.Location("", statement)), null);
     }
   }
