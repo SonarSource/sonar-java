@@ -76,7 +76,7 @@ class Whatever {
       }
     };
 
-    GrantedAuthority myOtherGrantedAuthority = new SimpleGrantedAuthority("foo");
+    GrantedAuthority myOtherGrantedAuthority = new SimpleGrantedAuthority("foo"); // Noncompliant
 
     AccessDecisionManager myAccessDecisionManager = new AccessDecisionManager() { // Noncompliant [[sc=57;ec=78]] {{Make sure that Permissions are controlled safely here.}}
       @Override
@@ -91,6 +91,13 @@ class Whatever {
     GlobalMethodSecurityConfiguration myGlobalMethodSecurityConfiguration2 = new GlobalMethodSecurityConfiguration();
 
     MyClass myClass = new MyClass() { };
+  }
+
+  MyGrantedAuthority myOtherGrantedAuthority = new MyGrantedAuthority(); // Noncompliant {{Make sure that Permissions are controlled safely here.}}
+}
+
+class MyGrantedAuthority implements GrantedAuthority { // Noncompliant
+  void foo() {
   }
 }
 

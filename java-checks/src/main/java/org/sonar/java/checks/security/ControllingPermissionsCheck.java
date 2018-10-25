@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -51,6 +52,7 @@ public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
     "javax.annotation.security.PermitAll",
     "javax.annotation.security.DenyAll"));
 
+  private static final String ORG_SPRINGFRAMEWORK_SECURITY_CORE_GRANTED_AUTHORITY = "org.springframework.security.core.GrantedAuthority";
   private static final List<String> INTERFACES = Collections.unmodifiableList(Arrays.asList(
     "org.springframework.security.access.AccessDecisionVoter",
     "org.springframework.security.access.AccessDecisionManager",
@@ -58,7 +60,7 @@ public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
     "org.springframework.security.access.PermissionEvaluator",
     "org.springframework.security.access.expression.SecurityExpressionOperations",
     "org.springframework.security.access.expression.method.MethodSecurityExpressionHandler",
-    "org.springframework.security.core.GrantedAuthority",
+    ORG_SPRINGFRAMEWORK_SECURITY_CORE_GRANTED_AUTHORITY,
     "org.springframework.security.acls.model.PermissionGrantingStrategy"));
 
   private static final String GLOBAL_METHOD_SECURITY_CONFIGURATION = "org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration";
@@ -131,12 +133,18 @@ public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleNewClassTree(NewClassTree tree) {
-    // only target anonymous classes
-    if (tree.classBody() != null
-      && ((JavaType) tree.symbolType()).directSuperTypes().stream()
-      .anyMatch(dst -> INTERFACES.stream().anyMatch(dst::is) || dst.is(GLOBAL_METHOD_SECURITY_CONFIGURATION))) {
-      reportIssue(tree.identifier());
-    }
+    ((JavaType) tree.symbolType()).directSuperTypes().stream()
+      .filter(directSuperType -> isGrantedAuthority(directSuperType) || isForbiddenForAnonymousClass(tree, directSuperType))
+      .findFirst()
+      .ifPresent(ct -> reportIssue(tree.identifier()));
+  }
+
+  private static boolean isGrantedAuthority(ClassJavaType dst) {
+    return dst.is(ORG_SPRINGFRAMEWORK_SECURITY_CORE_GRANTED_AUTHORITY);
+  }
+
+  private static boolean isForbiddenForAnonymousClass(NewClassTree tree, ClassJavaType dst) {
+    return tree.classBody() != null && (INTERFACES.stream().anyMatch(dst::is) || dst.is(GLOBAL_METHOD_SECURITY_CONFIGURATION));
   }
 
   private void handleMethodInvocationTree(MethodInvocationTree tree) {

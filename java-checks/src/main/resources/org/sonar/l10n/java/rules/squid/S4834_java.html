@@ -36,11 +36,11 @@ done properly.</p>
 <code>updateAcl</code></p>
 <p> <strong></strong> <code>org.springframework.security.config.annotation.web.builders.HttpSecurity</code>: <code>authorizeRequests</code></p>
 <ul>
-  <li> The instantiation of </li>
+  <li> The instantiation of an anonymous class implementing <code>org.springframework.security.core.GrantedAuthority</code> or of any class
+  implementing this interface directly. </li>
 </ul>
-<p> <strong></strong> <code>org.springframework.security.core.GrantedAuthority</code></p>
 <p>It will also raise issue on JSR-250 annotations <code>@RolesAllowed</code>, <code>@PermitAll</code> and <code>@DenyAll</code> from
-<code>javax.annotation</code> package.</p>
+<code>javax.annotation.security</code> package.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
   <li> at least one accessed action or resource is security-sensitive. </li>
