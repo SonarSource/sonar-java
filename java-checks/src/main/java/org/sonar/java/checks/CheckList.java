@@ -55,6 +55,7 @@ import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
 import org.sonar.java.checks.security.DynamicCodeCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.ExecCallCheck;
+import org.sonar.java.checks.security.FileHandlingCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
@@ -637,6 +638,7 @@ public final class CheckList {
       .add(DataHashingCheck.class)
       .add(CommandLineArgumentsCheck.class)
       .add(StandardInputReadCheck.class)
+      .add(FileHandlingCheck.class)
       .add(SocketUsageCheck.class)
       .build();
   }
