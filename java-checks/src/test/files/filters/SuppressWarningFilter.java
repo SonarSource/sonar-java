@@ -71,6 +71,9 @@ class A {
     int foo() {
       return bad_constant_name;
     }
+
+    @SuppressWarnings(org.sonar.java.filters.SuppressWarningFilterTest.CONSTANT_RULE_KEY) // WithIssue
+    private static final int bad_constant_name2 = 42; // NoIssue
   }
 }
 

@@ -20,23 +20,16 @@
 package org.sonar.java.filters;
 
 import org.junit.Test;
-
-import com.sonar.sslr.api.Trivia;
-
-import org.sonar.check.Rule;
 import org.sonar.java.checks.SuppressWarningsCheck;
 import org.sonar.java.checks.TodoTagPresenceCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
-import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
-import java.util.List;
 
 public class SuppressWarningFilterTest {
-
+  /**
+   * Constant used in test for rule key.
+   */
+  public static final String CONSTANT_RULE_KEY = "repo:S00115";
   @Test
   public void verify() {
     FilterVerifier.verify("src/test/files/filters/SuppressWarningFilter.java", new SuppressWarningFilter(),
