@@ -5,7 +5,7 @@ class Reflection {
                          Class<?> parameterTypes)
     throws NoSuchMethodException, SecurityException, ClassNotFoundException, NoSuchFieldException {
 
-    Class<?> clazz = Class.forName(className); // Noncompliant [[sc=28;ec=35]] {{Make sure that encrypting data is safe here.}}
+    Class<?> clazz = Class.forName(className); // Noncompliant [[sc=28;ec=35]] {{Make sure that this dynamic injection or execution of code is safe.}}
     clazz.getMethod(methodName, parameterTypes); // Noncompliant
     clazz.getMethods(); // Noncompliant
     clazz.getField(fieldName); // Noncompliant

@@ -53,7 +53,7 @@ public class DynamicCodeCheck extends AbstractMethodDetection {
     Arguments arguments = mit.arguments();
     // if at least one argument is provided the first argument is always the name
     if (arguments.isEmpty() || ConstantUtils.resolveAsStringConstant(arguments.get(0)) == null) {
-      reportIssue(ExpressionUtils.methodName(mit), "Make sure that encrypting data is safe here.");
+      reportIssue(ExpressionUtils.methodName(mit), "Make sure that this dynamic injection or execution of code is safe.");
     }
   }
 }
