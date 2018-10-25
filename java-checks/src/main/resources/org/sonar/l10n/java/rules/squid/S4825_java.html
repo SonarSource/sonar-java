@@ -36,49 +36,49 @@
 import java.net.URL;
 import java.net.HttpURLConnection;
 
-class URLConnection {
-        void foo() throws Exception {
+abstract class URLConnection {
+    void foo() throws Exception {
         URL url = new URL("http://example.com");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");  // Questionable: review how the connection is used
+        HttpURLConnection con = (HttpURLConnection) url.openConnection(); // Questionable: review how the http connection is used
+
+        doSomething((HttpURLConnection) url.openConnection()); // Questionable: review how the http connection is used
     }
+
+    abstract void doSomething(HttpURLConnection httpUrlConnection);
 }
 </pre>
 <pre>
 // === HttpClient Java 9 ===
-
 import jdk.incubator.http.HttpClient;
 import jdk.incubator.http.HttpRequest;
 import jdk.incubator.http.HttpResponse;
 
 class JavaNet9 {
-        void foo(HttpRequest request, HttpResponse.BodyHandler&lt;Object&gt; responseBodyHandler, HttpResponse.MultiProcessor&lt;?,?&gt; multiProcessor) throws Exception {
+    void foo(HttpRequest request, HttpResponse.BodyHandler&lt;Object&gt; responseBodyHandler, HttpResponse.MultiProcessor&lt;?,?&gt; multiProcessor) throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         client.send(request, responseBodyHandler); // Questionable
         client.sendAsync(request, responseBodyHandler); // Questionable
-        client.sendAsync​(request, multiProcessor); // Questionable
+        client.sendAsync(request, multiProcessor); // Questionable
     }
 }
 </pre>
 <pre>
 // === HttpClient Java 10 ===
-
 import jdk.incubator.http.HttpClient;
 import jdk.incubator.http.HttpRequest;
 import jdk.incubator.http.HttpResponse;
 
 class JavaNet10 {
-        void foo(HttpRequest request, HttpResponse.BodyHandler&lt;Object&gt; responseBodyHandler, HttpResponse.MultiSubscriber&lt;?,?&gt; multiSubscriber) throws Exception {
+    void foo(HttpRequest request, HttpResponse.BodyHandler&lt;Object&gt; responseBodyHandler, HttpResponse.MultiSubscriber&lt;?,?&gt; multiSubscriber) throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         client.send(request, responseBodyHandler); // Questionable
         client.sendAsync(request, responseBodyHandler); // Questionable
-        client.sendAsync​(request, multiSubscriber); // Questionable
+        client.sendAsync(request, multiSubscriber); // Questionable
     }
 }
 </pre>
 <pre>
 // === HttpClient Java 11 ===
-
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -109,6 +109,8 @@ class ApacheHttpClient {
             ResponseHandler&lt;?&gt; responseHandler, HttpUriRequest uriRequest, HttpEntityEnclosingRequest eeRequest)
             throws Exception {
         HttpClient client = HttpClientBuilder.create().build();
+
+        // All the following are Questionable
         client.execute(target, request);
         client.execute(target, request, context);
         client.execute(target, request, responseHandler);
@@ -117,8 +119,6 @@ class ApacheHttpClient {
         client.execute(uriRequest, context);
         client.execute(uriRequest, responseHandler);
         client.execute(uriRequest, responseHandler, context);
-
-        // All the following are Questionable
         con.sendRequestEntity(eeRequest);
         con.sendRequestHeader(request);
     }
@@ -134,9 +134,9 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 
 class GoogleHttpClient {
     void foo(Executor executor) throws Exception {
-
         HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory();
         HttpRequest request = requestFactory.buildGetRequest(new GenericUrl("http://example.com"));
+
         // All the following are Questionable
         request.execute();
         request.executeAsync();

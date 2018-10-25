@@ -553,6 +553,8 @@
     </plugins>
   </build>
 
+  <!-- Tests HttpRequestsHotspotCheck_java9.java and HttpRequestsHotspotCheck_java10.java require the jdk.incubator.httpclient module,
+       as the module is not part of java standard modules, it needs to be added to maven-surefire-plugin when compiling/running tests with JDK 9 or JDK 10 -->
   <profiles>
     <profile>
       <id>jdk-9-10</id>

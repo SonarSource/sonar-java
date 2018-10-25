@@ -2,6 +2,7 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.javanet.NetHttpTransport;
+import java.net.JarURLConnection;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Executor;
@@ -18,13 +19,20 @@ import org.apache.http.protocol.HttpContext;
 abstract class URLConnection {
   void foo() throws Exception {
     URL url = new URL("http://example.com");
-    HttpURLConnection con = (HttpURLConnection) url.openConnection(); // Noncompliant [[sc=29;ec=69]] {{Make sure that this http request is sent safely.}}
+    HttpURLConnection con = (HttpURLConnection) url.openConnection(); // Noncompliant [[sc=53;ec=67]] {{Make sure that this http request is sent safely.}}
     con.getContent(); // No issue here as it was raised when cast to HttpURLConnection
 
-    doSomething((HttpURLConnection) url.openConnection()); // Noncompliant
+    doSomething((HttpURLConnection) url.openConnection(null)); // Noncompliant
+    doSomething((JarURLConnection) url.openConnection()); // Compliant - not casted to HttpURLConnection
+    url.openConnection(); // Compliant - not casted to HttpURLConnection
+
+    HttpURLConnection connection2 = (HttpURLConnection) con;
+    HttpURLConnection connection3 = (HttpURLConnection) getConnection();
   }
 
   abstract void doSomething(HttpURLConnection httpUrlConnection);
+
+  abstract Object getConnection();
 }
 
 // === apache ===

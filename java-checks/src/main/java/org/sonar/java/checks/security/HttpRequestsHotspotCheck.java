@@ -19,57 +19,53 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 @Rule(key = "S4825")
-public class HttpRequestsHotspotCheck extends IssuableSubscriptionVisitor {
-
-  private static final MethodMatcherCollection METHOD_MATCHER = MethodMatcherCollection.create(
-    // === HttpClient Java 9/10 ===
-    MethodMatcher.create().typeDefinition("jdk.incubator.http.HttpClient").name(NameCriteria.startsWith("send")).withAnyParameters(),
-
-    // === HttpClient Java 11 ===
-    MethodMatcher.create().typeDefinition("java.net.http.HttpClient").name(NameCriteria.startsWith("send")).withAnyParameters(),
-
-    // === apache ===
-    MethodMatcher.create().typeDefinition("org.apache.http.client.HttpClient").name("execute").withAnyParameters(),
-    MethodMatcher.create().typeDefinition("org.apache.http.HttpClientConnection").name(NameCriteria.startsWith("send")).withAnyParameters(),
-
-    // === google-http-java-client ===
-    MethodMatcher.create().typeDefinition("com.google.api.client.http.HttpRequest").name(NameCriteria.startsWith("execute")).withAnyParameters());
+public class HttpRequestsHotspotCheck extends AbstractMethodDetection {
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.TYPE_CAST);
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return Arrays.asList(
+      MethodMatcher.create().typeDefinition("java.net.URL").name("openConnection").withAnyParameters(),
+
+      // === HttpClient Java 9/10 ===
+      MethodMatcher.create().typeDefinition("jdk.incubator.http.HttpClient").name(NameCriteria.startsWith("send")).withAnyParameters(),
+
+      // === HttpClient Java 11 ===
+      MethodMatcher.create().typeDefinition("java.net.http.HttpClient").name(NameCriteria.startsWith("send")).withAnyParameters(),
+
+      // === apache ===
+      MethodMatcher.create().typeDefinition("org.apache.http.client.HttpClient").name("execute").withAnyParameters(),
+      MethodMatcher.create().typeDefinition("org.apache.http.HttpClientConnection").name(NameCriteria.startsWith("send")).withAnyParameters(),
+
+      // === google-http-java-client ===
+      MethodMatcher.create().typeDefinition("com.google.api.client.http.HttpRequest").name(NameCriteria.startsWith("execute")).withAnyParameters());
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    if (!"openConnection".equals(mit.symbol().name()) || isCastToHttpUrlConnection(mit.parent())) {
+      reportIssue(ExpressionUtils.methodName(mit), "Make sure that this http request is sent safely.");
     }
+  }
 
-    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      if (METHOD_MATCHER.anyMatch(mit)) {
-        reportIssue(ExpressionUtils.methodName(mit), "Make sure that this http request is sent safely.");
-      }
-    } else {
-      TypeCastTree castTree = (TypeCastTree) tree;
-      if (castTree.type().symbolType().is("java.net.HttpURLConnection")) {
-        reportIssue(tree, "Make sure that this http request is sent safely.");
-      }
+  private static boolean isCastToHttpUrlConnection(Tree parent) {
+    if (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      return isCastToHttpUrlConnection(parent.parent());
+    } else if (parent.is(Tree.Kind.TYPE_CAST)) {
+      return ((TypeCastTree) parent).type().symbolType().is("java.net.HttpURLConnection");
     }
+    return false;
   }
 
 }
