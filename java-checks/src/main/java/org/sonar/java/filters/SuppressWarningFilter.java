@@ -26,30 +26,27 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
-
-import org.sonar.api.rule.RuleKey;
-import org.sonar.api.scan.issue.filter.FilterableIssue;
-import org.sonar.api.utils.AnnotationUtils;
-import org.sonar.check.Rule;
-import org.sonar.java.checks.SuppressWarningsCheck;
-import org.sonar.java.model.LiteralUtils;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.sonar.api.rule.RuleKey;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
+import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.check.Rule;
+import org.sonar.java.checks.SuppressWarningsCheck;
+import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
@@ -164,11 +161,14 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   private static List<String> getRulesFromExpression(ExpressionTree expression) {
     List<String> args = Lists.newArrayList();
-    if (expression.is(Tree.Kind.STRING_LITERAL)) {
-      args.add(LiteralUtils.trimQuotes(((LiteralTree) expression).value()));
-    } else if (expression.is(Tree.Kind.NEW_ARRAY)) {
+    if (expression.is(Tree.Kind.NEW_ARRAY)) {
       for (ExpressionTree initializer : ((NewArrayTree) expression).initializers()) {
         args.addAll(getRulesFromExpression(initializer));
+      }
+    } else {
+      String constant = ConstantUtils.resolveAsStringConstant(expression);
+      if (constant != null) {
+        args.add(constant);
       }
     }
     return args;
