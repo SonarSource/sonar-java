@@ -19,26 +19,15 @@
  */
 package org.sonar.java.externalreport;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonarsource.analyzer.commons.ExternalRuleLoader;
+import org.junit.Test;
 
-public class ExternalRulesDefinition implements RulesDefinition {
+import static org.assertj.core.api.Assertions.assertThat;
 
-  private final ExternalRuleLoader ruleLoader;
-  private final String linterKey;
+public class ExternalRulesDefinitionTest {
 
-  public ExternalRulesDefinition(ExternalRuleLoader ruleLoader, String linterKey) {
-    this.ruleLoader = ruleLoader;
-    this.linterKey = linterKey;
-  }
-
-  @Override
-  public void define(Context context) {
-    ruleLoader.createExternalRuleRepository(context);
-  }
-
-  @Override
-  public String toString() {
-    return linterKey+"-rules-definition";
+  @Test
+  public void toString_should_exist_and_contains_linter_name() {
+    // to string is used by compute engine logs and should return a unique key
+    assertThat(new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER, "someLinterKey").toString()).isEqualTo("someLinterKey-rules-definition");
   }
 }

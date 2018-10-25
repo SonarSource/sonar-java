@@ -57,8 +57,8 @@ public class SpotBugsSensorTest {
   @Test
   public void spotbugs_rules_definition() {
     RulesDefinition.Context context = new RulesDefinition.Context();
-    new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER).define(context);
-    new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER).define(context);
+    new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER, SpotBugsSensor.SPOTBUGS_KEY).define(context);
+    new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER, SpotBugsSensor.FINDSECBUGS_KEY).define(context);
     assertThat(context.repositories()).hasSize(2);
 
     RulesDefinition.Repository repository = context.repository("external_spotbugs");

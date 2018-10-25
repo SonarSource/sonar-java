@@ -57,7 +57,7 @@ public class CheckstyleSensorTest {
   @Test
   public void checkstyle_rules_definition() {
     RulesDefinition.Context context = new RulesDefinition.Context();
-    new ExternalRulesDefinition(CheckstyleSensor.RULE_LOADER).define(context);
+    new ExternalRulesDefinition(CheckstyleSensor.RULE_LOADER, CheckstyleSensor.LINTER_KEY).define(context);
 
     assertThat(context.repositories()).hasSize(1);
     RulesDefinition.Repository repository = context.repository("external_checkstyle");

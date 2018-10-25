@@ -44,7 +44,7 @@ public final class ExternalReportExtensions {
 
     boolean externalIssuesSupported = context.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(7, 2));
     if (externalIssuesSupported) {
-      context.addExtension(new ExternalRulesDefinition(CheckstyleSensor.RULE_LOADER));
+      context.addExtension(new ExternalRulesDefinition(CheckstyleSensor.RULE_LOADER, CheckstyleSensor.LINTER_KEY));
       context.addExtension(
         PropertyDefinition.builder(CheckstyleSensor.REPORT_PROPERTY_KEY)
           .name("Checkstyle Report Files")
@@ -55,7 +55,7 @@ public final class ExternalReportExtensions {
           .multiValues(true)
           .build());
 
-      context.addExtension(new ExternalRulesDefinition(PmdSensor.RULE_LOADER));
+      context.addExtension(new ExternalRulesDefinition(PmdSensor.RULE_LOADER, PmdSensor.LINTER_KEY));
       context.addExtension(
         PropertyDefinition.builder(PmdSensor.REPORT_PROPERTY_KEY)
           .name("PMD Report Files")
@@ -66,8 +66,8 @@ public final class ExternalReportExtensions {
           .multiValues(true)
           .build());
 
-      context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER));
-      context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER));
+      context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER, SpotBugsSensor.SPOTBUGS_KEY));
+      context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER, SpotBugsSensor.FINDSECBUGS_KEY));
       context.addExtension(
         PropertyDefinition.builder(SpotBugsSensor.REPORT_PROPERTY_KEY)
           .name("SpotBugs Report Files")
