@@ -28,7 +28,8 @@ class javaIOFile {
     new File(parent, StrChild); // compliant we rely on the fact that parent should be highlighted
 
 
-      File.createTempFile(prefix, suffix);
+    File.createTempFile(prefix, suffix); // Noncompliant
+    File.createTempFile(prefix, suffix, parent); // compliant
   }
 
   void mymethod(File file) {
@@ -81,6 +82,7 @@ class Guava {
     com.google.common.io.Files.fileTreeTraverser(); // not testable : method is package protected before being removed from guava.
     com.google.common.io.Files.fileTraverser(); // Noncompliant
     com.google.common.io.MoreFiles.directoryTreeTraverser(); // not testable : method has been removed from guava.
+    com.google.common.io.MoreFiles.fileTraverser(); // Noncompliant
     Resources.asByteSource(url); // Noncompliant
     Resources.asCharSource(url, charset); // Noncompliant
     Resources.copy(url, stream); // Noncompliant
