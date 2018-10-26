@@ -68,17 +68,39 @@ public class Main {
 &nbsp;&nbsp;&nbsp; }
 }
 </pre>
-<p>In the case of Arg4J, an issue is created whenever <code>org.kohsuke.argv4j.Option</code> is used.</p>
+<p>In the case of Args4J, an issue is created on the <code>public void run</code> method of any class using <code>org.kohsuke.args4j.Option</code> or
+<code>org.kohsuke.args4j.Argument</code>.</p>
+<p>Such a class is called directly by <code>org.kohsuke.args4j.Starter</code> outside of any <code>public static void main</code> method. If the class
+has no <code>run</code> method, no issue will be raised as there must be a <code>public static void main</code> and its argument is already
+highlighted.</p>
 <pre>
 // === argv4J ===
-import org.kohsuke.argv4j.Option;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.Argument;
 
 public class Main {
-&nbsp;&nbsp; &nbsp;// Questionable: This is coming from the command line
-&nbsp;&nbsp; &nbsp;@Option(name="-myarg",usage="An argument")
-&nbsp;&nbsp; &nbsp;public String myarg;
+    @Option(name="-myopt",usage="An option")
+    public String myopt;
 
-&nbsp;&nbsp; &nbsp;public void run() {
+    @Argument(usage = "An argument", metaVar = "&lt;myArg&gt;")
+    String myarg;
+
+    String file;
+
+    @Option(name="-file")
+    public void setFile(String file) {
+        this.file = file;
+    }
+
+    String arg2;
+
+    @Argument(index=1)
+    public void setArg2(String arg2) {
+        this.arg2 = arg2;
+    }
+
+&nbsp;&nbsp; &nbsp;public void run() { // Questionable: This function
+        myarg; // check how this argument is used
 &nbsp;&nbsp; &nbsp;}
 }
 </pre>

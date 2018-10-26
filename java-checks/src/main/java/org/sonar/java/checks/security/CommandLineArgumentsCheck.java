@@ -36,7 +36,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S4823")
 public class CommandLineArgumentsCheck extends IssuableSubscriptionVisitor {
 
-  private static final String ARGS4J_ANNOTATION = "org.kohsuke.args4j.Option";
+  private static final String ARGS4J_OPTION_ANNOTATION = "org.kohsuke.args4j.Option";
+  private static final String ARGS4J_ARGUMENT_ANNOTATION = "org.kohsuke.args4j.Argument";
   private static final String MESSAGE = "Make sure that command line arguments are used safely here.";
 
   @Override
@@ -56,20 +57,37 @@ public class CommandLineArgumentsCheck extends IssuableSubscriptionVisitor {
         MethodTreeImpl methodTree = (MethodTreeImpl) member;
         if (methodTree.isMainMethod()) {
           checkMainMethodArgsUsage(methodTree);
-        } else {
-          checkArgs4JAnnotation(methodTree.simpleName(), methodTree.symbol());
-          methodTree.parameters().forEach(p -> checkArgs4JAnnotation(p, p.symbol()));
+        } else if ("run".equals(methodTree.simpleName().name())) {
+          checkArgs4J(methodTree.simpleName(), classTree);
         }
-      } else if (member.is(Tree.Kind.VARIABLE)) {
-        checkArgs4JAnnotation(member, ((VariableTree) member).symbol());
       }
     }
   }
 
-  private void checkArgs4JAnnotation(Tree tree, Symbol symbol) {
-    if (symbol.metadata().isAnnotatedWith(ARGS4J_ANNOTATION)) {
-      reportIssue(tree, MESSAGE);
+  private void checkArgs4J(IdentifierTree methodIdentifier, ClassTree classTree) {
+    List<Tree> args4JAnnotatedMembers = classTree.members().stream()
+      .filter(CommandLineArgumentsCheck::hasArgs4JAnnotation)
+      .collect(Collectors.toList());
+
+    if (!args4JAnnotatedMembers.isEmpty()) {
+      List<JavaFileScannerContext.Location> secondaries = args4JAnnotatedMembers.stream()
+        .map(member -> new JavaFileScannerContext.Location("", member))
+        .collect(Collectors.toList());
+      reportIssue(methodIdentifier, MESSAGE, secondaries, null);
     }
+  }
+
+  private static boolean hasArgs4JAnnotation(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      return hasArgs4JAnnotation(((MethodTree) tree).symbol());
+    } else if (tree.is(Tree.Kind.VARIABLE)) {
+      return hasArgs4JAnnotation(((VariableTree) tree).symbol());
+    }
+    return false;
+  }
+
+  private static boolean hasArgs4JAnnotation(Symbol symbol) {
+    return symbol.metadata().isAnnotatedWith(ARGS4J_OPTION_ANNOTATION) || symbol.metadata().isAnnotatedWith(ARGS4J_ARGUMENT_ANNOTATION);
   }
 
   private void checkMainMethodArgsUsage(MethodTree mainMethod) {
