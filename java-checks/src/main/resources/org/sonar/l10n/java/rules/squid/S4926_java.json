@@ -1,0 +1,16 @@
+{
+  "title": "\"serialVersionUID\" should not be declared blindly",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4926",
+  "sqKey": "S4926",
+  "scope": "Main"
+}
