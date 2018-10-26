@@ -22,9 +22,10 @@ abstract class URLConnection {
     HttpURLConnection con = (HttpURLConnection) url.openConnection(); // Noncompliant [[sc=53;ec=67]] {{Make sure that this http request is sent safely.}}
     con.getContent(); // No issue here as it was raised when cast to HttpURLConnection
 
-    doSomething((HttpURLConnection) url.openConnection(null)); // Noncompliant
+    doSomething((HttpURLConnection) (url.openConnection(null))); // Noncompliant
     doSomething((JarURLConnection) url.openConnection()); // Compliant - not casted to HttpURLConnection
     url.openConnection(); // Compliant - not casted to HttpURLConnection
+    JarURLConnection jarURLConnection = (JarURLConnection) (url.openConnection());
 
     HttpURLConnection connection2 = (HttpURLConnection) con;
     HttpURLConnection connection3 = (HttpURLConnection) getConnection();
