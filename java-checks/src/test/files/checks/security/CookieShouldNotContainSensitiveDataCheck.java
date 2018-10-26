@@ -48,6 +48,10 @@ class S2255 {
     cookie.getValue(); // Noncompliant [[sc=12;ec=20]]
   }
 
+  public String myPage(@org.springframework.web.bind.annotation.CookieValue("cookieName") String myCookie) { // Noncompliant [[sc=24;ec=90]]
+    return "test";
+  }
+
   void playCookie(play.mvc.Http.Cookie cookie) {
     play.mvc.Http.Cookie.builder("name", "value"); // Noncompliant [[sc=42;ec=49]]
     play.mvc.Http.Cookie.builder("name", "");
@@ -65,7 +69,7 @@ class S2255 {
   }
 
   void foo(HttpServletRequest request, HttpServletResponse response){
-    response.addCookie(request.getCookies()[0]); // FN, needs simbolic execution
+    response.addCookie(request.getCookies()[0]); // FN, needs symbolic execution
   }
 
   void compliant(Cookie c1, HttpCookie c2, javax.ws.rs.core.Cookie c3, NewCookie c4, SimpleCookie c5, SavedCookie c6) {

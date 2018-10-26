@@ -32,70 +32,100 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-void aServiceMethodSettingCookie(HttpServletRequest request, HttpServletResponse response) {
-    Cookie cookie = new Cookie("userAccountID", acctID);  // Questionable
-    response.addCookie(cookie);  // Questionable
+public class JavaxServlet {
+    void aServiceMethodSettingCookie(HttpServletRequest request, HttpServletResponse response, String acctID) {
+        Cookie cookie = new Cookie("userAccountID", acctID);  // Questionable
+        response.addCookie(cookie);  // Questionable
 
-    cookie.getValue();  // Questionable. Check how the value is used.
+        cookie.getValue();  // Questionable. Check how the value is used.
+    }
 }
-
+</pre>
+<pre>
 // === javax.ws ===
+import java.util.Date;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.NewCookie;
 
-void jaxRsCookie() {
-    Cookie cookie= new Cookie("name", "value”);  // Questionable
-    cookie.getValue();  // Questionable
+class JavaxWs {
+    void jaxRsCookie(String comment, int maxAge, boolean secure, Date expiry, boolean httpOnly, String name,
+            String value, String path, String domain, int version) {
+        Cookie cookie= new Cookie("name", "value");  // Questionable
+        cookie.getValue();  // Questionable
 
-    new NewCookie(...);  // Questionable
+        new NewCookie(cookie);  // Questionable
+        new NewCookie(cookie, comment, maxAge, secure);
+        new NewCookie(cookie, comment, maxAge, expiry, secure, httpOnly);
+        new NewCookie(name, value);
+        new NewCookie(name, value, path, domain, version, comment, maxAge, secure);
+        new NewCookie(name, value, path, domain, version, comment, maxAge, expiry, secure, httpOnly);
+        new NewCookie(name, value, path, domain, comment, maxAge, secure);
+        new NewCookie(name, value, path, domain, comment, maxAge, secure, httpOnly);
+    }
 }
-
-
+</pre>
+<pre>
 // === java.net ===
 import java.net.HttpCookie;
 
-void httpCookie(HttpCookie hc) {
-    HttpCookie cookie = new HttpCookie("name", "value");  // Questionable
-    cookie.setValue("value");  // Questionable
-    cookie.getValue();  // Questionable
+class JavaNet {
+    void httpCookie(HttpCookie hc) {
+        HttpCookie cookie = new HttpCookie("name", "value");  // Questionable
+        cookie.setValue("value");  // Questionable
+        cookie.getValue();  // Questionable
+    }
 }
-
+</pre>
+<pre>
 // === apache.shiro ===
 import org.apache.shiro.web.servlet.SimpleCookie;
 
-void shiroCookie(SimpleCookie cookie) {
-    SimpleCookie sc = new SimpleCookie(cookie);  // Questionable
-    cookie.setValue("value");  // Questionable
-    cookie.getValue();  // Questionable
-}
+class ApacheShiro {
 
+    void shiroCookie(SimpleCookie cookie) {
+        SimpleCookie sc = new SimpleCookie(cookie);  // Questionable
+        cookie.setValue("value");  // Questionable
+        cookie.getValue();  // Questionable
+    }
+}
+</pre>
+<pre>
 // === spring ===
 import org.springframework.security.web.savedrequest.SavedCookie;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.RequestMapping;
+import javax.servlet.http.Cookie;
 
-@RequestMapping(“/mypage.html”)
-// Questionable. “myCookie” value is read from a cookie.
-public String myPage(@CookieValue(“cookieName”) String myCookie) {
-    // ...
+class Spring {
+    @RequestMapping("/mypage.html")
+    // Questionable. “myCookie” value is read from a cookie.
+    public String myPage(@CookieValue("cookieName") String myCookie) {
+        return "test";
+    }
+
+    void springCookie(Cookie cookie) {
+        SavedCookie savedCookie = new SavedCookie(cookie); // Questionable
+        cookie.getValue(); // Questionable
+    }
 }
-
-void springCookie(Cookie cookie) {
-    SavedCookie cookie = new SavedCookie(cookie);  // Questionable
-    cookie.getValue();  // Questionable
-}
-
+</pre>
+<pre>
 // === Play ===
 import play.mvc.Http.Cookie;
 import play.mvc.Http.CookieBuilder;
+import scala.language;
 
-void playCookie(Cookie cookie) {
-    cookie.value();  // Questionable
 
-    Cookie.builder("name", "value”);  // Questionable
-    new CookieBuilder()
-      .withName("name")
-      .withValue("value”)  // Questionable
-      .build();
+class Play {
+    void playCookie(Cookie cookie) {
+        cookie.value();  // Questionable
+
+        CookieBuilder builder = Cookie.builder("name", "value");  // Questionable
+        builder.withName("name")
+          .withValue("value")  // Questionable
+          .build();
+
+    }
 }
 </pre>
 <h2>See</h2>

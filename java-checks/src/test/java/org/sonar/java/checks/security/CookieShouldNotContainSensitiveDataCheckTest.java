@@ -27,5 +27,6 @@ public class CookieShouldNotContainSensitiveDataCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/security/CookieShouldNotContainSensitiveDataCheck.java", new CookieShouldNotContainSensitiveDataCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/CookieShouldNotContainSensitiveDataCheck.java", new CookieShouldNotContainSensitiveDataCheck());
   }
 }
