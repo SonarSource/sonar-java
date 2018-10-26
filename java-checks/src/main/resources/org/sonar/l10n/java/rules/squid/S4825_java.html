@@ -1,0 +1,155 @@
+<p>Sending HTTP requests is security-sensitive. It has led in the past to the following vulnerabilities:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-8150">CVE-2014-8150</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1000007">CVE-2018-1000007</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-0660">CVE-2010-0660</a> </li>
+</ul>
+<p>An HTTP request has different kinds of vulnerabilities:</p>
+<ul>
+  <li> it sends data which might be intercepted or dangerous. </li>
+  <li> it receives a response which might have been crafted by an attacker. </li>
+  <li> as each request opens a socket and triggers some processing for the sender and the recipient, it is possible to exhaust resources on both sides
+  by sending too many requests. </li>
+</ul>
+<p>This rule flags code that initiates an HTTP request. The goal is to guide security code reviews.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> the http connection is encrypted or not. </li>
+  <li> the recipient is not allowed to receive some of the data you send. </li>
+  <li> the data sent might be dangerous (example: it contains unvalidated user input). </li>
+  <li> an uncontrolled number of requests might be sent. For example, a request might be sent every time a user performs an action, and this action is
+  not limited. </li>
+</ul>
+<p>You are at risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> First, it is important to encrypt all HTTP connection if there is any chance for them to be eavesdropped. Use HTTPS whenever possible. </li>
+  <li> Ensure that you control the URIs you send requests to and the number or requests you send. Your software could otherwise be used to attack
+  other services. </li>
+  <li> Avoid sending sensitive information, be it in the URL, header or body. If part of the data comes from an untrusted source, such as a user
+  input, sanitize it beforehand. </li>
+  <li> Validate and sanitize the response before using it in any way. </li>
+</ul>
+<h2>Questionable Code Example</h2>
+<pre>
+// === Java URL connection ===
+import java.net.URL;
+import java.net.HttpURLConnection;
+
+abstract class URLConnection {
+    void foo() throws Exception {
+        URL url = new URL("http://example.com");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection(); // Questionable: review how the http connection is used
+
+        doSomething((HttpURLConnection) url.openConnection()); // Questionable: review how the http connection is used
+    }
+
+    abstract void doSomething(HttpURLConnection httpUrlConnection);
+}
+</pre>
+<pre>
+// === HttpClient Java 9 ===
+import jdk.incubator.http.HttpClient;
+import jdk.incubator.http.HttpRequest;
+import jdk.incubator.http.HttpResponse;
+
+class JavaNet9 {
+    void foo(HttpRequest request, HttpResponse.BodyHandler&lt;Object&gt; responseBodyHandler, HttpResponse.MultiProcessor&lt;?,?&gt; multiProcessor) throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        client.send(request, responseBodyHandler); // Questionable
+        client.sendAsync(request, responseBodyHandler); // Questionable
+        client.sendAsync(request, multiProcessor); // Questionable
+    }
+}
+</pre>
+<pre>
+// === HttpClient Java 10 ===
+import jdk.incubator.http.HttpClient;
+import jdk.incubator.http.HttpRequest;
+import jdk.incubator.http.HttpResponse;
+
+class JavaNet10 {
+    void foo(HttpRequest request, HttpResponse.BodyHandler&lt;Object&gt; responseBodyHandler, HttpResponse.MultiSubscriber&lt;?,?&gt; multiSubscriber) throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        client.send(request, responseBodyHandler); // Questionable
+        client.sendAsync(request, responseBodyHandler); // Questionable
+        client.sendAsync(request, multiSubscriber); // Questionable
+    }
+}
+</pre>
+<pre>
+// === HttpClient Java 11 ===
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+class JavaNet11 {
+    void foo(HttpRequest request, HttpResponse.BodyHandler&lt;Object&gt; responseBodyHandler, HttpResponse.PushPromiseHandler&lt;Object&gt; pushPromiseHandler) throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        client.send(request, responseBodyHandler); // Questionable
+        client.sendAsync(request, responseBodyHandler); // Questionable
+        client.sendAsync(request, responseBodyHandler, pushPromiseHandler); // Questionable
+    }
+}
+</pre>
+<pre>
+// === apache ===
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.HttpClientConnection;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HttpContext;
+
+class ApacheHttpClient {
+    void foo(HttpClientConnection con, HttpHost target, HttpRequest request, HttpContext context,
+            ResponseHandler&lt;?&gt; responseHandler, HttpUriRequest uriRequest, HttpEntityEnclosingRequest eeRequest)
+            throws Exception {
+        HttpClient client = HttpClientBuilder.create().build();
+
+        // All the following are Questionable
+        client.execute(target, request);
+        client.execute(target, request, context);
+        client.execute(target, request, responseHandler);
+        client.execute(target, request, responseHandler, context);
+        client.execute(uriRequest);
+        client.execute(uriRequest, context);
+        client.execute(uriRequest, responseHandler);
+        client.execute(uriRequest, responseHandler, context);
+        con.sendRequestEntity(eeRequest);
+        con.sendRequestHeader(request);
+    }
+}
+</pre>
+<pre>
+// === google-http-java-client ===
+import java.util.concurrent.Executor;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.javanet.NetHttpTransport;
+
+class GoogleHttpClient {
+    void foo(Executor executor) throws Exception {
+        HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory();
+        HttpRequest request = requestFactory.buildGetRequest(new GenericUrl("http://example.com"));
+
+        // All the following are Questionable
+        request.execute();
+        request.executeAsync();
+        request.executeAsync(executor);
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/20">MITRE, CWE-20</a> - Improper Input Validation </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/400">MITRE, CWE-400</a> - Uncontrolled Resource Consumption ('Resource Exhaustion') </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/200.html">MITRE, CWE-200</a> - Information Exposure </li>
+  <li> OWASP Top 10 2017 Category A1 - Injection </li>
+  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+</ul>
+

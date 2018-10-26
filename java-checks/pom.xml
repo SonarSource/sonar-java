@@ -111,6 +111,24 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>com.google.http-client</groupId>
+                  <artifactId>google-http-client</artifactId>
+                  <version>1.26.0</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.httpcomponents</groupId>
+                  <artifactId>httpclient</artifactId>
+                  <version>4.5.6</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.httpcomponents</groupId>
+                  <artifactId>httpcore</artifactId>
+                  <version>4.4.10</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>args4j</groupId>
                   <artifactId>args4j</artifactId>
                   <version>2.33</version>
@@ -534,4 +552,26 @@
       </plugin>
     </plugins>
   </build>
+
+  <!-- Tests HttpRequestsHotspotCheck_java9.java and HttpRequestsHotspotCheck_java10.java require the jdk.incubator.httpclient module,
+       as the module is not part of java standard modules, it needs to be added to maven-surefire-plugin when compiling/running tests with JDK 9 or JDK 10 -->
+  <profiles>
+    <profile>
+      <id>jdk-9-10</id>
+      <activation>
+        <jdk>[9,11)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>--add-modules jdk.incubator.httpclient</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
