@@ -26,6 +26,7 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -70,6 +71,8 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
       .add("java.math.BigDecimal")
       .add("java.util.Optional")
       .build();
+  private static final MethodMatcher PUT_IF_ABSENT_MATCHER = MethodMatcher.create()
+    .callSite(TypeCriteria.subtypeOf("java.util.concurrent.ConcurrentMap")).name("putIfAbsent").withAnyParameters();
 
   private static final Set<String> EXCLUDED_PREFIX = ImmutableSet.of("parse", "format", "decode", "valueOf");
 
@@ -93,10 +96,11 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
         return;
       }
       Symbol methodSymbol = mit.symbol();
-      if (!isVoidOrUnknown(mit.symbolType())
-        && isCheckedType(methodSymbol.owner().type())
-        && methodSymbol.isPublic()
-        && !isConstructor(methodSymbol)) {
+      if (PUT_IF_ABSENT_MATCHER.matches(mit) ||
+        (!isVoidOrUnknown(mit.symbolType())
+          && isCheckedType(methodSymbol.owner().type())
+          && methodSymbol.isPublic()
+          && !isConstructor(methodSymbol))) {
         IdentifierTree methodName = ExpressionUtils.methodName(mit);
         reportIssue(methodName, "The return value of \"" + methodName.name() + "\" must be used.");
       }
