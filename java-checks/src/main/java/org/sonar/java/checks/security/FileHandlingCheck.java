@@ -49,6 +49,7 @@ public class FileHandlingCheck extends AbstractMethodDetection {
       MethodMatcher.create().typeDefinition(JAVA_IO_FILE).name(INIT).parameters(JAVA_LANG_STRING),
       MethodMatcher.create().typeDefinition(JAVA_IO_FILE).name(INIT).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING),
       MethodMatcher.create().typeDefinition(JAVA_IO_FILE).name(INIT).parameters("java.net.URI"),
+      MethodMatcher.create().typeDefinition(JAVA_IO_FILE).name("createTempFile").parameters(JAVA_LANG_STRING, JAVA_LANG_STRING),
       MethodMatcher.create().typeDefinition("java.nio.file.Paths").name("get").parameters(JAVA_LANG_STRING, JAVA_LANG_STRING_ARRAY),
       MethodMatcher.create().typeDefinition("java.nio.file.Paths").name("get").parameters("java.net.URI"),
       MethodMatcher.create().typeDefinition("java.nio.file.FileSystem").name("getRootDirectories").withoutParameter(),
@@ -73,6 +74,7 @@ public class FileHandlingCheck extends AbstractMethodDetection {
       MethodMatcher.create().typeDefinition(GUAVA_FILES).name("fileTreeTraverser").withoutParameter(),
       MethodMatcher.create().typeDefinition(GUAVA_FILES).name("fileTraverser").withoutParameter(),
       MethodMatcher.create().typeDefinition("com.google.common.io.MoreFiles").name("directoryTreeTraverser").withoutParameter(),
+      MethodMatcher.create().typeDefinition("com.google.common.io.MoreFiles").name("fileTraverser").withoutParameter(),
 
       MethodMatcher.create().typeDefinition(GUAVA_RESOURCES).name("asByteSource").parameters(JAVA_NET_URL),
       MethodMatcher.create().typeDefinition(GUAVA_RESOURCES).name("asCharSource").parameters(JAVA_NET_URL, NIO_CHARSET),
