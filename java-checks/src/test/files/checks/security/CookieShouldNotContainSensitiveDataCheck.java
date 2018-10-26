@@ -69,7 +69,7 @@ class S2255 {
   }
 
   void foo(HttpServletRequest request, HttpServletResponse response){
-    response.addCookie(request.getCookies()[0]); // FN, needs s<mbolic execution
+    response.addCookie(request.getCookies()[0]); // FN, needs symbolic execution
   }
 
   void compliant(Cookie c1, HttpCookie c2, javax.ws.rs.core.Cookie c3, NewCookie c4, SimpleCookie c5, SavedCookie c6) {
