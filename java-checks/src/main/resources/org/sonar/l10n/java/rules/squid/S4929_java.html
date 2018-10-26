@@ -1,0 +1,45 @@
+<p>When directly subclassing <code>java.io.InputStream</code> or <code>java.io.FilterInputStream</code>, the only requirement is that you implement
+the method <code>read()</code>. However most uses for such streams don't read a single byte at a time and the default implementation for
+<code>read(byte[],int,int)</code> will call <code>read(int)</code> for every single byte in the array which can create a lot of overhead and is
+utterly inefficient. It is therefore strongly recommended that subclasses provide an efficient implementation of
+<code>read(byte[],int,int)</code>.</p>
+<p>This rule raises an issue when a direct subclass of <code>java.io.InputStream</code> or <code>java.io.FilterInputStream</code> doesn't provide an
+override of <code>read(byte[],int,int)</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class MyInputStream extends java.io.InputStream {
+  private FileInputStream fin;
+
+  public MyInputStream(File file) throws IOException {
+    fin = new FileInputStream(file);
+  }
+
+  @Override
+  public int read() throws IOException {
+    return fin.read();
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public class MyInputStream extends java.io.InputStream {
+  private FileInputStream fin;
+
+  public MyInputStream(File file) throws IOException {
+    fin = new FileInputStream(file);
+  }
+
+  @Override
+  public int read() throws IOException {
+    return fin.read();
+  }
+
+  @Override
+  public int read(byte[] b, int off, int len) throws IOException {
+    return fin.read(b, off, len);
+  }
+}
+</pre>
+<h2>Exceptions</h2>
+<p>This rule doesn't raise an issue when the class is declared <code>abstract</code>.</p>
+
