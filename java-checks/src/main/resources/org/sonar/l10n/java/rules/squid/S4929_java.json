@@ -1,0 +1,16 @@
+{
+  "title": "\"read(byte[],int,int)\" should be overridden",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "performance"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4929",
+  "sqKey": "S4929",
+  "scope": "Main"
+}
