@@ -1,9 +1,11 @@
 {
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BasicDynaBean.java':[
 70,
+76,
 ],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BasicDynaClass.java':[
 114,
+141,
 ],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanComparator.java':[
 52,

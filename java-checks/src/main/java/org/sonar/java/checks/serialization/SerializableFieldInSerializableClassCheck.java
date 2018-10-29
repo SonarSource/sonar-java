@@ -131,7 +131,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
   }
 
   private static boolean isTransientSerializableOrInjected(VariableTree member) {
-    if (ModifiersUtils.hasModifier(member.modifiers(), Modifier.TRANSIENT) || isSerializable(member.type())) {
+    if (ModifiersUtils.hasModifier(member.modifiers(), Modifier.TRANSIENT) || (isSerializable(member.type()) && !isSubtypeOfCollectionApi(member.type().symbolType()))) {
       return true;
     }
     SymbolMetadata metadata = member.symbol().metadata();

@@ -135,3 +135,8 @@ class IncompleteSerializableMethods2 implements Serializable {
 public class MyServlet extends javax.servlet.http.HttpServlet {
   private Map<String, String> nok1 = new MyNonSerializableMap<>();
 }
+
+class test implements Serializable {
+  private HashMap<Object, Object> both2; // Noncompliant
+  private ArrayList<Object> objects2; // Noncompliant
+}
