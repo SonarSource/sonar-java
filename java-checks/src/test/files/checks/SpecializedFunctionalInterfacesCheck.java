@@ -66,7 +66,7 @@ class A implements Supplier<Integer> { // Noncompliant [[sc=7;ec=8]] {{Refactor 
     Function<Long, Integer> a24 = (long1) -> 1; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'LongToIntFunction'}}
 
     Function<A, A> a25 = (aaa) -> new A(); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<A>'}}
-    Function<Integer, Integer> lambda = value -> value * 2; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<Integer>'}}
+    Function<Integer, Integer> lambda = value -> value * 2; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntUnaryOperator'}}
     BiFunction<String, Integer, Double> a40 = (x, y) -> 2.0; // Compliant
     BiFunction<String, String, Integer> a42 = (x, y) -> 1; // Compliant
     BiFunction<String, Double, Double> a43 = (x,y) -> 2.0; // Compliant
@@ -154,7 +154,7 @@ class A3 {
       return null;
     }
 
-    private static String getDetails(Function<? super Integer, ? super Integer> function, Integer... inT) { // Compliant
+    private static String getDetails(Function<? super Integer, ? super Integer> function, Integer... inT) { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<? super Integer>'}}
       Function<?, String> a; // Compliant
       Function<? super A, ? super A> foo1 = new Function() { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<? super A>'}}
         @Override
@@ -289,4 +289,9 @@ class UnknownTypes implements Supplier<MyFirstUnknownType> {
   Function<MyFirstUnknownType, MyFirstUnknownType> unknownTypeFunction4 = ut -> ut;
   BiFunction<MyFirstUnknownType, MySecondUnknownType, MyThirdUnknownType> unknownTypesBiFunction = (a, b) -> new MyThirdUnknownType(a,b);
   BiFunction<MyFirstUnknownType, MySecondUnknownType, Boolean> unknownTypesBiFunction2 = (x, y) -> true;
+}
+
+class MethodParams {
+  void call(Function<Integer, Integer> function) {  // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntUnaryOperator'}}
+  }
 }
