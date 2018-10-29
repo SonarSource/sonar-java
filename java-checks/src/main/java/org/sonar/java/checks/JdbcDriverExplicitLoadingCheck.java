@@ -25,12 +25,10 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.ConstantUtils;
-import org.sonar.java.checks.helpers.IdentifierUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S4925")
@@ -66,8 +64,7 @@ public class JdbcDriverExplicitLoadingCheck extends AbstractMethodDetection impl
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    ExpressionTree classNameParameter = mit.arguments().get(0);
-    String driverClassName = IdentifierUtils.getValue(classNameParameter, ConstantUtils::resolveAsStringConstant);
+    String driverClassName = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
     if (JDBC_4_DRIVERS.contains(driverClassName)) {
       reportIssue(ExpressionUtils.methodName(mit), "Remove this \"Class.forName()\", it is useless.");
     }

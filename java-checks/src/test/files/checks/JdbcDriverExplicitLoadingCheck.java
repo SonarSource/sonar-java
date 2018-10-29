@@ -12,15 +12,7 @@ class B {
 }
 
 class C {
-  private static final String JDBC_DRIVER = "org.h2.Driver";
   void doStuff() {
-    Class.forName(JDBC_DRIVER); // Noncompliant
-  }
-}
-
-class D {
-  private static final String CLASS_NAME = "java.lang.String";
-  void doStuff() {
-    Class.forName(CLASS_NAME);
+    Class.forName(javax.print.ServiceUIFactory.DIALOG_UI);
   }
 }
