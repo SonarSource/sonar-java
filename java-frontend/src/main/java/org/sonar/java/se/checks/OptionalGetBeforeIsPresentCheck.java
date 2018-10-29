@@ -110,12 +110,31 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
   }
 
   private static class OptionalSymbolicValue extends SymbolicValue {
-    private final SymbolicValue wrappedValue;
+    protected final SymbolicValue wrappedValue;
 
     private OptionalSymbolicValue(SymbolicValue wrappedValue) {
       this.wrappedValue = wrappedValue;
     }
 
+    @Override
+    public boolean references(SymbolicValue other) {
+      return wrappedValue.equals(other) || wrappedValue.references(other);
+    }
+  }
+
+  private static class FilteredOptionalSymbolicValue extends OptionalSymbolicValue {
+    private FilteredOptionalSymbolicValue(SymbolicValue wrappedValue) {
+      super(wrappedValue);
+    }
+
+    private ProgramState propagatePresentConstraint(ProgramState programState) {
+      ProgramState ps = programState;
+      if (wrappedValue instanceof FilteredOptionalSymbolicValue) {
+        ps = ((FilteredOptionalSymbolicValue) wrappedValue).propagatePresentConstraint(programState);
+      }
+
+      return ps.addConstraint(wrappedValue, OptionalConstraint.PRESENT);
+    }
   }
 
   private static class IsPresentSymbolicValue extends SymbolicValue {
@@ -130,8 +149,9 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
      * Will be called only after calling Optional.isPresent()
      */
     @Override
-    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      OptionalConstraint optionalConstraint =  programState.getConstraint(optionalSV, OptionalConstraint.class);
+    public List<ProgramState> setConstraint(ProgramState ps, BooleanConstraint booleanConstraint) {
+      ProgramState programState = ps;
+      OptionalConstraint optionalConstraint = programState.getConstraint(optionalSV, OptionalConstraint.class);
       if (isImpossibleState(booleanConstraint, optionalConstraint)) {
         return Collections.emptyList();
       }
@@ -139,12 +159,22 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
         return Collections.singletonList(programState);
       }
       OptionalConstraint newConstraint = booleanConstraint.isTrue() ? OptionalConstraint.PRESENT : OptionalConstraint.NOT_PRESENT;
+
+      if (newConstraint == OptionalConstraint.PRESENT && optionalSV instanceof FilteredOptionalSymbolicValue) {
+        programState = ((FilteredOptionalSymbolicValue) optionalSV).propagatePresentConstraint(programState);
+      }
+
       return Collections.singletonList(programState.addConstraint(optionalSV, newConstraint));
     }
 
     private static boolean isImpossibleState(BooleanConstraint booleanConstraint, OptionalConstraint optionalConstraint) {
       return (optionalConstraint == OptionalConstraint.PRESENT && booleanConstraint.isFalse())
         || (optionalConstraint == OptionalConstraint.NOT_PRESENT && booleanConstraint.isTrue());
+    }
+
+    @Override
+    public boolean references(SymbolicValue other) {
+      return optionalSV.equals(other) || optionalSV.references(other);
     }
   }
 
@@ -174,8 +204,13 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       } else if (OPTIONAL_FILTER.matches(tree)) {
         // filter has one parameter, so optional is next item on stack
         SymbolicValue optionalSV = programState.peekValue(1);
-        // reuse the same optional - will cause FN as we make filtering a no-op
-        constraintManager.setValueFactory(() -> optionalSV);
+
+        if (programState.getConstraint(optionalSV, OptionalConstraint.class) == OptionalConstraint.NOT_PRESENT) {
+          // reuse the same optional - filtering a non-present optional is a no-op
+          constraintManager.setValueFactory(() -> optionalSV);
+        } else {
+          constraintManager.setValueFactory(() -> new FilteredOptionalSymbolicValue(optionalSV));
+        }
       } else if (OPTIONAL_ORELSE.matches(tree)) {
         ProgramState.Pop pop = programState.unstackValue(2);
         SymbolicValue orElseValue = pop.values.get(0);

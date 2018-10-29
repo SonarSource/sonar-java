@@ -229,3 +229,37 @@ abstract class S3655noInterruption {
   public abstract void doSomething(Object o);
   public abstract java.util.Optional<Object> getValue();
 }
+
+abstract class FilteringOptionalImpactSymbolicValues {
+
+
+  private boolean bar() {
+    if (java.util.Optional.of("abc").isPresent()) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private boolean foo(String x) {
+    if (!java.util.Optional.of(x).filter(s -> s.startsWith("a")).isPresent()) { // Ok - not always true
+      return true;
+    }
+
+    java.util.Optional op = java.util.Optional.empty();
+    if (op.isPresent()) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      return true;
+    }
+
+    return false;
+  }
+
+  public void foobar(@Nullable String x) {
+    java.util.Optional<String> op = java.util.Optional.ofNullable(x).filter(s -> s.startsWith("a"));
+    if (!op.isPresent()) {
+      doSomething("");
+    }
+  }
+
+  public abstract void doSomething(Object o);
+}

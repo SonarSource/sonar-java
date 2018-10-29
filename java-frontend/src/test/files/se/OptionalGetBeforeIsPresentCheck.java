@@ -84,19 +84,38 @@ abstract class A {
 
   private void usingFilter1(Optional<String> op) {
     if (op.filter(this::testSomething).isPresent()) {
-      op.get(); // Compliant - filter should return the same optional if test pass
+      op.get(); // Compliant - filter return the same optional if 'isPresent()' is true on the filtered value
     }
     op.get(); // Noncompliant
   }
 
   private void usingFilter2(Optional<String> op) {
+    if (op.filter(this::testSomething).filter(this::testSomethingElse).isPresent()) {
+      op.get(); // Compliant
+    }
+    op.get(); // Noncompliant
+  }
+
+  private void usingFilter3(Optional<String> op) {
+    if (!op.filter(this::testSomething).isPresent()) {
+      op.get(); // Noncompliant - original optional may or may not be present, cannot know here by only testing the filtered optional
+      return;
+    }
+    op.get(); // Compliant - if op is not present, then filtered value will always be non present ->  unreachable when op not present
+  }
+
+  private void usingFilter4() {
+    Optional<String> op = Optional.empty();
     if (!op.filter(this::testSomething).isPresent()) {
       return;
     }
-    op.get(); // Compliant - FN
+    op.get(); // Compliant - dead code
   }
 
   abstract boolean testSomething(String s);
+
+  abstract boolean testSomethingElse(String s);
+
 }
 
 class Location {
