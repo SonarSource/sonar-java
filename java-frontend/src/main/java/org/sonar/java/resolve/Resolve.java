@@ -663,7 +663,7 @@ public class Resolve {
 
   private boolean isAcceptableDeferredType(DeferredType arg, JavaType formal) {
     AbstractTypedTree tree = arg.tree();
-    if(tree.is(Tree.Kind.METHOD_REFERENCE, Tree.Kind.LAMBDA_EXPRESSION) && !formal.symbol.isFlag(Flags.INTERFACE)) {
+    if(tree.is(Tree.Kind.METHOD_REFERENCE, Tree.Kind.LAMBDA_EXPRESSION) && (!formal.symbol.isFlag(Flags.INTERFACE) || !findSamMethodArgsRecursively(formal).isPresent())) {
       return false;
     }
     // we accept all deferred type as we will resolve this later, but reject lambdas with incorrect arity
@@ -1027,22 +1027,31 @@ public class Resolve {
   }
 
   public Optional<JavaSymbol.MethodJavaSymbol> getSamMethod(JavaType lambdaType) {
+    Optional<JavaSymbol.MethodJavaSymbol> result = Optional.empty();
     for (Symbol member : lambdaType.symbol().memberSymbols()) {
       if (isAbstractMethod(member)) {
         JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) member;
         boolean isObjectMethod = isObjectMethod(methodJavaSymbol);
         if(!isObjectMethod) {
-          return Optional.of(methodJavaSymbol);
+          if(result.isPresent()) {
+            // not a functional interface
+            return Optional.empty();
+          }
+          result = Optional.of(methodJavaSymbol);
         }
       }
     }
     for (ClassJavaType type : lambdaType.symbol.superTypes()) {
       Optional<JavaSymbol.MethodJavaSymbol> samMethod = getSamMethod(type);
       if (samMethod.isPresent()) {
-        return samMethod;
+        if(result.isPresent()) {
+          // not a functional interface
+          return Optional.empty();
+        }
+        result = samMethod;
       }
     }
-    return Optional.empty();
+    return result;
   }
 
   private boolean isObjectMethod(JavaSymbol.MethodJavaSymbol methodJavaSymbol) {

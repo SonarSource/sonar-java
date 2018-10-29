@@ -54,3 +54,15 @@ class B {
     first.c.counter ++;
   }
 }
+abstract class Test {
+
+  void test(java.util.function.Supplier<?> s) {
+    this.call(Object::new);
+    this.call(() -> new Object());
+    this.call(s);
+  }
+
+  static void call(java.util.Set<?> o) {}
+
+  abstract void call(java.util.function.Supplier<?> supplier);
+}
