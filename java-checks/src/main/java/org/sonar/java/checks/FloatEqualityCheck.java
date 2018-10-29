@@ -20,26 +20,41 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(key = "S1244")
 public class FloatEqualityCheck extends IssuableSubscriptionVisitor {
 
+  private static final MethodMatcherCollection EQUALS_MATCHER = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition("java.lang.Double").name("equals").parameters("java.lang.Object"),
+    MethodMatcher.create().typeDefinition("java.lang.Float").name("equals").parameters("java.lang.Object")
+  );
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO, Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR);
+    return ImmutableList.of(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO, Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if(tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      if (EQUALS_MATCHER.anyMatch(mit)) {
+        reportIssue(mit.methodSelect(), "Equality tests should not be made with floating point values.");
+      }
+      return;
+    }
+
     BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
     if (binaryExpressionTree.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR) && isIndirectEquality(binaryExpressionTree)) {
       binaryExpressionTree = (BinaryExpressionTree) binaryExpressionTree.leftOperand();

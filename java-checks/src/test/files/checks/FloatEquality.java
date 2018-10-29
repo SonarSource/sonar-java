@@ -42,4 +42,10 @@ class A {
     if(c > a || a < c) {} //Compliant
 
   }
+
+  void method(Double d1, Double d2, Float f1, Float f2) {
+    if (d1.equals(d2)) { } // Noncompliant
+    if (f1.equals(f2)) { } // Noncompliant
+    if (new Object().equals(f2)) { } //compliant
+  }
 }
