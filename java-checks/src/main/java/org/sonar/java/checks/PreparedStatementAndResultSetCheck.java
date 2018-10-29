@@ -20,6 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
@@ -31,6 +34,7 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -38,11 +42,6 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.List;
 
 @Rule(key = "S2695")
 public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection {
@@ -123,9 +122,15 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   }
 
   private static Integer handleVariableUsedAsQuery(IdentifierTree identifier) {
-    ExpressionTree lastAssignment = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(identifier, identifier.symbol());
-    if (lastAssignment != null && !isPartOfExpression(identifier, lastAssignment)) {
-      return getNumberQuery(lastAssignment);
+    ExpressionTree lastAssignmentExpr = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(identifier, identifier.symbol());
+    if (lastAssignmentExpr != null) {
+      Tree lastAssignment = lastAssignmentExpr.parent();
+      if (lastAssignment.is(Tree.Kind.PLUS_ASSIGNMENT)) {
+        return zeroIfNull(getNumberQuery(lastAssignmentExpr)) + zeroIfNull(getNumberQuery(((AssignmentExpressionTree) lastAssignment).variable()));
+      }
+      if (!isPartOfExpression(identifier, lastAssignmentExpr)) {
+        return getNumberQuery(lastAssignmentExpr);
+      }
     }
     return null;
   }
