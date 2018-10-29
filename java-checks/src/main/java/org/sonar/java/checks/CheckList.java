@@ -600,6 +600,7 @@ public final class CheckList {
       .add(SwitchInsteadOfIfSequenceCheck.class)
       .add(IterableIteratorCheck.class)
       .add(OutputStreamOverrideWriteCheck.class)
+      .add(InputStreamOverrideReadCheck.class)
       .add(PredictableSeedCheck.class)
       .add(RedundantStreamCollectCheck.class)
       .add(GettersSettersOnRightFieldCheck.class)
