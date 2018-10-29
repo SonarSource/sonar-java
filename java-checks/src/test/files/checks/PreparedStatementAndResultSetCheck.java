@@ -204,4 +204,11 @@ abstract class A extends UnknownClassFromSamePackage {
       return conn.prepareStatement("INSERT INTO " + tableName + " VALUES (?" + Strings.repeat(",?", argsNum - 1) + ")");
     }
   }
+
+  void foo(Connection conn) throws SQLException {
+    String q = "SELECT * FROM table WHERE name=?";
+    q += " AND c IS NOT NULL";
+    PreparedStatement ps = conn.prepareStatement(q);
+    ps.setString(1, "someValue"); // compliant, += with constant.
+  }
 }
