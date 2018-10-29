@@ -71,6 +71,7 @@ import org.sonar.java.checks.security.SocketUsageCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
 import org.sonar.java.checks.security.XPathUsageCheck;
 import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
+import org.sonar.java.checks.serialization.BlindSerialVersionUidCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
 import org.sonar.java.checks.serialization.PrivateReadResolveCheck;
@@ -644,6 +645,7 @@ public final class CheckList {
       .add(SocketUsageCheck.class)
       .add(XPathUsageCheck.class)
       .add(HttpRequestsHotspotCheck.class)
+      .add(BlindSerialVersionUidCheck.class)
       .build();
   }
 
