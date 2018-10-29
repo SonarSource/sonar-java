@@ -28,6 +28,7 @@ public class JavaVersionImpl implements JavaVersion {
 
   private static final Logger LOG = Loggers.get(JavaVersionImpl.class);
 
+  private static final int JAVA_6 = 6;
   private static final int JAVA_7 = 7;
   private static final int JAVA_8 = 8;
   private final int javaVersion;
@@ -54,6 +55,11 @@ public class JavaVersionImpl implements JavaVersion {
         + "(for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)");
       return new JavaVersionImpl();
     }
+  }
+
+  @Override
+  public boolean isJava6Compatible() {
+    return notSetOrAtLeast(JAVA_6);
   }
 
   @Override
