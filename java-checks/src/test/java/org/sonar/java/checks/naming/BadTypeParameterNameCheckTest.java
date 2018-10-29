@@ -26,7 +26,11 @@ public class BadTypeParameterNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadGenericNameNoncompliant.java", new BadTypeParameterNameCheck());
+    BadTypeParameterNameCheck check = new BadTypeParameterNameCheck();
+    JavaCheckVerifier.verify("src/test/files/checks/naming/BadGenericNameNoncompliant.java", check);
+    // verify that pattern was compiled once for the instance.
+    JavaCheckVerifier.verify("src/test/files/checks/naming/BadGenericNameNoncompliant.java", check);
+
   }
 
   @Test

@@ -27,6 +27,7 @@ public class HiddenFieldCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/HiddenFieldCheck.java", new HiddenFieldCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/HiddenFieldCheck.java", new HiddenFieldCheck());
   }
 
 }
