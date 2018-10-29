@@ -1,0 +1,51 @@
+<p>In the past, it was required to load a JDBC driver before creating a <code>java.sql.Connection</code>. Nowadays, when using JDBC 4.0 drivers, this
+is no longer required and <code>Class.forName()</code> can be safely removed because JDBC 4.0 (JDK 6) drivers available in the classpath are
+automatically loaded.</p>
+<p>This rule raises an issue when <code>Class.forName()</code> is used with one of the following values:</p>
+<ul>
+  <li> <code>com.mysql.jdbc.Driver</code> </li>
+  <li> <code>oracle.jdbc.driver.OracleDriver</code> </li>
+  <li> <code>com.ibm.db2.jdbc.app.DB2Driver</code> </li>
+  <li> <code>com.ibm.db2.jdbc.net.DB2Driver</code> </li>
+  <li> <code>com.sybase.jdbc.SybDriver</code> </li>
+  <li> <code>com.sybase.jdbc2.jdbc.SybDriver</code> </li>
+  <li> <code>com.teradata.jdbc.TeraDriver</code> </li>
+  <li> <code>com.microsoft.sqlserver.jdbc.SQLServerDriver</code> </li>
+  <li> <code>org.postgresql.Driver</code> </li>
+  <li> <code>sun.jdbc.odbc.JdbcOdbcDriver</code> </li>
+  <li> <code>org.hsqldb.jdbc.JDBCDriver</code> </li>
+  <li> <code>org.h2.Driver</code> </li>
+  <li> <code>org.firebirdsql.jdbc.FBDriver</code> </li>
+  <li> <code>net.sourceforge.jtds.jdbc.Driver</code> </li>
+</ul>
+<h2>Noncompliant Code Example</h2>
+<pre>
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class Demo {
+  private static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
+  private final Connection connection;
+
+  public Demo(String serverURI) throws SQLException, ClassNotFoundException {
+    Class.forName(DRIVER_CLASS_NAME); // Noncompliant; no longer required to load the JDBC Driver using Class.forName()
+    connection = DriverManager.getConnection(serverURI);
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class Demo {
+    private final Connection connection;
+
+    public Demo(String serverURI) throws SQLException {
+        connection = DriverManager.getConnection(serverURI);
+    }
+}
+</pre>
+
