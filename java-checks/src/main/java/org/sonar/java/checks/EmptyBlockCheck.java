@@ -60,10 +60,15 @@ public class EmptyBlockCheck extends IssuableSubscriptionVisitor {
       if (isMethodBlock) {
         isMethodBlock = false;
       } else if (!tree.parent().is(Tree.Kind.LAMBDA_EXPRESSION)
-              && !hasStatements((BlockTree) tree) && !hasCommentInside((BlockTree) tree)) {
+              && !hasStatements((BlockTree) tree)
+              && !isRuleException((BlockTree) tree)) {
         reportIssue(((BlockTree) tree).openBraceToken(), MESSAGE);
       }
     }
+  }
+
+  private static boolean isRuleException(BlockTree tree) {
+    return hasCommentInside(tree) && !tree.parent().is(Tree.Kind.SYNCHRONIZED_STATEMENT);
   }
 
   private static boolean hasCommentInside(BlockTree tree) {
