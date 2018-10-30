@@ -77,6 +77,11 @@ public class JavaVersionImpl implements JavaVersion {
   }
 
   @Override
+  public String java6CompatibilityMessage() {
+    return compatibilityMessage(JAVA_6);
+  }
+
+  @Override
   public String java7CompatibilityMessage() {
     return compatibilityMessage(JAVA_7);
   }

@@ -59,6 +59,12 @@ public interface JavaVersion {
   boolean isNotSet();
 
   /**
+   * Default compatibility message with java 6
+   * @return empty string if java version is properly set, default message otherwise.
+   */
+  String java6CompatibilityMessage();
+
+  /**
    * Default compatibility message with java 7
    * @return empty string if java version is properly set, default message otherwise.
    */

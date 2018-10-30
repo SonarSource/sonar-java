@@ -74,10 +74,12 @@ public class JavaVersionImplTest {
   public void compatibilityMesssages() throws Exception {
     JavaVersion version;
     version = new JavaVersionImpl();
+    assertThat(version.java6CompatibilityMessage()).isEqualTo(" (sonar.java.source not set. Assuming 6 or greater.)");
     assertThat(version.java7CompatibilityMessage()).isEqualTo(" (sonar.java.source not set. Assuming 7 or greater.)");
     assertThat(version.java8CompatibilityMessage()).isEqualTo(" (sonar.java.source not set. Assuming 8 or greater.)");
 
     version = new JavaVersionImpl(6);
+    assertThat(version.java6CompatibilityMessage()).isEmpty();
     assertThat(version.java7CompatibilityMessage()).isEmpty();
     assertThat(version.java8CompatibilityMessage()).isEmpty();
   }

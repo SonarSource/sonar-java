@@ -56,7 +56,6 @@ public class JdbcDriverExplicitLoadingCheck extends AbstractMethodDetection impl
     return Collections.singletonList(MethodMatcher.create().typeDefinition("java.lang.Class").name("forName").parameters("java.lang.String"));
   }
 
-
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
     return version.isJava6Compatible();
@@ -66,7 +65,7 @@ public class JdbcDriverExplicitLoadingCheck extends AbstractMethodDetection impl
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String driverClassName = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
     if (JDBC_4_DRIVERS.contains(driverClassName)) {
-      reportIssue(ExpressionUtils.methodName(mit), "Remove this \"Class.forName()\", it is useless.");
+      reportIssue(ExpressionUtils.methodName(mit), "Remove this \"Class.forName()\", it is useless." + context.getJavaVersion().java6CompatibilityMessage());
     }
   }
 }

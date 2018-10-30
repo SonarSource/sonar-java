@@ -24,9 +24,21 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class JdbcDriverExplicitLoadingCheckTest {
 
+  private static final String FILENAME = "src/test/files/checks/JdbcDriverExplicitLoadingCheck.java";
+
   @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/JdbcDriverExplicitLoadingCheck.java", new JdbcDriverExplicitLoadingCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/JdbcDriverExplicitLoadingCheck.java", new JdbcDriverExplicitLoadingCheck());
+  public void java6() {
+    JavaCheckVerifier.verify(FILENAME, new JdbcDriverExplicitLoadingCheck(), 6);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME, new JdbcDriverExplicitLoadingCheck(), 6);
+  }
+
+  @Test
+  public void java5() {
+    JavaCheckVerifier.verifyNoIssue(FILENAME, new JdbcDriverExplicitLoadingCheck(), 5);
+  }
+
+  @Test
+  public void unknownVersion() {
+    JavaCheckVerifier.verify("src/test/files/checks/JdbcDriverExplicitLoadingCheck_no_version.java", new JdbcDriverExplicitLoadingCheck());
   }
 }
