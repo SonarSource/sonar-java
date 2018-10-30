@@ -1290,6 +1290,9 @@ public class SymbolTableTest {
     assertThat(result.symbol("s2").type.is("java.lang.String")).isTrue();
     assertThat(result.symbol("foo", 95).usages()).hasSize(1);
     assertThat(result.symbol("x", 103).type.is("java.lang.Integer")).as(result.symbol("x",103).type.name()).isTrue();
+
+    assertThat(result.symbol("call", 124).usages()).isEmpty();
+    assertThat(result.symbol("call", 125).usages()).hasSize(3);
   }
 
   @Test
