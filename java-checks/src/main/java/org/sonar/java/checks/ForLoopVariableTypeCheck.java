@@ -73,6 +73,8 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
   private static boolean isMostPreciseType(Type variableType, Type collectionItemType) {
     if (collectionItemType instanceof WildCardType) {
       return ((WildCardType) collectionItemType).isSubtypeOfBound((JavaType) variableType);
+    } else if (collectionItemType instanceof ParametrizedTypeJavaType) {
+      return ((ParametrizedTypeJavaType) collectionItemType).erasure().equals(variableType.erasure());
     } else {
       return variableType.equals(collectionItemType);
     }

@@ -1,0 +1,14 @@
+{
+'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+3517,
+],
+'com.google.guava:guava:src/com/google/common/collect/Sets.java':[
+1225,
+],
+'com.google.guava:guava:src/com/google/common/escape/ArrayBasedEscaperMap.java':[
+83,
+],
+'com.google.guava:guava:src/com/google/common/util/concurrent/AggregateFuture.java':[
+66,
+],
+}

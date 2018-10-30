@@ -41,5 +41,13 @@ public class CheckForLoop {
     for (D.E e: D.getEs()) {}
     for (Object o; listOfB.hasNext(); o = listOfB.next()) {}
     while (listOfB.hasNext()) { listOfB.next(); }
+
+    java.util.Set<java.util.Set<B>> setOfSetOfB = java.util.Collections.emptySet();
+    for (java.util.Set<B> s: setOfSetOfB) {}
+    for (java.util.Set s: setOfSetOfB) {}
+    for (Object s: setOfSetOfB) {} // Noncompliant
+
+    java.util.Map t = new java.util.HashMap();
+    for (java.util.Map.Entry e : ((java.util.Map<?,?>)t).entrySet()) {}
   }
 }
