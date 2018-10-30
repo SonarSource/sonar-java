@@ -1,0 +1,52 @@
+<p>Some Guava features were really useful for Java 7 application because Guava was bringing APIs missing in the JDK. Java 8 fixed these limitations.
+When migrating an application to Java 8 or even when starting a new one, it's recommended to prefer Java 8 APIs over Guava ones to ease its
+maintenance: developers don't need to learn how to use two APIs and can stick to the standard one.</p>
+<p>This rule raises an issue when the following Guava APIs are used:</p>
+<table>
+  <tbody>
+    <tr>
+      <th> Guava API </th>
+      <th> Java 8 API </th>
+      <th> <br></th>
+      <th> com.google.common.io.BaseEncoding#base64() </th>
+      <th> java.util.Base64</th>
+    </tr>
+    <tr>
+      <td> com.google.common.io.BaseEncoding#base64Url() </td>
+      <td> java.util.Base64 </td>
+    </tr>
+    <tr>
+      <td> com.google.common.base.Joiner.on() </td>
+      <td> java.lang.String#join() or java.util.stream.Collectors#joining() </td>
+    </tr>
+    <tr>
+      <td> com.google.common.base.Optional#of() </td>
+      <td> java.util.Optional#of() </td>
+    </tr>
+    <tr>
+      <td> com.google.common.base.Optional#absent() </td>
+      <td> java.util.Optional#empty() </td>
+    </tr>
+    <tr>
+      <td> com.google.common.base.Optional#fromNullable() </td>
+      <td> java.util.Optional#ofNullable() </td>
+    </tr>
+    <tr>
+      <td> com.google.common.base.Optional </td>
+      <td> java.util.Optional </td>
+    </tr>
+    <tr>
+      <td> com.google.common.base.Predicate </td>
+      <td> java.util.function.Predicate </td>
+    </tr>
+    <tr>
+      <td> com.google.common.base.Function </td>
+      <td> java.util.function.Function </td>
+    </tr>
+    <tr>
+      <td> com.google.common.base.Supplier </td>
+      <td> java.util.function.Supplier </td>
+    </tr>
+  </tbody>
+</table>
+
