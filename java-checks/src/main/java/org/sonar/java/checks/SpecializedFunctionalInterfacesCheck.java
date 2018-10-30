@@ -76,7 +76,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
 
   public void checkVariableTypeAndInitializer(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
-    if (initializer != null && (initializer.is(Tree.Kind.LAMBDA_EXPRESSION) || isAnonymousClass(initializer))) {
+    if (variableTree.symbol().owner().isMethodSymbol() || (initializer != null && (initializer.is(Tree.Kind.LAMBDA_EXPRESSION) || isAnonymousClass(initializer)))) {
       matchFunctionalInterface((variableTree.symbol().type())).ifPresent(reportString -> {
         TypeTree variableType = variableTree.type();
         reportIssue(variableType, reportMessage(new InterfaceTreeAndStringPairReport(reportString, variableType)));
@@ -140,6 +140,9 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(ptjt, 0);
     ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(ptjt, 1);
     if (firstArgument.paramType.equals(secondArgument.paramType)) {
+      if (firstArgument.paramTypeName != null) {
+        return functionalInterfaceName("%sUnaryOperator", firstArgument.paramTypeName);
+      }
       return functionalInterfaceName("UnaryOperator<%s>", firstArgument.paramType);
     }
     if (isBoolean(secondArgument)) {
