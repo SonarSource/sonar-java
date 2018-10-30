@@ -25,6 +25,7 @@ import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
+import org.sonar.java.resolve.WildCardType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -53,19 +54,27 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
     Type variableType = actualStatement.variable().type().symbolType();
     Type collectionItemType = getCollectionItemType(actualStatement.expression());
 
-    if (collectionItemType != null && !variableType.equals(collectionItemType)) {
+    if (collectionItemType != null && !isMostPreciseType(variableType, collectionItemType)) {
       reportIssue(actualStatement.variable().type(), String.format(PRIMARY_MESSAGE, variableType.name()),
         getFlow(actualStatement, collectionItemType), 0);
     }
   }
 
   @CheckForNull
-  private static Type getCollectionItemType(ExpressionTree expression) {
+  private static JavaType getCollectionItemType(ExpressionTree expression) {
     if (((JavaType) expression.symbolType()).isParameterized()) {
       ParametrizedTypeJavaType paramType = (ParametrizedTypeJavaType) expression.symbolType();
       return paramType.substitution(paramType.typeParameters().get(0));
     } else {
       return null;
+    }
+  }
+
+  private static boolean isMostPreciseType(Type variableType, Type collectionItemType) {
+    if (collectionItemType instanceof WildCardType) {
+      return ((WildCardType) collectionItemType).isSubtypeOfBound((JavaType) variableType);
+    } else {
+      return variableType.equals(collectionItemType);
     }
   }
 
