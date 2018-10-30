@@ -67,7 +67,7 @@ public class EmptyBlockCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private boolean isRuleException(BlockTree tree) {
+  private static boolean isRuleException(BlockTree tree) {
     return hasCommentInside(tree) && !tree.parent().is(Tree.Kind.SYNCHRONIZED_STATEMENT);
   }
 
