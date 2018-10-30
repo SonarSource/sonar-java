@@ -24,19 +24,18 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4499")
 public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
@@ -70,7 +69,7 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    MethodTree method = findEnclosingMethod(mit);
+    MethodTree method = ExpressionUtils.getEnclosingMethod(mit);
     if (method != null) {
       Arguments args = mit.arguments();
       if (ENABLING_SSL_METHODS.matches(mit) && LiteralUtils.isTrue(args.get(0))) {
@@ -93,17 +92,6 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
 
   private static boolean isNotFalse(ExpressionTree expression) {
     return !LiteralUtils.isFalse(expression);
-  }
-
-  @CheckForNull
-  private static MethodTree findEnclosingMethod(Tree tree) {
-    while (!tree.is(Tree.Kind.CLASS, Tree.Kind.METHOD)) {
-      tree = tree.parent();
-    }
-    if (tree.is(Tree.Kind.CLASS)) {
-      return null;
-    }
-    return (MethodTree) tree;
   }
 
   private static class MethodBodyHashtableVisitor extends BaseTreeVisitor {

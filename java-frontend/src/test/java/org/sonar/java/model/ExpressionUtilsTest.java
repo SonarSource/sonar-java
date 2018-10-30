@@ -21,11 +21,13 @@ package org.sonar.java.model;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -159,5 +161,32 @@ public class ExpressionUtilsTest {
           .filter(e -> e instanceof AssignmentExpressionTree)
           .map(AssignmentExpressionTree.class::cast)
           .collect(Collectors.toList());
+  }
+
+  @Test
+  public void enclosing_method_test() {
+    File file = new File("src/test/files/model/ExpressionEnclosingMethodTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    FindAssignment findAssignment = new FindAssignment();
+    tree.accept(findAssignment);
+    findAssignment.assignments.forEach(a -> {
+      String expectedName = a.firstToken().trivias().get(0).comment().substring(3);
+      MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(a);
+      if ("null".equals(expectedName)) {
+        assertThat(enclosingMethod).isNull();
+      } else {
+        assertThat(enclosingMethod.simpleName().name()).isEqualTo(expectedName);
+      }
+    });
+  }
+
+  private static class FindAssignment extends BaseTreeVisitor {
+    private List<AssignmentExpressionTree> assignments = new ArrayList<>();
+
+    @Override
+    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+      assignments.add(tree);
+      super.visitAssignmentExpression(tree);
+    }
   }
 }

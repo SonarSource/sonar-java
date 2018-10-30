@@ -20,3 +20,8 @@ class RSA {
     keyGen.initialize(1023); // Noncompliant
   }
 }
+interface I {
+  Runnable r = () -> {
+    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+  };
+}

@@ -19,12 +19,14 @@
  */
 package org.sonar.java.model;
 
+import javax.annotation.CheckForNull;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -129,4 +131,14 @@ public final class ExpressionUtils {
     }
     return id;
   }
+
+  @CheckForNull
+  public static MethodTree getEnclosingMethod(ExpressionTree expr) {
+    Tree result = expr.parent();
+    while (result != null && !result.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
+      result = result.parent();
+    }
+    return (MethodTree) result;
+  }
+
 }

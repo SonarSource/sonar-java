@@ -120,3 +120,9 @@ class Limitations {
     factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
   }
 }
+
+interface I {
+  Runnable r = () -> {
+    TransformerFactory factory = TransformerFactory.newInstance();
+  };
+}

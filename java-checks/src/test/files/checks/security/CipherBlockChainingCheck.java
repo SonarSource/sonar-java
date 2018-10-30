@@ -92,3 +92,9 @@ class A {
     IvParameterSpec iv = new IvParameterSpec(bytes2); // Noncompliant Coverage reasons
   }
 }
+interface I {
+  Runnable r = () -> {
+    byte[] bytes = "111".getBytes("UTF-8");
+    IvParameterSpec iv = new IvParameterSpec(bytes);
+  };
+}

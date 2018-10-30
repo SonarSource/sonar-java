@@ -21,18 +21,17 @@ package org.sonar.java.checks.security;
 
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.CheckForNull;
 import javax.xml.XMLConstants;
 import javax.xml.transform.TransformerFactory;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.sonar.java.checks.helpers.ConstantUtils.resolveAsStringConstant;
 import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
@@ -53,7 +52,7 @@ public class SecureXmlTransformerCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodInvocation) {
-    Tree enclosingMethod = enclosingMethod(methodInvocation);
+    Tree enclosingMethod = ExpressionUtils.getEnclosingMethod(methodInvocation);
     if (enclosingMethod == null) {
       return;
     }
@@ -62,18 +61,6 @@ public class SecureXmlTransformerCheck extends AbstractMethodDetection {
     if (!visitor.foundCallsToSecuringMethods()) {
       reportIssue(methodInvocation.methodSelect(), "Secure this \"Transformer\" by either disabling external DTDs or enabling secure processing.");
     }
-  }
-
-  @CheckForNull
-  private static Tree enclosingMethod(Tree tree) {
-    Tree parent = tree.parent();
-    while (!parent.is(Kind.CLASS, Kind.METHOD)) {
-      parent = parent.parent();
-    }
-    if (parent.is(Kind.CLASS)) {
-      return null;
-    }
-    return parent;
   }
 
   private static class MethodBodyVisitor extends BaseTreeVisitor {
