@@ -78,6 +78,7 @@ class EmptyBlock {
       doSomething();
     }
 
+    // Noncompliant@+1
     synchronized (this) {
       // comment
     }
