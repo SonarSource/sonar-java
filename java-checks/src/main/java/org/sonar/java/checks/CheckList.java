@@ -648,6 +648,7 @@ public final class CheckList {
       .add(HttpRequestsHotspotCheck.class)
       .add(BlindSerialVersionUidCheck.class)
       .add(JdbcDriverExplicitLoadingCheck.class)
+      .add(StandardCharsetsConstantsCheck.class)
       .build();
   }
 
