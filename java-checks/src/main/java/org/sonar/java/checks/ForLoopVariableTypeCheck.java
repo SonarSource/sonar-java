@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4838")
 public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
 
-  private static final String PRIMARY_MESSAGE = "Change \"%s\" by the type handled by the Collection.";
+  private static final String PRIMARY_MESSAGE = "Change \"%s\" to the type handled by the Collection.";
   private static final String SECONDARY_MESSAGE = "Collection item type is \"%s\"";
 
   @Override
