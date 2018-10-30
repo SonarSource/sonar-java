@@ -1027,31 +1027,36 @@ public class Resolve {
   }
 
   public Optional<JavaSymbol.MethodJavaSymbol> getSamMethod(JavaType lambdaType) {
-    Optional<JavaSymbol.MethodJavaSymbol> result = Optional.empty();
-    for (Symbol member : lambdaType.symbol().memberSymbols()) {
-      if (isAbstractMethod(member)) {
-        JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) member;
-        boolean isObjectMethod = isObjectMethod(methodJavaSymbol);
-        if(!isObjectMethod) {
-          if(result.isPresent()) {
-            // not a functional interface
-            return Optional.empty();
-          }
-          result = Optional.of(methodJavaSymbol);
-        }
-      }
+    List<JavaSymbol.MethodJavaSymbol> methodSymbols = abstractMethodsOfType(lambdaType);
+    if (methodSymbols.size() > 1) {
+      return Optional.empty();
     }
-    for (ClassJavaType type : lambdaType.symbol.superTypes()) {
-      Optional<JavaSymbol.MethodJavaSymbol> samMethod = getSamMethod(type);
-      if (samMethod.isPresent()) {
-        if(result.isPresent()) {
-          // not a functional interface
-          return Optional.empty();
-        }
-        result = samMethod;
+    if (methodSymbols.size() == 1) {
+      JavaSymbol.MethodJavaSymbol override = methodSymbols.get(0).overriddenSymbol();
+      Optional<JavaSymbol.MethodJavaSymbol> otherAbstractMethod = lambdaType.symbol.superTypes()
+        .stream()
+        .filter(t -> t.symbol().isInterface())
+        .flatMap(t -> abstractMethodsOfType(t).stream())
+        .filter(m -> override == null || !override.equals(m))
+        .findFirst();
+      if (otherAbstractMethod.isPresent()) {
+        return Optional.empty();
+      } else {
+        return Optional.of(methodSymbols.get(0));
       }
+    } else {
+      // FIXME if list of supertypes define multiple abstract methods we might end up with a wrong samMethod from a non-functional interface
+      return lambdaType.symbol.superTypes()
+        .stream()
+        .flatMap(t -> abstractMethodsOfType(t).stream())
+        .findFirst();
     }
-    return result;
+  }
+
+  private List<JavaSymbol.MethodJavaSymbol> abstractMethodsOfType(JavaType javaType) {
+    return javaType.symbol().memberSymbols().stream().filter(Resolve::isAbstractMethod).map(JavaSymbol.MethodJavaSymbol.class::cast)
+      .filter(m -> !isObjectMethod(m))
+      .collect(Collectors.toList());
   }
 
   private boolean isObjectMethod(JavaSymbol.MethodJavaSymbol methodJavaSymbol) {
