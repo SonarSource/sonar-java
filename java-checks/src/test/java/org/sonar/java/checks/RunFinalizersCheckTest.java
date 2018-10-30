@@ -21,11 +21,18 @@ package org.sonar.java.checks;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.model.JavaVersionImpl;
 
 public class RunFinalizersCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/RunFinalizersCheck.java", new RunFinalizersCheck());
+    int javaVersion = JavaVersionImpl.fromString(System.getProperty("java.specification.version")).asInt();
+    if (javaVersion < 11) {
+      JavaCheckVerifier.verify("src/test/files/checks/RunFinalizersCheck.java", new RunFinalizersCheck());
+    } else {
+      // No issue raised starting JDK 11 as the related APIs were removed from JDK
+      JavaCheckVerifier.verifyNoIssue("src/test/files/checks/RunFinalizersCheck_no_issue.java", new RunFinalizersCheck());
+    }
   }
 }
