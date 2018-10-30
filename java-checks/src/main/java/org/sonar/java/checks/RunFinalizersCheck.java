@@ -22,13 +22,15 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S2151")
-public class RunFinalizersCheck extends AbstractMethodDetection {
+public class RunFinalizersCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -42,4 +44,10 @@ public class RunFinalizersCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     reportIssue(ExpressionUtils.methodName(mit), "Remove this call to \"" + mit.symbol().owner().name() + ".runFinalizersOnExit()\".");
   }
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isNotSet() || version.asInt() < 11;
+  }
+
 }
