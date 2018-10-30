@@ -81,10 +81,10 @@
       <plugin>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-xjc-plugin</artifactId>
-        <version>3.2.2</version>
+        <version>3.2.3</version>
         <configuration>
           <extensions>
-            <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.2.2</extension>
+            <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.2.3</extension>
           </extensions>
         </configuration>
         <executions>
