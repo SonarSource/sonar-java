@@ -127,14 +127,17 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       super(wrappedValue);
     }
 
-    private ProgramState propagatePresentConstraint(ProgramState programState) {
+    @Override
+    public List<ProgramState> setConstraint(ProgramState programState, Constraint constraint) {
       ProgramState ps = programState;
-      if (wrappedValue instanceof FilteredOptionalSymbolicValue) {
-        ps = ((FilteredOptionalSymbolicValue) wrappedValue).propagatePresentConstraint(programState);
+      if (constraint == OptionalConstraint.PRESENT) {
+        List<ProgramState> programStates = wrappedValue.setConstraint(ps, constraint);
+        Preconditions.checkState(programStates.size() == 1);
+        ps = programStates.get(0);
       }
-
-      return ps.addConstraint(wrappedValue, OptionalConstraint.PRESENT);
+      return super.setConstraint(ps, constraint);
     }
+
   }
 
   private static class IsPresentSymbolicValue extends SymbolicValue {
@@ -160,11 +163,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       }
       OptionalConstraint newConstraint = booleanConstraint.isTrue() ? OptionalConstraint.PRESENT : OptionalConstraint.NOT_PRESENT;
 
-      if (newConstraint == OptionalConstraint.PRESENT && optionalSV instanceof FilteredOptionalSymbolicValue) {
-        programState = ((FilteredOptionalSymbolicValue) optionalSV).propagatePresentConstraint(programState);
-      }
-
-      return Collections.singletonList(programState.addConstraint(optionalSV, newConstraint));
+      return optionalSV.setConstraint(ps, newConstraint);
     }
 
     private static boolean isImpossibleState(BooleanConstraint booleanConstraint, OptionalConstraint optionalConstraint) {
