@@ -29,6 +29,12 @@ import com.google.common.annotations.Beta;
 public interface JavaVersion {
 
   /**
+   * Test if java version of the project is greater than or equal to 6.
+   * @return true if java version used is >= 6
+   */
+  boolean isJava6Compatible();
+
+  /**
    * Test if java version of the project is greater than or equal to 7.
    * @return true if java version used is >= 7
    */
@@ -51,6 +57,12 @@ public interface JavaVersion {
    * @return false if set, true otherwise.
    */
   boolean isNotSet();
+
+  /**
+   * Default compatibility message with java 6
+   * @return empty string if java version is properly set, default message otherwise.
+   */
+  String java6CompatibilityMessage();
 
   /**
    * Default compatibility message with java 7

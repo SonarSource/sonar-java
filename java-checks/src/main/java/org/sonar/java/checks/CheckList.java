@@ -647,6 +647,7 @@ public final class CheckList {
       .add(XPathUsageCheck.class)
       .add(HttpRequestsHotspotCheck.class)
       .add(BlindSerialVersionUidCheck.class)
+      .add(JdbcDriverExplicitLoadingCheck.class)
       .build();
   }
 
