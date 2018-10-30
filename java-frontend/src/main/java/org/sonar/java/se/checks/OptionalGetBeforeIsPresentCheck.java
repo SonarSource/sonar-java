@@ -132,6 +132,9 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       ProgramState ps = programState;
       if (constraint == OptionalConstraint.PRESENT) {
         List<ProgramState> programStates = wrappedValue.setConstraint(ps, constraint);
+        // programStates should always have size 1 here as a FilteredOptionalSymbolicValue is only created on top of SV having
+        // either a PRESENT or no constraint. SV having already NOT_PRESENT constraints do not create a new FilteredOptionalSymbolicValue
+        // since the filtering operation will have no effect.
         Preconditions.checkState(programStates.size() == 1);
         ps = programStates.get(0);
       }
@@ -152,9 +155,8 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
      * Will be called only after calling Optional.isPresent()
      */
     @Override
-    public List<ProgramState> setConstraint(ProgramState ps, BooleanConstraint booleanConstraint) {
-      ProgramState programState = ps;
-      OptionalConstraint optionalConstraint = programState.getConstraint(optionalSV, OptionalConstraint.class);
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+      OptionalConstraint optionalConstraint =  programState.getConstraint(optionalSV, OptionalConstraint.class);
       if (isImpossibleState(booleanConstraint, optionalConstraint)) {
         return Collections.emptyList();
       }
@@ -163,7 +165,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       }
       OptionalConstraint newConstraint = booleanConstraint.isTrue() ? OptionalConstraint.PRESENT : OptionalConstraint.NOT_PRESENT;
 
-      return optionalSV.setConstraint(ps, newConstraint);
+      return optionalSV.setConstraint(programState, newConstraint);
     }
 
     private static boolean isImpossibleState(BooleanConstraint booleanConstraint, OptionalConstraint optionalConstraint) {
