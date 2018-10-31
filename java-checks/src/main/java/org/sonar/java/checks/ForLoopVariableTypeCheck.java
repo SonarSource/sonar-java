@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.WildCardType;
@@ -55,8 +56,10 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
     Type collectionItemType = getCollectionItemType(actualStatement.expression());
 
     if (collectionItemType != null && !isMostPreciseType(variableType, collectionItemType)) {
-      reportIssue(actualStatement.variable().type(), String.format(PRIMARY_MESSAGE, variableType.name()),
-        getFlow(actualStatement, collectionItemType), 0);
+      // Second pass: check if the variable is down-cast in the statement block
+      DownCastVisitor downCastVisitor = new DownCastVisitor(actualStatement, variableType, collectionItemType);
+      downCastVisitor.setContext(context);
+      downCastVisitor.scanTree(((ForEachStatement) tree).statement());
     }
   }
 
@@ -80,7 +83,36 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static List<JavaFileScannerContext.Location> getFlow(ForEachStatement actualStatement, Type collectionItemType) {
-    return Collections.singletonList(new JavaFileScannerContext.Location(String.format(SECONDARY_MESSAGE, collectionItemType.name()), actualStatement.expression()));
+  private class DownCastVisitor extends SubscriptionVisitor {
+
+    private final ForEachStatement forEachStatement;
+    private final Type variableType;
+    private final Type collectionItemType;
+
+    private DownCastVisitor(ForEachStatement forEachStatement, Type variableType, Type collectionItemType) {
+      this.forEachStatement = forEachStatement;
+      this.variableType = variableType;
+      this.collectionItemType = collectionItemType;
+    }
+
+    @Override
+    public List<Tree.Kind> nodesToVisit() {
+      return Collections.singletonList(Tree.Kind.TYPE_CAST);
+    }
+
+    @Override
+    public void visitNode(Tree tree) {
+      ForLoopVariableTypeCheck.this.reportIssue(forEachStatement.variable().type(), String.format(PRIMARY_MESSAGE, variableType.name()),
+        getSecondaryLocations(), 0);
+    }
+
+    @Override
+    public void scanTree(Tree tree) {
+      super.scanTree(tree);
+    }
+
+    private List<JavaFileScannerContext.Location> getSecondaryLocations() {
+      return Collections.singletonList(new JavaFileScannerContext.Location(String.format(SECONDARY_MESSAGE, collectionItemType.name()), forEachStatement.expression()));
+    }
   }
 }
