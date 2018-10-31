@@ -1,0 +1,17 @@
+{
+  "title": "\"StandardCharsets\" constants should be preferred",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1min"
+  },
+  "tags": [
+    "java7",
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4719",
+  "sqKey": "S4719",
+  "scope": "All"
+}
