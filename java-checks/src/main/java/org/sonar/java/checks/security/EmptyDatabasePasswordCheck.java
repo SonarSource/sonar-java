@@ -25,15 +25,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
-import org.sonar.java.checks.helpers.IdentifierUtils.ValueAndExpression;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-
-import static org.sonar.java.checks.helpers.IdentifierUtils.getValueAndExpression;
 
 @Rule(key = "S2115")
 public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
@@ -66,33 +62,21 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   }
 
   private void checkEmptyValue(MethodInvocationTree mit, ExpressionTree expression) {
-    ValueAndExpression<String> literalAndExpression = getValueAndExpression(expression, ConstantUtils::resolveAsStringConstant);
-    String literal = literalAndExpression.value;
+    String literal = ConstantUtils.resolveAsStringConstant(expression);
     if (literal != null && literal.trim().isEmpty()) {
-      ExpressionTree expressionTree = literalAndExpression.expressionTree;
-      if (expressionTree != expression) {
-        reportIssue(mit, MESSAGE, Collections.singletonList(new JavaFileScannerContext.Location("", expressionTree)), 0);
-      } else {
-        reportIssue(mit, MESSAGE);
-      }
+      reportIssue(mit, MESSAGE);
     }
   }
 
   private void checkUrlContainsEmptyPassword(MethodInvocationTree mit) {
     ExpressionTree urlArgument = mit.arguments().get(URL_ARGUMENT);
-    ValueAndExpression<String> literalAndExpression = getValueAndExpression(urlArgument, ConstantUtils::resolveAsStringConstant);
-    String url = literalAndExpression.value;
+    String url = ConstantUtils.resolveAsStringConstant(urlArgument);
     if (url != null &&
       (urlContainsEmptyPassword(url, MYSQL_URL_PATTERN) ||
         urlContainsEmptyPassword(url, ORACLE_URL_PATTERN) ||
         EMPTY_PASSWORD_PATTERN.matcher(url).matches())) {
 
-      ExpressionTree expressionTree = literalAndExpression.expressionTree;
-      if (expressionTree != urlArgument) {
-        reportIssue(mit, MESSAGE, Collections.singletonList(new JavaFileScannerContext.Location("", expressionTree)), 0);
-      } else {
-        reportIssue(mit, MESSAGE);
-      }
+      reportIssue(mit, MESSAGE);
     }
   }
 
