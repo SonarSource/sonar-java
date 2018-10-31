@@ -27,6 +27,9 @@ public class StandardCharsetsConstantsCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck(), 7);
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck(), 6);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck());
   }
 
 }

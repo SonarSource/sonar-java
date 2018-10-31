@@ -11,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FileUtils;
 
 class A {
-  private static final String UTF_8_NAME = "UTF-8";
 
   void myMethod(byte[] bytes, int offset, int length, InputStream inputStream, OutputStream outputStream, String charsetName) {
     Charset c;
@@ -37,11 +36,11 @@ class A {
 
     "".getBytes("UTF-8"); // Noncompliant
 
-    new String(bytes, UTF_8_NAME); // Noncompliant
-    new String(bytes, offset, length, UTF_8_NAME); // Noncompliant
+    new String(bytes, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
+    new String(bytes, offset, length, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
 
-    new InputStreamReader(inputStream, UTF_8_NAME); // Noncompliant
-    new OutputStreamWriter(outputStream, UTF_8_NAME); // Noncompliant
+    new InputStreamReader(inputStream, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
+    new OutputStreamWriter(outputStream, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
 
     // Compliant
     c = StandardCharsets.ISO_8859_1;
