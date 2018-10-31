@@ -315,7 +315,7 @@ public class BytecodeEGWalker {
     BytecodeCFGMethodVisitor cfgVisitor = new BytecodeCFGMethodVisitor();
     MethodLookup lookup = MethodLookup.lookup(signature, classLoader, cfgVisitor);
     if (lookup == null) {
-      LOG.debug("Method body not found: %s", signature);
+      LOG.debug("Method body not found: {}", signature);
       return;
     }
     methodBehavior.setDeclaredExceptions(lookup.declaredExceptions);
