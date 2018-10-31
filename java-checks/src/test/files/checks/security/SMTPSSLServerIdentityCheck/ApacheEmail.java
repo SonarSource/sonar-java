@@ -67,5 +67,11 @@ public class ApacheEmail {
     Email email = new SimpleEmail();
     email.setStartTLSRequired(true);   // Noncompliant
   }
-
+}
+interface Test {
+  java.util.function.Supplier<Object> s = () -> {
+    Email email = new SimpleEmail();
+    email.setSSLOnConnect(true);
+    return email;
+  };
 }

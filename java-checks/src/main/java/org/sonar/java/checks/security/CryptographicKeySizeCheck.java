@@ -23,16 +23,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4426")
 public class CryptographicKeySizeCheck extends AbstractMethodDetection {
@@ -51,23 +50,12 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    MethodTree methodTree = findEnclosingMethod(mit);
+    MethodTree methodTree = ExpressionUtils.getEnclosingMethod(mit);
     String getInstanceArg = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
     if (methodTree != null && getInstanceArg != null) {
       MethodVisitor methodVisitor = new MethodVisitor(getInstanceArg);
       methodTree.accept(methodVisitor);
     }
-  }
-
-  @CheckForNull
-  public static MethodTree findEnclosingMethod(Tree tree) {
-    while (!tree.is(Tree.Kind.CLASS, Tree.Kind.METHOD)) {
-      tree = tree.parent();
-    }
-    if (tree.is(Tree.Kind.CLASS)) {
-      return null;
-    }
-    return (MethodTree) tree;
   }
 
   private class MethodVisitor extends BaseTreeVisitor {

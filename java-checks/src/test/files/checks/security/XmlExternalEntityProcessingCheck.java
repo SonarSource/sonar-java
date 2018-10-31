@@ -201,3 +201,10 @@ class Validator {
   }
 
 }
+interface I {
+  Runnable r = () -> {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator();
+  };
+}

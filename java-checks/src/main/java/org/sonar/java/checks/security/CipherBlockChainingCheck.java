@@ -25,13 +25,13 @@ import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -46,7 +46,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    Tree mTree = findEnclosingMethod(newClassTree);
+    Tree mTree = ExpressionUtils.getEnclosingMethod(newClassTree);
     if (mTree != null) {
       MethodInvocationVisitor mitVisit = new MethodInvocationVisitor(newClassTree);
       mTree.accept(mitVisit);
@@ -54,16 +54,6 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
         reportIssue(newClassTree, "Use a dynamically-generated, random IV.");
       }
     }
-  }
-
-  private static MethodTree findEnclosingMethod(Tree tree) {
-    while (!tree.is(Tree.Kind.CLASS, Tree.Kind.METHOD)) {
-      tree = tree.parent();
-    }
-    if (tree.is(Tree.Kind.CLASS)) {
-      return null;
-    }
-    return (MethodTree) tree;
   }
 
   private static class MethodInvocationVisitor extends BaseTreeVisitor {

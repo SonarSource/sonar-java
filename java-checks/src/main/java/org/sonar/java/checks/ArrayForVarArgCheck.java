@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.MethodJavaType;
@@ -119,22 +120,13 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isCallingOverload(JavaSymbol.MethodJavaSymbol methodSymbol, ExpressionTree lastArg) {
-    MethodTree enclosing = getEnclosingMethod(lastArg);
+    MethodTree enclosing = ExpressionUtils.getEnclosingMethod(lastArg);
     return enclosing != null && haveSameParamButLast(enclosing.symbol(), methodSymbol);
   }
 
   private static boolean haveSameParamButLast(Symbol.MethodSymbol enclosing, JavaSymbol.MethodJavaSymbol methodSymbol) {
     return enclosing.name().equals(methodSymbol.name())
       && IntStream.range(0, enclosing.parameterTypes().size()).allMatch(i -> enclosing.parameterTypes().get(i) == methodSymbol.parameterTypes().get(i));
-  }
-
-  @CheckForNull
-  private static MethodTree getEnclosingMethod(ExpressionTree lastArg) {
-    Tree result = lastArg.parent();
-    while (result != null && !result.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
-      result = result.parent();
-    }
-    return (MethodTree) result;
   }
 
   private static boolean lastParamHasSameType(JavaSymbol.MethodJavaSymbol methodSymbol, @Nullable MethodJavaType methodType, Type lastArgType) {

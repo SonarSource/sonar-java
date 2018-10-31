@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
-import javax.annotation.CheckForNull;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
@@ -32,6 +31,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -107,7 +107,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
 
     private void checkMethodInvocation(MethodInvocationTree methodInvocation) {
       if (triggeringInvocationMatcher.matches(methodInvocation)) {
-        MethodTree enclosingMethod = enclosingMethod(methodInvocation);
+        MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(methodInvocation);
         if (enclosingMethod != null) {
           if (securingInvocationPredicate instanceof AccessExternalDTDOrSchemaPredicate) {
             ((AccessExternalDTDOrSchemaPredicate) securingInvocationPredicate).externalDTDDisabled = false;
@@ -120,18 +120,6 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
           }
         }
       }
-    }
-
-    @CheckForNull
-    private MethodTree enclosingMethod(Tree tree) {
-      Tree parent = tree.parent();
-      while (!parent.is(Kind.CLASS, Kind.METHOD)) {
-        parent = parent.parent();
-      }
-      if (parent.is(Kind.CLASS)) {
-        return null;
-      }
-      return (MethodTree) parent;
     }
   }
 
