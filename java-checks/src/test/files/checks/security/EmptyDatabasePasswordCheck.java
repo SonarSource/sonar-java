@@ -9,7 +9,7 @@ class S2115 {
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", "Foo");
 
     String pwd = "";
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd); // Noncompliant
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd); // Noncompliant [[secondary=11]]
 
     String pwd2 = "foo";
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd2);
@@ -17,7 +17,7 @@ class S2115 {
     String pRef = "";
     String pwd3 = pRef;
 
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd3); // Noncompliant
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd3); // Noncompliant [[secondary=17]]
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", getPassword());
 

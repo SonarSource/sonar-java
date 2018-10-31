@@ -25,12 +25,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
-import org.sonar.java.checks.helpers.IdentifierUtils;
+import org.sonar.java.checks.helpers.IdentifierUtils.ValueAndExpression;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+
+import static org.sonar.java.checks.helpers.IdentifierUtils.getValueAndExpression;
 
 @Rule(key = "S2115")
 public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
@@ -53,26 +56,44 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     Arguments args = mit.arguments();
-    if (args.size() > 2 && hasEmptyValue(args.get(PASSWORD_ARGUMENT))) {
-      reportIssue(mit, MESSAGE);
+    if (args.size() > 2) {
+      checkEmptyValue(mit, args.get(PASSWORD_ARGUMENT));
     }
-    if (args.size() == 1 && urlContainsEmptyPassword(mit)) {
-      reportIssue(mit, MESSAGE);
+    if (args.size() == 1) {
+      checkUrlContainsEmptyPassword(mit);
+    }
+
+  }
+
+  private void checkEmptyValue(MethodInvocationTree mit, ExpressionTree expression) {
+    ValueAndExpression<String> literalAndExpression = getValueAndExpression(expression, ConstantUtils::resolveAsStringConstant);
+    String literal = literalAndExpression.value;
+    if (literal != null && literal.trim().isEmpty()) {
+      ExpressionTree expressionTree = literalAndExpression.expressionTree;
+      if (expressionTree != expression) {
+        reportIssue(mit, MESSAGE, Collections.singletonList(new JavaFileScannerContext.Location("", expressionTree)), 0);
+      } else {
+        reportIssue(mit, MESSAGE);
+      }
     }
   }
 
-  private static boolean hasEmptyValue(ExpressionTree expression) {
-    String literal = IdentifierUtils.getValue(expression, ConstantUtils::resolveAsStringConstant);
-    return literal != null && literal.trim().isEmpty();
-  }
-
-  private static boolean urlContainsEmptyPassword(MethodInvocationTree mit) {
+  private void checkUrlContainsEmptyPassword(MethodInvocationTree mit) {
     ExpressionTree urlArgument = mit.arguments().get(URL_ARGUMENT);
-    String url = IdentifierUtils.getValue(urlArgument, ConstantUtils::resolveAsStringConstant);
-    return url != null &&
+    ValueAndExpression<String> literalAndExpression = getValueAndExpression(urlArgument, ConstantUtils::resolveAsStringConstant);
+    String url = literalAndExpression.value;
+    if (url != null &&
       (urlContainsEmptyPassword(url, MYSQL_URL_PATTERN) ||
         urlContainsEmptyPassword(url, ORACLE_URL_PATTERN) ||
-        EMPTY_PASSWORD_PATTERN.matcher(url).matches());
+        EMPTY_PASSWORD_PATTERN.matcher(url).matches())) {
+
+      ExpressionTree expressionTree = literalAndExpression.expressionTree;
+      if (expressionTree != urlArgument) {
+        reportIssue(mit, MESSAGE, Collections.singletonList(new JavaFileScannerContext.Location("", expressionTree)), 0);
+      } else {
+        reportIssue(mit, MESSAGE);
+      }
+    }
   }
 
   private static boolean urlContainsEmptyPassword(String url, Pattern urlPattern) {

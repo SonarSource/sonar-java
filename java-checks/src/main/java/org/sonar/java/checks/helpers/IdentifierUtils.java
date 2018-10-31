@@ -21,6 +21,7 @@ package org.sonar.java.checks.helpers;
 
 import java.util.function.Function;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -33,16 +34,20 @@ public class IdentifierUtils {
 
   @CheckForNull
   public static <T> T getValue(ExpressionTree expression, Function<ExpressionTree,T> resolver) {
+    return getValueAndExpression(expression, resolver).value;
+  }
+
+  public static <T> ValueAndExpression<T> getValueAndExpression(ExpressionTree expression, Function<ExpressionTree,T> resolver) {
     T value = resolver.apply(expression);
     if (value == null && expression.is(Tree.Kind.IDENTIFIER)) {
       ExpressionTree last = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(expression, ((IdentifierTree) expression).symbol());
       if (last == null || !isStrictAssignmentOrDeclaration(last) || last == expression) {
         value = null;
       } else {
-        value = getValue(last, resolver);
+        return getValueAndExpression(last, resolver);
       }
     }
-    return value;
+    return new ValueAndExpression<>(value, expression);
   }
 
   private static boolean isStrictAssignmentOrDeclaration(ExpressionTree expression) {
@@ -50,5 +55,16 @@ public class IdentifierUtils {
       return expression.parent().is(Tree.Kind.ASSIGNMENT);
     }
     return true;
+  }
+
+  public static class ValueAndExpression <T> {
+    @Nullable
+    public final T value;
+    public final ExpressionTree expressionTree;
+
+    ValueAndExpression(@Nullable T value, ExpressionTree expressionTree) {
+      this.value = value;
+      this.expressionTree = expressionTree;
+    }
   }
 }
