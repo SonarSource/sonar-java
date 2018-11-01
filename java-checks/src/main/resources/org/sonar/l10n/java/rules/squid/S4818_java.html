@@ -85,13 +85,20 @@ class A {
 <pre>
 // === Netty ===
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
+
+class CustomChannelInitializer extends ChannelInitializer&lt;ServerSocketChannel&gt; { // Questionable. Review how the SocketChannel is used.
+    @Override
+    protected void initChannel(ServerSocketChannel ch) throws Exception {
+    }
+}
 
 class A {
     void foo() {
-        new ChannelInitializer&lt;SocketChannel&gt;() {
+        new ChannelInitializer&lt;SocketChannel&gt;() {  // Questionable
             @Override
-            public void initChannel(SocketChannel ch) throws Exception {  // Questionable. Review how the SocketChannel is used.
+            public void initChannel(SocketChannel ch) throws Exception {
                 // ...
             }
         };
