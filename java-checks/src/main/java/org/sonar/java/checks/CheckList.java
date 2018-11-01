@@ -649,6 +649,7 @@ public final class CheckList {
       .add(BlindSerialVersionUidCheck.class)
       .add(JdbcDriverExplicitLoadingCheck.class)
       .add(StandardCharsetsConstantsCheck.class)
+      .add(ForLoopVariableTypeCheck.class)
       .build();
   }
 

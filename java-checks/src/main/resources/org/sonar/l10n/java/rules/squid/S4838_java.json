@@ -1,0 +1,17 @@
+{
+  "title": "An iteration on a Collection should be performed on the type handled by the Collection",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1min"
+  },
+  "tags": [
+    "bad-practice",
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4838",
+  "sqKey": "S4838",
+  "scope": "Main"
+}
