@@ -101,6 +101,7 @@ class Test {
     }
     for(I i: collectionOfK) { // Noncompliant
       (J) i;
+      (K) i;
     }
     for(I i: collectionOfK) { // Noncompliant
       (L) i;

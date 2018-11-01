@@ -91,11 +91,13 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
     private final ForEachStatement forEachStatement;
     private final VariableTree variable;
     private final Type collectionItemType;
+    private boolean blockAlreadyFlagged;
 
     private DownCastVisitor(ForEachStatement forEachStatement, VariableTree variable, Type collectionItemType) {
       this.forEachStatement = forEachStatement;
       this.variable = variable;
       this.collectionItemType = collectionItemType;
+      this.blockAlreadyFlagged = false;
     }
 
     @Override
@@ -105,10 +107,14 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitNode(Tree tree) {
+      if (blockAlreadyFlagged) {
+        return;
+      }
       ExpressionTree expression = ((TypeCastTree) tree).expression();
       if (expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).symbol().equals(variable.symbol())) {
         ForLoopVariableTypeCheck.this.reportIssue(forEachStatement.variable().type(), String.format(PRIMARY_MESSAGE, variable.type().symbolType().name()),
           getSecondaryLocations(), 0);
+        blockAlreadyFlagged = true;
       }
     }
 
