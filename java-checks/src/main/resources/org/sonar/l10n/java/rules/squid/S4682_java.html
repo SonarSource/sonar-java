@@ -1,0 +1,18 @@
+<p>By definition, primitive types are not Objects and so they can't be <code>null</code>. Adding <code>@CheckForNull</code> or <code>@Nullable</code>
+on primitive types adds confusion and is useless.</p>
+<p>This rule raises an issue when <code>@CheckForNull</code> or <code>@Nullable</code> is set on a method returning a primitive type: byte, short,
+int, long, float, double, boolean, char.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@CheckForNull
+boolean isFoo() {
+ ...
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+boolean isFoo() {
+ ...
+}
+</pre>
+

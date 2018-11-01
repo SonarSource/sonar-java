@@ -1,0 +1,16 @@
+{
+  "title": "\"@CheckForNull\" or \"@Nullable\" should not be used on primitive types",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1min"
+  },
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-4682",
+  "sqKey": "S4682",
+  "scope": "Main"
+}
