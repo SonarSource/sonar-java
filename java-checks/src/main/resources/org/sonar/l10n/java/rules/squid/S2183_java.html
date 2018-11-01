@@ -1,6 +1,9 @@
-<p>Since an <code>int</code> is a 32-bit variable, shifting by more than +/-31 is confusing at best and an error at worst. Shifting an
-<code>int</code> by 32 is the same as shifting it by 0, and shifting it by 33 is the same as shifting it by 1.</p>
-<p>Similarly, shifting a <code>long</code> by +/-64 is the same as shifting it by 0, and shifting it left by 65 is the same as shifting it by 1.</p>
+<p>Since an <code>int</code> is a 32-bit variable, shifting by more than +/-31 is confusing at best and an error at worst. When the runtime shifts
+32-bit integers, it uses the lowest 5 bits of the shift count operand. In other words, shifting an <code>int</code> by 32 is the same as shifting it
+by 0, and shifting it by 33 is the same as shifting it by 1.</p>
+<p>Similarly, when shifting 64-bit integers, the runtime uses the lowest 6 bits of the shift count operand and shifting <code>long</code> by 64 is the
+same as shifting it by 0, and shifting it by 65 is the same as shifting it by 1.</p>
+<p>8-bit and 16-bit integers are first cast to 32-bit and then the rules for 32-bit are applied.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public int shift(int a) {

@@ -23,7 +23,7 @@ Class c;
 if(c == Integer.class) { // No issue raised
 }
 </pre>
-<p>Comparing <code>Enum</code>s will not raise an issue:</p>
+<p>Comparing <code>Enum</code> will not raise an issue:</p>
 <pre>
 public enum Fruit {
    APPLE, BANANA, GRAPE
@@ -31,6 +31,10 @@ public enum Fruit {
 public boolean isFruitGrape(Fruit candidateFruit) {
   return candidateFruit == Fruit.GRAPE; // it's recommended to activate S4551 to enforce comparison of Enums using ==
 }
+</pre>
+<p>Comparing with <code>final</code> reference will not raise an issue:</p>
+<pre>
+private static final Color DEFAULT = Col
 </pre>
 <h2>See</h2>
 <ul>

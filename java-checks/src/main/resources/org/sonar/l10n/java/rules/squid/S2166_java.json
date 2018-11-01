@@ -8,6 +8,7 @@
   },
   "tags": [
     "convention",
+    "error-handling",
     "pitfall"
   ],
   "defaultSeverity": "Major",

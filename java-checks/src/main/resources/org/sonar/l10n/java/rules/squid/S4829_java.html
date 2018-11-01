@@ -15,17 +15,23 @@ can be dangerous and should be validated.</p>
 <p><a href="https://www.owasp.org/index.php/Input_Validation_Cheat_Sheet">Sanitize</a> all data read from the standard input before using it.</p>
 <h2>Questionable Code Example</h2>
 <pre>
-// Questionable. Check how the standard input is used.
-System.in.read();
+class A {
+    void foo(String fmt, Object args) throws Exception {
+        // Questionable. Check how the standard input is used.
+        System.in.read();
 
-// Questionable. Check how safe this new InputStream is.
-System.setIn(new FileInputStream("test.txt"));
+        // Questionable. Check how safe this new InputStream is.
+        System.setIn(new java.io.FileInputStream("test.txt"));
 
-Console console = System.console();
-// Questionable. All the following calls should be reviewed as they use the standard input.
-console.reader();
-console.readLine(...);
-console.readPassword(...);
+        java.io.Console console = System.console();
+        // Questionable. All the following calls should be reviewed as they use the standard input.
+        console.reader();
+        console.readLine();
+        console.readLine(fmt, args);
+        console.readPassword();
+        console.readPassword(fmt, args);
+    }
+}
 </pre>
 <h2>Exceptions</h2>
 <p>All references to <code>System.in</code> will create issues except direct calls to <code>System.in.close()</code>.</p>

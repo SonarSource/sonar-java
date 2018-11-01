@@ -12,7 +12,10 @@ extremely risky to create or write files without making sure that their permissi
 file content must be always done with caution as they could have been tampered with.</p>
 <p>The file system is a resource which can be easily exhausted. Opening too many files will use up all file descriptors, preventing other software
 from opening files. Filling the storage space will also prevent any additional write from happening.</p>
-<p>This rule flags code that initiates the use of files. The goal is to guide manual security code reviews.</p>
+<p>This rule flags code that initiates the use of files. It does not highlight how the files are used as this is often done in external libraries or
+via abstractions like <code>InputStream</code>. It focuses instead on the creation of <code>java.io.File</code> or equivalent from a
+<code>String</code>. This action indicates that one or multiple files will be processed just after this code. The goal is to guide manual security
+code reviews.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
   <li> the file or directory path you are using is coming from a user input or could have been tampered with. </li>
