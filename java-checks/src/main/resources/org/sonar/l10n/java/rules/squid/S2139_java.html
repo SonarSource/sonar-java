@@ -1,0 +1,28 @@
+<p>In applications where the accepted practice is to log an <code>Exception</code> and then rethrow it, you end up with miles-long logs that contain
+multiple instances of the same exception. In multi-threaded applications debugging this type of log can be particularly hellish because messages from
+other threads will be interwoven with the repetitions of the logged-and-thrown <code>Exception</code>. Instead, exceptions should be either logged or
+rethrown, not both.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+catch (SQLException e) {
+  ...
+  LOGGER.log(Level.ERROR,  contextInfo, e);
+  throw new MySQLException(contextInfo, e);
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+catch (SQLException e) {
+  ...
+  throw new MySQLException(contextInfo, e);
+}
+</pre>
+<p>or </p>
+<pre>
+catch (SQLException e) {
+  ...
+  LOGGER.log(Level.ERROR,  contextInfo, e);
+  // handle exception...
+}
+</pre>
+
