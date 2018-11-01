@@ -88,12 +88,16 @@ class Test {
   java.util.Collection<K> collectionOfK;
   java.util.Collection<J> collectionOfJ;
   java.util.Collection<I> collectionOfI;
+  Object other;
   void doStuff() {
     for(K k: collectionOfK) {}
     for(J k: collectionOfK) {}
     for(I i: collectionOfK) {}
     for(J j: collectionOfK) { // Noncompliant
       (K) j;
+    }
+    for(J j: collectionOfK) {
+      (K) other;
     }
     for(I i: collectionOfK) { // Noncompliant
       (J) i;
@@ -105,7 +109,7 @@ class Test {
       (K) j;
     }
     for(I i: collectionOfJ) { // Noncompliant
-      (J) j;
+      (J) i;
     }
     for(J j: collectionOfJ) {
       if (j instanceof K) {

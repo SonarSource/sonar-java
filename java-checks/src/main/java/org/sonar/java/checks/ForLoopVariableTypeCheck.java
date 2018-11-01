@@ -32,7 +32,10 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S4838")
 public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
@@ -57,7 +60,7 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
 
     if (collectionItemType != null && !isMostPreciseType(variableType, collectionItemType)) {
       // Second pass: check if the variable is down-cast in the statement block
-      DownCastVisitor downCastVisitor = new DownCastVisitor(actualStatement, variableType, collectionItemType);
+      DownCastVisitor downCastVisitor = new DownCastVisitor(actualStatement, actualStatement.variable(), collectionItemType);
       downCastVisitor.setContext(context);
       downCastVisitor.scanTree(((ForEachStatement) tree).statement());
     }
@@ -86,12 +89,12 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
   private class DownCastVisitor extends SubscriptionVisitor {
 
     private final ForEachStatement forEachStatement;
-    private final Type variableType;
+    private final VariableTree variable;
     private final Type collectionItemType;
 
-    private DownCastVisitor(ForEachStatement forEachStatement, Type variableType, Type collectionItemType) {
+    private DownCastVisitor(ForEachStatement forEachStatement, VariableTree variable, Type collectionItemType) {
       this.forEachStatement = forEachStatement;
-      this.variableType = variableType;
+      this.variable = variable;
       this.collectionItemType = collectionItemType;
     }
 
@@ -102,8 +105,11 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitNode(Tree tree) {
-      ForLoopVariableTypeCheck.this.reportIssue(forEachStatement.variable().type(), String.format(PRIMARY_MESSAGE, variableType.name()),
-        getSecondaryLocations(), 0);
+      ExpressionTree expression = ((TypeCastTree) tree).expression();
+      if (expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).symbol().equals(variable.symbol())) {
+        ForLoopVariableTypeCheck.this.reportIssue(forEachStatement.variable().type(), String.format(PRIMARY_MESSAGE, variable.type().symbolType().name()),
+          getSecondaryLocations(), 0);
+      }
     }
 
     @Override
