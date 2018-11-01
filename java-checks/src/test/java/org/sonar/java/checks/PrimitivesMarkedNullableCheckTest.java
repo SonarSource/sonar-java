@@ -29,4 +29,9 @@ public class PrimitivesMarkedNullableCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/PrimitivesMarkedNullableCheck.java", new PrimitivesMarkedNullableCheck());
   }
 
+  @Test
+  public void noSemantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/PrimitivesMarkedNullableCheck.java", new PrimitivesMarkedNullableCheck());
+  }
+
 }
