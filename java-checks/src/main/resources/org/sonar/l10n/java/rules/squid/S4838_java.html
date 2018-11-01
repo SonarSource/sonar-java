@@ -1,0 +1,21 @@
+<p>This rule raises an issue when an iteration over the items of a <code>Collection</code> is performed on a super-type of the type handled by the
+<code>Collection</code>.</p>
+<p>Relying on <code>Object</code> or any classes between <code>Object</code> and the real class handled by the <code>Collection</code> is not
+recommended. While it's accepted by the language, this practice reduces readability of the code and forces to down-cast the item of the
+<code>Collection</code> to be able to call a method on it while simply using the correct type in the iteration makes things more clear and simple.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public Collection&lt;Person&gt; getPersons() { ... }
+
+for (Object item : getPersons()) { // Noncompliant
+  Person person = (Person) item; // Noncompliant; it's required to down-cast to the to correct type to use "item"
+  person.getAdress();
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+for (Person person : getPersons()) { // Compliant
+  person.getAddress() ;
+}
+</pre>
+

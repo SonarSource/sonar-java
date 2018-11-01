@@ -650,6 +650,7 @@ public final class CheckList {
       .add(JdbcDriverExplicitLoadingCheck.class)
       .add(StandardCharsetsConstantsCheck.class)
       .add(PrimitivesMarkedNullableCheck.class)
+      .add(ForLoopVariableTypeCheck.class)
       .build();
   }
 
