@@ -17,6 +17,13 @@ class A {
 
     try {
 
+    } catch (SQLException e) { // Compliant
+      logger.log(Level.ALL, "", e);
+      throw new MySQLException(contextInfo);
+    }
+
+    try {
+
     } catch (SQLException e) { // Noncompliant
       logger.log(Level.ALL, "MyError: " + e);
       throw new MySQLException(contextInfo, e);
