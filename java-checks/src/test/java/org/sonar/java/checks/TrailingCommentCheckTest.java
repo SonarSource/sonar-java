@@ -31,6 +31,9 @@ public class TrailingCommentCheckTest {
     TrailingCommentCheck check = new TrailingCommentCheck();
     assertThat(check.legalCommentPattern).isEqualTo("^\\s*+[^\\s]++$");
     JavaCheckVerifier.verify("src/test/files/checks/TrailingCommentCheck.java", check);
+    check.legalCommentPattern = "";
+    // parameter has changed but regexp is not recompiled, so we find the same issues.
+    JavaCheckVerifier.verify("src/test/files/checks/TrailingCommentCheck.java", check);
   }
 
   @Test
