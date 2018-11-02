@@ -31,7 +31,6 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ConstantUtils;
-import org.sonar.java.checks.helpers.IdentifierUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -133,7 +132,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   }
 
   private Optional<String> isPassword(ExpressionTree argument) {
-    String value = IdentifierUtils.getValue(argument, ConstantUtils::resolveAsStringConstant);
+    String value = ConstantUtils.resolveAsStringConstant(argument);
     if (StringUtils.isEmpty(value)) {
       return Optional.empty();
     }
@@ -211,7 +210,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
     if (expression == null) {
       return false;
     }
-    String literal = IdentifierUtils.getValue(expression, ConstantUtils::resolveAsStringConstant);
+    String literal = ConstantUtils.resolveAsStringConstant(expression);
     return literal != null && !literal.trim().isEmpty();
   }
 

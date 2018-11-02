@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
-import org.sonar.java.checks.helpers.IdentifierUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
@@ -272,7 +271,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     ExpressionTree nameArgument = arguments.get(COOKIE_NAME_ARGUMENT);
-    String name = IdentifierUtils.getValue(nameArgument, ConstantUtils::resolveAsStringConstant);
+    String name = ConstantUtils.resolveAsStringConstant(nameArgument);
     return name != null && IGNORED_COOKIE_NAMES.stream().anyMatch(cookieName -> name.toLowerCase(Locale.ENGLISH).contains(cookieName));
   }
 
@@ -345,7 +344,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   private static boolean setterArgumentHasCompliantValue(Arguments arguments) {
     ExpressionTree expressionTree = arguments.get(0);
-    Boolean booleanValue = IdentifierUtils.getValue(expressionTree, ConstantUtils::resolveAsBooleanConstant);
+    Boolean booleanValue = ConstantUtils.resolveAsBooleanConstant(expressionTree);
     return booleanValue == null || booleanValue;
   }
 

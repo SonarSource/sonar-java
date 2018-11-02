@@ -31,7 +31,7 @@ class A {
 
     char[] passphrase = "whatever".toCharArray(); // Noncompliant
     passphrase = "whatever".toCharArray(); // Noncompliant
-    passphrase = PASSED.toCharArray(); // Noncompliant
+    passphrase = PASSED.toCharArray(); // FN
     passphrase = "".toCharArray();
 
     String password = "123"; // Noncompliant
@@ -39,7 +39,7 @@ class A {
     }
     if("whatever".equals(password)) { // Noncompliant
     }
-    if(PASSED.equals(password)) { // Noncompliant
+    if(PASSED.equals(password)) { // FN
     }
     if(password.equals("")) {
     }
@@ -61,7 +61,7 @@ class A {
 
     Connection conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", var);
     conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", "whateverpassword"); // Noncompliant
-    conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", PASSED); // Noncompliant
+    conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", PASSED); // FN
     conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root");
     conn = DriverManager.getConnection("jdbc:mysql://xxx/");
     conn = DriverManager.getConnection("jdbc:db2://myhost:5021/mydb:user=dbadm;password=foo"); // Noncompliant
