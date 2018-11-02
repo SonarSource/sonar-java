@@ -652,6 +652,7 @@ public final class CheckList {
       .add(PrimitivesMarkedNullableCheck.class)
       .add(ForLoopVariableTypeCheck.class)
       .add(ReplaceGuavaWithJava8Check.class)
+      .add(LoggedRethrownExceptionsCheck.class)
       .build();
   }
 
