@@ -83,14 +83,13 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private boolean isLoggingMethod(StatementTree statementTree, IdentifierTree exceptionIdentifier) {
+  private static boolean isLoggingMethod(StatementTree statementTree, IdentifierTree exceptionIdentifier) {
     if (!statementTree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
       return false;
     }
     ExpressionTree expression = ((ExpressionStatementTree) statementTree).expression();
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) expression;
-
       return LOGGING_METHODS.stream().anyMatch(logMethod -> logMethod.matches(mit)) && isExceptionUsed(exceptionIdentifier, mit);
     }
     return false;
