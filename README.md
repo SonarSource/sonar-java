@@ -56,9 +56,7 @@ To run tests locally follow these instructions.
 
 To build the plugin and run its unit tests, execute this command from the project's root directory:
 
-    mvn clean package
-
-Note: You need to run the `package` goal because the jacoco-previous module will shade JaCoCo to support two binary format of JaCoCo. This shading mechanism is bound to maven `package` phase and is required for other modules to compile.
+    mvn clean install
 
 ### Integration Tests
 
