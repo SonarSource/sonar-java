@@ -20,11 +20,13 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -38,7 +40,23 @@ import static org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 
 @Rule(key = "S2139")
 public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
-  private static final MethodMatcher JAVA_UTIL_LOGGER = MethodMatcher.create().typeDefinition("java.util.logging.Logger").name("log").withAnyParameters();
+  private static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
+  private static final String SLF4J_LOGGER = "org.slf4j.Logger";
+  private static final List<MethodMatcher> LOGGING_METHODS = Collections.unmodifiableList(Arrays.asList(
+    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("config").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("info").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("log").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("logp").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("logrb").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("throwing").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("severe").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("warning").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("debug").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("error").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("info").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("trace").withAnyParameters(),
+    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("warn").withAnyParameters()
+  ));
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -47,34 +65,59 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     CatchTree catchTree = (CatchTree) tree;
-    boolean isRethrowing = false;
     boolean isLogging = false;
     List<Location> secondaryLocations = new ArrayList<>();
     for (StatementTree statementTree : catchTree.block().body()) {
-      if (statementTree.is(Tree.Kind.THROW_STATEMENT)) {
+      if (isLogging && statementTree.is(Tree.Kind.THROW_STATEMENT)) {
         secondaryLocations.add(new Location("", ((ThrowStatementTree) statementTree).expression()));
-        isRethrowing = true;
-      } else if (isLoggingMethod(statementTree, catchTree.parameter().simpleName().name())) {
+        reportIssue(catchTree.parameter(), "Either log this exception and handle it, or rethrow it with some contextual information.", secondaryLocations, 0);
+        return;
+      } else if (isLoggingMethod(statementTree, catchTree.parameter().simpleName())) {
         secondaryLocations.add(new Location("", statementTree));
         isLogging = true;
       }
     }
-    if (isLogging && isRethrowing) {
-      reportIssue(catchTree.parameter(), "Either log this exception and handle it, or rethrow it with some contextual information.", secondaryLocations, 0);
-    }
   }
 
-  private static boolean isLoggingMethod(StatementTree statementTree, String exceptionIdentifier) {
+  private boolean isLoggingMethod(StatementTree statementTree, IdentifierTree exceptionIdentifier) {
     if (!statementTree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
       return false;
     }
     ExpressionTree expression = ((ExpressionStatementTree) statementTree).expression();
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) expression;
-      return JAVA_UTIL_LOGGER.matches(mit) && mit.arguments().stream().anyMatch(
-        param -> param.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree)param).name().equals(exceptionIdentifier));
+
+      return LOGGING_METHODS.stream().anyMatch(logMethod -> logMethod.matches(mit)) && isExceptionUsed(exceptionIdentifier, mit);
     }
     return false;
+  }
+
+  private static boolean isExceptionUsed(IdentifierTree exceptionIdentifier, MethodInvocationTree mit) {
+    ExceptionUsageVisitor visitor = new ExceptionUsageVisitor(exceptionIdentifier);
+    mit.arguments().forEach(param -> param.accept(visitor));
+    return visitor.isExceptionIdentifierUsed;
+  }
+
+
+  private static class ExceptionUsageVisitor extends BaseTreeVisitor {
+
+    IdentifierTree exceptionIdentifier;
+    boolean isExceptionIdentifierUsed = false;
+
+
+    ExceptionUsageVisitor(IdentifierTree exceptionIdentifier) {
+      this.exceptionIdentifier = exceptionIdentifier;
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      if (tree.name().equals(exceptionIdentifier.name())) {
+        isExceptionIdentifierUsed = true;
+      }
+    }
   }
 }

@@ -26,5 +26,6 @@ public class LoggedRethrownExceptionsCheckTest {
   @Test
   public void test() throws Exception {
     JavaCheckVerifier.verify("src/test/files/checks/LoggedRethrownExceptionsCheck.java", new LoggedRethrownExceptionsCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/LoggedRethrownExceptionsCheck.java", new LoggedRethrownExceptionsCheck());
   }
 }
