@@ -651,6 +651,7 @@ public final class CheckList {
       .add(StandardCharsetsConstantsCheck.class)
       .add(PrimitivesMarkedNullableCheck.class)
       .add(ForLoopVariableTypeCheck.class)
+      .add(ReplaceGuavaWithJava8Check.class)
       .build();
   }
 
