@@ -20,11 +20,11 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -42,7 +42,7 @@ import static org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
   private static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
   private static final String SLF4J_LOGGER = "org.slf4j.Logger";
-  private static final List<MethodMatcher> LOGGING_METHODS = Collections.unmodifiableList(Arrays.asList(
+  private static final MethodMatcherCollection LOGGING_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("config").withAnyParameters(),
     MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("info").withAnyParameters(),
     MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("log").withAnyParameters(),
@@ -56,7 +56,7 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
     MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("info").withAnyParameters(),
     MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("trace").withAnyParameters(),
     MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("warn").withAnyParameters()
-  ));
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -90,7 +90,7 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
     ExpressionTree expression = ((ExpressionStatementTree) statementTree).expression();
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) expression;
-      return LOGGING_METHODS.stream().anyMatch(logMethod -> logMethod.matches(mit)) && isExceptionUsed(exceptionIdentifier, mit);
+      return LOGGING_METHODS.anyMatch(mit) && isExceptionUsed(exceptionIdentifier, mit);
     }
     return false;
   }
@@ -114,7 +114,7 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      if (tree.name().equals(exceptionIdentifier.name())) {
+      if (!isExceptionIdentifierUsed && tree.name().equals(exceptionIdentifier.name())) {
         isExceptionIdentifierUsed = true;
       }
     }

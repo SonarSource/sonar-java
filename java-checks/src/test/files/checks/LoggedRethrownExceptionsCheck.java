@@ -1,7 +1,6 @@
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.sql.SQLException;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class A {
@@ -11,7 +10,7 @@ class A {
     final static org.slf4j.Logger slf4jLogger = LoggerFactory.getLogger(A.class);
     try {
 
-    } catch (SQLException e) { // Noncompliant [[secondary=15, 16]] {{Either log this exception and handle it, or rethrow it with some contextual information.}}
+    } catch (SQLException e) { // Noncompliant [[secondary=14, 15]] {{Either log this exception and handle it, or rethrow it with some contextual information.}}
       logger.log(Level.ALL, "", e);
       throw new MySQLException(contextInfo, e);
     }
