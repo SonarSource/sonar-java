@@ -74,6 +74,9 @@ class A {
 
     @SuppressWarnings(org.sonar.java.filters.SuppressWarningFilterTest.CONSTANT_RULE_KEY) // WithIssue
     private static final int bad_constant_name2 = 42; // NoIssue
+
+    @SuppressWarnings(someUnresolvedConstant) // WithIssue
+    private static final int bad_constant_name3 = 42; // WithIssue
   }
 }
 
@@ -103,4 +106,5 @@ class Javadoc {
   void m() {
 
   }
+
 }
