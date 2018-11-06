@@ -1158,7 +1158,6 @@ public class UCFGJavaVisitorTest {
             .ret(constant("\"\""), new LocationInFile(FILE_KEY, 5, 4, 5, 17)))
         .build();
     assertCodeToUCfg("class A { \n" +
-        // SONARJAVA-2835 : the type for multi-dimension array initializers is null
         "  private String[][][] foo() {" +
         "    return new String[][][] {{{\"one\",\"two\"}}, {{}}}; \n" +
         "  }\n" +
