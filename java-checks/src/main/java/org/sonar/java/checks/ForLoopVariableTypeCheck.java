@@ -65,7 +65,7 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
     if (collectionItemType != null && !isMostPreciseType(variableType, collectionItemType)) {
       // Second pass: check if the variable is down-cast in the statement block
       DownCastVisitor downCastVisitor = new DownCastVisitor(actualStatement.variable().symbol());
-      actualStatement.accept(downCastVisitor);
+      actualStatement.statement().accept(downCastVisitor);
 
       if (downCastVisitor.hasDownCastOfLoopVariable) {
         List<JavaFileScannerContext.Location> locations = Collections.singletonList(
