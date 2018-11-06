@@ -21,21 +21,25 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
+
 import javax.annotation.CheckForNull;
+
 import org.sonar.check.Rule;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.resolve.ArrayJavaType;
+import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.WildCardType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S4838")
 public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
@@ -60,20 +64,39 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
 
     if (collectionItemType != null && !isMostPreciseType(variableType, collectionItemType)) {
       // Second pass: check if the variable is down-cast in the statement block
-      DownCastVisitor downCastVisitor = new DownCastVisitor(actualStatement, actualStatement.variable(), collectionItemType);
-      downCastVisitor.setContext(context);
-      downCastVisitor.scanTree(((ForEachStatement) tree).statement());
+      DownCastVisitor downCastVisitor = new DownCastVisitor(actualStatement.variable().symbol());
+      actualStatement.statement().accept(downCastVisitor);
+
+      if (downCastVisitor.hasDownCastOfLoopVariable) {
+        List<JavaFileScannerContext.Location> locations = Collections.singletonList(
+          new JavaFileScannerContext.Location(String.format(SECONDARY_MESSAGE, collectionItemType.name()), actualStatement.expression()));
+        reportIssue(actualStatement.variable().type(), String.format(PRIMARY_MESSAGE, variableType.name()),
+          locations, 0);
+      }
     }
   }
 
   @CheckForNull
   private static JavaType getCollectionItemType(ExpressionTree expression) {
-    if (((JavaType) expression.symbolType()).isParameterized()) {
-      ParametrizedTypeJavaType paramType = (ParametrizedTypeJavaType) expression.symbolType();
-      return paramType.substitution(paramType.typeParameters().get(0));
-    } else {
+    JavaType expressionType = (JavaType) expression.symbolType();
+    if (expressionType.isSubtypeOf("java.util.Collection") && !expressionType.isParameterized()) {
+      // Ignoring raw collections (too many FP)
       return null;
     }
+    if (expressionType.isArray()) {
+      return ((ArrayJavaType) expressionType).elementType();
+    } else if(expressionType.isClass()) {
+      ClassJavaType clazz = (ClassJavaType) expressionType;
+      return clazz.superTypes()
+        .stream()
+        .filter(t -> t.is("java.lang.Iterable") && t.isParameterized())
+        .findFirst()
+        .map(iter -> {
+          ParametrizedTypeJavaType ptype = (ParametrizedTypeJavaType) iter;
+          return ptype.substitution(ptype.typeParameters().get(0));
+        }).orElse(null);
+    }
+    return null;
   }
 
   private static boolean isMostPreciseType(Type variableType, Type collectionItemType) {
@@ -86,45 +109,27 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private class DownCastVisitor extends SubscriptionVisitor {
+  private static class DownCastVisitor extends BaseTreeVisitor {
 
-    private final ForEachStatement forEachStatement;
-    private final VariableTree variable;
-    private final Type collectionItemType;
-    private boolean blockAlreadyFlagged;
+    private final Symbol symbol;
+    private boolean hasDownCastOfLoopVariable;
 
-    private DownCastVisitor(ForEachStatement forEachStatement, VariableTree variable, Type collectionItemType) {
-      this.forEachStatement = forEachStatement;
-      this.variable = variable;
-      this.collectionItemType = collectionItemType;
-      this.blockAlreadyFlagged = false;
+    private DownCastVisitor(Symbol symbol) {
+      this.symbol = symbol;
+      this.hasDownCastOfLoopVariable = false;
     }
 
     @Override
-    public List<Tree.Kind> nodesToVisit() {
-      return Collections.singletonList(Tree.Kind.TYPE_CAST);
-    }
-
-    @Override
-    public void visitNode(Tree tree) {
-      if (blockAlreadyFlagged) {
+    public void visitTypeCast(TypeCastTree tree) {
+      if (hasDownCastOfLoopVariable) {
         return;
       }
-      ExpressionTree expression = ((TypeCastTree) tree).expression();
-      if (expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).symbol().equals(variable.symbol())) {
-        ForLoopVariableTypeCheck.this.reportIssue(forEachStatement.variable().type(), String.format(PRIMARY_MESSAGE, variable.type().symbolType().name()),
-          getSecondaryLocations(), 0);
-        blockAlreadyFlagged = true;
+      ExpressionTree expression = tree.expression();
+      if (expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).symbol().equals(symbol)) {
+        hasDownCastOfLoopVariable = true;
+      } else {
+        super.visitTypeCast(tree);
       }
-    }
-
-    @Override
-    public void scanTree(Tree tree) {
-      super.scanTree(tree);
-    }
-
-    private List<JavaFileScannerContext.Location> getSecondaryLocations() {
-      return Collections.singletonList(new JavaFileScannerContext.Location(String.format(SECONDARY_MESSAGE, collectionItemType.name()), forEachStatement.expression()));
     }
   }
 }
