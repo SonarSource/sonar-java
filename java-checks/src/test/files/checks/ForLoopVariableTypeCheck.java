@@ -67,6 +67,23 @@ public class CheckForLoop {
 
     java.util.Map t = new java.util.HashMap();
     for (java.util.Map.Entry e : ((java.util.Map<?,?>)t).entrySet()) {}
+
+    java.util.List l;
+    for (Object o: l) {
+      (B) o;
+    }
+
+    class Foo implements java.util.Collection<String> {}
+    for (Object o: new Foo()) { // Compliant: ignoring raw subtypes of j.u.Collection
+      (String) o;
+    }
+
+    int[] arrayOfInt = new int[0];
+    for (Object e: arrayOfInt) { // Noncompliant
+      (int) e;
+    }
+    for (Object o: arrayOfInt) {}
+    for (int i: arrayOfInt) {}
   }
 }
 class MyMap<K, V> extends java.util.AbstractMap<K, V> {
@@ -88,6 +105,7 @@ class Test {
   java.util.Collection<K> collectionOfK;
   java.util.Collection<J> collectionOfJ;
   java.util.Collection<I> collectionOfI;
+  java.util.Map<String, java.util.Set<K>> multiMapOfK;
   Object other;
   void doStuff() {
     for(K k: collectionOfK) {}
@@ -105,6 +123,12 @@ class Test {
     }
     for(I i: collectionOfK) { // Noncompliant
       (L) i;
+    }
+    for(I i: collectionOfK) { // Noncompliant
+      (B) foo((L) i);
+    }
+    for(I i: collectionOfK) { // Noncompliant
+      for (I i2: (K) i) {}
     }
     for(J j: collectionOfJ) {
       (K) j;
