@@ -295,3 +295,21 @@ class MethodParams {
   void call(Function<Integer, Integer> function) {  // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntUnaryOperator'}}
   }
 }
+
+class InferedTypeTree {
+  java.util.Optional<Function<String, String>> fun() {
+    return null;
+  }
+
+  boolean test(String str) {
+    return fun().map(f -> consume(f, str)).isPresent();
+  }
+
+  boolean test2(String str) {
+    return fun().map((Function<String, String> f) -> consume(f, str)).isPresent();
+  }
+
+  java.util.Optional<Function<?, ?>> consume(Function<?, ?> f, String str) { // Noncompliant
+    return null;
+  }
+}

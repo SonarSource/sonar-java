@@ -76,7 +76,8 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
 
   public void checkVariableTypeAndInitializer(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
-    if (variableTree.symbol().owner().isMethodSymbol() || (initializer != null && (initializer.is(Tree.Kind.LAMBDA_EXPRESSION) || isAnonymousClass(initializer)))) {
+    if ((variableTree.symbol().owner().isMethodSymbol() && !variableTree.parent().is(Tree.Kind.LAMBDA_EXPRESSION))
+      || (initializer != null && (initializer.is(Tree.Kind.LAMBDA_EXPRESSION) || isAnonymousClass(initializer)))) {
       matchFunctionalInterface((variableTree.symbol().type())).ifPresent(reportString -> {
         TypeTree variableType = variableTree.type();
         reportIssue(variableType, reportMessage(new InterfaceTreeAndStringPairReport(reportString, variableType)));
