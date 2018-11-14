@@ -591,7 +591,7 @@ public class CFGTest {
   }
 
   @Test
-  public void three_branch_if() {
+  public void ternary_operator() {
     final CFG cfg = buildCFG("void fun() { Object c = foo ? a : b; a.toString();}");
     final CFGChecker cfgChecker = checker(
       block(
