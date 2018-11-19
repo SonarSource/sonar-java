@@ -1,0 +1,15 @@
+{
+  "title": "Expanding archive files is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "tags": [
+    "cert"
+  ],
+  "standards": [
+    "CERT"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5042",
+  "sqKey": "S5042",
+  "scope": "All"
+}

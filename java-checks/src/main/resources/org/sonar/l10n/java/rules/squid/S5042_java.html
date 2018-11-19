@@ -1,0 +1,57 @@
+<p>Uncompressing archive files is security-sensitive. For example, uncompressing archive files has led in the past to the following
+vulnerabilities:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1263">CVE-2018-1263</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16131">CVE-2018-16131</a> </li>
+</ul>
+<p>Applications that uncompress archive files (zip, tar, jar, war, 7z, ...) should verify the path where the archive's files are uncompressed and not
+trust blindly the content of the archive. Archive's files should not be uncompressed outside of the root directory where the archive is supposed to be
+uncompressed. Also, applications should control the size of the uncompressed data to not be a victim of Zip Bomb attack. Failure to do so could allow
+an attacker to use a dedicated crafted archive that holds directory traversal filenames (e.g. ../../attacker.sh) or the attacker could overload the
+file system, processors or memory of the operating system where the archive is uncompressed making the target OS completely unusable.</p>
+<p>This rule flags code that uncompress archives. The goal is to guide security code reviews.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> there is a validation of the name of the archive entry </li>
+  <li> there is a validation of the effective path where the archive entry is going to be uncompressed </li>
+  <li> there is a validation of the size of the uncompressed archive entry </li>
+  <li> there is a validation of the ratio between the compressed and uncompressed archive entry </li>
+</ul>
+<p>You are at risk if you answered no to any of those questions.</p>
+<p> </p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Validate the full path of the extracted file against the full path of the directory where files are uncompressed</p>
+<ul>
+  <li> the canonical path of the uncompressed file must start with the canonical path of the directory where files are extracted </li>
+  <li> the name of the archive entry must not contain ".." </li>
+</ul>
+<pre>
+String canonicalDirPath = outputDir.getCanonicalPath();
+String canonicalDestPath = targetFile.getCanonicalPath();
+
+if (!canonicalDestPath.startsWith(canonicalDirPath + File.separator)) { // Sanitizer
+  throw new ArchiverException("Entry is trying to leave the target dir: " + zipEntry.getName());
+}
+</pre>
+<p>Stop extracting the archive if the archive entry has been tainted with directory traversal filesnames.</p>
+<p>Define and control the ratio between compressed and uncompress bytes.</p>
+<p>Define and control the maximum allowed uncompressed file size.</p>
+<p>Count the number of file entries extracted from the archive and abort the extraction is the number is more than X files.</p>
+<h2>Questionable Code Example</h2>
+<pre>
+java.util.zip.ZipFile zipFile = new ZipFile(zipFileName);
+
+Enumeration&lt;? extends ZipEntry&gt; entries = zipFile.entries();
+while (entries.hasMoreElements()) {
+  ZipEntry e = entries.nextElement(); // Questionable
+  File f = new File(outputDir, e.getName());
+  InputStream input = zipFile.getInputStream(e);
+  extractFile(new ZipInputStream(input), outputDir, e.getName());
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/IDS04-J.+Safely+extract+files+from+ZipInputStream">CERT, IDS04-J.</a> - Safely
+  extract files from ZipInputStream </li>
+</ul>
+
