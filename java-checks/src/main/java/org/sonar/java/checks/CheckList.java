@@ -71,6 +71,7 @@ import org.sonar.java.checks.security.SocketUsageCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
 import org.sonar.java.checks.security.XPathUsageCheck;
 import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
+import org.sonar.java.checks.security.ZipEntryCheck;
 import org.sonar.java.checks.serialization.BlindSerialVersionUidCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
@@ -618,6 +619,7 @@ public final class CheckList {
       .add(SwitchDefaultLastCaseCheck.class)
       .add(RegexPatternsNeedlesslyCheck.class)
       .add(SpecializedFunctionalInterfacesCheck.class)
+      .add(ZipEntryCheck.class)
       .add(IndentationAfterConditionalCheck.class)
       .add(CipherBlockChainingCheck.class)
       .add(CryptographicKeySizeCheck.class)
