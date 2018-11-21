@@ -21,19 +21,19 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BinaryOperator;
-import java.util.stream.Stream;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -174,91 +174,75 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    try {
-      checkCall(mit, mit.symbol(), mit.arguments());
-    } catch (IllegalStateException e) {
-      // TODO
-      throw new RuntimeException("Could not check invocation at " + mit.firstToken().line(), e);
-    }
+    checkCall(mit, mit.symbol(), mit.arguments());
   }
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    try {
-      checkCall(newClassTree, newClassTree.constructorSymbol(), newClassTree.arguments());
-    } catch (IllegalStateException e) {
-      // TODO
-      throw new RuntimeException("Could not check invocation at " + newClassTree.firstToken().line(), e);
-    }
+    checkCall(newClassTree, newClassTree.constructorSymbol(), newClassTree.arguments());
   }
 
   private void checkCall(ExpressionTree callExpression, Symbol symbol, Arguments arguments) {
-    ExpressionTree charsetNameArgument = getCharsetNameArgument(symbol, arguments);
-
-    // TODO
-    //System.out.println(symbol.name() + " " + charsetNameArgument.firstToken().line() + ":" + charsetNameArgument.firstToken().column());
-
-    String constantName = getConstantName(charsetNameArgument);
-    if (constantName != null) {
-      String methodRef = getMethodRef(symbol);
-      switch (methodRef) {
-        case "Charset.forName":
-          reportIssue(callExpression, "Replace Charset.forName() call with StandardCharsets." + constantName);
-          break;
-        case "Charsets.toCharset":
-          reportIssue(callExpression, "Replace Charsets.toCharset() call with StandardCharsets." + constantName);
-          break;
-        case "IOUtils.toString":
-          if (arguments.size() == 2 && arguments.get(0).symbolType().is("byte[]")) {
-            reportIssue(callExpression, "Replace IOUtils.toString() call with new String(..., StandardCharsets." + constantName + ");");
-          } else {
+    getCharsetNameArgument(symbol, arguments).ifPresent((charsetNameArgument) -> {
+      String constantName = getConstantName(charsetNameArgument);
+      if (constantName != null) {
+        String methodRef = getMethodRef(symbol);
+        switch (methodRef) {
+          case "Charset.forName":
+            reportIssue(callExpression, "Replace Charset.forName() call with StandardCharsets." + constantName);
+            break;
+          case "Charsets.toCharset":
+            reportIssue(callExpression, "Replace Charsets.toCharset() call with StandardCharsets." + constantName);
+            break;
+          case "IOUtils.toString":
+            if (arguments.size() == 2 && arguments.get(0).symbolType().is("byte[]")) {
+              reportIssue(callExpression, "Replace IOUtils.toString() call with new String(..., StandardCharsets." + constantName + ");");
+            } else {
+              reportDefaultIssue(charsetNameArgument, constantName);
+            }
+            break;
+          default:
             reportDefaultIssue(charsetNameArgument, constantName);
-          }
-          break;
-        default:
-          reportDefaultIssue(charsetNameArgument, constantName);
-          break;
+            break;
+        }
       }
-    }
+    });
   }
 
   private void reportDefaultIssue(ExpressionTree charsetNameArgument, String constantName) {
     reportIssue(charsetNameArgument, "Replace charset name argument with StandardCharsets." + constantName);
   }
 
-  private ExpressionTree getCharsetNameArgument(Symbol symbol, Arguments arguments) {
-    BinaryOperator<ExpressionTree> reducer;
-
-    String symbolRef = getMethodRef(symbol);
-    switch (symbolRef) {
-      case "FileUtils.writeStringToFile":
-      case "IOUtils.toInputStream":
-      case "IOUtils.write":
-      case "IOUtils.writeLines":
-        reducer = (previous, current) -> current;
+  private Optional<ExpressionTree> getCharsetNameArgument(Symbol symbol, Arguments arguments) {
+    ExpressionTree result = null;
+    List<ExpressionTree> stringArguments = arguments.stream().filter(argument -> argument.symbolType().is(JAVA_LANG_STRING)).collect(Collectors.toList());
+    switch (stringArguments.size()) {
+      case 0:
+        result = null;
         break;
-      case "LockableFileWriter.<init>":
-        reducer = (previous, current) -> previous;
+      case 1:
+        result = stringArguments.get(0);
         break;
       default:
-        reducer = (previous, current) -> {
-          throw new IllegalStateException("Could not identify which string argument of " + symbolRef + " is the charset name");
-        };
+        String symbolRef = getMethodRef(symbol);
+        switch (symbolRef) {
+          case "FileUtils.writeStringToFile":
+          case "IOUtils.toInputStream":
+          case "IOUtils.write":
+          case "IOUtils.writeLines":
+            result = Iterables.getLast(stringArguments);
+            break;
+          case "LockableFileWriter.<init>":
+            result = stringArguments.get(0);
+            break;
+        }
+        break;
     }
-
-    Stream<ExpressionTree> stringArgumentStream = arguments.stream().filter(argument -> argument.symbolType().is(JAVA_LANG_STRING));
-    return stringArgumentStream.reduce(reducer).orElseGet(() -> {
-      // No String argument, so this must be an overload that has a Charset argument
-      return arguments.get(arguments.size() - 1);
-    });
+    return Optional.ofNullable(result);
   }
 
   private String getMethodRef(Symbol symbol) {
     return symbol.enclosingClass().name() + "." + symbol.name();
-  }
-
-  private String getFullyQualifiedMethodRef(Symbol symbol) {
-    return ((JavaSymbol.TypeJavaSymbol)symbol.owner()).getFullyQualifiedName() + "." + symbol.name();
   }
 
   private static String getConstantName(ExpressionTree argument) {
