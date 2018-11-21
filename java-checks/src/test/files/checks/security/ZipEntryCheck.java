@@ -14,7 +14,7 @@ abstract class A {
 
   void foo(
     ZipFile zipFile,
-    ZipEntry zipEntry,                          // Noncompliant {{Make sure that decompressing this archive file is safe here.}}
+    ZipEntry zipEntry,                          // Noncompliant {{Make sure that expanding this archive file is safe here.}}
     JarEntry jarEntry,                          // Noncompliant
     MyOwnZipEntry myOwnZipEntry,                // Noncompliant
     ArchiveEntry archiveEntry,                  // Noncompliant
@@ -22,7 +22,7 @@ abstract class A {
     MyOwnZipArchiveEntry myOwnZipArchiveEntry,  // Noncompliant
     MyUnrelatedZipEntry myUnrelatedZipEntry) {
 
-    ZipEntry entry = zipFile.getEntry("foo");  // Noncompliant [[sc=22;ec=45]] {{Make sure that decompressing this archive file is safe here.}}
+    ZipEntry entry = zipFile.getEntry("foo");  // Noncompliant [[sc=22;ec=45]] {{Make sure that expanding this archive file is safe here.}}
     ZipEntry moze = getMOZE();                 // Noncompliant [[sc=21;ec=30]]
     getZE().getName();                         // Noncompliant [[sc=5;ec=12]]
     getJE().isDirectory();                     // Noncompliant
