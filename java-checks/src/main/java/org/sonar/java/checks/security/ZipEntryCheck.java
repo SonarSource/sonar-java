@@ -33,6 +33,7 @@ public class ZipEntryCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Predicate<Type> IS_ZIP_ENTRY = type -> type.isSubtypeOf("java.util.zip.ZipEntry")
     || type.isSubtypeOf("org.apache.commons.compress.archivers.ArchiveEntry");
+  private static final String ISSUE_MESSAGE = "Make sure that expanding this archive file is safe here.";
 
   private JavaFileScannerContext context;
 
@@ -49,7 +50,7 @@ public class ZipEntryCheck extends BaseTreeVisitor implements JavaFileScanner {
   public void visitVariable(VariableTree tree) {
     if (tree.initializer() == null && IS_ZIP_ENTRY.test(tree.symbol().type())) {
       // skip the visit in case of issue already reported on the variable
-      context.reportIssue(this, tree, "Make sure that decompressing this archive file is safe here.");
+      context.reportIssue(this, tree, ISSUE_MESSAGE);
     } else {
       super.visitVariable(tree);
     }
@@ -58,7 +59,7 @@ public class ZipEntryCheck extends BaseTreeVisitor implements JavaFileScanner {
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
     if (IS_ZIP_ENTRY.test(tree.symbolType())) {
-      context.reportIssue(this, tree, "Make sure that decompressing this archive file is safe here.");
+      context.reportIssue(this, tree, ISSUE_MESSAGE);
     }
     super.visitMethodInvocation(tree);
   }
