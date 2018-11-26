@@ -75,3 +75,16 @@ class A {
     param.split("\\?q"); // Noncompliant
   }
 }
+
+enum E {
+
+  INSTANCE1(Pattern.compile(".*")), // Noncompliant {{Refactor this code to use a "static final" Pattern.}}
+  INSTANCE2(COMPILED);
+
+  private final Pattern pattern;
+  private static final Pattern COMPILED = Pattern.compile(".*");
+
+  E(Pattern pattern) {
+    this.pattern = pattern;
+  }
+}
