@@ -225,3 +225,8 @@ class NoTestsInNestedTest { // Noncompliant {{Add some tests to this class.}}
   }
 }
 
+class SomeTest implements SomeInterface { }// Noncompliant {{Add some tests to this class.}}
+
+interface SomeInterface {
+  class Foo implements SomeInterface { }
+}

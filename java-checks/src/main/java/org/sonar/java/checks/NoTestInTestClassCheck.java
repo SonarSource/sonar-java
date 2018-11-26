@@ -20,7 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ModifiersUtils;
@@ -37,11 +40,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
 
 @Rule(key = "S2187")
 public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
@@ -176,7 +174,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
       members = Stream.concat(members, getAllMembers(superClass.symbol(), isEnclosed, visitedSymbols));
     }
     Stream<Symbol.MethodSymbol> defaultMethodsFromInterfaces = symbol.interfaces().stream()
-      .flatMap(i -> getAllMembers(i.symbol(), false))
+      .flatMap(i -> getAllMembers(i.symbol(), false, visitedSymbols))
       .filter(m -> ((JavaSymbol.MethodJavaSymbol) m).isDefault());
     members = Stream.concat(members, defaultMethodsFromInterfaces);
     for (Symbol s : symbol.memberSymbols()) {
