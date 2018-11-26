@@ -29,4 +29,12 @@ class A {
     com.google.common.base.Joiner.on(","); // Noncompliant {{Use "String.join" or "java.util.stream.Collectors.joining" instead.}}
     com.google.common.base.Joiner.on(','); // Noncompliant {{Use "String.join" or "java.util.stream.Collectors.joining" instead.}}
   }
+
+  void doWithLambda(B<com.google.common.base.Optional<String>> b) {
+    b.foo(o -> System.out.println(o)); // Noncompliant [[sc=11;ec=12]] {{Use "java.util.Optional" instead.}}
+  }
+
+  static class B<T> {
+    void foo(java.util.function.Predicate<T> predicate) {}
+  }
 }
