@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import java.io.File;
 import org.assertj.core.api.Fail;
 import org.junit.Test;
 import org.sonar.java.AnalyzerMessage.TextSpan;
@@ -26,8 +27,13 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-
-import java.io.File;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.InferedTypeTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -112,7 +118,7 @@ public class AnalyzerMessageTest {
   }
 
   @Test
-  public void shouldFailOnEmptyTrees() {
+  public void shouldFailOnEmptySpans() {
     CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser()
       .parse("class A {\n}\n");
 
@@ -123,6 +129,34 @@ public class AnalyzerMessageTest {
       assertThat(e).isInstanceOf(IllegalStateException.class);
       assertThat(e.getMessage()).isEqualTo("Invalid issue location: Text span is empty when trying reporting on (l:3, c:0).");
     }
+  }
+
+  @Test
+  public void shouldNotFailOnEmptyTrees() {
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser()
+      .parse("class A {\n" +
+        "  void foo(java.util.List l) {\n" +
+        "    l.forEach(o -> {});\n" +
+        "  }\n" +
+        "}");
+
+    MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
+    MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) methodTree.block().body().get(0)).expression();
+    VariableTree variableTree = ((LambdaExpressionTree) mit.arguments().get(0)).parameters().get(0);
+    TypeTree type = variableTree.type();
+
+    assertThat(type).isInstanceOf(InferedTypeTree.class);
+    assertThat(AnalyzerMessage.textSpanFor(type))
+      .extracting("startLine", "startCharacter", "endLine", "endCharacter")
+      .contains(3, 14, 3, 15);
+
+    assertThat(AnalyzerMessage.textSpanBetween(type, methodTree))
+      .extracting("startLine", "startCharacter", "endLine", "endCharacter")
+      .contains(3, 14, 4, 3);
+
+    assertThat(AnalyzerMessage.textSpanBetween(methodTree, type))
+      .extracting("startLine", "startCharacter", "endLine", "endCharacter")
+      .contains(2, 2, 3, 15);
   }
 
   @Test

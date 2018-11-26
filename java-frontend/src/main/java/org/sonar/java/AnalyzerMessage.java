@@ -118,14 +118,14 @@ public class AnalyzerMessage {
   }
 
   public static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {
-    SyntaxToken firstSyntaxToken = syntaxNode.firstToken();
-    SyntaxToken lastSyntaxToken = syntaxNode.lastToken();
+    SyntaxToken firstSyntaxToken = getNonEmptyTree(syntaxNode).firstToken();
+    SyntaxToken lastSyntaxToken = getNonEmptyTree(syntaxNode).lastToken();
     return textSpanBetween(firstSyntaxToken, lastSyntaxToken);
   }
 
   public static AnalyzerMessage.TextSpan textSpanBetween(Tree startTree, Tree endTree) {
-    SyntaxToken firstSyntaxToken = startTree.firstToken();
-    SyntaxToken lastSyntaxToken = endTree.lastToken();
+    SyntaxToken firstSyntaxToken = getNonEmptyTree(startTree).firstToken();
+    SyntaxToken lastSyntaxToken = getNonEmptyTree(endTree).lastToken();
     return textSpanBetween(firstSyntaxToken, lastSyntaxToken);
   }
 
@@ -140,6 +140,24 @@ public class AnalyzerMessage {
       "Invalid issue location: Text span is empty when trying reporting on (l:%s, c:%s).",
       firstSyntaxToken.line(), firstSyntaxToken.column());
     return location;
+  }
+
+  /**
+   * It's possible that tree has no source code to match, thus no tokens. For example {@code InferedTypeTree}.
+   * In this case we will report on a parent tree.
+   * @return tree itself if it's not empty or its first non-empty ancestor
+   */
+  private static Tree getNonEmptyTree(Tree tree) {
+    if (tree.firstToken() != null) {
+      return tree;
+    }
+
+    Tree parent = tree.parent();
+    if (parent != null) {
+      return getNonEmptyTree(parent);
+    }
+
+    throw new IllegalStateException("Trying to report on an empty tree with no parent");
   }
 
   @Override
