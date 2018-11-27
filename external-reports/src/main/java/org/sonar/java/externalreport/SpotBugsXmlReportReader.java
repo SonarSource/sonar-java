@@ -73,7 +73,9 @@ public class SpotBugsXmlReportReader {
   }
 
   private void read(InputStream in) throws XMLStreamException, IOException {
-    XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(in);
+    XMLInputFactory factory = XMLInputFactory.newInstance();
+    factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+    XMLEventReader reader = factory.createXMLEventReader(in);
     Deque<String> elementStack = new LinkedList<>();
     while (reader.hasNext()) {
       XMLEvent event = reader.nextEvent();

@@ -72,7 +72,10 @@ class CheckstyleXmlReportReader {
   }
 
   private void read(InputStream in) throws XMLStreamException, IOException {
-    XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(in);
+    XMLInputFactory factory = XMLInputFactory.newInstance();
+    factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+    XMLEventReader reader = factory.createXMLEventReader(in);
+
     while (reader.hasNext()) {
       XMLEvent event = reader.nextEvent();
       if (event.isStartElement()) {

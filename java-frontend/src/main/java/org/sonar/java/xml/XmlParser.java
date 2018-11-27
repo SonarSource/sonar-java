@@ -19,6 +19,14 @@
  */
 package org.sonar.java.xml;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Deque;
+import java.util.LinkedList;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.sonar.api.utils.log.Logger;
@@ -30,15 +38,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Deque;
-import java.util.LinkedList;
 
 public class XmlParser {
 
@@ -58,9 +57,17 @@ public class XmlParser {
         LOG.warn("File {} is empty and won't be analyzed.", file.getPath());
         return null;
       }
-      Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+      DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+      documentBuilderFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      Document document = documentBuilderFactory.newDocumentBuilder().newDocument();
       SAXParserFactory factory = SAXParserFactory.newInstance();
-      disableXmlValidation(factory);
+      factory.setValidating(false);
+      factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      factory.setFeature("http://xml.org/sax/features/validation", false);
+      factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+      factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+      factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+      factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
       factory.newSAXParser().parse(file, new LocationHandler(document));
       return document;
     } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -70,15 +77,6 @@ public class XmlParser {
       }
     }
     return null;
-  }
-
-  private static void disableXmlValidation(SAXParserFactory factory) throws ParserConfigurationException, SAXException {
-    factory.setValidating(false);
-    factory.setFeature("http://xml.org/sax/features/validation", false);
-    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-    factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-    factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
   }
 
   private static class LocationHandler extends DefaultHandler {
