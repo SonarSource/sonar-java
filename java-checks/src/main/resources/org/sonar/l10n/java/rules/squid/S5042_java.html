@@ -19,10 +19,12 @@ or memory of the operating system where the archive is expanded making the targe
 <p>You are at risk if you answered yes to any of those questions.</p>
 <p> </p>
 <h2>Recommended Secure Coding Practices</h2>
-<p>Validate the full path of the extracted file against the full path of the directory where files are uncompressed.</p>
 <ul>
-  <li> the canonical path of the uncompressed file must start with the canonical path of the directory where files are extracted. </li>
-  <li> the name of the archive entry must not contain "..", i.e. reference to a parent directory. </li>
+  <li> Validate the full path of the extracted file against the full path of the directory where files are uncompressed.
+    <ul>
+      <li> the canonical path of the uncompressed file must start with the canonical path of the directory where files are extracted. </li>
+      <li> the name of the archive entry must not contain "..", i.e. reference to a parent directory. </li>
+    </ul> </li>
 </ul>
 <pre>
 String canonicalDirPath = outputDir.getCanonicalPath();
@@ -32,10 +34,13 @@ if (!canonicalDestPath.startsWith(canonicalDirPath + File.separator)) { // Sanit
   throw new ArchiverException("Entry is trying to leave the target dir: " + zipEntry.getName());
 }
 </pre>
-<p>Stop extracting the archive if any of its entries has been tainted with a directory traversal path.</p>
-<p>Define and control the ratio between compressed and uncompress bytes.</p>
-<p>Define and control the maximum allowed uncompressed file size.</p>
-<p>Count the number of file entries extracted from the archive and abort the extraction if their number is greater than a predefined threshold.</p>
+<ul>
+  <li> Stop extracting the archive if any of its entries has been tainted with a directory traversal path. </li>
+  <li> Define and control the ratio between compressed and uncompress bytes. </li>
+  <li> Define and control the maximum allowed uncompressed file size. </li>
+  <li> Count the number of file entries extracted from the archive and abort the extraction if their number is greater than a predefined threshold.
+  </li>
+</ul>
 <h2>Questionable Code Example</h2>
 <pre>
 java.util.zip.ZipFile zipFile = new ZipFile(zipFileName);
@@ -48,6 +53,12 @@ while (entries.hasMoreElements()) {
   extractFile(new ZipInputStream(input), outputDir, e.getName());
 }
 </pre>
+<h2>Exceptions</h2>
+<p>This rule doesn't raise an issue when a ZipEntry or a ArchiveEntry:</p>
+<ul>
+  <li> is declared as a class field </li>
+  <li> is a parameter of an abstract method of an <code>interface</code> or <code>abstract</code> class </li>
+</ul>
 <h2>See</h2>
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/409.html">MITRE, CWE-409</a> - Improper Handling of Highly Compressed Data (Data Amplification)
