@@ -72,7 +72,7 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
 
   private static boolean storedInStaticFinal(MethodInvocationTree mit) {
     Tree tree = mit.parent();
-    while (!tree.is(Kind.VARIABLE, Kind.CLASS, Kind.ASSIGNMENT, Kind.METHOD, Kind.ENUM)) {
+    while (!tree.is(Kind.VARIABLE, Kind.ASSIGNMENT, Kind.COMPILATION_UNIT)) {
       tree = tree.parent();
     }
     return isConstant(tree);
