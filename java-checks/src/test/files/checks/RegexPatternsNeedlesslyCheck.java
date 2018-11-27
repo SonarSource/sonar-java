@@ -17,6 +17,7 @@ class A {
 
   static {
     myRegex2 = ((Pattern.compile("myRegex"))); // Compliant
+    Pattern localPattern = Pattern.compile(".*"); // Noncompliant
   }
 
   void foo(String param) {
@@ -73,5 +74,27 @@ class A {
     param.split("\\\\"); // Compliant
     param.split("//++"); // Noncompliant
     param.split("\\?q"); // Noncompliant
+  }
+}
+
+enum E {
+
+  INSTANCE1(Pattern.compile(".*")), // Noncompliant {{Refactor this code to use a "static final" Pattern.}}
+  INSTANCE2(COMPILED);
+
+  private final Pattern pattern;
+  private static final Pattern COMPILED = Pattern.compile(".*");
+
+  E(Pattern pattern) {
+    this.pattern = pattern;
+  }
+}
+
+// this code does not compile
+// but as we are able to parse it, we should not fail during analysis
+// (consider SonarLint)
+interface I {
+  static {
+    Pattern.compile(".*"); // Noncompliant
   }
 }

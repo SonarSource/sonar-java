@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S4248")
@@ -71,14 +72,10 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
 
   private static boolean storedInStaticFinal(MethodInvocationTree mit) {
     Tree tree = mit.parent();
-    while (!tree.is(Tree.Kind.VARIABLE, Tree.Kind.CLASS, Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD)) {
+    while (!tree.is(Kind.VARIABLE, Kind.ASSIGNMENT, Kind.COMPILATION_UNIT)) {
       tree = tree.parent();
     }
-    if (tree.is(Tree.Kind.CLASS, Tree.Kind.METHOD)) {
-      return false;
-    } else {
-      return isConstant(tree);
-    }
+    return isConstant(tree);
   }
 
   private static boolean isConstant(Tree tree) {
