@@ -23,6 +23,15 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
@@ -34,17 +43,6 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Routines for name resolution.
@@ -131,8 +129,12 @@ public class Resolve {
       if (symbol.kind == JavaSymbol.VAR) {
         if(isAccessible(env, site, symbol)) {
           resolution.symbol = symbol;
-          symbol.complete();
-          resolution.type = typeSubstitutionSolver.applySiteSubstitution(symbol.type, c.type);
+          if (symbol.type == null) {
+            // type of the symbol has not been resolved yet, but will be in 2nd pass
+            resolution.type = null;
+          } else {
+            resolution.type = typeSubstitutionSolver.applySiteSubstitution(symbol.type, c.type);
+          }
           return resolution;
         } else {
           return Resolution.resolution(new AccessErrorJavaSymbol(symbol, Symbols.unknownType));
