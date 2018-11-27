@@ -54,6 +54,7 @@ public class PomParser {
       // which doesn't include jar of plugin
       JAXBContext context = JAXBContext.newInstance("org.sonar.maven.model.maven2", PomParser.class.getClassLoader());
       XMLInputFactory factory = XMLInputFactory.newInstance();
+      factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
       enableLocationPropertyForIBM(factory);
       XMLStreamReader reader = factory.createXMLStreamReader(is);
       StreamListener streamListener = new StreamListener(reader);

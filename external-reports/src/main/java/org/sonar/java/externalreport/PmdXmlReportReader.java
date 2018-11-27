@@ -72,7 +72,9 @@ public class PmdXmlReportReader {
 
   private void parse() throws XMLStreamException, IOException {
     try (InputStream inputStream = new FileInputStream(reportFile)) {
-      XMLEventReader reader = XMLInputFactory.newInstance().createXMLEventReader(inputStream);
+      XMLInputFactory factory = XMLInputFactory.newInstance();
+      factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+      XMLEventReader reader = factory.createXMLEventReader(inputStream);
       while (reader.hasNext()) {
         onXmlEvent(reader.nextEvent());
       }
