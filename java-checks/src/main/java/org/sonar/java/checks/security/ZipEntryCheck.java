@@ -26,6 +26,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S5042")
@@ -48,12 +50,29 @@ public class ZipEntryCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitVariable(VariableTree tree) {
-    if (tree.initializer() == null && IS_ZIP_ENTRY.test(tree.symbol().type())) {
-      // skip the visit in case of issue already reported on the variable
-      context.reportIssue(this, tree, ISSUE_MESSAGE);
-    } else {
-      super.visitVariable(tree);
+    if (isField(tree)) {
+      // skip fields
+      return;
     }
+    super.visitVariable(tree);
+  }
+
+  private static boolean isField(VariableTree tree) {
+    return tree.symbol().owner().isTypeSymbol();
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    if (tree.block() == null || tree.is(Tree.Kind.CONSTRUCTOR)) {
+      // skip everything for abstract methods (from interfaces or abstract class) and constructors
+      return;
+    }
+
+    tree.parameters().stream()
+      .filter(p -> IS_ZIP_ENTRY.test(p.symbol().type()))
+      .forEach(p -> context.reportIssue(this, p, ISSUE_MESSAGE));
+
+    super.visitMethod(tree);
   }
 
   @Override
