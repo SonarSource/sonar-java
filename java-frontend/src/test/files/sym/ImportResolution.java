@@ -1,7 +1,7 @@
 package sym;
 
 import org.sonar.java.model.JavaTree.NotImplementedTreeImpl;
-
+import static sym.A.BAR;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,4 +67,8 @@ class ImportResolution {
     nCopies(2, new Object());
     nCopies(2, 2);
   }
+}
+
+public class A<T> {
+  public static final String BAR = "value";
 }

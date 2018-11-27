@@ -19,12 +19,11 @@
  */
 package org.sonar.java.resolve;
 
+import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.java.test.ImportsResolutionCases.ImportInnerClass;
 import org.sonar.plugins.java.api.semantic.Symbol;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,6 +57,11 @@ public class ImportResolutionTest {
   public void import_on_inner_type_should_be_resolved() throws Exception {
     assertThat(result.symbol("annotationTree").type.symbol.name).isEqualTo("NotImplementedTreeImpl");
     assertThat(result.symbol("annotationTree").type.symbol.owner().name).isEqualTo("JavaTree");
+  }
+
+  @Test
+  public void import_on_inner_generic_type_member_should_not_fail() throws Exception {
+    assertThat(result.symbol("BAR", 4).type.symbol.name).isEqualTo("String");
   }
 
   @Test

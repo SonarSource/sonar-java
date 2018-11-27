@@ -131,6 +131,7 @@ public class Resolve {
       if (symbol.kind == JavaSymbol.VAR) {
         if(isAccessible(env, site, symbol)) {
           resolution.symbol = symbol;
+          symbol.complete();
           resolution.type = typeSubstitutionSolver.applySiteSubstitution(symbol.type, c.type);
           return resolution;
         } else {
