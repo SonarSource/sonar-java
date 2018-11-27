@@ -23,6 +23,15 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
@@ -34,17 +43,6 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Routines for name resolution.
@@ -126,18 +124,12 @@ public class Resolve {
    */
   private Resolution findField(Env env, JavaSymbol.TypeJavaSymbol site, String name, JavaSymbol.TypeJavaSymbol c) {
     Resolution bestSoFar = unresolved();
-    Resolution resolution = new Resolution();
     for (JavaSymbol symbol : c.members().lookup(name)) {
       if (symbol.kind == JavaSymbol.VAR) {
-        if(isAccessible(env, site, symbol)) {
-          resolution.symbol = symbol;
-          resolution.type = typeSubstitutionSolver.applySiteSubstitution(symbol.type, c.type);
-          return resolution;
-        } else {
-          return Resolution.resolution(new AccessErrorJavaSymbol(symbol, Symbols.unknownType));
-        }
+        return resolveField(env, site, c, symbol);
       }
     }
+    Resolution resolution;
     if (c.getSuperclass() != null) {
       resolution = findField(env, site, name, c.getSuperclass().symbol);
       if (resolution.symbol.kind < bestSoFar.symbol.kind) {
@@ -152,6 +144,18 @@ public class Resolve {
       }
     }
     return bestSoFar;
+  }
+
+  private Resolution resolveField(Env env, JavaSymbol.TypeJavaSymbol site, JavaSymbol.TypeJavaSymbol owner, JavaSymbol field) {
+    if (isAccessible(env, site, field)) {
+      Resolution resolution = Resolution.resolution(field);
+      if (field.type != null) {
+        // type may not have been resolved yet, but will be in 2nd pass
+        resolution.type = typeSubstitutionSolver.applySiteSubstitution(field.type, owner.type);
+      }
+      return resolution;
+    }
+    return Resolution.resolution(new AccessErrorJavaSymbol(field, Symbols.unknownType));
   }
 
   /**
