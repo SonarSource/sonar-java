@@ -124,23 +124,12 @@ public class Resolve {
    */
   private Resolution findField(Env env, JavaSymbol.TypeJavaSymbol site, String name, JavaSymbol.TypeJavaSymbol c) {
     Resolution bestSoFar = unresolved();
-    Resolution resolution = new Resolution();
     for (JavaSymbol symbol : c.members().lookup(name)) {
       if (symbol.kind == JavaSymbol.VAR) {
-        if(isAccessible(env, site, symbol)) {
-          resolution.symbol = symbol;
-          if (symbol.type == null) {
-            // type of the symbol has not been resolved yet, but will be in 2nd pass
-            resolution.type = null;
-          } else {
-            resolution.type = typeSubstitutionSolver.applySiteSubstitution(symbol.type, c.type);
-          }
-          return resolution;
-        } else {
-          return Resolution.resolution(new AccessErrorJavaSymbol(symbol, Symbols.unknownType));
-        }
+        return resolveField(env, site, c, symbol);
       }
     }
+    Resolution resolution;
     if (c.getSuperclass() != null) {
       resolution = findField(env, site, name, c.getSuperclass().symbol);
       if (resolution.symbol.kind < bestSoFar.symbol.kind) {
@@ -155,6 +144,18 @@ public class Resolve {
       }
     }
     return bestSoFar;
+  }
+
+  private Resolution resolveField(Env env, JavaSymbol.TypeJavaSymbol site, JavaSymbol.TypeJavaSymbol owner, JavaSymbol field) {
+    if (isAccessible(env, site, field)) {
+      Resolution resolution = Resolution.resolution(field);
+      if (field.type != null) {
+        // type may not have been resolved yet, but will be in 2nd pass
+        resolution.type = typeSubstitutionSolver.applySiteSubstitution(field.type, owner.type);
+      }
+      return resolution;
+    }
+    return Resolution.resolution(new AccessErrorJavaSymbol(field, Symbols.unknownType));
   }
 
   /**
