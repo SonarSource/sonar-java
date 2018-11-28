@@ -9,8 +9,14 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
 abstract class A {
 
-  ZipEntry myZipEntry;                          // Noncompliant
+  ZipEntry myZipEntry;                          // Compliant - fields are OK
+  ZipEntry myOtherZipEntry = createZE();        // Compliant
   MyUnrelatedZipEntry myUnrelatedZipEntry;
+
+  A(ZipEntry zipEntry) {                        // Compliant - constructor
+    this.myZipEntry = zipEntry;
+    this.myZipEntry = createZE();
+  }
 
   void foo(
     ZipFile zipFile,
@@ -46,10 +52,21 @@ abstract class A {
   abstract ZipArchiveEntry getZAE();
   abstract MyOwnZipArchiveEntry getMOZAE();
   abstract MyUnrelatedZipEntry getMUZE();
+  abstract void foo(ZipEntry ze);               // Compliant - abstract method
   abstract void bar(Object o);
   abstract void doSomething(java.util.function.Consumer<java.util.Optional<ZipEntry>> consumer);
+  static ZipEntry createZE() { return null; }
 
   static class MyOwnZipEntry extends ZipEntry { }
   abstract static class MyOwnZipArchiveEntry implements ArchiveEntry { }
   static class MyUnrelatedZipEntry { }
+
+  interface ZipEntryFilter {
+    boolean accept(ZipEntry entry);             // Compliant - part of an interface
+  }
+}
+
+abstract class B extends A {
+  @Override
+  void foo(ZipEntry ze) { } // Noncompliant - overrides are still reporting issues
 }
