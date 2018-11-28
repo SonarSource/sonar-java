@@ -16,10 +16,6 @@ case "$TEST" in
     export JAVA_HOME=/opt/sonarsource/jvm/java-1.8.0-sun-x64
     export PATH=$JAVA_HOME/bin:$PATH
   ;;
-  performancing)
-    #fetch submodule containing sources of performancing projects
-    git submodule update --init --recursive
-  ;;
   plugin)
   ;;
   semantic)

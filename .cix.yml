@@ -6,33 +6,18 @@ TEST:
   - plugin
   - ruling
   - semantic
-  - performancing
 
 SQ_VERSION:
   - DEV
   - LATEST_RELEASE[6.7]
 
 exclude:
-#exclude plugin tests on performance slaves
-  - TEST: plugin
-    SLAVE: performance
-    SQ_VERSION: DEV
-  - TEST: plugin
-    SLAVE: performance
-    SQ_VERSION: LATEST_RELEASE[6.7]
 #exclude plugin tests on windows slaves
   - TEST: plugin
     SLAVE: windows
     SQ_VERSION: DEV
   - TEST: plugin
     SLAVE: windows
-    SQ_VERSION: LATEST_RELEASE[6.7]
-#exclude ruling tests on performance slaves
-  - TEST: ruling
-    SLAVE: performance
-    SQ_VERSION: DEV
-  - TEST: ruling
-    SLAVE: performance
     SQ_VERSION: LATEST_RELEASE[6.7]
 #exclude all ruling jobs other than on LATEST_RELEASE[6.7] on linux
   - TEST: ruling
@@ -42,31 +27,6 @@ exclude:
   - TEST: ruling
     SLAVE: windows
     SQ_VERSION: DEV
-#exclude all performances jobs on linux slaves
-  - TEST: performancing
-    SLAVE: linux
-    SQ_VERSION: DEV
-  - TEST: performancing
-    SLAVE: linux
-    SQ_VERSION: LATEST_RELEASE[6.7]
-#exclude all performances jobs on windows slaves
-  - TEST: performancing
-    SLAVE: windows
-    SQ_VERSION: DEV
-  - TEST: performancing
-    SLAVE: windows
-    SQ_VERSION: LATEST_RELEASE[6.7]
-#exclude all performances jobs other than on LATEST_RELEASE[6.7]
-  - TEST: performancing
-    SLAVE: performance
-    SQ_VERSION: DEV
-#eclude all semantic jobs on performance slaves
-  - TEST: semantic
-    SLAVE: performance
-    SQ_VERSION: DEV
-  - TEST: semantic
-    SLAVE: performance
-    SQ_VERSION: LATEST_RELEASE[6.7]
 #eclude all semantic jobs on linux slaves other than LATEST_RELEASE[6.7]
   - TEST: semantic
     SLAVE: linux
