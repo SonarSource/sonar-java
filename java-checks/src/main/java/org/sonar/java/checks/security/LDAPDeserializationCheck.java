@@ -26,34 +26,45 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(key = "S4434")
 public class LDAPDeserializationCheck extends AbstractMethodDetection {
+  private static final String CONSTRUCTOR_NAME = "<init>";
   private static final String CLASS_NAME = "javax.naming.directory.SearchControls";
   private static final int RET_OBJ_INDEX = 4;
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Arrays.asList(
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(CLASS_NAME)).name("<init>").withAnyParameters(),
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(CLASS_NAME)).name(CONSTRUCTOR_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(CLASS_NAME)).name("setReturningObjFlag").parameters("boolean"));
   }
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    if (newClassTree.arguments().size() <= RET_OBJ_INDEX) {
-      return;
-    }
-    ExpressionTree retObjArgument = newClassTree.arguments().get(RET_OBJ_INDEX);
-    reportIfTrue(retObjArgument);
+    checkConstructorArguments(newClassTree.arguments());
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodTree) {
-    ExpressionTree setValue = methodTree.arguments().get(0);
-    reportIfTrue(setValue);
+    if (CONSTRUCTOR_NAME.equals(methodTree.symbol().name())) {
+      // when calling super() for classes extending SearchControls
+      checkConstructorArguments(methodTree.arguments());
+    } else {
+      ExpressionTree setValue = methodTree.arguments().get(0);
+      reportIfTrue(setValue);
+    }
+  }
+
+  private void checkConstructorArguments(Arguments args) {
+    if (args.size() <= RET_OBJ_INDEX) {
+      return;
+    }
+    ExpressionTree retObjArgument = args.get(RET_OBJ_INDEX);
+    reportIfTrue(retObjArgument);
   }
 
   private void reportIfTrue(ExpressionTree toUnderline) {

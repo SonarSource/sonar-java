@@ -17,3 +17,13 @@ class S4434 {
     ctrl.setReturningObjFlag(returnObject); // Should be noncompliant if we know returnObject is true
   }
 }
+
+class NamedSearchControls extends SearchControls {
+  public NamedSearchControls() {
+    super();
+  }
+
+  public NamedSearchControls(boolean b) {
+    super(0, 0, 0, new String[0], true, b); // Noncompliant
+  }
+}
