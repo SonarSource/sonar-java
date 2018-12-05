@@ -82,6 +82,8 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
         Symbol.TypeSymbol superClassSymbol = superClassType.symbol();
         if (hasNotFinalEqualsMethod(superClassSymbol)) {
           return true;
+        } else if (hasFinalEqualsMethod(superClassSymbol)) {
+          return false;
         }
         superClassType = superClassSymbol.superClass();
       }
@@ -91,5 +93,9 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
 
   private static boolean hasNotFinalEqualsMethod(Symbol.TypeSymbol superClassSymbol) {
     return superClassSymbol.lookupSymbols("equals").stream().anyMatch(symbol -> EQUALS_MATCHER.matches(symbol) && !symbol.isFinal());
+  }
+  
+  private static boolean hasFinalEqualsMethod(Symbol.TypeSymbol superClassSymbol) {
+	  return superClassSymbol.lookupSymbols("equals").stream().anyMatch(symbol -> EQUALS_MATCHER.matches(symbol) && symbol.isFinal());
   }
 }
