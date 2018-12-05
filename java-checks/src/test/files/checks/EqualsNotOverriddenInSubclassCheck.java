@@ -84,3 +84,14 @@ class M {
 class N extends M { // Compliant - M.equals() is final
   int i;
 }
+
+class O extends A {
+  @Override
+  public final boolean equals(Object obj) {
+    return false;
+  }
+}
+
+class P extends O { // Compliant - O.equals() is final
+	String s;
+}
