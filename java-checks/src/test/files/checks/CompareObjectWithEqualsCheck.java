@@ -140,19 +140,30 @@ class NoIssueWhenNoEqualsOverride {
   private static class ClassWithoutEquals3 extends UnknownSuperClass {}
 }
 
-class PSF {
+class FF {
 
 
-  public static final PSF A = new PSF();
-  public static final PSF B = new PSF();
+  public static final FF A = new FF();
+  public static final FF B = new FF();
+  private final FF C = new FF();
+  private final FF D = new FF();
 
   enum Unrelated { UNRELATED }
 
-  void test() {
+  void testPublicStaticFinal() {
     if (A == B) {} // Compliant
-    if (this.A == new PSF()) {} // Compliant
-    if (new PSF() == A) {} // Compliant
+    if (this.A == new FF()) {} // Compliant
+    if (new FF() == A) {} // Compliant
     if (A == Unrelated.UNRELATED) {} // Noncompliant
+  }
+
+  void testPrivateFinal() {
+    if (C == A) {} // Compliant
+    if (A == C) {} // Compliant
+    if (C == D) {} // Compliant
+    if (D == C) {} // Compliant
+    if (this.C == new FF()) {} // Compliant
+    if (new FF() == C) {} // Compliant
   }
 
   public boolean equals(Object o) {
