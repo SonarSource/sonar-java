@@ -79,7 +79,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
 
   private static boolean neitherIsPublicStaticFinal(ExpressionTree leftOperand, ExpressionTree rightOperand) {
     if (compatibleTypes(leftOperand, rightOperand)) {
-      return !isPublicStaticFinal(leftOperand) && !isPublicStaticFinal(rightOperand);
+      return !isFinal(leftOperand) && !isFinal(rightOperand);
     }
     return true;
   }
@@ -88,9 +88,9 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
     return leftOperand.symbolType().equals(rightOperand.symbolType());
   }
 
-  private static boolean isPublicStaticFinal(ExpressionTree tree) {
+  private static boolean isFinal(ExpressionTree tree) {
     return symbol(tree)
-      .map(s -> s.isPublic() && s.isStatic() && s.isFinal())
+      .map(s -> s.isFinal())
       .orElse(false);
   }
 
