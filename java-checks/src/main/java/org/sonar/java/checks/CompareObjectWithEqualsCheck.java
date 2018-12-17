@@ -164,4 +164,5 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   private static boolean hasEqualsMethod(Symbol.TypeSymbol symbol) {
     return symbol.lookupSymbols("equals").stream().anyMatch(EQUALS_MATCHER::matches);
   }
+
 }
