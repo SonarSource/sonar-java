@@ -20,25 +20,25 @@
 package org.sonar.java.checks.xml.ejb;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.XmlCheckVerifier;
-import org.sonar.java.xml.XmlCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class DefaultInterceptorsLocationCheckTest {
 
-  private static final XmlCheck CHECK = new DefaultInterceptorsLocationCheck();
+  private static final SonarXmlCheck CHECK = new DefaultInterceptorsLocationCheck();
 
   @Test
   public void interceptors_in_ejb_jar() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/ejb/DefaultInterceptorsLocationCheck/ejb-jar.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("ejb-jar.xml", CHECK);
   }
 
   @Test
   public void interceptors_not_in_ejb_jar() {
-    XmlCheckVerifier.verify("src/test/files/checks/xml/ejb/DefaultInterceptorsLocationCheck/ejb-interceptors.xml", CHECK);
+    SonarXmlCheckVerifier.verifyIssues("ejb-interceptors.xml", CHECK);
   }
 
   @Test
   public void not_an_ejb_jar() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/irrelevant.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("irrelevant.xml", CHECK);
   }
 }

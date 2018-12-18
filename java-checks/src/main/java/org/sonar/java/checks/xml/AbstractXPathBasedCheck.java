@@ -17,36 +17,30 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.xml.ejb;
+package org.sonar.java.checks.xml;
 
-import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import org.sonar.check.Rule;
-import org.sonar.java.AnalysisException;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
+import javax.xml.xpath.XPathFactory;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
-import org.w3c.dom.NodeList;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 
-@Rule(key = "S3281")
-public class DefaultInterceptorsLocationCheck extends AbstractXPathBasedCheck {
+public abstract class AbstractXPathBasedCheck extends SonarXmlCheck {
 
-  private static XPathExpression defaultInterceptorClassesExpression = getXPathExpression("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name=\"*\"]/interceptor-class");
+  private static final XPath XPATH = XPathFactory.newInstance().newXPath();
+
+  protected static XPathExpression getXPathExpression(String expression){
+    try {
+      return XPATH.compile(expression);
+    } catch (XPathExpressionException e) {
+      // fixme
+    }
+    return null;
+  }
 
   @Override
   protected void scanFile(XmlFile file) {
 
-    if (!"ejb-jar.xml".equalsIgnoreCase(file.getInputFile().filename())) {
-
-      try {
-        NodeList nodeList = (NodeList) defaultInterceptorClassesExpression.evaluate(file.getNamespaceUnawareDocument(), XPathConstants.NODESET);
-        for (int i = 0; i < nodeList.getLength(); i++) {
-          reportIssue(nodeList.item(i), "Move this default interceptor to \"ejb-jar.xml\"");
-        }
-
-      } catch (XPathExpressionException e) {
-        throw new AnalysisException("Unable to evaluate XPath expression", e);
-      }
-    }
   }
 }

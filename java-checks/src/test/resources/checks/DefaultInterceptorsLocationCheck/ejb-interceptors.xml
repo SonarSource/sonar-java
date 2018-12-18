@@ -6,6 +6,7 @@
     <interceptor-binding>
       <ejb-name>*</ejb-name>
       <interceptor-class>com.myco.ImportantInterceptor1</interceptor-class> <!-- Noncompliant {{Move this default interceptor to "ejb-jar.xml"}} -->
+<!--  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
       <interceptor-class>com.myco.ImportantInterceptor2</interceptor-class> <!-- Noncompliant {{Move this default interceptor to "ejb-jar.xml"}} -->
     </interceptor-binding>
     
