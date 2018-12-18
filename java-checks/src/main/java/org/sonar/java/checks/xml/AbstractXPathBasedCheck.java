@@ -17,28 +17,23 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.xml.ejb;
+package org.sonar.java.checks.xml;
 
-import org.junit.Test;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
-import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class DefaultInterceptorsLocationCheckTest {
+public abstract class AbstractXPathBasedCheck extends SonarXmlCheck {
 
-  private static final SonarXmlCheck CHECK = new DefaultInterceptorsLocationCheck();
+  private final XPath xpath = XPathFactory.newInstance().newXPath();
 
-  @Test
-  public void interceptors_in_ejb_jar() {
-    SonarXmlCheckVerifier.verifyNoIssue("ejb-jar.xml", CHECK);
-  }
-
-  @Test
-  public void interceptors_not_in_ejb_jar() {
-    SonarXmlCheckVerifier.verifyIssues("ejb-interceptors.xml", CHECK);
-  }
-
-  @Test
-  public void not_an_ejb_jar() {
-    SonarXmlCheckVerifier.verifyNoIssue("irrelevant.xml", CHECK);
+  protected XPathExpression getXPathExpression(String expression){
+    try {
+      return xpath.compile(expression);
+    } catch (XPathExpressionException e) {
+      throw new IllegalStateException("Failed to compile XPath expression " + expression, e);
+    }
   }
 }
