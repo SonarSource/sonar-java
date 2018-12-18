@@ -22,7 +22,7 @@ package org.sonar.java.checks.xml.maven;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.sonar.java.checks.verifier.PomCheckVerifier;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class GroupIdNamingConventionCheckTest {
 
@@ -32,18 +32,18 @@ public class GroupIdNamingConventionCheckTest {
   @Test
   public void test_default() {
     GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/GroupIdNamingConventionCheckDefaultNOK.xml", check);
-    PomCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/GroupIdNamingConventionCheckDefaultOK.xml", check);
-    PomCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/GroupIdNamingConventionCheckNoGroupId.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("defaultNOK/pom.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("defaultOK/pom.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("defaultNoGroupId/pom.xml", check);
   }
 
   @Test
   public void test_custom() {
     GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
     check.regex = "[a-z][a-z-0-9]*";
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/GroupIdNamingConventionCheckCustomNOK.xml", check);
-    PomCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/GroupIdNamingConventionCheckCustomOK.xml", check);
-    PomCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/GroupIdNamingConventionCheckNoGroupId.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("customNOK/pom.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("customOK/pom.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("defaultNoGroupId/pom.xml", check);
   }
 
   @Test
@@ -53,6 +53,12 @@ public class GroupIdNamingConventionCheckTest {
 
     GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
     check.regex = "*";
-    PomCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/GroupIdNamingConventionCheckDefaultOK.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("defaultNOK/pom.xml", check);
+  }
+
+  @Test
+  public void not_a_pom() {
+    GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
+    SonarXmlCheckVerifier.verifyNoIssue("irrelevant.xml", check);
   }
 }

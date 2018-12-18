@@ -709,15 +709,14 @@ public final class CheckList {
     return Arrays.asList(
       PomElementOrderCheck.class,
       DependencyWithSystemScopeCheck.class,
-      GroupIdNamingConventionCheck.class,
       ArtifactIdNamingConventionCheck.class,
       DisallowedDependenciesCheck.class,
       DeprecatedPomPropertiesCheck.class);
   }
 
   public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
-    return ImmutableList.<Class<? extends SonarXmlCheck>>builder()
-      .add(DefaultInterceptorsLocationCheck.class)
-      .build();
+    return Arrays.asList(
+      DefaultInterceptorsLocationCheck.class,
+      GroupIdNamingConventionCheck.class);
   }
 }
