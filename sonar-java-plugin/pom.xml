@@ -112,8 +112,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>9800000</maxsize>
-                  <minsize>8800000</minsize>
+                  <maxsize>11000000</maxsize>
+                  <minsize>10000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
@@ -215,6 +215,12 @@
                 </filter>
                 <filter>
                   <artifact>org.glassfish.jaxb:txw2</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>xerces:xercesImpl</artifact>
                   <includes>
                     <include>**</include>
                   </includes>

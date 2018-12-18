@@ -86,7 +86,9 @@ public class JavaPlugin implements Plugin {
       DefaultJavaResourceLocator.class,
       JavaSquidSensor.class,
       PostAnalysisIssueFilter.class,
-      XmlFileSensor.class);
+      XmlFileSensor.class,
+      NewXmlFileSensor.class
+      );
 
     if (isAnalysisWarningsSupported(context.getRuntime())) {
       builder.add(AnalysisWarningsWrapper.class);
