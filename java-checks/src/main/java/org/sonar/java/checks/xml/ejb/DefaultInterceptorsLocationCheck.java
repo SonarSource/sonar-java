@@ -19,28 +19,33 @@
  */
 package org.sonar.java.checks.xml.ejb;
 
-import org.sonar.check.Rule;
-import org.sonar.java.xml.XPathXmlCheck;
-import org.sonar.java.xml.XmlCheckContext;
-import org.w3c.dom.Node;
-
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import org.sonar.check.Rule;
+import org.sonar.java.AnalysisException;
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.w3c.dom.NodeList;
 
 @Rule(key = "S3281")
-public class DefaultInterceptorsLocationCheck extends XPathXmlCheck {
+public class DefaultInterceptorsLocationCheck extends AbstractXPathBasedCheck {
 
-  private XPathExpression defaultInterceptorClassesExpression;
-
-  @Override
-  public void precompileXPathExpressions(XmlCheckContext context) {
-    defaultInterceptorClassesExpression = context.compile("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name=\"*\"]/interceptor-class");
-  }
+  private XPathExpression defaultInterceptorClassesExpression = getXPathExpression("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name=\"*\"]/interceptor-class");
 
   @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) {
-    if (!"ejb-jar.xml".equalsIgnoreCase(context.getFile().getName())) {
-      for (Node interceptorClass : context.evaluateOnDocument(defaultInterceptorClassesExpression)) {
-        reportIssue(interceptorClass, "Move this default interceptor to \"ejb-jar.xml\"");
+  protected void scanFile(XmlFile file) {
+
+    if (!"ejb-jar.xml".equalsIgnoreCase(file.getInputFile().filename())) {
+
+      try {
+        NodeList nodeList = (NodeList) defaultInterceptorClassesExpression.evaluate(file.getNamespaceUnawareDocument(), XPathConstants.NODESET);
+        for (int i = 0; i < nodeList.getLength(); i++) {
+          reportIssue(nodeList.item(i), "Move this default interceptor to \"ejb-jar.xml\"");
+        }
+
+      } catch (XPathExpressionException e) {
+        throw new AnalysisException("Unable to evaluate XPath expression", e);
       }
     }
   }

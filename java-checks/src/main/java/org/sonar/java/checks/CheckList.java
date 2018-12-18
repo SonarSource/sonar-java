@@ -160,7 +160,12 @@ public final class CheckList {
   }
 
   public static List<Class> getChecks() {
-    return ImmutableList.<Class>builder().addAll(getJavaChecks()).addAll(getJavaTestChecks()).addAll(getXmlChecks()).build();
+    return ImmutableList.<Class>builder()
+      .addAll(getJavaChecks())
+      .addAll(getJavaTestChecks())
+      .addAll(getXmlChecks())
+      .addAll(getNewXmlChecks())
+      .build();
   }
 
   public static List<Class<? extends JavaCheck>> getJavaChecks() {
@@ -689,7 +694,6 @@ public final class CheckList {
     return ImmutableList.<Class<? extends JavaCheck>>builder()
       .addAll(getMavenChecks())
       .addAll(Arrays.asList(
-        DefaultInterceptorsLocationCheck.class,
         InterceptorExclusionsCheck.class,
         SingleConnectionFactoryCheck.class,
         DefaultMessageListenerContainerCheck.class,
@@ -713,6 +717,7 @@ public final class CheckList {
 
   public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
     return ImmutableList.<Class<? extends SonarXmlCheck>>builder()
+      .add(DefaultInterceptorsLocationCheck.class)
       .build();
   }
 }

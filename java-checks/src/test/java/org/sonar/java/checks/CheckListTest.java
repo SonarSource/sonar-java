@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Constructor;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +54,8 @@ public class CheckListTest {
   private static List<String> SE_CHEKS;
   private final Gson gson = new Gson();
 
+  private static final Set<String> BLACK_LIST = Collections.singleton("AbstractXPathBasedCheck.java");
+
   @BeforeClass
   public static void before() throws Exception {
     SE_CHEKS = ClassPath.from(CheckListTest.class.getClassLoader())
@@ -71,13 +74,12 @@ public class CheckListTest {
     int count = 0;
     List<File> files = (List<File>) FileUtils.listFiles(new File("src/main/java/org/sonar/java/checks/"), new String[] {"java"}, true);
     for (File file : files) {
-      if (file.getName().endsWith("Check.java")) {
+      if (file.getName().endsWith("Check.java") && !BLACK_LIST.contains(file.getName())) {
         count++;
       }
     }
     assertThat(CheckList.getChecks().size()).isEqualTo(count + SE_CHEKS.size());
   }
-
 
   private static class CustomRulesDefinition implements RulesDefinition {
 
