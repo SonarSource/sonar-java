@@ -149,6 +149,7 @@ import org.sonar.java.se.checks.debug.DebugInterruptedExecutionCheck;
 import org.sonar.java.se.checks.debug.DebugMethodYieldsCheck;
 import org.sonar.java.se.checks.debug.DebugMethodYieldsOnInvocationsCheck;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 
 public final class CheckList {
 
@@ -709,6 +710,11 @@ public final class CheckList {
       .add(ArtifactIdNamingConventionCheck.class)
       .add(DisallowedDependenciesCheck.class)
       .add(DeprecatedPomPropertiesCheck.class)
+      .build();
+  }
+
+  public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
+    return ImmutableList.<Class<? extends SonarXmlCheck>>builder()
       .build();
   }
 }
