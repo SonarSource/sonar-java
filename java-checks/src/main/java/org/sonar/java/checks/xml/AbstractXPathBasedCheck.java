@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks.xml;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -47,5 +50,21 @@ public abstract class AbstractXPathBasedCheck extends SonarXmlCheck {
     } catch (XPathExpressionException e) {
       throw new AnalysisException("Unable to evaluate XPath expression", e);
     }
+  }
+
+  protected static List<Node> evaluateAsList(XPathExpression expression, Node node) {
+    return asList(evaluate(expression, node));
+  }
+
+  protected static List<Node> asList(NodeList nodeList) {
+    int numberResults = nodeList.getLength();
+    if (numberResults == 0) {
+      return Collections.emptyList();
+    }
+    List<Node> result = new ArrayList<>(numberResults);
+    for (int i = 0; i < numberResults; i++) {
+      result.add(nodeList.item(i));
+    }
+    return result;
   }
 }

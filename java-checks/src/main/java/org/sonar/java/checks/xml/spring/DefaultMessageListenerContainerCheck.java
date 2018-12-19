@@ -26,27 +26,23 @@ import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 @Rule(key = "S3439")
 public class DefaultMessageListenerContainerCheck extends AbstractXPathBasedCheck {
 
-  private XPathExpression defaultMessageListenerContainerBeanExpression =
-    getXPathExpression("beans/bean[@class='org.springframework.jms.listener.DefaultMessageListenerContainer']");
+  private XPathExpression defaultMessageListenerContainerBeanExpression = getXPathExpression(
+    "beans/bean[@class='org.springframework.jms.listener.DefaultMessageListenerContainer']");
   private XPathExpression acceptMessageWhileStoppingPropertyExpression = getXPathExpression("property[@name='acceptMessagesWhileStopping']");
   private XPathExpression sessionTransactedPropertyExpression = getXPathExpression("property[@name='sessionTransacted']");
   private XPathExpression valueExpression = getXPathExpression("value[text()='true']");
 
-
   @Override
   protected void scanFile(XmlFile xmlFile) {
-    NodeList beanNodes = evaluate(defaultMessageListenerContainerBeanExpression, xmlFile.getNamespaceUnawareDocument());
-    for (int i = 0; i < beanNodes.getLength(); i++) {
-      Node bean = beanNodes.item(i);
+    evaluateAsList(defaultMessageListenerContainerBeanExpression, xmlFile.getNamespaceUnawareDocument()).forEach(bean -> {
       if (!hasAcceptMessagePropertyEnabled(bean) && hasSessionTransactedDisabled(bean)) {
         reportIssue(bean, "Enable \"acceptMessagesWhileStopping\".");
       }
-    }
+    });
   }
 
   private boolean hasAcceptMessagePropertyEnabled(Node bean) {
@@ -68,13 +64,7 @@ public class DefaultMessageListenerContainerCheck extends AbstractXPathBasedChec
   }
 
   private boolean hasPropertyAsChild(Node bean, XPathExpression expression) {
-    NodeList propertyList = evaluate(expression, bean);
-    for (int i = 0; i < propertyList.getLength(); i++) {
-      Node property = propertyList.item(i);
-      if (hasAttributeValue(property, "value") || evaluate(valueExpression, property).getLength() > 0) {
-        return true;
-      }
-    }
-    return false;
+    return evaluateAsList(expression, bean).stream()
+      .anyMatch(property -> hasAttributeValue(property, "value") || evaluate(valueExpression, property).getLength() > 0);
   }
 }

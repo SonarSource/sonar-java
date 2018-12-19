@@ -25,7 +25,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 @Rule(key = "S3421")
 public class DeprecatedPomPropertiesCheck extends AbstractXPathBasedCheck {
@@ -38,26 +37,20 @@ public class DeprecatedPomPropertiesCheck extends AbstractXPathBasedCheck {
     if (!"pom.xml".equalsIgnoreCase(file.getInputFile().filename())) {
       return;
     }
-    NodeList textNodes = evaluate(textsExpression, file.getDocument());
-    for (int i = 0; i < textNodes.getLength(); i++) {
-      checkText(textNodes.item(i));
-    }
+    evaluateAsList(textsExpression, file.getDocument()).forEach(this::checkText);
   }
 
   private void checkText(Node textNode) {
-    NodeList childNodes = textNode.getChildNodes();
-    for (int j = 0; j < childNodes.getLength(); j++) {
-      Node childNode = childNodes.item(j);
-      if (childNode.getNodeType() != Node.TEXT_NODE) {
-        continue;
-      }
-      String text = childNode.getNodeValue();
-      while (StringUtils.contains(text, POM_PROPERTY_PREFIX)) {
-        String property = extractPropertyName(text);
-        reportIssue(childNode, "Replace \"pom." + property + "\" with \"project." + property + "\".");
-        text = skipFirstProperty(text);
-      }
-    }
+    asList(textNode.getChildNodes()).stream()
+      .filter(node -> node.getNodeType() == Node.TEXT_NODE)
+      .forEach(node -> {
+        String text = node.getNodeValue();
+        while (StringUtils.contains(text, POM_PROPERTY_PREFIX)) {
+          String property = extractPropertyName(text);
+          reportIssue(node, "Replace \"pom." + property + "\" with \"project." + property + "\".");
+          text = skipFirstProperty(text);
+        }
+      });
   }
 
   private static String skipFirstProperty(String text) {

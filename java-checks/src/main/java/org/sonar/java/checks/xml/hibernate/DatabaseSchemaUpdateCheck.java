@@ -21,10 +21,10 @@ package org.sonar.java.checks.xml.hibernate;
 
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @Rule(key = "S3822")
 public class DatabaseSchemaUpdateCheck extends AbstractXPathBasedCheck  {
@@ -33,10 +33,7 @@ public class DatabaseSchemaUpdateCheck extends AbstractXPathBasedCheck  {
 
   @Override
   protected void scanFile(XmlFile file) {
-    NodeList nodeList = evaluate(hibernateHbm2ddlAutoProperty, file.getNamespaceUnawareDocument());
-    for (int i = 0; i < nodeList.getLength(); i++) {
-      checkProperty(nodeList.item(i));
-    }
+    evaluateAsList(hibernateHbm2ddlAutoProperty, file.getNamespaceUnawareDocument()).forEach(this::checkProperty);
   }
 
   private void checkProperty(Node property) {
