@@ -10,6 +10,7 @@
     <interceptor-binding>
       <ejb-name>MyExcludedClass</ejb-name>
       <exclude-default-interceptors>true</exclude-default-interceptors> <!-- Noncompliant {{Move this exclusion into the class as an annotation.}} -->
+<!--  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
       <exclude-class-interceptors>true</exclude-class-interceptors> <!-- Noncompliant {{Move this exclusion into the class as an annotation.}} -->
     </interceptor-binding>
     <interceptor-binding>
