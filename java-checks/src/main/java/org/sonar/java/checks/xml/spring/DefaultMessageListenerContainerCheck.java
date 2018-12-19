@@ -19,47 +19,44 @@
  */
 package org.sonar.java.checks.xml.spring;
 
-import com.google.common.collect.Iterables;
 import java.util.stream.IntStream;
-import java.util.stream.StreamSupport;
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
-import org.sonar.java.xml.XPathXmlCheck;
-import org.sonar.java.xml.XmlCheckContext;
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @Rule(key = "S3439")
-public class DefaultMessageListenerContainerCheck extends XPathXmlCheck {
+public class DefaultMessageListenerContainerCheck extends AbstractXPathBasedCheck {
 
-  private XPathExpression defaultMessageListenerContainerBeanExpression;
-  private XPathExpression acceptMessageWhileStoppingPropertyExpression;
-  private XPathExpression sessionTransactedPropertyExpression;
-  private XPathExpression valueExpression;
+  private XPathExpression defaultMessageListenerContainerBeanExpression =
+    getXPathExpression("beans/bean[@class='org.springframework.jms.listener.DefaultMessageListenerContainer']");
+  private XPathExpression acceptMessageWhileStoppingPropertyExpression = getXPathExpression("property[@name='acceptMessagesWhileStopping']");
+  private XPathExpression sessionTransactedPropertyExpression = getXPathExpression("property[@name='sessionTransacted']");
+  private XPathExpression valueExpression = getXPathExpression("value[text()='true']");
 
-  @Override
-  public void precompileXPathExpressions(XmlCheckContext context) {
-    defaultMessageListenerContainerBeanExpression = context.compile("beans/bean[@class='org.springframework.jms.listener.DefaultMessageListenerContainer']");
-    acceptMessageWhileStoppingPropertyExpression = context.compile("property[@name='acceptMessagesWhileStopping']");
-    sessionTransactedPropertyExpression = context.compile("property[@name='sessionTransacted']");
-    valueExpression = context.compile("value[text()='true']");
-  }
 
   @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) {
-    StreamSupport.stream(context.evaluateOnDocument(defaultMessageListenerContainerBeanExpression).spliterator(), false)
-      .filter(bean -> !hasAcceptMessagePropertyEnabled(context, bean) && hasSessionTransactedDisabled(context, bean))
-      .forEach(bean -> reportIssue(bean, "Enable \"acceptMessagesWhileStopping\"."));
+  protected void scanFile(XmlFile xmlFile) {
+    NodeList beanNodes = evaluate(defaultMessageListenerContainerBeanExpression, xmlFile.getNamespaceUnawareDocument());
+    for (int i = 0; i < beanNodes.getLength(); i++) {
+      Node bean = beanNodes.item(i);
+      if (!hasAcceptMessagePropertyEnabled(bean) && hasSessionTransactedDisabled(bean)) {
+        reportIssue(bean, "Enable \"acceptMessagesWhileStopping\".");
+      }
+    }
   }
 
-  private boolean hasAcceptMessagePropertyEnabled(XmlCheckContext context, Node bean) {
+  private boolean hasAcceptMessagePropertyEnabled(Node bean) {
     return hasAttributeValue(bean, "acceptMessagesWhileStopping")
-      || hasPropertyAsChild(context, bean, acceptMessageWhileStoppingPropertyExpression);
+      || hasPropertyAsChild(bean, acceptMessageWhileStoppingPropertyExpression);
   }
 
-  private boolean hasSessionTransactedDisabled(XmlCheckContext context, Node bean) {
+  private boolean hasSessionTransactedDisabled(Node bean) {
     return !hasAttributeValue(bean, "sessionTransacted")
-      && !hasPropertyAsChild(context, bean, sessionTransactedPropertyExpression);
+      && !hasPropertyAsChild(bean, sessionTransactedPropertyExpression);
   }
 
   private static boolean hasAttributeValue(Node bean, String attributeName) {
@@ -70,8 +67,14 @@ public class DefaultMessageListenerContainerCheck extends XPathXmlCheck {
       .anyMatch(attribute -> attribute.getNodeName().endsWith(attributeName) && "true".equals(attribute.getNodeValue()));
   }
 
-  private boolean hasPropertyAsChild(XmlCheckContext context, Node bean, XPathExpression expression) {
-    return StreamSupport.stream(context.evaluate(expression, bean).spliterator(), false)
-      .anyMatch(property -> hasAttributeValue(property, "value") || !Iterables.isEmpty(context.evaluate(valueExpression, property)));
+  private boolean hasPropertyAsChild(Node bean, XPathExpression expression) {
+    NodeList propertyList = evaluate(expression, bean);
+    for (int i = 0; i < propertyList.getLength(); i++) {
+      Node property = propertyList.item(i);
+      if (hasAttributeValue(property, "value") || evaluate(valueExpression, property).getLength() > 0) {
+        return true;
+      }
+    }
+    return false;
   }
 }
