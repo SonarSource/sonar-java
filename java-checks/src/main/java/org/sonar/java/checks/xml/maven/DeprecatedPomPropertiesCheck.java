@@ -19,35 +19,43 @@
  */
 package org.sonar.java.checks.xml.maven;
 
+import javax.xml.xpath.XPathExpression;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.xml.XPathXmlCheck;
-import org.sonar.java.xml.XmlCheckContext;
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.w3c.dom.Node;
-
-import javax.xml.xpath.XPathExpression;
+import org.w3c.dom.NodeList;
 
 @Rule(key = "S3421")
-public class DeprecatedPomPropertiesCheck extends XPathXmlCheck {
+public class DeprecatedPomPropertiesCheck extends AbstractXPathBasedCheck {
   private static final String POM_PROPERTY_PREFIX = "${pom.";
   private static final String POM_PROPERTY_SUFFIX = "}";
-  private XPathExpression textsExpression;
+  private XPathExpression textsExpression = getXPathExpression("//*[text()]");
 
   @Override
-  public void precompileXPathExpressions(XmlCheckContext context) {
-    textsExpression = context.compile("//*[text()]");
+  protected void scanFile(XmlFile file) {
+    if (!"pom.xml".equalsIgnoreCase(file.getInputFile().filename())) {
+      return;
+    }
+    NodeList textNodes = evaluate(textsExpression, file.getDocument());
+    for (int i = 0; i < textNodes.getLength(); i++) {
+      checkText(textNodes.item(i));
+    }
   }
 
-  @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) {
-    if ("pom.xml".equals(context.getFile().getName())) {
-      for (Node textNode : context.evaluateOnDocument(textsExpression)) {
-        String text = textNode.getFirstChild().getNodeValue();
-        while (StringUtils.contains(text, POM_PROPERTY_PREFIX)) {
-          String property = extractPropertyName(text);
-          reportIssue(textNode, "Replace \"pom." + property + "\" with \"project." + property + "\".");
-          text = skipFirstProperty(text);
-        }
+  private void checkText(Node textNode) {
+    NodeList childNodes = textNode.getChildNodes();
+    for (int j = 0; j < childNodes.getLength(); j++) {
+      Node childNode = childNodes.item(j);
+      if (childNode.getNodeType() != Node.TEXT_NODE) {
+        continue;
+      }
+      String text = childNode.getNodeValue();
+      while (StringUtils.contains(text, POM_PROPERTY_PREFIX)) {
+        String property = extractPropertyName(text);
+        reportIssue(childNode, "Replace \"pom." + property + "\" with \"project." + property + "\".");
+        text = skipFirstProperty(text);
       }
     }
   }

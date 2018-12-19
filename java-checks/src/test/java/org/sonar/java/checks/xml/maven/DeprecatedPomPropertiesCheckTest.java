@@ -20,18 +20,18 @@
 package org.sonar.java.checks.xml.maven;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.XmlCheckVerifier;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class DeprecatedPomPropertiesCheckTest {
   private static final DeprecatedPomPropertiesCheck CHECK = new DeprecatedPomPropertiesCheck();
 
   @Test
   public void pom() {
-    XmlCheckVerifier.verify("src/test/files/checks/xml/maven/DeprecatedPomPropertiesCheck/pom.xml", CHECK);
+    SonarXmlCheckVerifier.verifyIssues("pom.xml", CHECK);
   }
 
   @Test
   public void not_a_pom() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/DeprecatedPomPropertiesCheck/irrelevant.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", CHECK);
   }
 }
