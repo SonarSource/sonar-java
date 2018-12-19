@@ -19,68 +19,82 @@
  */
 package org.sonar.java.checks.xml.maven;
 
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.xml.maven.PomCheck;
-import org.sonar.java.xml.maven.PomCheckContext;
-import org.sonar.java.xml.maven.PomCheckContext.Location;
-import org.sonar.maven.model.LocatedTree;
-import org.sonar.maven.model.maven2.MavenProject;
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 @Rule(key = "S3423")
-public class PomElementOrderCheck implements PomCheck {
+public class PomElementOrderCheck extends AbstractXPathBasedCheck {
 
-  private static final Comparator<LocatedTree> LINE_COMPARATOR = (l1, l2) -> Integer.compare(l1.startLocation().line(), l2.startLocation().line());
+  private static final Comparator<Node> LINE_COMPARATOR = Comparator.comparingInt(n -> XmlFile.nodeLocation(n).getStartLine());
+
+  private static final List<String> REQUIRED_ORDER = ImmutableList.of(
+    "modelVersion",
+    "parent",
+    "groupId",
+    "artifactId",
+    "version",
+    "packaging",
+    "name",
+    "description",
+    "url",
+    "inceptionYear",
+    "organization",
+    "licenses",
+    "developers",
+    "contributors",
+    "mailingLists",
+    "prerequisites",
+    "modules",
+    "scm",
+    "issueManagement",
+    "ciManagement",
+    "distributionManagement",
+    "properties",
+    "dependencyManagement",
+    "dependencies",
+    "repositories",
+    "pluginRepositories",
+    "build",
+    "reporting",
+    "profiles");
 
   @Override
-  public void scanFile(PomCheckContext context) {
-    MavenProject project = context.getMavenProject();
-    List<Location> issues = checkPositions(
-      project.getModelVersion(),
-      project.getParent(),
-      project.getGroupId(),
-      project.getArtifactId(),
-      project.getVersion(),
-      project.getPackaging(),
-      project.getName(),
-      project.getDescription(),
-      project.getUrl(),
-      project.getInceptionYear(),
-      project.getOrganization(),
-      project.getLicenses(),
-      project.getDevelopers(),
-      project.getContributors(),
-      project.getMailingLists(),
-      project.getPrerequisites(),
-      project.getModules(),
-      project.getScm(),
-      project.getIssueManagement(),
-      project.getCiManagement(),
-      project.getDistributionManagement(),
-      project.getProperties(),
-      project.getDependencyManagement(),
-      project.getDependencies(),
-      project.getRepositories(),
-      project.getPluginRepositories(),
-      project.getBuild(),
-      project.getReporting(),
-      project.getProfiles()
-      );
-
-    if (!issues.isEmpty()) {
-      context.reportIssue(this, project.startLocation().line(), "Reorder the elements of this pom to match the recommended order.", issues);
+  protected void scanFile(XmlFile xmlFile) {
+    if (!"pom.xml".equalsIgnoreCase(xmlFile.getInputFile().filename())) {
+      return;
     }
+
+    checkPositions(xmlFile.getDocument().getDocumentElement());
   }
 
-  private static List<Location> checkPositions(LocatedTree... trees) {
-    List<LocatedTree> expectedOrder = Arrays.stream(trees).filter(Objects::nonNull).collect(Collectors.toList());
-    List<LocatedTree> observedOrder = expectedOrder.stream().sorted(LINE_COMPARATOR).collect(Collectors.toList());
+  private static Optional<Node> getChildElementByName(String name, List<Node> children) {
+    for (Node child : children) {
+      if (child.getNodeType() == Node.ELEMENT_NODE && ((Element) child).getTagName().equals(name)) {
+        return Optional.of(child);
+      }
+    }
+
+    return Optional.empty();
+  }
+
+  private void checkPositions(Element project) {
+    List<Node> children = XmlFile.children(project);
+    List<Node> expectedOrder = REQUIRED_ORDER.stream()
+      .map(elementName -> getChildElementByName(elementName, children))
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .collect(Collectors.toList());
+
+    List<Node> observedOrder = expectedOrder.stream().sorted(LINE_COMPARATOR).collect(Collectors.toList());
 
     int lastWrongPosition = -1;
     int firstWrongPosition = -1;
@@ -95,15 +109,18 @@ public class PomElementOrderCheck implements PomCheck {
     }
 
     if (lastWrongPosition == -1) {
-      return Collections.emptyList();
+      return;
     }
 
-    List<Location> issues = new ArrayList<>();
+    List<Secondary> inconsistencies = new ArrayList<>();
     // only reports between first and last wrong position
     for (int index = firstWrongPosition; index <= lastWrongPosition; index++) {
-      issues.add(new Location("Expected position: " + (index + 1), expectedOrder.get(index).startLocation().line()));
+      inconsistencies.add(new Secondary(expectedOrder.get(index), "Expected position: " + (index + 1)));
     }
 
-    return issues;
+    if (!inconsistencies.isEmpty()) {
+      reportIssue(XmlFile.startLocation(project),
+        "Reorder the elements of this pom to match the recommended order.", inconsistencies);
+    }
   }
 }

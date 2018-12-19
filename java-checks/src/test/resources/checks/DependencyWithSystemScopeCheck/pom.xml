@@ -13,7 +13,7 @@
         <scope>system</scope> <!-- Noncompliant {{Update this scope and remove the "systemPath".}} -->
 <!--    ^^^^^^^^^^^^^^^^^^^^^-->
         <systemPath>/foo/myjar.jar</systemPath>
-  <!--  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^< -->
+  <!--  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<  {{Remove this}}-->
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -25,7 +25,7 @@
       <scope>system</scope> <!-- Noncompliant {{Update this scope and remove the "systemPath".}} -->
 <!--  ^^^^^^^^^^^^^^^^^^^^^-->
       <systemPath>/foo/myjar.jar</systemPath>
-<!--  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^< -->
+<!--  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^< {{Remove this}} -->
     </dependency>
     <dependency>
       <groupId>g1</groupId>
@@ -44,7 +44,7 @@
     <dependency>
       <groupId>g1</groupId>
       <systemPath></systemPath>
-<!--  ^^^^^^^^^^^^^^^^^^^^^^^^^> -->
+<!--  ^^^^^^^^^^^^^^^^^^^^^^^^^>  {{Remove this}}-->
       <artifactId>a6</artifactId>
       <scope>system</scope> <!-- Noncompliant {{Update this scope and remove the "systemPath".}} -->
 <!--  ^^^^^^^^^^^^^^^^^^^^^-->

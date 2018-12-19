@@ -25,7 +25,6 @@ import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
-import org.sonarsource.analyzer.commons.xml.XmlTextRange;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -53,11 +52,10 @@ public class DependencyWithSystemScopeCheck extends AbstractXPathBasedCheck {
 
     Optional<Node> systemPathOptional = getElementByName("systemPath", dependency);
     if (systemPathOptional.isPresent()) {
-      XmlTextRange systemPathLocation = XmlFile.nodeLocation(systemPathOptional.get());
       reportIssue(
         XmlFile.nodeLocation(scope.get()),
         "Update this scope and remove the \"systemPath\".",
-        Collections.singletonList(systemPathLocation));
+        Collections.singletonList(new Secondary(systemPathOptional.get(), "Remove this")));
     } else {
       reportIssue(scope.get(), "Update this scope.");
     }

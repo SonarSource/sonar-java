@@ -1,0 +1,27 @@
+<!-- Noncompliant@+1 {{Reorder the elements of this pom to match the recommended order.}} -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<!--^[sc=1;el=+1;ec=101]@-1 -->
+     <dependencies>
+<!-- ^[el=+7;ec=17]< {{Expected position: 7}}-->
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.8.3</version>
+    </dependency>
+  </dependencies>
+
+     <groupId>org.sonarsource.java</groupId>
+<!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<  {{Expected position: 2}}-->
+    <modelVersion>4.0.0</modelVersion>
+<!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<  {{Expected position: 1}}-->
+    <description>foo</description>
+<!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<  {{Expected position: 6}}-->
+    <artifactId>simple-project</artifactId>
+<!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<  {{Expected position: 3}}-->
+    <packaging>jar</packaging>
+<!--^^^^^^^^^^^^^^^^^^^^^^^^^^<  {{Expected position: 5}}-->
+    <version>1.0-SNAPSHOT</version>
+<!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<  {{Expected position: 4}}-->
+
+</project>
