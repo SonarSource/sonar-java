@@ -694,7 +694,6 @@ public final class CheckList {
     return ImmutableList.<Class<? extends JavaCheck>>builder()
       .addAll(getMavenChecks())
       .addAll(Arrays.asList(
-        SingleConnectionFactoryCheck.class,
         SecurityConstraintsInWebXmlCheck.class,
         ValidationFiltersCheck.class,
         ActionNumberCheck.class,
@@ -715,6 +714,7 @@ public final class CheckList {
       DatabaseSchemaUpdateCheck.class,
       DefaultInterceptorsLocationCheck.class,
       InterceptorExclusionsCheck.class,
+      SingleConnectionFactoryCheck.class,
       ArtifactIdNamingConventionCheck.class,
       GroupIdNamingConventionCheck.class,
       DeprecatedPomPropertiesCheck.class);
