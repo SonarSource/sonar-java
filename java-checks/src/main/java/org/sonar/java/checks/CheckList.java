@@ -707,8 +707,7 @@ public final class CheckList {
     return Arrays.asList(
       PomElementOrderCheck.class,
       DependencyWithSystemScopeCheck.class,
-      DisallowedDependenciesCheck.class,
-      DeprecatedPomPropertiesCheck.class);
+      DisallowedDependenciesCheck.class);
   }
 
   public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
@@ -717,6 +716,7 @@ public final class CheckList {
       DatabaseSchemaUpdateCheck.class,
       DefaultInterceptorsLocationCheck.class,
       ArtifactIdNamingConventionCheck.class,
-      GroupIdNamingConventionCheck.class);
+      GroupIdNamingConventionCheck.class,
+      DeprecatedPomPropertiesCheck.class);
   }
 }
