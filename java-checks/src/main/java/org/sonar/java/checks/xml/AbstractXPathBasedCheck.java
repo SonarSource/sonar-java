@@ -55,7 +55,6 @@ public abstract class AbstractXPathBasedCheck extends SonarXmlCheck {
   protected static List<Node> evaluateAsList(XPathExpression expression, Node node) {
     return asList(evaluate(expression, node));
   }
-
   protected static List<Node> asList(NodeList nodeList) {
     int numberResults = nodeList.getLength();
     if (numberResults == 0) {

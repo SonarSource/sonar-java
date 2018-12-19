@@ -19,34 +19,27 @@
  */
 package org.sonar.java.checks.xml.spring;
 
-import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
-import org.sonar.java.xml.XPathXmlCheck;
-import org.sonar.java.xml.XmlCheckContext;
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonar.java.xml.XmlCheckUtils;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.w3c.dom.Node;
-
+import org.w3c.dom.NodeList;
 import javax.xml.xpath.XPathExpression;
 
 @Rule(key = "S3438")
-public class SingleConnectionFactoryCheck extends XPathXmlCheck {
+public class SingleConnectionFactoryCheck extends AbstractXPathBasedCheck {
 
-  private XPathExpression singleConnectionFactoryBeansExpression;
-  private XPathExpression reconnectOnExceptionPropertyValueExpression;
-
-  @Override
-  public void precompileXPathExpressions(XmlCheckContext context) {
-    singleConnectionFactoryBeansExpression = context.compile("beans/bean[@class='org.springframework.jms.connection.SingleConnectionFactory']");
-    reconnectOnExceptionPropertyValueExpression = context.compile("property[@name='reconnectOnException' and value='true']");
-  }
+  private XPathExpression singleConnectionFactoryBeansExpression = getXPathExpression("beans/bean[@class='org.springframework.jms.connection.SingleConnectionFactory']");
+  private XPathExpression reconnectOnExceptionPropertyValueExpression = getXPathExpression("property[@name='reconnectOnException' and value='true']");
 
   @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) {
-    for (Node bean : context.evaluateOnDocument(singleConnectionFactoryBeansExpression)) {
-      if (!hasPropertyAsAttribute(bean) && !hasPropertyAsChild(bean, context)) {
+  protected void scanFile(XmlFile file) {
+    evaluateAsList(singleConnectionFactoryBeansExpression, file.getNamespaceUnawareDocument()).forEach(bean -> {
+      if (!hasPropertyAsAttribute(bean) && !hasPropertyAsChild(bean)) {
         reportIssue(bean, "Add a \"reconnectOnException\" property, set to \"true\"");
       }
-    }
+    });
   }
 
   private static boolean hasPropertyAsAttribute(Node bean) {
@@ -54,8 +47,9 @@ public class SingleConnectionFactoryCheck extends XPathXmlCheck {
     return attribute != null && "true".equals(attribute.getNodeValue());
   }
 
-  private boolean hasPropertyAsChild(Node bean, XmlCheckContext context) {
-    return !Iterables.isEmpty(context.evaluate(reconnectOnExceptionPropertyValueExpression, bean));
+  private boolean hasPropertyAsChild(Node bean) {
+    NodeList nodeList = evaluate(reconnectOnExceptionPropertyValueExpression, bean);
+    return (nodeList.getLength() != 0);
   }
 
 }
