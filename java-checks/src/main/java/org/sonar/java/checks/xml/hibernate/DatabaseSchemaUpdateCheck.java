@@ -19,15 +19,12 @@
  */
 package org.sonar.java.checks.xml.hibernate;
 
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 import org.sonar.check.Rule;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
-import org.sonar.java.AnalysisException;
 
 @Rule(key = "S3822")
 public class DatabaseSchemaUpdateCheck extends AbstractXPathBasedCheck  {
@@ -36,13 +33,9 @@ public class DatabaseSchemaUpdateCheck extends AbstractXPathBasedCheck  {
 
   @Override
   protected void scanFile(XmlFile file) {
-    try {
-      NodeList nodeList = (NodeList) hibernateHbm2ddlAutoProperty.evaluate(file.getNamespaceUnawareDocument(), XPathConstants.NODESET);
-      for (int i = 0; i < nodeList.getLength(); i++) {
-        checkProperty(nodeList.item(i));
-      }
-    } catch (XPathExpressionException e) {
-      throw new AnalysisException("Unable to evaluate XPath expression", e);
+    NodeList nodeList = evaluate(hibernateHbm2ddlAutoProperty, file.getNamespaceUnawareDocument());
+    for (int i = 0; i < nodeList.getLength(); i++) {
+      checkProperty(nodeList.item(i));
     }
   }
 
