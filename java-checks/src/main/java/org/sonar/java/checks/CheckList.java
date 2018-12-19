@@ -692,8 +692,7 @@ public final class CheckList {
 
   public static List<Class<? extends JavaCheck>> getXmlChecks() {
     return Arrays.asList(
-      ActionNumberCheck.class,
-      FormNameDuplicationCheck.class);
+      ActionNumberCheck.class);
   }
 
   public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
@@ -710,6 +709,7 @@ public final class CheckList {
       ArtifactIdNamingConventionCheck.class,
       GroupIdNamingConventionCheck.class,
       ValidationFiltersCheck.class,
+      FormNameDuplicationCheck.class,
       DeprecatedPomPropertiesCheck.class);
   }
 }

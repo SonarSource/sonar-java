@@ -5,9 +5,11 @@
 
 <form-validation>
   <formset language="fr">
+    <!-- Noncompliant@+4 {{Rename this form; line 10 holds another form declaration with the same name.}} -->
+    <!--^[sl=+4;sc=5;el=+4;ec=33] -->
     <form name="BookForm"></form>
-    <form name="BookForm"></form> <!-- Noncompliant [[secondary=8]] {{Rename this form; line 8 holds another form declaration with the same name.}} -->
-    <form name="BookForm"></form> <!-- Noncompliant [[secondary=8]] {{Rename this form; line 8 holds another form declaration with the same name.}} -->
+<!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^< {{original}}-->
+    <form name="BookForm"></form>
   </formset>
   <formset language="fj">
     <form name="LibraryForm"></form>
@@ -17,8 +19,11 @@
     <form name="LibraryForm"></form>
   </formset>
   <formset language="fi">
+    <!-- Noncompliant@+5 {{Rename this form; line 24 holds another form declaration with the same name.}} -->
+    <!--^[sl=+5;sc=5;el=+5;ec=17] -->
     <form></form>
+<!--^^^^^^^^^^^^^< {{original}}-->
     <form name="LibraryForm"></form>
-    <form></form> <!-- Noncompliant [[secondary=20]] {{Rename this form; line 20 holds another form declaration with the same name.}} -->
+    <form></form>
   </formset>
 </form-validation>

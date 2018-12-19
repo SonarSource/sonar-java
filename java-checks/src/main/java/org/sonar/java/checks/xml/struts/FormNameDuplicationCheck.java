@@ -19,50 +19,47 @@
  */
 package org.sonar.java.checks.xml.struts;
 
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
-import org.sonar.java.xml.XPathXmlCheck;
-import org.sonar.java.xml.XmlCheckContext;
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonar.java.xml.XmlCheckUtils;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.XmlTextRange;
 import org.w3c.dom.Node;
-
 import javax.annotation.CheckForNull;
 import javax.xml.xpath.XPathExpression;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 @Rule(key = "S3374")
-public class FormNameDuplicationCheck extends XPathXmlCheck {
+public class FormNameDuplicationCheck extends AbstractXPathBasedCheck {
 
-  private XPathExpression formsetsExpression;
-  private XPathExpression formsExpression;
+  private XPathExpression formsetsExpression = getXPathExpression("form-validation/formset");
+  private XPathExpression formsExpression = getXPathExpression("form");
 
   @Override
-  public void precompileXPathExpressions(XmlCheckContext context) {
-    this.formsetsExpression = context.compile("form-validation/formset");
-    this.formsExpression = context.compile("form");
+  protected void scanFile(XmlFile xmlFile) {
+    evaluateAsList(formsetsExpression, xmlFile.getNamespaceUnawareDocument())
+      .forEach(this::checkIfDuplicate);
   }
 
-  @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) {
-    for (Node formset : context.evaluateOnDocument(formsetsExpression)) {
-      Map<String, Node> formsByName = new HashMap<>();
-      for (Node form : context.evaluate(formsExpression, formset)) {
+  private void checkIfDuplicate(Node formSet) {
+    Map<String, Node> formsByName = new HashMap<>();
+    evaluateAsList(formsExpression, formSet)
+      .forEach(form -> {
         String name = getNameAttribute(form);
         Node original = formsByName.get(name);
         if (original == null) {
           formsByName.put(name, form);
         } else {
-          reportIssue(context, form, original);
+          reportIssue(XmlFile.nodeLocation(form), original);
         }
-      }
-    }
+      });
   }
 
-  private void reportIssue(XmlCheckContext context, Node form, Node original) {
-    String msg = "Rename this form; line " + XmlCheckUtils.nodeLine(original) + " holds another form declaration with the same name.";
-    XmlCheckContext.XmlDocumentLocation secondary = new XmlCheckContext.XmlDocumentLocation("original", original);
-    context.reportIssue(this, form, msg, Lists.newArrayList(secondary));
+  private void reportIssue(XmlTextRange range, Node original) {
+    String msg = "Rename this form; line " + XmlFile.nodeLocation(original).getStartLine() + " holds another form declaration with the same name.";
+    List<Secondary> secondaries = Collections.singletonList(new Secondary(original, "original"));
+    reportIssue(range, msg, secondaries);
   }
 
   @CheckForNull
@@ -74,4 +71,5 @@ public class FormNameDuplicationCheck extends XPathXmlCheck {
     // node has no "name" attribute
     return null;
   }
+
 }
