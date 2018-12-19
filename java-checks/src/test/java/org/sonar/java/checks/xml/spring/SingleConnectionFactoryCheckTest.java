@@ -20,20 +20,20 @@
 package org.sonar.java.checks.xml.spring;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.XmlCheckVerifier;
-import org.sonar.java.xml.XmlCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class SingleConnectionFactoryCheckTest {
 
-  private static final XmlCheck CHECK = new SingleConnectionFactoryCheck();
+  private static final SonarXmlCheck CHECK = new SingleConnectionFactoryCheck();
 
   @Test
   public void beans() {
-    XmlCheckVerifier.verify("src/test/files/checks/xml/spring/SingleConnectionFactoryCheck/beans.xml", CHECK);
+    SonarXmlCheckVerifier.verifyIssues("beans.xml", CHECK);
   }
 
   @Test
   public void not_beans() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/irrelevant.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("irrelevant.xml", CHECK);
   }
 }

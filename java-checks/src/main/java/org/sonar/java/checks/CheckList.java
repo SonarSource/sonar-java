@@ -695,7 +695,6 @@ public final class CheckList {
       .addAll(getMavenChecks())
       .addAll(Arrays.asList(
         InterceptorExclusionsCheck.class,
-        SingleConnectionFactoryCheck.class,
         DefaultMessageListenerContainerCheck.class,
         SecurityConstraintsInWebXmlCheck.class,
         ValidationFiltersCheck.class,
@@ -717,7 +716,9 @@ public final class CheckList {
 
   public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
     return ImmutableList.<Class<? extends SonarXmlCheck>>builder()
-      .add(DefaultInterceptorsLocationCheck.class)
+      .addAll(Arrays.asList(
+        DefaultInterceptorsLocationCheck.class,
+        SingleConnectionFactoryCheck.class))
       .build();
   }
 }
