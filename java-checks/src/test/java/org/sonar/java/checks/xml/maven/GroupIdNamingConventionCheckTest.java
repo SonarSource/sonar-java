@@ -33,6 +33,7 @@ public class GroupIdNamingConventionCheckTest {
   public void test_default() {
     GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
     SonarXmlCheckVerifier.verifyIssues("defaultNOK/pom.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("emptyGroupId/pom.xml", check);
     SonarXmlCheckVerifier.verifyNoIssue("defaultOK/pom.xml", check);
     SonarXmlCheckVerifier.verifyNoIssue("defaultNoGroupId/pom.xml", check);
   }
@@ -42,6 +43,7 @@ public class GroupIdNamingConventionCheckTest {
     GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
     check.regex = "[a-z][a-z-0-9]*";
     SonarXmlCheckVerifier.verifyIssues("customNOK/pom.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("emptyGroupId/pom.xml", check);
     SonarXmlCheckVerifier.verifyNoIssue("customOK/pom.xml", check);
     SonarXmlCheckVerifier.verifyNoIssue("defaultNoGroupId/pom.xml", check);
   }

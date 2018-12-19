@@ -3,8 +3,8 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.sonarsource.java</groupId> <!-- Noncompliant {{Update this "groupId" to match the provided regular expression: '[a-z][a-z-0-9]*'}} -->
-      <!-- ^^^^^^^^^^^^^^^^^^^^ -->
+     <groupId>org.sonarsource.java</groupId> <!-- Noncompliant {{Update this "groupId" to match the provided regular expression: '[a-z][a-z-0-9]*'}} -->
+<!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
   <artifactId>simple-project</artifactId>
   <version>1.0-SNAPSHOT</version>
 

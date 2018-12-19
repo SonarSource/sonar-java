@@ -54,9 +54,8 @@ public class GroupIdNamingConventionCheck extends AbstractXPathBasedCheck {
       return;
     }
     Node groupId = groupIds.item(0);
-    String content = groupId.getTextContent();
-    if (!getPattern().matcher(content).matches()) {
-      reportIssue(groupId.getFirstChild(), "Update this \"groupId\" to match the provided regular expression: '" + regex + "'");
+    if (!getPattern().matcher(groupId.getTextContent()).matches()) {
+      reportIssue(groupId, "Update this \"groupId\" to match the provided regular expression: '" + regex + "'");
     }
   }
 
