@@ -13,10 +13,12 @@
     <property name="hibernate.hbm2ddl.auto">validate</property>     <!-- Compliant -->
     <property name="hibernate.hbm2ddl.auto"></property>             <!-- Compliant -->
 
-    <property name="hibernate.hbm2ddl.auto">foo-bar</property>     <!-- Noncompliant - any value -->
-    <property name="hibernate.hbm2ddl.auto">                       <!-- Noncompliant - any value on a different line -->
+    <property name="hibernate.hbm2ddl.auto">foo-bar</property>     <!-- Noncompliant {{Use "validate" or remove this property.}} -->
+    <!-- Noncompliant@+1 {{Use "validate" or remove this property.}} -->
+    <property name="hibernate.hbm2ddl.auto">
       qix
     </property>
+    <!-- ^[sc=5;el=+2;ec=15]@-2 -->
 
     <property name="hibernate.hbm2ddl.auto" />                     <!-- Compliant -->
     <property name="hibernate.hbm2ddl.auto">                       <!-- Compliant -->

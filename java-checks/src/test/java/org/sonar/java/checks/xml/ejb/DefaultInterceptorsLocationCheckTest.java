@@ -39,6 +39,6 @@ public class DefaultInterceptorsLocationCheckTest {
 
   @Test
   public void not_an_ejb_jar() {
-    SonarXmlCheckVerifier.verifyNoIssue("irrelevant.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", CHECK);
   }
 }

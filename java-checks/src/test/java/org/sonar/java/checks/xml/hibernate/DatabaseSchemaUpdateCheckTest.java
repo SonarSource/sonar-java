@@ -20,25 +20,23 @@
 package org.sonar.java.checks.xml.hibernate;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.XmlCheckVerifier;
-import org.sonar.java.xml.XmlCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class DatabaseSchemaUpdateCheckTest {
 
-  private static final XmlCheck CHECK = new DatabaseSchemaUpdateCheck();
-
-  private static final String TEST_FILES_ROOT = "src/test/files/checks/xml/hibernate/DatabaseSchemaUpdateCheck";
+  private static final SonarXmlCheck CHECK = new DatabaseSchemaUpdateCheck();
 
   @Test
   public void test() {
-    XmlCheckVerifier.verify(TEST_FILES_ROOT + "/hibernate11.cfg.xml", CHECK);
-    XmlCheckVerifier.verify(TEST_FILES_ROOT + "/hibernate20.cfg.xml", CHECK);
-    XmlCheckVerifier.verify(TEST_FILES_ROOT + "/hibernate30.cfg.xml", CHECK);
+    SonarXmlCheckVerifier.verifyIssues("hibernate11.cfg.xml", CHECK);
+    SonarXmlCheckVerifier.verifyIssues("hibernate20.cfg.xml", CHECK);
+    SonarXmlCheckVerifier.verifyIssues("hibernate30.cfg.xml", CHECK);
   }
 
   @Test
   public void no_issue() {
-    XmlCheckVerifier.verifyNoIssue(TEST_FILES_ROOT + "/hibernate30NoProperty.cfg.xml", CHECK);
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/irrelevant.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("hibernate30NoProperty.cfg.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", CHECK);
   }
 }

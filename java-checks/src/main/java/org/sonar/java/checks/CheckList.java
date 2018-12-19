@@ -700,8 +700,7 @@ public final class CheckList {
         SecurityConstraintsInWebXmlCheck.class,
         ValidationFiltersCheck.class,
         ActionNumberCheck.class,
-        FormNameDuplicationCheck.class,
-        DatabaseSchemaUpdateCheck.class))
+        FormNameDuplicationCheck.class))
       .build();
   }
 
@@ -716,6 +715,7 @@ public final class CheckList {
 
   public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
     return Arrays.asList(
+      DatabaseSchemaUpdateCheck.class,
       DefaultInterceptorsLocationCheck.class,
       GroupIdNamingConventionCheck.class);
   }
