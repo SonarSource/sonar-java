@@ -35,7 +35,7 @@ public class GroupIdNamingConventionCheckTest {
     SonarXmlCheckVerifier.verifyIssues("defaultNOK/pom.xml", check);
     SonarXmlCheckVerifier.verifyIssues("emptyGroupId/pom.xml", check);
     SonarXmlCheckVerifier.verifyNoIssue("defaultOK/pom.xml", check);
-    SonarXmlCheckVerifier.verifyNoIssue("defaultNoGroupId/pom.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("noGroupId/pom.xml", check);
   }
 
   @Test
@@ -45,7 +45,7 @@ public class GroupIdNamingConventionCheckTest {
     SonarXmlCheckVerifier.verifyIssues("customNOK/pom.xml", check);
     SonarXmlCheckVerifier.verifyIssues("emptyGroupId/pom.xml", check);
     SonarXmlCheckVerifier.verifyNoIssue("customOK/pom.xml", check);
-    SonarXmlCheckVerifier.verifyNoIssue("defaultNoGroupId/pom.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("noGroupId/pom.xml", check);
   }
 
   @Test

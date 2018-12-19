@@ -708,7 +708,6 @@ public final class CheckList {
     return Arrays.asList(
       PomElementOrderCheck.class,
       DependencyWithSystemScopeCheck.class,
-      ArtifactIdNamingConventionCheck.class,
       DisallowedDependenciesCheck.class,
       DeprecatedPomPropertiesCheck.class);
   }
@@ -717,6 +716,7 @@ public final class CheckList {
     return Arrays.asList(
       DatabaseSchemaUpdateCheck.class,
       DefaultInterceptorsLocationCheck.class,
+      ArtifactIdNamingConventionCheck.class,
       GroupIdNamingConventionCheck.class);
   }
 }

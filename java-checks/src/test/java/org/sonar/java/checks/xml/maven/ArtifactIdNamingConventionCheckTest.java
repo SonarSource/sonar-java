@@ -22,7 +22,7 @@ package org.sonar.java.checks.xml.maven;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.sonar.java.checks.verifier.PomCheckVerifier;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class ArtifactIdNamingConventionCheckTest {
 
@@ -32,18 +32,20 @@ public class ArtifactIdNamingConventionCheckTest {
   @Test
   public void test_default() {
     ArtifactIdNamingConventionCheck check = new ArtifactIdNamingConventionCheck();
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/ArtifactIdNamingConventionCheckDefaultNOK.xml", check);
-    PomCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/ArtifactIdNamingConventionCheckDefaultOK.xml", check);
-    PomCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/ArtifactIdNamingConventionCheckNoArtifactId.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("defaultNOK/pom.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("emptyArtifactId/pom.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("defaultOK/pom.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("noArtifactId/pom.xml", check);
   }
 
   @Test
   public void test_custom() {
     ArtifactIdNamingConventionCheck check = new ArtifactIdNamingConventionCheck();
     check.regex = "[a-z]+";
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/ArtifactIdNamingConventionCheckCustomNOK.xml", check);
-    PomCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/ArtifactIdNamingConventionCheckCustomOK.xml", check);
-    PomCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/ArtifactIdNamingConventionCheckNoArtifactId.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("customNOK/pom.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("emptyArtifactId/pom.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("customOK/pom.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("noArtifactId/pom.xml", check);
   }
 
   @Test
@@ -53,7 +55,13 @@ public class ArtifactIdNamingConventionCheckTest {
 
     ArtifactIdNamingConventionCheck check = new ArtifactIdNamingConventionCheck();
     check.regex = "*";
-    PomCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/ArtifactIdNamingConventionCheckDefaultOK.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("defaultOK/pom.xml", check);
+  }
+
+  @Test
+  public void not_a_pom() {
+    ArtifactIdNamingConventionCheck check = new ArtifactIdNamingConventionCheck();
+    SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", check);
   }
 
 }
