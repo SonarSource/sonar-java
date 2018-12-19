@@ -23,7 +23,6 @@ import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
-import org.w3c.dom.NodeList;
 
 @Rule(key = "S3281")
 public class DefaultInterceptorsLocationCheck extends AbstractXPathBasedCheck {
@@ -35,9 +34,7 @@ public class DefaultInterceptorsLocationCheck extends AbstractXPathBasedCheck {
     if ("ejb-jar.xml".equalsIgnoreCase(file.getInputFile().filename())) {
       return;
     }
-    NodeList nodeList = evaluate(defaultInterceptorClassesExpression, file.getNamespaceUnawareDocument());
-    for (int i = 0; i < nodeList.getLength(); i++) {
-      reportIssue(nodeList.item(i), "Move this default interceptor to \"ejb-jar.xml\"");
-    }
+    evaluateAsList(defaultInterceptorClassesExpression, file.getNamespaceUnawareDocument())
+      .forEach(node -> reportIssue(node, "Move this default interceptor to \"ejb-jar.xml\""));
   }
 }
