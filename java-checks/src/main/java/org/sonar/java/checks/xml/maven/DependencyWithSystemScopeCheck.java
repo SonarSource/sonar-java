@@ -19,43 +19,56 @@
  */
 package org.sonar.java.checks.xml.maven;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringUtils;
+import java.util.Collections;
+import java.util.Optional;
+import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.xml.maven.helpers.MavenDependencyCollector;
-import org.sonar.java.xml.maven.PomCheck;
-import org.sonar.java.xml.maven.PomCheckContext;
-import org.sonar.maven.model.LocatedAttribute;
-import org.sonar.maven.model.maven2.Dependency;
-
-import javax.annotation.Nullable;
-import java.util.List;
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.XmlTextRange;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @Rule(key = "S3422")
-public class DependencyWithSystemScopeCheck implements PomCheck {
+public class DependencyWithSystemScopeCheck extends AbstractXPathBasedCheck {
+
+  private XPathExpression dependencyExpression = getXPathExpression("//dependencies/dependency");
 
   @Override
-  public void scanFile(PomCheckContext context) {
-    List<Dependency> dependencies = new MavenDependencyCollector(context.getMavenProject()).allDependencies();
-    for (Dependency dependency : dependencies) {
-      LocatedAttribute scope = dependency.getScope();
-      if (scope != null && "system".equalsIgnoreCase(scope.getValue())) {
-        String message = "Update this scope.";
-        LocatedAttribute systemPath = dependency.getSystemPath();
-        List<PomCheckContext.Location> secondaries = getSecondary(systemPath);
-        if (systemPath != null) {
-          message = "Update this scope and remove the \"systemPath\".";
-        }
-        context.reportIssue(this, scope.startLocation().line(), message, secondaries);
-      }
+  protected void scanFile(XmlFile xmlFile) {
+    if (!"pom.xml".equalsIgnoreCase(xmlFile.getInputFile().filename())) {
+      return;
+    }
+
+    evaluateAsList(dependencyExpression, xmlFile.getNamespaceUnawareDocument())
+      .forEach(dependency -> checkDependency((Element) dependency));
+  }
+
+  private void checkDependency(Element dependency) {
+    Optional<Node> scope = getElementByName("scope", dependency);
+    if (!scope.isPresent() || !"system".equalsIgnoreCase(scope.get().getTextContent())) {
+      return;
+    }
+
+    Optional<Node> systemPathOptional = getElementByName("systemPath", dependency);
+    if (systemPathOptional.isPresent()) {
+      XmlTextRange systemPathLocation = XmlFile.nodeLocation(systemPathOptional.get());
+      reportIssue(
+        XmlFile.nodeLocation(scope.get()),
+        "Update this scope and remove the \"systemPath\".",
+        Collections.singletonList(systemPathLocation));
+    } else {
+      reportIssue(scope.get(), "Update this scope.");
     }
   }
 
-  private static List<PomCheckContext.Location> getSecondary(@Nullable LocatedAttribute systemPath) {
-    if (systemPath != null && StringUtils.isNotBlank(systemPath.getValue())) {
-      return Lists.newArrayList(new PomCheckContext.Location("Remove this", systemPath));
+  private static Optional<Node> getElementByName(String name, Element nestingElement) {
+    NodeList nodeList = nestingElement.getElementsByTagName(name);
+    if (nodeList.getLength() > 0) {
+      return Optional.of(nodeList.item(0));
     }
-    return ImmutableList.of();
+
+    return Optional.empty();
   }
 }

@@ -20,11 +20,13 @@
 package org.sonar.java.checks.xml.maven;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.PomCheckVerifier;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class DependencyWithSystemScopeCheckTest {
   @Test
-  public void test_check() {
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/DependencyWithSystemScopeCheck.xml", new DependencyWithSystemScopeCheck());
+  public void test() {
+    DependencyWithSystemScopeCheck check = new DependencyWithSystemScopeCheck();
+    SonarXmlCheckVerifier.verifyIssues("pom.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", check);
   }
 }
