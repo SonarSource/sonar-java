@@ -61,6 +61,6 @@ public class GroupIdNamingConventionCheckTest {
   @Test
   public void not_a_pom() {
     GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
-    SonarXmlCheckVerifier.verifyNoIssue("irrelevant.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", check);
   }
 }

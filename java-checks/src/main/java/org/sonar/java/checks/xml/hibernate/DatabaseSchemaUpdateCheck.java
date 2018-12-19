@@ -19,36 +19,39 @@
  */
 package org.sonar.java.checks.xml.hibernate;
 
-import java.util.stream.StreamSupport;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import org.sonar.check.Rule;
-import org.sonar.java.xml.XPathXmlCheck;
-import org.sonar.java.xml.XmlCheckContext;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonar.java.AnalysisException;
 
 @Rule(key = "S3822")
-public class DatabaseSchemaUpdateCheck extends XPathXmlCheck {
+public class DatabaseSchemaUpdateCheck extends AbstractXPathBasedCheck  {
 
-  private XPathExpression hibernateHbm2ddlAutoProperty;
-
-  @Override
-  public void precompileXPathExpressions(XmlCheckContext context) {
-    hibernateHbm2ddlAutoProperty = context.compile("//property[@name='hibernate.hbm2ddl.auto']");
-  }
+  private XPathExpression hibernateHbm2ddlAutoProperty = getXPathExpression("//property[@name='hibernate.hbm2ddl.auto']");
 
   @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) {
-    StreamSupport.stream(context.evaluateOnDocument(hibernateHbm2ddlAutoProperty).spliterator(), false)
-      .forEach(property -> checkProperty(property, context));
+  protected void scanFile(XmlFile file) {
+    try {
+      NodeList nodeList = (NodeList) hibernateHbm2ddlAutoProperty.evaluate(file.getNamespaceUnawareDocument(), XPathConstants.NODESET);
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        checkProperty(nodeList.item(i));
+      }
+    } catch (XPathExpressionException e) {
+      throw new AnalysisException("Unable to evaluate XPath expression", e);
+    }
   }
 
-  private void checkProperty(Node property, XmlCheckContext context) {
+  private void checkProperty(Node property) {
     NodeList children = property.getChildNodes();
     if (children.getLength() == 1) {
       String value = children.item(0).getNodeValue().trim();
       if (!"none".equals(value) && !"validate".equals(value)) {
-        context.reportIssue(this, property, "Use \"validate\" or remove this property.");
+        reportIssue(property, "Use \"validate\" or remove this property.");
       }
     }
   }
