@@ -696,7 +696,6 @@ public final class CheckList {
       .addAll(Arrays.asList(
         InterceptorExclusionsCheck.class,
         SingleConnectionFactoryCheck.class,
-        DefaultMessageListenerContainerCheck.class,
         SecurityConstraintsInWebXmlCheck.class,
         ValidationFiltersCheck.class,
         ActionNumberCheck.class,
@@ -714,6 +713,7 @@ public final class CheckList {
 
   public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
     return Arrays.asList(
+      DefaultMessageListenerContainerCheck.class,
       DatabaseSchemaUpdateCheck.class,
       DefaultInterceptorsLocationCheck.class,
       ArtifactIdNamingConventionCheck.class,

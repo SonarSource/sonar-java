@@ -20,19 +20,18 @@
 package org.sonar.java.checks.xml.spring;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.XmlCheckVerifier;
-import org.sonar.java.xml.XmlCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class DefaultMessageListenerContainerCheckTest {
-  private static final XmlCheck CHECK = new DefaultMessageListenerContainerCheck();
+  private static final DefaultMessageListenerContainerCheck CHECK = new DefaultMessageListenerContainerCheck();
 
   @Test
   public void beans() {
-    XmlCheckVerifier.verify("src/test/files/checks/xml/spring/DefaultMessageListenerContainerCheck/beans.xml", CHECK);
+    SonarXmlCheckVerifier.verifyIssues("beans.xml", CHECK);
   }
 
   @Test
   public void not_beans() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/irrelevant.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", CHECK);
   }
 }

@@ -26,7 +26,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.sonar.java.AnalysisException;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
-import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public abstract class AbstractXPathBasedCheck extends SonarXmlCheck {
@@ -41,9 +41,9 @@ public abstract class AbstractXPathBasedCheck extends SonarXmlCheck {
     }
   }
 
-  protected static NodeList evaluate(XPathExpression expression, Document document) {
+  protected static NodeList evaluate(XPathExpression expression, Node node) {
     try {
-      return (NodeList) expression.evaluate(document, XPathConstants.NODESET);
+      return (NodeList) expression.evaluate(node, XPathConstants.NODESET);
     } catch (XPathExpressionException e) {
       throw new AnalysisException("Unable to evaluate XPath expression", e);
     }
