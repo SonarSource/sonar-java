@@ -32,7 +32,7 @@ import org.sonar.java.AnalysisException;
 @Rule(key = "S3822")
 public class DatabaseSchemaUpdateCheck extends AbstractXPathBasedCheck  {
 
-  private XPathExpression hibernateHbm2ddlAutoProperty = getXPathExpression("//property[@name='hibernate.hbm2ddl.auto']");;
+  private XPathExpression hibernateHbm2ddlAutoProperty = getXPathExpression("//property[@name='hibernate.hbm2ddl.auto']");
 
   @Override
   protected void scanFile(XmlFile file) {
