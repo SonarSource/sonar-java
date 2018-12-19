@@ -20,10 +20,14 @@
 package org.sonar.java.checks.xml;
 
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.sonar.java.AnalysisException;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 public abstract class AbstractXPathBasedCheck extends SonarXmlCheck {
 
@@ -34,6 +38,14 @@ public abstract class AbstractXPathBasedCheck extends SonarXmlCheck {
       return xpath.compile(expression);
     } catch (XPathExpressionException e) {
       throw new IllegalStateException("Failed to compile XPath expression " + expression, e);
+    }
+  }
+
+  protected static NodeList evaluate(XPathExpression expression, Document document) {
+    try {
+      return (NodeList) expression.evaluate(document, XPathConstants.NODESET);
+    } catch (XPathExpressionException e) {
+      throw new AnalysisException("Unable to evaluate XPath expression", e);
     }
   }
 }

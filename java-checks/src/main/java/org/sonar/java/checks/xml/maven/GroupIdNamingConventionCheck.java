@@ -20,15 +20,13 @@
 package org.sonar.java.checks.xml.maven;
 
 import java.util.regex.Pattern;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @Rule(key = GroupIdNamingConventionCheck.KEY)
 public class GroupIdNamingConventionCheck extends AbstractXPathBasedCheck {
@@ -48,19 +46,17 @@ public class GroupIdNamingConventionCheck extends AbstractXPathBasedCheck {
 
   @Override
   protected void scanFile(XmlFile file) {
-    if (!"pom.xml".equals(file.getInputFile().filename())) {
+    if (!"pom.xml".equalsIgnoreCase(file.getInputFile().filename())) {
       return;
     }
-    try {
-      Node groupId = (Node) groupIdExpression.evaluate(file.getNamespaceUnawareDocument(), XPathConstants.NODE);
-      String content = groupId.getTextContent();
-      if (!getPattern().matcher(content).matches()) {
-        reportIssue(groupId.getFirstChild(), "Update this \"groupId\" to match the provided regular expression: '" + regex + "'");
-      }
-    } catch (NullPointerException e) {
-      // there is no 'groupId' in the pom, do nothing
-    } catch (XPathExpressionException e) {
-      throw new AnalysisException("Unable to evaluate XPath expression", e);
+    NodeList groupIds = evaluate(groupIdExpression, file.getNamespaceUnawareDocument());
+    if (groupIds.getLength() != 1) {
+      return;
+    }
+    Node groupId = groupIds.item(0);
+    String content = groupId.getTextContent();
+    if (!getPattern().matcher(content).matches()) {
+      reportIssue(groupId.getFirstChild(), "Update this \"groupId\" to match the provided regular expression: '" + regex + "'");
     }
   }
 
