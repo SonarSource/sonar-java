@@ -19,12 +19,17 @@
  */
 package org.sonar.java.checks.xml.maven;
 
+import java.util.regex.Pattern;
+import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.maven.model.maven2.MavenProject;
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @Rule(key = ArtifactIdNamingConventionCheck.KEY)
-public class ArtifactIdNamingConventionCheck extends AbstractNamingConvention {
+public class ArtifactIdNamingConventionCheck extends AbstractXPathBasedCheck {
 
   public static final String KEY = "S3420";
   private static final String DEFAULT_REGEX = "[a-z][a-z-0-9]+";
@@ -35,19 +40,32 @@ public class ArtifactIdNamingConventionCheck extends AbstractNamingConvention {
     defaultValue = "" + DEFAULT_REGEX)
   public String regex = DEFAULT_REGEX;
 
-  @Override
-  protected String getRegex() {
-    return regex;
-  }
+  private XPathExpression artifactIdExpression = getXPathExpression("project/artifactId");
+  private Pattern pattern = null;
 
   @Override
-  protected String getRuleKey() {
-    return KEY;
+  protected void scanFile(XmlFile file) {
+    if (!"pom.xml".equalsIgnoreCase(file.getInputFile().filename())) {
+      return;
+    }
+    NodeList artifactIds = evaluate(artifactIdExpression, file.getNamespaceUnawareDocument());
+    if (artifactIds.getLength() != 1) {
+      return;
+    }
+    Node artifactId = artifactIds.item(0);
+    if (!getPattern().matcher(artifactId.getTextContent()).matches()) {
+      reportIssue(artifactId, "Update this \"artifactId\" to match the provided regular expression: '" + regex + "'");
+    }
   }
 
-  @Override
-  protected NamedLocatedAttribute getTargetedLocatedAttribute(MavenProject mavenProject) {
-    return new NamedLocatedAttribute("artifactId", mavenProject.getArtifactId());
+  private Pattern getPattern() {
+    if (pattern == null) {
+      try {
+        pattern = Pattern.compile(regex, Pattern.DOTALL);
+      } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException("[" + KEY + "] Unable to compile the regular expression: " + regex, e);
+      }
+    }
+    return pattern;
   }
-
 }
