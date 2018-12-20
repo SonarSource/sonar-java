@@ -10,8 +10,10 @@
       <dependency>
         <groupId>g1</groupId>
         <artifactId>a1</artifactId>
-        <scope>system</scope> <!-- Noncompliant [[secondary=14]] {{Update this scope and remove the "systemPath".}} -->
+        <scope>system</scope> <!-- Noncompliant {{Update this scope and remove the "systemPath".}} -->
+<!--    ^^^^^^^^^^^^^^^^^^^^^-->
         <systemPath>/foo/myjar.jar</systemPath>
+  <!--  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^< -->
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -20,8 +22,10 @@
     <dependency>
       <groupId>g1</groupId>
       <artifactId>a2</artifactId>
-      <scope>system</scope> <!-- Noncompliant [[secondary=24]] {{Update this scope and remove the "systemPath".}} -->
+      <scope>system</scope> <!-- Noncompliant {{Update this scope and remove the "systemPath".}} -->
+<!--  ^^^^^^^^^^^^^^^^^^^^^-->
       <systemPath>/foo/myjar.jar</systemPath>
+<!--  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^< -->
     </dependency>
     <dependency>
       <groupId>g1</groupId>
@@ -35,13 +39,15 @@
     <dependency>
       <groupId>g1</groupId>
       <artifactId>a5</artifactId>
-      <scope>system</scope> <!-- Noncompliant {{Update this scope.}} -->
+      <scope>System</scope> <!-- Noncompliant {{Update this scope.}} -->
     </dependency>
     <dependency>
       <groupId>g1</groupId>
+      <systemPath></systemPath>
+<!--  ^^^^^^^^^^^^^^^^^^^^^^^^^> -->
       <artifactId>a6</artifactId>
       <scope>system</scope> <!-- Noncompliant {{Update this scope and remove the "systemPath".}} -->
-      <systemPath></systemPath>
+<!--  ^^^^^^^^^^^^^^^^^^^^^-->
     </dependency>
   </dependencies>
 
