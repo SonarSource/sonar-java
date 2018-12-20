@@ -702,8 +702,7 @@ public final class CheckList {
 
   private static List<Class<? extends JavaCheck>> getMavenChecks() {
     return Arrays.asList(
-      PomElementOrderCheck.class,
-      DisallowedDependenciesCheck.class);
+      PomElementOrderCheck.class);
   }
 
   public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
@@ -711,6 +710,7 @@ public final class CheckList {
       DependencyWithSystemScopeCheck.class,
       DefaultMessageListenerContainerCheck.class,
       DatabaseSchemaUpdateCheck.class,
+      DisallowedDependenciesCheck.class,
       DefaultInterceptorsLocationCheck.class,
       SecurityConstraintsInWebXmlCheck.class,
       InterceptorExclusionsCheck.class,

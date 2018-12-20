@@ -20,12 +20,10 @@
 package org.sonar.java.checks.xml.maven.helpers;
 
 import com.google.common.base.Preconditions;
-import org.sonar.maven.model.LocatedAttribute;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-public class RangedVersionMatcher implements LocatedAttributeMatcher {
+public class RangedVersionMatcher implements StringMatcher {
   @Nullable
   private final ArtifactVersion lowerBound;
   @Nullable
@@ -45,7 +43,6 @@ public class RangedVersionMatcher implements LocatedAttributeMatcher {
   /**
    * Build a {@link ArtifactVersion} from a String, throwing an {@link IllegalArgumentException} if failed to parse value.
    * @param version the raw version as string
-   * @param callingCheckKey the check requiring the matcher
    * @return the {@link ArtifactVersion} corresponding to the provided version as string
    */
   private static ArtifactVersion getVersion(String version) {
@@ -58,11 +55,11 @@ public class RangedVersionMatcher implements LocatedAttributeMatcher {
   }
 
   @Override
-  public boolean test(@Nullable LocatedAttribute attribute) {
-    if (attribute == null) {
+  public boolean test(@Nullable String value) {
+    if (value == null) {
       return false;
     }
-    ArtifactVersion dependencyVersion = getVersionSilently(attribute.getValue());
+    ArtifactVersion dependencyVersion = getVersionSilently(value);
     if (dependencyVersion == null) {
       // unable to parse version, ignore this dependency
       return false;

@@ -20,17 +20,16 @@
 package org.sonar.java.checks.xml.maven.helpers;
 
 import org.apache.commons.lang.StringUtils;
-import org.sonar.maven.model.maven2.Dependency;
 
 /**
  * Matchers targeting maven dependencies.
  */
 public class MavenDependencyMatcher {
-  private static final LocatedAttributeMatcher ALWAYS_MATCHING_MATCHER = LocatedAttributeMatcher.any();
+  private static final StringMatcher ALWAYS_MATCHING_MATCHER = StringMatcher.any();
 
-  private final LocatedAttributeMatcher groupIdMatcher;
-  private final LocatedAttributeMatcher artifactIdMatcher;
-  private final LocatedAttributeMatcher versionMatcher;
+  private final StringMatcher groupIdMatcher;
+  private final StringMatcher artifactIdMatcher;
+  private final StringMatcher versionMatcher;
 
   /**
    * Create a {@link MavenDependencyMatcher} for the given name pattern and optional version
@@ -68,7 +67,7 @@ public class MavenDependencyMatcher {
     versionMatcher = getMatcherForVersion(version);
   }
 
-  private static LocatedAttributeMatcher getMatcherForPattern(String pattern) {
+  private static StringMatcher getMatcherForPattern(String pattern) {
     return (StringUtils.isBlank(pattern) || isWildCard(pattern)) ? ALWAYS_MATCHING_MATCHER : new PatternMatcher(pattern);
   }
 
@@ -76,7 +75,7 @@ public class MavenDependencyMatcher {
     return "*".equals(pattern);
   }
 
-  private static LocatedAttributeMatcher getMatcherForVersion(String version) {
+  private static StringMatcher getMatcherForVersion(String version) {
     if (version.contains("-")) {
       String[] bounds = version.split("-");
       return new RangedVersionMatcher(bounds[0], bounds[1]);
@@ -84,9 +83,9 @@ public class MavenDependencyMatcher {
     return getMatcherForPattern(version);
   }
 
-  public boolean matches(Dependency dependency) {
-    return groupIdMatcher.test(dependency.getGroupId())
-      && artifactIdMatcher.test(dependency.getArtifactId())
-      && versionMatcher.test(dependency.getVersion());
+  public boolean matches(String groupId, String artifactId, String version) {
+    return groupIdMatcher.test(groupId)
+      && artifactIdMatcher.test(artifactId)
+      && versionMatcher.test(version);
   }
 }
