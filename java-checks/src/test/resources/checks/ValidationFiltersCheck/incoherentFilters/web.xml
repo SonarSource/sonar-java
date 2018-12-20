@@ -28,4 +28,8 @@
     <filter-name></filter-name> <!-- No issue raised for empty node -->
   </filter>
 
+  <filter-mapping>
+    <filter-name></filter-name> <!-- No issue raised for empty node -->
+  </filter-mapping>
+
 </web-app>
