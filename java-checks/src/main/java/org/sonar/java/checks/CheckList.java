@@ -710,6 +710,7 @@ public final class CheckList {
       SingleConnectionFactoryCheck.class,
       ArtifactIdNamingConventionCheck.class,
       GroupIdNamingConventionCheck.class,
+      ValidationFiltersCheck.class,
       DeprecatedPomPropertiesCheck.class);
   }
 }

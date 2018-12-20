@@ -19,46 +19,30 @@
  */
 package org.sonar.java.checks.xml.web;
 
+import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.w3c.dom.Node;
-
 import org.sonar.check.Rule;
-import org.sonar.java.xml.XmlCheckContext;
-
 import javax.xml.xpath.XPathExpression;
-
 import java.util.HashSet;
 import java.util.Set;
 
 @Rule(key = "S3355")
-public class ValidationFiltersCheck extends WebXmlCheckTemplate {
-  private XPathExpression filterNamesFromFilterExpression;
-  private XPathExpression filterNamesFromFilterMappingExpression;
+public class ValidationFiltersCheck extends AbstractWebXmlXPathBasedCheck {
+  private XPathExpression filterNamesFromFilterExpression = getXPathExpression(WEB_XML_ROOT + "/filter/filter-name");
+  private XPathExpression filterNamesFromFilterMappingExpression = getXPathExpression(WEB_XML_ROOT + "/filter-mapping/filter-name");
 
   @Override
-  public void precompileXPathExpressions(XmlCheckContext context) {
-    filterNamesFromFilterExpression = context.compile(WEB_XML_ROOT + "/filter/filter-name");
-    filterNamesFromFilterMappingExpression = context.compile(WEB_XML_ROOT + "/filter-mapping/filter-name");
-  }
-
-  @Override
-  public void scanWebXml(XmlCheckContext context) {
-    Iterable<Node> filtersDefinedInFilters = context.evaluateOnDocument(filterNamesFromFilterExpression);
-    Iterable<Node> filtersUsedInMapping = context.evaluateOnDocument(filterNamesFromFilterMappingExpression);
-    Set<String> filtersInMapping = getFilterNames(filtersUsedInMapping);
-    for (Node node : filtersDefinedInFilters) {
-      String filterName = getStringValue(node);
-      if (!filtersInMapping.contains(filterName)) {
-        reportIssue(node, "\"" + filterName + "\" should have a mapping.");
-      }
-    }
-  }
-
-  private static Set<String> getFilterNames(Iterable<Node> nodes) {
-    Set<String> nodeByFilterName = new HashSet<>();
-    for (Node node : nodes) {
-      nodeByFilterName.add(getStringValue(node));
-    }
-    return nodeByFilterName;
+  public void scanWebXml(XmlFile file) {
+    Set<String> filtersInMapping = new HashSet<>();
+    evaluateAsList(filterNamesFromFilterMappingExpression, file.getNamespaceUnawareDocument())
+      .forEach(node -> filtersInMapping.add(getStringValue(node)));
+    evaluateAsList(filterNamesFromFilterExpression, file.getNamespaceUnawareDocument())
+      .forEach(node -> {
+        String filterName = getStringValue(node);
+        if (!filtersInMapping.contains(filterName)) {
+          reportIssue(node, "\"" + filterName + "\" should have a mapping.");
+        }
+      });
   }
 
   private static String getStringValue(Node node) {
