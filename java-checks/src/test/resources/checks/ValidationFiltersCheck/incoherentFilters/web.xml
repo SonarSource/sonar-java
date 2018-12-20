@@ -11,6 +11,7 @@
 
   <filter>
     <filter-name>myFilter2</filter-name> <!-- Noncompliant {{"myFilter2" should have a mapping.}} -->
+<!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
   </filter>
 
   <filter-mapping>

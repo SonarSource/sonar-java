@@ -39,14 +39,15 @@ public class ValidationFiltersCheck extends AbstractWebXmlXPathBasedCheck {
     evaluateAsList(filterNamesFromFilterExpression, file.getNamespaceUnawareDocument())
       .forEach(node -> {
         String filterName = getStringValue(node);
-        if (!filtersInMapping.contains(filterName)) {
+        if (!filterName.isEmpty() && !filtersInMapping.contains(filterName)) {
           reportIssue(node, "\"" + filterName + "\" should have a mapping.");
         }
       });
   }
 
   private static String getStringValue(Node node) {
-    return node.getFirstChild().getNodeValue();
+    Node firstChild = node.getFirstChild();
+    return (firstChild == null) ? "" : firstChild.getNodeValue();
   }
 
 }
