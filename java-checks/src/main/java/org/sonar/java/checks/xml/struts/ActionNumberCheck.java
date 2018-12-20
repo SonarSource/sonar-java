@@ -19,19 +19,16 @@
  */
 package org.sonar.java.checks.xml.struts;
 
-import com.google.common.collect.Iterables;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.xml.XPathXmlCheck;
-import org.sonar.java.xml.XmlCheckContext;
-import org.w3c.dom.Node;
-
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
 import javax.xml.xpath.XPathExpression;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(key = "S3373")
-public class ActionNumberCheck extends XPathXmlCheck {
+public class ActionNumberCheck extends AbstractXPathBasedCheck {
 
   private static final int DEFAULT_MAXIMUM_NUMBER_FORWARDS = 4;
 
@@ -41,30 +38,25 @@ public class ActionNumberCheck extends XPathXmlCheck {
     defaultValue = "" + DEFAULT_MAXIMUM_NUMBER_FORWARDS)
   public int maximumForwards = DEFAULT_MAXIMUM_NUMBER_FORWARDS;
 
-  private XPathExpression actionsExpression;
-  private XPathExpression forwardsFromActionExpression;
+  private XPathExpression actionsExpression = getXPathExpression("struts-config/action-mappings/action");
+  private XPathExpression forwardsFromActionExpression = getXPathExpression("forward");
 
   @Override
-  public void precompileXPathExpressions(XmlCheckContext context) {
-    actionsExpression = context.compile("struts-config/action-mappings/action");
-    forwardsFromActionExpression = context.compile("forward");
-  }
-
-  @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) {
-    for (Node action : context.evaluateOnDocument(actionsExpression)) {
-      Iterable<Node> extraForwards = Iterables.skip(context.evaluate(forwardsFromActionExpression, action), maximumForwards);
-      if (!Iterables.isEmpty(extraForwards)) {
-        List<XmlCheckContext.XmlDocumentLocation> secondaries = new LinkedList<>();
-        for (Node forward : extraForwards) {
-          secondaries.add(new XmlCheckContext.XmlDocumentLocation("Move this forward to another action.", forward));
+  protected void scanFile(XmlFile xmlFile) {
+    evaluateAsList(actionsExpression, xmlFile.getNamespaceUnawareDocument())
+      .forEach(node -> {
+        List<Secondary> secondaries = new ArrayList<>();
+        evaluateAsList(forwardsFromActionExpression, node).stream().skip(maximumForwards)
+          .forEach(forward -> {
+            Secondary secondary = new Secondary(forward, "Move this forward to another action.");
+            secondaries.add(secondary);
+          });
+        if (!secondaries.isEmpty()) {
+          int cost = secondaries.size();
+          int numberForward = maximumForwards + cost;
+          String message = "Reduce the number of forwards in this action from " + numberForward + " to at most " + maximumForwards + ".";
+          reportIssue(XmlFile.nodeLocation(node), message, secondaries);
         }
-        int cost = secondaries.size();
-        int numberForward = maximumForwards + cost;
-        String message = "Reduce the number of forwards in this action from " + numberForward + " to at most " + maximumForwards + ".";
-        context.reportIssue(this, action, message, secondaries, cost);
-      }
-    }
+      });
   }
-
 }

@@ -21,7 +21,7 @@ package org.sonar.java.checks.xml.struts;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.java.checks.verifier.XmlCheckVerifier;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class ActionNumberCheckTest {
 
@@ -34,17 +34,17 @@ public class ActionNumberCheckTest {
 
   @Test
   public void struts_config_with_too_many_forwards() {
-    XmlCheckVerifier.verify("src/test/files/checks/xml/struts/ActionNumberCheck/tooManyActionsDefault/struts-config.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("tooManyActionsDefault/struts-config.xml", check);
   }
 
   @Test
   public void struts_config_with_too_many_forwards_custom() {
     check.maximumForwards = 3;
-    XmlCheckVerifier.verify("src/test/files/checks/xml/struts/ActionNumberCheck/tooManyActionsCustom/struts-config.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("tooManyActionsCustom/struts-config.xml", check);
   }
 
   @Test
   public void not_a_struts_config_xml() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/irrelevant.xml", check);
+    SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", check);
   }
 }
