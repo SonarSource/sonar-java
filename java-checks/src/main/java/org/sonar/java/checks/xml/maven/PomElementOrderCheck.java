@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 @Rule(key = "S3423")
-public class PomElementOrderCheck extends AbstractXPathBasedCheck {
+public class PomElementOrderCheck extends SonarXmlCheck {
 
   private static final Comparator<Node> LINE_COMPARATOR = Comparator.comparingInt(n -> XmlFile.nodeLocation(n).getStartLine());
 
