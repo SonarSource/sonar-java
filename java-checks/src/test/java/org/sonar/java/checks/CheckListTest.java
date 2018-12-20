@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 import com.google.gson.Gson;
@@ -27,7 +28,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,7 +54,7 @@ public class CheckListTest {
   private static List<String> SE_CHEKS;
   private final Gson gson = new Gson();
 
-  private static final Set<String> BLACK_LIST = Collections.singleton("AbstractXPathBasedCheck.java");
+  private static final Set<String> BLACK_LIST = ImmutableSet.of("AbstractXPathBasedCheck.java", "AbstractWebXmlXPathBasedCheck.java");
 
   @BeforeClass
   public static void before() throws Exception {

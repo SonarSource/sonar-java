@@ -20,29 +20,29 @@
 package org.sonar.java.checks.xml.web;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.XmlCheckVerifier;
-import org.sonar.java.xml.XmlCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class SecurityConstraintsInWebXmlCheckTest {
 
-  private static final XmlCheck CHECK = new SecurityConstraintsInWebXmlCheck();
+  private static final SonarXmlCheck CHECK = new SecurityConstraintsInWebXmlCheck();
 
   @Test
   public void web_xml_without_constraints() {
-    XmlCheckVerifier.verifyIssueOnFile(
-      "src/test/files/checks/xml/web/SecurityConstraintsInWebXmlCheck/withoutSecurityConstraints/web.xml",
-      "Add \"security-constraint\" elements to this descriptor.",
-      CHECK);
+    SonarXmlCheckVerifier.verifyIssueOnFile(
+      "withoutSecurityConstraints/web.xml",
+      CHECK,
+      "Add \"security-constraint\" elements to this descriptor.");
   }
 
   @Test
   public void web_xml_with_constraints() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/web/SecurityConstraintsInWebXmlCheck/withSecurityConstraints/web.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("withSecurityConstraints/web.xml", CHECK);
   }
 
   @Test
   public void not_a_web_xml() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/irrelevant.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", CHECK);
   }
 
 }

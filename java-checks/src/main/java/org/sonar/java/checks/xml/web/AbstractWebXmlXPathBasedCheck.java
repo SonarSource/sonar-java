@@ -19,28 +19,23 @@
  */
 package org.sonar.java.checks.xml.web;
 
-import org.sonar.check.Rule;
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
-import org.w3c.dom.NodeList;
-import javax.xml.xpath.XPathExpression;
-import java.util.Collections;
-import java.util.List;
 
-@Rule(key = "S3369")
-public class SecurityConstraintsInWebXmlCheck extends AbstractWebXmlXPathBasedCheck {
+public abstract class AbstractWebXmlXPathBasedCheck extends AbstractXPathBasedCheck {
 
-  private XPathExpression securityConstraintExpression = getXPathExpression(WEB_XML_ROOT + "/security-constraint");
-
-  private boolean hasNoSecurityConstraint(XmlFile file) {
-    NodeList nodeList = evaluate(securityConstraintExpression, file.getNamespaceUnawareDocument());
-    return nodeList.getLength() == 0;
-  }
+  public static final String WEB_XML_ROOT = "web-app";
 
   @Override
-  public void scanWebXml(XmlFile file) {
-    if (hasNoSecurityConstraint(file)) {
-      List<Integer> secondaryLocationLines = Collections.emptyList();
-      reportIssueOnFile("Add \"security-constraint\" elements to this descriptor.", secondaryLocationLines);
+  protected void scanFile(XmlFile file) {
+    if (isWebXmlFile(file)) {
+      scanWebXml(file);
     }
+  }
+
+  public abstract void scanWebXml(XmlFile file);
+
+  private static boolean isWebXmlFile(XmlFile file) {
+    return "web.xml".equalsIgnoreCase(file.getInputFile().filename());
   }
 }
