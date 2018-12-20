@@ -19,12 +19,8 @@
  */
 package org.sonar.java.checks.xml.maven.helpers;
 
-import org.junit.Test;
-import org.sonar.java.checks.xml.maven.helpers.MavenDependencyMatcher;
-import org.sonar.maven.model.LocatedAttribute;
-import org.sonar.maven.model.maven2.Dependency;
-
 import javax.annotation.Nullable;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +41,7 @@ public class MavenDependencyMatcherTest {
   @Test
   public void empty_dependencies_never_match() {
     matcher = new MavenDependencyMatcher("*:log", "");
-    assertNotMatch(new Dependency());
+    assertNotMatch("", "", "");
   }
 
   @Test
@@ -102,36 +98,18 @@ public class MavenDependencyMatcherTest {
   }
 
   private void assertNotMatch(String groupId, String artifactId) {
-    assertNotMatch(groupId, artifactId, null);
+    assertNotMatch(groupId, artifactId, "");
   }
 
   private void assertNotMatch(String groupId, String artifactId, @Nullable String version) {
-    assertNotMatch(newDependency(groupId, artifactId, version));
-  }
-
-  private void assertNotMatch(Dependency dependency) {
-    assertThat(matcher.matches(dependency)).isFalse();
+    assertThat(matcher.matches(groupId, artifactId, version)).isFalse();
   }
 
   private void assertMatches(String groupId, String artifactId) {
-    assertMatches(groupId, artifactId, null);
+    assertMatches(groupId, artifactId, "");
   }
 
-  private void assertMatches(String groupId, String artifactId, @Nullable String version) {
-    assertMatches(newDependency(groupId, artifactId, version));
-  }
-
-  private void assertMatches(Dependency dependency) {
-    assertThat(matcher.matches(dependency)).isTrue();
-  }
-
-  private static Dependency newDependency(String groupId, String artifactId, @Nullable String version) {
-    Dependency dependency = new Dependency();
-    dependency.setGroupId(new LocatedAttribute(groupId));
-    dependency.setArtifactId(new LocatedAttribute(artifactId));
-    if (version != null) {
-      dependency.setVersion(new LocatedAttribute(version));
-    }
-    return dependency;
+  private void assertMatches(String groupId, String artifactId, String version) {
+    assertThat(matcher.matches(groupId, artifactId, version)).isTrue();
   }
 }

@@ -19,13 +19,9 @@
  */
 package org.sonar.java.checks.xml.maven.helpers;
 
-import org.sonar.maven.model.LocatedAttribute;
-
-import javax.annotation.Nullable;
-
 import java.util.regex.Pattern;
 
-public class PatternMatcher implements LocatedAttributeMatcher {
+public class PatternMatcher implements StringMatcher {
 
   private final Pattern pattern;
 
@@ -34,8 +30,8 @@ public class PatternMatcher implements LocatedAttributeMatcher {
   }
 
   @Override
-  public boolean test(@Nullable LocatedAttribute attribute) {
-    return attribute != null && pattern.matcher(attribute.getValue()).matches();
+  public boolean test(String value) {
+    return !value.isEmpty() && pattern.matcher(value).matches();
   }
 
   private static Pattern compileRegex(String regex) {

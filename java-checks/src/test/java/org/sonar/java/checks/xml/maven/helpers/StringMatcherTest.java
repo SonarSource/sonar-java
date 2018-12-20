@@ -20,16 +20,15 @@
 package org.sonar.java.checks.xml.maven.helpers;
 
 import org.junit.Test;
-import org.sonar.maven.model.LocatedAttribute;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LocatedAttributeMatcherTest {
+public class StringMatcherTest {
 
   @Test
   public void matcher_always_matching_always_match() {
-    LocatedAttributeMatcher matcher = LocatedAttributeMatcher.any();
+    StringMatcher matcher = StringMatcher.any();
     assertThat(matcher.test(null)).isTrue();
-    assertThat(matcher.test(new LocatedAttribute("test"))).isTrue();
+    assertThat(matcher.test("test")).isTrue();
   }
 }

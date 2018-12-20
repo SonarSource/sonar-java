@@ -19,14 +19,12 @@
  */
 package org.sonar.java.checks.xml.maven.helpers;
 
-import org.sonar.maven.model.LocatedAttribute;
-
 import java.util.function.Predicate;
 
 @FunctionalInterface
-public interface LocatedAttributeMatcher extends Predicate<LocatedAttribute> {
+public interface StringMatcher extends Predicate<String> {
 
-  static LocatedAttributeMatcher any() {
-    return tree -> true;
+  static StringMatcher any() {
+    return str -> true;
   }
 }

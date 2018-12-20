@@ -19,18 +19,21 @@
  */
 package org.sonar.java.checks.xml.maven;
 
+import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.xml.maven.helpers.MavenDependencyCollector;
+import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonar.java.checks.xml.maven.helpers.MavenDependencyMatcher;
-import org.sonar.java.xml.maven.PomCheck;
-import org.sonar.java.xml.maven.PomCheckContext;
-import org.sonar.maven.model.maven2.Dependency;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 @Rule(key = DisallowedDependenciesCheck.KEY)
-public class DisallowedDependenciesCheck implements PomCheck {
+public class DisallowedDependenciesCheck extends AbstractXPathBasedCheck {
 
   public static final String KEY = "S3417";
+
+  private XPathExpression dependencyExpression = getXPathExpression("//dependencies/dependency");
 
   @RuleProperty(
     key = "dependencyName",
@@ -45,12 +48,29 @@ public class DisallowedDependenciesCheck implements PomCheck {
   private MavenDependencyMatcher matcher = null;
 
   @Override
-  public void scanFile(PomCheckContext context) {
-    for (Dependency dependency : new MavenDependencyCollector(context.getMavenProject()).allDependencies()) {
-      if (getMatcher().matches(dependency)) {
-        context.reportIssue(this, dependency, "Remove this forbidden dependency.");
+  protected void scanFile(XmlFile xmlFile) {
+    if (!"pom.xml".equalsIgnoreCase(xmlFile.getInputFile().filename())) {
+      return;
+    }
+
+    evaluateAsList(dependencyExpression, xmlFile.getNamespaceUnawareDocument()).forEach(dependency -> {
+      String groupId = getChildElementText("groupId", dependency);
+      String artifactId = getChildElementText("artifactId", dependency);
+      String dependencyVersion = getChildElementText("version", dependency);
+      if (getMatcher().matches(groupId, artifactId, dependencyVersion)) {
+        reportIssue(dependency, "Remove this forbidden dependency.");
+      }
+    });
+  }
+
+  private static String getChildElementText(String childElementName, Node parent) {
+    for (Node node : XmlFile.children(parent)) {
+      if (node.getNodeType() == Node.ELEMENT_NODE && ((Element) node).getTagName() == childElementName) {
+        return node.getTextContent();
       }
     }
+
+    return "";
   }
 
   private MavenDependencyMatcher getMatcher() {

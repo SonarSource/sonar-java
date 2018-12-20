@@ -21,7 +21,7 @@ package org.sonar.java.checks.xml.maven;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.java.checks.verifier.PomCheckVerifier;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class DisallowedDependenciesCheckTest {
 
@@ -35,33 +35,33 @@ public class DisallowedDependenciesCheckTest {
   @Test
   public void without_version() {
     check.dependencyName = "*:log4j";
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/disallowedDependenciesCheck/noVersion-pom.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("noVersion/pom.xml", check);
   }
 
   @Test
   public void with_simple_version() {
     check.dependencyName = "*:log4j";
     check.version = "1.2.*";
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/disallowedDependenciesCheck/regexVersion-pom.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("regexVersion/pom.xml", check);
   }
 
   @Test
   public void with_range_version() {
     check.dependencyName = "*:log4j";
     check.version = "1.1.0-1.2.15";
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/disallowedDependenciesCheck/rangeVersion-pom.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("rangeVersion/pom.xml", check);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void should_fail_with_invalid_name_provided() {
     check.dependencyName = "org.sonar";
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/disallowedDependenciesCheck/noVersion-pom.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("noVersion/pom.xml", check);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void should_fail_with_invalid_version_provided() {
     check.dependencyName = "org.sonar.*:*";
     check.version = "version-0";
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/disallowedDependenciesCheck/noVersion-pom.xml", check);
+    SonarXmlCheckVerifier.verifyIssues("noVersion/pom.xml", check);
   }
 }
