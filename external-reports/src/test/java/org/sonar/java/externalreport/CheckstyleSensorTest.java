@@ -142,8 +142,8 @@ public class CheckstyleSensorTest {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "invalid-path.txt");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("FileNotFoundException:")
-      .endsWith("invalid-path.txt' can't be read.");
+      .startsWith("Failed to import external issues report:")
+      .endsWith("invalid-path.txt");
   }
 
   @Test
@@ -151,8 +151,8 @@ public class CheckstyleSensorTest {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "not-checkstyle-file.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("IOException: Unexpected document root 'html' instead of 'checkstyle'.")
-      .endsWith("not-checkstyle-file.xml' can't be read.");
+      .startsWith("Failed to import external issues report:")
+      .endsWith("not-checkstyle-file.xml");
   }
 
   @Test
@@ -160,8 +160,8 @@ public class CheckstyleSensorTest {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "checkstyle-with-invalid-line.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("NumberFormatException: For input string: \"invalid\"")
-      .endsWith("checkstyle-with-invalid-line.xml' can't be read.");
+      .startsWith("Failed to import external issues report:")
+      .endsWith("checkstyle-with-invalid-line.xml");
   }
 
   @Test
@@ -169,8 +169,8 @@ public class CheckstyleSensorTest {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "invalid-file.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("XMLStreamException: ParseError at [row,col]:[2,1]")
-      .endsWith("invalid-file.xml' can't be read.");
+      .startsWith("Failed to import external issues report:")
+      .endsWith("invalid-file.xml");
   }
 
   @Test

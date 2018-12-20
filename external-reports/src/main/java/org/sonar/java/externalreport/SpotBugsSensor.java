@@ -21,11 +21,9 @@ package org.sonar.java.externalreport;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
-import javax.xml.stream.XMLStreamException;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
@@ -75,9 +73,8 @@ public class SpotBugsSensor implements Sensor {
     try (InputStream in = new FileInputStream(reportPath)) {
       LOG.info("Importing {}", reportPath);
       SpotBugsXmlReportReader.read(context, in, RULE_LOADER, Collections.singletonMap(FINDSECBUGS_KEY, FINDSECBUGS_LOADER));
-    } catch (IOException | XMLStreamException | RuntimeException e) {
-      LOG.error(e.getClass().getSimpleName() + ": " + e.getMessage() +
-        ", no issues information will be saved as the report file '{}' can't be read.", reportPath, e);
+    } catch (Exception e) {
+      LOG.error("Failed to import external issues report: " + reportPath, e);
     }
   }
 

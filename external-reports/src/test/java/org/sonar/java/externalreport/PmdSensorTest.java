@@ -107,14 +107,14 @@ public class PmdSensorTest {
   public void invalid_report_path() throws IOException {
     List<ExternalIssue> externalIssues = execute(SQ72, "invalid-path.txt");
     assertThat(externalIssues).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).matches("Can't find PMD XML report: .*invalid-path.txt");
+    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Failed to import external issues report:");
   }
 
   @Test
   public void not_xml_report() throws IOException {
     List<ExternalIssue> externalIssues = execute(SQ72, "hello.txt");
     assertThat(externalIssues).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).matches("Can't read PMD XML report: .*hello.txt");
+    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Failed to import external issues report:");
   }
 
   @Test

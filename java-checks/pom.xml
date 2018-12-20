@@ -38,6 +38,10 @@
       <artifactId>sslr-testing-harness</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.sonarsource.analyzer-commons</groupId>
+      <artifactId>sonar-xml-parsing</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
