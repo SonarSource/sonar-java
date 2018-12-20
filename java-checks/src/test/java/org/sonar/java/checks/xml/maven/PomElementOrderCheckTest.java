@@ -20,23 +20,23 @@
 package org.sonar.java.checks.xml.maven;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.PomCheckVerifier;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class PomElementOrderCheckTest {
 
   @Test
   public void should_raise_issue_if_order_is_wrong() {
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/PomElementOrderCheck.xml", new PomElementOrderCheck());
+    SonarXmlCheckVerifier.verifyIssues("Wrong1/pom.xml", new PomElementOrderCheck());
   }
 
   @Test
   public void should_raise_issue_with_location_only_between_first_and_last_wrong() {
-    PomCheckVerifier.verify("src/test/files/checks/xml/maven/PomElementOrderCheck2.xml", new PomElementOrderCheck());
+    SonarXmlCheckVerifier.verifyIssues("Wrong2/pom.xml", new PomElementOrderCheck());
   }
 
   @Test
   public void should_not_raise_issue_if_order_is_correct() {
-    PomCheckVerifier.verifyNoIssue("src/test/files/checks/xml/maven/PomElementOrderCheckCorrectOrder.xml", new PomElementOrderCheck());
+    SonarXmlCheckVerifier.verifyNoIssue("Ok/pom.xml", new PomElementOrderCheck());
   }
 
 }

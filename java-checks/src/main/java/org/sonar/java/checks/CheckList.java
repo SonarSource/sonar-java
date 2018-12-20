@@ -691,18 +691,10 @@ public final class CheckList {
   }
 
   public static List<Class<? extends JavaCheck>> getXmlChecks() {
-    return ImmutableList.<Class<? extends JavaCheck>>builder()
-      .addAll(getMavenChecks())
-      .addAll(Arrays.asList(
-        ValidationFiltersCheck.class,
-        ActionNumberCheck.class,
-        FormNameDuplicationCheck.class))
-      .build();
-  }
-
-  private static List<Class<? extends JavaCheck>> getMavenChecks() {
     return Arrays.asList(
-      PomElementOrderCheck.class);
+      ValidationFiltersCheck.class,
+      ActionNumberCheck.class,
+      FormNameDuplicationCheck.class);
   }
 
   public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
@@ -711,6 +703,7 @@ public final class CheckList {
       DefaultMessageListenerContainerCheck.class,
       DatabaseSchemaUpdateCheck.class,
       DisallowedDependenciesCheck.class,
+      PomElementOrderCheck.class,
       DefaultInterceptorsLocationCheck.class,
       SecurityConstraintsInWebXmlCheck.class,
       InterceptorExclusionsCheck.class,
