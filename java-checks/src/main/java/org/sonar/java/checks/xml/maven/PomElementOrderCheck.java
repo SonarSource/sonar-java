@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks.xml.maven;
 
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +36,7 @@ public class PomElementOrderCheck extends SonarXmlCheck {
 
   private static final Comparator<Node> LINE_COMPARATOR = Comparator.comparingInt(n -> XmlFile.nodeLocation(n).getStartLine());
 
-  private static final List<String> REQUIRED_ORDER = ImmutableList.of(
+  private static final List<String> REQUIRED_ORDER = Arrays.asList(
     "modelVersion",
     "parent",
     "groupId",
@@ -76,14 +76,12 @@ public class PomElementOrderCheck extends SonarXmlCheck {
     checkPositions(xmlFile.getDocument().getDocumentElement());
   }
 
-  private static Optional<Node> getChildElementByName(String name, List<Node> children) {
-    for (Node child : children) {
-      if (child.getNodeType() == Node.ELEMENT_NODE && ((Element) child).getTagName().equals(name)) {
-        return Optional.of(child);
-      }
-    }
-
-    return Optional.empty();
+  private static Optional<Element> getChildElementByName(String name, List<Node> children) {
+    return children.stream()
+      .filter(child -> child.getNodeType() == Node.ELEMENT_NODE)
+      .map(Element.class::cast)
+      .filter(element -> element.getTagName().equals(name))
+      .findFirst();
   }
 
   private void checkPositions(Element project) {
