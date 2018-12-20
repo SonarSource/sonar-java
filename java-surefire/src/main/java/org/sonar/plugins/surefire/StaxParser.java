@@ -20,16 +20,16 @@
 package org.sonar.plugins.surefire;
 
 import com.ctc.wstx.stax.WstxInputFactory;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import org.codehaus.staxmate.SMInputFactory;
 import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.sonar.plugins.surefire.data.SurefireStaxHandler;
 import org.sonar.plugins.surefire.data.UnitTestIndex;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import org.sonarsource.analyzer.commons.xml.SafetyFactory;
 
 public class StaxParser {
 
@@ -38,16 +38,13 @@ public class StaxParser {
 
   public StaxParser(UnitTestIndex index) {
     this.streamHandler = new SurefireStaxHandler(index);
-    XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
-    if (xmlFactory instanceof WstxInputFactory) {
-      WstxInputFactory wstxInputfactory = (WstxInputFactory) xmlFactory;
+    XMLInputFactory xmlInputFactory = SafetyFactory.createXMLInputFactory();
+    if (xmlInputFactory instanceof WstxInputFactory) {
+      WstxInputFactory wstxInputfactory = (WstxInputFactory) xmlInputFactory;
       wstxInputfactory.configureForLowMemUsage();
       wstxInputfactory.getConfig().setUndeclaredEntityResolver((String publicID, String systemID, String baseURI, String namespace) -> namespace);
     }
-    xmlFactory.setProperty(XMLInputFactory.IS_VALIDATING, false);
-    xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-    xmlFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
-    inf = new SMInputFactory(xmlFactory);
+    this.inf = new SMInputFactory(xmlInputFactory);
   }
 
   public void parse(File xmlFile) throws XMLStreamException {
