@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 import org.sonar.check.Rule;
 import javax.xml.xpath.XPathExpression;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Rule(key = "S3355")
@@ -33,21 +34,24 @@ public class ValidationFiltersCheck extends AbstractWebXmlXPathBasedCheck {
 
   @Override
   public void scanWebXml(XmlFile file) {
-    Set<String> filtersInMapping = new HashSet<>();
+    Set<Optional<String>> filtersInMapping = new HashSet<>();
     evaluateAsList(filterNamesFromFilterMappingExpression, file.getNamespaceUnawareDocument())
       .forEach(node -> filtersInMapping.add(getStringValue(node)));
     evaluateAsList(filterNamesFromFilterExpression, file.getNamespaceUnawareDocument())
       .forEach(node -> {
-        String filterName = getStringValue(node);
-        if (!filterName.isEmpty() && !filtersInMapping.contains(filterName)) {
-          reportIssue(node, "\"" + filterName + "\" should have a mapping.");
+        Optional<String> filterName = getStringValue(node);
+        if (filterName.isPresent() && !filtersInMapping.contains(filterName)) {
+          reportIssue(node, "\"" + filterName.get() + "\" should have a mapping.");
         }
       });
   }
 
-  private static String getStringValue(Node node) {
+  private static Optional<String> getStringValue(Node node) {
     Node firstChild = node.getFirstChild();
-    return (firstChild == null) ? "" : firstChild.getNodeValue();
+    if (firstChild == null) {
+      return Optional.empty();
+    }
+    return Optional.of(firstChild.getNodeValue());
   }
 
 }
