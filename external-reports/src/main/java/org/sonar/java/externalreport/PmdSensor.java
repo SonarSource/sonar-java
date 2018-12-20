@@ -20,10 +20,7 @@
 package org.sonar.java.externalreport;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
-import javax.xml.stream.XMLStreamException;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
@@ -65,10 +62,8 @@ public class PmdSensor implements Sensor {
     try {
       LOG.info("Importing {}", reportFile);
       PmdXmlReportReader.read(context, reportFile, RULE_LOADER);
-    } catch (FileNotFoundException e) {
-      LOG.error("Can't find PMD XML report: {}", reportFile);
-    } catch (XMLStreamException | IOException | RuntimeException e) {
-      LOG.error("Can't read PMD XML report: {}", reportFile, e);
+    } catch (Exception e) {
+      LOG.error("Failed to import external issues report: " + reportFile.getAbsolutePath(), e);
     }
   }
 

@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
@@ -44,6 +43,7 @@ import org.sonar.api.rules.RuleType;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
+import org.sonarsource.analyzer.commons.xml.SafetyFactory;
 
 public class PmdXmlReportReader {
 
@@ -72,9 +72,7 @@ public class PmdXmlReportReader {
 
   private void parse() throws XMLStreamException, IOException {
     try (InputStream inputStream = new FileInputStream(reportFile)) {
-      XMLInputFactory factory = XMLInputFactory.newInstance();
-      factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
-      XMLEventReader reader = factory.createXMLEventReader(inputStream);
+      XMLEventReader reader = SafetyFactory.createXMLInputFactory().createXMLEventReader(inputStream);
       while (reader.hasNext()) {
         onXmlEvent(reader.nextEvent());
       }

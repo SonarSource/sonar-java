@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
@@ -41,6 +40,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
+import org.sonarsource.analyzer.commons.xml.SafetyFactory;
 
 public class SpotBugsXmlReportReader {
 
@@ -73,9 +73,7 @@ public class SpotBugsXmlReportReader {
   }
 
   private void read(InputStream in) throws XMLStreamException, IOException {
-    XMLInputFactory factory = XMLInputFactory.newInstance();
-    factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
-    XMLEventReader reader = factory.createXMLEventReader(in);
+    XMLEventReader reader = SafetyFactory.createXMLInputFactory().createXMLEventReader(in);
     Deque<String> elementStack = new LinkedList<>();
     while (reader.hasNext()) {
       XMLEvent event = reader.nextEvent();

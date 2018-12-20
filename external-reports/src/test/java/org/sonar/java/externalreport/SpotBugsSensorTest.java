@@ -148,8 +148,8 @@ public class SpotBugsSensorTest {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "invalid-path.txt");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("FileNotFoundException:")
-      .endsWith("invalid-path.txt' can't be read.");
+      .startsWith("Failed to import external issues report:")
+      .endsWith("invalid-path.txt");
   }
 
   @Test
@@ -157,8 +157,8 @@ public class SpotBugsSensorTest {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "not-spotbugs-file.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("IOException: Unexpected document root 'html' instead of 'BugCollection'.")
-      .endsWith("not-spotbugs-file.xml' can't be read.");
+      .startsWith("Failed to import external issues report:")
+      .endsWith("not-spotbugs-file.xml");
   }
 
   @Test
@@ -166,8 +166,8 @@ public class SpotBugsSensorTest {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "spotbugsXml-with-invalid-line.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("NumberFormatException: For input string: \"invalid\"")
-      .endsWith("spotbugsXml-with-invalid-line.xml' can't be read.");
+      .startsWith("Failed to import external issues report:")
+      .endsWith("spotbugsXml-with-invalid-line.xml");
   }
 
   @Test
@@ -175,8 +175,8 @@ public class SpotBugsSensorTest {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "invalid-file.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("XMLStreamException: ParseError at [row,col]:[2,1]")
-      .endsWith("invalid-file.xml' can't be read.");
+      .startsWith("Failed to import external issues report:")
+      .endsWith("invalid-file.xml");
   }
 
   @Test
