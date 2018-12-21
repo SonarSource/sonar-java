@@ -11,6 +11,7 @@
 
   <filter>
     <filter-name>myFilter2</filter-name> <!-- Noncompliant {{"myFilter2" should have a mapping.}} -->
+<!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
   </filter>
 
   <filter-mapping>
@@ -21,6 +22,14 @@
   <filter-mapping>
     <filter-name>myFilter3</filter-name> <!-- this is OK, filter can be declared by @WebFilter -->
     <url-pattern>*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name></filter-name> <!-- No issue raised for empty node -->
+  </filter>
+
+  <filter-mapping>
+    <filter-name></filter-name> <!-- No issue raised for empty node -->
   </filter-mapping>
 
 </web-app>

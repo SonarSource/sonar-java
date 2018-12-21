@@ -692,7 +692,6 @@ public final class CheckList {
 
   public static List<Class<? extends JavaCheck>> getXmlChecks() {
     return Arrays.asList(
-      ValidationFiltersCheck.class,
       ActionNumberCheck.class,
       FormNameDuplicationCheck.class);
   }
@@ -710,6 +709,7 @@ public final class CheckList {
       SingleConnectionFactoryCheck.class,
       ArtifactIdNamingConventionCheck.class,
       GroupIdNamingConventionCheck.class,
+      ValidationFiltersCheck.class,
       DeprecatedPomPropertiesCheck.class);
   }
 }

@@ -7,6 +7,7 @@
 
   <filter>
     <filter-name>myFilter</filter-name>  <!-- Noncompliant {{"myFilter" should have a mapping.}} -->
+<!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
   </filter>
 
 </web-app>

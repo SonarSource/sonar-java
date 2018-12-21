@@ -20,31 +20,30 @@
 package org.sonar.java.checks.xml.web;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.XmlCheckVerifier;
-import org.sonar.java.xml.XmlCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class ValidationFiltersCheckTest {
 
-  private static final XmlCheck CHECK = new ValidationFiltersCheck();
+  private static final SonarXmlCheck CHECK = new ValidationFiltersCheck();
 
   @Test
   public void web_xml_without_filter() {
-    XmlCheckVerifier.verifyNoIssue(
-      "src/test/files/checks/xml/web/ValidationFiltersCheck/withoutFilters/web.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("withoutFilters/web.xml", CHECK);
   }
 
   @Test
   public void web_xml_incomplete_filter() {
-    XmlCheckVerifier.verify("src/test/files/checks/xml/web/ValidationFiltersCheck/incompleteFilters/web.xml", CHECK);
+    SonarXmlCheckVerifier.verifyIssues("incompleteFilters/web.xml", CHECK);
   }
 
   @Test
   public void web_xml_incoherent_filters() {
-    XmlCheckVerifier.verify("src/test/files/checks/xml/web/ValidationFiltersCheck/incoherentFilters/web.xml", CHECK);
+    SonarXmlCheckVerifier.verifyIssues("incoherentFilters/web.xml", CHECK);
   }
 
   @Test
   public void web_xml_with_filter() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/web/ValidationFiltersCheck/withFilters/web.xml", CHECK);
+    SonarXmlCheckVerifier.verifyNoIssue("withFilters/web.xml", CHECK);
   }
 }
