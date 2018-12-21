@@ -20,12 +20,12 @@
 package org.sonar.java.checks.xml.struts;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.XmlCheckVerifier;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class FormNameDuplicationCheckTest {
 
   @Test
   public void web_xml_without_filter() {
-    XmlCheckVerifier.verify("src/test/files/checks/xml/struts/FormNameDuplicationCheck/form-validation.xml", new FormNameDuplicationCheck());
+    SonarXmlCheckVerifier.verifyIssues("form-validation.xml", new FormNameDuplicationCheck());
   }
 }
