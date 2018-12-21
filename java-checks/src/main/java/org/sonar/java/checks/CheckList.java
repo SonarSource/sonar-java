@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.sonar.java.DebugCheck;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
@@ -164,7 +163,6 @@ public final class CheckList {
     return ImmutableList.<Class>builder()
       .addAll(getJavaChecks())
       .addAll(getJavaTestChecks())
-      .addAll(getXmlChecks())
       .addAll(getNewXmlChecks())
       .build();
   }
@@ -689,10 +687,6 @@ public final class CheckList {
       BadTestMethodNameCheck.class,
       AssertionFailInCatchBlockCheck.class,
       AssertionArgumentOrderCheck.class);
-  }
-
-  public static List<Class<? extends JavaCheck>> getXmlChecks() {
-    return Collections.emptyList();
   }
 
   public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {

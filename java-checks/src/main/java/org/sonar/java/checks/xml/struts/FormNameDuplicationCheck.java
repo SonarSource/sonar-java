@@ -27,7 +27,6 @@ import javax.annotation.CheckForNull;
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
-import org.sonar.java.xml.XmlCheckUtils;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.w3c.dom.Node;
 
@@ -65,7 +64,7 @@ public class FormNameDuplicationCheck extends AbstractXPathBasedCheck {
 
   @CheckForNull
   private static String getNameAttribute(Node form) {
-    Node name = XmlCheckUtils.nodeAttribute(form, "name");
+    Node name = nodeAttribute(form, "name");
     if (name != null) {
       return name.getNodeValue();
     }

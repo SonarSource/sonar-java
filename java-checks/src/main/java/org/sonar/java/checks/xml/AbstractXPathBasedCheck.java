@@ -22,6 +22,7 @@ package org.sonar.java.checks.xml;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.CheckForNull;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -29,6 +30,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.sonar.java.AnalysisException;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -55,6 +57,7 @@ public abstract class AbstractXPathBasedCheck extends SonarXmlCheck {
   protected static List<Node> evaluateAsList(XPathExpression expression, Node node) {
     return asList(evaluate(expression, node));
   }
+
   protected static List<Node> asList(NodeList nodeList) {
     int numberResults = nodeList.getLength();
     if (numberResults == 0) {
@@ -65,5 +68,14 @@ public abstract class AbstractXPathBasedCheck extends SonarXmlCheck {
       result.add(nodeList.item(i));
     }
     return result;
+  }
+
+  @CheckForNull
+  protected static Node nodeAttribute(Node node, String attribute) {
+    NamedNodeMap attributes = node.getAttributes();
+    if (attributes == null) {
+      return null;
+    }
+    return attributes.getNamedItem(attribute);
   }
 }

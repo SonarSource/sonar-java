@@ -86,7 +86,6 @@ public class JavaPlugin implements Plugin {
       DefaultJavaResourceLocator.class,
       JavaSquidSensor.class,
       PostAnalysisIssueFilter.class,
-      XmlFileSensor.class,
       NewXmlFileSensor.class
       );
 
