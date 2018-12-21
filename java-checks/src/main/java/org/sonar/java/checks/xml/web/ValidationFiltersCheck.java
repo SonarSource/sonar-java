@@ -36,12 +36,7 @@ public class ValidationFiltersCheck extends AbstractWebXmlXPathBasedCheck {
   public void scanWebXml(XmlFile file) {
     Set<String> filtersInMapping = new HashSet<>();
     evaluateAsList(filterNamesFromFilterMappingExpression, file.getNamespaceUnawareDocument())
-      .forEach(node -> {
-        Optional<String> nodeValue = getStringValue(node);
-        if (nodeValue.isPresent()) {
-          filtersInMapping.add(nodeValue.get());
-        }
-      });
+      .forEach(node -> getStringValue(node).ifPresent(filtersInMapping::add));
     evaluateAsList(filterNamesFromFilterExpression, file.getNamespaceUnawareDocument())
       .forEach(node -> {
         Optional<String> filterName = getStringValue(node);
