@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.sonar.java.DebugCheck;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
@@ -691,8 +692,7 @@ public final class CheckList {
   }
 
   public static List<Class<? extends JavaCheck>> getXmlChecks() {
-    return Arrays.asList(
-      ActionNumberCheck.class);
+    return Collections.emptyList();
   }
 
   public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
@@ -708,6 +708,7 @@ public final class CheckList {
       SingleConnectionFactoryCheck.class,
       ArtifactIdNamingConventionCheck.class,
       GroupIdNamingConventionCheck.class,
+      ActionNumberCheck.class,
       ValidationFiltersCheck.class,
       FormNameDuplicationCheck.class,
       DeprecatedPomPropertiesCheck.class);
