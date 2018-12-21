@@ -51,5 +51,11 @@
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

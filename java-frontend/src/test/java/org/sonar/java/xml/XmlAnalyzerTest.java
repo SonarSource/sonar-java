@@ -30,8 +30,6 @@ import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.xml.maven.PomCheck;
-import org.sonar.java.xml.maven.PomCheckContext;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -66,13 +64,6 @@ public class XmlAnalyzerTest {
     }
   };
 
-  private static final JavaCheck POM_CHECK = new PomCheck() {
-    @Override
-    public void scanFile(PomCheckContext context) {
-      context.reportIssue(this, 1, "message");
-    }
-  };
-
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
@@ -81,9 +72,9 @@ public class XmlAnalyzerTest {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(PARSE_ISSUE_POM);
     fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).setLanguage("xml").build());
-    SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
+    SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK);
 
-    XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
+    XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK);
     analyzer.scan(Lists.newArrayList(xmlFile));
 
     verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull());
@@ -95,9 +86,9 @@ public class XmlAnalyzerTest {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(INVALID_POM);
     fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).setLanguage("xml").build());
-    SonarComponents sonarComponents = createSonarComponentsMock(fs, POM_CHECK);
+    SonarComponents sonarComponents = createSonarComponentsMock(fs);
 
-    XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, POM_CHECK);
+    XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents);
     analyzer.scan(Lists.newArrayList(xmlFile));
 
     verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull());
@@ -124,12 +115,12 @@ public class XmlAnalyzerTest {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(VALID_POM);
     fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).build());
-    SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
+    SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK);
 
-    XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
+    XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK);
     analyzer.scan(Lists.newArrayList(xmlFile));
 
-    verify(sonarComponents, times(2)).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull());
+    verify(sonarComponents, times(1)).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull());
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
 
@@ -148,25 +139,11 @@ public class XmlAnalyzerTest {
   }
 
   @Test
-  public void should_scan_pom_file_with_pom_check() {
+  public void should_scan_xml_file_when_no_check_provided() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(VALID_POM);
     fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).build());
-    SonarComponents sonarComponents = createSonarComponentsMock(fs, POM_CHECK);
-
-    XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, POM_CHECK);
-    analyzer.scan(Lists.newArrayList(xmlFile));
-
-    verify(sonarComponents, times(1)).addIssue(any(File.class), any(JavaCheck.class), any(Integer.class), anyString(), isNull());
-    verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
-  }
-
-  @Test
-  public void should_scan_xml_file__when_no_check_provided() {
-    DefaultFileSystem fs = new DefaultFileSystem(new File(""));
-    File xmlFile = new File(VALID_POM);
-    fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).build());
-    SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
+    SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents);
     analyzer.scan(Lists.newArrayList(xmlFile));
@@ -176,29 +153,13 @@ public class XmlAnalyzerTest {
   }
 
   @Test
-  public void should_not_run_pom_check_when_no_pom_file_provided() {
-    DefaultFileSystem fs = new DefaultFileSystem(new File(""));
-    File xmlFile = new File("src/test/files/xml/parsing.xml");
-    fs.add(new TestInputFileBuilder("", xmlFile.getAbsolutePath()).setLanguage("xml").build());
-    SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
-
-    XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
-    analyzer.scan(Lists.newArrayList(xmlFile));
-
-    verify(sonarComponents, never()).addIssue(any(File.class), eq(POM_CHECK), any(Integer.class), anyString(), isNull());
-    verify(sonarComponents, times(1)).addIssue(any(File.class), eq(XML_CHECK), any(Integer.class), anyString(), isNull());
-    verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
-  }
-
-  @Test
   public void should_not_run_xml_check_when_no_xml_file_provided() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
-    SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
+    SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK);
 
-    XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
+    XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK);
     analyzer.scan(Lists.<File>newArrayList());
 
-    verify(sonarComponents, never()).addIssue(any(File.class), eq(POM_CHECK), any(Integer.class), anyString(), isNull());
     verify(sonarComponents, never()).addIssue(any(File.class), eq(XML_CHECK), any(Integer.class), anyString(), isNull());
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }
@@ -211,7 +172,6 @@ public class XmlAnalyzerTest {
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents);
     analyzer.scan(Lists.newArrayList());
 
-    verify(sonarComponents, never()).addIssue(any(File.class), eq(POM_CHECK), any(Integer.class), anyString(), isNull());
     verify(sonarComponents, never()).addIssue(any(File.class), eq(XML_CHECK), any(Integer.class), anyString(), isNull());
     verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
   }

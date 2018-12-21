@@ -29,11 +29,6 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>java-maven-model</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>org.ow2.asm</groupId>
@@ -54,18 +49,6 @@
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-    </dependency>
-    <!-- we use woodstox parser as underlying XML parser for JAXB in PomParser.java because element location in source provided by XML parsers
-    is implementation specific and woodstox was used historically for this purpose. If you remove this dependency JAXB will use Xerces parser
-    which provides different column numbers for location -->
-    <dependency>
-      <groupId>com.fasterxml.woodstox</groupId>
-      <artifactId>woodstox-core</artifactId>
     </dependency>
 
     <dependency>
@@ -97,24 +80,6 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-    </dependency>
-
-    <!-- JAXB is used to parse pom.xml files in PomParser -->
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jaxb</groupId>
-      <artifactId>jaxb-runtime</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <!-- JAXB runtime requires javax.activation.DataSource from JAF -->
-    <dependency>
-      <groupId>com.sun.activation</groupId>
-      <artifactId>javax.activation</artifactId>
-      <scope>runtime</scope>
     </dependency>
 
     <dependency>
