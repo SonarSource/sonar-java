@@ -27,8 +27,10 @@ import org.sonarsource.analyzer.commons.xml.XmlTextRange;
 import org.w3c.dom.Node;
 import javax.annotation.CheckForNull;
 import javax.xml.xpath.XPathExpression;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Rule(key = "S3374")
 public class FormNameDuplicationCheck extends AbstractXPathBasedCheck {
