@@ -24,8 +24,9 @@ import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
 import javax.xml.xpath.XPathExpression;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.w3c.dom.Node;
 
 @Rule(key = "S3373")
 public class ActionNumberCheck extends AbstractXPathBasedCheck {
@@ -44,19 +45,19 @@ public class ActionNumberCheck extends AbstractXPathBasedCheck {
   @Override
   protected void scanFile(XmlFile xmlFile) {
     evaluateAsList(actionsExpression, xmlFile.getNamespaceUnawareDocument())
-      .forEach(node -> {
-        List<Secondary> secondaries = new ArrayList<>();
-        evaluateAsList(forwardsFromActionExpression, node).stream().skip(maximumForwards)
-          .forEach(forward -> {
-            Secondary secondary = new Secondary(forward, "Move this forward to another action.");
-            secondaries.add(secondary);
-          });
-        if (!secondaries.isEmpty()) {
-          int cost = secondaries.size();
-          int numberForward = maximumForwards + cost;
-          String message = "Reduce the number of forwards in this action from " + numberForward + " to at most " + maximumForwards + ".";
-          reportIssue(XmlFile.nodeLocation(node), message, secondaries);
-        }
-      });
+      .forEach(this::checkAction);
   }
+
+  private void checkAction(Node node) {
+    List<Secondary> secondaries = evaluateAsList(forwardsFromActionExpression, node).stream()
+      .skip(maximumForwards)
+      .map(forward -> new Secondary(forward, "Move this forward to another action."))
+      .collect(Collectors.toList());
+    if (!secondaries.isEmpty()) {
+      int numberForward = maximumForwards + secondaries.size();
+      String message = "Reduce the number of forwards in this action from " + numberForward + " to at most " + maximumForwards + ".";
+      reportIssue(XmlFile.nodeLocation(node), message, secondaries);
+    }
+  }
+
 }
