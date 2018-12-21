@@ -163,7 +163,7 @@ public final class CheckList {
     return ImmutableList.<Class>builder()
       .addAll(getJavaChecks())
       .addAll(getJavaTestChecks())
-      .addAll(getNewXmlChecks())
+      .addAll(getXmlChecks())
       .build();
   }
 
@@ -689,7 +689,7 @@ public final class CheckList {
       AssertionArgumentOrderCheck.class);
   }
 
-  public static List<Class<? extends SonarXmlCheck>> getNewXmlChecks() {
+  public static List<Class<? extends SonarXmlCheck>> getXmlChecks() {
     return Arrays.asList(
       DependencyWithSystemScopeCheck.class,
       DefaultMessageListenerContainerCheck.class,

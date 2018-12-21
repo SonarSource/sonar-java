@@ -37,9 +37,9 @@ import org.sonarsource.analyzer.commons.xml.ParseException;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 
-public class NewXmlFileSensor implements Sensor {
+public class XmlFileSensor implements Sensor {
 
-  private static final Logger LOG = Loggers.get(NewXmlFileSensor.class);
+  private static final Logger LOG = Loggers.get(XmlFileSensor.class);
 
   private final Checks<SonarXmlCheck> checks;
 
@@ -48,8 +48,8 @@ public class NewXmlFileSensor implements Sensor {
     descriptor.name("XML rules for Java projects");
   }
 
-  public NewXmlFileSensor(CheckFactory checkFactory) {
-    this.checks = checkFactory.<SonarXmlCheck>create(CheckList.REPOSITORY_KEY).addAnnotatedChecks((Iterable) CheckList.getNewXmlChecks());
+  public XmlFileSensor(CheckFactory checkFactory) {
+    this.checks = checkFactory.<SonarXmlCheck>create(CheckList.REPOSITORY_KEY).addAnnotatedChecks((Iterable) CheckList.getXmlChecks());
   }
 
   @Override
