@@ -21,6 +21,10 @@ package org.sonar.plugins.java;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.sonar.api.batch.fs.FilePredicate;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
@@ -33,6 +37,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.checks.CheckList;
+import org.sonarsource.analyzer.commons.ProgressReport;
 import org.sonarsource.analyzer.commons.xml.ParseException;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
@@ -56,8 +61,32 @@ public class XmlFileSensor implements Sensor {
   public void execute(SensorContext context) {
     FileSystem fs = context.fileSystem();
     FilePredicate xmlFilesPredicate = fs.predicates().matchesPathPattern("**/*.xml");
-    // TODO: add progress report
-    fs.inputFiles(xmlFilesPredicate).forEach(inputFile -> scanFile(context, inputFile));
+
+    List<InputFile> inputFiles = new ArrayList<>();
+    fs.inputFiles(xmlFilesPredicate).forEach(inputFiles::add);
+
+    if (inputFiles.isEmpty()) {
+      return;
+    }
+
+    ProgressReport progressReport = new ProgressReport("Report about progress of Java XML analyzer", TimeUnit.SECONDS.toMillis(10));
+    progressReport.start(inputFiles.stream().map(InputFile::toString).collect(Collectors.toList()));
+
+    boolean successfullyCompleted = false;
+    boolean cancelled = false;
+    try {
+      for (InputFile inputFile : inputFiles) {
+        scanFile(context, inputFile);
+        progressReport.nextFile();
+      }
+      successfullyCompleted = !cancelled;
+    } finally {
+      if (successfullyCompleted) {
+        progressReport.stop();
+      } else {
+        progressReport.cancel();
+      }
+    }
   }
 
   private void scanFile(SensorContext context, InputFile inputFile) {

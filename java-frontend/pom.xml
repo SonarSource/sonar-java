@@ -22,10 +22,6 @@
       <artifactId>sslr-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sonarsource.sslr-squid-bridge</groupId>
-      <artifactId>sslr-squid-bridge</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
@@ -86,6 +82,11 @@
       <groupId>org.sonarsource.ucfg</groupId>
       <artifactId>sonar-ucfg</artifactId>
       <version>1.2.0.107</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.sonarsource.analyzer-commons</groupId>
+      <artifactId>sonar-analyzer-commons</artifactId>
     </dependency>
   </dependencies>
 

@@ -115,6 +115,11 @@
       </dependency>
       <dependency>
         <groupId>org.sonarsource.analyzer-commons</groupId>
+        <artifactId>sonar-analyzer-recognizers</artifactId>
+        <version>${analyzer.commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonarsource.analyzer-commons</groupId>
         <artifactId>sonar-xml-parsing</artifactId>
         <version>${analyzer.commons.version}</version>
       </dependency>
@@ -148,33 +153,6 @@
           <exclusion>
             <artifactId>hamcrest-all</artifactId>
             <groupId>org.hamcrest</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.sonarsource.sslr-squid-bridge</groupId>
-        <artifactId>sslr-squid-bridge</artifactId>
-        <version>2.7.0.377</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.codehaus.sonar.sslr</groupId>
-            <artifactId>sslr-core</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.sonar</groupId>
-            <artifactId>sonar-plugin-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.sonar.sslr</groupId>
-            <artifactId>sslr-xpath</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

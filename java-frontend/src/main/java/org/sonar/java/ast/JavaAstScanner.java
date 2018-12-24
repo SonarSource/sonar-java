@@ -39,7 +39,7 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.ProgressReport;
+import org.sonarsource.analyzer.commons.ProgressReport;
 
 public class JavaAstScanner {
   private static final Logger LOG = Loggers.get(JavaAstScanner.class);
