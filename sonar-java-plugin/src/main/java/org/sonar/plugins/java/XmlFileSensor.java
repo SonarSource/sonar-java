@@ -19,59 +19,68 @@
  */
 package org.sonar.plugins.java;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import com.google.common.annotations.VisibleForTesting;
+import java.io.IOException;
 import org.sonar.api.batch.fs.FilePredicate;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.java.SonarComponents;
+import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.checks.CheckList;
-import org.sonar.java.xml.XmlAnalyzer;
+import org.sonarsource.analyzer.commons.xml.ParseException;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 
 public class XmlFileSensor implements Sensor {
 
-  private final FileSystem fs;
-  private final FilePredicate xmlFilePredicate;
-  private final SonarComponents sonarComponents;
+  private static final Logger LOG = Loggers.get(XmlFileSensor.class);
 
-  public XmlFileSensor(SonarComponents sonarComponents, FileSystem fs) {
-    this.fs = fs;
-    this.xmlFilePredicate = fs.predicates().matchesPathPattern("**/*.xml");
-    this.sonarComponents = sonarComponents;
-  }
+  private final Checks<SonarXmlCheck> checks;
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.name("SonarJavaXmlFileSensor");
+    descriptor.name("XML rules for Java projects");
+  }
+
+  public XmlFileSensor(CheckFactory checkFactory) {
+    this.checks = checkFactory.<SonarXmlCheck>create(CheckList.REPOSITORY_KEY).addAnnotatedChecks((Iterable) CheckList.getXmlChecks());
   }
 
   @Override
   public void execute(SensorContext context) {
-    if (hasXmlFiles()) {
-      Iterable<InputFile> xmlInputFiles = getXmlFiles();
-      // make xml files visible in SQ UI, when XML plugin is not installed
-      xmlInputFiles.forEach(context::markForPublishing);
-      sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getXmlChecks());
-      sonarComponents.setSensorContext(context);
-      new XmlAnalyzer(sonarComponents, sonarComponents.checkClasses()).scan(toFile(xmlInputFiles));
+    FileSystem fs = context.fileSystem();
+    FilePredicate xmlFilesPredicate = fs.predicates().matchesPathPattern("**/*.xml");
+    // TODO: add progress report
+    fs.inputFiles(xmlFilesPredicate).forEach(inputFile -> scanFile(context, inputFile));
+  }
+
+  private void scanFile(SensorContext context, InputFile inputFile) {
+    XmlFile xmlFile;
+    try {
+      xmlFile = XmlFile.create(inputFile);
+    } catch (ParseException | IOException e) {
+      LOG.debug("Skipped '{}' due to parsing error", inputFile.toString());
+      return;
+    }
+
+    checks.all().forEach(check -> {
+      RuleKey ruleKey = checks.ruleKey(check);
+      scanFile(context, xmlFile, check, ruleKey);
+    });
+  }
+
+  @VisibleForTesting
+  void scanFile(SensorContext context, XmlFile xmlFile, SonarXmlCheck check, RuleKey ruleKey) {
+    try {
+      check.scanFile(context, ruleKey, xmlFile);
+    } catch (Exception e) {
+      LOG.error(String.format("Failed to analyze '%s' with rule %s", xmlFile.getInputFile().toString(), ruleKey), e);
     }
   }
-
-  private boolean hasXmlFiles() {
-    return fs.hasFiles(xmlFilePredicate);
-  }
-
-  private Iterable<InputFile> getXmlFiles() {
-    return fs.inputFiles(xmlFilePredicate);
-  }
-
-  private static Collection<File> toFile(Iterable<InputFile> inputFiles) {
-    return StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::file).collect(Collectors.toList());
-  }
-
 }

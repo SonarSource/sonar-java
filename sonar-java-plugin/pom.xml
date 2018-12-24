@@ -112,8 +112,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>11000000</maxsize>
-                  <minsize>10000000</minsize>
+                  <maxsize>9000000</maxsize>
+                  <minsize>8500000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
@@ -162,59 +162,6 @@
                 </filter>
                 <filter>
                   <artifact>org.sonarsource.java:java-frontend</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-                <!-- Following classes are required to be included because they are accessed reflexively inside JAXB -->
-                <filter>
-                  <artifact>org.sonarsource.java:java-maven-model</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                  <excludes>
-                    <exclude>*.xjb</exclude>
-                    <exclude>*.xsd</exclude>
-                  </excludes>
-                </filter>
-                <filter>
-                  <artifact>javax.xml.bind:jaxb-api</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-                <filter>
-                  <artifact>org.glassfish.jaxb:*</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-                <filter>
-                  <artifact>com.sun.activation:javax.activation</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-                <filter>
-                  <artifact>com.sun.xml.fastinfoset:FastInfoset</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-                <filter>
-                  <artifact>com.sun.istack:istack-commons-runtime</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-                <filter>
-                  <artifact>org.jvnet.staxex:stax-ex</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-                <filter>
-                  <artifact>org.glassfish.jaxb:txw2</artifact>
                   <includes>
                     <include>**</include>
                   </includes>

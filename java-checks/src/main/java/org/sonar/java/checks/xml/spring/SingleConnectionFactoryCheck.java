@@ -19,13 +19,12 @@
  */
 package org.sonar.java.checks.xml.spring;
 
+import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
-import org.sonar.java.xml.XmlCheckUtils;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import javax.xml.xpath.XPathExpression;
 
 @Rule(key = "S3438")
 public class SingleConnectionFactoryCheck extends AbstractXPathBasedCheck {
@@ -43,7 +42,7 @@ public class SingleConnectionFactoryCheck extends AbstractXPathBasedCheck {
   }
 
   private static boolean hasPropertyAsAttribute(Node bean) {
-    Node attribute = XmlCheckUtils.nodeAttribute(bean, "p:reconnectOnException");
+    Node attribute = nodeAttribute(bean, "p:reconnectOnException");
     return attribute != null && "true".equals(attribute.getNodeValue());
   }
 

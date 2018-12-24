@@ -1,6 +1,0 @@
-<test>
-    <test2>hello</test2> <!-- Noncompliant [[secondary=4]] {{Message1}} -->
-    <test3>
-        <test4>world</test4>
-    </test3>
-</test>

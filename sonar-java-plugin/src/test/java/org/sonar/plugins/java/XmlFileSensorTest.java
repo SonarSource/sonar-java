@@ -41,7 +41,7 @@ import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class NewXmlFileSensorTest {
+public class XmlFileSensorTest {
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -60,7 +60,7 @@ public class NewXmlFileSensorTest {
   @Test
   public void test() throws Exception {
     CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build());
-    NewXmlFileSensor sensor = new NewXmlFileSensor(checkFactory);
+    XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
     addFileWithIssue("xml");
 
@@ -78,7 +78,7 @@ public class NewXmlFileSensorTest {
   @Test
   public void testDoNothingIfNoXmlFile() throws Exception {
     CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build());
-    NewXmlFileSensor sensor = new NewXmlFileSensor(checkFactory);
+    XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
     addFileWithIssue("foo");
     sensor.execute(context);
@@ -89,7 +89,7 @@ public class NewXmlFileSensorTest {
   @Test
   public void testDoNothingIfNoXmlRule() throws Exception {
     CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().build());
-    NewXmlFileSensor sensor = new NewXmlFileSensor(checkFactory);
+    XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
     addFileWithIssue("xml");
     sensor.execute(context);
@@ -100,7 +100,7 @@ public class NewXmlFileSensorTest {
   @Test
   public void testDoNothingIfParsingError() throws Exception {
     CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build());
-    NewXmlFileSensor sensor = new NewXmlFileSensor(checkFactory);
+    XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
     DefaultInputFile notXml = TestInputFileBuilder.create("moduleKey", "test.xml")
       .setCharset(StandardCharsets.UTF_8)
@@ -117,7 +117,7 @@ public class NewXmlFileSensorTest {
 
   @Test
   public void testDescriptor() throws Exception {
-    NewXmlFileSensor sensor = new NewXmlFileSensor(new CheckFactory(new ActiveRulesBuilder().build()));
+    XmlFileSensor sensor = new XmlFileSensor(new CheckFactory(new ActiveRulesBuilder().build()));
     DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
     sensor.describe(descriptor);
 
@@ -129,7 +129,7 @@ public class NewXmlFileSensorTest {
 
   @Test
   public void testCheckFailure() throws Exception {
-    NewXmlFileSensor sensor = new NewXmlFileSensor(new CheckFactory(new ActiveRulesBuilder().build()));
+    XmlFileSensor sensor = new XmlFileSensor(new CheckFactory(new ActiveRulesBuilder().build()));
     InputFile inputFile = addFileWithIssue("xml");
     XmlFile xmlFile = XmlFile.create(inputFile);
     sensor.scanFile(context, xmlFile, new TestCheck(), XML_RULE_KEY);
