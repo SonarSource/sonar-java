@@ -41,7 +41,7 @@ public class DuplicationTest {
 
     orchestrator.executeBuild(build);
 
-    assertThat(getMeasureAsDouble(DUPLICATION_PROJECT_KEY, "duplicated_lines_density")).isEqualTo(32.7);
+    assertThat(getMeasureAsDouble(DUPLICATION_PROJECT_KEY, "duplicated_lines_density")).isEqualTo(39.6);
     assertThat(getMeasureAsInteger(DUPLICATION_PROJECT_KEY, "duplicated_lines")).isEqualTo(36);
     assertThat(getMeasureAsInteger(DUPLICATION_PROJECT_KEY, "duplicated_files")).isEqualTo(2);
     assertThat(getMeasureAsInteger(DUPLICATION_PROJECT_KEY, "duplicated_blocks")).isEqualTo(2);
