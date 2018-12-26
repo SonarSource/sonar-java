@@ -98,6 +98,19 @@ public class XmlFileSensorTest {
   }
 
   @Test
+  public void testHandleAnalysisCancellation() throws Exception {
+    CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().build());
+    XmlFileSensor sensor = new XmlFileSensor(checkFactory);
+
+    context.setCancelled(true);
+
+    addFileWithIssue("xml");
+    sensor.execute(context);
+
+    assertThat(context.allIssues()).isEmpty();
+  }
+
+  @Test
   public void testDoNothingIfParsingError() throws Exception {
     CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
@@ -121,7 +134,7 @@ public class XmlFileSensorTest {
     DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
     sensor.describe(descriptor);
 
-    assertThat(descriptor.name()).isEqualTo("XML rules for Java projects");
+    assertThat(descriptor.name()).isEqualTo("JavaXmlSensor");
     // todo: do we want to run this sensor only for projects containing JVM languages
     assertThat(descriptor.languages()).isEmpty();
     assertThat(descriptor.isGlobal()).isFalse();

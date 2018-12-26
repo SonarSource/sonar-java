@@ -21,12 +21,12 @@ package org.sonar.java.checks;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.sonar.squidbridge.recognizer.CamelCaseDetector;
-import org.sonar.squidbridge.recognizer.ContainsDetector;
-import org.sonar.squidbridge.recognizer.Detector;
-import org.sonar.squidbridge.recognizer.EndWithDetector;
-import org.sonar.squidbridge.recognizer.KeywordsDetector;
-import org.sonar.squidbridge.recognizer.LanguageFootprint;
+import org.sonarsource.analyzer.recognizers.CamelCaseDetector;
+import org.sonarsource.analyzer.recognizers.ContainsDetector;
+import org.sonarsource.analyzer.recognizers.Detector;
+import org.sonarsource.analyzer.recognizers.EndWithDetector;
+import org.sonarsource.analyzer.recognizers.KeywordsDetector;
+import org.sonarsource.analyzer.recognizers.LanguageFootprint;
 
 public final class JavaFootprint implements LanguageFootprint {
 

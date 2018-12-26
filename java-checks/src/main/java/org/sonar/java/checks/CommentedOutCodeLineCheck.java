@@ -21,7 +21,9 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
@@ -29,11 +31,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.recognizer.CodeRecognizer;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.sonarsource.analyzer.recognizers.CodeRecognizer;
 
 @Rule(key = "CommentedOutCodeLine")
 @RspecKey("S125")
