@@ -19,18 +19,24 @@
  */
 package org.sonar.plugins.java;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.api.utils.AnnotationUtils;
-import org.sonar.java.SonarComponents;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.checks.CheckList;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
@@ -39,6 +45,8 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
  */
 @SonarLintSide
 public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
+
+  private static final Logger LOG = Loggers.get(JavaSonarWayProfile.class);
 
   private final SonarRuntime sonarRuntime;
 
@@ -58,7 +66,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
       }
     }
 
-    SonarComponents.getSecurityRuleKeys().forEach(key -> sonarWay.activateRule(CheckList.REPOSITORY_KEY, key));
+    getSecurityRuleKeys().forEach(key -> sonarWay.activateRule(CheckList.REPOSITORY_KEY, key));
 
     sonarWay.done();
   }
@@ -101,6 +109,25 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
     } catch (IOException e) {
       throw new IllegalStateException("Failed to read: " + resource, e);
     }
+  }
+
+  @VisibleForTesting
+  static Set<String> getSecurityRuleKeys() {
+    try {
+      Class<?> javaRulesClass = Class.forName("com.sonar.plugins.security.api.JavaRules");
+      Method getRuleKeysMethod = javaRulesClass.getMethod("getRuleKeys");
+      return (Set<String>) getRuleKeysMethod.invoke(null);
+    } catch (ClassNotFoundException e) {
+      LOG.debug("com.sonar.plugins.security.api.JavaRules is not found, no security rules added to Sonar way java profile: " + e.getMessage());
+    } catch (NoSuchMethodException e) {
+      LOG.debug("com.sonar.plugins.security.api.JavaRules#getRuleKeys is not found, no security rules added to Sonar way java profile: " + e.getMessage());
+    } catch (IllegalAccessException e) {
+      LOG.debug("[IllegalAccessException] no security rules added to Sonar way java profile: " + e.getMessage());
+    } catch (InvocationTargetException e) {
+      LOG.debug("[InvocationTargetException] no security rules added to Sonar way java profile: " + e.getMessage());
+    }
+
+    return new HashSet<>();
   }
 
   static class Profile {

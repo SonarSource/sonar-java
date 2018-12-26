@@ -77,9 +77,6 @@ public class JavaSquid {
     if (sonarComponents != null) {
       if(!sonarComponents.isSonarLintContext()) {
         codeVisitors = Iterables.concat(codeVisitors, Arrays.asList(new FileLinesVisitor(sonarComponents), new SyntaxHighlighterVisitor(sonarComponents)));
-        if (sonarComponents.shouldGenerateUCFG()) {
-          codeVisitors = Iterables.concat(codeVisitors, Collections.singletonList(new UCFGJavaVisitor(sonarComponents.workDir())));
-        }
         testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
       }
       classpath = sonarComponents.getJavaClasspath();

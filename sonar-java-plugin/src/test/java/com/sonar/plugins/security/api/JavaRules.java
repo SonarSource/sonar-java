@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Class required to test SonarComponents
+ * Class required to test SonarWay
  */
 public class JavaRules {
 

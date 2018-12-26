@@ -77,13 +77,6 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.sonarsource.ucfg</groupId>
-      <artifactId>sonar-ucfg</artifactId>
-      <version>1.2.0.107</version>
-    </dependency>
-
     <dependency>
       <groupId>org.sonarsource.analyzer-commons</groupId>
       <artifactId>sonar-analyzer-commons</artifactId>
