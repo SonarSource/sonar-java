@@ -19,12 +19,12 @@
  */
 package org.sonar.plugins.java;
 
+import com.sonar.plugins.security.api.JavaRules;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
-import org.sonar.api.SonarQubeVersion;
-import org.sonar.api.SonarRuntime;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.api.utils.ValidationMessages;
@@ -77,6 +77,17 @@ public class JavaSonarWayProfileTest {
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
     BuiltInQualityProfilesDefinition.BuiltInActiveRule rule = profile.rule(RuleKey.of("squid", "S2092"));
     assertThat(rule).isNull();
+  }
+
+  @Test
+  public void should_contains_security_rules_if_present() {
+    // no security rules available
+    JavaRules.ruleKeys = new HashSet<>();
+    assertThat(JavaSonarWayProfile.getSecurityRuleKeys()).isEmpty();
+
+    // one security rule available
+    JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S3649"));
+    assertThat(JavaSonarWayProfile.getSecurityRuleKeys()).containsOnly("S3649");
   }
 
 }
