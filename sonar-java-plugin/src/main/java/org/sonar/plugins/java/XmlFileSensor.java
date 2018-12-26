@@ -50,7 +50,7 @@ public class XmlFileSensor implements Sensor {
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.name("XML rules for Java projects");
+    descriptor.name("JavaXmlSensor");
   }
 
   public XmlFileSensor(CheckFactory checkFactory) {
@@ -76,6 +76,10 @@ public class XmlFileSensor implements Sensor {
     boolean cancelled = false;
     try {
       for (InputFile inputFile : inputFiles) {
+        if (context.isCancelled()) {
+          cancelled = true;
+          break;
+        }
         scanFile(context, inputFile);
         progressReport.nextFile();
       }
