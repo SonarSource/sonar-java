@@ -21,7 +21,6 @@ package org.sonar.java.se.checks;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
@@ -161,15 +160,20 @@ public class MinMaxRangeCheck extends SECheck {
   private static ProgramState handleNumericalConstant(CheckerContext context, IdentifierTree syntaxNode) {
     ProgramState programState = context.getState();
     Symbol identifier = syntaxNode.symbol();
-    if (isNumericalConstant(identifier)) {
-      SymbolicValue constant = programState.getValue(identifier);
-      if (constant != null) {
-        NumericalConstraint numericalConstraint = programState.getConstraint(constant, NumericalConstraint.class);
-        Optional<Object> constantValue = ((JavaSymbol.VariableJavaSymbol) identifier).constantValue();
-        if (numericalConstraint == null && constantValue.isPresent()) {
-          programState = programState.addConstraint(constant, new NumericalConstraint((Number) constantValue.get()));
-        }
-      }
+    if (!isNumericalConstant(identifier)) {
+      return programState;
+    }
+    SymbolicValue constant = programState.getValue(identifier);
+    if (constant == null) {
+      return programState;
+    }
+    NumericalConstraint numericalConstraint = programState.getConstraint(constant, NumericalConstraint.class);
+    if (numericalConstraint == null) {
+      return ((JavaSymbol.VariableJavaSymbol) identifier).constantValue()
+        .filter(Number.class::isInstance)
+        .map(Number.class::cast)
+        .map(value -> programState.addConstraint(constant, new NumericalConstraint(value)))
+        .orElse(programState);
     }
     return programState;
   }
