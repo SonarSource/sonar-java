@@ -119,6 +119,17 @@ class MinMaxRangeCheck {
     return Math.max(result, upper);
   }
 
+  // do not remove this constant, it is used for other test
+  public static final String DOT_AS_STRING = ".";
+
+  private static final char DOT = '.'; // 46 as int
+  private static final char SEMICOLUMN = ';'; // 59 as int
+
+  public int rangeCheckWithOtherTypes(char num) {
+    int result = Math.min(num, DOT);
+    return Math.max(result, SEMICOLUMN); // Noncompliant
+  }
+
   public void foo() {
     foo();
   }
