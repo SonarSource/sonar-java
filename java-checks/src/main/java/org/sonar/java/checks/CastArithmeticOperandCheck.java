@@ -26,12 +26,14 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -80,7 +82,7 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    checkMethodInvocationArgument(tree);
+    checkMethodInvocationArgument(tree.arguments(), tree.symbol());
     super.visitMethodInvocation(tree);
   }
 
@@ -103,6 +105,14 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
     }
   }
 
+  @Override
+  public void visitNewClass(NewClassTree tree) {
+    if (tree.is(Tree.Kind.NEW_CLASS)) {
+      checkMethodInvocationArgument(tree.arguments(), tree.constructorSymbol());
+    }
+    super.visitNewClass(tree);
+  }
+
   private void checkMethodTree(MethodTreeImpl methodTree) {
     TypeTree returnTypeTree = methodTree.returnType();
     Type returnType = returnTypeTree != null ? returnTypeTree.symbolType() : null;
@@ -111,14 +121,13 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
     }
   }
 
-  private void checkMethodInvocationArgument(MethodInvocationTree mit) {
-    Symbol symbol = mit.symbol();
+  private void checkMethodInvocationArgument(Arguments arguments, Symbol symbol) {
     if (symbol.isMethodSymbol()) {
       List<Type> parametersTypes = ((Symbol.MethodSymbol) symbol).parameterTypes();
-      if (mit.arguments().size() == parametersTypes.size()) {
+      if (arguments.size() == parametersTypes.size()) {
         int i = 0;
         for (Type argType : parametersTypes) {
-          checkExpression(argType, mit.arguments().get(i));
+          checkExpression(argType, arguments.get(i));
           i++;
         }
       }
