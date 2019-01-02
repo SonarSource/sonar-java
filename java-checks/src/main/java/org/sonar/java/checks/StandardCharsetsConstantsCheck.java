@@ -46,6 +46,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4719")
 public class StandardCharsetsConstantsCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
+  private static final String INT = "int";
+  private static final String BOOLEAN = "boolean";
+  private static final String BYTE_ARRAY = "byte[]";
+
+  private static final String TO_STRING = "toString";
+  private static final String WRITE = "write";
+
   private static final String JAVA_IO_FILE = "java.io.File";
   private static final String JAVA_IO_INPUTSTREAM = "java.io.InputStream";
   private static final String JAVA_IO_OUTPUTSTREAM = "java.io.OutputStream";
@@ -60,17 +67,19 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   private static final String JAVA_LANG_STRINGBUFFER = "java.lang.StringBuffer";
   private static final String JAVA_LANG_CHARSEQUENCE = "java.lang.CharSequence";
   private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";
+
   private static final String COMMONS_CODEC_CHARSETS = "org.apache.commons.codec.Charsets";
   private static final String COMMONS_CODEC_HEX = "org.apache.commons.codec.binary.Hex";
   private static final String COMMONS_CODEC_QUOTEDPRINTABLECODEC = "org.apache.commons.codec.net.QuotedPrintableCodec";
-  private static final String COMMONS_IO_CHARSETS = "org.apache.commons.io.Charsets";
-  private static final String COMMONS_IO_FILEUTILS = "org.apache.commons.io.FileUtils";
-  private static final String COMMONS_IO_IOUTILS = "org.apache.commons.io.IOUtils";
-  private static final String COMMONS_IO_CHARSEQUENCEINPUTSTREAM = "org.apache.commons.io.input.CharSequenceInputStream";
-  private static final String COMMONS_IO_READERINPUTSTREAM = "org.apache.commons.io.input.ReaderInputStream";
-  private static final String COMMONS_IO_REVERSEDLINESFILEREADER = "org.apache.commons.io.input.ReversedLinesFileReader";
-  private static final String COMMONS_IO_LOCKABLEFILEWRITER = "org.apache.commons.io.output.LockableFileWriter";
-  private static final String COMMONS_IO_WRITEROUTPUTSTREAM = "org.apache.commons.io.output.WriterOutputStream";
+  private static final String COMMONS_IO = "org.apache.commons.io";
+  private static final String COMMONS_IO_CHARSETS = COMMONS_IO + ".Charsets";
+  private static final String COMMONS_IO_FILEUTILS = COMMONS_IO + ".FileUtils";
+  private static final String COMMONS_IO_IOUTILS = COMMONS_IO + ".IOUtils";
+  private static final String COMMONS_IO_CHARSEQUENCEINPUTSTREAM = COMMONS_IO + ".input.CharSequenceInputStream";
+  private static final String COMMONS_IO_READERINPUTSTREAM = COMMONS_IO + ".input.ReaderInputStream";
+  private static final String COMMONS_IO_REVERSEDLINESFILEREADER = COMMONS_IO + ".input.ReversedLinesFileReader";
+  private static final String COMMONS_IO_LOCKABLEFILEWRITER = COMMONS_IO + ".output.LockableFileWriter";
+  private static final String COMMONS_IO_WRITEROUTPUTSTREAM = COMMONS_IO + ".output.WriterOutputStream";
 
   private static final List<Charset> STANDARD_CHARSETS = Arrays.asList(
           StandardCharsets.ISO_8859_1,
@@ -113,7 +122,8 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     Symbol symbol = identifierTree.symbol();
     if (symbol.isVariableSymbol() && symbol.owner().type().is("com.google.common.base.Charsets")) {
       String identifier = identifierTree.name();
-      if (STANDARD_CHARSETS.stream().anyMatch(c -> c.name().equals(identifier.replace("_", "-")))) {
+      String aliasedIdentigier = identifier.replace("_", "-");
+      if (STANDARD_CHARSETS.stream().anyMatch(c -> c.name().equals(aliasedIdentigier))) {
         reportIssue(identifierTree, "Replace \"com.google.common.base.Charsets." + identifier + "\" with \"StandardCharsets." + identifier + "\".");
       }
     }
@@ -122,50 +132,54 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Arrays.asList(
-      MethodMatcher.create().typeDefinition(JAVA_NIO_CHARSET).name("forName").parameters(JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("getBytes").parameters(JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("getBytes").parameters(JAVA_NIO_CHARSET),
-      MethodMatcher.create().typeDefinition(COMMONS_CODEC_CHARSETS).name("toCharset").parameters(JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_CHARSETS).name("toCharset").parameters(JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_FILEUTILS).name("readFileToString").parameters(JAVA_IO_FILE, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_FILEUTILS).name("readLines").parameters(JAVA_IO_FILE, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_FILEUTILS).name("write").parameters(JAVA_IO_FILE, JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_FILEUTILS).name("write").parameters(JAVA_IO_FILE, JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING, "boolean"),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_FILEUTILS).name("writeStringToFile").parameters(JAVA_IO_FILE, JAVA_LANG_STRING, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_FILEUTILS).name("writeStringToFile").parameters(JAVA_IO_FILE, JAVA_LANG_STRING, JAVA_LANG_STRING, "boolean"),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("copy").parameters(JAVA_IO_INPUTSTREAM, JAVA_IO_WRITER, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("copy").parameters(JAVA_IO_READER, JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("lineIterator").parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("readLines").parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("toByteArray").parameters(JAVA_IO_READER, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("toCharArray").parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("toInputStream").parameters(JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("toInputStream").parameters(JAVA_LANG_STRING, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("toString").parameters("byte[]", JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("toString").parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("toString").parameters(JAVA_NET_URI, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("toString").parameters(JAVA_NET_URL, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("write").parameters("byte[]", JAVA_IO_WRITER, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("write").parameters("char[]", JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("write").parameters(JAVA_LANG_CHARSEQUENCE, JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("write").parameters(JAVA_LANG_STRING, JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("write").parameters(JAVA_LANG_STRINGBUFFER, JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(COMMONS_IO_IOUTILS).name("writeLines").parameters(JAVA_UTIL_COLLECTION, JAVA_LANG_STRING, JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
-      constructor(JAVA_LANG_STRING).parameters("byte[]", JAVA_LANG_STRING),
-      constructor(JAVA_LANG_STRING).parameters("byte[]", "int", "int", JAVA_LANG_STRING),
+      method(JAVA_NIO_CHARSET, "forName").parameters(JAVA_LANG_STRING),
+      method(JAVA_LANG_STRING, "getBytes").parameters(JAVA_LANG_STRING),
+      method(JAVA_LANG_STRING, "getBytes").parameters(JAVA_NIO_CHARSET),
+      method(COMMONS_CODEC_CHARSETS, "toCharset").parameters(JAVA_LANG_STRING),
+      method(COMMONS_IO_CHARSETS, "toCharset").parameters(JAVA_LANG_STRING),
+      method(COMMONS_IO_FILEUTILS, "readFileToString").parameters(JAVA_IO_FILE, JAVA_LANG_STRING),
+      method(COMMONS_IO_FILEUTILS, "readLines").parameters(JAVA_IO_FILE, JAVA_LANG_STRING),
+      method(COMMONS_IO_FILEUTILS, WRITE).parameters(JAVA_IO_FILE, JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING),
+      method(COMMONS_IO_FILEUTILS, WRITE).parameters(JAVA_IO_FILE, JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING, BOOLEAN),
+      method(COMMONS_IO_FILEUTILS, "writeStringToFile").parameters(JAVA_IO_FILE, JAVA_LANG_STRING, JAVA_LANG_STRING),
+      method(COMMONS_IO_FILEUTILS, "writeStringToFile").parameters(JAVA_IO_FILE, JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN),
+      method(COMMONS_IO_IOUTILS, "copy").parameters(JAVA_IO_INPUTSTREAM, JAVA_IO_WRITER, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, "copy").parameters(JAVA_IO_READER, JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, "lineIterator").parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, "readLines").parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, "toByteArray").parameters(JAVA_IO_READER, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, "toCharArray").parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, "toInputStream").parameters(JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, "toInputStream").parameters(JAVA_LANG_STRING, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, TO_STRING).parameters(BYTE_ARRAY, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, TO_STRING).parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, TO_STRING).parameters(JAVA_NET_URI, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, TO_STRING).parameters(JAVA_NET_URL, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, WRITE).parameters(BYTE_ARRAY, JAVA_IO_WRITER, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, WRITE).parameters("char[]", JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, WRITE).parameters(JAVA_LANG_CHARSEQUENCE, JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, WRITE).parameters(JAVA_LANG_STRING, JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, WRITE).parameters(JAVA_LANG_STRINGBUFFER, JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
+      method(COMMONS_IO_IOUTILS, "writeLines").parameters(JAVA_UTIL_COLLECTION, JAVA_LANG_STRING, JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
+      constructor(JAVA_LANG_STRING).parameters(BYTE_ARRAY, JAVA_LANG_STRING),
+      constructor(JAVA_LANG_STRING).parameters(BYTE_ARRAY, INT, INT, JAVA_LANG_STRING),
       constructor(JAVA_IO_INPUTSTREAMREADER).parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
       constructor(JAVA_IO_OUTPUTSTREAMWRITER).parameters(JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
       constructor(COMMONS_IO_CHARSEQUENCEINPUTSTREAM).parameters(JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING),
-      constructor(COMMONS_IO_CHARSEQUENCEINPUTSTREAM).parameters(JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING, "int"),
+      constructor(COMMONS_IO_CHARSEQUENCEINPUTSTREAM).parameters(JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING, INT),
       constructor(COMMONS_IO_READERINPUTSTREAM).parameters(JAVA_IO_READER, JAVA_LANG_STRING),
-      constructor(COMMONS_IO_READERINPUTSTREAM).parameters(JAVA_IO_READER, JAVA_LANG_STRING, "int"),
-      constructor(COMMONS_IO_REVERSEDLINESFILEREADER).parameters(JAVA_IO_FILE, "int", JAVA_LANG_STRING),
+      constructor(COMMONS_IO_READERINPUTSTREAM).parameters(JAVA_IO_READER, JAVA_LANG_STRING, INT),
+      constructor(COMMONS_IO_REVERSEDLINESFILEREADER).parameters(JAVA_IO_FILE, INT, JAVA_LANG_STRING),
       constructor(COMMONS_IO_LOCKABLEFILEWRITER).parameters(JAVA_IO_FILE, JAVA_LANG_STRING),
-      constructor(COMMONS_IO_LOCKABLEFILEWRITER).parameters(JAVA_IO_FILE, JAVA_LANG_STRING, "boolean", JAVA_LANG_STRING),
+      constructor(COMMONS_IO_LOCKABLEFILEWRITER).parameters(JAVA_IO_FILE, JAVA_LANG_STRING, BOOLEAN, JAVA_LANG_STRING),
       constructor(COMMONS_IO_WRITEROUTPUTSTREAM).parameters(JAVA_IO_WRITER, JAVA_LANG_STRING),
-      constructor(COMMONS_IO_WRITEROUTPUTSTREAM).parameters(JAVA_IO_WRITER, JAVA_LANG_STRING, "int", "boolean"),
+      constructor(COMMONS_IO_WRITEROUTPUTSTREAM).parameters(JAVA_IO_WRITER, JAVA_LANG_STRING, INT, BOOLEAN),
       constructor(COMMONS_CODEC_HEX).parameters(JAVA_LANG_STRING),
       constructor(COMMONS_CODEC_QUOTEDPRINTABLECODEC).parameters(JAVA_LANG_STRING));
+  }
+
+  private static MethodMatcher method(String type, String name) {
+    return MethodMatcher.create().typeDefinition(type).name(name);
   }
 
   private static MethodMatcher constructor(String type) {
@@ -183,71 +197,61 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   }
 
   private void checkCall(ExpressionTree callExpression, Symbol symbol, Arguments arguments) {
-    getCharsetNameArgument(symbol, arguments).ifPresent((charsetNameArgument) -> {
-      String constantName = getConstantName(charsetNameArgument);
-      if (constantName != null) {
-        String methodRef = getMethodRef(symbol);
-        switch (methodRef) {
-          case "Charset.forName":
-            reportIssue(callExpression, "Replace Charset.forName() call with StandardCharsets." + constantName);
-            break;
-          case "Charsets.toCharset":
-            reportIssue(callExpression, "Replace Charsets.toCharset() call with StandardCharsets." + constantName);
-            break;
-          case "IOUtils.toString":
-            if (arguments.size() == 2 && arguments.get(0).symbolType().is("byte[]")) {
-              reportIssue(callExpression, "Replace IOUtils.toString() call with new String(..., StandardCharsets." + constantName + ");");
-            } else {
+    getCharsetNameArgument(symbol, arguments)
+      .ifPresent(charsetNameArgument -> getConstantName(charsetNameArgument)
+        .ifPresent(constantName -> {
+          String methodRef = getMethodRef(symbol);
+          switch (methodRef) {
+            case "Charset.forName":
+            case "Charsets.toCharset":
+              reportIssue(callExpression, String.format("Replace %s() call with StandardCharsets.%s", methodRef, constantName));
+              break;
+            case "IOUtils.toString":
+              if (arguments.size() == 2 && arguments.get(0).symbolType().is(BYTE_ARRAY)) {
+                reportIssue(callExpression, "Replace IOUtils.toString() call with new String(..., StandardCharsets." + constantName + ");");
+              } else {
+                reportDefaultIssue(charsetNameArgument, constantName);
+              }
+              break;
+            default:
               reportDefaultIssue(charsetNameArgument, constantName);
-            }
-            break;
-          default:
-            reportDefaultIssue(charsetNameArgument, constantName);
-            break;
-        }
-      }
-    });
+              break;
+          }
+        }));
   }
 
   private void reportDefaultIssue(ExpressionTree charsetNameArgument, String constantName) {
     reportIssue(charsetNameArgument, "Replace charset name argument with StandardCharsets." + constantName);
   }
 
-  private Optional<ExpressionTree> getCharsetNameArgument(Symbol symbol, Arguments arguments) {
-    ExpressionTree result = null;
+  private static Optional<ExpressionTree> getCharsetNameArgument(Symbol symbol, Arguments arguments) {
     List<ExpressionTree> stringArguments = arguments.stream().filter(argument -> argument.symbolType().is(JAVA_LANG_STRING)).collect(Collectors.toList());
-    switch (stringArguments.size()) {
-      case 0:
-        result = null;
-        break;
-      case 1:
-        result = stringArguments.get(0);
-        break;
-      default:
-        String symbolRef = getMethodRef(symbol);
-        switch (symbolRef) {
-          case "FileUtils.writeStringToFile":
-          case "IOUtils.toInputStream":
-          case "IOUtils.write":
-          case "IOUtils.writeLines":
-            result = Iterables.getLast(stringArguments);
-            break;
-          case "LockableFileWriter.<init>":
-            result = stringArguments.get(0);
-            break;
-        }
-        break;
+    if (stringArguments.isEmpty()) {
+      return Optional.empty();
     }
-    return Optional.ofNullable(result);
+    if (stringArguments.size() == 1) {
+      return Optional.of(stringArguments.get(0));
+    }
+    switch (getMethodRef(symbol)) {
+      case "FileUtils.writeStringToFile":
+      case "IOUtils.toInputStream":
+      case "IOUtils.write":
+      case "IOUtils.writeLines":
+        return Optional.of(Iterables.getLast(stringArguments));
+      case "LockableFileWriter.<init>":
+        return Optional.of(stringArguments.get(0));
+      default:
+        return Optional.empty();
+    }
   }
 
-  private String getMethodRef(Symbol symbol) {
+  private static String getMethodRef(Symbol symbol) {
     return symbol.enclosingClass().name() + "." + symbol.name();
   }
 
-  private static String getConstantName(ExpressionTree argument) {
+  private static Optional<String> getConstantName(ExpressionTree argument) {
     String constantValue = ConstantUtils.resolveAsStringConstant(argument);
-    return ALIAS_TO_CONSTANT.get(constantValue);
+    return Optional.ofNullable(ALIAS_TO_CONSTANT.get(constantValue));
   }
 
   @Override

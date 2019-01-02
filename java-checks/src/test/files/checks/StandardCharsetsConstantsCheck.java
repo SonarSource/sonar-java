@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.lang.CharSequence;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -13,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 class A {
+  private Charset charset;
   private byte[] bytes;
   private char[] chars;
   private int offset;
@@ -37,13 +37,13 @@ class A {
   private URI uri;
   private URL url;
 
-  void myMethod() {
-    com.google.common.base.Charsets.ISO_8859_1; // Noncompliant {{Replace "com.google.common.base.Charsets.ISO_8859_1" with "StandardCharsets.ISO_8859_1".}} [[sc=37;ec=47]]
-    com.google.common.base.Charsets.US_ASCII; // Noncompliant {{Replace "com.google.common.base.Charsets.US_ASCII" with "StandardCharsets.US_ASCII".}}
-    com.google.common.base.Charsets.UTF_16; // Noncompliant {{Replace "com.google.common.base.Charsets.UTF_16" with "StandardCharsets.UTF_16".}}
-    com.google.common.base.Charsets.UTF_16BE; // Noncompliant {{Replace "com.google.common.base.Charsets.UTF_16BE" with "StandardCharsets.UTF_16BE".}}
-    com.google.common.base.Charsets.UTF_16LE; // Noncompliant {{Replace "com.google.common.base.Charsets.UTF_16LE" with "StandardCharsets.UTF_16LE".}}
-    com.google.common.base.Charsets.UTF_8; // Noncompliant {{Replace "com.google.common.base.Charsets.UTF_8" with "StandardCharsets.UTF_8".}}
+  void myMethod() throws Exception {
+    charset = com.google.common.base.Charsets.ISO_8859_1; // Noncompliant {{Replace "com.google.common.base.Charsets.ISO_8859_1" with "StandardCharsets.ISO_8859_1".}} [[sc=47;ec=57]]
+    charset = com.google.common.base.Charsets.US_ASCII; // Noncompliant {{Replace "com.google.common.base.Charsets.US_ASCII" with "StandardCharsets.US_ASCII".}}
+    charset = com.google.common.base.Charsets.UTF_16; // Noncompliant {{Replace "com.google.common.base.Charsets.UTF_16" with "StandardCharsets.UTF_16".}}
+    charset = com.google.common.base.Charsets.UTF_16BE; // Noncompliant {{Replace "com.google.common.base.Charsets.UTF_16BE" with "StandardCharsets.UTF_16BE".}}
+    charset = com.google.common.base.Charsets.UTF_16LE; // Noncompliant {{Replace "com.google.common.base.Charsets.UTF_16LE" with "StandardCharsets.UTF_16LE".}}
+    charset = com.google.common.base.Charsets.UTF_8; // Noncompliant {{Replace "com.google.common.base.Charsets.UTF_8" with "StandardCharsets.UTF_8".}}
 
     // Canonical names of java.nio API and java.io/java.lang API
     Charset.forName("ISO-8859-1"); // Noncompliant {{Replace Charset.forName() call with StandardCharsets.ISO_8859_1}} [[sc=5;ec=34]]
@@ -109,12 +109,12 @@ class A {
     new org.apache.commons.io.output.WriterOutputStream(writer, "UTF-8", bufferSize, writeImmediately); // Noncompliant
 
     // Compliant
-    StandardCharsets.ISO_8859_1;
-    StandardCharsets.US_ASCII;
-    StandardCharsets.UTF_16;
-    StandardCharsets.UTF_16BE;
-    StandardCharsets.UTF_16LE;
-    StandardCharsets.UTF_8;
+    charset = StandardCharsets.ISO_8859_1;
+    charset = StandardCharsets.US_ASCII;
+    charset = StandardCharsets.UTF_16;
+    charset = StandardCharsets.UTF_16BE;
+    charset = StandardCharsets.UTF_16LE;
+    charset = StandardCharsets.UTF_8;
 
     "".getBytes(charsetName);
     "".getBytes("Windows-1252");
