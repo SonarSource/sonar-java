@@ -107,9 +107,7 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    if (tree.is(Tree.Kind.NEW_CLASS)) {
-      checkMethodInvocationArgument(tree.arguments(), tree.constructorSymbol());
-    }
+    checkMethodInvocationArgument(tree.arguments(), tree.constructorSymbol());
     super.visitNewClass(tree);
   }
 
