@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -34,8 +35,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Optional;
 
 @Rule(key = "S1698")
 public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -90,8 +89,8 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
 
   private static boolean isFinal(ExpressionTree tree) {
     return symbol(tree)
-      .map(s -> s.isFinal())
-      .orElse(false);
+      .filter(Symbol::isFinal)
+      .isPresent();
   }
 
   private static Optional<Symbol> symbol(ExpressionTree tree) {
