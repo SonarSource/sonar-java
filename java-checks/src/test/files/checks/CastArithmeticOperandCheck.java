@@ -57,4 +57,10 @@ class A {
     double b = (1+3) / 5.0; // Compliant
     double c = ((1 + 0) / 2 + 0) / 5.0; // Noncompliant [[sc=17;ec=28]] {{Cast one of the operands of this integer division to a "double".}}
   }
+
+  void test_constructors() {
+    java.util.Date date1 = new java.util.Date(2 + 1); // Noncompliant {{Cast one of the operands of this addition operation to a "long".}}
+    java.util.Date date2 = new java.util.Date("today"); // Compliant
+  }
 }
+
