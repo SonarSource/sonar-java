@@ -66,14 +66,22 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     super.visitBinaryExpression(tree);
     if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
-      Type leftOpType = tree.leftOperand().symbolType();
-      Type rightOpType = tree.rightOperand().symbolType();
+      ExpressionTree leftExpression = tree.leftOperand();
+      ExpressionTree rightExpression = tree.rightOperand();
+      Type leftOpType = leftExpression.symbolType();
+      Type rightOpType = rightExpression.symbolType();
       if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType)
+        && neitherIsThis(leftExpression, rightExpression)
         && bothImplementsEqualsMethod(leftOpType, rightOpType)
-        && neitherIsPublicStaticFinal(tree.leftOperand(), tree.rightOperand())) {
+        && neitherIsPublicStaticFinal(leftExpression, rightExpression)) {
         context.reportIssue(this, tree.operatorToken(), "Use the \"equals\" method if value comparison was intended.");
       }
     }
+  }
+
+  private static boolean neitherIsThis(ExpressionTree leftExpression, ExpressionTree rightExpression) {
+    return (!(leftExpression.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) leftExpression).name()))
+    && !(rightExpression.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) rightExpression).name())));
   }
 
   private static boolean neitherIsPublicStaticFinal(ExpressionTree leftOperand, ExpressionTree rightOperand) {

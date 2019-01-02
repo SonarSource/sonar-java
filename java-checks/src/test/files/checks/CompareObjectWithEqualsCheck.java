@@ -4,6 +4,7 @@ class A {
   String[] strArray1 = {"blue"};
   String[] strArray2 = {"blue"};
   private void method() {
+    if (this == str2) {} // Compliant
     if (str1 == str2) {} // Noncompliant [[sc=14;ec=16]] {{Use the "equals" method if value comparison was intended.}}
     if(str1 == "green") {} // Noncompliant {{Use the "equals" method if value comparison was intended.}}
     if (str1.equals(str2)) {}
@@ -76,6 +77,7 @@ class C{
       if(list.get(0) == MyEnum.Value) {} // Compliant
       java.util.List<MyClass> myClassList;
       if(myClassList.get(0) == MyEnum.Value) {} // Noncompliant
+      if (myClassList.get(0) == this) {} // Compliant
     }
 
     T myMethod(MyClass<T> instance){}
