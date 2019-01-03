@@ -5,6 +5,7 @@ class A {
   String[] strArray2 = {"blue"};
   private void method() {
     if (this == str2) {} // Compliant
+    if ((this) == str2) {} // Compliant
     if (str1 == str2) {} // Noncompliant [[sc=14;ec=16]] {{Use the "equals" method if value comparison was intended.}}
     if(str1 == "green") {} // Noncompliant {{Use the "equals" method if value comparison was intended.}}
     if (str1.equals(str2)) {}

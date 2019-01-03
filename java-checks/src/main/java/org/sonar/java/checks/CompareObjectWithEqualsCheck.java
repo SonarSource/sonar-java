@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -80,8 +81,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   }
 
   private static boolean neitherIsThis(ExpressionTree leftExpression, ExpressionTree rightExpression) {
-    return (!(leftExpression.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) leftExpression).name()))
-    && !(rightExpression.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) rightExpression).name())));
+    return !ExpressionUtils.isThis(leftExpression) && !ExpressionUtils.isThis(rightExpression);
   }
 
   private static boolean neitherIsPublicStaticFinal(ExpressionTree leftOperand, ExpressionTree rightOperand) {
