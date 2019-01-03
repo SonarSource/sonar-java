@@ -28,4 +28,9 @@ public class EqualsNotOverriddenInSubclassCheckTest {
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/EqualsNotOverriddenInSubclassCheck.java", new EqualsNotOverriddenInSubclassCheck());
   }
+
+  @Test
+  public void noSemantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/EqualsNotOverriddenInSubclassCheck.java", new EqualsNotOverriddenInSubclassCheck());
+  }
 }

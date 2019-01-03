@@ -93,5 +93,5 @@ class O extends A {
 }
 
 class P extends O { // Compliant - O.equals() is final
-	String s;
+  String s;
 }
