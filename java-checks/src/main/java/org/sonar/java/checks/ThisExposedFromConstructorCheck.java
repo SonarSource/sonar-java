@@ -64,7 +64,7 @@ public class ThisExposedFromConstructorCheck extends IssuableSubscriptionVisitor
       if (this.owner == tree.symbol().owner()) {
         return;
       }
-      tree.arguments().stream().filter(expression -> ExpressionUtils.isThis(expression)).forEach(this::report);
+      tree.arguments().stream().filter(ExpressionUtils::isThis).forEach(this::report);
       super.visitMethodInvocation(tree);
     }
 

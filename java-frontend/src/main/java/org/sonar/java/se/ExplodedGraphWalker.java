@@ -1052,7 +1052,7 @@ public class ExplodedGraphWalker {
   }
 
   private static boolean isProvidingThisAsArgument(MethodInvocationTree tree) {
-    return tree.arguments().stream().anyMatch(expr -> ExpressionUtils.isThis(expr));
+    return tree.arguments().stream().anyMatch(ExpressionUtils::isThis);
   }
 
   private void resetFieldValues(boolean resetOnlyStaticFields) {
