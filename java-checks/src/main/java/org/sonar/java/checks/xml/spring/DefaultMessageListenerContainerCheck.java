@@ -22,13 +22,13 @@ package org.sonar.java.checks.xml.spring;
 import java.util.stream.IntStream;
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 @Rule(key = "S3439")
-public class DefaultMessageListenerContainerCheck extends AbstractXPathBasedCheck {
+public class DefaultMessageListenerContainerCheck extends SimpleXPathBasedCheck {
 
   private XPathExpression defaultMessageListenerContainerBeanExpression = getXPathExpression(
     "beans/bean[@class='org.springframework.jms.listener.DefaultMessageListenerContainer']");
@@ -37,7 +37,7 @@ public class DefaultMessageListenerContainerCheck extends AbstractXPathBasedChec
   private XPathExpression valueExpression = getXPathExpression("value[text()='true']");
 
   @Override
-  protected void scanFile(XmlFile xmlFile) {
+  public void scanFile(XmlFile xmlFile) {
     evaluateAsList(defaultMessageListenerContainerBeanExpression, xmlFile.getNamespaceUnawareDocument()).forEach(bean -> {
       if (!hasAcceptMessagePropertyEnabled(bean) && hasSessionTransactedDisabled(bean)) {
         reportIssue(bean, "Enable \"acceptMessagesWhileStopping\".");

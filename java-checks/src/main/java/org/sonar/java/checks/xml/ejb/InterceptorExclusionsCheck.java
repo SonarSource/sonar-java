@@ -19,20 +19,20 @@
  */
 package org.sonar.java.checks.xml.ejb;
 
+import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 import org.w3c.dom.Node;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
-import javax.xml.xpath.XPathExpression;
 
 @Rule(key = "S3282")
-public class InterceptorExclusionsCheck extends AbstractXPathBasedCheck  {
+public class InterceptorExclusionsCheck extends SimpleXPathBasedCheck {
 
   private XPathExpression notDefaultInterceptorBindingsExpression = getXPathExpression("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name!=\"*\"]");
   private XPathExpression exclusionsExpression = getXPathExpression("*[self::exclude-default-interceptors[text()=\"true\"] or self::exclude-class-interceptors[text()=\"true\"]]");
 
   @Override
-  protected void scanFile(XmlFile xmlFile) {
+  public void scanFile(XmlFile xmlFile) {
     evaluateAsList(notDefaultInterceptorBindingsExpression, xmlFile.getNamespaceUnawareDocument()).forEach(this::checkExclusions);
   }
 

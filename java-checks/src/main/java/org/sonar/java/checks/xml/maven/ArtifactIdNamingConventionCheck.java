@@ -23,13 +23,13 @@ import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @Rule(key = ArtifactIdNamingConventionCheck.KEY)
-public class ArtifactIdNamingConventionCheck extends AbstractXPathBasedCheck {
+public class ArtifactIdNamingConventionCheck extends SimpleXPathBasedCheck {
 
   public static final String KEY = "S3420";
   private static final String DEFAULT_REGEX = "[a-z][a-z-0-9]+";
@@ -44,12 +44,12 @@ public class ArtifactIdNamingConventionCheck extends AbstractXPathBasedCheck {
   private Pattern pattern = null;
 
   @Override
-  protected void scanFile(XmlFile file) {
+  public void scanFile(XmlFile file) {
     if (!"pom.xml".equalsIgnoreCase(file.getInputFile().filename())) {
       return;
     }
     NodeList artifactIds = evaluate(artifactIdExpression, file.getNamespaceUnawareDocument());
-    if (artifactIds.getLength() != 1) {
+    if (artifactIds == null || artifactIds.getLength() != 1) {
       return;
     }
     Node artifactId = artifactIds.item(0);

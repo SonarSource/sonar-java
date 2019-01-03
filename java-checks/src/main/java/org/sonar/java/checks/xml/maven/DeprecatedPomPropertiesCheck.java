@@ -22,18 +22,18 @@ package org.sonar.java.checks.xml.maven;
 import javax.xml.xpath.XPathExpression;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 import org.w3c.dom.Node;
 
 @Rule(key = "S3421")
-public class DeprecatedPomPropertiesCheck extends AbstractXPathBasedCheck {
+public class DeprecatedPomPropertiesCheck extends SimpleXPathBasedCheck {
   private static final String POM_PROPERTY_PREFIX = "${pom.";
   private static final String POM_PROPERTY_SUFFIX = "}";
   private XPathExpression textsExpression = getXPathExpression("//*[text()]");
 
   @Override
-  protected void scanFile(XmlFile file) {
+  public void scanFile(XmlFile file) {
     if (!"pom.xml".equalsIgnoreCase(file.getInputFile().filename())) {
       return;
     }
@@ -41,7 +41,7 @@ public class DeprecatedPomPropertiesCheck extends AbstractXPathBasedCheck {
   }
 
   private void checkText(Node textNode) {
-    asList(textNode.getChildNodes()).stream()
+    XmlFile.children(textNode).stream()
       .filter(node -> node.getNodeType() == Node.TEXT_NODE)
       .forEach(node -> {
         String text = node.getNodeValue();

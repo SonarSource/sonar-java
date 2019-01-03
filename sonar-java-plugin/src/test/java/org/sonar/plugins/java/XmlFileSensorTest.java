@@ -170,7 +170,7 @@ public class XmlFileSensorTest {
   private static class TestCheck extends SonarXmlCheck {
 
     @Override
-    protected void scanFile(XmlFile file) {
+    public void scanFile(XmlFile file) {
       throw new IllegalStateException("Something wrong happened");
     }
   }

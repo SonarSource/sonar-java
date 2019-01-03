@@ -19,17 +19,17 @@
  */
 package org.sonar.java.checks.xml.struts;
 
-import org.sonar.check.Rule;
-import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
-import org.sonarsource.analyzer.commons.xml.XmlFile;
-import javax.xml.xpath.XPathExpression;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.xml.xpath.XPathExpression;
+import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
+import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 import org.w3c.dom.Node;
 
 @Rule(key = "S3373")
-public class ActionNumberCheck extends AbstractXPathBasedCheck {
+public class ActionNumberCheck extends SimpleXPathBasedCheck {
 
   private static final int DEFAULT_MAXIMUM_NUMBER_FORWARDS = 4;
 
@@ -43,7 +43,7 @@ public class ActionNumberCheck extends AbstractXPathBasedCheck {
   private XPathExpression forwardsFromActionExpression = getXPathExpression("forward");
 
   @Override
-  protected void scanFile(XmlFile xmlFile) {
+  public void scanFile(XmlFile xmlFile) {
     evaluateAsList(actionsExpression, xmlFile.getNamespaceUnawareDocument())
       .forEach(this::checkAction);
   }
