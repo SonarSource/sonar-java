@@ -21,19 +21,19 @@ package org.sonar.java.checks.xml.spring;
 
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @Rule(key = "S3438")
-public class SingleConnectionFactoryCheck extends AbstractXPathBasedCheck {
+public class SingleConnectionFactoryCheck extends SimpleXPathBasedCheck {
 
   private XPathExpression singleConnectionFactoryBeansExpression = getXPathExpression("beans/bean[@class='org.springframework.jms.connection.SingleConnectionFactory']");
   private XPathExpression reconnectOnExceptionPropertyValueExpression = getXPathExpression("property[@name='reconnectOnException' and value='true']");
 
   @Override
-  protected void scanFile(XmlFile file) {
+  public void scanFile(XmlFile file) {
     evaluateAsList(singleConnectionFactoryBeansExpression, file.getNamespaceUnawareDocument()).forEach(bean -> {
       if (!hasPropertyAsAttribute(bean) && !hasPropertyAsChild(bean)) {
         reportIssue(bean, "Add a \"reconnectOnException\" property, set to \"true\"");
@@ -42,13 +42,13 @@ public class SingleConnectionFactoryCheck extends AbstractXPathBasedCheck {
   }
 
   private static boolean hasPropertyAsAttribute(Node bean) {
-    Node attribute = nodeAttribute(bean, "p:reconnectOnException");
+    Node attribute = XmlFile.nodeAttribute(bean, "p:reconnectOnException");
     return attribute != null && "true".equals(attribute.getNodeValue());
   }
 
   private boolean hasPropertyAsChild(Node bean) {
     NodeList nodeList = evaluate(reconnectOnExceptionPropertyValueExpression, bean);
-    return (nodeList.getLength() != 0);
+    return nodeList != null && nodeList.getLength() != 0;
   }
 
 }

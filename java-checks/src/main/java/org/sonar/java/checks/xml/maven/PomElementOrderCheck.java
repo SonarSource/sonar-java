@@ -68,7 +68,7 @@ public class PomElementOrderCheck extends SonarXmlCheck {
     "profiles");
 
   @Override
-  protected void scanFile(XmlFile xmlFile) {
+  public void scanFile(XmlFile xmlFile) {
     if (!"pom.xml".equalsIgnoreCase(xmlFile.getInputFile().filename())) {
       return;
     }

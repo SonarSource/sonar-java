@@ -26,18 +26,18 @@ import java.util.Map;
 import javax.annotation.CheckForNull;
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 import org.w3c.dom.Node;
 
 @Rule(key = "S3374")
-public class FormNameDuplicationCheck extends AbstractXPathBasedCheck {
+public class FormNameDuplicationCheck extends SimpleXPathBasedCheck {
 
   private XPathExpression formsetsExpression = getXPathExpression("form-validation/formset");
   private XPathExpression formsExpression = getXPathExpression("form");
 
   @Override
-  protected void scanFile(XmlFile xmlFile) {
+  public void scanFile(XmlFile xmlFile) {
     evaluateAsList(formsetsExpression, xmlFile.getNamespaceUnawareDocument())
       .forEach(this::checkIfDuplicate);
   }
@@ -64,7 +64,7 @@ public class FormNameDuplicationCheck extends AbstractXPathBasedCheck {
 
   @CheckForNull
   private static String getNameAttribute(Node form) {
-    Node name = nodeAttribute(form, "name");
+    Node name = XmlFile.nodeAttribute(form, "name");
     if (name != null) {
       return name.getNodeValue();
     }

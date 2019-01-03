@@ -22,14 +22,14 @@ package org.sonar.java.checks.xml.maven;
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonar.java.checks.xml.maven.helpers.MavenDependencyMatcher;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 @Rule(key = DisallowedDependenciesCheck.KEY)
-public class DisallowedDependenciesCheck extends AbstractXPathBasedCheck {
+public class DisallowedDependenciesCheck extends SimpleXPathBasedCheck {
 
   public static final String KEY = "S3417";
 
@@ -48,7 +48,7 @@ public class DisallowedDependenciesCheck extends AbstractXPathBasedCheck {
   private MavenDependencyMatcher matcher = null;
 
   @Override
-  protected void scanFile(XmlFile xmlFile) {
+  public void scanFile(XmlFile xmlFile) {
     if (!"pom.xml".equalsIgnoreCase(xmlFile.getInputFile().filename())) {
       return;
     }
@@ -65,7 +65,7 @@ public class DisallowedDependenciesCheck extends AbstractXPathBasedCheck {
 
   private static String getChildElementText(String childElementName, Node parent) {
     for (Node node : XmlFile.children(parent)) {
-      if (node.getNodeType() == Node.ELEMENT_NODE && ((Element) node).getTagName() == childElementName) {
+      if (node.getNodeType() == Node.ELEMENT_NODE && ((Element) node).getTagName().equals(childElementName)) {
         return node.getTextContent();
       }
     }

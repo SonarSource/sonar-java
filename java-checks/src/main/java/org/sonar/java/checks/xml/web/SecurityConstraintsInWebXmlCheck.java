@@ -19,12 +19,10 @@
  */
 package org.sonar.java.checks.xml.web;
 
+import java.util.Collections;
+import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
-import org.w3c.dom.NodeList;
-import javax.xml.xpath.XPathExpression;
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S3369")
 public class SecurityConstraintsInWebXmlCheck extends AbstractWebXmlXPathBasedCheck {
@@ -32,15 +30,13 @@ public class SecurityConstraintsInWebXmlCheck extends AbstractWebXmlXPathBasedCh
   private XPathExpression securityConstraintExpression = getXPathExpression(WEB_XML_ROOT + "/security-constraint");
 
   private boolean hasNoSecurityConstraint(XmlFile file) {
-    NodeList nodeList = evaluate(securityConstraintExpression, file.getNamespaceUnawareDocument());
-    return nodeList.getLength() == 0;
+    return evaluateAsList(securityConstraintExpression, file.getNamespaceUnawareDocument()).isEmpty();
   }
 
   @Override
   public void scanWebXml(XmlFile file) {
     if (hasNoSecurityConstraint(file)) {
-      List<Integer> secondaryLocationLines = Collections.emptyList();
-      reportIssueOnFile("Add \"security-constraint\" elements to this descriptor.", secondaryLocationLines);
+      reportIssueOnFile("Add \"security-constraint\" elements to this descriptor.", Collections.emptyList());
     }
   }
 }

@@ -19,15 +19,15 @@
  */
 package org.sonar.java.checks.xml.web;
 
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 
-public abstract class AbstractWebXmlXPathBasedCheck extends AbstractXPathBasedCheck {
+public abstract class AbstractWebXmlXPathBasedCheck extends SimpleXPathBasedCheck {
 
   public static final String WEB_XML_ROOT = "web-app";
 
   @Override
-  protected void scanFile(XmlFile file) {
+  public void scanFile(XmlFile file) {
     if (isWebXmlFile(file)) {
       scanWebXml(file);
     }

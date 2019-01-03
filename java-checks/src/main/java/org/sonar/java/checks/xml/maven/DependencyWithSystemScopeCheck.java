@@ -23,19 +23,19 @@ import java.util.Collections;
 import java.util.Optional;
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @Rule(key = "S3422")
-public class DependencyWithSystemScopeCheck extends AbstractXPathBasedCheck {
+public class DependencyWithSystemScopeCheck extends SimpleXPathBasedCheck {
 
   private XPathExpression dependencyExpression = getXPathExpression("//dependencies/dependency");
 
   @Override
-  protected void scanFile(XmlFile xmlFile) {
+  public void scanFile(XmlFile xmlFile) {
     if (!"pom.xml".equalsIgnoreCase(xmlFile.getInputFile().filename())) {
       return;
     }

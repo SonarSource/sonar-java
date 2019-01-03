@@ -21,16 +21,16 @@ package org.sonar.java.checks.xml.ejb;
 
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 
 @Rule(key = "S3281")
-public class DefaultInterceptorsLocationCheck extends AbstractXPathBasedCheck {
+public class DefaultInterceptorsLocationCheck extends SimpleXPathBasedCheck {
 
   private XPathExpression defaultInterceptorClassesExpression = getXPathExpression("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name=\"*\"]/interceptor-class");
 
   @Override
-  protected void scanFile(XmlFile file) {
+  public void scanFile(XmlFile file) {
     if ("ejb-jar.xml".equalsIgnoreCase(file.getInputFile().filename())) {
       return;
     }

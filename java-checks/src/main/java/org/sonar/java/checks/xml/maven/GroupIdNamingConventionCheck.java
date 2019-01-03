@@ -23,13 +23,13 @@ import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpression;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.xml.AbstractXPathBasedCheck;
 import org.sonarsource.analyzer.commons.xml.XmlFile;
+import org.sonarsource.analyzer.commons.xml.checks.SimpleXPathBasedCheck;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @Rule(key = GroupIdNamingConventionCheck.KEY)
-public class GroupIdNamingConventionCheck extends AbstractXPathBasedCheck {
+public class GroupIdNamingConventionCheck extends SimpleXPathBasedCheck {
 
   public static final String KEY = "S3419";
 
@@ -45,12 +45,12 @@ public class GroupIdNamingConventionCheck extends AbstractXPathBasedCheck {
   private Pattern pattern = null;
 
   @Override
-  protected void scanFile(XmlFile file) {
+  public void scanFile(XmlFile file) {
     if (!"pom.xml".equalsIgnoreCase(file.getInputFile().filename())) {
       return;
     }
     NodeList groupIds = evaluate(groupIdExpression, file.getNamespaceUnawareDocument());
-    if (groupIds.getLength() != 1) {
+    if (groupIds == null || groupIds.getLength() != 1) {
       return;
     }
     Node groupId = groupIds.item(0);
