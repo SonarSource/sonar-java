@@ -20,7 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
+import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ModifiersUtils;
@@ -32,8 +33,6 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.List;
 
 @Rule(key = "S2160")
 public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisitor {
@@ -47,31 +46,25 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     ClassTree classTree = (ClassTree) tree;
-    if (hasSemantic() && shouldImplementEquals(classTree)) {
+    if (shouldImplementEquals(classTree)) {
       reportIssue(classTree.simpleName(), "Override the \"equals\" method in this class.");
     }
   }
 
   private static boolean shouldImplementEquals(ClassTree classTree) {
-    return hasAtLeastOneField(classTree) && !implementsEquals(classTree) && parentClassImplementsEquals(classTree);
+    return hasAtLeastOneField(classTree) && !hasNotFinalEqualsMethod(classTree.symbol()) && parentClassImplementsEquals(classTree);
   }
 
   private static boolean hasAtLeastOneField(ClassTree classTree) {
-    for (Tree member : classTree.members()) {
-      if (isField(member)) {
-        return true;
-      }
-    }
-    return false;
+    return classTree.members().stream().anyMatch(EqualsNotOverriddenInSubclassCheck::isField);
   }
 
   private static boolean isField(Tree tree) {
     return tree.is(Tree.Kind.VARIABLE) && !ModifiersUtils.hasModifier(((VariableTree) tree).modifiers(), Modifier.STATIC);
-  }
-
-  private static boolean implementsEquals(ClassTree classTree) {
-    return hasNotFinalEqualsMethod(classTree.symbol());
   }
 
   private static boolean parentClassImplementsEquals(ClassTree tree) {
@@ -80,10 +73,9 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
       Type superClassType = superClass.symbolType();
       while (superClassType.symbol().isTypeSymbol() && !superClassType.is("java.lang.Object")) {
         Symbol.TypeSymbol superClassSymbol = superClassType.symbol();
-        if (hasNotFinalEqualsMethod(superClassSymbol)) {
-          return true;
-        } else if (hasFinalEqualsMethod(superClassSymbol)) {
-          return false;
+        Optional<Symbol> equalsMethod = equalsMethod(superClassSymbol);
+        if (equalsMethod.isPresent()) {
+          return !equalsMethod.get().isFinal();
         }
         superClassType = superClassSymbol.superClass();
       }
@@ -91,11 +83,11 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
     return false;
   }
 
-  private static boolean hasNotFinalEqualsMethod(Symbol.TypeSymbol superClassSymbol) {
-    return superClassSymbol.lookupSymbols("equals").stream().anyMatch(symbol -> EQUALS_MATCHER.matches(symbol) && !symbol.isFinal());
+  private static boolean hasNotFinalEqualsMethod(Symbol.TypeSymbol type) {
+    return equalsMethod(type).filter(equalsMethod -> !equalsMethod.isFinal()).isPresent();
   }
-  
-  private static boolean hasFinalEqualsMethod(Symbol.TypeSymbol superClassSymbol) {
-	  return superClassSymbol.lookupSymbols("equals").stream().anyMatch(symbol -> EQUALS_MATCHER.matches(symbol) && symbol.isFinal());
+
+  private static Optional<Symbol> equalsMethod(Symbol.TypeSymbol type) {
+    return type.lookupSymbols("equals").stream().filter(EQUALS_MATCHER::matches).findFirst();
   }
 }
