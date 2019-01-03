@@ -18,5 +18,9 @@ class A {
 
     if (boxedInt1 == myInt1) {} // Compliant: unboxing conversion
     if (boxedInt1 != myInt1) {} // Compliant: unboxing conversion
+
+    if (boxedInt1 > boxedInt2) {}
+    if (str1 != myInt1) {}
+    if (null != str1) {}
   }
 }

@@ -20,40 +20,15 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaType;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4973")
-public class CompareStringsBoxedTypesWithEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVisitor {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
-  private JavaFileScannerContext context;
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    if (context.getSemanticModel() != null) {
-      scan(context.getTree());
-    }
-  }
-
-  @Override
-  public void visitMethod(MethodTree tree) {
-    if (!isEquals(tree)) {
-      super.visitMethod(tree);
-    }
-  }
-
-  private static boolean isEquals(MethodTree tree) {
-    return ((MethodTreeImpl) tree).isEqualsMethod();
-  }
 
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
@@ -61,21 +36,18 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends BaseTreeVisitor imp
     if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       Type leftOpType = tree.leftOperand().symbolType();
       Type rightOpType = tree.rightOperand().symbolType();
-      if (isNotNull(leftOpType, rightOpType) && (isString(leftOpType, rightOpType) || isBoxedType(leftOpType, rightOpType))) {
-        context.reportIssue(this, tree.operatorToken(), "Use the \"equals\" method if value comparison was intended.");
+      if (!isNullComparison(leftOpType, rightOpType) && (isString(leftOpType, rightOpType) || isBoxedType(leftOpType, rightOpType))) {
+        reportIssue(this, tree.operatorToken());
       }
     }
   }
 
-  private boolean isString(Type leftOpType, Type rightOpType) {
+  private static boolean isString(Type leftOpType, Type rightOpType) {
     return leftOpType.is(JAVA_LANG_STRING) && rightOpType.is(JAVA_LANG_STRING);
   }
 
-  private boolean isBoxedType(Type leftOpType, Type rightOpType) {
+  private static boolean isBoxedType(Type leftOpType, Type rightOpType) {
     return ((JavaType)leftOpType).isPrimitiveWrapper() && ((JavaType)rightOpType).isPrimitiveWrapper();
   }
 
-  private boolean isNotNull(Type leftOpType, Type rightOpType) {
-    return !((JavaType)leftOpType).isTagged(JavaType.BOT) && !((JavaType)rightOpType).isTagged(JavaType.BOT);
-  }
 }

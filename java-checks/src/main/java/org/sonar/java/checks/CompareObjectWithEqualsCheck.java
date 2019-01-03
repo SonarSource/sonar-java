@@ -23,45 +23,19 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1698")
-public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class CompareObjectWithEqualsCheck extends CompareWithEqualsVisitor {
 
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
   private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create().name("equals").parameters(JAVA_LANG_OBJECT);
-  private JavaFileScannerContext context;
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    if (context.getSemanticModel() != null) {
-      scan(context.getTree());
-    }
-  }
-
-  @Override
-  public void visitMethod(MethodTree tree) {
-    if (!isEquals(tree)) {
-      super.visitMethod(tree);
-    }
-  }
-
-  private static boolean isEquals(MethodTree tree) {
-    return ((MethodTreeImpl) tree).isEqualsMethod();
-  }
 
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
@@ -75,7 +49,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
         && neitherIsThis(leftExpression, rightExpression)
         && bothImplementsEqualsMethod(leftOpType, rightOpType)
         && neitherIsPublicStaticFinal(leftExpression, rightExpression)) {
-        context.reportIssue(this, tree.operatorToken(), "Use the \"equals\" method if value comparison was intended.");
+        reportIssue(this, tree.operatorToken());
       }
     }
   }
@@ -131,20 +105,12 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
     return operandType.erasure().isClass() && !operandType.symbol().isEnum();
   }
 
-  private static boolean isNullComparison(Type leftOpType, Type rightOpType) {
-    return isBot(leftOpType) || isBot(rightOpType);
-  }
-
   private static boolean isNumericalComparison(Type leftOperandType, Type rightOperandType) {
     return leftOperandType.isNumerical() || rightOperandType.isNumerical();
   }
 
   private static boolean isJavaLangClassComparison(Type leftOpType, Type rightOpType) {
     return leftOpType.is("java.lang.Class") || rightOpType.is("java.lang.Class");
-  }
-
-  private static boolean isBot(Type type) {
-    return ((JavaType) type).isTagged(JavaType.BOT);
   }
 
   private static boolean bothImplementsEqualsMethod(Type leftOpType, Type rightOpType) {
