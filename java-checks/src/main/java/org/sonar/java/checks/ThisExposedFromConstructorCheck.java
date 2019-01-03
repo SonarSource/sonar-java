@@ -64,13 +64,13 @@ public class ThisExposedFromConstructorCheck extends IssuableSubscriptionVisitor
       if (this.owner == tree.symbol().owner()) {
         return;
       }
-      tree.arguments().stream().filter(this::isThis).forEach(this::report);
+      tree.arguments().stream().filter(expression -> ExpressionUtils.isThis(expression)).forEach(this::report);
       super.visitMethodInvocation(tree);
     }
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (!isThis(tree.expression())) {
+      if (!ExpressionUtils.isThis(tree.expression())) {
         return;
       }
       ExpressionTree variable = tree.variable();
@@ -89,15 +89,6 @@ public class ThisExposedFromConstructorCheck extends IssuableSubscriptionVisitor
     @Override
     public void visitClass(ClassTree tree) {
       // skip nested and anonymous classes
-    }
-
-    private boolean isThis(ExpressionTree expression) {
-      ExpressionTree expressionNoParenthesis = ExpressionUtils.skipParentheses(expression);
-      if (expressionNoParenthesis.is(Tree.Kind.IDENTIFIER)) {
-        String targetName = ((IdentifierTree) expressionNoParenthesis).name();
-        return "this".equals(targetName);
-      }
-      return false;
     }
 
     private void report(ExpressionTree tree) {

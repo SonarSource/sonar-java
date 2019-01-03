@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -80,7 +81,7 @@ public class FinalizeFieldsSetCheck extends IssuableSubscriptionVisitor {
       ExpressionTree variable = tree.variable();
       if (variable.is(Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) variable;
-        if (!isThis(memberSelectExpressionTree.expression())) {
+        if (!ExpressionUtils.isThis(memberSelectExpressionTree.expression())) {
           return false;
         }
         variable = memberSelectExpressionTree.identifier();
@@ -90,10 +91,6 @@ public class FinalizeFieldsSetCheck extends IssuableSubscriptionVisitor {
         return variableSymbol.owner().isTypeSymbol();
       }
       return false;
-    }
-
-    private boolean isThis(ExpressionTree tree) {
-      return tree.is(Kind.IDENTIFIER) && "this".equals(((IdentifierTree) tree).name());
     }
 
     private boolean isNullAssignment(AssignmentExpressionTree tree) {

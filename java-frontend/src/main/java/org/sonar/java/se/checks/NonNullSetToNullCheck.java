@@ -138,7 +138,7 @@ public class NonNullSetToNullCheck extends SECheck {
       return false;
     }
     ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
-    return methodSelect.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) methodSelect).name());
+    return ExpressionUtils.isThis(methodSelect);
   }
 
   private void checkVariable(CheckerContext context, MethodTree tree, final Symbol symbol) {
