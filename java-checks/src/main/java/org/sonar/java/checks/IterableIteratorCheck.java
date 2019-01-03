@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -81,7 +81,7 @@ public class IterableIteratorCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
       ExpressionTree returnedExpression = tree.expression();
-      if (returnedExpression.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) returnedExpression).name())) {
+      if (ExpressionUtils.isThis(returnedExpression)) {
         issueLocations.add(returnedExpression);
       }
       super.visitReturnStatement(tree);

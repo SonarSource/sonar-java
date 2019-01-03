@@ -141,4 +141,14 @@ public final class ExpressionUtils {
     return (MethodTree) result;
   }
 
+  /**
+   * Checks if the given expression refers to "this"
+   * @param expression the expression to check
+   * @return true if this expression refers to "this"
+   */
+  public static boolean isThis(ExpressionTree expression) {
+    ExpressionTree newExpression = ExpressionUtils.skipParentheses(expression);
+    return newExpression.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) newExpression).name());
+  }
+
 }

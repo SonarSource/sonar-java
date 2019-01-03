@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -66,14 +67,21 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     super.visitBinaryExpression(tree);
     if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
-      Type leftOpType = tree.leftOperand().symbolType();
-      Type rightOpType = tree.rightOperand().symbolType();
+      ExpressionTree leftExpression = tree.leftOperand();
+      ExpressionTree rightExpression = tree.rightOperand();
+      Type leftOpType = leftExpression.symbolType();
+      Type rightOpType = rightExpression.symbolType();
       if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType)
+        && neitherIsThis(leftExpression, rightExpression)
         && bothImplementsEqualsMethod(leftOpType, rightOpType)
-        && neitherIsPublicStaticFinal(tree.leftOperand(), tree.rightOperand())) {
+        && neitherIsPublicStaticFinal(leftExpression, rightExpression)) {
         context.reportIssue(this, tree.operatorToken(), "Use the \"equals\" method if value comparison was intended.");
       }
     }
+  }
+
+  private static boolean neitherIsThis(ExpressionTree leftExpression, ExpressionTree rightExpression) {
+    return !ExpressionUtils.isThis(leftExpression) && !ExpressionUtils.isThis(rightExpression);
   }
 
   private static boolean neitherIsPublicStaticFinal(ExpressionTree leftOperand, ExpressionTree rightOperand) {

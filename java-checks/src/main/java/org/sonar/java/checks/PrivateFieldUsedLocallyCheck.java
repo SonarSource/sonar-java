@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
@@ -145,14 +146,10 @@ public class PrivateFieldUsedLocallyCheck extends IssuableSubscriptionVisitor {
     public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
       Symbol symbol = tree.identifier().symbol();
       if (isField(symbol) && !symbol.isStatic()) {
-
         if (tree.expression().is(Kind.IDENTIFIER)) {
-          String objectName = ((IdentifierTree) tree.expression()).name();
-
-          if (!"this".equals(objectName)) {
+          if (!ExpressionUtils.isThis(tree.expression())) {
             fieldsReadOnAnotherInstance.add(symbol);
           }
-
         } else {
           fieldsReadOnAnotherInstance.add(symbol);
         }

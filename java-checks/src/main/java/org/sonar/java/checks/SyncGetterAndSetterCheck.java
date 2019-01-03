@@ -22,12 +22,12 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
@@ -112,7 +112,7 @@ public class SyncGetterAndSetterCheck extends IssuableSubscriptionVisitor {
     BlockTree blockTree = methodTree.block();
     if (blockTree != null && blockTree.body().size() == 1 && blockTree.body().get(0).is(Tree.Kind.SYNCHRONIZED_STATEMENT)) {
       SynchronizedStatementTree sync = (SynchronizedStatementTree) blockTree.body().get(0);
-      return sync.expression().is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) sync.expression()).name());
+      return ExpressionUtils.isThis(sync.expression());
     }
     return false;
   }

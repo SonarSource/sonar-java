@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -99,17 +100,13 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
     } else if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
       ExpressionTree mseExpression = mse.expression();
-      if (isThis(mseExpression)) {
+      if (ExpressionUtils.isThis(mseExpression)) {
         return isField(mse.identifier());
       } else {
         return isField(mseExpression);
       }
     }
     return false;
-  }
-
-  private static boolean isThis(ExpressionTree expression) {
-    return expression.is(Kind.IDENTIFIER) && "this".equals(((IdentifierTree) expression).name());
   }
 
   private class AssignmentVisitor extends BaseTreeVisitor {
