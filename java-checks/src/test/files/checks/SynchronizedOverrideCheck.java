@@ -11,7 +11,7 @@ class B extends A{
   @java.lang.Override
   public void f2(){} // Compliant
 
-  public void f3(){} // Noncompliant {{Make this method "synchronized" to match the parent class implementation.}}
+  public void f3(){} // Noncompliant [[secondary=5]] {{Make this method "synchronized" to match the parent class implementation.}}
 }
 
 class C extends B{

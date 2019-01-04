@@ -20,18 +20,22 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.resolve.Flags;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
 @Rule(key = "S3551")
 public class SynchronizedOverrideCheck extends IssuableSubscriptionVisitor {
+
+  private static final String MESSAGE = "Make this method \"synchronized\" to match the parent class implementation.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -45,18 +49,28 @@ public class SynchronizedOverrideCheck extends IssuableSubscriptionVisitor {
     }
 
     MethodTree methodTree = (MethodTree) tree;
-    Symbol.MethodSymbol overriddenSymbol =  methodTree.symbol().overriddenSymbol();
+    Symbol.MethodSymbol methodSymbol = methodTree.symbol();
+    Symbol.MethodSymbol overriddenSymbol =  methodSymbol.overriddenSymbol();
     if (overriddenSymbol == null || overriddenSymbol.isUnknown()) {
       return;
     }
-    MethodTree overridenMethodTree = overriddenSymbol.declaration();
-    if (null != overridenMethodTree && isSynchronized(overridenMethodTree) && !isSynchronized(methodTree)) {
-      reportIssue(methodTree.simpleName(), "Make this method \"synchronized\" to match the parent class implementation.");
+    if (isSynchronized(overriddenSymbol) && !isSynchronized(methodSymbol)) {
+      MethodTree overridenMethodTree = overriddenSymbol.declaration();
+      if (null != overridenMethodTree) {
+        List<JavaFileScannerContext.Location> secondaryLocations = Collections.singletonList(
+          new JavaFileScannerContext.Location("", overridenMethodTree.simpleName()));
+        reportIssue(methodTree.simpleName(), MESSAGE, secondaryLocations, null);
+      }
+      else {
+        reportIssue(methodTree.simpleName(), MESSAGE);
+      }
     }
   }
 
-  private static boolean isSynchronized(MethodTree methodTree) {
-    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.SYNCHRONIZED);
+  private static boolean isSynchronized(Symbol methodSymbol) {
+    return Flags.isFlagged(
+      ((JavaSymbol) methodSymbol).flags(),
+      Flags.SYNCHRONIZED);
   }
 
 }
