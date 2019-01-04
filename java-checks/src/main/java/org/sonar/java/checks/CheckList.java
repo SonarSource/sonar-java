@@ -331,6 +331,7 @@ public final class CheckList {
       MagicNumberCheck.class,
       StringConcatenationInLoopCheck.class,
       CompareObjectWithEqualsCheck.class,
+      CompareStringsBoxedTypesWithEqualsCheck.class,
       RepeatAnnotationCheck.class,
       NPEThrowCheck.class,
       NullDereferenceInConditionalCheck.class,

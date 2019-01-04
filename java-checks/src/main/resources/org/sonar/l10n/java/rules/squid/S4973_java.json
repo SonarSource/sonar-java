@@ -1,0 +1,27 @@
+{
+  "title": "Strings and Boxed types should be compared using \"equals()\"",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "cert"
+  ],
+  "standards": [
+    "CWE",
+    "CERT"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-4973",
+  "sqKey": "S4973",
+  "scope": "All",
+  "securityStandards": {
+    "CWE": [
+      595,
+      597
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+<p>It's almost always a mistake to compare two instances of <code>java.lang.String</code> or boxed types like <code>java.lang.Integer</code> using
+reference equality <code>==</code> or <code>!=</code>, because it is not comparing actual value but locations in memory.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+String firstName = getFirstName(); // String overrides equals
+String lastName = getLastName();
+
+if (firstName == lastName) { ... }; // Non-compliant; false even if the strings have the same value
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+String firstName = getFirstName();
+String lastName = getLastName();
+
+if (firstName != null &amp;&amp; firstName.equals(lastName)) { ... };
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/595.html">MITRE, CWE-595</a> - Comparison of Object References Instead of Object Contents </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/597.html">MITRE, CWE-597</a> - Use of Wrong Operator in String Comparison </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/wwD1AQ">CERT, EXP03-J.</a> - Do not use the equality operators when comparing values of
+  boxed primitives </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/8AEqAQ">CERT, EXP50-J.</a> - Do not confuse abstract object equality with reference
+  equality </li>
+</ul>
+
