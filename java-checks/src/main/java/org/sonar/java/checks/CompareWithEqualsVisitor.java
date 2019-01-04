@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public abstract class CompareWithEqualsVisitor extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String JAVA_LANG_STRING = "java.lang.String";
   private JavaFileScannerContext context;
 
   @Override
@@ -69,6 +70,14 @@ public abstract class CompareWithEqualsVisitor extends BaseTreeVisitor implement
 
   private static boolean isBot(Type type) {
     return ((JavaType) type).isTagged(JavaType.BOT);
+  }
+
+  protected static boolean isStringType(Type leftOpType, Type rightOpType) {
+    return leftOpType.is(JAVA_LANG_STRING) && rightOpType.is(JAVA_LANG_STRING);
+  }
+
+  protected static boolean isBoxedType(Type leftOpType, Type rightOpType) {
+    return ((JavaType)leftOpType).isPrimitiveWrapper() && ((JavaType)rightOpType).isPrimitiveWrapper();
   }
 
   protected void reportIssue(SyntaxToken opToken) {

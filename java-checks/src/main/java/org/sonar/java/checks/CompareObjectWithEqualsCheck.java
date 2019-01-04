@@ -90,7 +90,9 @@ public class CompareObjectWithEqualsCheck extends CompareWithEqualsVisitor {
     return isNullComparison(leftOpType, rightOpType)
       || isNumericalComparison(leftOpType, rightOpType)
       || isJavaLangClassComparison(leftOpType, rightOpType)
-      || isObjectType(leftOpType, rightOpType);
+      || isObjectType(leftOpType, rightOpType)
+      || isStringType(leftOpType, rightOpType)
+      || isBoxedType(leftOpType, rightOpType);
   }
 
   private static boolean isObjectType(Type leftOpType, Type rightOpType) {
