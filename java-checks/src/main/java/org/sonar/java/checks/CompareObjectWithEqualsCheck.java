@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1698")
 public class CompareObjectWithEqualsCheck extends CompareWithEqualsVisitor {
@@ -38,19 +37,16 @@ public class CompareObjectWithEqualsCheck extends CompareWithEqualsVisitor {
   private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create().name("equals").parameters(JAVA_LANG_OBJECT);
 
   @Override
-  public void visitBinaryExpression(BinaryExpressionTree tree) {
-    super.visitBinaryExpression(tree);
-    if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
-      ExpressionTree leftExpression = tree.leftOperand();
-      ExpressionTree rightExpression = tree.rightOperand();
-      Type leftOpType = leftExpression.symbolType();
-      Type rightOpType = rightExpression.symbolType();
-      if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType)
-        && neitherIsThis(leftExpression, rightExpression)
-        && bothImplementsEqualsMethod(leftOpType, rightOpType)
-        && neitherIsPublicStaticFinal(leftExpression, rightExpression)) {
-        reportIssue(this, tree.operatorToken());
-      }
+  protected void checkEqualityExpression(BinaryExpressionTree tree) {
+    ExpressionTree leftExpression = tree.leftOperand();
+    ExpressionTree rightExpression = tree.rightOperand();
+    Type leftOpType = leftExpression.symbolType();
+    Type rightOpType = rightExpression.symbolType();
+    if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType)
+      && neitherIsThis(leftExpression, rightExpression)
+      && bothImplementsEqualsMethod(leftOpType, rightOpType)
+      && neitherIsPublicStaticFinal(leftExpression, rightExpression)) {
+      reportIssue(tree.operatorToken());
     }
   }
 

@@ -25,10 +25,12 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 
-public class CompareWithEqualsVisitor extends BaseTreeVisitor implements JavaFileScanner {
+public abstract class CompareWithEqualsVisitor extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
 
@@ -41,11 +43,21 @@ public class CompareWithEqualsVisitor extends BaseTreeVisitor implements JavaFil
   }
 
   @Override
-  public void visitMethod(MethodTree tree) {
+  public final void visitMethod(MethodTree tree) {
     if (!isEquals(tree)) {
       super.visitMethod(tree);
     }
   }
+
+  @Override
+  public final void visitBinaryExpression(BinaryExpressionTree tree) {
+    super.visitBinaryExpression(tree);
+    if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+      checkEqualityExpression(tree);
+    }
+  }
+
+  protected abstract void checkEqualityExpression(BinaryExpressionTree tree);
 
   private static boolean isEquals(MethodTree tree) {
     return ((MethodTreeImpl) tree).isEqualsMethod();
@@ -55,11 +67,11 @@ public class CompareWithEqualsVisitor extends BaseTreeVisitor implements JavaFil
     return isBot(leftOpType) || isBot(rightOpType);
   }
 
-  protected static boolean isBot(Type type) {
+  private static boolean isBot(Type type) {
     return ((JavaType) type).isTagged(JavaType.BOT);
   }
 
-  protected void reportIssue(JavaFileScanner scanner, SyntaxToken opToken) {
-    context.reportIssue(scanner, opToken, "Use the \"equals\" method if value comparison was intended.");
+  protected void reportIssue(SyntaxToken opToken) {
+    context.reportIssue(this, opToken, "Use the \"equals\" method if value comparison was intended.");
   }
 }

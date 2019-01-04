@@ -331,6 +331,7 @@ public final class CheckList {
       MagicNumberCheck.class,
       StringConcatenationInLoopCheck.class,
       CompareObjectWithEqualsCheck.class,
+      CompareStringsBoxedTypesWithEqualsCheck.class,
       RepeatAnnotationCheck.class,
       NPEThrowCheck.class,
       NullDereferenceInConditionalCheck.class,
@@ -660,8 +661,7 @@ public final class CheckList {
       PrimitivesMarkedNullableCheck.class,
       ForLoopVariableTypeCheck.class,
       ReplaceGuavaWithJava8Check.class,
-      LoggedRethrownExceptionsCheck.class,
-      CompareStringsBoxedTypesWithEqualsCheck.class);
+      LoggedRethrownExceptionsCheck.class);
   }
 
   public static List<Class<? extends DebugCheck>> getDebugChecks() {

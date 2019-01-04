@@ -23,7 +23,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4973")
 public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVisitor {
@@ -31,14 +30,11 @@ public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVi
   private static final String JAVA_LANG_STRING = "java.lang.String";
 
   @Override
-  public void visitBinaryExpression(BinaryExpressionTree tree) {
-    super.visitBinaryExpression(tree);
-    if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
-      Type leftOpType = tree.leftOperand().symbolType();
-      Type rightOpType = tree.rightOperand().symbolType();
-      if (!isNullComparison(leftOpType, rightOpType) && (isString(leftOpType, rightOpType) || isBoxedType(leftOpType, rightOpType))) {
-        reportIssue(this, tree.operatorToken());
-      }
+  protected void checkEqualityExpression(BinaryExpressionTree tree) {
+    Type leftOpType = tree.leftOperand().symbolType();
+    Type rightOpType = tree.rightOperand().symbolType();
+    if (!isNullComparison(leftOpType, rightOpType) && (isString(leftOpType, rightOpType) || isBoxedType(leftOpType, rightOpType))) {
+      reportIssue(tree.operatorToken());
     }
   }
 
