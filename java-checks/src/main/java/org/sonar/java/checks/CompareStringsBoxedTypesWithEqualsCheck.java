@@ -20,30 +20,20 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 
 @Rule(key = "S4973")
 public class CompareStringsBoxedTypesWithEqualsCheck extends CompareWithEqualsVisitor {
 
-  private static final String JAVA_LANG_STRING = "java.lang.String";
-
   @Override
   protected void checkEqualityExpression(BinaryExpressionTree tree) {
     Type leftOpType = tree.leftOperand().symbolType();
     Type rightOpType = tree.rightOperand().symbolType();
-    if (!isNullComparison(leftOpType, rightOpType) && (isString(leftOpType, rightOpType) || isBoxedType(leftOpType, rightOpType))) {
+    if (!isNullComparison(leftOpType, rightOpType)
+      && (isStringType(leftOpType, rightOpType) || isBoxedType(leftOpType, rightOpType))) {
       reportIssue(tree.operatorToken());
     }
-  }
-
-  private static boolean isString(Type leftOpType, Type rightOpType) {
-    return leftOpType.is(JAVA_LANG_STRING) && rightOpType.is(JAVA_LANG_STRING);
-  }
-
-  private static boolean isBoxedType(Type leftOpType, Type rightOpType) {
-    return ((JavaType)leftOpType).isPrimitiveWrapper() && ((JavaType)rightOpType).isPrimitiveWrapper();
   }
 
 }

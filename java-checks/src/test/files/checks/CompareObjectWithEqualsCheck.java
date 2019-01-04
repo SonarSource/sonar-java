@@ -6,8 +6,8 @@ class A {
   private void method() {
     if (this == str2) {} // Compliant
     if ((this) == str2) {} // Compliant
-    if (str1 == str2) {} // Noncompliant [[sc=14;ec=16]] {{Use the "equals" method if value comparison was intended.}}
-    if(str1 == "green") {} // Noncompliant {{Use the "equals" method if value comparison was intended.}}
+    if (str1 == str2) {} // Compliant (handled by S4973)
+    if(str1 == "green") {} // Compliant (handled by S4973)
     if (str1.equals(str2)) {}
     if(strArray1 == strArray2) {}
     if(null == str1){ }
@@ -20,7 +20,7 @@ class B {
   private void method() {
     if(strArray2 == strArray2){}
     if(strArray2[0] == strArray2[1]){}
-    if(strArray2[0][0] == strArray2[1][1]){} // Noncompliant {{Use the "equals" method if value comparison was intended.}}
+    if(strArray2[0][0] == strArray2[1][1]){} // Compliant (handled by S4973)
     byte[] bits;
     if(bits [0] == bits [1]) {}
     if(Foo.FOO == Foo.BAR) {}
@@ -36,8 +36,8 @@ class C{
   String[] strArray1 = {"blue"};
   String[] strArray2 = {"blue"};
   private void method() {
-    if (str1 != str2) {} // Noncompliant {{Use the "equals" method if value comparison was intended.}}
-    if(str1 != "green") {} // Noncompliant {{Use the "equals" method if value comparison was intended.}}
+    if (str1 != str2) {} // Compliant (handled by S4973)
+    if(str1 != "green") {} // Compliant (handled by S4973)
     if (str1.equals(str2)) {}
     if(strArray1 != strArray2) {}
     if(null != str1){ }
