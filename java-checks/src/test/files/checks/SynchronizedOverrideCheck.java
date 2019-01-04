@@ -19,3 +19,8 @@ class C extends B{
   public void f1(){} // Compliant
 }
 
+class D extends java.lang.Throwable {
+  @java.lang.Override
+  public Throwable getCause() {} // Noncompliant {{Make this method "synchronized" to match the parent class implementation.}}
+}
+
