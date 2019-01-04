@@ -60,8 +60,7 @@ public class SynchronizedOverrideCheck extends IssuableSubscriptionVisitor {
         List<JavaFileScannerContext.Location> secondaryLocations = Collections.singletonList(
           new JavaFileScannerContext.Location("", overridenMethodTree.simpleName()));
         reportIssue(methodTree.simpleName(), MESSAGE, secondaryLocations, null);
-      }
-      else {
+      } else {
         reportIssue(methodTree.simpleName(), MESSAGE);
       }
     }
