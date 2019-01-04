@@ -23,7 +23,7 @@ potentially leading to loss of confidentiality, integrity or availability.</p>
   <li> sanitize the user input. </li>
 </ul>
 <p> </p>
-<p>Restrict which users can have access to the command</p>
+<p>Restrict which users can have access to the command:</p>
 <ul>
   <li> use a firewall to protect the process running the code, and to protect the network from the command. </li>
   <li> authenticate the user and allow only some users to run the command. </li>
@@ -35,6 +35,28 @@ potentially leading to loss of confidentiality, integrity or availability.</p>
   <li> refuse to run the command if the process has too many privileges. For example: forbid running the code as "root". </li>
 </ul>
 <p> </p>
+<h2>Questionable Code Example</h2>
+<pre>
+Runtime.getRuntime().exec(...);  // Questionable. Validate the executed command.
+
+ProcessBuilder pb = new ProcessBuilder(command);  // Questionable.
+pb.command(command);  // Questionable.
+
+// === apache.commons ===
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+
+CommandLine cmdLine = CommandLine.parse("bad.exe");
+DefaultExecutor executor = new DefaultExecutor();
+executor.execute(cmdLine); // Questionable
+
+</pre>
+<h2>Exceptions</h2>
+<p>The following code will not raise any issue.</p>
+<pre>
+ProcessBuilder pb = new ProcessBuilder();
+pb.command();
+</pre>
 <h2>See</h2>
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/78">MITRE, CWE-78</a> - Improper Neutralization of Special Elements used in an OS Command </li>
