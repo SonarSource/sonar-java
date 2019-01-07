@@ -1,0 +1,20 @@
+{
+  "title": "Overrides should match their parent class methods in synchronization",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [
+    "multi-threading",
+    "cert"
+  ],
+  "standards": [
+    "CERT"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3551",
+  "sqKey": "S3551",
+  "scope": "Main"
+}

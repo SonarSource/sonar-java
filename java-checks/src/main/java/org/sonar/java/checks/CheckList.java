@@ -661,7 +661,8 @@ public final class CheckList {
       PrimitivesMarkedNullableCheck.class,
       ForLoopVariableTypeCheck.class,
       ReplaceGuavaWithJava8Check.class,
-      LoggedRethrownExceptionsCheck.class);
+      LoggedRethrownExceptionsCheck.class,
+      SynchronizedOverrideCheck.class);
   }
 
   public static List<Class<? extends DebugCheck>> getDebugChecks() {

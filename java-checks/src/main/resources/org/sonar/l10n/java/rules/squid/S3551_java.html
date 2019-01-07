@@ -1,0 +1,44 @@
+<p>When <code>@Overrides</code> of <code>synchronized</code> methods are not themselves <code>synchronized</code>, the result can be improper
+synchronization as callers rely on the thread-safety promised by the parent class.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Parent {
+
+  synchronized void foo() {
+    //...
+  }
+}
+
+public class Child extends Parent {
+
+ @Override
+  public foo () {  // Noncompliant
+    // ...
+    super.foo();
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public class Parent {
+
+  synchronized void foo() {
+    //...
+  }
+}
+
+public class Child extends Parent {
+
+  @Override
+  synchronized foo () {
+    // ...
+    super.foo();
+  }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/XgAZAg">CERT, TSM00-J</a> - Do not override thread-safe methods with methods that are
+  not thread-safe </li>
+</ul>
+
