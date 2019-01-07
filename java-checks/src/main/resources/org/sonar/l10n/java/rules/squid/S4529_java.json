@@ -21,7 +21,7 @@
     "OWASP Top Ten",
     "SANS Top 25"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4529",
   "sqKey": "S4529",
   "scope": "Main",

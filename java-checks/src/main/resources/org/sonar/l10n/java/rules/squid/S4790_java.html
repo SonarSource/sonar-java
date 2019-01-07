@@ -10,23 +10,29 @@ original data with another one having the same hash.</p>
 <p>This rule flags code that initiates hashing.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> the hashed value is used for security purpose. </li>
+  <li> the hashed value is used in a security context. </li>
   <li> the hashing algorithm you are using is known to have vulnerabilities. </li>
-  <li> a <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">"salt"</a> is not added to the input before hashing. </li>
-  <li> the salt value is always the same, or it is not random, or it is reused. </li>
-  <li> the salt is shorter than the resulting hash value. </li>
+  <li> <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">salts</a> are not automatically generated and applied by the hashing function.
+  </li>
+  <li> any generated salts are cryptographically weak or not credential-specific. </li>
 </ul>
 <p>You are at risk if you answered yes to the first question and any of the following ones.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> use only hashing algorithms which are <a href="https://en.wikipedia.org/wiki/Hash_function_security_summary">known to be strong</a>. Check
-  regularly that this is still the case as hashing algorithms strength change with time. </li>
-  <li> generate a long random salt. </li>
-  <li> the salt is at least as long as the resulting hash value. </li>
-  <li> append the value being hashed to the salt and pass the whole thing into a standard hash function such as SHA256. </li>
+  <li> for security related purposes, use only hashing algorithms which are <a
+  href="https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet">currently known to be strong</a>. Avoid using algorithms like MD5 and SHA1
+  completely in security contexts. </li>
+  <li> do not define your own hashing- or salt algorithms as they will most probably have flaws. </li>
+  <li> do not use algorithms that compute too quickly, like SHA256, as it must remain beyond modern hardware capabilities to perform brute force and
+  dictionary based attacks. </li>
+  <li> use a hashing algorithm that generate its own salts as part of the hashing. If you generate your own salts, make sure that a cryptographically
+  strong salt algorithm is used, that generated salts are credential-specific, and finally, that the salt is applied correctly before the hashing.
+  </li>
   <li> save both the salt and the hashed value in the relevant database record; during future validation operations, the salt and hash can then be
   retrieved from the database. The hash is recalculated with the stored salt and the value being validated, and the result compared to the stored
   hash. </li>
+  <li> the strength of hashing algorithms often decreases over time as hardware capabilities increase. Check regularly that the algorithms you are
+  using are still considered secure. If needed, rehash your data using a stronger algorithm. </li>
 </ul>
 <h2>Questionable Code Example</h2>
 <pre>

@@ -3,7 +3,6 @@
 by 0, and shifting it by 33 is the same as shifting it by 1.</p>
 <p>Similarly, when shifting 64-bit integers, the runtime uses the lowest 6 bits of the shift count operand and shifting <code>long</code> by 64 is the
 same as shifting it by 0, and shifting it by 65 is the same as shifting it by 1.</p>
-<p>8-bit and 16-bit integers are first cast to 32-bit and then the rules for 32-bit are applied.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public int shift(int a) {

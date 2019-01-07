@@ -8,8 +8,7 @@
   },
   "tags": [
     "cwe",
-    "owasp-a8",
-    "cert"
+    "owasp-a8"
   ],
   "standards": [
     "CWE",
