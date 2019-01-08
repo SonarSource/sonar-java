@@ -17,36 +17,21 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java;
+package org.sonar.java.filters;
 
-import java.io.File;
-import java.nio.file.Files;
+import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+public class TestsAsFirstCitizenIssueFilterTest {
 
-public final class CheckTestUtils {
-
-  private CheckTestUtils() {
-    // Utility class
+  @Test
+  public void no_issue_if_TEST() {
+    FilterVerifier.verify("src/test/files/filters/TestsAsFirstCitizenIssueFilter.java", InputFile.Type.TEST, new TestsAsFirstCitizenIssueFilter());
   }
 
-  public static InputFile inputFile(String filename) {
-    return inputFile(filename, InputFile.Type.MAIN);
+  @Test(expected = AssertionError.class)
+  public void test_issue_if_MAIN() {
+    FilterVerifier.verify("src/test/files/filters/TestsAsFirstCitizenIssueFilter.java", InputFile.Type.MAIN, new TestsAsFirstCitizenIssueFilter());
   }
 
-  public static InputFile inputFile(String filename, InputFile.Type typeOfFile) {
-    File file = new File(filename);
-    try {
-      return new TestInputFileBuilder("", file.getPath())
-        .setContents(new String(Files.readAllBytes(file.toPath()), UTF_8))
-        .setCharset(UTF_8)
-        .setLanguage("java")
-        .setType(typeOfFile)
-        .build();
-    } catch (Exception e) {
-      throw new IllegalStateException(String.format("Unable to lead file '%s", file.getAbsolutePath()));
-    }
-  }
 }

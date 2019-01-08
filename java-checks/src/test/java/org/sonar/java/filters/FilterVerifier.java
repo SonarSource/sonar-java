@@ -39,6 +39,7 @@ import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.CheckTestUtils;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridgeForTests;
@@ -53,6 +54,11 @@ import static org.mockito.Mockito.when;
 public class FilterVerifier {
 
   public static void verify(String filename, JavaIssueFilter filter, JavaCheck... extraJavaChecks) {
+    verify(filename, InputFile.Type.MAIN, filter, extraJavaChecks);
+  }
+
+  public static void verify(String filename, InputFile.Type typeOfFile, JavaIssueFilter filter, JavaCheck... extraJavaChecks) {
+
     IssueCollector issueCollector = new IssueCollector();
     ArrayList<JavaCheck> visitors = Lists.<JavaCheck>newArrayList(filter, issueCollector);
 
@@ -67,8 +73,9 @@ public class FilterVerifier {
     List<File> projectClasspath = Lists.newArrayList(classpath);
     projectClasspath.add(new File("target/test-classes"));
 
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, null);
-    InputFile inputFile = CheckTestUtils.inputFile(filename);
+    SonarComponents sonarComponents = createSonarComponentsMock();
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, sonarComponents);
+    InputFile inputFile = CheckTestUtils.inputFile(filename, typeOfFile);
     JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
 
@@ -118,6 +125,14 @@ public class FilterVerifier {
       }
     }
     return rules;
+  }
+
+  private static SonarComponents createSonarComponentsMock() {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+
+    when(sonarComponents.isSonarLintContext()).thenReturn(true);
+
+    return sonarComponents;
   }
 
   private static class IssueCollector extends SubscriptionVisitor {

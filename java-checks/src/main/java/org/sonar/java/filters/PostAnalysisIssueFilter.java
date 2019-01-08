@@ -32,7 +32,8 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueF
     new EclipseI18NFilter(),
     new LombokFilter(),
     new SuppressWarningFilter(),
-    new GeneratedCodeFilter());
+    new GeneratedCodeFilter(),
+    new TestsAsFirstCitizenIssueFilter());
   private Iterable<JavaIssueFilter> issueFilers;
 
   @VisibleForTesting

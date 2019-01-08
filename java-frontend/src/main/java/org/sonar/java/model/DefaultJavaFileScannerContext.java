@@ -203,6 +203,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   @Override
+  public boolean isTestFile() {
+    return inputFile.type() == InputFile.Type.TEST;
+  }
+
+  @Override
   public File getWorkingDirectory() {
     return sonarComponents.workDir();
   }

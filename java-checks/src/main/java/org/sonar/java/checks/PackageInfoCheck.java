@@ -36,7 +36,8 @@ public class PackageInfoCheck implements JavaFileScanner {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     File parentFile = context.getInputFile().file().getParentFile();
-    if (!new File(parentFile, "package-info.java").isFile() && !directoriesWithoutPackageFile.contains(parentFile)) {
+    if (!new File(parentFile, "package-info.java").isFile() && !directoriesWithoutPackageFile.contains(parentFile)
+      && !context.isTestFile()) {
       Path baseDirAbsolutePath = ((DefaultJavaFileScannerContext) context).getBaseDirectory().getAbsoluteFile().toPath();
       Path parentDirAbsolutePath = parentFile.getAbsoluteFile().toPath();
       Path relativize = baseDirAbsolutePath.relativize(parentDirAbsolutePath);

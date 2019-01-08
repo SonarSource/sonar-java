@@ -21,6 +21,7 @@ package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.Plugin;
+import org.sonar.api.PropertyType;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.config.PropertyDefinition;
@@ -86,7 +87,17 @@ public class JavaPlugin implements Plugin {
       DefaultJavaResourceLocator.class,
       JavaSquidSensor.class,
       PostAnalysisIssueFilter.class,
-      XmlFileSensor.class
+      XmlFileSensor.class,
+      PropertyDefinition.builder(Java.TESTS_AS_FIRST_CITIZEN)
+        .description(
+          "Make no distinction between test and main sources. When set to true, will play all the rules targeting "
+            + "main sources on tests sources as well. Test sources will also be taken into account for all the metrics.")
+        .name("Tests as First Citizens")
+        .category(JavaConstants.JAVA_CATEGORY)
+        .type(PropertyType.BOOLEAN)
+        .defaultValue("false")
+        .onQualifiers(Qualifiers.PROJECT)
+        .build()
       );
 
     if (isAnalysisWarningsSupported(context.getRuntime())) {

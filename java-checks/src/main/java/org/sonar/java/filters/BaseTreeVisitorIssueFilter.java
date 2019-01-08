@@ -42,6 +42,7 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
   private String componentKey;
   private final Multimap<String, Integer> excludedLinesByRule;
   private final Map<Class<? extends JavaCheck>, String> rulesKeysByRulesClass;
+  private JavaFileScannerContext context;
 
   public BaseTreeVisitorIssueFilter() {
     excludedLinesByRule = HashMultimap.create();
@@ -63,8 +64,13 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     return componentKey;
   }
 
+  public JavaFileScannerContext context() {
+    return context;
+  }
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
     componentKey = context.getInputFile().key();
     excludedLinesByRule.clear();
     scan(context.getTree());

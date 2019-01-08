@@ -20,12 +20,10 @@
 package org.sonar.java;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
@@ -50,50 +48,65 @@ public class JavaSquid {
 
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
+  private final boolean scanTestsLikeSources;
 
   public JavaSquid(JavaVersion javaVersion,
     @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
     JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
-    this(javaVersion, false, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, visitors);
+    this(javaVersion, false, false, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, visitors);
   }
 
-  public JavaSquid(JavaVersion javaVersion, boolean xFileEnabled,
+  public JavaSquid(JavaVersion javaVersion, boolean xFileEnabled, boolean scanTestsLikeSources,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
 
-    List<JavaCheck> commonVisitors = Lists.newArrayList(javaResourceLocator);
+    this.scanTestsLikeSources = scanTestsLikeSources;
+
+    List<JavaCheck> commonVisitors = new ArrayList<>();
+    commonVisitors.add(javaResourceLocator);
     if (postAnalysisIssueFilter != null) {
       commonVisitors.add(postAnalysisIssueFilter);
     }
 
-    Iterable<JavaCheck> codeVisitors = Iterables.concat(commonVisitors, Arrays.asList(visitors));
-    Collection<JavaCheck> testCodeVisitors = Lists.newArrayList(commonVisitors);
+    List<JavaCheck> codeVisitors = new ArrayList<>(commonVisitors);
+    codeVisitors.addAll(Arrays.asList(visitors));
+
+    List<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     if (measurer != null) {
-      Iterable<JavaCheck> measurers = Collections.singletonList(measurer);
-      codeVisitors = Iterables.concat(measurers, codeVisitors);
-      testCodeVisitors.add(measurer.new TestFileMeasurer());
+      codeVisitors.add(0, measurer);
+      if (!scanTestsLikeSources) {
+        testCodeVisitors.add(0, measurer.new TestFileMeasurer());
+      }
     }
-    List<File> classpath = Lists.newArrayList();
-    List<File> testClasspath = Lists.newArrayList();
+    List<File> classpath = new ArrayList<>();
+    List<File> testClasspath = new ArrayList<>();
     if (sonarComponents != null) {
       if(!sonarComponents.isSonarLintContext()) {
-        codeVisitors = Iterables.concat(codeVisitors, Arrays.asList(new FileLinesVisitor(sonarComponents), new SyntaxHighlighterVisitor(sonarComponents)));
-        testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
+        codeVisitors.add(new FileLinesVisitor(sonarComponents));
+        codeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
+        if (!scanTestsLikeSources) {
+          testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
+        }
       }
       classpath = sonarComponents.getJavaClasspath();
       testClasspath = sonarComponents.getJavaTestClasspath();
       testCodeVisitors.addAll(sonarComponents.testCheckClasses());
+
+      if (scanTestsLikeSources) {
+        classpath.addAll(sonarComponents.getJavaTestClasspath());
+      }
     }
 
     //AstScanner for main files
     ActionParser<Tree> parser = JavaParser.createParser();
     astScanner = new JavaAstScanner(parser, sonarComponents);
-    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents, SymbolicExecutionMode.getMode(visitors, xFileEnabled)));
+    VisitorsBridge visitorsBridgeForMain = createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents, SymbolicExecutionMode.getMode(visitors, xFileEnabled));
+    astScanner.setVisitorBridge(visitorsBridgeForMain);
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(parser, sonarComponents);
-    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents, SymbolicExecutionMode.DISABLED));
-
+    VisitorsBridge visitorBridgeForTests = createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents, SymbolicExecutionMode.DISABLED);
+    astScannerForTests.setVisitorBridge(visitorBridgeForTests);
   }
 
   private static VisitorsBridge createVisitorBridge(
@@ -103,10 +116,13 @@ public class JavaSquid {
     return visitorsBridge;
   }
 
-
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles) {
-    scanSources(sourceFiles);
-    scanTests(testFiles);
+    if (scanTestsLikeSources) {
+      scanSources(Iterables.concat(sourceFiles, testFiles));
+    } else {
+      scanSources(sourceFiles);
+      scanTests(testFiles);
+    }
   }
 
   private void scanSources(Iterable<InputFile> sourceFiles) {
