@@ -64,6 +64,11 @@ public class Java extends AbstractLanguage {
   public static final String DEBUG_RULE_KEY = "sonar.java.debug";
 
   /**
+   * Do not make any distinctions between tests and main sources
+   */
+  public static final String TESTS_AS_FIRST_CITIZEN = "sonar.java.tests.firstcitizen";
+
+  /**
    * Settings of the plugin.
    */
   private final Configuration settings;
