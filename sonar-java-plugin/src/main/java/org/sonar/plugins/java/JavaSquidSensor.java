@@ -22,6 +22,7 @@ package org.sonar.plugins.java;
 import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -81,16 +82,23 @@ public class JavaSquidSensor implements Sensor {
     javaResourceLocator.setSensorContext(context);
     sonarComponents.setSensorContext(context);
 
+    boolean testAsFirstCitizen = testAsFirstCitizen();
     List<Class<? extends JavaCheck>> checks = ImmutableList.<Class<? extends JavaCheck>>builder()
       .addAll(CheckList.getJavaChecks())
       .addAll(CheckList.getDebugChecks())
+      .addAll(testAsFirstCitizen ? CheckList.getJavaTestChecks() : Collections.emptyList())
       .build();
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, checks);
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
     Measurer measurer = new Measurer(fs, context, noSonarFilter);
-    JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
+    JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), testAsFirstCitizen, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
+      sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles());
     sonarComponents.saveAnalysisErrors();
+  }
+
+  private boolean testAsFirstCitizen() {
+    return settings.getBoolean(Java.TESTS_AS_FIRST_CITIZEN).orElse(false);
   }
 
   private Collection<File> getSourceFiles() {
