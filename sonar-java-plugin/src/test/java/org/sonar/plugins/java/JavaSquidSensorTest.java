@@ -180,7 +180,6 @@ public class JavaSquidSensorTest {
   }
 
   private void executeJavaSquidSensor(SensorContextTester context) {
-
     context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER));
     // Mock visitor for metrics.
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
@@ -212,5 +211,38 @@ public class JavaSquidSensorTest {
     SensorContextTester context = createParseErrorContext();
     executeJavaSquidSensor(context);
     assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
+  }
+
+  @Test
+  public void testIssuesCreationOnTestFileWhenTestsAreFirstCitizens() throws IOException {
+    MapSettings settings = new MapSettings();
+    NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
+
+    SensorContextTester context = SensorContextTester.create(new File("src/test/files/").getAbsoluteFile());
+    DefaultFileSystem fs = context.fileSystem();
+
+    String effectiveKey = "TestSourceTest.java";
+    File file = new File(fs.baseDir(), effectiveKey);
+    DefaultInputFile inputFile = new TestInputFileBuilder("", effectiveKey).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
+      .setType(InputFile.Type.TEST)
+      .initMetadata(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8))
+      .setCharset(StandardCharsets.UTF_8)
+      .build();
+    fs.add(inputFile);
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SCANNER));
+
+    settings.setProperty(Java.TESTS_AS_FIRST_CITIZEN, "true");
+
+    SonarComponents sonarComponents = createSonarComponentsMock(context);
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings.asConfig(), fs));
+    PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
+
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, postAnalysisIssueFilter);
+
+    jss.execute(context);
+    // 1 issue from BadMethodName rule, usually applied on MAIN, not on TEST
+    verify(sonarComponents, times(1)).reportIssue(any(AnalyzerMessage.class));
+    // LOC are not counted for test files normally
+    assertThat(context.<Integer>measure(inputFile.key(), "ncloc").value()).isEqualTo(6);
   }
 }
