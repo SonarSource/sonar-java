@@ -30,10 +30,12 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -56,7 +58,7 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverridden(tree)) && isNotMainMethod(tree)) {
+    if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverridden(tree)) && isNotMainMethod(tree) && !isTestMethod(tree)) {
       for (TypeTree throwClause : tree.throwsClauses()) {
         Type exceptionType = throwClause.symbolType();
         if (isRawException(exceptionType) && !exceptionsThrownByMethodInvocations.contains(exceptionType)) {
@@ -111,6 +113,15 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
 
   private static boolean isNotMainMethod(MethodTree tree) {
     return !((MethodTreeImpl) tree).isMainMethod();
+  }
+
+  private static boolean isTestMethod(MethodTree methodTree) {
+    // rely solely on syntax
+    return methodTree.modifiers().annotations().stream()
+      .map(AnnotationTree::annotationType)
+      .map(Tree::lastToken)
+      .map(SyntaxToken::text)
+      .anyMatch("Test"::equals);
   }
 
 }
