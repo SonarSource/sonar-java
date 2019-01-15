@@ -30,7 +30,7 @@ public class BadMethodNameCheckTest {
   }
 
   @Test
-  public void test2() {
+  public void test_custom_regex() {
     BadMethodNameCheck check = new BadMethodNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadMethodNameCustom.java", check);
