@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
@@ -173,6 +174,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public File getFile() {
     return file;
+  }
+
+  @Override
+  public boolean isTestFile() {
+    return sonarComponents != null && sonarComponents.inputFromIOFile(file).type() == InputFile.Type.TEST;
   }
 
   @Override

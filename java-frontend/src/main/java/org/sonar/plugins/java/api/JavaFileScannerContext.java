@@ -98,6 +98,12 @@ public interface JavaFileScannerContext {
   File getFile();
 
   /**
+   * Tells if the file under analysis is considered as TEST file by SonarQube or not.
+   * @return true if the file under analysis is a TEST file, false if it is a MAIN file
+   */
+  boolean isTestFile();
+
+  /**
    * The working directory used by the analysis.
    * @return the current working directory.
    */
