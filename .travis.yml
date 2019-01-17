@@ -6,7 +6,11 @@ git:
 
 install: true
 jdk: openjdk11
-script: "./travis.sh"
+script: 
+  - export JAVA_HOME=/home/travis/openjdk11
+  - rm -rf $JAVA_HOME
+  - ~/bin/install-jdk.sh --target "/home/travis/openjdk11" --workspace "/home/travis/.cache/install-jdk" --feature "11" --license "GPL" --cacerts --url "https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz"
+  - "./travis.sh"
 env:
   - TEST=CI
 matrix:
