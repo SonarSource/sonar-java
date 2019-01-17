@@ -20,12 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
+import java.io.File;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-
-import java.io.File;
-import java.util.Set;
 
 @Rule(key = "S1228")
 public class PackageInfoCheck implements JavaFileScanner {
@@ -35,10 +34,17 @@ public class PackageInfoCheck implements JavaFileScanner {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     File parentFile = context.getFile().getParentFile();
-    if (!new File(parentFile, "package-info.java").isFile() && !directoriesWithoutPackageFile.contains(parentFile)) {
+
+    if (!packageInfoFileExists(parentFile)
+      && !directoriesWithoutPackageFile.contains(parentFile)
+      && !context.isTestFile()) {
       context.addIssue(parentFile, PackageInfoCheck.this, -1, "Add a 'package-info.java' file to document the '" + parentFile.getName() + "' package");
       directoriesWithoutPackageFile.add(parentFile);
     }
+  }
+
+  private static boolean packageInfoFileExists(File parentDirectory) {
+    return new File(parentDirectory, "package-info.java").isFile();
   }
 
 }
