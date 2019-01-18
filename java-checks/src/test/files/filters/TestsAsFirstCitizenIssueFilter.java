@@ -1,7 +1,8 @@
 /**
  * Executed rules:
- * - RawExceptionCheck (S1228)
- * - BadMethodNameCheck (S112)
+ * - RawExceptionCheck (S00112)
+ * - BadMethodNameCheck (S100)
+ * - HardcodedURICheck (S1075)
  */
 abstract class A {
 
@@ -27,4 +28,7 @@ abstract class A {
   @org.foo.bar
   public void this_is_not_a_test_method() { // WithIssue
   }
+
+  String s = "http://www.mywebsite.com"; // NoIssue
+  int v = 42;
 }
