@@ -32,11 +32,13 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Fail;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridgeForTests;
@@ -45,6 +47,7 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,6 +55,10 @@ import static org.mockito.Mockito.when;
 public class FilterVerifier {
 
   public static void verify(String filename, JavaIssueFilter filter, JavaCheck... extraJavaChecks) {
+    verify(filename, InputFile.Type.MAIN, filter, extraJavaChecks);
+  }
+
+  public static void verify(String filename, InputFile.Type typeOfFile, JavaIssueFilter filter, JavaCheck... extraJavaChecks) {
     // set the component to the filter
     filter.setComponentKey(filename);
 
@@ -68,8 +75,10 @@ public class FilterVerifier {
     Collection<File> classpath = FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true);
     List<File> projectClasspath = Lists.newArrayList(classpath);
     projectClasspath.add(new File("target/test-classes"));
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, null);
-    JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge);
+    File fileUnderTest = new File(filename);
+    SonarComponents sonarComponents = createSonarComponentsMock(fileUnderTest, typeOfFile);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, sonarComponents);
+    JavaAstScanner.scanSingleFileForTests(fileUnderTest, visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
 
     Multimap<Integer, String> issuesByLines = HashMultimap.create();
@@ -118,6 +127,18 @@ public class FilterVerifier {
       }
     }
     return rules;
+  }
+
+  private static SonarComponents createSonarComponentsMock(File testfile, InputFile.Type typeOfFile) {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+
+    InputFile inputFile = mock(InputFile.class);
+    when(inputFile.type()).thenReturn(typeOfFile);
+    when(sonarComponents.inputFromIOFile(eq(testfile))).thenReturn(inputFile);
+
+    when(sonarComponents.isSonarLintContext()).thenReturn(true);
+
+    return sonarComponents;
   }
 
   private static class IssueCollector extends SubscriptionVisitor {
