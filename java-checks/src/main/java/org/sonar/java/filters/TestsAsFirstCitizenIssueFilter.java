@@ -23,14 +23,20 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.sonar.java.checks.RawExceptionCheck;
+import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 
 public class TestsAsFirstCitizenIssueFilter extends BaseTreeVisitorIssueFilter {
 
   @Override
   public Set<Class<? extends JavaCheck>> filteredRules() {
-    return new HashSet<>(Arrays.asList(RawExceptionCheck.class));
+    return new HashSet<>(Arrays.asList(
+      RawExceptionCheck.class,
+      BadMethodNameCheck.class));
   }
 
   @Override
@@ -41,7 +47,22 @@ public class TestsAsFirstCitizenIssueFilter extends BaseTreeVisitorIssueFilter {
     } else {
       acceptLines(tree, RawExceptionCheck.class);
     }
+
+    if (isTestMethod(tree)) {
+      excludeLines(tree, BadMethodNameCheck.class);
+    } else {
+      acceptLines(tree, BadMethodNameCheck.class);
+    }
+
     super.visitMethod(tree);
+  }
+
+  private static boolean isTestMethod(MethodTree methodTree) {
+    return methodTree.modifiers().annotations().stream()
+      .map(AnnotationTree::annotationType)
+      .map(Tree::lastToken)
+      .map(SyntaxToken::text)
+      .anyMatch("Test"::equals);
   }
 
 }
