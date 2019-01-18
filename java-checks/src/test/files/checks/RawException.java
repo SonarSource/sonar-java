@@ -1,5 +1,3 @@
-import org.junit.Test;
-
 public class Example {
 
   public void throws_Throwable() throws Throwable { // Noncompliant [[sc=41;ec=50]]
@@ -81,21 +79,4 @@ class SubClass extends Example {
   }
   public static void main(String[] args) throws Exception { //should not raise issue SONARJAVA-671
   }
-}
-
-class Tests {
-  @Test
-  public void my_test_1() throws Exception { } // Compliant
-
-  @org.junit.jupiter.api.Test
-  public void my_test_2() throws Exception { } // Compliant
-
-  @org.testng.annotations.Test
-  public void my_test_3() throws Exception { } // Compliant
-
-  @org.foo.bar.Test
-  public void not_a_recognized_test_1() throws Exception { } // Compliant
-
-  @org.foo.bar.Test2
-  public void not_a_recognized_test_2() throws Exception { } // Noncompliant
 }
