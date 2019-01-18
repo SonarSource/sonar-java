@@ -38,6 +38,7 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
@@ -47,6 +48,7 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.platform.Server;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
+import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.Version;
 import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalyzerMessage;
@@ -89,26 +91,26 @@ public class JavaSquidSensorTest {
 
   @Test
   public void test_issues_creation_on_main_file() throws IOException {
-    TestIssueCreation(InputFile.Type.MAIN, 4);
+    testIssueCreation(InputFile.Type.MAIN, 7); // the number of test in this class - their names are not matching the regex of BadMethodNameCheck
   }
 
   @Test
   public void test_issues_creation_on_test_file() throws IOException { // NOSONAR required to test NOSONAR reporting on test files
-    TestIssueCreation(InputFile.Type.TEST, 0);
+    testIssueCreation(InputFile.Type.TEST, 0);
   }
 
-  private void TestIssueCreation(InputFile.Type onType, int expectedIssues) throws IOException {
+  private void testIssueCreation(InputFile.Type onType, int expectedIssues) throws IOException {
     MapSettings settings = new MapSettings();
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    SensorContextTester context = CreateContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    SensorContextTester context = createContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     DefaultFileSystem fs = context.fileSystem();
-    SonarComponents sonarComponents = CreateSonarComponentsMock(context);
+    SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings.asConfig(), fs));
     PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, postAnalysisIssueFilter);
 
     jss.execute(context);
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(96));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(98)); // line of N0S0NAR
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
@@ -118,7 +120,7 @@ public class JavaSquidSensorTest {
     jss.execute(context);
   }
 
-  private static SensorContextTester CreateContext(InputFile.Type onType) throws IOException {
+  private static SensorContextTester createContext(InputFile.Type onType) throws IOException {
     SensorContextTester context = SensorContextTester.create(new File("src/test/java/").getAbsoluteFile());
     DefaultFileSystem fs = context.fileSystem();
 
@@ -133,7 +135,7 @@ public class JavaSquidSensorTest {
     return context;
   }
 
-  private static SonarComponents CreateSonarComponentsMock(SensorContextTester contextTester) {
+  private static SonarComponents createSonarComponentsMock(SensorContextTester contextTester) {
     Configuration settings = new MapSettings().asConfig();
     DefaultFileSystem fs = contextTester.fileSystem();
     JavaTestClasspath javaTestClasspath = new JavaTestClasspath(settings, fs);
@@ -152,7 +154,7 @@ public class JavaSquidSensorTest {
 
   @Test
   public void verify_analysis_errors_are_collected_on_parse_error() throws Exception {
-    SensorContextTester context = CreateParseErrorContext();
+    SensorContextTester context = createParseErrorContext();
     context.settings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true);
     executeJavaSquidSensor(context);
 
@@ -166,7 +168,7 @@ public class JavaSquidSensorTest {
     assertThat(analysisError.getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
   }
 
-  private SensorContextTester CreateParseErrorContext() throws IOException {
+  private SensorContextTester createParseErrorContext() throws IOException {
     File file = new File("src/test/files/ParseError.java");
     SensorContextTester context = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
 
@@ -200,7 +202,7 @@ public class JavaSquidSensorTest {
 
   @Test
   public void feedback_should_not_be_fed_if_no_errors() throws IOException {
-    SensorContextTester context = CreateContext(InputFile.Type.MAIN);
+    SensorContextTester context = createContext(InputFile.Type.MAIN);
     context.settings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true);
     executeJavaSquidSensor(context);
     assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
@@ -208,7 +210,7 @@ public class JavaSquidSensorTest {
 
   @Test
   public void feedback_should_not_be_fed_if_not_SonarCloud_Host() throws IOException {
-    SensorContextTester context = CreateParseErrorContext();
+    SensorContextTester context = createParseErrorContext();
     executeJavaSquidSensor(context);
     assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
   }
@@ -233,16 +235,30 @@ public class JavaSquidSensorTest {
 
     settings.setProperty(Java.TESTS_AS_FIRST_CITIZEN, "true");
 
-    SonarComponents sonarComponents = CreateSonarComponentsMock(context);
+    SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, new JavaClasspath(settings.asConfig(), fs));
     PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
 
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, postAnalysisIssueFilter);
 
     jss.execute(context);
-    // 1 issue from BadMethodName rule, usually applied on MAIN, not on TEST
-    verify(sonarComponents, times(1)).reportIssue(any(AnalyzerMessage.class));
+    // 2 issue from BadMethodName rule, usually applied on MAIN, but filtered on TEST
+    verify(sonarComponents, times(2)).reportIssue(any(AnalyzerMessage.class));
+    // one issue filtered out -> only 1 accepted issue
+    assertThat(context.allIssues().stream()
+      .map(JavaSquidSensorTest::mockFilterableIssue)
+      .filter(issue -> postAnalysisIssueFilter.accept(issue, i -> true)))
+        .hasSize(1);
     // LOC are not counted for test files normally
     assertThat(context.<Integer>measure(inputFile.key(), "ncloc").value()).isEqualTo(7);
   }
+
+  private static FilterableIssue mockFilterableIssue(Issue issue) {
+    FilterableIssue result = mock(FilterableIssue.class);
+    when(result.ruleKey()).thenReturn(issue.ruleKey());
+    when(result.line()).thenReturn(issue.primaryLocation().textRange().start().line());
+    when(result.componentKey()).thenReturn(issue.primaryLocation().inputComponent().key());
+    return result;
+  }
+
 }
