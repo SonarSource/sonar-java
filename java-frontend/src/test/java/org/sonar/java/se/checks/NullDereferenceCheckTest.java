@@ -40,6 +40,11 @@ public class NullDereferenceCheckTest {
   }
 
   @Test
+  public void assertions_in_tests() {
+    JavaCheckVerifier.verify("src/test/files/se/AssertionsInTests.java", new NullDereferenceCheck());
+  }
+
+  @Test
   public void chained_method_invocation_issue_order() {
     JavaCheckVerifier.verify("src/test/files/se/MethodParamInvocationOrder.java", new NullDereferenceCheck());
   }

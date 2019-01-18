@@ -94,6 +94,8 @@ public class BehaviorCache {
     "com.google.common.base.Strings#isNullOrEmpty",
     "com.google.common.base.Platform#stringIsNullOrEmpty",
 
+    "org.junit.Assert#assertNotNull",
+
     "org.eclipse.core.runtime.Assert#");
 
   public BehaviorCache(SquidClassLoader classLoader) {
