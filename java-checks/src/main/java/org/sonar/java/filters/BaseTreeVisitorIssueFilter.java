@@ -25,7 +25,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
-
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
@@ -35,16 +37,12 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
-import java.util.Set;
-
 public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor implements JavaIssueFilter {
 
   private String componentKey;
   private final Multimap<String, Integer> excludedLinesByRule;
   private final Map<Class<? extends JavaCheck>, String> rulesKeysByRulesClass;
+  private JavaFileScannerContext context;
 
   public BaseTreeVisitorIssueFilter() {
     excludedLinesByRule = HashMultimap.create();
@@ -71,8 +69,13 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     return componentKey;
   }
 
+  public JavaFileScannerContext context() {
+    return context;
+  }
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
     excludedLinesByRule.clear();
     scan(context.getTree());
   }
