@@ -22,10 +22,12 @@ package org.sonar.java.filters;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.sonar.java.checks.HardcodedURICheck;
 import org.sonar.java.checks.RawExceptionCheck;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,7 +38,8 @@ public class TestsAsFirstCitizenIssueFilter extends BaseTreeVisitorIssueFilter {
   public Set<Class<? extends JavaCheck>> filteredRules() {
     return new HashSet<>(Arrays.asList(
       RawExceptionCheck.class,
-      BadMethodNameCheck.class));
+      BadMethodNameCheck.class,
+      HardcodedURICheck.class));
   }
 
   @Override
@@ -63,6 +66,16 @@ public class TestsAsFirstCitizenIssueFilter extends BaseTreeVisitorIssueFilter {
       .map(Tree::lastToken)
       .map(SyntaxToken::text)
       .anyMatch("Test"::equals);
+  }
+
+  @Override
+  public void visitLiteral(LiteralTree tree) {
+    if (context().isTestFile() && tree.is(Tree.Kind.STRING_LITERAL)) {
+      excludeLines(tree, HardcodedURICheck.class);
+    } else {
+      acceptLines(tree, HardcodedURICheck.class);
+    }
+    super.visitLiteral(tree);
   }
 
 }
