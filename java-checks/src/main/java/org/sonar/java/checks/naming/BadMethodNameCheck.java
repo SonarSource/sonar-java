@@ -27,9 +27,7 @@ import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(
@@ -60,24 +58,14 @@ public class BadMethodNameCheck extends IssuableSubscriptionVisitor {
     super.setContext(context);
   }
 
+
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (isNotOverriden(methodTree)
-      && !pattern.matcher(methodTree.simpleName().name()).matches()
-      && !isTestMethod(methodTree)) {
+    if (isNotOverriden(methodTree) && !pattern.matcher(methodTree.simpleName().name()).matches()) {
       reportIssue(methodTree.simpleName(), "Rename this method name to match the regular expression '" + format + "'.");
     }
   }
-
-  private static boolean isTestMethod(MethodTree methodTree) {
-    // rely solely on syntax
-    return methodTree.modifiers().annotations().stream()
-      .map(AnnotationTree::annotationType)
-      .map(Tree::lastToken)
-      .map(SyntaxToken::text)
-      .anyMatch("Test"::equals);
-    }
 
   private static boolean isNotOverriden(MethodTree methodTree) {
     return Boolean.FALSE.equals(methodTree.isOverriding());
