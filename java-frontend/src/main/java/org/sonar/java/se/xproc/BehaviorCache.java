@@ -95,6 +95,7 @@ public class BehaviorCache {
     "com.google.common.base.Platform#stringIsNullOrEmpty",
 
     "org.junit.Assert#assertNotNull",
+    "org.junit.jupiter.api.Assertions#assertNotNull",
 
     "org.eclipse.core.runtime.Assert#");
 

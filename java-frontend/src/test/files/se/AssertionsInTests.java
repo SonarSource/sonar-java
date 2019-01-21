@@ -57,6 +57,13 @@ abstract class AssertionsInTests {
     assertEquals(o.toString(), "hello"); // Noncompliant
   }
 
+  @Test
+  public void testJunit5() {
+    Object o = getObject();
+    org.junit.jupiter.api.Assertions.assertNotNull(o);
+    o.toString(); // Compliant
+  }
+
   @CheckForNull
   abstract Object getObject();
   abstract AbstractObjectAssert getAssert(Object o);

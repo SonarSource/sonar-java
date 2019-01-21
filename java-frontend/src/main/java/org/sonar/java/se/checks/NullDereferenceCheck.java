@@ -104,7 +104,7 @@ public class NullDereferenceCheck extends SECheck {
           }
         }
         if (ASSERTJ_IS_NOT_NULL.matches((MethodInvocationTree) syntaxNode)) {
-          ps = handleAssertJIsNotNull(ps, context);
+          ps = checkAssertJisNotNull(ps, context);
           if (ps == null) {
             return ps;
           }
@@ -128,7 +128,7 @@ public class NullDereferenceCheck extends SECheck {
     return context.getState();
   }
 
-  private static ProgramState handleAssertJIsNotNull(ProgramState currentState, CheckerContext context) {
+  private static ProgramState checkAssertJisNotNull(ProgramState currentState, CheckerContext context) {
     Node parentNode = context.getNode().parent();
     Tree previousSyntaxNode = parentNode.programPoint.syntaxTree();
     if (!previousSyntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
