@@ -92,11 +92,11 @@ public class JavaPlugin implements Plugin {
         .description(
           "Make no distinction between test and main sources. When set to true, will play all the rules targeting "
             + "main sources on tests sources as well. Test sources will also be taken into account for all the metrics.")
+        .name("Tests as First Citizens")
+        .category(JavaConstants.JAVA_CATEGORY)
         .type(PropertyType.BOOLEAN)
         .defaultValue("false")
-        .category(JavaConstants.JAVA_CATEGORY)
-        // .onQualifiers(Qualifiers.PROJECT)
-        .hidden()
+        .onQualifiers(Qualifiers.PROJECT)
         .build()
       );
 
