@@ -38,6 +38,7 @@ import java.util.Optional;
 public class OptionalAsParameterCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
+  private static final String GUAVA_OPTIONAL = "com.google.common.base.Optional";
   private static final List<String> PRIMITIVE_OPTIONALS = ImmutableList.<String>builder()
     .add("java.util.OptionalDouble")
     .add("java.util.OptionalInt")
@@ -64,7 +65,7 @@ public class OptionalAsParameterCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Optional<String> expectedTypeInsteadOfOptional(Type type) {
-    if (type.is(JAVA_UTIL_OPTIONAL)) {
+    if (type.is(JAVA_UTIL_OPTIONAL) || type.is(GUAVA_OPTIONAL)) {
       String msg;
       if (((JavaType) type).isParameterized()) {
         ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) type;
