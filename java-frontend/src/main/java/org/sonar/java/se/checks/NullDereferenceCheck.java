@@ -21,12 +21,21 @@ package org.sonar.java.se.checks;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
+import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
@@ -43,16 +52,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
 
@@ -62,6 +61,10 @@ public class NullDereferenceCheck extends SECheck {
   private static final String JAVA_LANG_NPE = "java.lang.NullPointerException";
   private static final MethodMatcher OPTIONAL_OR_ELSE_GET_MATCHER = MethodMatcher.create().typeDefinition("java.util.Optional").name("orElseGet")
     .addParameter("java.util.function.Supplier");
+  private static final MethodMatcher ASSERTJ_IS_NOT_NULL = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert"))
+    .name("isNotNull").withoutParameter();
+  private static final MethodMatcher ASSERTJ_ASSERT_THAT = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.Assertions"))
+    .name("assertThat").addParameter(TypeCriteria.anyType());
 
   private static class NullDereferenceIssue {
     final ExplodedGraph.Node node;
@@ -100,6 +103,12 @@ public class NullDereferenceCheck extends SECheck {
             return ps;
           }
         }
+        if (ASSERTJ_IS_NOT_NULL.matches((MethodInvocationTree) syntaxNode)) {
+          ps = checkAssertJisNotNull(ps, context);
+          if (ps == null) {
+            return ps;
+          }
+        }
         if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
           SymbolicValue dereferencedSV = context.getState().peekValue(methodInvocation.arguments().size());
           return checkConstraint(ps, context, methodSelect, dereferencedSV);
@@ -117,6 +126,29 @@ public class NullDereferenceCheck extends SECheck {
         // ignore
     }
     return context.getState();
+  }
+
+  private static ProgramState checkAssertJisNotNull(ProgramState currentState, CheckerContext context) {
+    Node parentNode = context.getNode().parent();
+    Tree previousSyntaxNode = parentNode.programPoint.syntaxTree();
+    if (!previousSyntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+      return currentState;
+    }
+    MethodInvocationTree mit = (MethodInvocationTree) previousSyntaxNode;
+    if (!ASSERTJ_ASSERT_THAT.matches(mit)) {
+      return currentState;
+    }
+    SymbolicValue assertThatParameter = parentNode.programState.peekValue();
+    if (assertThatParameter == null) {
+      // defensive
+      return currentState;
+    }
+    ObjectConstraint nullNessConstraint = currentState.getConstraint(assertThatParameter, ObjectConstraint.class);
+    if (nullNessConstraint == ObjectConstraint.NULL) {
+      // kill the branch - isNotNull is interrupt the process and is going to fail the unit test
+      return null;
+    }
+    return currentState;
   }
 
   private ProgramState checkMemberSelect(CheckerContext context, MemberSelectExpressionTree mse, SymbolicValue currentVal) {
