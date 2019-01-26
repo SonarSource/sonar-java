@@ -1,0 +1,19 @@
+{
+  "title": "\"Bean Validation\" (JSR 380) should be properly configured",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+  ],
+  "standards": [
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5128",
+  "sqKey": "S5128",
+  "scope": "Main",
+  "securityStandards": {
+  }
+}

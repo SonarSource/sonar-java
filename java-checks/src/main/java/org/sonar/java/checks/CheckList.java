@@ -665,7 +665,8 @@ public final class CheckList {
       LoggedRethrownExceptionsCheck.class,
       CORSCheck.class,
       BasicAuthCheck.class,
-      SynchronizedOverrideCheck.class);
+      SynchronizedOverrideCheck.class,
+      MissingBeanValidationCheck.class);
   }
 
   public static List<Class<? extends DebugCheck>> getDebugChecks() {
