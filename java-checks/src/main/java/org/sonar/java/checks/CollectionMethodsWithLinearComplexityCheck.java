@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SymbolUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
@@ -89,7 +90,7 @@ public class CollectionMethodsWithLinearComplexityCheck extends IssuableSubscrip
     matcherActualTypeMap.forEach((methodMatcher, actualTypes) -> {
       if (methodMatcher.matches(mit) && invocationInMethod(mit)) {
         Symbol target = invocationTarget(mit);
-        if (target != null && isField(target) && matchesActualType(target, actualTypes)) {
+        if (target != null && SymbolUtils.isField(target) && matchesActualType(target, actualTypes)) {
           IdentifierTree methodName = ExpressionUtils.methodName(mit);
           reportIssue(methodName, "This call to \"" + methodName.name() + "()\" may be a performance hot spot if the collection is large.");
         }
@@ -103,10 +104,6 @@ public class CollectionMethodsWithLinearComplexityCheck extends IssuableSubscrip
       parent = parent.parent();
     }
     return parent != null;
-  }
-
-  private static boolean isField(Symbol symbol) {
-    return symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !"this".equals(symbol.name()) && !"super".equals(symbol.name());
   }
 
   private static boolean matchesActualType(Symbol invocationTarget, Set<String> actualTypes) {
