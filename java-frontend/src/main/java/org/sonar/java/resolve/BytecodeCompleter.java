@@ -40,7 +40,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 
 public class BytecodeCompleter implements JavaSymbol.Completer {
 
-  public static final int ASM_API_VERSION = Opcodes.ASM7_EXPERIMENTAL;
+  public static final int ASM_API_VERSION = Opcodes.ASM7;
 
   private Symbols symbols;
   private final ParametrizedTypeCache parametrizedTypeCache;
