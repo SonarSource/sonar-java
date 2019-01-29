@@ -98,7 +98,11 @@ public class XmlFileSensor implements Sensor {
     try {
       xmlFile = XmlFile.create(inputFile);
     } catch (ParseException | IOException e) {
-      LOG.debug("Skipped '{}' due to parsing error", inputFile.toString());
+      LOG.debug("Skipped '{}' due to parsing error", inputFile);
+      return;
+    } catch (Exception e) {
+      // Our own XML parsing may have failed somewhere, so logging as warning to appear in logs
+      LOG.warn(String.format("Unable to analyse file '%s'.", inputFile), e);
       return;
     }
 
