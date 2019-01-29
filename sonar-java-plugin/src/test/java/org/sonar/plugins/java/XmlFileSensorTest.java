@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
@@ -126,6 +127,29 @@ public class XmlFileSensorTest {
     assertThat(context.allIssues()).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.DEBUG).get(0)).isEqualTo("Skipped 'test.xml' due to parsing error");
+  }
+
+  @Test
+  public void testDoNotFailAnalysisIfUnexpectedIssue() throws Exception {
+    CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build());
+    XmlFileSensor sensor = new XmlFileSensor(checkFactory);
+
+    DefaultInputFile inputFile = TestInputFileBuilder.create("moduleKey", "test.xml")
+      .setCharset(StandardCharsets.UTF_8)
+      .setContents(
+        "<a>\n"
+          + "  <b />\n"
+          + "</a>\n")
+      .build();
+    DefaultInputFile mocked = Mockito.spy(inputFile);
+    Mockito.when(mocked.contents()).thenThrow(new IllegalStateException("This should have been caught."));
+    context.fileSystem().add(mocked);
+    sensor.execute(context);
+
+    assertThat(context.allIssues()).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.WARN)).hasSize(1);
+    assertThat(logTester.logs(LoggerLevel.WARN).get(0)).startsWith("Unable to analyse file 'test.xml'.");
   }
 
   @Test
