@@ -22,6 +22,7 @@ package org.sonar.java.filters;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.java.checks.HardcodedURICheck;
 import org.sonar.java.checks.RawExceptionCheck;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
@@ -66,6 +67,17 @@ public class TestsAsFirstCitizenIssueFilter extends BaseTreeVisitorIssueFilter {
       .map(Tree::lastToken)
       .map(SyntaxToken::text)
       .anyMatch("Test"::equals);
+  }
+
+  void testYolo() {
+    // do nothing
+  }
+
+  void explode(@Nullable Object o) {
+    if (o == null) {
+      testYolo();
+    }
+    o.toString();
   }
 
   @Override

@@ -1,3 +1,7 @@
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 /**
  * Executed rules:
  * - RawExceptionCheck (S00112)
@@ -31,4 +35,9 @@ abstract class A {
 
   String s = "http://www.mywebsite.com"; // NoIssue
   int v = 42;
+
+  @Test
+  public void my_test() throws Exception { // NoIssue
+    // there is nothing
+  }
 }
