@@ -34,4 +34,10 @@ public class TestsAsFirstCitizenIssueFilterTest {
     FilterVerifier.verify("src/test/files/filters/TestsAsFirstCitizenIssueFilter.java", InputFile.Type.MAIN, new TestsAsFirstCitizenIssueFilter());
   }
 
+  @Test
+  public void testFoo() throws Exception {
+    TestsAsFirstCitizenIssueFilter filter = new TestsAsFirstCitizenIssueFilter();
+    filter.explode("yolo");
+  }
+
 }
