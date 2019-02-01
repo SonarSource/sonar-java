@@ -163,6 +163,11 @@ public class NullDereferenceCheck extends SECheck {
     Tree previousSyntaxNode;
     do {
       node = node.parent();
+      if (node == null) {
+        // reached starting point of EG and failed to find corresponding method invocation.
+        // should not happen by construction, but defensive approach
+        return currentState;
+      }
       previousSyntaxNode = node.programPoint.syntaxTree();
     } while (!previousSyntaxNode.equals(mit));
 
