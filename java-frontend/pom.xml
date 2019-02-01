@@ -224,6 +224,12 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.easytesting</groupId>
+                  <artifactId>fest-assert</artifactId>
+                  <version>1.4</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>junit</groupId>
                   <artifactId>junit</artifactId>
                   <version>4.12</version>

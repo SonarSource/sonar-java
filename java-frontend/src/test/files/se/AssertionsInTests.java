@@ -16,6 +16,13 @@ abstract class AssertionsInTests {
   }
 
   @Test
+  public void testFest() throws Exception {
+    Object o = getObject();
+    org.fest.assertions.Assertions.assertThat(o).isNotNull();
+    org.fest.assertions.Assertions.assertThat(o.toString()).isEqualTo("hello"); // Compliant
+  }
+
+  @Test
   public void testAssertj_no_nullness_assertion() throws Exception {
     Object o = getObject();
     assertThat(o.toString()).isEqualTo("Hello");  // Noncompliant

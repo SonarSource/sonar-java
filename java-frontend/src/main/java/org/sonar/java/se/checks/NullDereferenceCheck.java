@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -61,10 +62,14 @@ public class NullDereferenceCheck extends SECheck {
   private static final String JAVA_LANG_NPE = "java.lang.NullPointerException";
   private static final MethodMatcher OPTIONAL_OR_ELSE_GET_MATCHER = MethodMatcher.create().typeDefinition("java.util.Optional").name("orElseGet")
     .addParameter("java.util.function.Supplier");
-  private static final MethodMatcher ASSERTJ_IS_NOT_NULL = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert"))
-    .name("isNotNull").withoutParameter();
-  private static final MethodMatcher ASSERTJ_ASSERT_THAT = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.Assertions"))
-    .name("assertThat").addParameter(TypeCriteria.anyType());
+
+  private static final MethodMatcherCollection ASSERT_IS_NOT_NULL = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert")).name("isNotNull").withoutParameter(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert")).name("isNotNull").withoutParameter());
+
+  private static final MethodMatcherCollection ASSERT_THAT = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.Assertions")).name("assertThat").addParameter(TypeCriteria.anyType()),
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.Assertions")).name("assertThat").addParameter(TypeCriteria.anyType()));
 
   private static class NullDereferenceIssue {
     final ExplodedGraph.Node node;
@@ -103,8 +108,8 @@ public class NullDereferenceCheck extends SECheck {
             return ps;
           }
         }
-        if (ASSERTJ_IS_NOT_NULL.matches((MethodInvocationTree) syntaxNode)) {
-          ps = checkAssertJisNotNull(ps, context);
+        if (ASSERT_IS_NOT_NULL.anyMatch((MethodInvocationTree) syntaxNode)) {
+          ps = checkAssertIsNotNull(ps, context);
           if (ps == null) {
             return ps;
           }
@@ -128,14 +133,14 @@ public class NullDereferenceCheck extends SECheck {
     return context.getState();
   }
 
-  private static ProgramState checkAssertJisNotNull(ProgramState currentState, CheckerContext context) {
+  private static ProgramState checkAssertIsNotNull(ProgramState currentState, CheckerContext context) {
     Node parentNode = context.getNode().parent();
     Tree previousSyntaxNode = parentNode.programPoint.syntaxTree();
     if (!previousSyntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       return currentState;
     }
     MethodInvocationTree mit = (MethodInvocationTree) previousSyntaxNode;
-    if (!ASSERTJ_ASSERT_THAT.matches(mit)) {
+    if (!ASSERT_THAT.anyMatch(mit)) {
       return currentState;
     }
     SymbolicValue assertThatParameter = parentNode.programState.peekValue();
