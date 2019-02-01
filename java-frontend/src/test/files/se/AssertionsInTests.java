@@ -32,11 +32,18 @@ abstract class AssertionsInTests {
   public void testAssertj_chained() throws Exception {
     Object o = getObject();
     assertThat(o).isEqualTo("Hello").isNotNull();
-    assertThat(o.toString()); // Noncompliant - FP - not following chain of assert
+    assertThat(o.toString()); // Compliant
   }
 
   @Test
-  public void testAssertj_chained_frm_unrelated_method() throws Exception {
+  public void testAssertj_chained_with_as_method() throws Exception {
+    Object o = getObject();
+    assertThat(o).as("This is my error message if null").isNotNull();
+    assertThat(o.toString()); // Compliant
+  }
+
+  @Test
+  public void testAssertj_chained_from_unrelated_method() throws Exception {
     Object o = getObject();
     getAssert(o).isNotNull();
     assertThat(o.toString()); // Noncompliant - FP ? - we do not know what getAssert is doing
@@ -49,7 +56,6 @@ abstract class AssertionsInTests {
     equalTo.isNotNull();
     assertThat(o.toString()).isEqualTo("Hello"); // Noncompliant - FP
   }
-
 
   @Test
   public void testJunit() throws Exception {

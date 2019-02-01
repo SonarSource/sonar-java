@@ -34,9 +34,9 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
-import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
@@ -63,9 +63,10 @@ public class NullDereferenceCheck extends SECheck {
   private static final MethodMatcher OPTIONAL_OR_ELSE_GET_MATCHER = MethodMatcher.create().typeDefinition("java.util.Optional").name("orElseGet")
     .addParameter("java.util.function.Supplier");
 
+  private static final String IS_NOT_NULL = "isNotNull";
   private static final MethodMatcherCollection ASSERT_IS_NOT_NULL = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert")).name("isNotNull").withoutParameter(),
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert")).name("isNotNull").withoutParameter());
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert")).name(IS_NOT_NULL).withoutParameter(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert")).name(IS_NOT_NULL).withoutParameter());
 
   private static final MethodMatcherCollection ASSERT_THAT = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.Assertions")).name("assertThat").addParameter(TypeCriteria.anyType()),
@@ -108,8 +109,8 @@ public class NullDereferenceCheck extends SECheck {
             return ps;
           }
         }
-        if (ASSERT_IS_NOT_NULL.anyMatch((MethodInvocationTree) syntaxNode)) {
-          ps = checkAssertIsNotNull(ps, context);
+        if (isIsNotNullMethod(methodInvocation)) {
+          ps = checkAssertIsNotNull(ps, context, methodInvocation);
           if (ps == null) {
             return ps;
           }
@@ -133,19 +134,41 @@ public class NullDereferenceCheck extends SECheck {
     return context.getState();
   }
 
-  private static ProgramState checkAssertIsNotNull(ProgramState currentState, CheckerContext context) {
-    Node parentNode = context.getNode().parent();
-    Tree previousSyntaxNode = parentNode.programPoint.syntaxTree();
-    if (!previousSyntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      return currentState;
+  private static boolean isIsNotNullMethod(MethodInvocationTree methodInvocation) {
+    return ASSERT_IS_NOT_NULL.anyMatch(methodInvocation)
+      // if semantic can not resolve the method, due to type inference
+      || (methodInvocation.symbol().isUnknown() && IS_NOT_NULL.equals(ExpressionUtils.methodName(methodInvocation).name()));
+  }
+
+  private static ProgramState checkAssertIsNotNull(ProgramState currentState, CheckerContext context, MethodInvocationTree methodInvocation) {
+    // search for the parent 'assertThat' method relying on syntax
+    MethodInvocationTree mit = methodInvocation;
+    while (true) {
+      ExpressionTree methodSelect = mit.methodSelect();
+      if (!methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+        return currentState;
+      }
+      ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
+      if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
+        return currentState;
+      }
+      mit = (MethodInvocationTree) expression;
+      if (ASSERT_THAT.anyMatch(mit)) {
+        break;
+      }
     }
-    MethodInvocationTree mit = (MethodInvocationTree) previousSyntaxNode;
-    if (!ASSERT_THAT.anyMatch(mit)) {
-      return currentState;
-    }
-    SymbolicValue assertThatParameter = parentNode.programState.peekValue();
+    // Retrieved the MethodInvocationTree corresponding to the 'assertThat()' coupled with 'isNotNull()'.
+    // Now searching for corresponding Node in Exploded Graph
+    ExplodedGraph.Node node = context.getNode();
+    Tree previousSyntaxNode;
+    do {
+      node = node.parent();
+      previousSyntaxNode = node.programPoint.syntaxTree();
+    } while (!previousSyntaxNode.equals(mit));
+
+    // check constraint on argument
+    SymbolicValue assertThatParameter = node.programState.peekValue();
     if (assertThatParameter == null) {
-      // defensive
       return currentState;
     }
     ObjectConstraint nullNessConstraint = currentState.getConstraint(assertThatParameter, ObjectConstraint.class);
