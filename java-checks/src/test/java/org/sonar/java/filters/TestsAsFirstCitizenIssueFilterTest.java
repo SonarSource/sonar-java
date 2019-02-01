@@ -25,7 +25,7 @@ import org.sonar.api.batch.fs.InputFile;
 public class TestsAsFirstCitizenIssueFilterTest {
 
   @Test
-  public void no_issue_of_TEST() {
+  public void no_issue_if_TEST() {
     FilterVerifier.verify("src/test/files/filters/TestsAsFirstCitizenIssueFilter.java", InputFile.Type.TEST, new TestsAsFirstCitizenIssueFilter());
   }
 
