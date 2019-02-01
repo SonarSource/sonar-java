@@ -16,6 +16,7 @@ abstract class A {
   }
 
   abstract void foo() throws java.io.IOException;
+  abstract void bar();
 
   @org.junit.Test
   public void this_is_a_test_method() { // NoIssue
@@ -23,6 +24,11 @@ abstract class A {
 
   @org.foo.Test
   public void this_could_be_a_test_method() { // NoIssue
+  }
+
+  @org.junit.Test
+  public void this_test_does_not_throw_exceptions() throws Exception { // NoIssue
+    bar();
   }
 
   @org.foo.bar

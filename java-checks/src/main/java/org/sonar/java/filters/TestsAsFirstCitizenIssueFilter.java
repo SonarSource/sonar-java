@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.sonar.java.checks.HardcodedURICheck;
 import org.sonar.java.checks.RawExceptionCheck;
+import org.sonar.java.checks.RedundantThrowsDeclarationCheck;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -39,22 +40,22 @@ public class TestsAsFirstCitizenIssueFilter extends BaseTreeVisitorIssueFilter {
     return new HashSet<>(Arrays.asList(
       RawExceptionCheck.class,
       BadMethodNameCheck.class,
-      HardcodedURICheck.class));
+      HardcodedURICheck.class,
+      RedundantThrowsDeclarationCheck.class));
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
     if (context().isTestFile()) {
-      // exclude any issue from RawExceptionCheck for methods of test files
       excludeLines(tree, RawExceptionCheck.class);
     } else {
       acceptLines(tree, RawExceptionCheck.class);
     }
 
     if (isTestMethod(tree)) {
-      excludeLines(tree, BadMethodNameCheck.class);
+      excludeLines(tree, Arrays.asList(BadMethodNameCheck.class, RedundantThrowsDeclarationCheck.class));
     } else {
-      acceptLines(tree, BadMethodNameCheck.class);
+      acceptLines(tree, Arrays.asList(BadMethodNameCheck.class, RedundantThrowsDeclarationCheck.class));
     }
 
     super.visitMethod(tree);
