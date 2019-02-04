@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String SHOULD = "should";
   private static final String VERIFY = "verify";
   private static final String ASSERT_NAME = "assert";
 
@@ -115,7 +116,10 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     method("com.github.tomakehurst.wiremock.WireMockServer", VERIFY).withAnyParameters(),
     // Eclipse Vert.x
     method("io.vertx.ext.unit.TestContext", STARTS_WITH_ASSERT).withAnyParameters(),
-    method("io.vertx.ext.unit.TestContext", STARTS_WITH_FAIL).withAnyParameters());
+    method("io.vertx.ext.unit.TestContext", STARTS_WITH_FAIL).withAnyParameters(),
+    // Selenide
+    method( "com.codeborne.selenide.SelenideElement", NameCriteria.startsWith(SHOULD) ).withAnyParameters(),
+    method( "com.codeborne.selenide.ElementsCollection", NameCriteria.startsWith(SHOULD) ).withAnyParameters());
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
   private final Deque<Boolean> inUnitTest = new ArrayDeque<>();

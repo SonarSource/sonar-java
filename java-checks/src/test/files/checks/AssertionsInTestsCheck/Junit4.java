@@ -1,3 +1,6 @@
+import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
 import java.util.List;
 import javax.annotation.Nullable;
 import junit.framework.TestCase;
@@ -114,6 +117,14 @@ public abstract class AssertionsInTestsCheckJunit4 {
   @Test
   public void mockito_assertion_verify_no_more_interactions() {
     Mockito.verifyNoMoreInteractions(Mockito.mock(List.class));
+  }
+
+  @Test
+  public void selenide_verify_should() {
+    Selenide.open("https://www.google.com/");
+    Selenide.$(By.name("q")).val("selenide").pressEnter();
+    Selenide.$$("#ires .g").shouldHave(CollectionCondition.sizeGreaterThan(1));
+    Selenide.$("#ires .g", 0).shouldHave(Condition.text("Selenide: concise UI tests in Java"));
   }
 
 
