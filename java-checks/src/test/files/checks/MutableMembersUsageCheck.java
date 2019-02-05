@@ -248,4 +248,12 @@ class Fields {
     }
   }
 
+  class CollectionSingleton {
+    private final static java.util.Set<String> singletonSet = Collections.singleton("Test");
+
+    public java.util.Set<String> getSet() {
+      return singletonSet;
+    }
+  }
+
 }

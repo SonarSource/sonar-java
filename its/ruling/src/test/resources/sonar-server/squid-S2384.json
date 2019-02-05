@@ -1,7 +1,4 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/ce/taskprocessor/ReportTaskProcessorDeclaration.java':[
-37,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/ws/AuthenticationWs.java':[
 31,
 ],
@@ -97,7 +94,6 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/taskprocessor/ReportTaskProcessor.java':[
 53,
-67,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/duplication/ws/DuplicationsParser.java':[
 202,
