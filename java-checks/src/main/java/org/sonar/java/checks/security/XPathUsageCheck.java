@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 @Rule(key = "S4817")
 public class XPathUsageCheck extends AbstractMethodDetection {
 
-  private static final String MESSAGE = "Make sure that executing this XPATH expression is safe here.";
+  private static final String MESSAGE = "Make sure that executing this XPATH expression is safe.";
   private static final String APACHE_JXPATH_CONTEXT = "org.apache.commons.jxpath.JXPathContext";
   private static final String APACHE_XALAN_XPATH_API = "org.apache.xpath.XPathAPI";
   private static final String JAVA_LANG_STRING = "java.lang.String";
