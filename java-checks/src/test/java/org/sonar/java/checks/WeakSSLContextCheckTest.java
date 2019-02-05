@@ -30,6 +30,7 @@ public class WeakSSLContextCheckTest {
     String filename = "src/test/files/checks/WeakSSLContextCheck.java";
     JavaCheckVerifier.verify(filename, check);
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(filename, check);
+    JavaCheckVerifier.verify("src/test/files/checks/WeakSSLContextCheckJava8.java", check, 8);
   }
 
 }

@@ -27,6 +27,7 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -38,12 +39,20 @@ import static org.sonar.java.model.LiteralUtils.trimQuotes;
 @Rule(key = "S4423")
 public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> STRONG_PROTOCOLS = new HashSet<>(Arrays.asList("TLSv1.2", "DTLSv1.2"));
+  private static final Set<String> STRONG_PROTOCOLS = new HashSet<>(Arrays.asList("TLSv1.2", "DTLSv1.2", "TLSv1.3", "DTLSv1.3"));
+  private static final Set<String> STRONG_AFTER_JAVA_8 = new HashSet<>(Arrays.asList("TLS", "DTLS"));
 
   private static final MethodMatcher SSLCONTEXT_GETINSTANCE_MATCHER = MethodMatcher.create()
     .typeDefinition("javax.net.ssl.SSLContext")
     .name("getInstance")
     .withAnyParameters();
+  private boolean projectHasJava8OrHigher;
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    projectHasJava8OrHigher = context.getJavaVersion().asInt() >= 8;
+    super.setContext(context);
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -52,17 +61,24 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      Arguments arguments = mit.arguments();
-      if (SSLCONTEXT_GETINSTANCE_MATCHER.matches(mit)) {
-        ExpressionTree firstArgument = arguments.get(0);
-        if (firstArgument.is(Tree.Kind.STRING_LITERAL) && !STRONG_PROTOCOLS.contains(trimQuotes(((LiteralTree) firstArgument).value()))) {
+    if (!hasSemantic()) {
+      return;
+    }
+    MethodInvocationTree mit = (MethodInvocationTree) tree;
+    Arguments arguments = mit.arguments();
+    if (SSLCONTEXT_GETINSTANCE_MATCHER.matches(mit)) {
+      ExpressionTree firstArgument = arguments.get(0);
+      if (firstArgument.is(Tree.Kind.STRING_LITERAL)) {
+        String protocol = trimQuotes(((LiteralTree) firstArgument).value());
+        if (!isStrongProtocol(protocol)) {
           reportIssue(firstArgument, "Change this code to use a stronger protocol.");
         }
       }
     }
   }
 
+  private boolean isStrongProtocol(String protocol) {
+    return STRONG_PROTOCOLS.contains(protocol) || (projectHasJava8OrHigher && STRONG_AFTER_JAVA_8.contains(protocol));
+  }
 
 }
