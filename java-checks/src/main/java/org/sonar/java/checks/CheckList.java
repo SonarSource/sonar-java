@@ -662,6 +662,7 @@ public final class CheckList {
       ForLoopVariableTypeCheck.class,
       ReplaceGuavaWithJava8Check.class,
       LoggedRethrownExceptionsCheck.class,
+      CORSCheck.class,
       SynchronizedOverrideCheck.class);
   }
 
