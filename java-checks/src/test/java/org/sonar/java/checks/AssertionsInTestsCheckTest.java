@@ -48,7 +48,8 @@ public class AssertionsInTestsCheckTest {
       {"Mockito"},
       {"JMock"},
       {"WireMock"},
-      {"VertX"}
+      {"VertX"},
+      {"Selenide"}
     });
   }
 
