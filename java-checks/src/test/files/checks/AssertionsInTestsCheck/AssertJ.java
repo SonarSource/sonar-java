@@ -71,4 +71,49 @@ public class AssertionsInTestsCheckAssertJ {
     Fail.shouldHaveThrown(IllegalArgumentException.class);
   }
 
+  @Test
+  public void assertion_in_helper_method() {
+    helper_method(true);
+  }
+
+  @Test
+  public void assertion_in_static_helper_method() {
+    static_helper_method();
+  }
+
+  @Test
+  public void assertion_in_helper_method_as_reference() {
+    new java.util.ArrayList<Boolean>().forEach(this::helper_method);
+    new java.util.ArrayList<Boolean>().forEach(this::helper_method_no_assert);
+  }
+
+  @Test
+  public void no_assertion_in_helper_method() { // Noncompliant
+    helper_method_no_assert(true);
+  }
+
+  @Test
+  public void no_assertion_in_helper_method_as_reference() { // Noncompliant
+    new java.util.ArrayList<Boolean>().forEach(this::helper_method_no_assert);
+  }
+
+  @Test
+  public void assertion_in_external_static_method() { // Noncompliant
+    // FP as rule currently cannot resolve cross-files custom assert methods
+    org.sonarsource.helper.AssertionsHelper.customAssertion();
+  }
+
+  public void helper_method(boolean expected) {
+    Assertions.assertThat(expected);
+  }
+
+  public static void static_helper_method() {
+    new java.util.ArrayList<Boolean>().forEach(Assertions::assertThat);
+    new java.util.ArrayList<Boolean>().forEach(java.util.Objects::isNull);
+  }
+
+  public void helper_method_no_assert(boolean expected) {
+    new java.util.ArrayList<Boolean>().forEach(java.util.Objects::isNull);
+  }
+
 }
