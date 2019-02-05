@@ -9,7 +9,7 @@ import org.xml.sax.InputSource;
 // === javax.xml.xpath.XPath ===
 abstract class A {
   void foo(XPath xpath, String expression, InputSource source, QName returnType, Object item) throws Exception {
-    xpath.compile(expression); // Noncompliant [[sc=11;ec=18]] {{Make sure that executing this XPATH expression is safe here.}}
+    xpath.compile(expression); // Noncompliant [[sc=11;ec=18]] {{Make sure that executing this XPATH expression is safe.}}
     xpath.evaluate(expression, source); // Noncompliant
     xpath.evaluate(expression, source, returnType); // Noncompliant
     xpath.evaluate(expression, item); // Noncompliant
