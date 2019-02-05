@@ -118,8 +118,8 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     method("io.vertx.ext.unit.TestContext", STARTS_WITH_ASSERT).withAnyParameters(),
     method("io.vertx.ext.unit.TestContext", STARTS_WITH_FAIL).withAnyParameters(),
     // Selenide
-    method( "com.codeborne.selenide.SelenideElement", NameCriteria.startsWith(SHOULD) ).withAnyParameters(),
-    method( "com.codeborne.selenide.ElementsCollection", NameCriteria.startsWith(SHOULD) ).withAnyParameters());
+    method("com.codeborne.selenide.SelenideElement", NameCriteria.startsWith(SHOULD)).withAnyParameters(),
+    method("com.codeborne.selenide.ElementsCollection", NameCriteria.startsWith(SHOULD)).withAnyParameters());
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
   private final Deque<Boolean> inUnitTest = new ArrayDeque<>();
