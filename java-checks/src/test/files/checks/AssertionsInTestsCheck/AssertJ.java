@@ -77,6 +77,11 @@ public class AssertionsInTestsCheckAssertJ {
   }
 
   @Test
+  public void assertion_in_helper_method() {
+    helper_method_with_custom_assertion_method();
+  }
+
+  @Test
   public void assertion_in_static_helper_method() {
     static_helper_method();
   }
@@ -103,8 +108,42 @@ public class AssertionsInTestsCheckAssertJ {
     org.sonarsource.helper.AssertionsHelper.customAssertion();
   }
 
+  @Test
+  public void assertion_in_external_method() { // Noncompliant
+    // FP as rule currently cannot resolve cross-files custom assert methods
+    new org.sonarsource.helper.AssertionsHelper().customInstanceAssertion();
+  }
+
+  @Test
+  public void assertion_in_whitelisted_external_static_method() {
+    org.sonarsource.helper.AssertionsHelper.customAssertionAsRuleParameter(true);
+  }
+
+  @Test
+  public void assertion_in_whitelisted_external_method() {
+    new org.sonarsource.helper.AssertionsHelper().customInstanceAssertionAsRuleParameter();
+  }
+
+  @Test
+  public void assertion_in_whitelisted_external_method_as_reference() {
+    new java.util.ArrayList<Boolean>().forEach(org.sonarsource.helper.AssertionsHelper::customAssertionAsRuleParameter);
+  }
+
+  @Test
+  public void assertion_method_reference_in_helper_method() {
+    helper_method_with_custom_assertion_method_reference();
+  }
+
   public void helper_method(boolean expected) {
     Assertions.assertThat(expected);
+  }
+
+  public void helper_method_with_custom_assertion_method() {
+    org.sonarsource.helper.AssertionsHelper.customAssertionAsRuleParameter(true);
+  }
+
+  public void helper_method_with_custom_assertion_method_reference() {
+    new java.util.ArrayList<Boolean>().forEach(org.sonarsource.helper.AssertionsHelper::customAssertionAsRuleParameter);
   }
 
   public static void static_helper_method() {
