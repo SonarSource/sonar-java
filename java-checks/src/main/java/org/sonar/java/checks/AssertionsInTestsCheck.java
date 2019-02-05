@@ -21,7 +21,9 @@ package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -37,6 +39,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -123,16 +126,19 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
   private final Deque<Boolean> inUnitTest = new ArrayDeque<>();
+  private final Map<Symbol, Boolean> assertionInMethod = new HashMap<>();
   private JavaFileScannerContext context;
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
     this.context = context;
+    assertionInMethod.clear();
     inUnitTest.push(false);
     methodContainsAssertion.push(false);
     scan(context.getTree());
     methodContainsAssertion.pop();
     inUnitTest.pop();
+    assertionInMethod.clear();
   }
 
   @Override
@@ -154,7 +160,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
     super.visitMethodInvocation(mit);
-    if (!methodContainsAssertion.peek() && inUnitTest.peek() && ASSERTION_INVOCATION_MATCHERS.anyMatch(mit)) {
+    if (!methodContainsAssertion.peek() && inUnitTest.peek() && isAssertion(mit)) {
       methodContainsAssertion.pop();
       methodContainsAssertion.push(true);
     }
@@ -163,10 +169,31 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
     super.visitMethodReference(methodReferenceTree);
-    if (!methodContainsAssertion.peek() && inUnitTest.peek() && ASSERTION_INVOCATION_MATCHERS.anyMatch(methodReferenceTree)) {
+    if (!methodContainsAssertion.peek() && inUnitTest.peek() && isAssertion(methodReferenceTree)) {
       methodContainsAssertion.pop();
       methodContainsAssertion.push(true);
     }
+  }
+
+  private boolean isAssertion(MethodInvocationTree mit) {
+    return ASSERTION_INVOCATION_MATCHERS.anyMatch(mit) || isLocalMethodWithAssertion(mit.symbol());
+  }
+
+  private boolean isAssertion(MethodReferenceTree methodReferenceTree) {
+    return ASSERTION_INVOCATION_MATCHERS.anyMatch(methodReferenceTree) || isLocalMethodWithAssertion(methodReferenceTree.method().symbol());
+  }
+
+  private boolean isLocalMethodWithAssertion(Symbol symbol) {
+    return assertionInMethod.computeIfAbsent(symbol, key -> {
+      Tree declaration = key.declaration();
+      if (declaration == null) {
+        return false;
+      } else {
+        AssertionVisitor assertionVisitor = new AssertionVisitor();
+        declaration.accept(assertionVisitor);
+        return assertionVisitor.hasAssertion;
+      }
+    });
   }
 
   private static boolean expectAssertion(MethodTree methodTree) {
@@ -207,6 +234,26 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   private static MethodMatcher method(TypeCriteria typeDefinitionCriteria, NameCriteria nameCriteria) {
     return MethodMatcher.create().typeDefinition(typeDefinitionCriteria).name(nameCriteria);
+  }
+
+  private static class AssertionVisitor extends BaseTreeVisitor {
+    boolean hasAssertion = false;
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree mit) {
+      super.visitMethodInvocation(mit);
+      if (!hasAssertion && ASSERTION_INVOCATION_MATCHERS.anyMatch(mit)) {
+        hasAssertion = true;
+      }
+    }
+
+    @Override
+    public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
+      super.visitMethodReference(methodReferenceTree);
+      if (!hasAssertion && ASSERTION_INVOCATION_MATCHERS.anyMatch(methodReferenceTree)) {
+        hasAssertion = true;
+      }
+    }
   }
 
 }
