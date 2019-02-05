@@ -557,6 +557,11 @@
                   <artifactId>commons-compress</artifactId>
                   <version>1.18</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>com.codeborne</groupId>
+                  <artifactId>selenide</artifactId>
+                  <version>5.1.0</version>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>

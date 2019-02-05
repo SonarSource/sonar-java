@@ -116,7 +116,6 @@ public abstract class AssertionsInTestsCheckJunit4 {
     Mockito.verifyNoMoreInteractions(Mockito.mock(List.class));
   }
 
-
   static abstract class AbstractTest {
     @Test
     public abstract void unit_test();
