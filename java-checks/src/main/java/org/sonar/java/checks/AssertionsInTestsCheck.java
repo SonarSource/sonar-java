@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -132,6 +133,8 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     method("com.codeborne.selenide.SelenideElement", NameCriteria.startsWith(SHOULD)).withAnyParameters(),
     method("com.codeborne.selenide.ElementsCollection", NameCriteria.startsWith(SHOULD)).withAnyParameters());
 
+  private static final MethodMatcher JMOCKIT_CONSTRUCTOR_MATCHER = method("mockit.Verifications", "<init>").withAnyParameters();
+
   @RuleProperty(
     key = "customAssertionFrameworksMethods",
     description = "List of fully qualified method symbols that should be considered as assertion methods. The wildcard character can be used at the end of the method name.",
@@ -175,7 +178,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
     super.visitMethodInvocation(mit);
-    if (!methodContainsAssertion.peek() && inUnitTest.peek() && isAssertion(mit)) {
+    if (shouldCheckForAssertion() && isAssertion(mit)) {
       methodContainsAssertion.pop();
       methodContainsAssertion.push(true);
     }
@@ -184,10 +187,23 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
     super.visitMethodReference(methodReferenceTree);
-    if (!methodContainsAssertion.peek() && inUnitTest.peek() && isAssertion(methodReferenceTree)) {
+    if (shouldCheckForAssertion() && isAssertion(methodReferenceTree)) {
       methodContainsAssertion.pop();
       methodContainsAssertion.push(true);
     }
+  }
+
+  @Override
+  public void visitNewClass(NewClassTree tree) {
+    super.visitNewClass(tree);
+    if (shouldCheckForAssertion() && JMOCKIT_CONSTRUCTOR_MATCHER.matches(tree)) {
+      methodContainsAssertion.pop();
+      methodContainsAssertion.push(true);
+    }
+  }
+
+  private boolean shouldCheckForAssertion() {
+    return !methodContainsAssertion.peek() && inUnitTest.peek();
   }
 
   private boolean isAssertion(MethodInvocationTree mit) {
@@ -299,6 +315,14 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
       super.visitMethodReference(methodReferenceTree);
       if (!hasAssertion && (ASSERTION_INVOCATION_MATCHERS.anyMatch(methodReferenceTree) || customAssertionMethodsMatcher.anyMatch(methodReferenceTree))) {
+        hasAssertion = true;
+      }
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      super.visitNewClass(tree);
+      if (!hasAssertion && JMOCKIT_CONSTRUCTOR_MATCHER.matches(tree)) {
         hasAssertion = true;
       }
     }
