@@ -22,6 +22,7 @@ package org.sonar.java.checks.security;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -65,7 +66,7 @@ public class RegexHotspotCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       if (REGEX_HOTSPOTS.anyMatch((MethodInvocationTree) tree)) {
         Arguments args = ((MethodInvocationTree) tree).arguments();
-        if (!args.isEmpty()) {
+        if (!args.isEmpty() && !isSafeRegex(args.get(0))) {
           reportIssue(args.get(0), MESSAGE);
         }
       }
@@ -85,8 +86,15 @@ public class RegexHotspotCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isRegexpParameter(ExpressionTree expr) {
     if(expr.is(Tree.Kind.ASSIGNMENT) && ((AssignmentExpressionTree) expr).variable().is(Tree.Kind.IDENTIFIER)) {
-      return ((IdentifierTree) ((AssignmentExpressionTree) expr).variable()).name().equals("regexp");
+      AssignmentExpressionTree aet = (AssignmentExpressionTree) expr;
+      IdentifierTree variable = (IdentifierTree) aet.variable();
+      return variable.name().equals("regexp") && !isSafeRegex(aet.expression());
     }
     return false;
+  }
+
+  private static boolean isSafeRegex(ExpressionTree exp) {
+    String regexp = ConstantUtils.resolveAsStringConstant(exp);
+    return regexp != null && (regexp.length() <= 1 || regexp.matches("\\w*"));
   }
 }
