@@ -49,5 +49,19 @@ public class Test implements Serializable {
 
   @org.hibernate.validator.constraints.URL(message = "hello") // compliant no regexp
   private String url2;
-  // ...
+
+  @org.hibernate.validator.constraints.URL(regexp = ".") // compliant, safeRegex
+  private String url3;
+
+}
+
+private class SafeRegex {
+  void foo(String input) {
+    String replacement = "test";
+    input.replaceAll("", replacement);
+    input.replaceAll("a", replacement);
+    input.replaceAll(".", replacement);
+    input.replaceAll("asdklj44_", replacement);
+    input.replaceAll(".*", replacement); // Noncompliant
+  }
 }
