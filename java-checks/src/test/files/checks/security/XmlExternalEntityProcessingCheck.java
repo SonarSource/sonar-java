@@ -41,8 +41,17 @@ class StaxTest {
     factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     return factory;
   }
-
+  XMLInputFactory dtd_with_primitive_false2() {
+    XMLInputFactory factory = XMLInputFactory.newFactory();
+    factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+    return factory;
+  }
   XMLInputFactory dtd_with_primitive_true() {
+    XMLInputFactory factory = XMLInputFactory.newFactory(); // Noncompliant
+    factory.setProperty(XMLInputFactory.SUPPORT_DTD, true);
+    return factory;
+  }
+  XMLInputFactory dtd_with_primitive_true2() {
     XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
     factory.setProperty(XMLInputFactory.SUPPORT_DTD, true);
     return factory;
