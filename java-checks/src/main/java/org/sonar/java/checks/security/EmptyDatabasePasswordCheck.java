@@ -37,9 +37,8 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   private static final String MESSAGE = "Add password protection to this database.";
   private static final int PASSWORD_ARGUMENT = 2;
   private static final int URL_ARGUMENT = 0;
-  private static final Pattern EMPTY_PASSWORD_PATTERN = Pattern.compile(".*password\\s*=\\s*([&;].*|$)");
-  private static final Pattern MYSQL_URL_PATTERN = Pattern.compile("jdbc:mysql://.*:(?<password>.*)@.*");
-  private static final Pattern ORACLE_URL_PATTERN = Pattern.compile("jdbc:oracle:.*:.*/(?<password>.*)@.*");
+  private static final Pattern EMPTY_PASSWORD_PATTERN = Pattern.compile(".*password\\s*=\\s*([&;\\)].*|$)");
+  private static final Pattern URL_PATTERN = Pattern.compile("(jdbc:mysql://[^:]*:?(?<password>.*)@.*)|(jdbc:oracle:[^:]*:?.*/(?<password2>.*)@.*)");
   private static final List<MethodMatcher> METHOD_MATCHERS = Collections.singletonList(
     MethodMatcher.create().typeDefinition("java.sql.DriverManager").name("getConnection").withAnyParameters());
 
@@ -71,18 +70,19 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   private void checkUrlContainsEmptyPassword(MethodInvocationTree mit) {
     ExpressionTree urlArgument = mit.arguments().get(URL_ARGUMENT);
     String url = ConstantUtils.resolveAsStringConstant(urlArgument);
-    if (url != null &&
-      (urlContainsEmptyPassword(url, MYSQL_URL_PATTERN) ||
-        urlContainsEmptyPassword(url, ORACLE_URL_PATTERN) ||
-        EMPTY_PASSWORD_PATTERN.matcher(url).matches())) {
-
+    if (url != null && urlContainsEmptyPassword(url)) {
       reportIssue(mit, MESSAGE);
     }
   }
 
-  private static boolean urlContainsEmptyPassword(String url, Pattern urlPattern) {
-    Matcher matcher = urlPattern.matcher(url);
-    return matcher.matches() && matcher.group("password").trim().isEmpty();
+  private static boolean urlContainsEmptyPassword(String url) {
+    Matcher matcher = URL_PATTERN.matcher(url);
+    if (matcher.matches()) {
+      String password = matcher.group("password");
+      String password2 = matcher.group("password2");
+      return (password != null && password.trim().isEmpty()) || (password2 != null && password2.trim().isEmpty());
+    }
+    return EMPTY_PASSWORD_PATTERN.matcher(url).matches() || !url.contains("password=");
   }
 
 }
