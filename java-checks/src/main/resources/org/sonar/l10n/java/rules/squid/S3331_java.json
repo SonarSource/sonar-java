@@ -1,0 +1,24 @@
+{
+  "title": "Cookie domains should be as narrow as possible ",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "owasp-a7"
+  ],
+  "standards": [
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-3331",
+  "sqKey": "S3331",
+  "scope": "Main",
+  "securityStandards": {
+    "OWASP": [
+      "A7"
+    ]
+  }
+}
