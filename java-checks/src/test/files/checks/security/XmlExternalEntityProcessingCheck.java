@@ -18,6 +18,18 @@ class StaxTest {
     return factory;
   }
 
+  XMLInputFactory unrelated_property() {
+    XMLInputFactory factory = XMLInputFactory.newInstance();
+    factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
+    return factory;
+  }
+
+  XMLInputFactory unrelated_property() {
+    XMLInputFactory factory = XMLInputFactory.newInstance();// Noncompliant
+    factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "true");
+    return factory;
+  }
+
   XMLInputFactory external_entities_with_false_value() {
     XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);

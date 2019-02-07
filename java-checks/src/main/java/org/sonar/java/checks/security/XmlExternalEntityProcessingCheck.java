@@ -157,7 +157,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
         String propertyName = resolveAsStringConstant(arguments.get(0));
         if (XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES.equals(propertyName) || XMLInputFactory.SUPPORT_DTD.equals(propertyName)) {
           ExpressionTree propertyValue = arguments.get(1);
-          return Boolean.FALSE.equals(resolveAsBooleanConstant(propertyValue));
+          return Boolean.FALSE.equals(resolveAsBooleanConstant(propertyValue)) || "false".equalsIgnoreCase(resolveAsStringConstant(propertyValue));
         }
       }
       return false;
