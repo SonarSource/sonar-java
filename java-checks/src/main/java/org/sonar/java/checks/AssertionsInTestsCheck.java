@@ -20,11 +20,15 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.NameCriteria;
@@ -41,8 +45,12 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final Logger LOG = Loggers.get(AssertionsInTestsCheck.class);
 
   private static final String SHOULD = "should";
   private static final String VERIFY = "verify";
@@ -124,6 +132,13 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     method("com.codeborne.selenide.SelenideElement", NameCriteria.startsWith(SHOULD)).withAnyParameters(),
     method("com.codeborne.selenide.ElementsCollection", NameCriteria.startsWith(SHOULD)).withAnyParameters());
 
+  @RuleProperty(
+    key = "customAssertionFrameworksMethods",
+    description = "List of fully qualified method symbols that should be considered as assertion methods. The wildcard character can be used at the end of the method name.",
+    defaultValue = "")
+  public String customAssertionFrameworksMethods = "";
+  private MethodMatcherCollection customAssertionMethodsMatcher = null;
+
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
   private final Deque<Boolean> inUnitTest = new ArrayDeque<>();
   private final Map<Symbol, Boolean> assertionInMethod = new HashMap<>();
@@ -176,11 +191,13 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private boolean isAssertion(MethodInvocationTree mit) {
-    return ASSERTION_INVOCATION_MATCHERS.anyMatch(mit) || isLocalMethodWithAssertion(mit.symbol());
+    return ASSERTION_INVOCATION_MATCHERS.anyMatch(mit) || getCustomAssertionMethodsMatcher().anyMatch(mit) || isLocalMethodWithAssertion(mit.symbol());
   }
 
   private boolean isAssertion(MethodReferenceTree methodReferenceTree) {
-    return ASSERTION_INVOCATION_MATCHERS.anyMatch(methodReferenceTree) || isLocalMethodWithAssertion(methodReferenceTree.method().symbol());
+    return ASSERTION_INVOCATION_MATCHERS.anyMatch(methodReferenceTree)
+      || getCustomAssertionMethodsMatcher().anyMatch(methodReferenceTree)
+      || isLocalMethodWithAssertion(methodReferenceTree.method().symbol());
   }
 
   private boolean isLocalMethodWithAssertion(Symbol symbol) {
@@ -189,11 +206,37 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
       if (declaration == null) {
         return false;
       } else {
-        AssertionVisitor assertionVisitor = new AssertionVisitor();
+        AssertionVisitor assertionVisitor = new AssertionVisitor(getCustomAssertionMethodsMatcher());
         declaration.accept(assertionVisitor);
         return assertionVisitor.hasAssertion;
       }
     });
+  }
+
+  private MethodMatcherCollection getCustomAssertionMethodsMatcher() {
+    if (customAssertionMethodsMatcher == null) {
+      String[] fullyQualifiedMethodSymbols = customAssertionFrameworksMethods.split(",");
+      List<MethodMatcher> customMethodMatchers = new ArrayList<>(fullyQualifiedMethodSymbols.length);
+      for (String fullyQualifiedMethodSymbol : fullyQualifiedMethodSymbols) {
+        String[] methodMatcherParts = fullyQualifiedMethodSymbol.split("#");
+        if (methodMatcherParts.length == 2 && !isEmpty(methodMatcherParts[0].trim()) && !isEmpty(methodMatcherParts[1].trim())) {
+          String methodName = methodMatcherParts[1].trim();
+          NameCriteria nameCriteria;
+          if (methodName.endsWith("*")) {
+            nameCriteria = NameCriteria.startsWith(methodName.substring(0, methodName.length() - 1));
+          } else {
+            nameCriteria = NameCriteria.is(methodName);
+          }
+          customMethodMatchers.add(method(methodMatcherParts[0].trim(), nameCriteria).withAnyParameters());
+        } else {
+          LOG.warn("Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: '{}'", fullyQualifiedMethodSymbol);
+        }
+      }
+
+      customAssertionMethodsMatcher = MethodMatcherCollection.create(customMethodMatchers.toArray(new MethodMatcher[0]));
+    }
+
+    return customAssertionMethodsMatcher;
   }
 
   private static boolean expectAssertion(MethodTree methodTree) {
@@ -238,11 +281,16 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   private static class AssertionVisitor extends BaseTreeVisitor {
     boolean hasAssertion = false;
+    private MethodMatcherCollection customAssertionMethodsMatcher;
+
+    public AssertionVisitor(MethodMatcherCollection customAssertionMethodsMatcher) {
+      this.customAssertionMethodsMatcher = customAssertionMethodsMatcher;
+    }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       super.visitMethodInvocation(mit);
-      if (!hasAssertion && ASSERTION_INVOCATION_MATCHERS.anyMatch(mit)) {
+      if (!hasAssertion && (ASSERTION_INVOCATION_MATCHERS.anyMatch(mit) || customAssertionMethodsMatcher.anyMatch(mit))) {
         hasAssertion = true;
       }
     }
@@ -250,7 +298,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     @Override
     public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
       super.visitMethodReference(methodReferenceTree);
-      if (!hasAssertion && ASSERTION_INVOCATION_MATCHERS.anyMatch(methodReferenceTree)) {
+      if (!hasAssertion && (ASSERTION_INVOCATION_MATCHERS.anyMatch(methodReferenceTree) || customAssertionMethodsMatcher.anyMatch(methodReferenceTree))) {
         hasAssertion = true;
       }
     }

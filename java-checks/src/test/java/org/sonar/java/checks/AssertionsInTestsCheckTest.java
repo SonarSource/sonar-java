@@ -21,11 +21,17 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.Collection;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
 public class AssertionsInTestsCheckTest {
@@ -53,14 +59,27 @@ public class AssertionsInTestsCheckTest {
     });
   }
 
+  @Rule
+  public LogTester logTester = new LogTester();
+
   public String framework;
 
   public AssertionsInTestsCheckTest(String framework) {
     this.framework = framework;
   }
 
+  @Before
+  public void setup() {
+    check.customAssertionFrameworksMethods =
+      "org.sonarsource.helper.AssertionsHelper#customAssertionAsRule*,org.sonarsource.helper.AssertionsHelper#customInstanceAssertionAsRuleParameter,blabla,bla# , #bla";
+  }
+
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/" + framework + ".java", check);
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(
+      "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'blabla'",
+      "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'bla# '",
+      "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ' #bla'");
   }
 }
