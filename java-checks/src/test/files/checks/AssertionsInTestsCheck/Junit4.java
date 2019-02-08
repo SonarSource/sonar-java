@@ -65,6 +65,29 @@ public abstract class AssertionsInTestsCheckJunit4 {
   }
 
   @Test
+  public void fest_assert_method_reference() {
+    new java.util.ArrayList<org.fest.assertions.GenericAssert>().forEach(org.fest.assertions.GenericAssert::isNull);
+  }
+
+  @Test
+  public void fest_assert_helper_method() {
+    helper_fest_assert();
+  }
+
+  @Test
+  public void fest_assert_helper_method_reference() {
+    helper_fest_assert_method_reference();
+  }
+
+  public void helper_fest_assert() {
+    org.fest.assertions.Fail.fail("foo");
+  }
+
+  public void helper_fest_assert_method_reference() {
+    new java.util.ArrayList<org.fest.assertions.GenericAssert>().forEach(org.fest.assertions.GenericAssert::isNull);
+  }
+
+  @Test
   public void fest_assert_that() {
     org.fest.assertions.Assertions.assertThat(true);
   }

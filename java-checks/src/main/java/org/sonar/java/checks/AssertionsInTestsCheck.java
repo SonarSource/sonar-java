@@ -25,6 +25,8 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
@@ -39,6 +41,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -47,41 +50,23 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.sonar.java.model.ExpressionUtils.methodName;
 
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Logger LOG = Loggers.get(AssertionsInTestsCheck.class);
 
-  private static final String SHOULD = "should";
-  private static final String VERIFY = "verify";
-  private static final String ASSERT_NAME = "assert";
-
-  private static final TypeCriteria ORG_ASSERTJ_ASSERTIONS = TypeCriteria.is("org.assertj.core.api.Assertions");
-  private static final TypeCriteria ORG_ASSERTJ_FAIL = TypeCriteria.is("org.assertj.core.api.Fail");
   private static final TypeCriteria IO_RESTASSURED = TypeCriteria.is("io.restassured.response.ValidatableResponseOptions");
-
   private static final TypeCriteria ANY_TYPE = TypeCriteria.anyType();
   private static final NameCriteria ANY_NAME = NameCriteria.any();
-  private static final NameCriteria STARTS_WITH_FAIL = NameCriteria.startsWith("fail");
-  private static final NameCriteria STARTS_WITH_ASSERT = NameCriteria.startsWith(ASSERT_NAME);
+
+  private static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile("(assert|verify|fail|should|check|expect).*");
 
   private static final MethodMatcherCollection ASSERTION_INVOCATION_MATCHERS = MethodMatcherCollection.create(
-    // junit
-    method("org.junit.Assert", STARTS_WITH_ASSERT).withAnyParameters(),
-    method("org.junit.Assert", STARTS_WITH_FAIL).withAnyParameters(),
-    method("org.junit.rules.ExpectedException", NameCriteria.startsWith("expect")).withAnyParameters(),
-    method(TypeCriteria.subtypeOf("junit.framework.Assert"), STARTS_WITH_ASSERT).withAnyParameters(),
-    method(TypeCriteria.subtypeOf("junit.framework.Assert"), STARTS_WITH_FAIL).withAnyParameters(),
-    method("org.junit.rules.ErrorCollector", "checkThat").withAnyParameters(),
-    // fest 1.x
+    // fest 1.x / 2.X
     method(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert"), ANY_NAME).withAnyParameters(),
-    method("org.fest.assertions.Assertions", STARTS_WITH_ASSERT).withAnyParameters(),
-    method("org.fest.assertions.Fail", STARTS_WITH_FAIL).withAnyParameters(),
-    // fest 2.x
     method(TypeCriteria.subtypeOf("org.fest.assertions.api.AbstractAssert"), ANY_NAME).withAnyParameters(),
-    method("org.fest.assertions.api.Fail", STARTS_WITH_FAIL).withAnyParameters(),
-
     // rest assured 2.0
     method(IO_RESTASSURED, NameCriteria.is("body")).withAnyParameters(),
     method(IO_RESTASSURED, NameCriteria.is("time")).withAnyParameters(),
@@ -90,56 +75,19 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     method(IO_RESTASSURED, NameCriteria.startsWith("header")).withAnyParameters(),
     method(IO_RESTASSURED, NameCriteria.startsWith("cookie")).withAnyParameters(),
     method(IO_RESTASSURED, NameCriteria.startsWith("spec")).withAnyParameters(),
-
-    // ReactiveX
-    // 2.x
-    method(TypeCriteria.subtypeOf("io.reactivex.observers.BaseTestConsumer"), STARTS_WITH_ASSERT).withAnyParameters(),
-    // 1.x
-    method(TypeCriteria.subtypeOf("rx.observers.TestObserver"), STARTS_WITH_ASSERT).withAnyParameters(),
-    method(TypeCriteria.subtypeOf("rx.observers.TestSubscriber"), STARTS_WITH_ASSERT).withAnyParameters(),
-    method(TypeCriteria.is("rx.observers.AssertableSubscriber"), STARTS_WITH_ASSERT).withAnyParameters(),
-
     // assertJ
     method(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert"), ANY_NAME).withAnyParameters(),
-    method(ORG_ASSERTJ_FAIL, STARTS_WITH_FAIL).withAnyParameters(),
-    method(ORG_ASSERTJ_FAIL, "shouldHaveThrown").withAnyParameters(),
-    method(ORG_ASSERTJ_ASSERTIONS, STARTS_WITH_FAIL).withAnyParameters(),
-    method(ORG_ASSERTJ_ASSERTIONS, "shouldHaveThrown").withAnyParameters(),
-    method(ORG_ASSERTJ_ASSERTIONS, STARTS_WITH_ASSERT).withAnyParameters(),
-    method(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractSoftAssertions"), STARTS_WITH_ASSERT).withAnyParameters(),
-    // hamcrest
-    method("org.hamcrest.MatcherAssert", STARTS_WITH_ASSERT).withAnyParameters(),
-    // Mockito
-    method("org.mockito.Mockito", NameCriteria.startsWith(VERIFY)).withAnyParameters(),
-    method("org.mockito.InOrder", NameCriteria.startsWith(VERIFY)).withAnyParameters(),
     // spring
     method("org.springframework.test.web.servlet.ResultActions", "andExpect").addParameter(ANY_TYPE),
-    // EasyMock
-    method("org.easymock.EasyMock", VERIFY).withAnyParameters(),
-    method(TypeCriteria.subtypeOf("org.easymock.IMocksControl"), VERIFY).withAnyParameters(),
-    method(TypeCriteria.subtypeOf("org.easymock.EasyMockSupport"), "verifyAll").withAnyParameters(),
-    // Truth Framework
-    method("com.google.common.truth.Truth", STARTS_WITH_ASSERT).withAnyParameters(),
-    method("com.google.common.truth.Truth8", STARTS_WITH_ASSERT).withAnyParameters(),
-    // JMock Mockery
-    method(TypeCriteria.subtypeOf("org.jmock.Mockery"), "assertIsSatisfied").withAnyParameters(),
-    // WireMock
-    method("com.github.tomakehurst.wiremock.client.WireMock", VERIFY).withAnyParameters(),
-    method("com.github.tomakehurst.wiremock.WireMockServer", VERIFY).withAnyParameters(),
-    // Eclipse Vert.x
-    method("io.vertx.ext.unit.TestContext", STARTS_WITH_ASSERT).withAnyParameters(),
-    method("io.vertx.ext.unit.TestContext", STARTS_WITH_FAIL).withAnyParameters(),
-    // Selenide
-    method("com.codeborne.selenide.SelenideElement", NameCriteria.startsWith(SHOULD)).withAnyParameters(),
-    method("com.codeborne.selenide.ElementsCollection", NameCriteria.startsWith(SHOULD)).withAnyParameters());
-
-  private static final MethodMatcher JMOCKIT_CONSTRUCTOR_MATCHER = method("mockit.Verifications", "<init>").withAnyParameters();
+    // JMockit
+    method("mockit.Verifications", "<init>").withAnyParameters());
 
   @RuleProperty(
-    key = "customAssertionFrameworksMethods",
-    description = "List of fully qualified method symbols that should be considered as assertion methods. The wildcard character can be used at the end of the method name.",
+    key = "customAssertionMethods",
+    description = "Comma-separated list of fully qualified method symbols that should be considered as assertion methods. " +
+      "The wildcard character can be used at the end of the method name.",
     defaultValue = "")
-  public String customAssertionFrameworksMethods = "";
+  public String customAssertionMethods = "";
   private MethodMatcherCollection customAssertionMethodsMatcher = null;
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
@@ -178,7 +126,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
     super.visitMethodInvocation(mit);
-    if (shouldCheckForAssertion() && isAssertion(mit)) {
+    if (shouldCheckForAssertion() && isAssertion(methodName(mit), mit.symbol())) {
       methodContainsAssertion.pop();
       methodContainsAssertion.push(true);
     }
@@ -187,7 +135,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
     super.visitMethodReference(methodReferenceTree);
-    if (shouldCheckForAssertion() && isAssertion(methodReferenceTree)) {
+    if (shouldCheckForAssertion() && isAssertion(methodReferenceTree.method(), methodReferenceTree.method().symbol())) {
       methodContainsAssertion.pop();
       methodContainsAssertion.push(true);
     }
@@ -196,7 +144,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitNewClass(NewClassTree tree) {
     super.visitNewClass(tree);
-    if (shouldCheckForAssertion() && JMOCKIT_CONSTRUCTOR_MATCHER.matches(tree)) {
+    if (shouldCheckForAssertion() && isAssertion(null, tree.constructorSymbol())) {
       methodContainsAssertion.pop();
       methodContainsAssertion.push(true);
     }
@@ -206,14 +154,12 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     return !methodContainsAssertion.peek() && inUnitTest.peek();
   }
 
-  private boolean isAssertion(MethodInvocationTree mit) {
-    return ASSERTION_INVOCATION_MATCHERS.anyMatch(mit) || getCustomAssertionMethodsMatcher().anyMatch(mit) || isLocalMethodWithAssertion(mit.symbol());
-  }
-
-  private boolean isAssertion(MethodReferenceTree methodReferenceTree) {
-    return ASSERTION_INVOCATION_MATCHERS.anyMatch(methodReferenceTree)
-      || getCustomAssertionMethodsMatcher().anyMatch(methodReferenceTree)
-      || isLocalMethodWithAssertion(methodReferenceTree.method().symbol());
+  private boolean isAssertion(@Nullable IdentifierTree method, Symbol methodSymbol) {
+    boolean matchesMethodPattern = method != null && ASSERTION_METHODS_PATTERN.matcher(method.name()).matches();
+    return matchesMethodPattern
+      || ASSERTION_INVOCATION_MATCHERS.anyMatch(methodSymbol)
+      || getCustomAssertionMethodsMatcher().anyMatch(methodSymbol)
+      || isLocalMethodWithAssertion(methodSymbol);
   }
 
   private boolean isLocalMethodWithAssertion(Symbol symbol) {
@@ -231,7 +177,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   private MethodMatcherCollection getCustomAssertionMethodsMatcher() {
     if (customAssertionMethodsMatcher == null) {
-      String[] fullyQualifiedMethodSymbols = customAssertionFrameworksMethods.split(",");
+      String[] fullyQualifiedMethodSymbols = customAssertionMethods.split(",");
       List<MethodMatcher> customMethodMatchers = new ArrayList<>(fullyQualifiedMethodSymbols.length);
       for (String fullyQualifiedMethodSymbol : fullyQualifiedMethodSymbols) {
         String[] methodMatcherParts = fullyQualifiedMethodSymbol.split("#");
@@ -283,10 +229,6 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     return method(TypeCriteria.is(typeDefinition), NameCriteria.is(methodName));
   }
 
-  private static MethodMatcher method(TypeCriteria typeDefinitionCriteria, String methodName) {
-    return method(typeDefinitionCriteria, NameCriteria.is(methodName));
-  }
-
   private static MethodMatcher method(String typeDefinition, NameCriteria nameCriteria) {
     return MethodMatcher.create().typeDefinition(TypeCriteria.is(typeDefinition)).name(nameCriteria);
   }
@@ -306,7 +248,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       super.visitMethodInvocation(mit);
-      if (!hasAssertion && (ASSERTION_INVOCATION_MATCHERS.anyMatch(mit) || customAssertionMethodsMatcher.anyMatch(mit))) {
+      if (!hasAssertion && isLocalAssertion(methodName(mit), mit.symbol())) {
         hasAssertion = true;
       }
     }
@@ -314,7 +256,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     @Override
     public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
       super.visitMethodReference(methodReferenceTree);
-      if (!hasAssertion && (ASSERTION_INVOCATION_MATCHERS.anyMatch(methodReferenceTree) || customAssertionMethodsMatcher.anyMatch(methodReferenceTree))) {
+      if (!hasAssertion && isLocalAssertion(methodReferenceTree.method(), methodReferenceTree.method().symbol())) {
         hasAssertion = true;
       }
     }
@@ -322,9 +264,14 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     @Override
     public void visitNewClass(NewClassTree tree) {
       super.visitNewClass(tree);
-      if (!hasAssertion && JMOCKIT_CONSTRUCTOR_MATCHER.matches(tree)) {
+      if (!hasAssertion && isLocalAssertion(null, tree.constructorSymbol())) {
         hasAssertion = true;
       }
+    }
+
+    private boolean isLocalAssertion(@Nullable IdentifierTree method, Symbol methodSymbol) {
+      boolean matchesMethodPattern = method != null && ASSERTION_METHODS_PATTERN.matcher(method.name()).matches();
+      return matchesMethodPattern || ASSERTION_INVOCATION_MATCHERS.anyMatch(methodSymbol) || customAssertionMethodsMatcher.anyMatch(methodSymbol);
     }
   }
 
