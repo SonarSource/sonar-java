@@ -24,9 +24,12 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.helpers.ConstantUtils.resolveAsStringConstant;
@@ -34,18 +37,32 @@ import static org.sonar.java.checks.helpers.ConstantUtils.resolveAsStringConstan
 @Rule(key = "S2647")
 public class BasicAuthCheck extends AbstractMethodDetection {
 
+  private static final String LANG_STRING = "java.lang.String";
+
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Arrays.asList(
       MethodMatcher.create().typeDefinition("org.apache.http.message.AbstractHttpMessage").name("setHeader").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.net.URLConnection").name("setRequestProperty").withAnyParameters()
+      MethodMatcher.create().typeDefinition("org.apache.http.message.AbstractHttpMessage").name("addHeader").addParameter(LANG_STRING).addParameter(LANG_STRING),
+      MethodMatcher.create().typeDefinition("org.apache.http.message.BasicHeader").name("<init>").addParameter(LANG_STRING).addParameter(LANG_STRING),
+      MethodMatcher.create().typeDefinition("java.net.URLConnection").name("setRequestProperty").withAnyParameters(),
+      MethodMatcher.create().typeDefinition("java.net.URLConnection").name("addRequestProperty").withAnyParameters()
       );
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if ("Authorization".equals(resolveAsStringConstant(mit.arguments().get(0)))) {
-      ExpressionTree arg = mostLeft(mit.arguments().get(1));
+    checkArguments(mit.arguments());
+  }
+
+  @Override
+  protected void onConstructorFound(NewClassTree newClassTree) {
+    checkArguments(newClassTree.arguments());
+  }
+
+  private void checkArguments(Arguments arguments) {
+    if ("Authorization".equals(resolveAsStringConstant(arguments.get(0)))) {
+      ExpressionTree arg = mostLeft(arguments.get(1));
       String authentication = resolveAsStringConstant(arg);
       if (authentication != null && authentication.startsWith("Basic")) {
         reportIssue(arg, "Use a more secure method than basic authentication.");
@@ -54,9 +71,9 @@ public class BasicAuthCheck extends AbstractMethodDetection {
   }
 
   private static ExpressionTree mostLeft(ExpressionTree arg) {
-    ExpressionTree res = arg;
+    ExpressionTree res = ExpressionUtils.skipParentheses(arg);
     while (res.is(Tree.Kind.PLUS)) {
-      res = ((BinaryExpressionTree) res).leftOperand();
+      res = ExpressionUtils.skipParentheses(((BinaryExpressionTree) res).leftOperand());
     }
     return res;
   }
