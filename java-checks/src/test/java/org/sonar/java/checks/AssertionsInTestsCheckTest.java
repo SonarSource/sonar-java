@@ -71,8 +71,8 @@ public class AssertionsInTestsCheckTest {
 
   @Before
   public void setup() {
-    check.customAssertionFrameworksMethods =
-      "org.sonarsource.helper.AssertionsHelper#customAssertionAsRule*,org.sonarsource.helper.AssertionsHelper#customInstanceAssertionAsRuleParameter,blabla,bla# , #bla";
+    check.customAssertionMethods = "org.sonarsource.helper.AssertionsHelper$ConstructorAssertion#<init>,org.sonarsource.helper.AssertionsHelper#customAssertionAsRule*," +
+      "org.sonarsource.helper.AssertionsHelper#customInstanceAssertionAsRuleParameter,blabla,bla# , #bla";
   }
 
   @Test
