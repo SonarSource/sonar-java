@@ -43,7 +43,7 @@ public class CookieDomainCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree arg = mit.arguments().get(0);
     String domain = ConstantUtils.resolveAsStringConstant(arg);
-    if (domain != null && !domain.substring(1).contains(".")) {
+    if (domain != null && !domain.isEmpty() && !domain.substring(1).contains(".")) {
       reportIssue(arg, "Specify at least a second-level cookie domain.");
     }
   }

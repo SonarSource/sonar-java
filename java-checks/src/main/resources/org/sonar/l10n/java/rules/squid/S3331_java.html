@@ -8,6 +8,8 @@ level, as in <em>.com</em>.</p>
 <pre>
 Cookie myCookie = new Cookie("name", "val");
 myCookie.setDomain(".com"); // Noncompliant
+java.net.HttpCookie myOtherCookie = new java.net.HttpCookie("name", "val");
+myOtherCookie.setDomain(".com"); // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
@@ -17,6 +19,9 @@ Cookie myCookie = new Cookie("name", "val"); // Compliant; by default, cookies a
 
 Cookie myCookie = new Cookie("name", "val");
 myCookie.setDomain(".myDomain.com"); // Compliant
+
+java.net.HttpCookie myOtherCookie = new java.net.HttpCookie("name", "val");
+myOtherCookie.setDomain(".myDomain.com"); // Compliant
 </pre>
 <h2>See</h2>
 <ul>
