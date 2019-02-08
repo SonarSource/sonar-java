@@ -77,6 +77,11 @@ public class AssertionsInTestsCheckAssertJ {
   }
 
   @Test
+  public void assertion_in_helper_method_chain() {
+    intermediate_helper_method(true);
+  }
+
+  @Test
   public void assertion_in_helper_method() {
     helper_method_with_custom_assertion_method();
   }
@@ -147,6 +152,13 @@ public class AssertionsInTestsCheckAssertJ {
   @Test
   public void assertion_in_constructor_from_helper_method() {
     helper_with_custom_constructor_assertion();
+  }
+
+  public void intermediate_helper_method(boolean booleanValue) {
+    if (booleanValue) {
+      intermediate_helper_method(!booleanValue);
+    }
+    helper_method(booleanValue);
   }
 
   public void helper_method(boolean expected) {

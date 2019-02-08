@@ -141,9 +141,6 @@
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/plugins/ws/PluginUpdateAggregateBuilderTest.java':[
 49,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/projectlink/ws/CreateActionTest.java':[
-114,
-],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/projectlink/ws/SearchActionTest.java':[
 152,
 162,
