@@ -664,6 +664,7 @@ public final class CheckList {
       ReplaceGuavaWithJava8Check.class,
       LoggedRethrownExceptionsCheck.class,
       CORSCheck.class,
+      BasicAuthCheck.class,
       SynchronizedOverrideCheck.class);
   }
 
