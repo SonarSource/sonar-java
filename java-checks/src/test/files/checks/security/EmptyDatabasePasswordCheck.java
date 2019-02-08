@@ -71,4 +71,37 @@ class S2115 {
   String getPassword() {
     return "foo";
   }
+
+  void missingPassword() {
+    // ://user@
+    DriverManager.getConnection("jdbc:mysql://sandy@localhost:1111/db"); // Noncompliant
+    // empty ://user:@
+    DriverManager.getConnection("jdbc:mysql://sandy:@localhost:1111/db"); // Noncompliant
+
+    // no ,password= nor (password=
+    DriverManager.getConnection("jdbc:mysql://[(host=myhost1,port=1111,user=sandy),(host=myhost2,port=2222,user=finn)]/db"); // Noncompliant
+    // empty (password=)
+    DriverManager.getConnection("jdbc:mysql://address=(host=myhost1)(port=1111)(user=sandy)(password=),address=(host=myhost2)(port=2222)(user=finn)(password=)/db"); // Noncompliant
+    // empty ,password=)
+    DriverManager.getConnection("jdbc:mysql://[(host=myhost1,port=1111,user=sandy,password=secret),(host=myhost2,port=2222,user=finn,password=)]/db"); // Noncompliant
+
+    // empty &password= at the end
+    DriverManager.getConnection("jdbc:mysql://localhost:1111/db?user=user&password="); // Noncompliant
+    // empty ?password=&
+    DriverManager.getConnection("jdbc:mysql://localhost:1111/db?password=&user=user"); // Noncompliant
+    // no &password= nor ?password=
+    DriverManager.getConnection("jdbc:mysql://localhost:1111/db"); // Noncompliant
+
+    // empty :user/@//
+    DriverManager.getConnection("jdbc:oracle:thin:scott/@//myhost:1521/myservicename"); // Noncompliant
+    // empty :user//@
+    DriverManager.getConnection("jdbc:oracle:oci:scott/tiger/@"); // Noncompliant
+
+    // no ;password=
+    DriverManager.getConnection("jdbc:derby:sample"); // Noncompliant
+    // empty ;password=;
+    DriverManager.getConnection("jdbc:derby:sample;password=;user=jill"); // Noncompliant
+    // empty ;password= at the end
+    DriverManager.getConnection("jdbc:derby:sample;user=jill;password="); // Noncompliant
+  }
 }
