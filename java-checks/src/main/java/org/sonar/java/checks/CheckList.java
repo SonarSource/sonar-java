@@ -339,6 +339,7 @@ public final class CheckList {
       MismatchPackageDirectoryCheck.class,
       ReplaceLambdaByMethodRefCheck.class,
       FieldModifierCheck.class,
+      CookieDomainCheck.class,
       SerializableFieldInSerializableClassCheck.class,
       PackageInfoCheck.class,
       SwitchWithTooManyCasesCheck.class,
