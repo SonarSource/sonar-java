@@ -48,13 +48,13 @@ public class XmlFileSensor implements Sensor {
 
   private final Checks<SonarXmlCheck> checks;
 
-  @Override
-  public void describe(SensorDescriptor descriptor) {
-    descriptor.name("JavaXmlSensor");
-  }
-
   public XmlFileSensor(CheckFactory checkFactory) {
     this.checks = checkFactory.<SonarXmlCheck>create(CheckList.REPOSITORY_KEY).addAnnotatedChecks((Iterable) CheckList.getXmlChecks());
+  }
+
+  @Override
+  public void describe(SensorDescriptor descriptor) {
+    descriptor.name("JavaXmlSensor").onlyWhenConfiguration(configuration -> !checks.all().isEmpty());
   }
 
   @Override

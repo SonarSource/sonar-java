@@ -34,6 +34,7 @@ import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
@@ -162,6 +163,15 @@ public class XmlFileSensorTest {
     // todo: do we want to run this sensor only for projects containing JVM languages
     assertThat(descriptor.languages()).isEmpty();
     assertThat(descriptor.isGlobal()).isFalse();
+    assertThat(descriptor.configurationPredicate().test(new MapSettings().asConfig())).isFalse();
+
+    sensor = new XmlFileSensor(new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build()));
+    descriptor = new DefaultSensorDescriptor();
+    sensor.describe(descriptor);
+    assertThat(descriptor.languages()).isEmpty();
+    assertThat(descriptor.isGlobal()).isFalse();
+    assertThat(descriptor.configurationPredicate().test(new MapSettings().asConfig())).isTrue();
+
   }
 
   @Test
