@@ -63,7 +63,10 @@ public class XmlFileSensor implements Sensor {
     FilePredicate xmlFilesPredicate = fs.predicates().matchesPathPattern("**/*.xml");
 
     List<InputFile> inputFiles = new ArrayList<>();
-    fs.inputFiles(xmlFilesPredicate).forEach(inputFiles::add);
+    fs.inputFiles(xmlFilesPredicate).forEach(inputFile1 -> {
+      context.markForPublishing(inputFile1);
+      inputFiles.add(inputFile1);
+    });
 
     if (inputFiles.isEmpty()) {
       return;

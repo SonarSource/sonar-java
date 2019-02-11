@@ -64,9 +64,9 @@ public class XmlFileSensorTest {
     CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
-    addFileWithIssue("xml");
-
+    DefaultInputFile xml = (DefaultInputFile) addFileWithIssue("xml");
     sensor.execute(context);
+    assertThat(xml.isPublished()).isTrue();
 
     Collection<Issue> issues = context.allIssues();
     assertThat(issues).hasSize(1);
@@ -93,8 +93,9 @@ public class XmlFileSensorTest {
     CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().build());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
-    addFileWithIssue("xml");
+    DefaultInputFile xml = (DefaultInputFile) addFileWithIssue("xml");
     sensor.execute(context);
+    assertThat(xml.isPublished()).isTrue();
 
     assertThat(context.allIssues()).isEmpty();
   }
@@ -106,8 +107,9 @@ public class XmlFileSensorTest {
 
     context.setCancelled(true);
 
-    addFileWithIssue("xml");
+    DefaultInputFile xml = (DefaultInputFile) addFileWithIssue("xml");
     sensor.execute(context);
+    assertThat(xml.isPublished()).isTrue();
 
     assertThat(context.allIssues()).isEmpty();
   }
@@ -196,6 +198,7 @@ public class XmlFileSensorTest {
         "    </interceptor-binding>\n" +
         "  </assembly-descriptor>\n" +
         "</ejb-jar>")
+      .setPublish(false)
       .build();
     context.fileSystem().add(inputFile);
     return inputFile;
