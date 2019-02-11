@@ -23,10 +23,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
@@ -95,21 +93,18 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
   private final Deque<Boolean> inUnitTest = new ArrayDeque<>();
   private final Map<Symbol, Boolean> assertionInMethod = new HashMap<>();
-  private final Set<Symbol> visitedMethods = new HashSet<>();
   private JavaFileScannerContext context;
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
     this.context = context;
     assertionInMethod.clear();
-    visitedMethods.clear();
     inUnitTest.push(false);
     methodContainsAssertion.push(false);
     scan(context.getTree());
     methodContainsAssertion.pop();
     inUnitTest.pop();
     assertionInMethod.clear();
-    visitedMethods.clear();
   }
 
   @Override
@@ -168,27 +163,17 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private boolean isLocalMethodWithAssertion(Symbol symbol) {
-    Boolean hasAssertion = assertionInMethod.get(symbol);
-    if (hasAssertion == null) {
-      if (visitedMethods.contains(symbol)) {
-        // avoid recursion
-        return false;
-      } else {
-        visitedMethods.add(symbol);
-
-        Tree declaration = symbol.declaration();
-        if (declaration == null) {
-          hasAssertion = false;
-        } else {
-          AssertionVisitor assertionVisitor = new AssertionVisitor();
-          declaration.accept(assertionVisitor);
-          hasAssertion = assertionVisitor.hasAssertion;
-        }
+    if (!assertionInMethod.containsKey(symbol)) {
+      assertionInMethod.put(symbol, false);
+      Tree declaration = symbol.declaration();
+      if (declaration != null) {
+        AssertionVisitor assertionVisitor = new AssertionVisitor();
+        declaration.accept(assertionVisitor);
+        assertionInMethod.put(symbol, assertionVisitor.hasAssertion);
       }
     }
 
-    assertionInMethod.putIfAbsent(symbol, hasAssertion);
-    return hasAssertion;
+    return assertionInMethod.get(symbol);
   }
 
   private MethodMatcherCollection getCustomAssertionMethodsMatcher() {
