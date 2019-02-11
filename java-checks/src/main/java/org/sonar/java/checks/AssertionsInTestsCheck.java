@@ -163,16 +163,17 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private boolean isLocalMethodWithAssertion(Symbol symbol) {
-    return assertionInMethod.computeIfAbsent(symbol, key -> {
-      Tree declaration = key.declaration();
-      if (declaration == null) {
-        return false;
-      } else {
-        AssertionVisitor assertionVisitor = new AssertionVisitor(getCustomAssertionMethodsMatcher());
+    if (!assertionInMethod.containsKey(symbol)) {
+      assertionInMethod.put(symbol, false);
+      Tree declaration = symbol.declaration();
+      if (declaration != null) {
+        AssertionVisitor assertionVisitor = new AssertionVisitor();
         declaration.accept(assertionVisitor);
-        return assertionVisitor.hasAssertion;
+        assertionInMethod.put(symbol, assertionVisitor.hasAssertion);
       }
-    });
+    }
+
+    return assertionInMethod.get(symbol);
   }
 
   private MethodMatcherCollection getCustomAssertionMethodsMatcher() {
@@ -237,18 +238,13 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     return MethodMatcher.create().typeDefinition(typeDefinitionCriteria).name(nameCriteria);
   }
 
-  private static class AssertionVisitor extends BaseTreeVisitor {
+  private class AssertionVisitor extends BaseTreeVisitor {
     boolean hasAssertion = false;
-    private MethodMatcherCollection customAssertionMethodsMatcher;
-
-    public AssertionVisitor(MethodMatcherCollection customAssertionMethodsMatcher) {
-      this.customAssertionMethodsMatcher = customAssertionMethodsMatcher;
-    }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       super.visitMethodInvocation(mit);
-      if (!hasAssertion && isLocalAssertion(methodName(mit), mit.symbol())) {
+      if (!hasAssertion && isAssertion(methodName(mit), mit.symbol())) {
         hasAssertion = true;
       }
     }
@@ -256,7 +252,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     @Override
     public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
       super.visitMethodReference(methodReferenceTree);
-      if (!hasAssertion && isLocalAssertion(methodReferenceTree.method(), methodReferenceTree.method().symbol())) {
+      if (!hasAssertion && isAssertion(methodReferenceTree.method(), methodReferenceTree.method().symbol())) {
         hasAssertion = true;
       }
     }
@@ -264,14 +260,9 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     @Override
     public void visitNewClass(NewClassTree tree) {
       super.visitNewClass(tree);
-      if (!hasAssertion && isLocalAssertion(null, tree.constructorSymbol())) {
+      if (!hasAssertion && isAssertion(null, tree.constructorSymbol())) {
         hasAssertion = true;
       }
-    }
-
-    private boolean isLocalAssertion(@Nullable IdentifierTree method, Symbol methodSymbol) {
-      boolean matchesMethodPattern = method != null && ASSERTION_METHODS_PATTERN.matcher(method.name()).matches();
-      return matchesMethodPattern || ASSERTION_INVOCATION_MATCHERS.anyMatch(methodSymbol) || customAssertionMethodsMatcher.anyMatch(methodSymbol);
     }
   }
 
