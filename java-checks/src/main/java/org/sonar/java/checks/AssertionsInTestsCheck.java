@@ -110,20 +110,12 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     }
   }
 
-  private boolean isAssertion(@Nullable IdentifierTree method, Symbol methodSymbol) {
-    boolean matchesMethodPattern = method != null && ASSERTION_METHODS_PATTERN.matcher(method.name()).matches();
-    return matchesMethodPattern
-      || ASSERTION_INVOCATION_MATCHERS.anyMatch(methodSymbol)
-      || getCustomAssertionMethodsMatcher().anyMatch(methodSymbol)
-      || isLocalMethodWithAssertion(methodSymbol);
-  }
-
   private boolean isLocalMethodWithAssertion(Symbol symbol) {
     if (!assertionInMethod.containsKey(symbol)) {
       assertionInMethod.put(symbol, false);
       Tree declaration = symbol.declaration();
       if (declaration != null) {
-        AssertionVisitor assertionVisitor = new AssertionVisitor();
+        AssertionVisitor assertionVisitor = new AssertionVisitor(getCustomAssertionMethodsMatcher());
         declaration.accept(assertionVisitor);
         assertionInMethod.put(symbol, assertionVisitor.hasAssertion);
       }
@@ -196,6 +188,11 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   private class AssertionVisitor extends BaseTreeVisitor {
     boolean hasAssertion = false;
+    private MethodMatcherCollection customMethodsMatcher;
+
+    private AssertionVisitor(MethodMatcherCollection customMethodsMatcher) {
+      this.customMethodsMatcher = customMethodsMatcher;
+    }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
@@ -219,6 +216,14 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
       if (!hasAssertion && isAssertion(null, tree.constructorSymbol())) {
         hasAssertion = true;
       }
+    }
+
+    private boolean isAssertion(@Nullable IdentifierTree method, Symbol methodSymbol) {
+      boolean matchesMethodPattern = method != null && ASSERTION_METHODS_PATTERN.matcher(method.name()).matches();
+      return matchesMethodPattern
+        || ASSERTION_INVOCATION_MATCHERS.anyMatch(methodSymbol)
+        || customMethodsMatcher.anyMatch(methodSymbol)
+        || isLocalMethodWithAssertion(methodSymbol);
     }
   }
 
