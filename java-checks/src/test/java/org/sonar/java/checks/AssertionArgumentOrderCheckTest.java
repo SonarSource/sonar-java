@@ -28,4 +28,10 @@ public class AssertionArgumentOrderCheckTest {
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/AssertionArgumentOrderCheck.java", new AssertionArgumentOrderCheck());
   }
+
+  @Test
+  public void test_JUnit5() {
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionArgumentOrderCheck_JUnit5.java", new AssertionArgumentOrderCheck());
+  }
+
 }
