@@ -36,6 +36,7 @@ public class AssertionInThreadRunCheck extends IssuableSubscriptionVisitor {
 
   private static final Iterable<String> CHECKED_TYPES = ImmutableList.of(
     "org.junit.Assert",
+    "org.junit.jupiter.api.Assertions",
     "junit.framework.Assert",
     "junit.framework.TestCase",
     "org.fest.assertions.Assertions");
