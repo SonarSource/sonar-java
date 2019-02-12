@@ -30,6 +30,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.CheckForNull;
 import org.apache.commons.lang.ArrayUtils;
 import org.sonar.api.utils.log.Logger;
@@ -131,6 +132,16 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
     } catch (IOException e) {
       throw new AnalysisException("An IOException occurred in SonarJava classLoader.",e);
     }
+  }
+
+  @Override
+  public URL getResource(String name) {
+    Objects.requireNonNull(name);
+    URL url = findResource(name);
+    if (url == null) {
+      return super.getResource(name);
+    }
+    return url;
   }
 
   /**
