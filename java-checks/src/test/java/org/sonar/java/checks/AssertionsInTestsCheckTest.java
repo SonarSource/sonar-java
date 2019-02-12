@@ -43,6 +43,7 @@ public class AssertionsInTestsCheckTest {
     return Arrays.asList(new Object[][] {
       {"Junit3"},
       {"Junit4"},
+      {"Junit5"},
       {"AssertJ"},
       {"Hamcrest"},
       {"Spring"},
