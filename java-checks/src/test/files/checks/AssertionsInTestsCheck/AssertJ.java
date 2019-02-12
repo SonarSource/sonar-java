@@ -7,6 +7,16 @@ import org.junit.Test;
 
 public class AssertionsInTestsCheckAssertJ {
 
+  interface Visitor {
+    void visit(Object object);
+  }
+
+  class VisitorHandler {
+    VisitorHandler(Object object, Visitor visitor) {
+      visitor.visit(object);
+    }
+  }
+
   private final SoftAssertions soft_assert = new SoftAssertions();
 
   @Rule
@@ -69,6 +79,31 @@ public class AssertionsInTestsCheckAssertJ {
   @Test
   public void fail_shouldHaveThrown() {
     Fail.shouldHaveThrown(IllegalArgumentException.class);
+  }
+
+  @Test
+  public void assertions_in_anonymous_class() {
+    new VisitorHandler(null, new Visitor() {
+      @Override
+      public void visit(Object object) {
+        Assertions.fail("a");
+      }
+    });
+  }
+
+  @Test
+  public void no_assertion_in_anonymous_class() { // Noncompliant
+    new VisitorHandler(null, new Visitor() {
+      @Override
+      public void visit(Object object) {
+        java.util.Objects.isNull(object);
+      }
+    });
+  }
+
+  @Test
+  public void assertions_in_lambda() {
+    new VisitorHandler(null, object -> org.assertj.core.api.Assertions.fail("a"));
   }
 
   @Test
