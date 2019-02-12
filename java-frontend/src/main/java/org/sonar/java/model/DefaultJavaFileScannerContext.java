@@ -180,6 +180,10 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     return sonarComponents.workDir();
   }
 
+  public File getBaseDirectory() {
+    return sonarComponents.getFileSystem().baseDir();
+  }
+
   @Override
   public List<Tree> getComplexityNodes(Tree tree) {
     return complexityVisitor.getNodes(tree);

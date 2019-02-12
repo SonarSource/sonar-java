@@ -57,7 +57,7 @@ public class SquidTest {
       assertThat(issues).hasSize(2);
       assertThat(issues.stream().map(Issue::ruleKey)).allMatch("squid:S1228"::equals);
       assertThat(issues.stream().map(Issue::line)).allMatch(Objects::isNull);
-      assertThat(issues.stream().map(Issue::message)).allMatch(msg -> msg.contains("src/main/java/package1") || msg.contains("src/main/java/package2"));
+      assertThat(issues.stream().map(Issue::message)).allMatch(msg -> msg.contains("'src/main/java/package1'") || msg.contains("'src/main/java/package2'"));
     } else {
       List<Issue> issues = issueClient.find(IssueQuery.create().components(JavaTestSuite.keyFor("com.sonarsource.it.samples:squid", "package1", ""))).list();
       assertThat(issues).hasSize(1);

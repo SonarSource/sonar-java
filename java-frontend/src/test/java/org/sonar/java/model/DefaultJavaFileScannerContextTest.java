@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.EndOfAnalysisCheck;
@@ -158,6 +159,7 @@ public class DefaultJavaFileScannerContextTest {
   @Test
   public void working_directory() {
     assertThat(context.getWorkingDirectory()).isNotNull();
+    assertThat(context.getBaseDirectory()).isNotNull();
   }
 
   @Test
@@ -273,6 +275,9 @@ public class DefaultJavaFileScannerContextTest {
     doAnswer(invocation -> "content").when(sonarComponents).fileContent(eq(JAVA_FILE));
 
     doAnswer(invocation -> WORK_DIR).when(sonarComponents).workDir();
+    File moduleBaseDir = new File("");
+    SensorContextTester context = SensorContextTester.create(moduleBaseDir);
+    doAnswer(invocation -> context.fileSystem()).when(sonarComponents).getFileSystem();
 
     return sonarComponents;
   }
