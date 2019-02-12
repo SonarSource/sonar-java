@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -32,8 +33,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(key = "S2162")
 public class SymmetricEqualsCheck extends IssuableSubscriptionVisitor {
@@ -96,8 +95,14 @@ public class SymmetricEqualsCheck extends IssuableSubscriptionVisitor {
     private void checkOperand(ExpressionTree expressionTree) {
       if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mset = (MemberSelectExpressionTree) expressionTree;
-        if (isClassExpression(mset) && isClassOfOwner(mset) && !isOwnerFinal()) {
-          reportIssue(expressionTree, "Compare to \"this.getClass()\" instead.");
+        if (isClassExpression(mset)) {
+          if (isClassOfOwner(mset)) {
+            if (!isOwnerFinal()) {
+              reportIssue(expressionTree, "Compare to \"this.getClass()\" instead.");
+            }
+          } else {
+            reportIssue(expressionTree, "Remove this comparison to an unrelated class.");
+          }
         }
       }
     }
