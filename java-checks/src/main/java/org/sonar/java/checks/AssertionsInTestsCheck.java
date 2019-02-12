@@ -21,8 +21,10 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
@@ -47,6 +49,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.sonar.java.model.ExpressionUtils.methodName;
 
@@ -54,6 +57,13 @@ import static org.sonar.java.model.ExpressionUtils.methodName;
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Logger LOG = Loggers.get(AssertionsInTestsCheck.class);
+
+  private static final Set<String> JUNIT5_TEST_ANNOTATIONS = new HashSet<>(asList(
+    "org.junit.jupiter.api.Test",
+    "org.junit.jupiter.api.RepeatedTest",
+    "org.junit.jupiter.api.TestFactory",
+    "org.junit.jupiter.api.TestTemplate",
+    "org.junit.jupiter.params.ParameterizedTest"));
 
   private static final TypeCriteria IO_RESTASSURED = TypeCriteria.is("io.restassured.response.ValidatableResponseOptions");
   private static final TypeCriteria ANY_TYPE = TypeCriteria.anyType();
@@ -169,6 +179,11 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
         return true;
       }
       symbol = symbol.overriddenSymbol();
+    }
+    SymbolMetadata symbolMetadata = methodTree.symbol().metadata();
+    if (JUNIT5_TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith)) {
+      // contrary to JUnit 4, JUnit 5 Test annotations are not inherited when method is overridden, so no need to check overridden symbols
+      return true;
     }
     Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
     return enclosingClass != null && enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test");
