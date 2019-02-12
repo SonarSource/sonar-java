@@ -93,3 +93,29 @@ final class Foo<T> {
     }
   }
 }
+class Parent {}
+class Child extends UnrelatedClassLiteral {}
+class UnrelatedClassLiteral extends Parent {
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+
+    if (obj == null) {
+      return false;
+    }
+
+    if (obj.getClass() == this.getClass()) {
+      return f.equals(((MyObject) obj).f);
+    }
+
+    if (obj.getClass() == String.class) { // Noncompliant [[sc=27;ec=39]] {{Remove this comparison to an unrelated class.}}
+      return f.equals(obj.toString());
+    }
+    if (obj.getClass() == Parent.class) { // Noncompliant
+    }
+    if (obj.getClass() == Child.class) { // Noncompliant
+    }
+    return false;
+  }
+}
