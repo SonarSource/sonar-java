@@ -29,4 +29,9 @@ public class UnusedTestRuleCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedTestRuleCheck.java", new UnusedTestRuleCheck());
   }
 
+  @Test
+  public void test_JUnit5() {
+    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedTestRuleCheck_JUnit5.java", new UnusedTestRuleCheck());
+  }
+
 }

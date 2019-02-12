@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -51,9 +52,20 @@ public class UnusedTestRuleCheck extends IssuableSubscriptionVisitor {
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) member;
         Symbol symbol = variableTree.symbol();
-        if (isTestNameOrTemporaryFolderRule(symbol) && symbol.usages().isEmpty()) {
-          reportIssue(variableTree.simpleName(), "Remove this unused \"" + symbol.type() + "\".");
+        if ((isTestNameOrTemporaryFolderRule(symbol) || hasTempDirAnnotation(symbol)) && symbol.usages().isEmpty()) {
+          reportIssue(variableTree.simpleName(), "Remove this unused \"" + getSymbolType(symbol) + "\".");
         }
+      } else if (member.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
+        checkJUnit5((MethodTree) member);
+      }
+    }
+  }
+
+  private void checkJUnit5(MethodTree member) {
+    for (VariableTree param : member.parameters()) {
+      Symbol symbol = param.symbol();
+      if ((hasTempDirAnnotation(symbol) || symbol.type().is("org.junit.jupiter.api.TestInfo")) && symbol.usages().isEmpty()) {
+        reportIssue(param.simpleName(), "Remove this unused \"" + getSymbolType(symbol) + "\".");
       }
     }
   }
@@ -61,4 +73,13 @@ public class UnusedTestRuleCheck extends IssuableSubscriptionVisitor {
   private static boolean isTestNameOrTemporaryFolderRule(Symbol symbol) {
     return symbol.metadata().isAnnotatedWith("org.junit.Rule") && CHECKED_RULE.contains(symbol.type().fullyQualifiedName());
   }
+
+  private static boolean hasTempDirAnnotation(Symbol symbol) {
+    return symbol.metadata().isAnnotatedWith("org.junit.jupiter.api.io.TempDir");
+  }
+
+  private static String getSymbolType(Symbol symbol) {
+    return hasTempDirAnnotation(symbol) ? "TempDir" : symbol.type().toString();
+  }
+
 }
