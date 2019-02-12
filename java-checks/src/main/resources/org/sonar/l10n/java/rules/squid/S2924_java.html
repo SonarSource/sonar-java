@@ -2,6 +2,7 @@
 there's no reason to leave them cluttering up the file if they're not in use.</p>
 <p>This rule raises an issue when <code>Test</code> class fields of the following types aren't used by any of the test methods:
 <code>TemporaryFolder</code>, and <code>TestName</code>.</p>
+<p>This rule also applies to the JUnit 5 equivalent classes: <code>TempDir</code>, and <code>TestInfo</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class ProjectDefinitionTest {
