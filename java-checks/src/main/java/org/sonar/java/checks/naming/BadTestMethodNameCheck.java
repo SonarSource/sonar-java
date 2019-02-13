@@ -20,32 +20,21 @@
 package org.sonar.java.checks.naming;
 
 import com.google.common.collect.ImmutableList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static java.util.Arrays.asList;
+import static org.sonar.java.checks.helpers.UnitTestUtils.hasTestAnnotation;
 
 @Rule(key = "S3578")
 public class BadTestMethodNameCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_FORMAT = "^test[A-Z][a-zA-Z0-9]*$";
-  private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList(
-    "org.junit.Test",
-    "org.testng.annotations.Test",
-    "org.junit.jupiter.api.Test",
-    "org.junit.jupiter.api.RepeatedTest",
-    "org.junit.jupiter.api.TestFactory",
-    "org.junit.jupiter.api.TestTemplate",
-    "org.junit.jupiter.params.ParameterizedTest"));
 
   @RuleProperty(
     key = "format",
@@ -75,7 +64,7 @@ public class BadTestMethodNameCheck extends IssuableSubscriptionVisitor {
       return;
     }
     MethodTree methodTree = (MethodTree) tree;
-    if (isNotOverriden(methodTree) && isTestMethod(methodTree) && !pattern.matcher(methodTree.simpleName().name()).matches()) {
+    if (isNotOverriden(methodTree) && hasTestAnnotation(methodTree) && !pattern.matcher(methodTree.simpleName().name()).matches()) {
       reportIssue(methodTree.simpleName(), "Rename this method name to match the regular expression: '" + format + "'");
     }
   }
@@ -84,8 +73,4 @@ public class BadTestMethodNameCheck extends IssuableSubscriptionVisitor {
     return Boolean.FALSE.equals(methodTree.isOverriding());
   }
 
-  private static boolean isTestMethod(MethodTree methodTree) {
-    SymbolMetadata metadata = methodTree.symbol().metadata();
-    return TEST_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
-  }
 }

@@ -20,10 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.base.MoreObjects;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
@@ -36,7 +34,6 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -50,8 +47,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.sonar.java.checks.helpers.UnitTestUtils.hasTestAnnotation;
 
 @Rule(key = "S2970")
 public class AssertionsCompletenessCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -101,15 +98,6 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     methodWithName(TRUTH_SUPERTYPE, NameCriteria.is("that"))
   );
 
-  private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList(
-    "org.junit.Test",
-    "org.testng.annotations.Test",
-    "org.junit.jupiter.api.Test",
-    "org.junit.jupiter.api.RepeatedTest",
-    "org.junit.jupiter.api.TestFactory",
-    "org.junit.jupiter.api.TestTemplate",
-    "org.junit.jupiter.params.ParameterizedTest"));
-
   private Boolean chainedToAnyMethodButFestExclusions = null;
   private JavaFileScannerContext context;
 
@@ -145,8 +133,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     super.visitMethod(methodTree);
 
     // soft assertions are allowed to be incomplete outside unit tests
-    SymbolMetadata symbolMetadata = methodTree.symbol().metadata();
-    if (TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith)) {
+    if (hasTestAnnotation(methodTree)) {
       SoftAssertionsVisitor softAssertionsVisitor = new SoftAssertionsVisitor();
       methodTree.accept(softAssertionsVisitor);
       if (softAssertionsVisitor.assertThatCalled) {

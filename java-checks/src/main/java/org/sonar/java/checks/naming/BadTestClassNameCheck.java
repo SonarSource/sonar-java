@@ -21,10 +21,9 @@ package org.sonar.java.checks.naming;
 
 import com.google.common.collect.ImmutableList;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -37,20 +36,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static java.util.Arrays.asList;
-
 @Rule(key = "S3577")
 public class BadTestClassNameCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_FORMAT = "^((Test|IT)[a-zA-Z0-9]+|[A-Z][a-zA-Z0-9]*(Test|IT|TestCase|ITCase))$";
-  private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList(
-    "org.junit.Test",
-    "org.testng.annotations.Test",
-    "org.junit.jupiter.api.Test",
-    "org.junit.jupiter.api.RepeatedTest",
-    "org.junit.jupiter.api.TestFactory",
-    "org.junit.jupiter.api.TestTemplate",
-    "org.junit.jupiter.params.ParameterizedTest"));
 
   @RuleProperty(
     key = "format",
@@ -92,8 +81,8 @@ public class BadTestClassNameCheck extends IssuableSubscriptionVisitor {
   private static boolean hasTestMethod(List<Tree> members) {
     return members.stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
-      .map(tree -> ((MethodTree) tree).symbol().metadata())
-      .anyMatch(metadata -> TEST_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith));
+      .map(MethodTree.class::cast)
+      .anyMatch(UnitTestUtils::hasTestAnnotation);
   }
 
 }
