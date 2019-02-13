@@ -1,4 +1,5 @@
 import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
 import java.io.Serializable;
 
 class A {
@@ -39,4 +40,20 @@ class ParameterizedSerializable<T> implements Serializable {
     s.writeObject(u);
   }
   
+}
+
+class TypeOfAssignedExpressions {
+  final java.util.Map<Integer, List<Object>> cacheProp = new HashMap<>();
+  final java.util.Map<Integer, List<Object>> cacheVar;
+  java.util.Map<Integer, List<Object>> cacheVar2 = new HashMap<>();
+
+  void foo() {
+    try (FileOutputStream fos = new FileOutputStream(""); ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+      oos.writeObject(cacheProp); // compliant, real type is hashmap
+      oos.writeObject(cacheVar); // Noncompliant : no initializer
+      oos.writeObject(cacheVar2); // Noncompliant not final, so we are unsure of concrete type
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
+  }
 }

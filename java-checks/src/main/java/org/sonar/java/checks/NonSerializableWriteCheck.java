@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -32,8 +33,7 @@ import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import java.util.List;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2118")
 public class NonSerializableWriteCheck extends IssuableSubscriptionVisitor {
@@ -86,10 +86,22 @@ public class NonSerializableWriteCheck extends IssuableSubscriptionVisitor {
   private void visitMethodInvocation(MethodInvocationTree methodInvocation) {
     if (WRITE_OBJECT_MATCHER.matches(methodInvocation)) {
       ExpressionTree argument = methodInvocation.arguments().get(0);
-      if (!isAcceptableType(argument.symbolType()) && !isTestedSymbol(argument)) {
+      if (!isAcceptableType(argument.symbolType()) && !isTestedSymbol(argument) && !hasSerializableConcreteType(argument)) {
         reportIssue(argument, "Make the \"" + argument.symbolType().fullyQualifiedName() + "\" class \"Serializable\" or don't write it.");
       }
     }
+  }
+
+  private static boolean hasSerializableConcreteType(ExpressionTree argument) {
+    if (argument.is(Kind.IDENTIFIER)) {
+      IdentifierTree argument1 = (IdentifierTree) argument;
+      Tree declaration = argument1.symbol().declaration();
+      if (argument1.symbol().isFinal() && declaration != null && declaration.is(Kind.VARIABLE)) {
+        ExpressionTree initializer = ((VariableTree) declaration).initializer();
+        return initializer != null && isAcceptableType(initializer.symbolType());
+      }
+    }
+    return false;
   }
 
   private static boolean isAcceptableType(org.sonar.plugins.java.api.semantic.Type argType) {
