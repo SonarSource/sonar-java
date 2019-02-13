@@ -64,7 +64,7 @@ public class PackageInfoCheckTest {
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponents.setSensorContext(context);
 
-    DefaultInputFile inputFile = new TestInputFileBuilder("", moduleBaseDir, file).setCharset(StandardCharsets.UTF_8)
+    DefaultInputFile inputFile = new TestInputFileBuilder("", file.getPath()).setCharset(StandardCharsets.UTF_8)
       .setContents(new String(Files.readAllBytes(file.toPath()))).build();
     context.fileSystem().add(inputFile);
     return sonarComponents;
