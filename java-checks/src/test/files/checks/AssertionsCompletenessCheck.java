@@ -150,4 +150,75 @@ public class AssertionsCompletenessCheck {
     } // Compliant, no need to call "assertAll()", it will be called by AutoCloseableSoftAssertions
   }
 
+  @Test
+  public void assertj_junit_soft_assertions_cross_methods_1() throws Exception {
+    org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
+    doSomething(softly);
+    softly.assertAll();
+  }
+
+  @Test
+  public void assertj_junit_soft_assertions_cross_methods_2() throws Exception {
+    org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
+    softly.assertThat(1).isEqualTo("1");
+    doSomethingElse(softly);
+  }
+
+  @Test
+  public void assertj_junit_soft_assertions_cross_methods_3() throws Exception {
+    org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
+    doBoth(softly, true);
+  }
+
+  @Test
+  public void assertj_junit_soft_assertions_cross_methods_4() throws Exception {
+    doSoftAssertions("expected");
+  }
+
+  @Test
+  public void assertj_junit_soft_assertions_cross_methods_5() throws Exception {
+    doIncompleteSoftAssertions1("expected");
+  } // Noncompliant {{Add a call to 'assertAll' after all 'assertThat'.}}
+
+  @Test
+  public void assertj_junit_soft_assertions_cross_methods_6() throws Exception {
+    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=208,213]] {{Add one or more 'assertThat' before 'assertAll'.}}
+  }
+
+  private void doSomething(org.assertj.core.api.SoftAssertions softly) {
+    softly.assertThat(1).isEqualTo("1");
+  }
+
+  private void doSomethingElse(org.assertj.core.api.SoftAssertions softly) {
+    softly.assertAll();
+  }
+
+  private void doSoftAssertions(String expected) {
+    org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
+    softly.assertThat(1).isEqualTo(expected);
+    softly.assertAll();
+  }
+
+  private void doIncompleteSoftAssertions1(String expected) {
+    org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
+    softly.assertThat(1).isEqualTo(expected);
+  }
+
+  private void doIncompleteSoftAssertions2() {
+    doIncompleteSoftAssertions3();
+  }
+
+  private void doIncompleteSoftAssertions3() {
+    org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
+    softly.assertAll();
+  }
+
+  private void doBoth(org.assertj.core.api.SoftAssertions softly, boolean doItAgain) {
+    doSomething(softly);
+    if (doItAgain) {
+      doBoth(softly, !doItAgain);
+    }
+    doSomethingElse(softly);
+  }
+
 }
