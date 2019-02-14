@@ -19,8 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
@@ -31,12 +34,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S1170")
 public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisitor {
@@ -46,7 +45,7 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS);
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override
@@ -70,11 +69,9 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
 
   private boolean isObjectInInnerClass(VariableTree variableTree) {
     if (nestedClassesLevel > 1) {
-      if (variableTree.type().is(Tree.Kind.IDENTIFIER)) {
-        return !"String".equals(((IdentifierTree) variableTree.type()).name());
-      } else {
-        return !variableTree.type().is(Tree.Kind.PRIMITIVE_TYPE);
-      }
+      ExpressionTree initializer = variableTree.initializer();
+      return !((variableTree.type().is(Tree.Kind.PRIMITIVE_TYPE) || variableTree.symbol().type().is("java.lang.String"))
+        && initializer != null && ConstantUtils.resolveAsConstant(initializer) != null);
     }
     return false;
   }
@@ -91,19 +88,16 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
   private static boolean hasConstantInitializer(VariableTree variableTree) {
     ExpressionTree init = variableTree.initializer();
     if (init != null) {
-      if(ExpressionUtils.skipParentheses(init).is(Tree.Kind.METHOD_REFERENCE)) {
+      if (ExpressionUtils.skipParentheses(init).is(Tree.Kind.METHOD_REFERENCE)) {
         MethodReferenceTree methodRef = (MethodReferenceTree) ExpressionUtils.skipParentheses(init);
-        if(isInstanceIdentifier(methodRef.expression())) {
+        if (isInstanceIdentifier(methodRef.expression())) {
           return false;
         }
       }
-      boolean arrayWithInitializer = true;
       if (init.is(Tree.Kind.NEW_ARRAY)) {
-        // exclude allocations : new int[6] but allow initialization new int[]{1,2};
-        NewArrayTree newArrayTree = (NewArrayTree) init;
-        arrayWithInitializer = newArrayTree.dimensions().isEmpty() || newArrayTree.openBraceToken() != null;
+        return false;
       }
-      return arrayWithInitializer && !containsChildrenOfKind((JavaTree) init, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+      return !containsChildrenOfKind((JavaTree) init, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
     }
     return false;
   }
