@@ -195,7 +195,7 @@ public class JavaClasspathTest {
   public void libraries_should_accept_relative_paths_with_wildcard() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "../../files/**/lib");
     javaClasspath = createJavaClasspath();
-    assertThat(javaClasspath.getElements()).hasSize(8);
+    assertThat(javaClasspath.getElements()).hasSize(9);
     File jar = javaClasspath.getElements().get(0);
     assertThat(jar).exists();
     assertThat(javaClasspath.getElements()).extracting("name").containsExactlyInAnyOrder(
@@ -203,6 +203,7 @@ public class JavaClasspathTest {
       "hello.jar",
       "world.jar",
       "emptyFile.jar",
+      "likeJdkJar.jar",
       "emptyArchive.jar",
       "lib",
       "lib",

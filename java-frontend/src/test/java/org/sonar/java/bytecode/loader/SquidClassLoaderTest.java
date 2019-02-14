@@ -21,6 +21,7 @@ package org.sonar.java.bytecode.loader;
 
 import com.google.common.collect.Iterators;
 import java.io.File;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -66,6 +67,13 @@ public class SquidClassLoaderTest {
     classLoader.loadClass(SquidClassLoader.class.getName());
   }
 
+  @Test
+  public void should_read_child_classes_first() throws Exception {
+    classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/lib/likeJdkJar.jar")));
+    URL resource = classLoader.getResource("java/lang/String.class");
+    assertThat(resource).isNotNull();
+    assertThat(resource.getFile()).contains("likeJdkJar.jar!");
+  }
   @Test
   public void createFromJar() throws Exception {
     File jar = new File("src/test/files/bytecode/lib/hello.jar");
