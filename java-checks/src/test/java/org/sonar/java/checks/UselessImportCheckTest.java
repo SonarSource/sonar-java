@@ -30,6 +30,11 @@ public class UselessImportCheckTest {
   }
 
   @Test
+  public void no_semantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UselessImportCheck/NoSemanticWithPackage.java", new UselessImportCheck());
+  }
+
+  @Test
   public void detected_without_package() {
     JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/WithoutPackage.java", new UselessImportCheck());
   }
