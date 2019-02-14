@@ -60,7 +60,8 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   private static final TypeCriteria ANY_TYPE = TypeCriteria.anyType();
   private static final NameCriteria ANY_NAME = NameCriteria.any();
 
-  private static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile("(assert|verify|fail|should|check|expect).*");
+  private static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile("(assert|verify|fail|should|check|expect|validate).*");
+  private static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
 
   private static final MethodMatcherCollection ASSERTION_INVOCATION_MATCHERS = MethodMatcherCollection.create(
     // fest 1.x / 2.X
@@ -80,6 +81,10 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     method("org.springframework.test.web.servlet.ResultActions", "andExpect").addParameter(ANY_TYPE),
     // JMockit
     method("mockit.Verifications", "<init>").withAnyParameters());
+
+  private static final MethodMatcherCollection REACTIVE_X_TEST_METHODS = MethodMatcherCollection.create(
+    method(TypeCriteria.subtypeOf("rx.Observable"), NameCriteria.is("test")).withAnyParameters(),
+    method(TypeCriteria.subtypeOf("io.reactivex.Observable"), NameCriteria.is("test")).withAnyParameters());
 
   @RuleProperty(
     key = "customAssertionMethods",
@@ -225,11 +230,22 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     }
 
     private boolean isAssertion(@Nullable IdentifierTree method, Symbol methodSymbol) {
-      boolean matchesMethodPattern = method != null && ASSERTION_METHODS_PATTERN.matcher(method.name()).matches();
-      return matchesMethodPattern
+      return matchesMethodPattern(method, methodSymbol)
         || ASSERTION_INVOCATION_MATCHERS.anyMatch(methodSymbol)
         || customMethodsMatcher.anyMatch(methodSymbol)
         || isLocalMethodWithAssertion(methodSymbol);
+    }
+
+    private boolean matchesMethodPattern(@Nullable IdentifierTree method, Symbol methodSymbol) {
+      if (method == null) {
+        return false;
+      }
+
+      String methodName = method.name();
+      if (TEST_METHODS_PATTERN.matcher(methodName).matches()) {
+        return !REACTIVE_X_TEST_METHODS.anyMatch(methodSymbol);
+      }
+      return ASSERTION_METHODS_PATTERN.matcher(methodName).matches();
     }
   }
 

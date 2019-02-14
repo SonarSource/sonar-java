@@ -10,6 +10,7 @@ public class ReactiveX2 {
   public void noAssert() { // Noncompliant
     Observable<String> observable = Observable.just("string");
     observable.test();
+    observable.test(true);
   }
 
   @Test
