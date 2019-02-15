@@ -23,7 +23,7 @@ class A {
     BigInteger bigInteger4 = new BigInteger("-9223372036854775808"); // Noncompliant
     BigInteger bigInteger5 = new BigInteger("-9223372036854775809");
     BigInteger bigInteger6 = new BigInteger("error");
-    BigDecimal doubleBigDecimal = new BigDecimal(1.1); // Noncompliant {{Remove this "BigDecimal" constructor}}
+    BigDecimal doubleBigDecimal = new BigDecimal(1.1);
     BigDecimal stringBigDecimal = new BigDecimal("1.1");
   }
 
