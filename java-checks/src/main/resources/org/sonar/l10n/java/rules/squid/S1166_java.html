@@ -57,9 +57,20 @@ try {
   myInteger = 0;
 }
 </pre>
+<p>Furthermore, no issue will be raised if the exception message is logged with additional information, as it shows that the developer added some
+context to the error message.</p>
+<pre>
+try {
+  /* ... */
+} catch (Exception e) {
+  String message = "Exception raised while authenticating user: " + e.getMessage();
+  LOGGER.warn(message); // Compliant - exception message logged with some contextual information
+}
+</pre>
 <h2>See</h2>
 <ul>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/6gEqAQ">CERT, ERR00-J.</a> - Do not suppress or ignore checked exceptions </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/778.html">MITRE, CWE-778</a> - Insufficient Logging </li>
   <li> OWASP Top 10 2017 Category A10 - Insufficient Logging &amp; Monitoring </li>
 </ul>
 

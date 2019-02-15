@@ -1,4 +1,12 @@
+import org.slf4j.Logger;
+
+import static java.util.logging.Level.WARNING;
+
 class A {
+  private static final Logger LOGGER = null;
+  private static final org.slf4j.Marker MARKER = null;
+  private static final java.util.logging.Logger JAVA_LOGGER = null;
+
   private void f() {
     try {
     } catch (Exception e) {                     // Noncompliant {{Either log or rethrow this exception.}} [[sc=14;ec=25]]
@@ -160,6 +168,223 @@ class A {
     } catch (Exception e) { // Noncompliant
       System.out.println("", e.getCause());
     }
+  }
+
+  private void fooBar() {
+    try {
+    } catch (Exception e) { // Compliant
+      LOGGER.warn("abc");
+      doSomething(e);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = "Exception raised while authenticating user: " + e.getMessage();
+      LOGGER.warn(message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      LOGGER.warn("Some context for exception: " + e.getMessage());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = e.getMessage();
+      LOGGER.warn("Some context for exception: " + message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      MyClass m = new MyClass() {
+        public String doSomething(Exception innerException) {
+          return innerException.getMessage();
+        }
+      };
+      LOGGER.warn("Not a context for exception ", m.toString());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      MyClass m = new MyClass() {
+        public String doSomething(Exception innerException) {
+          return innerException.getMessage();
+        }
+      };
+      LOGGER.warn(m.toString(), e.getMessage());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = e.getMessage();
+      LOGGER.warn("Some context for exception: {}", message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      LOGGER.warn(e.getMessage());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      LOGGER.warn(MARKER, "Some context for exception: {}", e.getMessage());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      LOGGER.warn(MARKER, "Some context for exception", e);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      LOGGER.warn(MARKER, e.getMessage());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      LOGGER.warn("Something is broken");
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String message = "Something is broken";
+      String message2 = e.getMessage();
+      LOGGER.warn(message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = "Some context for exception" + e.getMessage();
+      LOGGER.warn(message);
+    }
+
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = "Some context for exception" + e.getMessage();
+      JAVA_LOGGER.info(message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      JAVA_LOGGER.info("Some context for exception" + e.getMessage());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      JAVA_LOGGER.info(e.getMessage());
+    }
+
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = "Some context for exception" + e.getMessage();
+      JAVA_LOGGER.log(WARNING, message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = "Some context for exception";
+      message += e.getMessage();
+      JAVA_LOGGER.log(WARNING, message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String message = e.getMessage();
+      JAVA_LOGGER.log(WARNING, message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = e.getMessage();
+      JAVA_LOGGER.log(WARNING, "Some context for exception", message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String message = e.getMessage();
+      JAVA_LOGGER.log(WARNING, "Some context for exception", "notTheMessage");
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String message = e.getMessage();
+      JAVA_LOGGER.log(null);
+    }
+
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = "Some context for exception" + e.getMessage();
+      JAVA_LOGGER.logp(WARNING, "", "", message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      JAVA_LOGGER.logp(WARNING, "", "", e.getMessage());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String notAMessage = "";
+      notAMessage = notAMessage;
+      JAVA_LOGGER.logp(WARNING, "", "", notAMessage);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      JAVA_LOGGER.logp(WARNING, "", e.getMessage(), e.getMessage());
+      doSomethingElse("", "", "", e.getMessage());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = e.getMessage();
+      JAVA_LOGGER.logp(WARNING, "", "", "Some context for exception", message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      JAVA_LOGGER.logp(WARNING, "", "", "Some context for exception", unknown);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String message = e.getMessage();
+      JAVA_LOGGER.logp(WARNING, "", "", "Some context for exception", "notTheMessage");
+    }
+
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = "Some context for exception" + e.getMessage();
+      JAVA_LOGGER.logrb(WARNING, "", "", "", message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      JAVA_LOGGER.logrb(WARNING, "", "", "", e.getMessage());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      String message = e.getMessage();
+      JAVA_LOGGER.logrb(WARNING, "", "", "", "Some context for exception", message);
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Noncompliant
+      String message = e.getMessage();
+      JAVA_LOGGER.logrb(WARNING, "", "", "", "Some context for exception", "notTheMessage");
+    }
+  }
+
+  private void doSomething(Object e) {}
+  private void doSomethingElse(String a, String b, String c, String d) {}
+
+  interface MyClass {
+    void doSomething();
   }
 
   MyEnum foo() {
