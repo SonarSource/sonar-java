@@ -19,19 +19,16 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -107,7 +104,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   private JavaFileScannerContext context;
   private Deque<UsageStatus> usageStatusStack;
-  private Iterable<String> exceptions;
+  private List<String> exceptions;
   private List<String> exceptionIdentifiers;
   private Set<CatchTree> excludedCatchTrees = new HashSet<>();
 
@@ -115,11 +112,6 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     usageStatusStack = new ArrayDeque<>();
-    exceptions = Splitter.on(",").trimResults().split(exceptionsCommaSeparated);
-    exceptionIdentifiers = Lists.newArrayList();
-    for (String exception : exceptions) {
-      exceptionIdentifiers.add(exception.substring(exception.lastIndexOf('.') + 1));
-    }
     if (context.getSemanticModel() != null) {
       scan(context.getTree());
     }
@@ -185,27 +177,24 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   public void visitMethodInvocation(MethodInvocationTree mit) {
     super.visitMethodInvocation(mit);
     if (LOGGING_METHODS.anyMatch(mit)) {
-      Iterator<UsageStatus> iterator = usageStatusStack.iterator();
-      while (iterator.hasNext()) {
-        iterator.next().addLoggingMethodInvocation(mit);
-      }
+      usageStatusStack.forEach(usageStatus -> usageStatus.addLoggingMethodInvocation(mit));
     }
   }
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-    IdentifierTree identifier = null;
+    final IdentifierTree identifier;
     ExpressionTree expression = tree.expression();
     if (expression.is(Kind.IDENTIFIER)) {
       identifier = (IdentifierTree) expression;
     } else if (expression.is(Kind.PARENTHESIZED_EXPRESSION) && ((ParenthesizedTree) expression).expression().is(Kind.IDENTIFIER)) {
       identifier = (IdentifierTree) ((ParenthesizedTree) expression).expression();
+    } else {
+      identifier = null;
     }
+
     if (!usageStatusStack.isEmpty() && identifier != null) {
-      Iterator<UsageStatus> iterator = usageStatusStack.iterator();
-      while (iterator.hasNext()) {
-        iterator.next().addInvalidUsage(identifier);
-      }
+      usageStatusStack.forEach(usageStatus -> usageStatus.addInvalidUsage(identifier));
     }
     super.visitMemberSelectExpression(tree);
 
@@ -218,14 +207,30 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   private boolean isUnqualifiedExcludedType(Tree tree) {
     return tree.is(Kind.IDENTIFIER) &&
-      exceptionIdentifiers.contains(((IdentifierTree) tree).name());
+      getExceptionIdentifiers().contains(((IdentifierTree) tree).name());
   }
 
   private boolean isQualifiedExcludedType(Tree tree) {
     if (!tree.is(Kind.MEMBER_SELECT)) {
       return false;
     }
-    return Iterables.contains(exceptions, ExpressionsHelper.concatenate((MemberSelectExpressionTree) tree));
+    return getExceptions().contains(ExpressionsHelper.concatenate((MemberSelectExpressionTree) tree));
+  }
+
+  private List<String> getExceptions() {
+    if (exceptions == null) {
+      exceptions = Stream.of(exceptionsCommaSeparated.split(",")).map(String::trim).collect(Collectors.toList());
+    }
+    return exceptions;
+  }
+
+  private List<String> getExceptionIdentifiers() {
+    if (exceptionIdentifiers == null) {
+      exceptionIdentifiers = getExceptions().stream()
+        .map(exception -> exception.substring(exception.lastIndexOf('.') + 1))
+        .collect(Collectors.toList());
+    }
+    return exceptionIdentifiers;
   }
 
   private static class UsageStatus {
@@ -254,13 +259,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
         return false;
       }
 
-      for (MethodInvocationTree mit : loggingMethodInvocations) {
-        if (hasGetMessageInvocation(mit) && hasDynamicExceptionMessageUsage(mit)) {
-          return true;
-        }
-      }
-
-      return false;
+      return loggingMethodInvocations.stream().anyMatch(mit -> hasGetMessageInvocation(mit) && hasDynamicExceptionMessageUsage(mit));
     }
 
     private static boolean hasGetMessageInvocation(MethodInvocationTree mit) {
@@ -268,17 +267,13 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     }
 
     private static boolean isGetMessageReferencedByIdentifiers(MethodInvocationTree mit) {
-      Set<IdentifierTree> identifiersChildren = new HashSet<>();
-      BaseTreeVisitor visitor = new BaseTreeVisitor() {
-        @Override
-        public void visitIdentifier(IdentifierTree tree) {
-          identifiersChildren.add(tree);
-        }
-      };
+      ChildrenIdentifierCollector visitor = new ChildrenIdentifierCollector();
       mit.accept(visitor);
 
-      boolean invocationInInitializer = identifiersChildren.stream().anyMatch(identifierTree -> hasGetMessageMethodInvocation(getVariableInitializer(identifierTree)));
-      return invocationInInitializer || identifiersChildren.stream()
+      boolean invocationInInitializer = visitor.identifiersChildren.stream()
+        .anyMatch(identifierTree -> hasGetMessageMethodInvocation(getVariableInitializer(identifierTree)));
+
+      return invocationInInitializer || visitor.identifiersChildren.stream()
         .map(IdentifierTree::symbol)
         .map(Symbol::usages)
         .flatMap(usagesList -> getAssignments(usagesList).stream())
@@ -298,25 +293,26 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       Arguments arguments = mit.arguments();
       int argumentsCount = arguments.size();
       ExpressionTree firstArg = arguments.get(0);
+      ExpressionTree argumentToCheck;
       if (mit.symbol().owner().type().is(SLF4J_LOGGER)) {
         if (argumentsCount == 1) {
-          return !isSimpleExceptionMessage(firstArg);
+          argumentToCheck = firstArg;
         } else if (argumentsCount == 2 && firstArg.symbolType().is("org.slf4j.Marker")) {
-          return !isSimpleExceptionMessage(arguments.get(1));
+          argumentToCheck = arguments.get(1);
         } else {
-          return true;
+          argumentToCheck = null;
         }
+      } else if (JAVA_UTIL_LOG_METHOD.matches(mit) && argumentsCount == 2) {
+        argumentToCheck = arguments.get(1);
+      } else if (JAVA_UTIL_LOGP_METHOD.matches(mit) && argumentsCount == 4) {
+        argumentToCheck = arguments.get(3);
+      } else if (JAVA_UTIL_LOGRB_METHOD.matches(mit) && argumentsCount == 5) {
+        argumentToCheck = arguments.get(4);
       } else {
-        if (JAVA_UTIL_LOG_METHOD.matches(mit) && argumentsCount == 2) {
-          return !isSimpleExceptionMessage(arguments.get(1));
-        } else if (JAVA_UTIL_LOGP_METHOD.matches(mit) && argumentsCount == 4) {
-          return !isSimpleExceptionMessage(arguments.get(3));
-        } else if (JAVA_UTIL_LOGRB_METHOD.matches(mit) && argumentsCount == 5) {
-          return !isSimpleExceptionMessage(arguments.get(4));
-        } else {
-          return !isSimpleExceptionMessage(firstArg);
-        }
+        argumentToCheck = firstArg;
       }
+
+      return argumentToCheck == null || !isSimpleExceptionMessage(argumentToCheck);
     }
 
     private static boolean isSimpleExceptionMessage(ExpressionTree expressionTree) {
@@ -374,7 +370,15 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       }
       super.visitMethodInvocation(mit);
     }
+  }
 
+  private static class ChildrenIdentifierCollector extends BaseTreeVisitor {
+    Set<IdentifierTree> identifiersChildren = new HashSet<>();
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      identifiersChildren.add(tree);
+    }
   }
 
 }
