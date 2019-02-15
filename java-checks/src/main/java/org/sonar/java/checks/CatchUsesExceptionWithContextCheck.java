@@ -50,6 +50,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -255,10 +256,6 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     }
 
     private boolean isMessageLoggedWithAdditionalContext() {
-      if (loggingMethodInvocations.isEmpty()) {
-        return false;
-      }
-
       return loggingMethodInvocations.stream().anyMatch(mit -> hasGetMessageInvocation(mit) && hasDynamicExceptionMessageUsage(mit));
     }
 
@@ -271,7 +268,9 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       mit.accept(visitor);
 
       boolean invocationInInitializer = visitor.identifiersChildren.stream()
-        .anyMatch(identifierTree -> hasGetMessageMethodInvocation(getVariableInitializer(identifierTree)));
+        .map(UsageStatus::getVariableInitializer)
+        .distinct()
+        .anyMatch(UsageStatus::hasGetMessageMethodInvocation);
 
       return invocationInInitializer || visitor.identifiersChildren.stream()
         .map(IdentifierTree::symbol)
@@ -369,6 +368,11 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
         hasGetMessageCall = true;
       }
       super.visitMethodInvocation(mit);
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree newClassTree) {
+      // skip method invocations found in a NewClassTree
     }
   }
 

@@ -195,6 +195,26 @@ class A {
     }
     try {
       /* ... */
+    } catch (Exception e) { // Noncompliant
+      MyClass m = new MyClass() {
+        public String doSomething(Exception innerException) {
+          return innerException.getMessage();
+        }
+      };
+      LOGGER.warn("Not a context for exception ", m.toString());
+    }
+    try {
+      /* ... */
+    } catch (Exception e) { // Compliant
+      MyClass m = new MyClass() {
+        public String doSomething(Exception innerException) {
+          return innerException.getMessage();
+        }
+      };
+      LOGGER.warn(m.toString(), e.getMessage());
+    }
+    try {
+      /* ... */
     } catch (Exception e) { // Compliant
       String message = e.getMessage();
       LOGGER.warn("Some context for exception: {}", message);
@@ -362,6 +382,10 @@ class A {
 
   private void doSomething(Object e) {}
   private void doSomethingElse(String a, String b, String c, String d) {}
+
+  interface MyClass {
+    void doSomething();
+  }
 
   MyEnum foo() {
     try {
