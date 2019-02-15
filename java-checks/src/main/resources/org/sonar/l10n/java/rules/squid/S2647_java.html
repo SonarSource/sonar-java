@@ -2,22 +2,14 @@
 thinnest veil of protection to your users, and should not be used. </p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-// in web.xml
-&lt;web-app  ...&gt;
-  &lt;!--  ...  --&gt;
-  &lt;login-config&gt;
-    &lt;auth-method&gt;BASIC&lt;/auth-method&gt;
-  &lt;/login-config&gt;
-&lt;/web-app&gt;
-
-// in Java code using HttpPost from Apache HttpClient
+// Using HttpPost from Apache HttpClient
 String encoding = Base64Encoder.encode ("login:passwd");
 org.apache.http.client.methods.HttpPost httppost = new HttpPost(url);
 httppost.setHeader("Authorization", "Basic " + encoding);  // Noncompliant
 
 or
 
-// in Java using HttpURLConnection
+// Using HttpURLConnection
 String encoding = Base64.getEncoder().encodeToString(("login:passwd").getBytes(‌"UTF‌​-8"​));
 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 conn.setRequestMethod("POST");

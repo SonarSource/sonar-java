@@ -1,5 +1,5 @@
 {
-  "title": "Useless imports should be removed",
+  "title": "Unnecessary imports should be removed",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
