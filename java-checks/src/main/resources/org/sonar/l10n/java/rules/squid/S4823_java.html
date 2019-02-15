@@ -7,8 +7,8 @@
 <p>Command line arguments can be dangerous just like any other user input. They should never be used without being first validated and sanitized.</p>
 <p>Remember also that any user can retrieve the list of processes running on a system, which makes the arguments provided to them visible. Thus
 passing sensitive information via command line arguments should be considered as insecure.</p>
-<p>This code flags all program entry points (<code>main</code> methods) when command line arguments are used. The goal is to guide security code
-reviews.</p>
+<p>This rule raises an issue when on every program entry points (<code>main</code> methods) when command line arguments are used. The goal is to guide
+security code reviews.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
   <li> any of the command line arguments are used without being sanitized first. </li>

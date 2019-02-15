@@ -1,5 +1,14 @@
-<p>According to the JavaDocs <code>java.util.Stream.peek</code> is only meant to be used for debugging purposes and should not be used in
-production.</p>
+<p>According to its JavaDocs, <code>java.util.Stream.peek()</code> “exists mainly to support debugging” purposes. Although this does not mean that
+using it for other purposes is discouraged, relying on <code>peek()</code> without careful consideration can lead to error-prone code such as:</p>
+<ul>
+  <li> If the stream pipeline does not include a terminal operation, no elements will be consumed and the <code>peek()</code> action will not be
+  invoked at all. </li>
+  <li> As long as a stream implementation can reach the final step, it can freely optimize processing by only producing some elements or even none at
+  all (e.g. relying on other collection methods for counting elements). Accordingly, the <code>peek()</code> action will be invoked for fewer elements
+  or not at all. </li>
+</ul>
+<p>This rule raises an issue for each use of <code>peek()</code> to be sure that it is challenged and validated by the team to be meant for production
+debugging/logging purposes.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 Stream.of("one", "two", "three", "four")
@@ -7,5 +16,11 @@ Stream.of("one", "two", "three", "four")
          .peek(e -&gt; System.out.println("Filtered value: " + e)); // Noncompliant
 </pre>
 <h2>See</h2>
-<p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#peek-java.util.function.Consumer-">Java 8 API Documentation</a></p>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#peek-java.util.function.Consumer-">Java 8 API Documentation</a>
+  </li>
+  <li> 4comprehension: <a href="https://4comprehension.com/idiomatic-peeking/">Idiomatic Peeking with Java Stream API</a> </li>
+  <li> Data Geekery: <a href="https://blog.jooq.org/2014/06/13/java-8-friday-10-subtle-mistakes-when-using-the-streams-api/">10 Subtle Mistakes When
+  Using the Streams API</a> </li>
+</ul>
 
