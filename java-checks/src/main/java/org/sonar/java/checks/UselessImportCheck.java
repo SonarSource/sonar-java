@@ -30,8 +30,10 @@ import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -79,7 +81,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
         importTree = (ImportTree) importClauseTree;
       }
 
-      if (importTree == null || importTree.isStatic()) {
+      if (importTree == null) {
         // discard empty statements, which can be part of imports
         continue;
       }
@@ -104,9 +106,33 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
         context.reportIssue(this, importTree, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
       } else if (isDuplicatedImport(importName)) {
         context.reportIssue(this, importTree, "Remove this duplicated import.");
+      } else if(importTree.isStatic()) {
+        checkSymbolUsage(importTree, importName);
       } else {
         lineByImportReference.put(importName, importTree);
         pendingImports.add(importName);
+      }
+    }
+  }
+
+  private void checkSymbolUsage(ImportTree importTree, String importName) {
+    IdentifierTree id = null;
+    if (importTree.qualifiedIdentifier().is(Tree.Kind.IDENTIFIER)) {
+      id = (IdentifierTree) importTree.qualifiedIdentifier();
+    } else if (importTree.qualifiedIdentifier().is(Tree.Kind.MEMBER_SELECT)) {
+      id = ((MemberSelectExpressionTree) importTree.qualifiedIdentifier()).identifier();
+    }
+    if (id != null) {
+      SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
+      if (semanticModel != null) {
+        Symbol symbol = semanticModel.getSymbol(importTree);
+        if (symbol != null) {
+          Symbol owner = symbol.owner();
+          // Exclude method symbols : they could be ambiguous or unresolved and lead to FP.
+          if (symbol.isVariableSymbol() && symbol.usages().stream().allMatch(identifierTree -> semanticModel.getEnclosingClass(identifierTree) == owner)) {
+            context.reportIssue(this, importTree, "Remove this unused import '" + importName + "'.");
+          }
+        }
       }
     }
   }
