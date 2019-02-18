@@ -19,8 +19,12 @@
  */
 package org.sonar.java.bytecode.loader;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Iterators;
 import com.google.common.io.ByteStreams;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.CheckForNull;
 import org.apache.commons.lang.ArrayUtils;
 import org.sonar.api.utils.log.Logger;
@@ -46,6 +52,7 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
   private static final Logger LOG = Loggers.get(SquidClassLoader.class);
 
   private final List<Loader> loaders;
+  private final LoadingCache<String, Optional<Loader>> loaderCache;
 
   /**
    * @param files ordered list of files and directories from which to load classes and resources
@@ -69,6 +76,15 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
         }
       }
     }
+
+    loaderCache = CacheBuilder.newBuilder()
+      .maximumSize(5000)
+      .build(new CacheLoader<String, Optional<Loader>>() {
+        @Override
+        public Optional<Loader> load(String key) {
+          return findLoaderWithResource(key);
+        }
+      });
   }
 
   private static ClassLoader computeParent() {
@@ -94,13 +110,21 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
 
   @Override
   public URL findResource(String name) {
+    try {
+      return loaderCache.get(name).map(loader -> loader.findResource(name)).orElse(null);
+    } catch (ExecutionException | UncheckedExecutionException e) {
+      throw new IllegalStateException(e.getCause());
+    }
+  }
+
+  private Optional<Loader> findLoaderWithResource(String resourceName) {
     for (Loader loader : loaders) {
-      URL url = loader.findResource(name);
+      URL url = loader.findResource(resourceName);
       if (url != null) {
-        return url;
+        return Optional.of(loader);
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override
