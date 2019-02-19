@@ -189,6 +189,17 @@ public class SquidClassLoaderTest {
   }
 
   @Test
+  public void exceptionThrownWhenAlreadyClosed() {
+    File jar = new File("src/test/files/bytecode/lib/hello.jar");
+    classLoader = new SquidClassLoader(Arrays.asList(jar));
+    classLoader.close();
+
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("java.lang.IllegalStateException: zip file closed");
+    classLoader.getResource("org/sonar/tests/Hello.class");
+  }
+
+  @Test
   public void test_loading_class() {
     SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("target/test-classes")));
     String className = getClass().getCanonicalName();
