@@ -51,7 +51,6 @@ public class JavaPerformanceTest {
       // Dummy sonar.java.binaries to pass validation
       .setProperty("sonar.java.binaries", "launcher")
       .setProperty("sonar.preloadFileMetadata", "true")
-      .setProperty("sonar.analysis.mode", "preview")
       .setProjectKey("project")
       .setProjectName("project")
       .setProjectVersion("1")
