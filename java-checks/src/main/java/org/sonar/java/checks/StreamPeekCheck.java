@@ -45,4 +45,9 @@ public class StreamPeekCheck extends AbstractMethodDetection {
     reportIssue(ExpressionUtils.methodName(mit), "Remove this use of \"Stream.peek\".");
   }
 
+  int returnAPositiveNumber()
+  {
+    return 1;
+  }
+
 }
