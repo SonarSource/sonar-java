@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -45,9 +46,12 @@ public class StreamPeekCheck extends AbstractMethodDetection {
     reportIssue(ExpressionUtils.methodName(mit), "Remove this use of \"Stream.peek\".");
   }
 
-  int returnAPositiveNumber()
-  {
-    return 1;
+  void returnAPositiveNumber() {
+    List<Integer> values = new ArrayList<>();
+    values.add(1);
+    values.add(2);
+    values.add(3);
+    values.stream().peek(n -> System.out.println(n));
   }
 
 }
