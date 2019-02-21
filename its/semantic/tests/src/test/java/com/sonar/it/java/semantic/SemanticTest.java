@@ -136,11 +136,8 @@ public class SemanticTest {
   }
 
   private static void executeBuildWithCommonProperties(Build<?> build, String projectName) throws IOException {
-    build.setProperty("sonar.cpd.skip", "true")
+    build.setProperty("sonar.cpd.exclusions", "**/*")
       .setProperty("sonar.skipPackageDesign", "true")
-      .setProperty("sonar.analysis.mode", "preview")
-      .setProperty("sonar.issuesReport.html.enable", "true")
-      .setProperty("sonar.issuesReport.html.location", htmlReportPath(projectName))
       .setProperty("dump.old", effectiveDumpOldFolder.resolve(projectName).toString())
       .setProperty("dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
       .setProperty("lits.differences", litsDifferencesPath(projectName));
@@ -176,13 +173,9 @@ public class SemanticTest {
     return FileLocation.of("target/" + projectName + "_differences").getFile().getAbsolutePath();
   }
 
-  private static String htmlReportPath(String projectName) {
-    return FileLocation.of("target/" + projectName + "_issue-report").getFile().getAbsolutePath();
-  }
-
   private static void assertNoDifferences(String projectName) throws IOException {
     String differences = new String(Files.readAllBytes(Paths.get(litsDifferencesPath(projectName))), StandardCharsets.UTF_8);
-    Assertions.assertThat(differences).overridingErrorMessage(differences + " -> file://" + htmlReportPath(projectName) + "/issues-report.html").isEmpty();
+    Assertions.assertThat(differences).isEmpty();
   }
 
   private static File debuggingPlugin() {
