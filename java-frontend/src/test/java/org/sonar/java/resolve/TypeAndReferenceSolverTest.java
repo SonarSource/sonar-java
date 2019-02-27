@@ -36,11 +36,13 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -208,6 +210,19 @@ public class TypeAndReferenceSolverTest {
     List<AnnotationInstance> annotations = ((JavaSymbol.TypeJavaSymbol) clazz.symbol()).metadata().annotations();
     assertThat(annotations.size()).isEqualTo(1);
     assertThat(annotations.get(0).symbol().type().is(annotation.symbol().name())).isTrue();
+  }
+
+  @Test
+  public void annotation_inside_type() {
+    CompilationUnitTree compilationUnit = treeOf("package org.foo; @interface MyAnnotation { } class MyClass<T> { MyClass<@MyAnnotation Object> field; }");
+    ClassTreeImpl annotation = (ClassTreeImpl) compilationUnit.types().get(0);
+    ClassTreeImpl clazz = (ClassTreeImpl) compilationUnit.types().get(1);
+    VariableTree field = (VariableTree) clazz.members().get(0);
+    ParameterizedTypeTree type = (ParameterizedTypeTree) field.type();
+    IdentifierTree objectType = (IdentifierTree) type.typeArguments().get(0);
+    List<AnnotationTree> annotations = objectType.annotations();
+    assertThat(annotations.size()).isEqualTo(1);
+    assertThat(annotations.get(0).symbolType().is(annotation.symbol().type().fullyQualifiedName())).isTrue();
   }
 
   @Test

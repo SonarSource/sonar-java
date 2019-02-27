@@ -382,9 +382,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           return resolveClassType(tree, resolveEnv, mse);
         }
         identifierTree = mse.identifier();
+
         List<AnnotationTree> identifierAnnotations = identifierTree.annotations();
         scan(identifierAnnotations);
         completeMetadata((JavaSymbol) identifierTree.symbol(), identifierAnnotations);
+
         Resolve.Resolution res = getSymbolOfMemberSelectExpression(mse, kind, resolveEnv);
         resolvedSymbol = res.symbol();
         JavaType resolvedType = resolve.resolveTypeSubstitution(res.type(), getType(mse.expression()));
@@ -394,6 +396,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         identifierTree = (IdentifierTree) tree;
         Resolve.Resolution resolution = resolve.findIdent(resolveEnv, identifierTree.name(), kind);
         resolvedSymbol = resolution.symbol();
+
+        // Resolve annotations which can be present (for instance) when declaring types: "List<@MyAnnotation MyClass>"
+        // but do not associate it with the symbol of the identifier (that would be a non-sense to associate '@MyAnnotation'
+        // with the 'MyClass' symbol type)
+        scan(identifierTree.annotations());
+
         JavaType type = resolution.type();
         if(kind == JavaSymbol.TYP && type.isParameterized()) {
           type = type.erasure();
