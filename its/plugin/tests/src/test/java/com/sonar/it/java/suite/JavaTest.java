@@ -72,21 +72,6 @@ public class JavaTest {
   }
 
   /**
-   * Since 2.13 commented-out code lines not saved as measure for Java - see SONAR-3093
-   */
-  @Test
-  public void shouldDetectCommentedOutCode() {
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("commented-out-java-code"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.dynamicAnalysis", "false");
-    orchestrator.executeBuild(build);
-
-    assertThat(getMeasureAsInteger("com.sonarsource.it.samples:commented-out-java-code", "ncloc")).isEqualTo(7);
-    assertThat(getMeasureAsInteger("com.sonarsource.it.samples:commented-out-java-code", "commented_out_code_lines")).isNull();
-  }
-
-  /**
    * SONARJAVA-444
    */
   @Test

@@ -132,7 +132,6 @@ public class JavaComplexityTest {
 
   @Test
   public void shouldNotPersistDistributionOnFiles() {
-    assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "Helloworld.java"), "class_complexity_distribution")).isNull();
     assertThat(getMeasure(JavaTestSuite.keyFor(PROJECT, "complexity/", "Helloworld.java"), "function_complexity_distribution")).isNull();
   }
 
