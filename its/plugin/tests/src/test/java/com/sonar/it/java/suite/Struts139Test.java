@@ -24,7 +24,6 @@ import com.sonar.orchestrator.build.MavenBuild;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonarqube.ws.WsMeasures.Measure;
 
 import static com.sonar.it.java.suite.JavaTestSuite.getComponent;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasure;
@@ -79,7 +78,7 @@ public class Struts139Test {
 
   @Test
   public void unit_test_metrics() {
-    int linesToCover = 15498;
+    int linesToCover = isGreater76() ? 15470 : 15494;
     assertThat(getMeasureAsDouble(PROJECT_STRUTS, "lines_to_cover")).isEqualTo(linesToCover, offset(10.0));
     assertThat(getMeasureAsDouble(PROJECT_STRUTS, "coverage")).isEqualTo(25.1, offset(0.2));
     assertThat(getMeasureAsDouble(moduleKey(), "coverage")).isEqualTo(36.8, offset(0.2));
@@ -128,16 +127,6 @@ public class Struts139Test {
     assertThat(getMeasure(componentKey, "file_complexity_distribution")).isNull();
   }
 
-  @Test
-  public void should_get_details_of_coverage_hits() {
-    String componentKey = componentKey("org/apache/struts/action/", "ActionForward.java");
-    Measure coverage = getMeasure(componentKey, "coverage_line_hits_data");
-    assertThat(coverage).isNotNull();
-    String value = coverage.getValue();
-    assertThat(value.length()).isGreaterThan(10);
-    assertThat(value).matches("(\\d+=\\d+;{0,1})+");
-  }
-
   private static String componentKey(String path, String file) {
     if (isGreater75()) {
       return String.format("%s:%s/src/main/java/%s%s", PROJECT_STRUTS, MODULE_CORE_PHYSICAL_NAME, path, file);
@@ -154,6 +143,10 @@ public class Struts139Test {
 
   private static boolean isGreater75() {
     return orchestrator.getServer().version().isGreaterThanOrEquals(7, 6);
+  }
+
+  private static boolean isGreater76() {
+    return orchestrator.getServer().version().isGreaterThanOrEquals(7, 7);
   }
 
   private static String getMeasureValue(String componentKey, String metricKey) {
