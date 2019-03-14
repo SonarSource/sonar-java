@@ -27,8 +27,7 @@ pipeline {
           agent {
             label 'linux'
           }
-          steps {            
-            
+          steps {
             runITs("plugin","DEV",JDK_VERSION)
           }
         }     
@@ -41,7 +40,7 @@ pipeline {
           }
         } 
         stage('ruling/LATEST_RELEASE[6.7]/linux') {
-          when { branch 'master' }
+          when { expression { return params.GITHUB_BRANCH.equals('master') } } 
           agent {
             label 'linux'
           }
@@ -73,7 +72,7 @@ pipeline {
           }          
         } 
         stage('QA-OS/windows') {
-          when { branch 'master' }
+          when { expression { return params.GITHUB_BRANCH.equals('master') } } 
           agent {
             label 'windows'
           }
@@ -82,7 +81,7 @@ pipeline {
           }
         }
         stage('QA-OS/macOS') {
-          when { branch 'master' }
+          when { expression { return params.GITHUB_BRANCH.equals('master') } } 
           agent {
             label 'macosx'
           }
