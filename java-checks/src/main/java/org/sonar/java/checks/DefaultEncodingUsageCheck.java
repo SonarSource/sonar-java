@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import java.util.List;
@@ -157,8 +156,14 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
       constructor(JAVA_LANG_STRING).parameters(BYTE_ARRAY),
       constructor(JAVA_LANG_STRING).parameters(BYTE_ARRAY, INT, INT),
       method(JAVA_IO_BYTEARRAYOUTPUTSTREAM, "toString").withoutParameter(),
-      constructor(JAVA_IO_FILEREADER).withAnyParameters(),
-      constructor(JAVA_IO_FILEWRITER).withAnyParameters(),
+      constructor(JAVA_IO_FILEREADER).parameters("java.io.FileDescriptor"),
+      constructor(JAVA_IO_FILEREADER).parameters(JAVA_IO_FILE),
+      constructor(JAVA_IO_FILEREADER).parameters(JAVA_LANG_STRING),
+      constructor(JAVA_IO_FILEWRITER).parameters("java.io.FileDescriptor"),
+      constructor(JAVA_IO_FILEWRITER).parameters(JAVA_IO_FILE),
+      constructor(JAVA_IO_FILEWRITER).parameters(JAVA_IO_FILE, BOOLEAN),
+      constructor(JAVA_IO_FILEWRITER).parameters(JAVA_LANG_STRING),
+      constructor(JAVA_IO_FILEWRITER).parameters(JAVA_LANG_STRING, BOOLEAN),
       constructor(JAVA_IO_INPUTSTREAMREADER).parameters(JAVA_IO_INPUTSTREAM),
       constructor(JAVA_IO_OUTPUTSTREAMWRITER).parameters(JAVA_IO_OUTPUTSTREAM),
       constructor(JAVA_IO_PRINTSTREAM).parameters(JAVA_IO_FILE),
@@ -221,7 +226,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
     Symbol symbol = newClassTree.constructorSymbol();
     if (symbol.isMethodSymbol()) {
       Symbol.MethodSymbol constructor = (Symbol.MethodSymbol) symbol;
-      String signature = constructor.owner().name() + "(" + Joiner.on(',').join(constructor.parameterTypes()) + ")";
+      String signature = constructor.owner().name() + "(" + constructor.parameterTypes().stream().map(Type::toString).collect(Collectors.joining(",")) + ")";
       reportIssue(newClassTree.identifier(), "Remove this use of constructor \"" + signature + "\"");
     }
   }

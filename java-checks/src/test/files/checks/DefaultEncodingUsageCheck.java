@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -32,6 +33,7 @@ class A {
     new FileWriter(new java.io.FileDescriptor()); // Noncompliant
     new FileWriter("fileName"); // Noncompliant
     new FileWriter("fileName", true); // Noncompliant
+    new FileWriter("fileName", StandardCharsets.UTF_8, true); // java 11 - not resolved if not build with java 11, valid
     new InputStreamReader(new java.io.FileInputStream("")); // Noncompliant
     new OutputStreamWriter(outputStream); // Noncompliant
     new PrintStream(file); // Noncompliant
