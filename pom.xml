@@ -88,7 +88,7 @@
     <orchestrator.version>3.21.0.1721</orchestrator.version>
     <sslr.version>1.23</sslr.version>
     <jacoco.version>0.8.3</jacoco.version>
-    <asm.version>7.0</asm.version>
+    <asm.version>7.1</asm.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
 
