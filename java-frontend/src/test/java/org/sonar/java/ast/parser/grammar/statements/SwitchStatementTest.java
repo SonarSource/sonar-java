@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.parser.grammar.statements;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaLexer;
 
@@ -29,17 +28,15 @@ public class SwitchStatementTest {
 
   @Test
   public void okSwitch() {
-    assertThat(JavaLexer.SWITCH_STATEMENT)
+    assertThat(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
       .matches("switch (foo) {}")
       .matches("switch (foo) { case 0: break; }")
       .matches("switch (foo) { case 0: break; default: break; }");
   }
 
-  // TODO to support java 12
-  @Ignore
   @Test
   public void switch_statement_with_traditional_control_flow() {
-    assertThat(JavaLexer.SWITCH_STATEMENT)
+    assertThat(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
       .matches("" +
         "switch (i) {" +
         "  case 1: print('A'); break;" +
@@ -54,28 +51,29 @@ public class SwitchStatementTest {
         "}");
   }
 
-  // TODO to support java 12
-  @Ignore
   @Test
   public void switch_statement_with_simplified_control_flow() {
-    assertThat(JavaLexer.SWITCH_STATEMENT)
+    assertThat(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
       .matches("" +
         "switch (i) {" +
         "  case 1 -> print('A');" +
         "  case 2 -> { if (r == 0) print('A'); else print('B'); }" +
         "  default -> {}" +
         "}")
-      // unexpected statement in case
-      .notMatches("switch (i) { case 1 -> ; }")
-      // simplified control flow support break only in a block
-      .notMatches("switch (i) { case 1 -> break; default -> break; }")
-      // case support only expression or throw
-      .notMatches("switch (i) { case 1 -> if (r == 0) print('A'); else print('B'); }");
+      // Our parser is more tolerant than java 12, we wrongly accept:
+      // empty statement
+      .matches("switch (i) { case 1 -> ; }")
+      // several statements
+      .matches("switch (i) { case 1 -> i++; j++; }")
+      // break
+      .matches("switch (i) { case 1 -> break; default -> break; }")
+      // not a block, expression or throw
+      .matches("switch (i) { case 1 -> if (r == 0) print('A'); else print('B'); }");
   }
 
   @Test
   public void fall_through_with_traditional_control_flow() {
-    assertThat(JavaLexer.SWITCH_STATEMENT)
+    assertThat(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
       .matches("" +
         "switch (i) {" +
         "  case 1:" +
@@ -83,21 +81,17 @@ public class SwitchStatementTest {
         "}");
   }
 
-  // TODO to support java 12
-  @Ignore
   @Test
   public void fall_through_replacement_with_simplified_control_flow() {
-    assertThat(JavaLexer.SWITCH_STATEMENT)
+    assertThat(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
       .matches("" +
         "switch (i) {" +
         "  case 1, 2 -> print('A');" +
         "}")
-      // simplified control flow does not support fall through like traditional control flow
-      .notMatches("switch (i) { case 1 -> case 2 -> print('A'); }");
+      // Our parser is more tolerant than java 12, we wrongly accept fall through:
+      .matches("switch (i) { case 1 -> case 2 -> print('A'); }");
   }
 
-  // TODO to support java 12
-  @Ignore
   @Test
   public void switch_expression() {
     assertThat(JavaLexer.STATEMENT)
@@ -122,15 +116,13 @@ public class SwitchStatementTest {
         "  case 2 -> { print('A'); break 20; }" +
         "  default -> { break 20; }" +
         "};")
-      // simplified control flow support break only in a block
-      .notMatches("r = switch (i) { case 1 -> break 10; default -> break 20; };")
+      // Our parser is more tolerant than java 12, we wrongly accept break without block
+      .matches("r = switch (i) { case 1 -> break 10; default -> break 20; };")
       // a statement starting with switch is not considered as switch expression without parentheses
       .notMatches("switch (i) { default -> \"\"; }.length();")
       .matches("(switch (i) { default -> \"\"; }).length();");
   }
 
-  // TODO to support java 12
-  @Ignore
   @Test
   public void switch_with_simplified_control_flow_should_accept_throw_statement() {
     assertThat(JavaLexer.STATEMENT)
@@ -140,7 +132,7 @@ public class SwitchStatementTest {
         "  case 1 -> print('A');" +
         "  case 2 -> throw new IllegalStateException(\"2\");" +
         "  default -> print('A');" +
-        "};")
+        "}")
       // switch expression
       .matches("" +
         "r = switch (i) {" +
@@ -150,8 +142,6 @@ public class SwitchStatementTest {
         "};");
   }
 
-  // TODO to support java 12
-  @Ignore
   @Test
   public void variable_declaration_in_a_case() {
     assertThat(JavaLexer.STATEMENT)
@@ -165,27 +155,23 @@ public class SwitchStatementTest {
         "switch (i) {" +
         "  case 1 -> { char a = 'A'; print(a); }" +
         "}")
-      // simplified control flow does not support variable declaration without block
-      .notMatches("" +
+      // Our parser is more tolerant than java 12, we wrongly accept variable declaration without block
+      .matches("" +
         "switch (i) {" +
         "  case 1 -> char a = 'A';" +
         "}");
   }
 
-  // TODO to support java 12
-  @Ignore
   @Test
   public void switch_should_be_a_statement_with_or_without_a_semicolon() {
     assertThat(JavaLexer.STATEMENT)
-      .matches("switch (i) { case 1 -> print('A'); }")
-      .matches("switch (i) { case 1 -> print('A'); };")
+      .matches("{ switch (i) { case 1 -> print('A'); } }")
+      .matches("{ switch (i) { case 1 -> print('A'); };}")
       // but after a switch expression, a semicolon is required
       .matches("r = switch (i) { case 1 -> 10; default -> 0; };")
       .notMatches("r = switch (i) { case 1 -> 10; default -> 0; }");
   }
 
-  // TODO to support java 12
-  @Ignore
   @Test
   public void break_to_label_and_value_break() {
     assertThat(JavaLexer.STATEMENT)
@@ -202,48 +188,54 @@ public class SwitchStatementTest {
         "}")
       // value break n1 and n2
       .matches("" +
-        "int n1 = 2;" +
-        "while(i < 0) {" +
-        "  int n2 = 3;" +
-        "  r = switch (i) {" +
-        "    case 1: print('A'); break n1;" +
-        "    case 2: print('B'); break n2;" +
-        "    default: break n1;" +
-        "  };" +
+        "{" +
+        "  int n1 = 2;" +
+        "  while(i < 0) {" +
+        "    int n2 = 3;" +
+        "    r = switch (i) {" +
+        "      case 1: print('A'); break n1;" +
+        "      case 2: print('B'); break n2;" +
+        "      default: break n1;" +
+        "    };" +
+        "  }" +
         "}")
       // switch statement has no ambiguous reference to 'n1', it always resolve to labels
       // with traditional control flow
       .matches("" +
+        "{" +
         "  int n1 = 3;" +
         "n1:" +
         "  switch (i) {" +
         "    case 1: break n1;" +
         "    default: break n1;" +
-        "  };")
+        "  };" +
+        "}")
       // or with simplified control flow
       .matches("" +
+        "{" +
         "  int n1 = 3;" +
         "n1:" +
         "  switch (i) {" +
         "    case 1 -> { break n1; }" +
         "    default -> { break n1; }" +
-        "  };")
+        "  };" +
+        "}")
       // but switch expression can be ambiguous between label and value, even if the following statement
       // is syntactically valid, it is semantically ambiguous and the compiler will produce the following
       // error: ambiguous reference to 'n1'
       .matches("" +
+        "{" +
         "  int n1 = 3;" +
         "n1:" +
         "  r = switch (i) {" +
         "    case 1: break n1;" +
         "    default: break n1;" +
-        "  };")
-      // switch statement can not return any value, the compiler will produce the following error: unexpected value break
-      .notMatches("switch (i) { case 1: break 7; }");
+        "  };" +
+        "}")
+      // Our parser is more tolerant than java 12, we wrongly accept value break in switch statement
+      .matches("switch (i) { case 1: break 7; }");
   }
 
-  // TODO to support java 12
-  @Ignore
   @Test
   public void switch_and_return_statement() {
     assertThat(JavaLexer.STATEMENT)
@@ -268,8 +260,8 @@ public class SwitchStatementTest {
         "  case 2 -> { return 20; }" +
         "  default -> { return 0; }" +
         "}")
-      // using return inside simplified control flow without block should not parse
-      .notMatches("" +
+      // Our parser is more tolerant than java 12, we wrongly accept return without block
+      .matches("" +
         "switch (i) {" +
         " case 1 -> return 10;" +
         " case 2 -> return 20;" +

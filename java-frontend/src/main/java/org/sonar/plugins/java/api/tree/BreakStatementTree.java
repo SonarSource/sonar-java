@@ -43,6 +43,12 @@ public interface BreakStatementTree extends StatementTree {
   @Nullable
   IdentifierTree label();
 
+  /**
+   * @since 5.12
+   */
+  @Nullable
+  ExpressionTree value();
+
   SyntaxToken semicolonToken();
 
 }

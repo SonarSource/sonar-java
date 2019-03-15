@@ -23,17 +23,18 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
-
-import java.util.Collections;
-import java.util.List;
 
 public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatementTree {
 
@@ -60,6 +61,11 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   @Override
   public Kind kind() {
     return Kind.SWITCH_STATEMENT;
+  }
+
+  @Override
+  public Type symbolType() {
+    return Symbols.unknownType;
   }
 
   @Override

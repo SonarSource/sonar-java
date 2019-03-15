@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
+import org.sonar.java.model.statement.CaseLabelTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
@@ -1192,37 +1193,61 @@ public class JavaTreeModelTest {
    */
   @Test
   public void switch_statement() {
-    SwitchStatementTree tree = (SwitchStatementTree) firstMethodFirstStatement("class T { void m() { switch (e) { case 1: case 2: ; default: ; } } }");
+    SwitchStatementTree tree = (SwitchStatementTree) firstMethodFirstStatement("class T { void m() { switch (e) { case 1: case 2, 3 -> ; default: ; } } }");
     assertThat(tree.is(Tree.Kind.SWITCH_STATEMENT)).isTrue();
     assertThat(tree.switchKeyword().text()).isEqualTo("switch");
+    assertThat(tree.openBraceToken().text()).isEqualTo("{");
+    assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.cases()).hasSize(2);
     assertThatChildrenIteratorHasSize(tree, 8);
+    assertThat(tree.symbolType().isUnknown()).isTrue();
 
     CaseGroupTree c = tree.cases().get(0);
     assertThat(c.is(Tree.Kind.CASE_GROUP)).isTrue();
     assertThat(c.labels()).hasSize(2);
     CaseLabelTree caseLabelTree = c.labels().get(0);
-    assertThat(caseLabelTree.is(Tree.Kind.CASE_LABEL)).isTrue();
+    assertThat(caseLabelTree.is(Tree.Kind.CASE_LABEL_COLON)).isTrue();
     assertThat(caseLabelTree.caseOrDefaultKeyword().text()).isEqualTo("case");
     assertThat(caseLabelTree.expression()).isNotNull();
+    assertThat(caseLabelTree.expressions()).hasSize(1);
+    assertThat(((LiteralTree)caseLabelTree.expression()).value()).isEqualTo("1");
+    assertThat(((LiteralTree)caseLabelTree.expressions().get(0)).value()).isEqualTo("1");
     assertThat(caseLabelTree.colonToken().text()).isEqualTo(":");
+    assertThat(caseLabelTree.colonOrArrowToken().text()).isEqualTo(":");
     assertThatChildrenIteratorHasSize(caseLabelTree, 3);
+
+    // old CaseLabelTreeImpl constructor is still available
+    CaseLabelTreeImpl oldCaseLabel = new CaseLabelTreeImpl(
+      (InternalSyntaxToken)caseLabelTree.caseOrDefaultKeyword(),
+      caseLabelTree.expression(),
+      (InternalSyntaxToken) caseLabelTree.colonOrArrowToken());
+    assertThat(oldCaseLabel.is(Tree.Kind.CASE_LABEL_COLON)).isTrue();
+    assertThat(oldCaseLabel.caseOrDefaultKeyword().text()).isEqualTo("case");
+    assertThat(oldCaseLabel.expression()).isNotNull();
+    assertThat(oldCaseLabel.expressions()).hasSize(1);
+    assertThat(caseLabelTree.colonOrArrowToken().text()).isEqualTo(":");
+
     caseLabelTree = c.labels().get(1);
-    assertThat(caseLabelTree.is(Tree.Kind.CASE_LABEL)).isTrue();
+    assertThat(caseLabelTree.is(Kind.CASE_LABEL_ARROW)).isTrue();
     assertThat(caseLabelTree.caseOrDefaultKeyword().text()).isEqualTo("case");
     assertThat(caseLabelTree.expression()).isNotNull();
-    assertThat(caseLabelTree.colonToken().text()).isEqualTo(":");
-    assertThatChildrenIteratorHasSize(caseLabelTree, 3);
+    assertThat(caseLabelTree.expressions()).hasSize(2);
+    assertThat(((LiteralTree)caseLabelTree.expression()).value()).isEqualTo("2");
+    assertThat(((LiteralTree)caseLabelTree.expressions().get(0)).value()).isEqualTo("2");
+    assertThat(((LiteralTree)caseLabelTree.expressions().get(1)).value()).isEqualTo("3");
+    assertThat(caseLabelTree.colonToken().text()).isEqualTo("->");
+    assertThat(caseLabelTree.colonOrArrowToken().text()).isEqualTo("->");
+    assertThatChildrenIteratorHasSize(caseLabelTree, 4);
     assertThat(c.body()).hasSize(1);
 
     c = tree.cases().get(1);
     assertThat(c.is(Tree.Kind.CASE_GROUP)).isTrue();
     assertThat(c.labels()).hasSize(1);
     caseLabelTree = c.labels().get(0);
-    assertThat(caseLabelTree.is(Tree.Kind.CASE_LABEL)).isTrue();
+    assertThat(caseLabelTree.is(Tree.Kind.CASE_LABEL_COLON)).isTrue();
     assertThat(caseLabelTree.caseOrDefaultKeyword().text()).isEqualTo("default");
     assertThat(caseLabelTree.expression()).isNull();
     assertThat(caseLabelTree.colonToken().text()).isEqualTo(":");
@@ -1355,6 +1380,15 @@ public class JavaTreeModelTest {
     assertThat(tree.is(Tree.Kind.BREAK_STATEMENT)).isTrue();
     assertThat(tree.breakKeyword().text()).isEqualTo("break");
     assertThat(tree.label().name()).isEqualTo("label");
+    assertThat(((IdentifierTree)tree.value()).name()).isEqualTo("label");
+    assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 3);
+
+    tree = (BreakStatementTree) firstMethodFirstStatement("class T { void m() { break 1 + 1 ; } }");
+    assertThat(tree.is(Tree.Kind.BREAK_STATEMENT)).isTrue();
+    assertThat(tree.breakKeyword().text()).isEqualTo("break");
+    assertThat(tree.label()).isNull();
+    assertThat(tree.value()).isInstanceOf(BinaryExpressionTree.class);
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
     assertThatChildrenIteratorHasSize(tree, 3);
   }

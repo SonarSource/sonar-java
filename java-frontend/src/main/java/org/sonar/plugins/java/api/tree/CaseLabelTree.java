@@ -20,7 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
-
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -40,9 +40,27 @@ public interface CaseLabelTree extends Tree {
 
   SyntaxToken caseOrDefaultKeyword();
 
+  /**
+   * @deprecated use the {@link #expressions()} method.
+   */
+  @Deprecated
   @Nullable
   ExpressionTree expression();
 
+  /**
+   * @since 5.12
+   */
+  List<ExpressionTree> expressions();
+
+  /**
+   * @deprecated use the {@link #colonOrArrowToken()} method.
+   */
+  @Deprecated
   SyntaxToken colonToken();
+
+  /**
+   * @since 5.12
+   */
+  SyntaxToken colonOrArrowToken();
 
 }

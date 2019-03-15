@@ -37,7 +37,7 @@ import java.util.List;
  * @since Java 1.3
  */
 @Beta
-public interface SwitchStatementTree extends StatementTree {
+public interface SwitchStatementTree extends StatementTree, ExpressionTree {
 
   SyntaxToken switchKeyword();
 

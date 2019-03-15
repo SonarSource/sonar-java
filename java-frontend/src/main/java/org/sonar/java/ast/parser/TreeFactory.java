@@ -1115,12 +1115,20 @@ public class TreeFactory {
     return new CaseGroupTreeImpl(labels, blockStatements);
   }
 
-  public CaseLabelTreeImpl newCaseSwitchLabel(InternalSyntaxToken caseSyntaxToken, ExpressionTree expression, InternalSyntaxToken colonSyntaxToken) {
-    return new CaseLabelTreeImpl(caseSyntaxToken, expression, colonSyntaxToken);
+  public CaseLabelTreeImpl newSwitchCaseColonLabel(InternalSyntaxToken caseSyntaxToken, ArgumentListTreeImpl argumentList, InternalSyntaxToken colonToken) {
+    return new CaseLabelTreeImpl(caseSyntaxToken, argumentList, Kind.CASE_LABEL_COLON, colonToken);
   }
 
-  public CaseLabelTreeImpl newDefaultSwitchLabel(InternalSyntaxToken defaultToken, InternalSyntaxToken colonToken) {
-    return new CaseLabelTreeImpl(defaultToken, null, colonToken);
+  public CaseLabelTreeImpl newSwitchCaseArrowLabel(InternalSyntaxToken caseSyntaxToken, ArgumentListTreeImpl argumentList, InternalSyntaxToken arrowToken) {
+    return new CaseLabelTreeImpl(caseSyntaxToken, argumentList, Kind.CASE_LABEL_ARROW, arrowToken);
+  }
+
+  public CaseLabelTreeImpl newSwitchDefaultColonLabel(InternalSyntaxToken defaultToken, InternalSyntaxToken colonToken) {
+    return new CaseLabelTreeImpl(defaultToken, Collections.emptyList(), Kind.CASE_LABEL_COLON, colonToken);
+  }
+
+  public CaseLabelTreeImpl newSwitchDefaultArrowLabel(InternalSyntaxToken defaultToken, InternalSyntaxToken arrowToken) {
+    return new CaseLabelTreeImpl(defaultToken, Collections.emptyList(), Kind.CASE_LABEL_ARROW, arrowToken);
   }
 
   public SynchronizedStatementTreeImpl synchronizedStatement(InternalSyntaxToken synchronizedToken, InternalSyntaxToken openParenToken, ExpressionTree expression,
@@ -1128,12 +1136,8 @@ public class TreeFactory {
     return new SynchronizedStatementTreeImpl(synchronizedToken, openParenToken, expression, closeParenToken, block);
   }
 
-  public BreakStatementTreeImpl breakStatement(InternalSyntaxToken breakToken, Optional<InternalSyntaxToken> identifierToken, InternalSyntaxToken semicolonSyntaxToken) {
-    IdentifierTreeImpl identifier = null;
-    if (identifierToken.isPresent()) {
-      identifier = new IdentifierTreeImpl(identifierToken.get());
-    }
-    return new BreakStatementTreeImpl(breakToken, identifier, semicolonSyntaxToken);
+  public BreakStatementTreeImpl breakStatement(InternalSyntaxToken breakToken, Optional<ExpressionTree> labelOrValue, InternalSyntaxToken semicolonSyntaxToken) {
+    return new BreakStatementTreeImpl(breakToken, labelOrValue.orNull(), semicolonSyntaxToken);
   }
 
   public ContinueStatementTreeImpl continueStatement(InternalSyntaxToken continueToken, Optional<InternalSyntaxToken> identifierToken, InternalSyntaxToken semicolonToken) {

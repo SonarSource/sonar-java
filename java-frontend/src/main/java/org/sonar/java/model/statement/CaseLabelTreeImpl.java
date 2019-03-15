@@ -20,6 +20,7 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterables;
+import java.util.List;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -34,20 +35,25 @@ import java.util.Collections;
 
 public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
   private final InternalSyntaxToken caseOrDefaultKeyword;
-  @Nullable
-  private final ExpressionTree expression;
-  private final InternalSyntaxToken colonToken;
+  private final List<ExpressionTree> expressions;
+  private final Kind kind;
+  private final InternalSyntaxToken colonOrArrowToken;
 
-  public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, @Nullable ExpressionTree expression, InternalSyntaxToken colonToken) {
+  public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, @Nullable ExpressionTree expression, InternalSyntaxToken colonOrArrowToken) {
+    this(caseOrDefaultKeyword, Collections.singletonList(expression), Kind.CASE_LABEL_COLON, colonOrArrowToken);
+  }
+
+  public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, List<ExpressionTree> expressions, Kind kind, InternalSyntaxToken colonOrArrowToken) {
     super(JavaLexer.SWITCH_LABEL);
     this.caseOrDefaultKeyword = caseOrDefaultKeyword;
-    this.expression = expression;
-    this.colonToken = colonToken;
+    this.expressions = expressions;
+    this.kind = kind;
+    this.colonOrArrowToken = colonOrArrowToken;
   }
 
   @Override
   public Kind kind() {
-    return Kind.CASE_LABEL;
+    return kind;
   }
 
   @Override
@@ -58,12 +64,22 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
   @Nullable
   @Override
   public ExpressionTree expression() {
-    return expression;
+    return expressions.isEmpty() ? null : expressions.get(0);
+  }
+
+  @Override
+  public List<ExpressionTree> expressions() {
+    return expressions;
   }
 
   @Override
   public SyntaxToken colonToken() {
-    return colonToken;
+    return colonOrArrowToken;
+  }
+
+  @Override
+  public SyntaxToken colonOrArrowToken() {
+    return colonOrArrowToken;
   }
 
   @Override
@@ -75,8 +91,8 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
   public Iterable<Tree> children() {
     return Iterables.concat(
       Collections.singletonList(caseOrDefaultKeyword),
-      expression != null ? Collections.singletonList(expression) : Collections.<Tree>emptyList(),
-      Collections.singletonList(colonToken));
+      expressions,
+      Collections.singletonList(colonOrArrowToken));
   }
 
 }

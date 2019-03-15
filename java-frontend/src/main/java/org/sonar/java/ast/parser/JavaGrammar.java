@@ -723,7 +723,7 @@ public class JavaGrammar {
           WHILE_STATEMENT(),
           DO_WHILE_STATEMENT(),
           TRY_STATEMENT(),
-          SWITCH_STATEMENT(),
+          SWITCH_STATEMENT_OR_EXPRESSION(),
           SYNCHRONIZED_STATEMENT(),
           RETURN_STATEMENT(),
           THROW_STATEMENT(),
@@ -909,8 +909,8 @@ public class JavaGrammar {
         PRIMARY_WITH_SELECTOR()));
   }
 
-  public SwitchStatementTreeImpl SWITCH_STATEMENT() {
-    return b.<SwitchStatementTreeImpl>nonterminal(JavaLexer.SWITCH_STATEMENT)
+  public SwitchStatementTreeImpl SWITCH_STATEMENT_OR_EXPRESSION() {
+    return b.<SwitchStatementTreeImpl>nonterminal(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
       .is(
         f.switchStatement(
           b.token(JavaKeyword.SWITCH), b.token(JavaPunctuator.LPAR), EXPRESSION(), b.token(JavaPunctuator.RPAR),
@@ -921,15 +921,24 @@ public class JavaGrammar {
 
   public CaseGroupTreeImpl SWITCH_GROUP() {
     return b.<CaseGroupTreeImpl>nonterminal(JavaLexer.SWITCH_BLOCK_STATEMENT_GROUP)
-      .is(f.switchGroup(b.oneOrMore(SWITCH_LABEL()), BLOCK_STATEMENTS()));
+      .is(f.switchGroup(b.oneOrMore(SWITCH_CASE_OR_DEFAULT_CLAUSE()), BLOCK_STATEMENTS()));
   }
 
-  public CaseLabelTreeImpl SWITCH_LABEL() {
+  public CaseLabelTreeImpl SWITCH_CASE_OR_DEFAULT_CLAUSE() {
     return b.<CaseLabelTreeImpl>nonterminal(JavaLexer.SWITCH_LABEL)
       .is(
         b.firstOf(
-          f.newCaseSwitchLabel(b.token(JavaKeyword.CASE), EXPRESSION(), b.token(JavaPunctuator.COLON)),
-          f.newDefaultSwitchLabel(b.token(JavaKeyword.DEFAULT), b.token(JavaPunctuator.COLON))));
+          f.newSwitchCaseColonLabel(b.token(JavaKeyword.CASE), SWITCH_CASE_EXPRESSION_LIST(), b.token(JavaPunctuator.COLON)),
+          f.newSwitchCaseArrowLabel(b.token(JavaKeyword.CASE), SWITCH_CASE_EXPRESSION_LIST(), b.token(JavaLexer.ARROW)),
+          f.newSwitchDefaultColonLabel(b.token(JavaKeyword.DEFAULT), b.token(JavaPunctuator.COLON)),
+          f.newSwitchDefaultArrowLabel(b.token(JavaKeyword.DEFAULT), b.token(JavaLexer.ARROW))));
+  }
+
+  public ArgumentListTreeImpl SWITCH_CASE_EXPRESSION_LIST() {
+    return b.<ArgumentListTreeImpl>nonterminal(JavaLexer.SWITCH_CASE_EXPRESSION_LIST)
+      .is(f.newArguments(
+          EXPRESSION(),
+          b.zeroOrMore(f.newTuple20(b.token(JavaPunctuator.COMMA), EXPRESSION()))));
   }
 
   public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
@@ -941,7 +950,7 @@ public class JavaGrammar {
 
   public BreakStatementTreeImpl BREAK_STATEMENT() {
     return b.<BreakStatementTreeImpl>nonterminal(JavaLexer.BREAK_STATEMENT)
-      .is(f.breakStatement(b.token(JavaKeyword.BREAK), b.optional(b.token(JavaTokenType.IDENTIFIER)), b.token(JavaPunctuator.SEMI)));
+      .is(f.breakStatement(b.token(JavaKeyword.BREAK), b.optional(EXPRESSION()), b.token(JavaPunctuator.SEMI)));
   }
 
   public ContinueStatementTreeImpl CONTINUE_STATEMENT() {
@@ -1197,7 +1206,8 @@ public class JavaGrammar {
                 b.token(JavaPunctuator.INC),
                 b.token(JavaPunctuator.DEC)))),
           f.newTildaExpression(b.token(JavaPunctuator.TILDA), UNARY_EXPRESSION()),
-          f.newBangExpression(b.token(JavaPunctuator.BANG), UNARY_EXPRESSION())));
+          f.newBangExpression(b.token(JavaPunctuator.BANG), UNARY_EXPRESSION()),
+          SWITCH_STATEMENT_OR_EXPRESSION()));
   }
 
   public ExpressionTree PRIMARY_WITH_SELECTOR() {
