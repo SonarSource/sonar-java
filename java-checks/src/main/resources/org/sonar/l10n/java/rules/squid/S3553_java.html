@@ -4,6 +4,9 @@ method may or may not return a value. </p>
 increasing the value. With an <code>Optional</code> parameter, you go from having 2 possible inputs: null and not-null, to three: null,
 non-null-without-value, and non-null-with-value. Add to that the fact that overloading has long been available to convey that some parameters are
 optional, and there's really no reason to have <code>Optional</code> parameters.</p>
+<p>The rule also checks for Guava's <code>Optional</code>, as it was the inspiration for the JDK <code>Optional</code>. Although it is different in
+some aspects (serialization, being recommended for use as collection elements), using it as a parameter type causes exactly the same problems as for
+JDK <code>Optional</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public String sayHello(Optional&lt;String&gt; name) {  // Noncompliant
