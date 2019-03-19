@@ -937,8 +937,8 @@ public class JavaGrammar {
   public ArgumentListTreeImpl SWITCH_CASE_EXPRESSION_LIST() {
     return b.<ArgumentListTreeImpl>nonterminal(JavaLexer.SWITCH_CASE_EXPRESSION_LIST)
       .is(f.newArguments(
-          EXPRESSION(),
-          b.zeroOrMore(f.newTuple20(b.token(JavaPunctuator.COMMA), EXPRESSION()))));
+          EXPRESSION_NOT_LAMBDA(),
+          b.zeroOrMore(f.newTuple20(b.token(JavaPunctuator.COMMA), EXPRESSION_NOT_LAMBDA()))));
   }
 
   public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
@@ -1007,6 +1007,13 @@ public class JavaGrammar {
 
   public ExpressionTree EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaLexer.EXPRESSION)
+      .is(b.firstOf(
+        LAMBDA_EXPRESSION(),
+        ASSIGNMENT_EXPRESSION()));
+  }
+
+  public ExpressionTree EXPRESSION_NOT_LAMBDA() {
+    return b.<ExpressionTree>nonterminal(JavaLexer.EXPRESSION_NOT_LAMBDA)
       .is(ASSIGNMENT_EXPRESSION());
   }
 
@@ -1030,7 +1037,9 @@ public class JavaGrammar {
                 b.token(JavaPunctuator.SLEQU),
                 b.token(JavaPunctuator.SREQU),
                 b.token(JavaPunctuator.BSREQU)),
-              CONDITIONAL_EXPRESSION()))));
+              b.firstOf(
+                LAMBDA_EXPRESSION(),
+                CONDITIONAL_EXPRESSION())))));
   }
 
   public ExpressionTree CONDITIONAL_EXPRESSION() {
@@ -1043,7 +1052,9 @@ public class JavaGrammar {
               b.token(JavaPunctuator.QUERY),
               EXPRESSION(),
               b.token(JavaPunctuator.COLON),
-              EXPRESSION()))));
+              b.firstOf(
+                LAMBDA_EXPRESSION(),
+                CONDITIONAL_EXPRESSION())))));
   }
 
   public ExpressionTree CONDITIONAL_OR_EXPRESSION() {
@@ -1227,7 +1238,9 @@ public class JavaGrammar {
                 TYPE(),
                 b.optional(f.newTuple29(b.token(JavaPunctuator.AND), BOUND())),
                 b.token(JavaPunctuator.RPAR),
-                UNARY_EXPRESSION_NOT_PLUS_MINUS()))));
+                b.firstOf(
+                  LAMBDA_EXPRESSION(),
+                  UNARY_EXPRESSION_NOT_PLUS_MINUS())))));
   }
 
   public ExpressionTree METHOD_REFERENCE() {
@@ -1249,7 +1262,6 @@ public class JavaGrammar {
     return b.<ExpressionTree>nonterminal(JavaLexer.PRIMARY)
       .is(
         b.firstOf(
-          LAMBDA_EXPRESSION(),
           IDENTIFIER_OR_METHOD_INVOCATION(),
           PARENTHESIZED_EXPRESSION(),
           LITERAL(),

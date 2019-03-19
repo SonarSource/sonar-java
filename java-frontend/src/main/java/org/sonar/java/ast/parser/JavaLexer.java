@@ -194,6 +194,7 @@ public enum JavaLexer implements GrammarRuleKey {
   EMPTY_STATEMENT,
 
   EXPRESSION,
+  EXPRESSION_NOT_LAMBDA,
   RESOURCE,
   PAR_EXPRESSION,
   FOR_INIT,

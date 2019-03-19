@@ -35,6 +35,12 @@ public class SwitchStatementTest {
   }
 
   @Test
+  public void switch_in_compilation_unit_context() {
+    assertThat(JavaLexer.COMPILATION_UNIT)
+      .matches("class A { void f() { boolean r = switch(x) { case A -> true; default -> false; }; } }");
+  }
+
+  @Test
   public void switch_statement_with_traditional_control_flow() {
     assertThat(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
       .matches("" +
@@ -60,6 +66,16 @@ public class SwitchStatementTest {
         "  case 2 -> { if (r == 0) print('A'); else print('B'); }" +
         "  default -> {}" +
         "}")
+      .matches("" +
+        "switch (i) {" +
+        "  case ENUM1 -> print('A');" +
+        "  case ENUM2 -> { if (r == 0) print('A'); else print('B'); }" +
+        "  default -> {}" +
+        "}")
+      // cast expression should not be confuse with lambda
+      .matches("switch (i) { case (char)C -> print('C'); default -> print('D'); }")
+      // Limitation: we confuse the "case with arrow" and "lambda at the end of conditional expression" in the following valid java code:
+      .notMatches("switch (i) { case true ? 1 : C -> print('C'); default -> print('B'); }")
       // Our parser is more tolerant than java 12, we wrongly accept:
       // empty statement
       .matches("switch (i) { case 1 -> ; }")
