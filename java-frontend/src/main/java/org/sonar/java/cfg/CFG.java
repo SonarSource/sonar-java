@@ -505,7 +505,11 @@ public class CFG implements ControlFlowGraph {
         buildLabeledStatement((LabeledStatementTree) tree);
         break;
       case SWITCH_STATEMENT:
-        buildSwitchStatement((SwitchStatementTree) tree);
+        if (tree.parent().is(Tree.Kind.BLOCK, Tree.Kind.CASE_GROUP)) {
+          buildSwitchStatement((SwitchStatementTree) tree);
+        } else {
+          buildSwitchExpression((SwitchStatementTree) tree);
+        }
         break;
       case BREAK_STATEMENT:
         buildBreakStatement((BreakStatementTree) tree);
@@ -758,6 +762,10 @@ public class CFG implements ControlFlowGraph {
       currentBlock.addSuccessor(switchSuccessor);
     }
     currentBlock = conditionBlock;
+  }
+
+  private void buildSwitchExpression(SwitchStatementTree tree) {
+    currentBlock.elements.add(tree);
   }
 
   private static boolean containsDefaultCase(List<CaseLabelTree> labels) {

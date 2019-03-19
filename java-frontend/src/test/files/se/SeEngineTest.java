@@ -7,6 +7,10 @@ class A0 {
       a.toString(); // Noncompliant
   }
 
+  void switch_expression(int r) {
+    r = switch (1) { default -> 42; };
+  }
+
   void complex_condition() {
     if (b == a && a == null)
       a.toString(); // Noncompliant
