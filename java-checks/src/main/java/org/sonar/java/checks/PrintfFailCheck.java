@@ -204,6 +204,11 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
       }else {
         index++;
       }
+      if (argIndex >= args.size()) {
+        int formatIndex = argIndex + 1;
+        reportIssue(mit, "Not enough arguments to feed formater at index " + formatIndex + ": '%" + formatIndex + "$'.");
+        return;
+      }
       ExpressionTree argExpressionTree = args.get(argIndex);
       Type argType = argExpressionTree.symbolType();
       checkNumerical(mit, param, argType);

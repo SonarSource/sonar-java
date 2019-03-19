@@ -17,6 +17,8 @@ class A {
     String.format("Display %3$d and then %d", 1, 2, 3);
     String.format("Too many arguments %d and %d", 1, 2, 3);
     String.format("Not enough arguments %d and %d", 1);  // Noncompliant {{Not enough arguments.}}
+    String.format("%1$d %2$d %9$-3.3s", 1, 2, "hello");  // Noncompliant {{Not enough arguments to feed formater at index 9: '%9$'.}}
+    String.format("%12$s", 1, 2, "hello");  // Noncompliant {{Not enough arguments to feed formater at index 12: '%12$'.}}
     String.format("First Line\n %d", 1);
     String.format("First Line");
     String.format("First Line%%");
