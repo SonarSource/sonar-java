@@ -29,8 +29,12 @@ import javax.annotation.Nullable;
  * JLS 14.11
  *
  * <pre>
- *   case {@link #expression()} :
+ *   case {@link #expressions()} :
  *   default :
+ * </pre>
+ * <pre>
+ *   case {@link #expressions()} ->
+ *   default ->
  * </pre>
  *
  * @since Java 1.3
@@ -41,25 +45,32 @@ public interface CaseLabelTree extends Tree {
   SyntaxToken caseOrDefaultKeyword();
 
   /**
-   * @deprecated use the {@link #expressions()} method.
+   * @return true for case with colon: "case 3:" or "default:"
+   *         false for case with arrow: "case 3 ->" or "default ->"
+   * @since 5.12 (Java 12 new features)
+   */
+  boolean isFallThrough();
+
+  /**
+   * @deprecated (since 5.12) use the {@link #expressions()} method.
    */
   @Deprecated
   @Nullable
   ExpressionTree expression();
 
   /**
-   * @since 5.12
+   * @since 5.12 (Java 12 new features)
    */
   List<ExpressionTree> expressions();
 
   /**
-   * @deprecated use the {@link #colonOrArrowToken()} method.
+   * @deprecated (since 5.12) use the {@link #colonOrArrowToken()} method.
    */
   @Deprecated
   SyntaxToken colonToken();
 
   /**
-   * @since 5.12
+   * @since 5.12 (Java 12 new features)
    */
   SyntaxToken colonOrArrowToken();
 

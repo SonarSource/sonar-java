@@ -1209,7 +1209,7 @@ public class JavaTreeModelTest {
     assertThat(c.is(Tree.Kind.CASE_GROUP)).isTrue();
     assertThat(c.labels()).hasSize(2);
     CaseLabelTree caseLabelTree = c.labels().get(0);
-    assertThat(caseLabelTree.is(Tree.Kind.CASE_LABEL_COLON)).isTrue();
+    assertThat(caseLabelTree.isFallThrough()).isTrue();
     assertThat(caseLabelTree.caseOrDefaultKeyword().text()).isEqualTo("case");
     assertThat(caseLabelTree.expression()).isNotNull();
     assertThat(caseLabelTree.expressions()).hasSize(1);
@@ -1224,14 +1224,14 @@ public class JavaTreeModelTest {
       (InternalSyntaxToken)caseLabelTree.caseOrDefaultKeyword(),
       caseLabelTree.expression(),
       (InternalSyntaxToken) caseLabelTree.colonOrArrowToken());
-    assertThat(oldCaseLabel.is(Tree.Kind.CASE_LABEL_COLON)).isTrue();
+    assertThat(oldCaseLabel.isFallThrough()).isTrue();
     assertThat(oldCaseLabel.caseOrDefaultKeyword().text()).isEqualTo("case");
     assertThat(oldCaseLabel.expression()).isNotNull();
     assertThat(oldCaseLabel.expressions()).hasSize(1);
     assertThat(caseLabelTree.colonOrArrowToken().text()).isEqualTo(":");
 
     caseLabelTree = c.labels().get(1);
-    assertThat(caseLabelTree.is(Kind.CASE_LABEL_ARROW)).isTrue();
+    assertThat(caseLabelTree.isFallThrough()).isFalse();
     assertThat(caseLabelTree.caseOrDefaultKeyword().text()).isEqualTo("case");
     assertThat(caseLabelTree.expression()).isNotNull();
     assertThat(caseLabelTree.expressions()).hasSize(2);
@@ -1247,10 +1247,10 @@ public class JavaTreeModelTest {
     assertThat(c.is(Tree.Kind.CASE_GROUP)).isTrue();
     assertThat(c.labels()).hasSize(1);
     caseLabelTree = c.labels().get(0);
-    assertThat(caseLabelTree.is(Tree.Kind.CASE_LABEL_COLON)).isTrue();
+    assertThat(caseLabelTree.isFallThrough()).isTrue();
     assertThat(caseLabelTree.caseOrDefaultKeyword().text()).isEqualTo("default");
     assertThat(caseLabelTree.expression()).isNull();
-    assertThat(caseLabelTree.colonToken().text()).isEqualTo(":");
+    assertThat(caseLabelTree.colonOrArrowToken().text()).isEqualTo(":");
     assertThatChildrenIteratorHasSize(caseLabelTree, 2);
     assertThat(c.body()).hasSize(1);
 

@@ -535,6 +535,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   @Override
+  public void visitSwitchStatement(SwitchStatementTree tree) {
+    super.visitSwitchStatement(tree);
+    registerType(tree, Symbols.unknownType);
+  }
+
+  @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
     resolveAs(tree.expression(), JavaSymbol.VAR);
   }
@@ -641,18 +647,18 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitCaseLabel(CaseLabelTree tree) {
-    ExpressionTree labelExpression = tree.expression();
-    if (labelExpression == null) {
+    if (tree.expressions().isEmpty()) {
       // for 'default' case
       return;
     }
+    ExpressionTree labelExpression = tree.expressions().get(0);
     ExpressionTree enumExpression = enumExpressionFromSwitchOnEnum(tree);
     if (enumExpression != null) {
       // JLS10 § 14.11. : If the type of the switch statement's Expression is an enum type, then every case constant associated
       // with the switch statement must be an enum constant of that type.
       resolveEnumConstant(enumExpression, (IdentifierTree) labelExpression);
     } else {
-      scan(tree.expression());
+      scan(tree.expressions());
     }
   }
 

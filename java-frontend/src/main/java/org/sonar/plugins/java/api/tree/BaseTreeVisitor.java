@@ -128,7 +128,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitCaseLabel(CaseLabelTree tree) {
-    scan(tree.expression());
+    scan(tree.expressions());
   }
 
   @Override

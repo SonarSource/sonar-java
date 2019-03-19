@@ -36,29 +36,34 @@ import java.util.Collections;
 public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
   private final InternalSyntaxToken caseOrDefaultKeyword;
   private final List<ExpressionTree> expressions;
-  private final Kind kind;
+  private final boolean isFallThrough;
   private final InternalSyntaxToken colonOrArrowToken;
 
   public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, @Nullable ExpressionTree expression, InternalSyntaxToken colonOrArrowToken) {
-    this(caseOrDefaultKeyword, Collections.singletonList(expression), Kind.CASE_LABEL_COLON, colonOrArrowToken);
+    this(caseOrDefaultKeyword, Collections.singletonList(expression), true, colonOrArrowToken);
   }
 
-  public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, List<ExpressionTree> expressions, Kind kind, InternalSyntaxToken colonOrArrowToken) {
+  public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, List<ExpressionTree> expressions, boolean isFallThrough, InternalSyntaxToken colonOrArrowToken) {
     super(JavaLexer.SWITCH_LABEL);
     this.caseOrDefaultKeyword = caseOrDefaultKeyword;
     this.expressions = expressions;
-    this.kind = kind;
+    this.isFallThrough = isFallThrough;
     this.colonOrArrowToken = colonOrArrowToken;
   }
 
   @Override
   public Kind kind() {
-    return kind;
+    return Kind.CASE_LABEL;
   }
 
   @Override
   public SyntaxToken caseOrDefaultKeyword() {
     return caseOrDefaultKeyword;
+  }
+
+  @Override
+  public boolean isFallThrough() {
+    return isFallThrough;
   }
 
   @Nullable

@@ -44,7 +44,7 @@ public interface BreakStatementTree extends StatementTree {
   IdentifierTree label();
 
   /**
-   * @since 5.12
+   * @since 5.12 (Java 12 new features)
    */
   @Nullable
   ExpressionTree value();

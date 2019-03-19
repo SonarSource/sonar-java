@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -735,11 +736,10 @@ public class CFG implements ControlFlowGraph {
       CaseGroupTree firstCase = switchStatementTree.cases().get(0);
       for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
         build(caseGroupTree.body());
-        Lists.reverse(caseGroupTree.labels()).forEach(l -> {
-          if (l.expression() != null) {
-            build(l.expression());
-          }
-        });
+        Lists.reverse(caseGroupTree.labels()).stream()
+          .map(CaseLabelTree::expressions)
+          .flatMap(Collection::stream)
+          .forEach(this::build);
         if (!hasDefaultCase) {
           hasDefaultCase = containsDefaultCase(caseGroupTree.labels());
         }

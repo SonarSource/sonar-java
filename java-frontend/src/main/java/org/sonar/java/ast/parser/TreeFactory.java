@@ -1116,19 +1116,19 @@ public class TreeFactory {
   }
 
   public CaseLabelTreeImpl newSwitchCaseColonLabel(InternalSyntaxToken caseSyntaxToken, ArgumentListTreeImpl argumentList, InternalSyntaxToken colonToken) {
-    return new CaseLabelTreeImpl(caseSyntaxToken, argumentList, Kind.CASE_LABEL_COLON, colonToken);
+    return new CaseLabelTreeImpl(caseSyntaxToken, argumentList, true, colonToken);
   }
 
   public CaseLabelTreeImpl newSwitchCaseArrowLabel(InternalSyntaxToken caseSyntaxToken, ArgumentListTreeImpl argumentList, InternalSyntaxToken arrowToken) {
-    return new CaseLabelTreeImpl(caseSyntaxToken, argumentList, Kind.CASE_LABEL_ARROW, arrowToken);
+    return new CaseLabelTreeImpl(caseSyntaxToken, argumentList, false, arrowToken);
   }
 
   public CaseLabelTreeImpl newSwitchDefaultColonLabel(InternalSyntaxToken defaultToken, InternalSyntaxToken colonToken) {
-    return new CaseLabelTreeImpl(defaultToken, Collections.emptyList(), Kind.CASE_LABEL_COLON, colonToken);
+    return new CaseLabelTreeImpl(defaultToken, Collections.emptyList(), true, colonToken);
   }
 
   public CaseLabelTreeImpl newSwitchDefaultArrowLabel(InternalSyntaxToken defaultToken, InternalSyntaxToken arrowToken) {
-    return new CaseLabelTreeImpl(defaultToken, Collections.emptyList(), Kind.CASE_LABEL_ARROW, arrowToken);
+    return new CaseLabelTreeImpl(defaultToken, Collections.emptyList(), false, arrowToken);
   }
 
   public SynchronizedStatementTreeImpl synchronizedStatement(InternalSyntaxToken synchronizedToken, InternalSyntaxToken openParenToken, ExpressionTree expression,

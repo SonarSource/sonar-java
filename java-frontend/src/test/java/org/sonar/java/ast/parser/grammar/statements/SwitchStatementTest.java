@@ -179,12 +179,18 @@ public class SwitchStatementTest {
   }
 
   @Test
-  public void switch_should_be_a_statement_with_or_without_a_semicolon() {
+  public void switch_statement_with_semicolon() {
     assertThat(JavaLexer.STATEMENT)
-      .matches("{ switch (i) { case 1 -> print('A'); } }")
-      .matches("{ switch (i) { case 1 -> print('A'); };}")
-      // but after a switch expression, a semicolon is required
+      .matches("switch (i) { case 1 -> print('A'); }")
+      // adding a semicolon is like adding an extra empty statement
+      .notMatches("switch (i) { case 1 -> print('A'); };");
+  }
+
+  @Test
+  public void statement_with_switch_expression_and_semicolon_at_the_end() {
+    assertThat(JavaLexer.STATEMENT)
       .matches("r = switch (i) { case 1 -> 10; default -> 0; };")
+      // missing semicolon
       .notMatches("r = switch (i) { case 1 -> 10; default -> 0; }");
   }
 

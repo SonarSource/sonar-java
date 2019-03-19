@@ -144,17 +144,9 @@ public interface Tree {
     CASE_GROUP(CaseGroupTree.class),
 
     /**
-     * case with colon: case <expression-list> :
      * {@link CaseLabelTree}
      */
-    CASE_LABEL_COLON(CaseLabelTree.class),
-
-    /**
-     * java 12 case with arrow: case <expression-list> ->
-     * @since 5.12
-     * {@link CaseLabelTree}
-     */
-    CASE_LABEL_ARROW(CaseLabelTree.class),
+    CASE_LABEL(CaseLabelTree.class),
 
     /**
      * {@link WhileStatementTree}

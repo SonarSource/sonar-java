@@ -565,6 +565,12 @@ public class TypeAndReferenceSolverTest {
   }
 
   @Test
+  public void switch_expression() {
+    assertThat(typeOfExpression("switch(1) { default -> new Object(); }")).isSameAs(Symbols.unknownType);
+    assertThat(typeOfExpression("switch(1) { case 1 -> 42; default -> 42; }")).isSameAs(Symbols.unknownType);
+  }
+
+  @Test
   public void lambda_expression() {
     assertThat(typeOf("a -> a+1").isTagged(JavaType.DEFERRED)).isTrue();
   }
