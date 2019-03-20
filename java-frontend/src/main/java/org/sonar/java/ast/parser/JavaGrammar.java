@@ -928,10 +928,10 @@ public class JavaGrammar {
     return b.<CaseLabelTreeImpl>nonterminal(JavaLexer.SWITCH_LABEL)
       .is(
         b.firstOf(
-          f.newSwitchCaseColonLabel(b.token(JavaKeyword.CASE), SWITCH_CASE_EXPRESSION_LIST(), b.token(JavaPunctuator.COLON)),
-          f.newSwitchCaseArrowLabel(b.token(JavaKeyword.CASE), SWITCH_CASE_EXPRESSION_LIST(), b.token(JavaLexer.ARROW)),
-          f.newSwitchDefaultColonLabel(b.token(JavaKeyword.DEFAULT), b.token(JavaPunctuator.COLON)),
-          f.newSwitchDefaultArrowLabel(b.token(JavaKeyword.DEFAULT), b.token(JavaLexer.ARROW))));
+          f.newSwitchCaseLabel(b.token(JavaKeyword.CASE), SWITCH_CASE_EXPRESSION_LIST(), b.token(JavaPunctuator.COLON)),
+          f.newSwitchCaseLabel(b.token(JavaKeyword.CASE), SWITCH_CASE_EXPRESSION_LIST(), b.token(JavaLexer.ARROW)),
+          f.newSwitchCaseDefaultLabel(b.token(JavaKeyword.DEFAULT), b.token(JavaPunctuator.COLON)),
+          f.newSwitchCaseDefaultLabel(b.token(JavaKeyword.DEFAULT), b.token(JavaLexer.ARROW))));
   }
 
   public ArgumentListTreeImpl SWITCH_CASE_EXPRESSION_LIST() {

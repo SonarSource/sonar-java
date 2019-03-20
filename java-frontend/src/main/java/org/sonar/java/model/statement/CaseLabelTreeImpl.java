@@ -20,7 +20,10 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterables;
+import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -30,24 +33,17 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-
 public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
   private final InternalSyntaxToken caseOrDefaultKeyword;
   private final List<ExpressionTree> expressions;
   private final boolean isFallThrough;
   private final InternalSyntaxToken colonOrArrowToken;
 
-  public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, @Nullable ExpressionTree expression, InternalSyntaxToken colonOrArrowToken) {
-    this(caseOrDefaultKeyword, Collections.singletonList(expression), true, colonOrArrowToken);
-  }
-
-  public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, List<ExpressionTree> expressions, boolean isFallThrough, InternalSyntaxToken colonOrArrowToken) {
+  public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, List<ExpressionTree> expressions, InternalSyntaxToken colonOrArrowToken) {
     super(JavaLexer.SWITCH_LABEL);
     this.caseOrDefaultKeyword = caseOrDefaultKeyword;
     this.expressions = expressions;
-    this.isFallThrough = isFallThrough;
+    this.isFallThrough = JavaPunctuator.COLON.getValue().equals(colonOrArrowToken.text());
     this.colonOrArrowToken = colonOrArrowToken;
   }
 

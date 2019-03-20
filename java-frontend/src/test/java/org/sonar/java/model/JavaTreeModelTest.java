@@ -25,7 +25,6 @@ import java.util.List;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
-import org.sonar.java.model.statement.CaseLabelTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
@@ -1218,17 +1217,6 @@ public class JavaTreeModelTest {
     assertThat(caseLabelTree.colonToken().text()).isEqualTo(":");
     assertThat(caseLabelTree.colonOrArrowToken().text()).isEqualTo(":");
     assertThatChildrenIteratorHasSize(caseLabelTree, 3);
-
-    // old CaseLabelTreeImpl constructor is still available
-    CaseLabelTreeImpl oldCaseLabel = new CaseLabelTreeImpl(
-      (InternalSyntaxToken)caseLabelTree.caseOrDefaultKeyword(),
-      caseLabelTree.expression(),
-      (InternalSyntaxToken) caseLabelTree.colonOrArrowToken());
-    assertThat(oldCaseLabel.isFallThrough()).isTrue();
-    assertThat(oldCaseLabel.caseOrDefaultKeyword().text()).isEqualTo("case");
-    assertThat(oldCaseLabel.expression()).isNotNull();
-    assertThat(oldCaseLabel.expressions()).hasSize(1);
-    assertThat(caseLabelTree.colonOrArrowToken().text()).isEqualTo(":");
 
     caseLabelTree = c.labels().get(1);
     assertThat(caseLabelTree.isFallThrough()).isFalse();

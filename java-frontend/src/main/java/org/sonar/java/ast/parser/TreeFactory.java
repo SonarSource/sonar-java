@@ -1115,20 +1115,12 @@ public class TreeFactory {
     return new CaseGroupTreeImpl(labels, blockStatements);
   }
 
-  public CaseLabelTreeImpl newSwitchCaseColonLabel(InternalSyntaxToken caseSyntaxToken, ArgumentListTreeImpl argumentList, InternalSyntaxToken colonToken) {
-    return new CaseLabelTreeImpl(caseSyntaxToken, argumentList, true, colonToken);
+  public CaseLabelTreeImpl newSwitchCaseLabel(InternalSyntaxToken caseSyntaxToken, ArgumentListTreeImpl argumentList, InternalSyntaxToken colonToken) {
+    return new CaseLabelTreeImpl(caseSyntaxToken, argumentList, colonToken);
   }
 
-  public CaseLabelTreeImpl newSwitchCaseArrowLabel(InternalSyntaxToken caseSyntaxToken, ArgumentListTreeImpl argumentList, InternalSyntaxToken arrowToken) {
-    return new CaseLabelTreeImpl(caseSyntaxToken, argumentList, false, arrowToken);
-  }
-
-  public CaseLabelTreeImpl newSwitchDefaultColonLabel(InternalSyntaxToken defaultToken, InternalSyntaxToken colonToken) {
-    return new CaseLabelTreeImpl(defaultToken, Collections.emptyList(), true, colonToken);
-  }
-
-  public CaseLabelTreeImpl newSwitchDefaultArrowLabel(InternalSyntaxToken defaultToken, InternalSyntaxToken arrowToken) {
-    return new CaseLabelTreeImpl(defaultToken, Collections.emptyList(), false, arrowToken);
+  public CaseLabelTreeImpl newSwitchCaseDefaultLabel(InternalSyntaxToken defaultToken, InternalSyntaxToken colonToken) {
+    return new CaseLabelTreeImpl(defaultToken, Collections.emptyList(), colonToken);
   }
 
   public SynchronizedStatementTreeImpl synchronizedStatement(InternalSyntaxToken synchronizedToken, InternalSyntaxToken openParenToken, ExpressionTree expression,
