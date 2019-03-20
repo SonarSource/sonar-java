@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.SymbolUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
@@ -34,6 +33,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -47,7 +47,7 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.METHOD);
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override
@@ -55,17 +55,19 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
     if (!hasSemantic()) {
       return;
     }
-    if (tree.is(Tree.Kind.CLASS)) {
-      checkFields((ClassTree) tree);
-    } else if (tree.is(Tree.Kind.METHOD)) {
-      checkMethod((MethodTree) tree);
+    ClassTree classTree = (ClassTree) tree;
+
+    for (Tree member : classTree.members()) {
+      if (member.is(Tree.Kind.VARIABLE)) {
+        checkField((VariableTree) member);
+      } else if (member.is(Tree.Kind.METHOD)) {
+        checkMethod((MethodTree) member);
+      }
     }
   }
 
-  private void checkFields(ClassTree tree) {
-    JavaSymbol.TypeJavaSymbol typeJavaSymbol = (JavaSymbol.TypeJavaSymbol) tree.symbol();
-    typeJavaSymbol.memberSymbols().stream().filter(SymbolUtils::isField).map(Symbol::declaration).map(VariableTree.class::cast)
-      .forEach(declaration -> getIssueMessage(declaration).ifPresent(message -> reportIssue(declaration.type(), message)));
+  private void checkField(VariableTree declaration) {
+    getIssueMessage(declaration).ifPresent(message -> reportIssue(declaration.type(), message));
   }
 
   private void checkMethod(MethodTree method) {
@@ -82,16 +84,16 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean validationEnabled(VariableTree variable) {
-    Type type = variable.symbol().type();
-    boolean result = variable.symbol().metadata().isAnnotatedWith(JAVAX_VALIDATION_VALID);
-    if (type instanceof ParametrizedTypeJavaType) {
-      result = result || typeArgumentAnnotationNames(variable).anyMatch(name -> name.equals(JAVAX_VALIDATION_VALID));
+    if (variable.symbol().metadata().isAnnotatedWith(JAVAX_VALIDATION_VALID)) {
+      return true;
     }
-    return result;
+
+    Type type = variable.symbol().type();
+    return type instanceof ParametrizedTypeJavaType && typeArgumentAnnotations(variable).anyMatch(annotation -> annotation.is(JAVAX_VALIDATION_VALID));
   }
 
-  private Stream<String> typeArgumentAnnotationNames(VariableTree variable) {
-    return typeArgumentTypeTrees(variable).flatMap(type -> type.annotations().stream()).map(annotation -> annotation.symbolType().fullyQualifiedName());
+  private Stream<Type> typeArgumentAnnotations(VariableTree variable) {
+    return typeArgumentTypeTrees(variable).flatMap(type -> type.annotations().stream()).map(ExpressionTree::symbolType);
   }
 
   private Stream<TypeTree> typeArgumentTypeTrees(VariableTree variable) {
@@ -124,12 +126,12 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
     return Stream.concat(classAnnotationInstances(classSymbol), fieldAnnotationInstances(classSymbol));
   }
 
-  private Stream<SymbolMetadata.AnnotationInstance> classAnnotationInstances(JavaSymbol classSymbol) {
+  private Stream<SymbolMetadata.AnnotationInstance> classAnnotationInstances(Symbol classSymbol) {
     return classSymbol.metadata().annotations().stream();
   }
 
   private Stream<SymbolMetadata.AnnotationInstance> fieldAnnotationInstances(JavaSymbol.TypeJavaSymbol classSymbol) {
-    return classSymbol.memberSymbols().stream().map(JavaSymbol.class::cast).flatMap(this::classAnnotationInstances);
+    return classSymbol.memberSymbols().stream().flatMap(this::classAnnotationInstances);
   }
 
   private boolean isConstraintAnnotation(SymbolMetadata.AnnotationInstance annotationInstance) {

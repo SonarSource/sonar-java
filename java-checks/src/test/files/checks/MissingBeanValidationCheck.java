@@ -36,6 +36,10 @@ class CompliantGroup {
   private List<User> members; // Compliant
 }
 
+class CompliantUserSelection {
+  private List<@Valid User> contents; // Compliant; preferred syntax as of Java 8
+}
+
 class NonCompliantService {
   public void login(User user) { // Noncompliant {{Add missing "@Valid" on "user" to validate it with "Bean Validation".}}
   }

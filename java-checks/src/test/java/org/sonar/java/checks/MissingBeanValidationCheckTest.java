@@ -23,13 +23,9 @@ import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class MissingBeanValidationCheckTest {
-  @Test
-  public void java8() {
-    JavaCheckVerifier.verify("src/test/files/checks/MissingBeanValidationCheckJava8.java", new MissingBeanValidationCheck(), 8);
-  }
 
   @Test
-  public void no_version() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/MissingBeanValidationCheck.java", new MissingBeanValidationCheck());
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/MissingBeanValidationCheck.java", new MissingBeanValidationCheck());
   }
