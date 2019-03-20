@@ -78,6 +78,7 @@ public class JavaClasspathTest {
   public void should_use_new_java_binaries_property() {
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/classes");
+    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT,PROJECT_KEY_DIT,"java","dit-check");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(1);
   }
@@ -95,6 +96,7 @@ public class JavaClasspathTest {
   public void relative_path_and_wildcard_for_binaries_should_be_supported() {
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/../target/clas**, ");
+    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT,PROJECT_KEY_DIT,"java","dit-check");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(1);
   }
@@ -103,6 +105,7 @@ public class JavaClasspathTest {
   public void should_use_aar_library() {
     SonarScanner scanner = aarProjectSonarScanner();
     scanner.setProperty("sonar.java.libraries", aarPath);
+    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_AAR,PROJECT_KEY_DIT,"java","using-aar-dep");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_AAR)).isEqualTo(1);
   }
@@ -112,6 +115,7 @@ public class JavaClasspathTest {
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/classes");
     scanner.setProperty("sonar.java.libraries", guavaJarPath);
+    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT,PROJECT_KEY_DIT,"java","dit-check");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(2);
   }
@@ -122,6 +126,7 @@ public class JavaClasspathTest {
     scanner.setProperty("sonar.java.binaries", "target/classes");
     scanner.setProperty("sonar.java.libraries", guavaJarPath + "," + fakeGuavaJarPath);
     scanner.setProperty("sonar.verbose", "true");
+    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT,PROJECT_KEY_DIT,"java","dit-check");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(2);
 
@@ -131,6 +136,7 @@ public class JavaClasspathTest {
     scanner.setProperty("sonar.java.binaries", "target/classes");
     scanner.setProperty("sonar.java.libraries", fakeGuavaJarPath + "," + guavaJarPath);
     scanner.setProperty("sonar.verbose", "true");
+    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT,PROJECT_KEY_DIT,"java","dit-check");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(1);
   }
@@ -161,6 +167,7 @@ public class JavaClasspathTest {
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target");
     scanner.setProperty("sonar.java.libraries", "target/classes");
+    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT,PROJECT_KEY_DIT,"java","dit-check");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(1);
   }
@@ -172,8 +179,8 @@ public class JavaClasspathTest {
   private static void mavenOnDitProject(String goal) {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("dit-check"))
       .setGoals(goal)
-      .setProperty("sonar.profile", "dit-check")
       .setProperty("sonar.dynamicAnalysis", "false");
+
     ORCHESTRATOR.executeBuild(build);
   }
 
@@ -182,7 +189,6 @@ public class JavaClasspathTest {
       .setProperty("sonar.projectKey", PROJECT_KEY_AAR)
       .setProperty("sonar.projectName", "using-aar-dep")
       .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
-      .setProperty("sonar.profile", "using-aar-dep")
       .setProperty("sonar.sources", "src/main/java");
   }
 
@@ -191,7 +197,6 @@ public class JavaClasspathTest {
       .setProperty("sonar.projectKey", PROJECT_KEY_DIT)
       .setProperty("sonar.projectName", "dit-check")
       .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
-      .setProperty("sonar.profile", "dit-check")
       .setProperty("sonar.sources", "src/main/java");
   }
 

@@ -133,8 +133,9 @@ public class JavaTest {
   @Test
   public void filtered_issues() throws Exception {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("filtered-issues"))
-      .setCleanPackageSonarGoals()
-      .setProperty("sonar.profile", "filtered-issues");
+      .setCleanPackageSonarGoals();
+
+    TestUtils.provisionProject(orchestrator,"org.example:example","filtered-issues","java","filtered-issues");
     orchestrator.executeBuild(build);
 
     assertThat(getMeasureAsInteger("org.example:example", "violations")).isEqualTo(2);
@@ -186,11 +187,10 @@ public class JavaTest {
     orchestrator.getConfiguration().locators().copyToDirectory(junit_4_11, tmp.getRoot());
     MavenBuild build = MavenBuild.create()
       .setPom(TestUtils.projectPom("java-inner-classes"))
-      .setProperty("sonar.profile", "ignored-test-check")
       .setProperty("sonar.java.test.binaries", "target/test-classes")
       .setProperty("sonar.java.test.libraries", new File(tmp.getRoot(), junit_4_11.getFilename()).getAbsolutePath())
       .setCleanPackageSonarGoals();
-
+    TestUtils.provisionProject(orchestrator,"com.sonarsource.it.samples:java-inner-classes","java-inner-classes","java","ignored-test-check");
     orchestrator.executeBuild(build);
     assertThat(getMeasureAsInteger("com.sonarsource.it.samples:java-inner-classes", "violations")).isEqualTo(1);
   }
@@ -200,8 +200,9 @@ public class JavaTest {
     String sonarJavaSource = "sonar.java.source";
 
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-version-aware-visitor"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.profile", "java-version-aware-visitor");
+      .setCleanSonarGoals();
+
+    TestUtils.provisionProject(orchestrator,"org.example:example","java-version-aware-visitor","java","java-version-aware-visitor");
 
     // no java version specified. maven scanner gets maven default version : java 5.
     orchestrator.executeBuild(build);
@@ -230,8 +231,8 @@ public class JavaTest {
       .setProperty("sonar.projectKey", "org.example:example-scanner")
       .setProperty("sonar.projectName", "example")
       .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
-      .setProperty("sonar.profile", "java-version-aware-visitor")
       .setProperty("sonar.sources", "src/main/java");
+    TestUtils.provisionProject(orchestrator,"org.example:example-scanner","java-version-aware-visitor","java","java-version-aware-visitor");
     orchestrator.executeBuild(scan);
     // no java version specified, got issue on java 7 code
     assertThat(getMeasureAsInteger("org.example:example-scanner", "violations")).isEqualTo(1);

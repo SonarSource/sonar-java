@@ -21,6 +21,7 @@ package com.sonar.it.java.suite;
 
 import com.google.common.collect.Iterables;
 import com.sonar.orchestrator.Orchestrator;
+import com.sonar.orchestrator.container.Server;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -77,5 +78,11 @@ public class TestUtils {
       .credentials(ADMIN_LOGIN, ADMIN_PASSWORD)
       .url(orchestrator.getServer().getUrl())
       .build());
+  }
+
+  public static void provisionProject(Orchestrator ORCHESTRATOR, String projectKey, String projectName, String languageKey, String profileName) {
+    Server server = ORCHESTRATOR.getServer();
+    server.provisionProject(projectKey, projectName);
+    server.associateProjectToQualityProfile(projectKey, languageKey, profileName);
   }
 }
