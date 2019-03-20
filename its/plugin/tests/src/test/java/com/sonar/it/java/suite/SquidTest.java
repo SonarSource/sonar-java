@@ -43,8 +43,8 @@ public class SquidTest {
 
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("squid"))
       .setCleanPackageSonarGoals()
-      .setProperty("sonar.scm.disabled", "true")
-      .setProperty("sonar.profile", "squid");
+      .setProperty("sonar.scm.disabled", "true");
+    TestUtils.provisionProject(orchestrator, "com.sonarsource.it.samples:squid","squid","java","squid");
     orchestrator.executeBuild(build);
   }
 

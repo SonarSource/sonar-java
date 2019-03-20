@@ -39,6 +39,7 @@ public class SuppressWarningTest {
 
   @ClassRule
   public static final Orchestrator ORCHESTRATOR;
+  public static final String PROJECT_KEY = "org.example:example";
 
   static {
     OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
@@ -56,11 +57,12 @@ public class SuppressWarningTest {
   public void suppressWarnings_nosonar() throws Exception {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("suppress-warnings"))
       .setCleanSonarGoals()
-      .setProperty("sonar.java.binaries", "target")
-      .setProperty("sonar.profile", "suppress-warnings");
+      .setProperty("sonar.java.binaries", "target");
+    TestUtils.provisionProject(ORCHESTRATOR, SuppressWarningTest.PROJECT_KEY,"suppress-warnings","java","suppress-warnings");
+
     ORCHESTRATOR.executeBuild(build);
 
-    assertThat(parseInt(getMeasure("org.example:example", "violations").getValue())).isEqualTo(4);
+    assertThat(parseInt(getMeasure(PROJECT_KEY, "violations").getValue())).isEqualTo(4);
   }
 
   @CheckForNull

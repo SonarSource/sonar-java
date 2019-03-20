@@ -49,8 +49,8 @@ public class JavaComplexityTest {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-complexity"))
       .setCleanSonarGoals()
       .setProperty("sonar.dynamicAnalysis", "false")
-      .setProperty("sonar.java.binaries", "target")
-      .setProperty("sonar.profile", "java-complexity");
+      .setProperty("sonar.java.binaries", "target");
+    TestUtils.provisionProject(orchestrator, PROJECT,"java-complexity","java","java-complexity");
     orchestrator.executeBuild(build);
   }
 

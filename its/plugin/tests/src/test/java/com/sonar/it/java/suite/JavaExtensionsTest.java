@@ -39,8 +39,8 @@ public class JavaExtensionsTest {
   @Test
   public void test() {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-extension"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.profile", "java-extension");
+      .setCleanSonarGoals();
+    TestUtils.provisionProject(orchestrator, "com.sonarsource.it.projects:java-extension","java-extension","java","java-extension");
     orchestrator.executeBuild(build);
 
     IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
