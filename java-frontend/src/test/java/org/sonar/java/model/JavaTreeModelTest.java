@@ -71,6 +71,7 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.StaticInitializerTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -1191,7 +1192,7 @@ public class JavaTreeModelTest {
    * 14.11. The switch Statement
    */
   @Test
-  public void switch_statement() {
+  public void switch_statement_and_expression() {
     SwitchStatementTree tree = (SwitchStatementTree) firstMethodFirstStatement("class T { void m() { switch (e) { case 1: case 2, 3 -> ; default: ; } } }");
     assertThat(tree.is(Tree.Kind.SWITCH_STATEMENT)).isTrue();
     assertThat(tree.switchKeyword().text()).isEqualTo("switch");
@@ -1201,8 +1202,17 @@ public class JavaTreeModelTest {
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.cases()).hasSize(2);
-    assertThatChildrenIteratorHasSize(tree, 8);
-    assertThat(tree.symbolType().isUnknown()).isTrue();
+
+    SwitchExpressionTree switchExpression = tree.asSwitchExpression();
+    assertThat(switchExpression.is(Tree.Kind.SWITCH_EXPRESSION)).isTrue();
+    assertThat(tree.switchKeyword()).isEqualTo(switchExpression.switchKeyword());
+    assertThat(tree.openBraceToken()).isEqualTo(switchExpression.openBraceToken());
+    assertThat(tree.closeBraceToken()).isEqualTo(switchExpression.closeBraceToken());
+    assertThat(tree.openParenToken()).isEqualTo(switchExpression.openParenToken());
+    assertThat(tree.expression()).isEqualTo(switchExpression.expression());
+    assertThat(tree.closeParenToken()).isEqualTo(switchExpression.closeParenToken());
+    assertThat(tree.cases()).isEqualTo(switchExpression.cases());
+    assertThatChildrenIteratorHasSize(switchExpression, 8);
 
     CaseGroupTree c = tree.cases().get(0);
     assertThat(c.is(Tree.Kind.CASE_GROUP)).isTrue();
@@ -1245,7 +1255,7 @@ public class JavaTreeModelTest {
     tree = (SwitchStatementTree) firstMethodFirstStatement("class T { void m() { switch (e) { default: } } }");
     assertThat(tree.cases()).hasSize(1);
     assertThat(tree.cases().get(0).body()).isEmpty();
-    assertThatChildrenIteratorHasSize(tree, 7);
+    assertThatChildrenIteratorHasSize(tree, 1);
   }
 
   /**

@@ -28,7 +28,7 @@ public class SwitchStatementTest {
 
   @Test
   public void okSwitch() {
-    assertThat(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
+    assertThat(JavaLexer.SWITCH_STATEMENT)
       .matches("switch (foo) {}")
       .matches("switch (foo) { case 0: break; }")
       .matches("switch (foo) { case 0: break; default: break; }");
@@ -42,7 +42,7 @@ public class SwitchStatementTest {
 
   @Test
   public void switch_statement_with_traditional_control_flow() {
-    assertThat(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
+    assertThat(JavaLexer.SWITCH_STATEMENT)
       .matches("" +
         "switch (i) {" +
         "  case 1: print('A'); break;" +
@@ -59,7 +59,7 @@ public class SwitchStatementTest {
 
   @Test
   public void switch_statement_with_simplified_control_flow() {
-    assertThat(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
+    assertThat(JavaLexer.SWITCH_STATEMENT)
       .matches("" +
         "switch (i) {" +
         "  case 1 -> print('A');" +
@@ -89,7 +89,7 @@ public class SwitchStatementTest {
 
   @Test
   public void fall_through_with_traditional_control_flow() {
-    assertThat(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
+    assertThat(JavaLexer.SWITCH_STATEMENT)
       .matches("" +
         "switch (i) {" +
         "  case 1:" +
@@ -99,7 +99,7 @@ public class SwitchStatementTest {
 
   @Test
   public void fall_through_replacement_with_simplified_control_flow() {
-    assertThat(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
+    assertThat(JavaLexer.SWITCH_STATEMENT)
       .matches("" +
         "switch (i) {" +
         "  case 1, 2 -> print('A');" +

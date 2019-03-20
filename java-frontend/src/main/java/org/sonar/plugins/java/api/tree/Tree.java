@@ -139,6 +139,11 @@ public interface Tree {
     SWITCH_STATEMENT(SwitchStatementTree.class),
 
     /**
+     * {@link SwitchExpressionTree}
+     */
+    SWITCH_EXPRESSION(SwitchExpressionTree.class),
+
+    /**
      * {@link CaseGroupTree}
      */
     CASE_GROUP(CaseGroupTree.class),

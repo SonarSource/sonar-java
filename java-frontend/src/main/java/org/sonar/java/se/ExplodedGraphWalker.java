@@ -540,6 +540,7 @@ public class ExplodedGraphWalker {
         executeMethodInvocation(mit);
         return;
       case LABELED_STATEMENT:
+      case SWITCH_STATEMENT:
       case EXPRESSION_STATEMENT:
       case PARENTHESIZED_EXPRESSION:
         throw new IllegalStateException("Cannot appear in CFG: " + tree.kind().name());
@@ -629,7 +630,7 @@ public class ExplodedGraphWalker {
         break;
       case LAMBDA_EXPRESSION:
       case METHOD_REFERENCE:
-      case SWITCH_STATEMENT:
+      case SWITCH_EXPRESSION:
         programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
         break;
       case ASSERT_STATEMENT:

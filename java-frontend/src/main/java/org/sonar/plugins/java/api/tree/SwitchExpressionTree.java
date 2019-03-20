@@ -23,7 +23,7 @@ import com.google.common.annotations.Beta;
 import java.util.List;
 
 /**
- * 'switch' statement.
+ * 'switch' expression.
  *
  * JLS 14.11
  *
@@ -33,12 +33,10 @@ import java.util.List;
  *   }
  * </pre>
  *
- * @since SonarJava 5.12: wrapper on top of a {@link SwitchExpressionTree}
- *
- * @since Java 1.3
+ * @since Java 12
  */
 @Beta
-public interface SwitchStatementTree extends StatementTree {
+public interface SwitchExpressionTree extends ExpressionTree {
 
   SyntaxToken switchKeyword();
 
@@ -50,14 +48,7 @@ public interface SwitchStatementTree extends StatementTree {
 
   SyntaxToken openBraceToken();
 
-  // TODO groups() a better name?
   List<CaseGroupTree> cases();
 
   SyntaxToken closeBraceToken();
-
-  /**
-   * Switch expressions introduced with support Java 12
-   * @since SonarJava 5.12
-   */
-  SwitchExpressionTree asSwitchExpression();
 }

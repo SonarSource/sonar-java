@@ -116,6 +116,11 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
+    scan(tree.asSwitchExpression());
+  }
+
+  @Override
+  public void visitSwitchExpression(SwitchExpressionTree tree) {
     scan(tree.expression());
     scan(tree.cases());
   }

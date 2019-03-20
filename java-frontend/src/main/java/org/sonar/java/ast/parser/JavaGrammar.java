@@ -63,7 +63,6 @@ import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
-import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
@@ -76,6 +75,8 @@ import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
 import org.sonar.plugins.java.api.tree.ModuleNameTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
@@ -723,7 +724,7 @@ public class JavaGrammar {
           WHILE_STATEMENT(),
           DO_WHILE_STATEMENT(),
           TRY_STATEMENT(),
-          SWITCH_STATEMENT_OR_EXPRESSION(),
+          SWITCH_STATEMENT(),
           SYNCHRONIZED_STATEMENT(),
           RETURN_STATEMENT(),
           THROW_STATEMENT(),
@@ -909,10 +910,15 @@ public class JavaGrammar {
         PRIMARY_WITH_SELECTOR()));
   }
 
-  public SwitchStatementTreeImpl SWITCH_STATEMENT_OR_EXPRESSION() {
-    return b.<SwitchStatementTreeImpl>nonterminal(JavaLexer.SWITCH_STATEMENT_OR_EXPRESSION)
+  public SwitchStatementTree SWITCH_STATEMENT() {
+    return b.<SwitchStatementTree>nonterminal(JavaLexer.SWITCH_STATEMENT)
+      .is(f.switchStatement(SWITCH_EXPRESSION()));
+  }
+
+  public SwitchExpressionTree SWITCH_EXPRESSION() {
+    return b.<SwitchExpressionTree>nonterminal(JavaLexer.SWITCH_EXPRESSION)
       .is(
-        f.switchStatement(
+        f.switchExpression(
           b.token(JavaKeyword.SWITCH), b.token(JavaPunctuator.LPAR), EXPRESSION(), b.token(JavaPunctuator.RPAR),
           b.token(JavaPunctuator.LWING),
           b.zeroOrMore(SWITCH_GROUP()),
@@ -928,10 +934,17 @@ public class JavaGrammar {
     return b.<CaseLabelTreeImpl>nonterminal(JavaLexer.SWITCH_LABEL)
       .is(
         b.firstOf(
-          f.newSwitchCaseLabel(b.token(JavaKeyword.CASE), SWITCH_CASE_EXPRESSION_LIST(), b.token(JavaPunctuator.COLON)),
-          f.newSwitchCaseLabel(b.token(JavaKeyword.CASE), SWITCH_CASE_EXPRESSION_LIST(), b.token(JavaLexer.ARROW)),
-          f.newSwitchCaseDefaultLabel(b.token(JavaKeyword.DEFAULT), b.token(JavaPunctuator.COLON)),
-          f.newSwitchCaseDefaultLabel(b.token(JavaKeyword.DEFAULT), b.token(JavaLexer.ARROW))));
+          f.newSwitchCase(
+            b.token(JavaKeyword.CASE),
+            SWITCH_CASE_EXPRESSION_LIST(),
+            b.firstOf(
+              b.token(JavaPunctuator.COLON),
+              b.token(JavaLexer.ARROW))),
+          f.newSwitchDefault(
+            b.token(JavaKeyword.DEFAULT),
+            b.firstOf(
+              b.token(JavaPunctuator.COLON),
+              b.token(JavaLexer.ARROW)))));
   }
 
   public ArgumentListTreeImpl SWITCH_CASE_EXPRESSION_LIST() {
@@ -1218,7 +1231,7 @@ public class JavaGrammar {
                 b.token(JavaPunctuator.DEC)))),
           f.newTildaExpression(b.token(JavaPunctuator.TILDA), UNARY_EXPRESSION()),
           f.newBangExpression(b.token(JavaPunctuator.BANG), UNARY_EXPRESSION()),
-          SWITCH_STATEMENT_OR_EXPRESSION()));
+          SWITCH_EXPRESSION()));
   }
 
   public ExpressionTree PRIMARY_WITH_SELECTOR() {

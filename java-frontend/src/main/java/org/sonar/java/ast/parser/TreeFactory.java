@@ -93,6 +93,7 @@ import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.StaticInitializerTreeImpl;
+import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
@@ -111,6 +112,8 @@ import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
 import org.sonar.plugins.java.api.tree.ModuleNameTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -1101,13 +1104,17 @@ public class TreeFactory {
     return partial.completeTypeAndInitializer(classType, equalToken, expression);
   }
 
-  public SwitchStatementTreeImpl switchStatement(InternalSyntaxToken switchToken, InternalSyntaxToken openParenToken, ExpressionTree expression,
+  public SwitchStatementTree switchStatement(SwitchExpressionTree switchExpression) {
+    return new SwitchStatementTreeImpl(switchExpression);
+  }
+
+  public SwitchExpressionTree switchExpression(InternalSyntaxToken switchToken, InternalSyntaxToken openParenToken, ExpressionTree expression,
     InternalSyntaxToken closeParenToken,
     InternalSyntaxToken openBraceToken, Optional<List<CaseGroupTreeImpl>> optionalGroups, InternalSyntaxToken closeBraceToken) {
 
     List<CaseGroupTreeImpl> groups = optionalGroups.or(Collections.<CaseGroupTreeImpl>emptyList());
 
-    return new SwitchStatementTreeImpl(switchToken, openParenToken, expression, closeParenToken,
+    return new SwitchExpressionTreeImpl(switchToken, openParenToken, expression, closeParenToken,
       openBraceToken, groups, closeBraceToken);
   }
 
@@ -1115,11 +1122,11 @@ public class TreeFactory {
     return new CaseGroupTreeImpl(labels, blockStatements);
   }
 
-  public CaseLabelTreeImpl newSwitchCaseLabel(InternalSyntaxToken caseSyntaxToken, ArgumentListTreeImpl argumentList, InternalSyntaxToken colonToken) {
+  public CaseLabelTreeImpl newSwitchCase(InternalSyntaxToken caseSyntaxToken, ArgumentListTreeImpl argumentList, InternalSyntaxToken colonToken) {
     return new CaseLabelTreeImpl(caseSyntaxToken, argumentList, colonToken);
   }
 
-  public CaseLabelTreeImpl newSwitchCaseDefaultLabel(InternalSyntaxToken defaultToken, InternalSyntaxToken colonToken) {
+  public CaseLabelTreeImpl newSwitchDefault(InternalSyntaxToken defaultToken, InternalSyntaxToken colonToken) {
     return new CaseLabelTreeImpl(defaultToken, Collections.emptyList(), colonToken);
   }
 

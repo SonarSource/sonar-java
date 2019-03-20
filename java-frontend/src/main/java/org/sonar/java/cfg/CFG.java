@@ -71,6 +71,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
@@ -505,11 +506,10 @@ public class CFG implements ControlFlowGraph {
         buildLabeledStatement((LabeledStatementTree) tree);
         break;
       case SWITCH_STATEMENT:
-        if (tree.parent().is(Tree.Kind.BLOCK, Tree.Kind.CASE_GROUP)) {
-          buildSwitchStatement((SwitchStatementTree) tree);
-        } else {
-          buildSwitchExpression((SwitchStatementTree) tree);
-        }
+        buildSwitchStatement((SwitchStatementTree) tree);
+        break;
+      case SWITCH_EXPRESSION:
+        buildSwitchExpression((SwitchExpressionTree) tree);
         break;
       case BREAK_STATEMENT:
         buildBreakStatement((BreakStatementTree) tree);
@@ -764,7 +764,8 @@ public class CFG implements ControlFlowGraph {
     currentBlock = conditionBlock;
   }
 
-  private void buildSwitchExpression(SwitchStatementTree tree) {
+  private void buildSwitchExpression(SwitchExpressionTree tree) {
+    // FIXME When used as expression, switches are considered as a simple element
     currentBlock.elements.add(tree);
   }
 
