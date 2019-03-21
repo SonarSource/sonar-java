@@ -43,8 +43,6 @@ public class Struts139Test {
 
   @BeforeClass
   public static void analyzeProject() {
-    orchestrator.resetData();
-
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("struts-1.3.9-lite"))
       .setGoals("org.jacoco:jacoco-maven-plugin:prepare-agent clean verify");
     MavenBuild analysis = MavenBuild.create(TestUtils.projectPom("struts-1.3.9-lite"))

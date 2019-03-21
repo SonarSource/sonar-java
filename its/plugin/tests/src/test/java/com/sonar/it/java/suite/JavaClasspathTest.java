@@ -69,18 +69,16 @@ public class JavaClasspathTest {
     fakeGuavaJarPath = new File(new File(TestUtils.projectDir("dit-check"), "lib"), "fake-guava-1.0.jar").getAbsolutePath();
   }
 
-  @Before
-  public void deleteData() {
-    ORCHESTRATOR.resetData();
-  }
-
   @Test
   public void should_use_new_java_binaries_property() {
+    String projectKey = "should_use_new_java_binaries_property";
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/classes");
-    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT, PROJECT_KEY_DIT, "java", "dit-check");
+    scanner.setProjectKey(projectKey);
+
+    TestUtils.provisionProject(ORCHESTRATOR, projectKey, projectKey, "java", "dit-check");
     ORCHESTRATOR.executeBuild(scanner);
-    assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(1);
+    assertThat(getNumberOfViolations(projectKey)).isEqualTo(1);
   }
 
   @Test
@@ -94,18 +92,21 @@ public class JavaClasspathTest {
 
   @Test
   public void relative_path_and_wildcard_for_binaries_should_be_supported() {
+    String projectKey = "relative_path_and_wildcard_for_binaries_should_be_supported";
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/../target/clas**, ");
-    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT, PROJECT_KEY_DIT, "java", "dit-check");
+    scanner.setProjectKey(projectKey);
+    TestUtils.provisionProject(ORCHESTRATOR, projectKey, projectKey, "java", "dit-check");
     ORCHESTRATOR.executeBuild(scanner);
-    assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(1);
+    assertThat(getNumberOfViolations(projectKey)).isEqualTo(1);
   }
 
   @Test
   public void should_use_aar_library() {
     SonarScanner scanner = aarProjectSonarScanner();
     scanner.setProperty("sonar.java.libraries", aarPath);
-    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_AAR, PROJECT_KEY_DIT, "java", "using-aar-dep");
+
+    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_AAR, "should_use_aar_library", "java", "using-aar-dep");
     ORCHESTRATOR.executeBuild(scanner);
     assertThat(getNumberOfViolations(PROJECT_KEY_AAR)).isEqualTo(1);
   }
@@ -122,23 +123,28 @@ public class JavaClasspathTest {
 
   @Test
   public void should_keep_order_libs() {
+    String projectKey = "should_keep_order_libs";
+
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/classes");
     scanner.setProperty("sonar.java.libraries", guavaJarPath + "," + fakeGuavaJarPath);
     scanner.setProperty("sonar.verbose", "true");
-    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT, PROJECT_KEY_DIT, "java", "dit-check");
-    ORCHESTRATOR.executeBuild(scanner);
-    assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(2);
+    scanner.setProjectKey(projectKey);
 
-    ORCHESTRATOR.resetData();
+    TestUtils.provisionProject(ORCHESTRATOR, projectKey, projectKey, "java", "dit-check");
+    ORCHESTRATOR.executeBuild(scanner);
+    assertThat(getNumberOfViolations(projectKey)).isEqualTo(2);
+
+    projectKey = "should_keep_order_libs_2";
 
     scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/classes");
     scanner.setProperty("sonar.java.libraries", fakeGuavaJarPath + "," + guavaJarPath);
     scanner.setProperty("sonar.verbose", "true");
-    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT, PROJECT_KEY_DIT, "java", "dit-check");
+    scanner.setProjectKey(projectKey);
+    TestUtils.provisionProject(ORCHESTRATOR, projectKey, projectKey, "java", "dit-check");
     ORCHESTRATOR.executeBuild(scanner);
-    assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(1);
+    assertThat(getNumberOfViolations(projectKey)).isEqualTo(1);
   }
 
   @Test
@@ -164,12 +170,14 @@ public class JavaClasspathTest {
 
   @Test
   public void directory_of_classes_in_library_should_be_supported() throws Exception {
+    String projectKey = "directory_of_classes_in_library_should_be_supported";
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target");
     scanner.setProperty("sonar.java.libraries", "target/classes");
-    TestUtils.provisionProject(ORCHESTRATOR, PROJECT_KEY_DIT, PROJECT_KEY_DIT, "java", "dit-check");
+    scanner.setProjectKey(projectKey);
+    TestUtils.provisionProject(ORCHESTRATOR, projectKey, projectKey, "java", "dit-check");
     ORCHESTRATOR.executeBuild(scanner);
-    assertThat(getNumberOfViolations(PROJECT_KEY_DIT)).isEqualTo(1);
+    assertThat(getNumberOfViolations(projectKey)).isEqualTo(1);
   }
 
   private static void buildDitProject() {

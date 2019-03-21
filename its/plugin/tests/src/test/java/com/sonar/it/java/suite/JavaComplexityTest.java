@@ -45,12 +45,11 @@ public class JavaComplexityTest {
 
   @BeforeClass
   public static void analyzeProject() {
-    orchestrator.resetData();
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-complexity"))
       .setCleanSonarGoals()
       .setProperty("sonar.dynamicAnalysis", "false")
       .setProperty("sonar.java.binaries", "target");
-    TestUtils.provisionProject(orchestrator, PROJECT,"java-complexity","java","java-complexity");
+    TestUtils.provisionProject(orchestrator, PROJECT, "java-complexity", "java", "java-complexity");
     orchestrator.executeBuild(build);
   }
 
