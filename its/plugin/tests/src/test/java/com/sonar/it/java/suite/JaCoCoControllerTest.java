@@ -41,10 +41,6 @@ public class JaCoCoControllerTest {
   public static final Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
   private String javaVersion;
 
-  @BeforeClass
-  public static void analyzeProject() {
-    orchestrator.resetData();
-  }
 
   @Before
   public void setUp() throws Exception {
@@ -54,7 +50,7 @@ public class JaCoCoControllerTest {
       .filter(plugin -> plugin.key.equals("java"))
       .map(p -> {
         String f = p.filename;
-        if(f.contains("SNAPSHOT")) {
+        if (f.contains("SNAPSHOT")) {
           return p.version;
         }
         // when executed in SonarSource QA, snapshot version is replaced by built version

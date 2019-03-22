@@ -37,11 +37,6 @@ public class UnitTestsTest {
   @ClassRule
   public static Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
 
-  @Before
-  public void deleteData() {
-    orchestrator.resetData();
-  }
-
   @Test
   public void tests_without_main_code() {
     MavenBuild build = MavenBuild.create()
