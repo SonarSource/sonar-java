@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -70,6 +71,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
@@ -506,6 +508,9 @@ public class CFG implements ControlFlowGraph {
       case SWITCH_STATEMENT:
         buildSwitchStatement((SwitchStatementTree) tree);
         break;
+      case SWITCH_EXPRESSION:
+        buildSwitchExpression((SwitchExpressionTree) tree);
+        break;
       case BREAK_STATEMENT:
         buildBreakStatement((BreakStatementTree) tree);
         break;
@@ -735,11 +740,10 @@ public class CFG implements ControlFlowGraph {
       CaseGroupTree firstCase = switchStatementTree.cases().get(0);
       for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
         build(caseGroupTree.body());
-        Lists.reverse(caseGroupTree.labels()).forEach(l -> {
-          if (l.expression() != null) {
-            build(l.expression());
-          }
-        });
+        Lists.reverse(caseGroupTree.labels()).stream()
+          .map(CaseLabelTree::expressions)
+          .flatMap(Collection::stream)
+          .forEach(this::build);
         if (!hasDefaultCase) {
           hasDefaultCase = containsDefaultCase(caseGroupTree.labels());
         }
@@ -758,6 +762,11 @@ public class CFG implements ControlFlowGraph {
       currentBlock.addSuccessor(switchSuccessor);
     }
     currentBlock = conditionBlock;
+  }
+
+  private void buildSwitchExpression(SwitchExpressionTree tree) {
+    // FIXME When used as expression, switches are considered as a simple element
+    currentBlock.elements.add(tree);
   }
 
   private static boolean containsDefaultCase(List<CaseLabelTree> labels) {

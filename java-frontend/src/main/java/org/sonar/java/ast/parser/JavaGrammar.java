@@ -63,7 +63,6 @@ import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
-import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
@@ -76,6 +75,8 @@ import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
 import org.sonar.plugins.java.api.tree.ModuleNameTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
@@ -909,10 +910,15 @@ public class JavaGrammar {
         PRIMARY_WITH_SELECTOR()));
   }
 
-  public SwitchStatementTreeImpl SWITCH_STATEMENT() {
-    return b.<SwitchStatementTreeImpl>nonterminal(JavaLexer.SWITCH_STATEMENT)
+  public SwitchStatementTree SWITCH_STATEMENT() {
+    return b.<SwitchStatementTree>nonterminal(JavaLexer.SWITCH_STATEMENT)
+      .is(f.switchStatement(SWITCH_EXPRESSION()));
+  }
+
+  public SwitchExpressionTree SWITCH_EXPRESSION() {
+    return b.<SwitchExpressionTree>nonterminal(JavaLexer.SWITCH_EXPRESSION)
       .is(
-        f.switchStatement(
+        f.switchExpression(
           b.token(JavaKeyword.SWITCH), b.token(JavaPunctuator.LPAR), EXPRESSION(), b.token(JavaPunctuator.RPAR),
           b.token(JavaPunctuator.LWING),
           b.zeroOrMore(SWITCH_GROUP()),
@@ -921,15 +927,31 @@ public class JavaGrammar {
 
   public CaseGroupTreeImpl SWITCH_GROUP() {
     return b.<CaseGroupTreeImpl>nonterminal(JavaLexer.SWITCH_BLOCK_STATEMENT_GROUP)
-      .is(f.switchGroup(b.oneOrMore(SWITCH_LABEL()), BLOCK_STATEMENTS()));
+      .is(f.switchGroup(b.oneOrMore(SWITCH_CASE_OR_DEFAULT_CLAUSE()), BLOCK_STATEMENTS()));
   }
 
-  public CaseLabelTreeImpl SWITCH_LABEL() {
+  public CaseLabelTreeImpl SWITCH_CASE_OR_DEFAULT_CLAUSE() {
     return b.<CaseLabelTreeImpl>nonterminal(JavaLexer.SWITCH_LABEL)
       .is(
         b.firstOf(
-          f.newCaseSwitchLabel(b.token(JavaKeyword.CASE), EXPRESSION(), b.token(JavaPunctuator.COLON)),
-          f.newDefaultSwitchLabel(b.token(JavaKeyword.DEFAULT), b.token(JavaPunctuator.COLON))));
+          f.newSwitchCase(
+            b.token(JavaKeyword.CASE),
+            SWITCH_CASE_EXPRESSION_LIST(),
+            b.firstOf(
+              b.token(JavaPunctuator.COLON),
+              b.token(JavaLexer.ARROW))),
+          f.newSwitchDefault(
+            b.token(JavaKeyword.DEFAULT),
+            b.firstOf(
+              b.token(JavaPunctuator.COLON),
+              b.token(JavaLexer.ARROW)))));
+  }
+
+  public ArgumentListTreeImpl SWITCH_CASE_EXPRESSION_LIST() {
+    return b.<ArgumentListTreeImpl>nonterminal(JavaLexer.SWITCH_CASE_EXPRESSION_LIST)
+      .is(f.newArguments(
+          EXPRESSION_NOT_LAMBDA(),
+          b.zeroOrMore(f.newTuple20(b.token(JavaPunctuator.COMMA), EXPRESSION_NOT_LAMBDA()))));
   }
 
   public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
@@ -941,7 +963,7 @@ public class JavaGrammar {
 
   public BreakStatementTreeImpl BREAK_STATEMENT() {
     return b.<BreakStatementTreeImpl>nonterminal(JavaLexer.BREAK_STATEMENT)
-      .is(f.breakStatement(b.token(JavaKeyword.BREAK), b.optional(b.token(JavaTokenType.IDENTIFIER)), b.token(JavaPunctuator.SEMI)));
+      .is(f.breakStatement(b.token(JavaKeyword.BREAK), b.optional(EXPRESSION()), b.token(JavaPunctuator.SEMI)));
   }
 
   public ContinueStatementTreeImpl CONTINUE_STATEMENT() {
@@ -998,6 +1020,13 @@ public class JavaGrammar {
 
   public ExpressionTree EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaLexer.EXPRESSION)
+      .is(b.firstOf(
+        LAMBDA_EXPRESSION(),
+        ASSIGNMENT_EXPRESSION()));
+  }
+
+  public ExpressionTree EXPRESSION_NOT_LAMBDA() {
+    return b.<ExpressionTree>nonterminal(JavaLexer.EXPRESSION_NOT_LAMBDA)
       .is(ASSIGNMENT_EXPRESSION());
   }
 
@@ -1021,7 +1050,9 @@ public class JavaGrammar {
                 b.token(JavaPunctuator.SLEQU),
                 b.token(JavaPunctuator.SREQU),
                 b.token(JavaPunctuator.BSREQU)),
-              CONDITIONAL_EXPRESSION()))));
+              b.firstOf(
+                LAMBDA_EXPRESSION(),
+                CONDITIONAL_EXPRESSION())))));
   }
 
   public ExpressionTree CONDITIONAL_EXPRESSION() {
@@ -1034,7 +1065,9 @@ public class JavaGrammar {
               b.token(JavaPunctuator.QUERY),
               EXPRESSION(),
               b.token(JavaPunctuator.COLON),
-              EXPRESSION()))));
+              b.firstOf(
+                LAMBDA_EXPRESSION(),
+                CONDITIONAL_EXPRESSION())))));
   }
 
   public ExpressionTree CONDITIONAL_OR_EXPRESSION() {
@@ -1197,7 +1230,8 @@ public class JavaGrammar {
                 b.token(JavaPunctuator.INC),
                 b.token(JavaPunctuator.DEC)))),
           f.newTildaExpression(b.token(JavaPunctuator.TILDA), UNARY_EXPRESSION()),
-          f.newBangExpression(b.token(JavaPunctuator.BANG), UNARY_EXPRESSION())));
+          f.newBangExpression(b.token(JavaPunctuator.BANG), UNARY_EXPRESSION()),
+          SWITCH_EXPRESSION()));
   }
 
   public ExpressionTree PRIMARY_WITH_SELECTOR() {
@@ -1217,7 +1251,9 @@ public class JavaGrammar {
                 TYPE(),
                 b.optional(f.newTuple29(b.token(JavaPunctuator.AND), BOUND())),
                 b.token(JavaPunctuator.RPAR),
-                UNARY_EXPRESSION_NOT_PLUS_MINUS()))));
+                b.firstOf(
+                  LAMBDA_EXPRESSION(),
+                  UNARY_EXPRESSION_NOT_PLUS_MINUS())))));
   }
 
   public ExpressionTree METHOD_REFERENCE() {
@@ -1239,7 +1275,6 @@ public class JavaGrammar {
     return b.<ExpressionTree>nonterminal(JavaLexer.PRIMARY)
       .is(
         b.firstOf(
-          LAMBDA_EXPRESSION(),
           IDENTIFIER_OR_METHOD_INVOCATION(),
           PARENTHESIZED_EXPRESSION(),
           LITERAL(),

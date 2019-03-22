@@ -81,7 +81,7 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
-import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeArguments;
@@ -535,6 +535,13 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   @Override
+  public void visitSwitchExpression(SwitchExpressionTree tree) {
+    super.visitSwitchExpression(tree);
+    // FIXME - resolve type of the switch based on returned types from cases
+    registerType(tree, Symbols.unknownType);
+  }
+
+  @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
     resolveAs(tree.expression(), JavaSymbol.VAR);
   }
@@ -641,28 +648,28 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitCaseLabel(CaseLabelTree tree) {
-    ExpressionTree labelExpression = tree.expression();
-    if (labelExpression == null) {
+    if (tree.expressions().isEmpty()) {
       // for 'default' case
       return;
     }
+    ExpressionTree labelExpression = tree.expressions().get(0);
     ExpressionTree enumExpression = enumExpressionFromSwitchOnEnum(tree);
     if (enumExpression != null) {
       // JLS10 § 14.11. : If the type of the switch statement's Expression is an enum type, then every case constant associated
       // with the switch statement must be an enum constant of that type.
       resolveEnumConstant(enumExpression, (IdentifierTree) labelExpression);
     } else {
-      scan(tree.expression());
+      scan(tree.expressions());
     }
   }
 
   @CheckForNull
   private static ExpressionTree enumExpressionFromSwitchOnEnum(CaseLabelTree tree) {
     Tree parent = tree.parent();
-    while (!parent.is(Tree.Kind.SWITCH_STATEMENT)) {
+    while (!parent.is(Tree.Kind.SWITCH_EXPRESSION)) {
       parent = parent.parent();
     }
-    ExpressionTree enumExpression = ((SwitchStatementTree) parent).expression();
+    ExpressionTree enumExpression = ((SwitchExpressionTree) parent).expression();
     return enumExpression.symbolType().symbol().isEnum() ? enumExpression : null;
   }
 

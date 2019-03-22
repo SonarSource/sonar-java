@@ -20,35 +20,35 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
-
-import javax.annotation.Nullable;
+import java.util.List;
 
 /**
- * 'break' statement.
+ * 'switch' expression.
  *
- * JLS 14.15
+ * JLS 14.11
  *
  * <pre>
- *   break ;
- *   break {@link #label()} ;
+ *   switch ( {@link #expression()} ) {
+ *     {@link #cases()}
+ *   }
  * </pre>
  *
- * @since Java 1.3
+ * @since Java 12
  */
 @Beta
-public interface BreakStatementTree extends StatementTree {
+public interface SwitchExpressionTree extends ExpressionTree {
 
-  SyntaxToken breakKeyword();
+  SyntaxToken switchKeyword();
 
-  @Nullable
-  IdentifierTree label();
+  SyntaxToken openParenToken();
 
-  /**
-   * @since 5.12 (Java 12 new features)
-   */
-  @Nullable
-  ExpressionTree value();
+  ExpressionTree expression();
 
-  SyntaxToken semicolonToken();
+  SyntaxToken closeParenToken();
 
+  SyntaxToken openBraceToken();
+
+  List<CaseGroupTree> cases();
+
+  SyntaxToken closeBraceToken();
 }

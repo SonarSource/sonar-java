@@ -49,6 +49,8 @@ public interface TreeVisitor {
 
   void visitSwitchStatement(SwitchStatementTree tree);
 
+  void visitSwitchExpression(SwitchExpressionTree tree);
+
   void visitCaseGroup(CaseGroupTree tree);
 
   void visitCaseLabel(CaseLabelTree tree);

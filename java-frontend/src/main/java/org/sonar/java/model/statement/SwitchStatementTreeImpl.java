@@ -19,42 +19,29 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import org.sonar.java.model.InternalSyntaxToken;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Collections;
-import java.util.List;
-
 public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatementTree {
 
-  private final ExpressionTree expression;
-  private final List<CaseGroupTree> cases;
-  private final InternalSyntaxToken switchKeyword;
-  private final InternalSyntaxToken openParenToken;
-  private final InternalSyntaxToken closeParenToken;
-  private final InternalSyntaxToken openBraceToken;
-  private final InternalSyntaxToken closeBraceToken;
+  private final SwitchExpressionTree switchExpression;
 
-  public SwitchStatementTreeImpl(InternalSyntaxToken switchKeyword, InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken,
-    InternalSyntaxToken openBraceToken, List<CaseGroupTreeImpl> groups, InternalSyntaxToken closeBraceToken) {
+  public SwitchStatementTreeImpl(SwitchExpressionTree switchExpression) {
     super(Kind.SWITCH_STATEMENT);
-    this.switchKeyword = switchKeyword;
-    this.openParenToken = openParenToken;
-    this.expression = Preconditions.checkNotNull(expression);
-    this.closeParenToken = closeParenToken;
-    this.openBraceToken = openBraceToken;
-    this.cases = ImmutableList.<CaseGroupTree>builder().addAll(Preconditions.checkNotNull(groups)).build();
-    this.closeBraceToken = closeBraceToken;
+    this.switchExpression = switchExpression;
+  }
+
+  @Override
+  public SwitchExpressionTree asSwitchExpression() {
+    return switchExpression;
   }
 
   @Override
@@ -64,37 +51,37 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public SyntaxToken switchKeyword() {
-    return switchKeyword;
+    return switchExpression.switchKeyword();
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return openParenToken;
+    return switchExpression.openParenToken();
   }
 
   @Override
   public ExpressionTree expression() {
-    return expression;
+    return switchExpression.expression();
   }
 
   @Override
   public SyntaxToken closeParenToken() {
-    return closeParenToken;
+    return switchExpression.closeParenToken();
   }
 
   @Override
   public SyntaxToken openBraceToken() {
-    return openBraceToken;
+    return switchExpression.openBraceToken();
   }
 
   @Override
   public List<CaseGroupTree> cases() {
-    return cases;
+    return switchExpression.cases();
   }
 
   @Override
   public SyntaxToken closeBraceToken() {
-    return closeBraceToken;
+    return switchExpression.closeBraceToken();
   }
 
   @Override
@@ -104,10 +91,7 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public Iterable<Tree> children() {
-    return Iterables.concat(
-      Lists.newArrayList(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken),
-      cases,
-      Collections.singletonList(closeBraceToken));
+    return Collections.singletonList(switchExpression);
   }
 
 }

@@ -20,28 +20,27 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterables;
+import java.util.Collections;
+import javax.annotation.Nullable;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-
 public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTree {
   private final InternalSyntaxToken breakToken;
   @Nullable
-  private final IdentifierTree label;
+  private final ExpressionTree labelOrValue;
   private final InternalSyntaxToken semicolonToken;
 
-  public BreakStatementTreeImpl(InternalSyntaxToken breakToken, @Nullable IdentifierTreeImpl label, InternalSyntaxToken semicolonToken) {
+  public BreakStatementTreeImpl(InternalSyntaxToken breakToken, @Nullable ExpressionTree labelOrValue, InternalSyntaxToken semicolonToken) {
     super(Kind.BREAK_STATEMENT);
     this.breakToken = breakToken;
-    this.label = label;
+    this.labelOrValue = labelOrValue;
     this.semicolonToken = semicolonToken;
   }
 
@@ -58,7 +57,13 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
   @Nullable
   @Override
   public IdentifierTree label() {
-    return label;
+    return labelOrValue instanceof IdentifierTree ? (IdentifierTree) labelOrValue : null;
+  }
+
+  @Nullable
+  @Override
+  public ExpressionTree value() {
+    return labelOrValue;
   }
 
   @Override
@@ -75,7 +80,7 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
   public Iterable<Tree> children() {
     return Iterables.concat(
       Collections.singletonList(breakToken),
-      label != null ? Collections.singletonList(label) : Collections.<Tree>emptyList(),
+      labelOrValue != null ? Collections.singletonList(labelOrValue) : Collections.<Tree>emptyList(),
       Collections.<Tree>singletonList(semicolonToken));
   }
 

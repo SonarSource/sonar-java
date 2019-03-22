@@ -20,7 +20,6 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
-
 import java.util.List;
 
 /**
@@ -33,6 +32,8 @@ import java.util.List;
  *     {@link #cases()}
  *   }
  * </pre>
+ *
+ * @since SonarJava 5.12: wrapper on top of a {@link SwitchExpressionTree}
  *
  * @since Java 1.3
  */
@@ -54,4 +55,9 @@ public interface SwitchStatementTree extends StatementTree {
 
   SyntaxToken closeBraceToken();
 
+  /**
+   * Switch expressions introduced with support Java 12
+   * @since SonarJava 5.12
+   */
+  SwitchExpressionTree asSwitchExpression();
 }

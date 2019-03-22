@@ -149,7 +149,7 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     int bodySize = body.size();
     if (bodySize > 0 && body.get(0).is(Kind.BLOCK)) {
       expectedLevel -= indentationLevel;
-      checkIndentation(body.get(0), Iterables.getLast(labels).colonToken().column() + 2);
+      checkIndentation(body.get(0), Iterables.getLast(labels).colonOrArrowToken().column() + 2);
       newBody = body.subList(1, bodySize);
     }
     checkIndentation(newBody);
