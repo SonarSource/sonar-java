@@ -55,8 +55,8 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
     if (!hasSemantic()) {
       return;
     }
-    ClassTree classTree = (ClassTree) tree;
 
+    ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         checkField((VariableTree) member);
@@ -66,24 +66,24 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkField(VariableTree declaration) {
-    getIssueMessage(declaration).ifPresent(message -> reportIssue(declaration.type(), message));
+  private void checkField(VariableTree field) {
+    getIssueMessage(field).ifPresent(message -> reportIssue(field.type(), message));
   }
 
   private void checkMethod(MethodTree method) {
     for (VariableTree parameter : method.parameters()) {
-      getIssueMessage(parameter).ifPresent(s -> reportIssue(parameter.type(), s));
+      getIssueMessage(parameter).ifPresent(message -> reportIssue(parameter.type(), message));
     }
   }
 
-  private Optional<String> getIssueMessage(VariableTree variable) {
+  private static Optional<String> getIssueMessage(VariableTree variable) {
     if (!validationEnabled(variable) && validationSupported(variable)) {
       return Optional.of(MessageFormat.format("Add missing \"@Valid\" on \"{0}\" to validate it with \"Bean Validation\".", variable.simpleName()));
     }
     return Optional.empty();
   }
 
-  private boolean validationEnabled(VariableTree variable) {
+  private static boolean validationEnabled(VariableTree variable) {
     if (variable.symbol().metadata().isAnnotatedWith(JAVAX_VALIDATION_VALID)) {
       return true;
     }
@@ -92,20 +92,20 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
     return type instanceof ParametrizedTypeJavaType && typeArgumentAnnotations(variable).anyMatch(annotation -> annotation.is(JAVAX_VALIDATION_VALID));
   }
 
-  private Stream<Type> typeArgumentAnnotations(VariableTree variable) {
+  private static Stream<Type> typeArgumentAnnotations(VariableTree variable) {
     return typeArgumentTypeTrees(variable).flatMap(type -> type.annotations().stream()).map(ExpressionTree::symbolType);
   }
 
-  private Stream<TypeTree> typeArgumentTypeTrees(VariableTree variable) {
+  private static Stream<TypeTree> typeArgumentTypeTrees(VariableTree variable) {
     ParameterizedTypeTree parameterizedType = (ParameterizedTypeTree) variable.type();
     return parameterizedType.typeArguments().stream().map(TypeTree.class::cast);
   }
 
-  private boolean validationSupported(VariableTree variable) {
-    return annotationInstances(variable).anyMatch(this::isConstraintAnnotation);
+  private static boolean validationSupported(VariableTree variable) {
+    return annotationInstances(variable).anyMatch(MissingBeanValidationCheck::isConstraintAnnotation);
   }
 
-  private Stream<SymbolMetadata.AnnotationInstance> annotationInstances(VariableTree variable) {
+  private static Stream<SymbolMetadata.AnnotationInstance> annotationInstances(VariableTree variable) {
     if (variable.type().is(Tree.Kind.PARAMETERIZED_TYPE)) {
       return typeArgumentAnnotationInstances(variable);
     } else {
@@ -114,27 +114,23 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private Stream<SymbolMetadata.AnnotationInstance> typeArgumentAnnotationInstances(VariableTree variable) {
-    return typeArgumentTypeTrees(variable).map(this::typeSymbol).flatMap(this::classAndFieldAnnotationInstances);
+  private static Stream<SymbolMetadata.AnnotationInstance> typeArgumentAnnotationInstances(VariableTree variable) {
+    return typeArgumentTypeTrees(variable).map(TypeTree::symbolType).map(Type::symbol).flatMap(MissingBeanValidationCheck::classAndFieldAnnotationInstances);
   }
 
-  private JavaSymbol.TypeJavaSymbol typeSymbol(TypeTree type) {
-    return ((JavaType) type.symbolType()).getSymbol();
-  }
-
-  private Stream<SymbolMetadata.AnnotationInstance> classAndFieldAnnotationInstances(JavaSymbol.TypeJavaSymbol classSymbol) {
+  private static Stream<SymbolMetadata.AnnotationInstance> classAndFieldAnnotationInstances(Symbol.TypeSymbol classSymbol) {
     return Stream.concat(classAnnotationInstances(classSymbol), fieldAnnotationInstances(classSymbol));
   }
 
-  private Stream<SymbolMetadata.AnnotationInstance> classAnnotationInstances(Symbol classSymbol) {
+  private static Stream<SymbolMetadata.AnnotationInstance> classAnnotationInstances(Symbol classSymbol) {
     return classSymbol.metadata().annotations().stream();
   }
 
-  private Stream<SymbolMetadata.AnnotationInstance> fieldAnnotationInstances(JavaSymbol.TypeJavaSymbol classSymbol) {
-    return classSymbol.memberSymbols().stream().flatMap(this::classAnnotationInstances);
+  private static Stream<SymbolMetadata.AnnotationInstance> fieldAnnotationInstances(Symbol.TypeSymbol classSymbol) {
+    return classSymbol.memberSymbols().stream().flatMap(MissingBeanValidationCheck::classAnnotationInstances);
   }
 
-  private boolean isConstraintAnnotation(SymbolMetadata.AnnotationInstance annotationInstance) {
+  private static boolean isConstraintAnnotation(SymbolMetadata.AnnotationInstance annotationInstance) {
     return ((JavaSymbol.TypeJavaSymbol) annotationInstance.symbol()).metadata().isAnnotatedWith(JAVAX_VALIDATION_CONSTRAINT);
   }
 }
