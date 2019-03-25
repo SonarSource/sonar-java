@@ -7,13 +7,10 @@
     "constantCost": "5min"
   },
   "tags": [
-  ],
-  "standards": [
+    
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5128",
   "sqKey": "S5128",
-  "scope": "Main",
-  "securityStandards": {
-  }
+  "scope": "Main"
 }
