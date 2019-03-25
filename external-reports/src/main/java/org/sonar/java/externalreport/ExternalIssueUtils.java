@@ -23,7 +23,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.issue.NewExternalIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
-import org.sonar.api.rule.RuleKey;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
 public final class ExternalIssueUtils {
@@ -32,13 +31,13 @@ public final class ExternalIssueUtils {
     // utility class
   }
 
-  public static void saveIssue(SensorContext context, ExternalRuleLoader ruleLoader, InputFile inputFile, RuleKey ruleKey, String line, String message) {
+  public static void saveIssue(SensorContext context, ExternalRuleLoader ruleLoader, InputFile inputFile, String engineId, String ruleId, String line, String message) {
     NewExternalIssue newExternalIssue = context.newExternalIssue();
 
     newExternalIssue
-      .type(ruleLoader.ruleType(ruleKey.rule()))
-      .severity(ruleLoader.ruleSeverity(ruleKey.rule()))
-      .remediationEffortMinutes(ruleLoader.ruleConstantDebtMinutes(ruleKey.rule()));
+      .type(ruleLoader.ruleType(ruleId))
+      .severity(ruleLoader.ruleSeverity(ruleId))
+      .remediationEffortMinutes(ruleLoader.ruleConstantDebtMinutes(ruleId));
 
     NewIssueLocation primaryLocation = newExternalIssue.newLocation()
       .message(message)
@@ -50,7 +49,8 @@ public final class ExternalIssueUtils {
 
     newExternalIssue
       .at(primaryLocation)
-      .forRule(ruleKey)
+      .engineId(engineId)
+      .ruleId(ruleId)
       .save();
   }
 
