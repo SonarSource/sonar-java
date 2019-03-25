@@ -107,6 +107,8 @@ public class SpotBugsSensorTest {
 
     ExternalIssue first = externalIssues.get(0);
     assertThat(first.primaryLocation().inputComponent().key()).isEqualTo("spotbugs-project:src/main/java/org/myapp/Main.java");
+    assertThat(first.engineId()).isEqualTo("spotbugs");
+    assertThat(first.ruleId()).isEqualTo("HE_EQUALS_USE_HASHCODE");
     assertThat(first.ruleKey().rule()).isEqualTo("HE_EQUALS_USE_HASHCODE");
     assertThat(first.ruleKey().repository()).isEqualTo("external_spotbugs");
     assertThat(first.type()).isEqualTo(RuleType.CODE_SMELL);
@@ -125,6 +127,8 @@ public class SpotBugsSensorTest {
 
     ExternalIssue first = externalIssues.get(0);
     assertThat(first.primaryLocation().inputComponent().key()).isEqualTo("spotbugs-project:src/main/java/org/myapp/Main.java");
+    assertThat(first.engineId()).isEqualTo("findsecbugs");
+    assertThat(first.ruleId()).isEqualTo("RSA_KEY_SIZE");
     assertThat(first.ruleKey().rule()).isEqualTo("RSA_KEY_SIZE");
     assertThat(first.ruleKey().repository()).isEqualTo("external_findsecbugs");
     assertThat(first.type()).isEqualTo(RuleType.VULNERABILITY);

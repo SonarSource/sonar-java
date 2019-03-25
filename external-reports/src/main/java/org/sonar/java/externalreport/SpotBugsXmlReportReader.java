@@ -36,7 +36,6 @@ import javax.xml.stream.events.XMLEvent;
 import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
@@ -165,15 +164,15 @@ public class SpotBugsXmlReportReader {
       return;
     }
 
-    RuleKey ruleKey = RuleKey.of(SpotBugsSensor.SPOTBUGS_KEY, bugInstanceType);
+    String engineId = SpotBugsSensor.SPOTBUGS_KEY;
     ExternalRuleLoader ruleLoader = defaultRuleLoader;
     for (Map.Entry<String, ExternalRuleLoader> otherLoader : otherLoaders.entrySet()) {
-      if (otherLoader.getValue().ruleKeys().contains(ruleKey.rule())) {
+      if (otherLoader.getValue().ruleKeys().contains(bugInstanceType)) {
         ruleLoader = otherLoader.getValue();
-        ruleKey = RuleKey.of(otherLoader.getKey(), bugInstanceType);
+        engineId = otherLoader.getKey();
       }
     }
-    ExternalIssueUtils.saveIssue(context, ruleLoader, inputFile, ruleKey, sourceLineStart, bugInstanceLongMessage);
+    ExternalIssueUtils.saveIssue(context, ruleLoader, inputFile, engineId, bugInstanceType, sourceLineStart, bugInstanceLongMessage);
   }
 
   private static String getAttributeValue(StartElement element, QName attributeName) {

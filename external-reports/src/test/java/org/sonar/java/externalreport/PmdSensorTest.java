@@ -156,6 +156,8 @@ public class PmdSensorTest {
 
     ExternalIssue first = externalIssues.get(0);
     assertThat(first.primaryLocation().inputComponent().key()).isEqualTo(PROJECT_ID + ":file1.java");
+    assertThat(first.engineId()).isEqualTo("pmd");
+    assertThat(first.ruleId()).isEqualTo("UnusedFormalParameter");
     assertThat(first.ruleKey().rule()).isEqualTo("UnusedFormalParameter");
     assertThat(first.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(first.severity()).isEqualTo(Severity.MAJOR);

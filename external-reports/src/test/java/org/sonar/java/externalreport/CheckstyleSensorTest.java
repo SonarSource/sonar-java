@@ -102,6 +102,8 @@ public class CheckstyleSensorTest {
 
     ExternalIssue first = externalIssues.get(0);
     assertThat(first.primaryLocation().inputComponent().key()).isEqualTo("checkstyle-project:Main.java");
+    assertThat(first.engineId()).isEqualTo("checkstyle");
+    assertThat(first.ruleId()).isEqualTo("javadoc.JavadocPackageCheck");
     assertThat(first.ruleKey().rule()).isEqualTo("javadoc.JavadocPackageCheck");
     assertThat(first.type()).isEqualTo(RuleType.CODE_SMELL);
     assertThat(first.severity()).isEqualTo(Severity.MAJOR);

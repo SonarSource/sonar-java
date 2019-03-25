@@ -38,7 +38,6 @@ import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.issue.NewExternalIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -109,12 +108,13 @@ public class PmdXmlReportReader {
   private void onViolationStartElement(StartElement element) {
     try {
       TextRange textRange = textRange(element);
-      RuleKey ruleKey = RuleKey.of(PmdSensor.LINTER_KEY, getAttributeValue(element, "rule"));
+      String ruleId = getAttributeValue(element, "rule");
       issue = context.newExternalIssue()
-        .forRule(ruleKey)
+        .engineId(PmdSensor.LINTER_KEY)
+        .ruleId(ruleId)
         .type(RuleType.CODE_SMELL)
         .severity(SEVERITIES.get(getAttributeAsInt(element, "priority")))
-        .remediationEffortMinutes(ruleLoader.ruleConstantDebtMinutes(ruleKey.rule()));
+        .remediationEffortMinutes(ruleLoader.ruleConstantDebtMinutes(ruleId));
       issueLocation = issue.newLocation()
         .on(inputFile)
         .at(textRange);
