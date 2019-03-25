@@ -84,13 +84,6 @@ class A {
 
   private void putIfAbsentTest() {
     private final java.util.concurrent.ConcurrentMap<String, String> map1 = new java.util.concurrent.ConcurrentHashMap<>();
-    private final java.util.Map<String, String> map2 = new java.util.concurrent.ConcurrentHashMap<>();
-    private final java.util.Map<String, String> map3 = new  java.util.HashMap<>();
-    private final java.util.concurrent.ConcurrentHashMap<String, String> map4 = new java.util.concurrent.ConcurrentHashMap<>();
-
-    map1.putIfAbsent("val", "val"); // Noncompliant
-    map2.putIfAbsent("val", "val"); // compliant, FN no way right now to detect real type of map2
-    map3.putIfAbsent("val", "val"); // compliant not a concurrent hashmap
-    map4.putIfAbsent("val", "val"); // Noncompliant 
+    map1.putIfAbsent("val", "val"); // Compliant, 'putIfAbsent' does have a side-effect
   }
 }
