@@ -28,7 +28,6 @@ import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.ce.measure.RangeDistributionBuilder;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
@@ -40,7 +39,6 @@ import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -54,9 +52,6 @@ public class Measurer extends SubscriptionVisitor {
   private final NoSonarFilter noSonarFilter;
   private InputFile sonarFile;
   private int methods;
-  private int complexityInMethods;
-  private RangeDistributionBuilder methodComplexityDistribution;
-
   private final Deque<ClassTree> classTrees = new LinkedList<>();
   private int classes;
 
@@ -92,25 +87,17 @@ public class Measurer extends SubscriptionVisitor {
     }
     classTrees.clear();
     methods = 0;
-    complexityInMethods = 0;
     classes = 0;
-    methodComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_METHODS);
     super.setContext(context);
     scanTree(context.getTree());
     //leave file.
     int fileComplexity = context.getComplexityNodes(context.getTree()).size();
     saveMetricOnFile(CoreMetrics.CLASSES, classes);
     saveMetricOnFile(CoreMetrics.FUNCTIONS, methods);
-    saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_FUNCTIONS, complexityInMethods);
-    saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_CLASSES, fileComplexity);
     saveMetricOnFile(CoreMetrics.COMPLEXITY, fileComplexity);
     saveMetricOnFile(CoreMetrics.COMMENT_LINES, commentLinesVisitor.commentLinesMetric());
     saveMetricOnFile(CoreMetrics.STATEMENTS, new StatementVisitor().numberOfStatements(context.getTree()));
     saveMetricOnFile(CoreMetrics.NCLOC, new LinesOfCodeVisitor().linesOfCode(context.getTree()));
-    saveMetricOnFile(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, methodComplexityDistribution.build());
-
-    RangeDistributionBuilder fileComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_FILES);
-    saveMetricOnFile(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION, fileComplexityDistribution.add(fileComplexity).build());
 
     saveMetricOnFile(CoreMetrics.COGNITIVE_COMPLEXITY, CognitiveComplexityVisitor.compilationUnitComplexity(context.getTree()));
   }
@@ -137,11 +124,7 @@ public class Measurer extends SubscriptionVisitor {
     }
     if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && classTrees.peek().simpleName() != null) {
       //don't count methods in anonymous classes.
-      MethodTree methodTree = (MethodTree) tree;
       methods++;
-      int methodComplexity = context.getComplexityNodes(methodTree).size();
-      methodComplexityDistribution.add(methodComplexity);
-      complexityInMethods += methodComplexity;
     }
 
   }

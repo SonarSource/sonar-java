@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 
 public class MeasurerTest {
 
-  private static final int NB_OF_METRICS = 11;
+  private static final int NB_OF_METRICS = 7;
   private SensorContextTester context;
   private File baseDir;
   private DefaultFileSystem fs;
@@ -70,11 +70,6 @@ public class MeasurerTest {
   @Test
   public void verify_cognitive_complexity_metric() {
     checkMetric("CognitiveComplexity.java", "cognitive_complexity", 25);
-  }
-
-  @Test
-  public void verify_complexity_in_classes() {
-    checkMetric("Complexity.java", "complexity_in_classes", 15);
   }
 
   @Test
