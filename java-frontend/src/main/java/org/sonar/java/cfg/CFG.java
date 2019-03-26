@@ -737,15 +737,24 @@ public class CFG implements ControlFlowGraph {
     breakTargets.addLast(switchSuccessor);
     boolean hasDefaultCase = false;
     if (!switchStatementTree.cases().isEmpty()) {
+      boolean withoutFallTrough = switchWithoutFallThrough(switchStatementTree.asSwitchExpression());
       CaseGroupTree firstCase = switchStatementTree.cases().get(0);
       for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
+        if (withoutFallTrough) {
+          currentBlock.successors().clear();
+          currentBlock.addSuccessor(switchSuccessor);
+        }
         build(caseGroupTree.body());
-        Lists.reverse(caseGroupTree.labels()).stream()
+        List<CaseLabelTree> labels = caseGroupTree.labels();
+        Lists.reverse(labels).stream()
           .map(CaseLabelTree::expressions)
+          .map(Lists::reverse)
           .flatMap(Collection::stream)
           .forEach(this::build);
+        if (!withoutFallTrough) {
+        }
         if (!hasDefaultCase) {
-          hasDefaultCase = containsDefaultCase(caseGroupTree.labels());
+          hasDefaultCase = containsDefaultCase(labels);
         }
         currentBlock.setCaseGroup(caseGroupTree);
         switches.getLast().addSuccessor(currentBlock);
@@ -769,13 +778,22 @@ public class CFG implements ControlFlowGraph {
     currentBlock.elements.add(tree);
   }
 
+  /**
+   * A switch expression can use the traditional cases with 'column' (with fall-through) or,
+   * starting with java 12, the 'arrow' cases (without fall-through). Cases can not be mixed.
+   *
+   * @param switchExpressionTree the switch to evaluate
+   * @return true if the switch uses fall-through
+   */
+  private static boolean switchWithoutFallThrough(SwitchExpressionTree switchExpressionTree) {
+    return switchExpressionTree.cases().stream()
+      .map(CaseGroupTree::labels)
+      .flatMap(List::stream)
+      .noneMatch(CaseLabelTree::isFallThrough);
+  }
+
   private static boolean containsDefaultCase(List<CaseLabelTree> labels) {
-    for (CaseLabelTree caseLabel : labels) {
-      if ("default".equals(caseLabel.caseOrDefaultKeyword().text())) {
-        return true;
-      }
-    }
-    return false;
+    return labels.stream().anyMatch(caseLabel -> "default".equals(caseLabel.caseOrDefaultKeyword().text()));
   }
 
   private void buildBreakStatement(BreakStatementTree tree) {
