@@ -13,7 +13,7 @@
 
   <properties>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-    <sonarlint-core.version>3.0.0.1140</sonarlint-core.version>
+    <sonarlint-core.version>4.2.0.2266</sonarlint-core.version>
   </properties>
 
   <dependencies>
@@ -39,6 +39,11 @@
       <groupId>org.sonarsource.sonarlint.core</groupId>
       <artifactId>sonarlint-core</artifactId>
       <version>${sonarlint-core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -185,6 +186,16 @@ public class SonarLintTest {
       @Override
       public String getPath() {
         return path.toString();
+      }
+
+      @Override
+      public String relativePath() {
+        return baseDir.toPath().relativize(path).toString();
+      }
+
+      @Override
+      public URI uri() {
+        return path.toUri();
       }
 
       @Override
