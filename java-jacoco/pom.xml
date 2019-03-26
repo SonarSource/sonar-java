@@ -97,6 +97,13 @@
       <artifactId>logback-classic</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- used to test org.sonar.plugins.jacoco.JaCoCoSensor.describe -->
+    <dependency>
+      <groupId>org.sonarsource.sonarlint.core</groupId>
+      <artifactId>sonarlint-core</artifactId>
+      <version>4.1.0.2218</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

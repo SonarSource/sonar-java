@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.jacoco;
 
+import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Optional;
@@ -42,6 +43,7 @@ import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_PATH_PROPERTY;
 public class JaCoCoSensor implements Sensor {
 
   private static final String JACOCO_MERGED_FILENAME = "jacoco-merged.exec";
+  private static final Set<String> DEPRECATED_PROPERTIES = ImmutableSet.of(REPORT_PATH_PROPERTY, IT_REPORT_PATH_PROPERTY);
   private final ResourcePerspectives perspectives;
   private final JavaResourceLocator javaResourceLocator;
   private final JavaClasspath javaClasspath;
@@ -64,12 +66,18 @@ public class JaCoCoSensor implements Sensor {
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.onlyOnLanguage("java").name("JaCoCoSensor");
+    descriptor
+      .onlyOnLanguage("java")
+      .name("JaCoCoSensor");
   }
 
   @Override
   public void execute(SensorContext context) {
     warnAboutDeprecatedProperties(context.config());
+    if (context.config().hasKey(JACOCO_XML_PROPERTY)) {
+      LOG.debug("Property '{}' was specified, skipping processing of binary JaCoCo exec report.", JACOCO_XML_PROPERTY);
+      return;
+    }
     Set<File> reportPaths = getReportPaths(context);
     if (reportPaths.isEmpty()) {
       return;
@@ -90,6 +98,11 @@ public class JaCoCoSensor implements Sensor {
     if (config.hasKey(REPORT_MISSING_FORCE_ZERO)) {
       addAnalysisWarning("Property '%s' is deprecated and its value will be ignored.", REPORT_MISSING_FORCE_ZERO);
     }
+    DEPRECATED_PROPERTIES.forEach(deprecatedProperty -> {
+      if (config.hasKey(deprecatedProperty) && !config.hasKey(REPORT_PATHS_PROPERTY) && !config.hasKey(JACOCO_XML_PROPERTY)) {
+        addAnalysisWarning("Property '%s' is deprecated. '%s' should be used instead (JaCoCo XML format).", deprecatedProperty, JACOCO_XML_PROPERTY);
+      }
+    });
     if (config.hasKey(REPORT_PATHS_PROPERTY)) {
       if (config.hasKey(JACOCO_XML_PROPERTY)) {
         LOG.info("Both '{}' and '{}' were set. '{}' is deprecated therefore, only '{}' will be taken into account.",
@@ -106,7 +119,7 @@ public class JaCoCoSensor implements Sensor {
     analysisWarnings.addUnique(msg);
   }
 
-  private Set<File> getReportPaths(SensorContext context) {
+  private static Set<File> getReportPaths(SensorContext context) {
     Set<File> reportPaths = new HashSet<>();
     Configuration settings = context.config();
     FileSystem fs = context.fileSystem();
@@ -125,12 +138,9 @@ public class JaCoCoSensor implements Sensor {
     return reportPaths;
   }
 
-  private Optional<File> getReport(Configuration settings, FileSystem fs, String reportPathPropertyKey, String msg) {
+  private static Optional<File> getReport(Configuration settings, FileSystem fs, String reportPathPropertyKey, String msg) {
     Optional<String> reportPathProp = settings.get(reportPathPropertyKey);
     if (reportPathProp.isPresent()) {
-      if (!settings.hasKey(REPORT_PATHS_PROPERTY)) {
-        addAnalysisWarning("Property '%s' is deprecated. '%s' should be used instead (JaCoCo XML format).", reportPathPropertyKey, JACOCO_XML_PROPERTY);
-      }
       String reportPathProperty = reportPathProp.get();
       File report = fs.resolvePath(reportPathProperty);
       if (!report.isFile()) {
