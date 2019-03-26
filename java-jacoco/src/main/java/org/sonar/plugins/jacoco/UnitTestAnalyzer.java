@@ -42,6 +42,8 @@ import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
 import org.sonar.api.test.Testable;
+import org.sonar.api.utils.Version;
+import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -50,17 +52,22 @@ public class UnitTestAnalyzer {
 
   private final ResourcePerspectives perspectives;
   private final JavaResourceLocator javaResourceLocator;
+  private final AnalysisWarningsWrapper analysisWarnings;
 
   private Map<String, File> classFilesCache;
   private JavaClasspath javaClasspath;
   private JacocoReportReader jacocoReportReader;
   private final File report;
+  private boolean supportCoverageByTest;
 
-  public UnitTestAnalyzer(File report, ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
+  public UnitTestAnalyzer(File report, ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator,
+                          JavaClasspath javaClasspath,
+                          AnalysisWarningsWrapper analysisWarnings) {
     this.report = report;
     this.perspectives = perspectives;
     this.javaResourceLocator = javaResourceLocator;
     this.javaClasspath = javaClasspath;
+    this.analysisWarnings = analysisWarnings;
   }
 
   private static String fullyQualifiedClassName(String packageName, String simpleClassName) {
@@ -83,6 +90,7 @@ public class UnitTestAnalyzer {
   }
 
   public final void analyse(SensorContext context) {
+    supportCoverageByTest = !context.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(7, 7));
     classFilesCache = Maps.newHashMap();
     for (File classesDir : javaClasspath.getBinaryDirs()) {
       populateClassFilesCache(classesDir, "");
@@ -137,10 +145,22 @@ public class UnitTestAnalyzer {
     if (analyzedResources == 0) {
       JaCoCoExtensions.LOG.warn("Coverage information was not collected. Perhaps you forget to include debug information into compiled classes?");
     } else if (collectedCoveragePerTest) {
+      logDeprecationForCoveragePerTest();
       JaCoCoExtensions.LOG.info("Information about coverage per test has been collected.");
     } else if (newJacocoExecutionData != null) {
       JaCoCoExtensions.LOG.info("No information about coverage per test.");
     }
+  }
+
+  private void logDeprecationForCoveragePerTest() {
+    String msg;
+    if (supportCoverageByTest) {
+      msg = "'Coverage per Test' feature is deprecated. Consider removing sonar-jacoco-listeners from your configuration.";
+    } else {
+      msg = "'Coverage per Test' feature was removed from SonarQube. Remove sonar-jacoco-listeners listener configuration.";
+    }
+    JaCoCoExtensions.LOG.warn(msg);
+    analysisWarnings.addUnique(msg);
   }
 
   private boolean readCoveragePerTests(ExecutionDataVisitor executionDataVisitor) {
@@ -171,7 +191,7 @@ public class UnitTestAnalyzer {
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       InputFile resource = getResource(coverage);
       if (resource != null) {
-        List<Integer> coveredLines =  coveredLines(coverage);
+        List<Integer> coveredLines = coveredLines(coverage);
         if (!coveredLines.isEmpty() && addCoverage(resource, testResource, testName, coveredLines)) {
           result = true;
         }

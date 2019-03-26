@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.sonar.api.SonarQubeSide;
+import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -247,6 +248,23 @@ public class JaCoCoSensorTest {
     context.settings().setProperty(REPORT_PATH_PROPERTY, jacocoExecutionData.getAbsolutePath());
     sensor.execute(context);
     verify(testCase).setCoverageBlock(testAbleFile, linesExpected);
+  }
+
+  @Test
+  public void log_deprecation_for_coverage_per_test() throws IOException {
+    testExecutionDataForLinesCoveredByTest("/org/sonar/plugins/jacoco/JaCoCov0_7_5_coverage_per_test/", newArrayList(3, 4, 5, 8, 12));
+    String msg = "'Coverage per Test' feature is deprecated. Consider removing sonar-jacoco-listeners from your configuration.";
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(msg);
+    assertThat(analysisWarnings.warnings).contains(msg);
+  }
+
+  @Test
+  public void log_removal_for_coverage_per_test() throws IOException {
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(7,7), SonarQubeSide.SCANNER));
+    testExecutionDataForLinesCoveredByTest("/org/sonar/plugins/jacoco/JaCoCov0_7_5_coverage_per_test/", newArrayList(3, 4, 5, 8, 12));
+    String msg = "'Coverage per Test' feature was removed from SonarQube. Remove sonar-jacoco-listeners listener configuration.";
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(msg);
+    assertThat(analysisWarnings.warnings).contains(msg);
   }
 
   @Test

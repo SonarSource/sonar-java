@@ -86,7 +86,7 @@ public class JaCoCoSensor implements Sensor {
       reportMerged.getParentFile().mkdirs();
       JaCoCoReportMerger.mergeReports(reportMerged, reportPaths.toArray(new File[0]));
     }
-    new UnitTestAnalyzer(reportMerged, perspectives, javaResourceLocator, javaClasspath).analyse(context);
+    new UnitTestAnalyzer(reportMerged, perspectives, javaResourceLocator, javaClasspath, analysisWarnings).analyse(context);
   }
 
   private void warnAboutDeprecatedProperties(Configuration config) {
