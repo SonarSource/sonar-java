@@ -25,15 +25,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.sonar.api.SonarQubeSide;
-import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.internal.MapSettings;
@@ -47,6 +50,7 @@ import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
+import org.sonarsource.sonarlint.core.analyzer.sensor.SensorOptimizer;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +63,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.sonar.plugins.jacoco.JaCoCoExtensions.IT_REPORT_PATH_PROPERTY;
+import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_MISSING_FORCE_ZERO;
 import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_PATHS_PROPERTY;
 import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_PATH_PROPERTY;
 
@@ -93,6 +98,8 @@ public class JaCoCoSensorTest {
     context = SensorContextTester.create(outputDir);
     context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_7, SonarQubeSide.SCANNER));
     context.fileSystem().setWorkDir(temp.newFolder().toPath());
+    DefaultInputFile inputFile = TestInputFileBuilder.create(context.module().key(), "Hello.java").setLanguage("java").build();
+    context.fileSystem().add(inputFile);
 
     context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
     perspectives = mock(ResourcePerspectives.class);
@@ -131,6 +138,16 @@ public class JaCoCoSensorTest {
     context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
     context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
     runAnalysis();
+    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.reportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
+    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.itReportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
+  }
+
+  @Test
+  public void no_warning_with_xml_prop_set() throws Exception {
+    context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
+    context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
+    context.settings().setProperty(JaCoCoSensor.JACOCO_XML_PROPERTY, "jacoco.xml");
+    runAnalysisWithoutAssert();
     assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.reportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
     assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.itReportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
   }
@@ -175,11 +192,7 @@ public class JaCoCoSensorTest {
   }
 
   private void runAnalysis() throws IOException {
-    when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
-
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-
-    sensor.execute(context);
+    runAnalysisWithoutAssert();
     for (int zeroHitline : zeroHitlines) {
       assertThat(context.lineHits(resource.key(), zeroHitline)).isEqualTo(0);
     }
@@ -188,6 +201,12 @@ public class JaCoCoSensorTest {
     }
     assertThat(context.conditions(resource.key(), 15)).isEqualTo(2);
     assertThat(context.coveredConditions(resource.key(), 15)).isEqualTo(0);
+  }
+
+  private void runAnalysisWithoutAssert() {
+    when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    sensor.execute(context);
   }
 
   @Test
@@ -323,13 +342,33 @@ public class JaCoCoSensorTest {
   }
 
   @Test
+  public void should_log_warning_for_force_coverage() throws Exception {
+    context.settings().setProperty(REPORT_MISSING_FORCE_ZERO, "true");
+    runAnalysis();
+    String msg = "Property 'sonar.jacoco.reportMissing.force.zero' is deprecated and its value will be ignored.";
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(msg);
+    assertThat(analysisWarnings.warnings).contains(msg);
+  }
+
+  @Test
   public void should_log_info_when_both_xml_and_exec_properties_set() throws Exception {
     context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
     context.settings().setProperty(JaCoCoSensor.JACOCO_XML_PROPERTY, "jacoco.xml");
-    runAnalysis();
+    runAnalysisWithoutAssert();
+    List<Integer> coverage = IntStream.range(1, resource.lines()).mapToObj(line -> context.lineHits(resource.key(), line)).collect(Collectors.toList());
+    assertThat(coverage).allMatch(Objects::isNull);
+
     String msg = "Both 'sonar.jacoco.reportPaths' and 'sonar.coverage.jacoco.xmlReportPaths' were set. 'sonar.jacoco.reportPaths' is deprecated therefore, only 'sonar.coverage.jacoco.xmlReportPaths' will be taken into account.";
     assertThat(logTester.logs(LoggerLevel.INFO)).contains(msg);
     assertThat(analysisWarnings.warnings).isEmpty();
+  }
+
+  @Test
+  public void test_sensor_descriptor() {
+    SensorOptimizer sensorOptimizer = new SensorOptimizer(context.fileSystem(), context.activeRules(), context.config());
+    DefaultSensorDescriptor sensorDescriptor = new DefaultSensorDescriptor();
+    sensor.describe(sensorDescriptor);
+    assertThat(sensorOptimizer.shouldExecute(sensorDescriptor)).isTrue();
   }
 
   static class TestAnalysisWarnings extends AnalysisWarningsWrapper {
