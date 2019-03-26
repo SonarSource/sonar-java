@@ -29,6 +29,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Configuration;
+import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -44,11 +45,21 @@ public class JaCoCoSensor implements Sensor {
   private final ResourcePerspectives perspectives;
   private final JavaResourceLocator javaResourceLocator;
   private final JavaClasspath javaClasspath;
+  static final String JACOCO_XML_PROPERTY = "sonar.coverage.jacoco.xmlReportPaths";
+  private AnalysisWarningsWrapper analysisWarnings;
 
+  /**
+   * Used by SQ < 7.4 where AnalysisWarning is not yet available. Should be dropped once SQ > 7.4 is the minimal version
+   */
   public JaCoCoSensor(ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
+    this(perspectives, javaResourceLocator, javaClasspath, AnalysisWarningsWrapper.NOOP_ANALYSIS_WARNINGS);
+  }
+
+  public JaCoCoSensor(ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath, AnalysisWarningsWrapper analysisWarnings) {
     this.perspectives = perspectives;
     this.javaResourceLocator = javaResourceLocator;
     this.javaClasspath = javaClasspath;
+    this.analysisWarnings = analysisWarnings;
   }
 
   @Override
@@ -61,13 +72,14 @@ public class JaCoCoSensor implements Sensor {
     if (context.config().hasKey(REPORT_MISSING_FORCE_ZERO)) {
       LOG.warn("Property '{}' is deprecated and its value will be ignored.", REPORT_MISSING_FORCE_ZERO);
     }
+    warnAboutDeprecatedProperties(context.config());
     Set<File> reportPaths = getReportPaths(context);
     if (reportPaths.isEmpty()) {
       return;
     }
     // Merge JaCoCo reports
     File reportMerged;
-    if(reportPaths.size() == 1) {
+    if (reportPaths.size() == 1) {
       reportMerged = reportPaths.iterator().next();
     } else {
       reportMerged = new File(context.fileSystem().workDir(), JACOCO_MERGED_FILENAME);
@@ -75,6 +87,23 @@ public class JaCoCoSensor implements Sensor {
       JaCoCoReportMerger.mergeReports(reportMerged, reportPaths.toArray(new File[0]));
     }
     new UnitTestAnalyzer(reportMerged, perspectives, javaResourceLocator, javaClasspath).analyse(context);
+  }
+
+  private void warnAboutDeprecatedProperties(Configuration config) {
+    if (config.hasKey(REPORT_PATHS_PROPERTY)) {
+      if (config.hasKey(JACOCO_XML_PROPERTY)) {
+        LOG.info("Both '{}' and '{}' were set. '{}' is deprecated therefore, only '{}' will be taken into account.",
+          REPORT_PATHS_PROPERTY, JACOCO_XML_PROPERTY, REPORT_PATHS_PROPERTY, JACOCO_XML_PROPERTY);
+      } else {
+        addAnalysisWarning("'%s' is deprecated (JaCoCo binary format). '%s' should be used instead (JaCoCo XML format).", REPORT_PATHS_PROPERTY, JACOCO_XML_PROPERTY);
+      }
+    }
+  }
+
+  private void addAnalysisWarning(String format, Object... args) {
+    String msg = String.format(format, args);
+    LOG.warn(msg);
+    analysisWarnings.addUnique(msg);
   }
 
   private static Set<File> getReportPaths(SensorContext context) {

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,6 +43,7 @@ import org.sonar.api.test.MutableTestable;
 import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -72,10 +74,12 @@ public class JaCoCoSensorTest {
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
+  private TestAnalysisWarnings analysisWarnings = new TestAnalysisWarnings();
+
   @Rule
   public LogTester logTester = new LogTester();
-  private int[] oneHitlines = new int[] {6, 7, 8, 11};
-  private int[] zeroHitlines = new int[] {15, 16, 18};
+  private int[] oneHitlines = new int[]{6, 7, 8, 11};
+  private int[] zeroHitlines = new int[]{15, 16, 18};
   private DefaultInputFile resource = new TestInputFileBuilder("", "org/sonar/plugins/jacoco/tests/Hello").setLines(19).build();
 
   @Before
@@ -92,7 +96,7 @@ public class JaCoCoSensorTest {
     context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
     perspectives = mock(ResourcePerspectives.class);
     javaClasspath = mock(JavaClasspath.class);
-    sensor = new JaCoCoSensor(perspectives, javaResourceLocator, javaClasspath);
+    sensor = new JaCoCoSensor(perspectives, javaResourceLocator, javaClasspath, analysisWarnings);
   }
 
   @Test
@@ -148,12 +152,12 @@ public class JaCoCoSensorTest {
     String path1 = TestUtils.getResource("org/sonar/plugins/jacoco/JaCoCo_incompatible_merge/jacoco-0.7.5.exec").getPath();
     String path2 = TestUtils.getResource("org/sonar/plugins/jacoco/JaCoCo_incompatible_merge/jacoco-it-0.7.5.exec").getPath();
     context.settings().setProperty(REPORT_PATH_PROPERTY, "");
-    context.settings().setProperty(REPORT_PATHS_PROPERTY, path1+","+path2);
+    context.settings().setProperty(REPORT_PATHS_PROPERTY, path1 + "," + path2);
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
     sensor.execute(context);
-    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Analysing "+path1);
-    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Analysing "+path2);
-    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Analysing "+new File(context.fileSystem().workDir(), "jacoco-merged.exec").getAbsolutePath());
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Analysing " + path1);
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Analysing " + path2);
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Analysing " + new File(context.fileSystem().workDir(), "jacoco-merged.exec").getAbsolutePath());
   }
 
   @Test
@@ -190,7 +194,7 @@ public class JaCoCoSensorTest {
     outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest2/");
     jacocoExecutionData = new File(outputDir, "jacoco.exec");
     Files.copy(TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest2/org/example/App.class.toCopy"),
-        new File(jacocoExecutionData.getParentFile(), "/org/example/App.class"));
+      new File(jacocoExecutionData.getParentFile(), "/org/example/App.class"));
     DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(10).build();
     when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
@@ -289,6 +293,39 @@ public class JaCoCoSensorTest {
       "> 'org/foo/bar/Example2'",
       "> 'Example'",
       "In order to have accurate coverage measures, the same class files must be used as at runtime for report generation.");
+  }
+
+  @Test
+  public void should_log_warning_for_deprecated_properties() throws Exception {
+    context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
+    runAnalysis();
+    String msg = "'sonar.jacoco.reportPaths' is deprecated (JaCoCo binary format). 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).";
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(msg);
+    assertThat(analysisWarnings.warnings).contains(msg);
+  }
+
+  @Test
+  public void should_log_info_when_both_xml_and_exec_properties_set() throws Exception {
+    context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
+    context.settings().setProperty(JaCoCoSensor.JACOCO_XML_PROPERTY, "jacoco.xml");
+    runAnalysis();
+    String msg = "Both 'sonar.jacoco.reportPaths' and 'sonar.coverage.jacoco.xmlReportPaths' were set. 'sonar.jacoco.reportPaths' is deprecated therefore, only 'sonar.coverage.jacoco.xmlReportPaths' will be taken into account.";
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains(msg);
+    assertThat(analysisWarnings.warnings).isEmpty();
+  }
+
+  static class TestAnalysisWarnings extends AnalysisWarningsWrapper {
+
+    List<String> warnings = new ArrayList<>();
+
+    TestAnalysisWarnings() {
+      super(null);
+    }
+
+    @Override
+    public void addUnique(String text) {
+      warnings.add(text);
+    }
   }
 
 }

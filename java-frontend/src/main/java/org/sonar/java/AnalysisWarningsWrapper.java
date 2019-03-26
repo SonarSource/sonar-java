@@ -33,6 +33,16 @@ import org.sonar.api.notifications.AnalysisWarnings;
 public class AnalysisWarningsWrapper {
   private final AnalysisWarnings analysisWarnings;
 
+  /**
+   * Noop instance which can be used as placeholder when {@link AnalysisWarnings} is not supported
+   */
+  public static final AnalysisWarningsWrapper NOOP_ANALYSIS_WARNINGS = new AnalysisWarningsWrapper(null) {
+    @Override
+    public void addUnique(String text) {
+      // no operation
+    }
+  };
+
   public AnalysisWarningsWrapper(AnalysisWarnings analysisWarnings) {
     this.analysisWarnings = analysisWarnings;
   }
