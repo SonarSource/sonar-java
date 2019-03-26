@@ -103,7 +103,7 @@ public abstract class AbstractJavaClasspath {
   }
 
   protected boolean hasMoreThanOneJavaFile() {
-    return Iterables.size(fs.files(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)))) > 1;
+    return Iterables.size(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)))) > 1;
   }
 
   private Set<File> getFilesForPattern(Path baseDir, String pathPattern, boolean libraryProperty) {
