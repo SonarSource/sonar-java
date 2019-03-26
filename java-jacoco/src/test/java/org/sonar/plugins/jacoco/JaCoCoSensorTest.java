@@ -122,7 +122,7 @@ public class JaCoCoSensorTest {
   public void test_read_execution_data_after_6_2_using_deprecated_prop() throws Exception {
     context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
     runAnalysis();
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Property 'sonar.jacoco.reportPath' is deprecated. Please use 'sonar.jacoco.reportPaths' instead.");
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Property 'sonar.jacoco.reportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
   }
 
   @Test
@@ -131,15 +131,15 @@ public class JaCoCoSensorTest {
     context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
     context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
     runAnalysis();
-    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.reportPath' is deprecated. Please use 'sonar.jacoco.reportPaths' instead.");
-    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.itReportPath' is deprecated. Please use 'sonar.jacoco.reportPaths' instead.");
+    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.reportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
+    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.itReportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
   }
 
   @Test
   public void test_read_execution_data_after_6_2_using_deprecated_it_prop() throws Exception {
     context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
     runAnalysis();
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Property 'sonar.jacoco.itReportPath' is deprecated. Please use 'sonar.jacoco.reportPaths' instead.");
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Property 'sonar.jacoco.itReportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
   }
 
   @Test
