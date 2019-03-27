@@ -39,11 +39,6 @@ public final class SurefireUtils {
 
   private static final Logger LOGGER = Loggers.get(SurefireUtils.class);
   /**
-   * @deprecated since 4.11
-   */
-  @Deprecated
-  public static final String SUREFIRE_REPORTS_PATH_PROPERTY = "sonar.junit.reportsPath";
-  /**
    * @since 4.11
    */
   public static final String SUREFIRE_REPORT_PATHS_PROPERTY = "sonar.junit.reportPaths";
@@ -59,20 +54,10 @@ public final class SurefireUtils {
    * @return The directories containing the surefire reports or default one (target/surefire-reports) if not found (not configured or not found).
    */
   public static List<File> getReportsDirectories(Configuration settings, FileSystem fs, PathResolver pathResolver) {
-    File dir = getReportsDirectoryFromDeprecatedProperty(settings, fs, pathResolver);
     List<File> dirs = getReportsDirectoriesFromProperty(settings, fs, pathResolver);
     if (dirs != null) {
-      if (dir != null) {
-        // both properties are set, deprecated property ignored
-        LOGGER.debug("Property '{}' is deprecated and will be ignored, as property '{}' is also set.", SUREFIRE_REPORTS_PATH_PROPERTY, SUREFIRE_REPORT_PATHS_PROPERTY);
-      }
       return dirs;
     }
-    if (dir != null) {
-      LOGGER.info("Property '{}' is deprecated. Use property '{}' instead.", SUREFIRE_REPORTS_PATH_PROPERTY, SUREFIRE_REPORT_PATHS_PROPERTY);
-      return Collections.singletonList(dir);
-    }
-    // both properties are not set
     return Collections.singletonList(new File(fs.baseDir(), "target/surefire-reports"));
   }
 
@@ -84,17 +69,6 @@ public final class SurefireUtils {
         .map(path -> getFileFromPath(fs, pathResolver, path))
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
-    }
-    return null;
-  }
-
-  @CheckForNull
-  private static File getReportsDirectoryFromDeprecatedProperty(Configuration settings, FileSystem fs, PathResolver pathResolver) {
-    if(settings.hasKey(SUREFIRE_REPORTS_PATH_PROPERTY)) {
-      String path = settings.get(SUREFIRE_REPORTS_PATH_PROPERTY).orElse(null);
-      if (path != null) {
-        return getFileFromPath(fs, pathResolver, path);
-      }
     }
     return null;
   }

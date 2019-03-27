@@ -36,18 +36,6 @@ public final class SurefireExtensions {
   public static List getExtensions() {
     return ImmutableList.of(
         /**
-         * @deprecated since 4.11, replaced by 'sonar.junit.reportPaths'
-         */
-        PropertyDefinition.builder(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)
-            .name("JUnit Reports")
-            .description("DEPRECATED : Use property '" + SurefireUtils.SUREFIRE_REPORT_PATHS_PROPERTY + "instead. "
-              + "Path to the directory containing all the *.xml JUnit report files. "
-              + "The path may be absolute or relative to the project base directory.")
-            .onQualifiers(Qualifiers.PROJECT)
-            .category(JavaConstants.JAVA_CATEGORY)
-            .subCategory("JUnit")
-            .build(),
-        /**
          * @since 4.11
          */
         PropertyDefinition.builder(SurefireUtils.SUREFIRE_REPORT_PATHS_PROPERTY)
