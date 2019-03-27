@@ -59,8 +59,10 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.MULTIPLY_ASSIGNMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_ARRAY;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NEW_CLASS;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.PLUS;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.RETURN_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.STRING_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.SWITCH_EXPRESSION;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.SWITCH_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.THROW_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.TRY_STATEMENT;
@@ -347,6 +349,7 @@ public class CFGTest {
         case NEW_CLASS:
         case NEW_ARRAY:
         case INSTANCE_OF:
+        case SWITCH_EXPRESSION:
         case LAMBDA_EXPRESSION:
         case TYPE_CAST:
         case PLUS_ASSIGNMENT:
@@ -411,6 +414,7 @@ public class CFGTest {
         case BREAK_STATEMENT:
         case CONTINUE_STATEMENT:
         case SWITCH_STATEMENT:
+        case SWITCH_EXPRESSION:
         case RETURN_STATEMENT:
         case FOR_STATEMENT:
         case FOR_EACH_STATEMENT:
@@ -791,6 +795,107 @@ public class CFGTest {
         element(IDENTIFIER, "Integer"),
         element(IDENTIFIER, "foo"),
         element(METHOD_INVOCATION)).successors(0));
+    cfgChecker.check(cfg);
+  }
+
+  @Test
+  public void switch_expression_without_fallthrough() {
+    final CFG cfg = buildCFG("int fun(int foo) throws Exception {\n" +
+      "    int a = switch (foo) {\n" +
+      "      case 1 -> fun(bar1) + fun(bar2);\n" +
+      "      case 2, 3, 4 -> fun(qix);\n" +
+      "      case 5 -> throw new Exception(\"boom\");\n" +
+      "      default -> fun(def);\n" +
+      "    };\n" +
+      "    return a;\n" +
+      "  }");
+    final CFGChecker cfgChecker = checker(
+      block(
+        element(INT_LITERAL, "1"),
+        element(IDENTIFIER, "fun"),
+        element(IDENTIFIER, "bar1"),
+        element(METHOD_INVOCATION),
+        element(IDENTIFIER, "fun"),
+        element(IDENTIFIER, "bar2"),
+        element(METHOD_INVOCATION),
+        element(PLUS)).hasCaseGroup().successors(1),
+      block(
+        element(INT_LITERAL, "2"),
+        element(INT_LITERAL, "3"),
+        element(INT_LITERAL, "4"),
+        element(IDENTIFIER, "fun"),
+        element(IDENTIFIER, "qix"),
+        element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
+      block(
+        element(INT_LITERAL, "5"),
+        element(STRING_LITERAL, "boom"),
+        element(NEW_CLASS)).hasCaseGroup().terminator(THROW_STATEMENT).successors(0),
+      block(
+        element(IDENTIFIER, "fun"),
+        element(IDENTIFIER, "def"),
+        element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
+      block(
+        element(IDENTIFIER, "foo")).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6),
+      block(
+        element(SWITCH_EXPRESSION),
+        element(VARIABLE, "a"),
+        element(IDENTIFIER, "a")).terminator(RETURN_STATEMENT).successors(0));
+    cfgChecker.check(cfg);
+  }
+
+  @Test
+  public void switch_expression_with_fallthrough() {
+    final CFG cfg = buildCFG("int fun(int foo) throws Exception {\n" +
+      "    int a = switch (foo) {\n" +
+      "      case 1:\n" +
+      "        fun(bar);\n" +
+      "      case 2:\n" +
+      "      case 3:\n" +
+      "      case 4:\n" +
+      "        break fun(bar1) + fun(bar2);\n" +
+      "      case 5:\n" +
+      "        throw new Exception(\"boom\");\n" +
+      "      case 6:\n" +
+      "        break foo;\n" +
+      "      default:\n" +
+      "        break fun(def);\n" +
+      "    };\n" +
+      "    return a;\n" +
+      "  }");
+    final CFGChecker cfgChecker = checker(
+      block(
+        element(INT_LITERAL, "1"),
+        element(IDENTIFIER, "fun"),
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).hasCaseGroup().successors(6),
+      block(
+        element(INT_LITERAL, "2"),
+        element(INT_LITERAL, "3"),
+        element(INT_LITERAL, "4"),
+        element(IDENTIFIER, "fun"),
+        element(IDENTIFIER, "bar1"),
+        element(METHOD_INVOCATION),
+        element(IDENTIFIER, "fun"),
+        element(IDENTIFIER, "bar2"),
+        element(METHOD_INVOCATION),
+        element(PLUS)).hasCaseGroup().terminator(BREAK_STATEMENT).successors(1),
+      block(
+        element(INT_LITERAL, "5"),
+        element(STRING_LITERAL, "boom"),
+        element(NEW_CLASS)).hasCaseGroup().terminator(THROW_STATEMENT).successors(0),
+      block(
+        element(INT_LITERAL, "6"),
+        element(IDENTIFIER, "foo")).hasCaseGroup().successors(1),
+      block(
+        element(IDENTIFIER, "fun"),
+        element(IDENTIFIER, "def"),
+        element(METHOD_INVOCATION)).hasCaseGroup().successors(1),
+      block(
+        element(IDENTIFIER, "foo")).terminator(SWITCH_EXPRESSION).successors(3, 4, 5, 6, 7),
+      block(
+        element(SWITCH_EXPRESSION),
+        element(VARIABLE, "a"),
+        element(IDENTIFIER, "a")).terminator(RETURN_STATEMENT).successors(0));
     cfgChecker.check(cfg);
   }
 

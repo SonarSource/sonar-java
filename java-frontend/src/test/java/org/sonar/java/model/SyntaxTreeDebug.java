@@ -24,6 +24,7 @@ import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -42,6 +43,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -150,8 +152,10 @@ public class SyntaxTreeDebug {
         return whileStatementString((WhileStatementTree) syntaxNode);
       case SWITCH_STATEMENT:
         return switchStatementString((SwitchStatementTree) syntaxNode);
+      case SWITCH_EXPRESSION:
+        return switchExpressionString((SwitchExpressionTree) syntaxNode);
       case BREAK_STATEMENT:
-        return "break";
+        return breakStatementString((BreakStatementTree) syntaxNode);
       case CONTINUE_STATEMENT:
         return "continue";
       case ARRAY_ACCESS_EXPRESSION:
@@ -365,7 +369,19 @@ public class SyntaxTreeDebug {
   }
 
   private static String switchStatementString(SwitchStatementTree syntaxNode) {
+    return switchExpressionString(syntaxNode.asSwitchExpression());
+  }
+
+  private static String switchExpressionString(SwitchExpressionTree syntaxNode) {
     return "switch (" + toString(syntaxNode.expression()) + ')';
+  }
+
+  private static String breakStatementString(BreakStatementTree syntaxNode) {
+    ExpressionTree value = syntaxNode.value();
+    if (value == null) {
+      return "break";
+    }
+    return "break " + toString(value);
   }
 
   private static String forEachStatementString(ForEachStatement syntaxNode) {
