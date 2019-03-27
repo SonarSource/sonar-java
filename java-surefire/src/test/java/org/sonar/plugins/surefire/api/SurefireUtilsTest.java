@@ -59,51 +59,6 @@ public class SurefireUtilsTest {
   }
 
   @Test
-  public void should_get_reports_path_from_deprecated_property() {
-    MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.junit.reportsPath", "target/surefire");
-
-    DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/resources/org/sonar/plugins/surefire/api/SurefireUtilsTest/shouldGetReportsPathFromDeprecatedProperty"));
-    PathResolver pathResolver = new PathResolver();
-
-    assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
-
-    List<File> directories = SurefireUtils.getReportsDirectories(settings.asConfig(), fs, pathResolver);
-
-    assertThat(directories).hasSize(1);
-    File directory = directories.get(0);
-    assertThat(directory.exists()).isTrue();
-    assertThat(directory.isDirectory()).isTrue();
-    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Property 'sonar.junit.reportsPath' is deprecated. Use property 'sonar.junit.reportPaths' instead.");
-  }
-
-  @Test
-  public void should_only_use_new_property_if_both_set() {
-    MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.junit.reportsPath", "../shouldGetReportsPathFromDeprecatedProperty/target/surefire");
-    settings.setProperty("sonar.junit.reportPaths", "target/surefire,submodule/target/surefire");
-
-    DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/resources/org/sonar/plugins/surefire/api/SurefireUtilsTest/shouldGetReportsPathFromProperty"));
-    PathResolver pathResolver = new PathResolver();
-
-    assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
-
-    List<File> directories = SurefireUtils.getReportsDirectories(settings.asConfig(), fs, pathResolver);
-
-    assertThat(directories).hasSize(2);
-    File directory1 = directories.get(0);
-    assertThat(directory1.exists()).isTrue();
-    assertThat(directory1.isDirectory()).isTrue();
-    File directory2 = directories.get(1);
-    assertThat(directory2.exists()).isTrue();
-    assertThat(directory2.isDirectory()).isTrue();
-    assertThat(logTester.logs(LoggerLevel.DEBUG))
-      .contains("Property 'sonar.junit.reportsPath' is deprecated and will be ignored, as property 'sonar.junit.reportPaths' is also set.");
-    assertThat(logTester.logs(LoggerLevel.INFO))
-      .doesNotContain("Property 'sonar.junit.reportsPath' is deprecated. Use property 'sonar.junit.reportPaths' instead.");
-  }
-
-  @Test
   public void return_default_value_if_property_unset() throws Exception {
     MapSettings settings = new MapSettings();
     DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/resources/org/sonar/plugins/surefire/api/SurefireUtilsTest"));

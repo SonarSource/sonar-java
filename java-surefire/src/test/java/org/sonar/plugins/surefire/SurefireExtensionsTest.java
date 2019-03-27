@@ -28,6 +28,6 @@ public class SurefireExtensionsTest {
 
   @Test
   public void shouldGetExtensions() {
-    assertThat(SurefireExtensions.getExtensions().size(), equalTo(4));
+    assertThat(SurefireExtensions.getExtensions().size(), equalTo(3));
   }
 }

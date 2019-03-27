@@ -79,7 +79,7 @@ public class SurefireSensorTest {
   @Test
   public void shouldNotFailIfReportsNotFound() {
     MapSettings settings = new MapSettings();
-    settings.setProperty(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY, "unknown");
+    settings.setProperty(SurefireUtils.SUREFIRE_REPORT_PATHS_PROPERTY, "unknown");
 
     SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings.asConfig(), fs, pathResolver);
     surefireSensor.execute(mock(SensorContext.class));
