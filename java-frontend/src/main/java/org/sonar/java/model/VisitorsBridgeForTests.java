@@ -88,6 +88,11 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     }
 
     @Override
+    public void addIssue(File file, JavaCheck javaCheck, int line, String message) {
+      issues.add(new AnalyzerMessage(javaCheck, file, line, message, 0));
+    }
+
+    @Override
     public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Integer cost) {
       issues.add(new AnalyzerMessage(javaCheck, getFile(), line, message, cost != null ? cost.intValue() : 0));
     }

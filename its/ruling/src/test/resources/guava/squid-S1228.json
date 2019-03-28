@@ -1,8 +1,6 @@
 {
-'com.google.guava:guava:src/com/google/common/base/internal':[
+'com.google.guava:guava':[
 0,
-],
-'com.google.guava:guava:src/com/google/thirdparty/publicsuffix':[
 0,
 ],
 }

@@ -91,6 +91,7 @@ public abstract class CheckVerifier {
   private final ArrayListMultimap<Integer, Map<IssueAttribute, String>> expected = ArrayListMultimap.create();
   private boolean expectNoIssues = false;
   private String expectFileIssue;
+  private String expectedProjectIssue;
 
   public void expectNoIssues() {
     this.expectNoIssues = true;
@@ -98,6 +99,10 @@ public abstract class CheckVerifier {
 
   public void setExpectedFileIssue(String expectFileIssue) {
     this.expectFileIssue = expectFileIssue;
+  }
+
+  public void setExpectedProjectIssue(String expectedProjectIssue) {
+    this.expectedProjectIssue = expectedProjectIssue;
   }
 
   public abstract String getExpectedIssueTrigger();
@@ -174,7 +179,9 @@ public abstract class CheckVerifier {
     if (expectNoIssues) {
       assertNoIssues(issues, bypassNoIssue);
     } else if (StringUtils.isNotEmpty(expectFileIssue)) {
-      assertSingleIssue(issues);
+      assertSingleIssue(issues, true, expectFileIssue);
+    } else if (StringUtils.isNotEmpty(expectedProjectIssue)) {
+      assertSingleIssue(issues, false, expectedProjectIssue);
     } else {
       assertMultipleIssue(issues);
     }
@@ -348,11 +355,12 @@ public abstract class CheckVerifier {
     }
   }
 
-  private void assertSingleIssue(Set<AnalyzerMessage> issues) {
+  private static void assertSingleIssue(Set<AnalyzerMessage> issues, boolean issueOnFile, String expectedMessage) {
     Preconditions.checkState(issues.size() == 1, "A single issue is expected on the file");
     AnalyzerMessage issue = Iterables.getFirst(issues, null);
+    assertThat(!issue.getFile().isDirectory()).isEqualTo(issueOnFile);
     assertThat(issue.getLine()).isNull();
-    assertThat(issue.getMessage()).isEqualTo(expectFileIssue);
+    assertThat(issue.getMessage()).isEqualTo(expectedMessage);
   }
 
   private void assertNoIssues(Set<AnalyzerMessage> issues, boolean bypass) {

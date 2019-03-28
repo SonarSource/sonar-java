@@ -37,8 +37,8 @@ import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -139,20 +139,27 @@ public class SonarComponents {
     this.context = context;
   }
 
+  @Nullable
+  public InputComponent inputFromIOFileOrDirectory(File file) {
+    if (file.isDirectory()) {
+      // TODO context.module() is deprecated since SQ 7.6, but it can not yet be replaced by
+      //  context.project() until the oldest "SQ supported version" is >= 7.6
+      return context != null && isInSubDirectory(fs.baseDir().getAbsoluteFile(), file.getAbsoluteFile()) ? context.module() : null;
+    }
+    return inputFromIOFile(file);
+  }
+
+  @Nullable
   public InputFile inputFromIOFile(File file) {
     return fs.inputFile(fs.predicates().is(file));
   }
 
-  public int fileLength(File file) {
-    return inputFromIOFile(file).lines();
+  private static boolean isInSubDirectory(File dir, @Nullable File file) {
+    return file != null && (file.equals(dir) || isInSubDirectory(dir, file.getParentFile()));
   }
 
-  private InputPath inputPathFromIOFile(File file) {
-    if (file.isDirectory()) {
-      return fs.inputDir(file);
-    } else {
-      return inputFromIOFile(file);
-    }
+  public int fileLength(File file) {
+    return inputFromIOFile(file).lines();
   }
 
   public FileLinesContext fileLinesContextFor(File file) {
@@ -236,30 +243,30 @@ public class SonarComponents {
     if (key == null) {
       return;
     }
-    File file = analyzerMessage.getFile();
-    InputPath inputPath = inputPathFromIOFile(file);
-    if (inputPath == null) {
+    InputComponent inputComponent = inputFromIOFileOrDirectory(analyzerMessage.getFile());
+    if (inputComponent == null) {
       return;
     }
     Double cost = analyzerMessage.getCost();
-    reportIssue(analyzerMessage, key, inputPath, cost);
+    reportIssue(analyzerMessage, key, inputComponent, cost);
   }
 
   @VisibleForTesting
-  void reportIssue(AnalyzerMessage analyzerMessage, RuleKey key, InputPath inputPath, Double cost) {
+  void reportIssue(AnalyzerMessage analyzerMessage, RuleKey key, InputComponent fileOrProject, @Nullable Double cost) {
     Preconditions.checkNotNull(context);
     JavaIssue issue = JavaIssue.create(context, key, cost);
     AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
     if (textSpan == null) {
-      // either an issue at file or folder level
-      issue.setPrimaryLocationOnFile(inputPath, analyzerMessage.getMessage());
+      // either an issue at file or project level
+      issue.setPrimaryLocationOnComponent(fileOrProject, analyzerMessage.getMessage());
     } else {
       if (!textSpan.onLine()) {
         Preconditions.checkState(!textSpan.isEmpty(), "Issue location should not be empty");
       }
-      issue.setPrimaryLocation((InputFile) inputPath, analyzerMessage.getMessage(), textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
+      issue.setPrimaryLocation((InputFile) fileOrProject, analyzerMessage.getMessage(), textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
     }
-    issue.addFlow(inputFromIOFile(analyzerMessage.getFile()), analyzerMessage.flows).save();
+    issue.addFlow(inputFromIOFile(analyzerMessage.getFile()), analyzerMessage.flows);
+    issue.save();
   }
 
   public boolean reportAnalysisError(RecognitionException re, File file) {

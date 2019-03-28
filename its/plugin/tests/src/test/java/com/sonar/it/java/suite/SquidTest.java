@@ -49,25 +49,13 @@ public class SquidTest {
   @Test
   public void should_detect_missing_package_info() throws Exception {
     IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
-    if (isGreater75()) {
-      // starting with 7.6, not possible anymore to raise issue at folder level -> moved to project level
-      List<Issue> issues = issueClient.find(IssueQuery.create().components("com.sonarsource.it.samples:squid")).list();
-      assertThat(issues).hasSize(2);
-      assertThat(issues.stream().map(Issue::ruleKey)).allMatch("squid:S1228"::equals);
-      assertThat(issues.stream().map(Issue::line)).allMatch(Objects::isNull);
-      assertThat(issues.stream().map(Issue::message)).allMatch(msg -> msg.contains("'src/main/java/package1'") || msg.contains("'src/main/java/package2'"));
-    } else {
-      List<Issue> issues = issueClient.find(IssueQuery.create().components(JavaTestSuite.keyFor("com.sonarsource.it.samples:squid", "package1", ""))).list();
-      assertThat(issues).hasSize(1);
-      assertThat(issues.get(0).ruleKey()).isEqualTo("squid:S1228");
-      assertThat(issues.get(0).line()).isNull();
-    }
+    List<Issue> issues = issueClient.find(IssueQuery.create().components("com.sonarsource.it.samples:squid")).list();
+    assertThat(issues).hasSize(2);
+    assertThat(issues.stream().map(Issue::ruleKey)).allMatch("squid:S1228"::equals);
+    assertThat(issues.stream().map(Issue::line)).allMatch(Objects::isNull);
+    assertThat(issues.stream().map(Issue::message)).allMatch(msg -> msg.contains("'src/main/java/package1'") || msg.contains("'src/main/java/package2'"));
     List<Issue> issuesOnTestPackage = issueClient.find(IssueQuery.create().components("com.sonarsource.it.samples:squid:src/test/java/package1")).list();
     assertThat(issuesOnTestPackage).isEmpty();
-  }
-
-  private static boolean isGreater75() {
-    return orchestrator.getServer().version().isGreaterThanOrEquals(7, 6);
   }
 
 }

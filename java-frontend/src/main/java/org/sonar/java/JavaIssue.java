@@ -19,18 +19,16 @@
  */
 package org.sonar.java;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.rule.RuleKey;
-
-import javax.annotation.Nullable;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public final class JavaIssue {
   private final NewIssue newIssue;
@@ -46,10 +44,10 @@ public final class JavaIssue {
     return new JavaIssue(newIssue);
   }
 
-  public JavaIssue setPrimaryLocationOnFile(InputPath file, String message) {
+  public JavaIssue setPrimaryLocationOnComponent(InputComponent fileOrProject, String message) {
     newIssue.at(
       newIssue.newLocation()
-        .on(file)
+        .on(fileOrProject)
         .message(message));
     return this;
   }
