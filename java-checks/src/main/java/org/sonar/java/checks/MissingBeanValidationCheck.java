@@ -25,9 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -87,9 +84,7 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
     if (variable.symbol().metadata().isAnnotatedWith(JAVAX_VALIDATION_VALID)) {
       return true;
     }
-
-    Type type = variable.symbol().type();
-    return type instanceof ParametrizedTypeJavaType && typeArgumentAnnotations(variable).anyMatch(annotation -> annotation.is(JAVAX_VALIDATION_VALID));
+    return typeArgumentAnnotations(variable).anyMatch(annotation -> annotation.is(JAVAX_VALIDATION_VALID));
   }
 
   private static Stream<Type> typeArgumentAnnotations(VariableTree variable) {
@@ -97,8 +92,11 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Stream<TypeTree> typeArgumentTypeTrees(VariableTree variable) {
-    ParameterizedTypeTree parameterizedType = (ParameterizedTypeTree) variable.type();
-    return parameterizedType.typeArguments().stream().map(TypeTree.class::cast);
+    TypeTree variableType = variable.type();
+    if (!variableType.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      return Stream.empty();
+    }
+    return ((ParameterizedTypeTree) variableType).typeArguments().stream().map(TypeTree.class::cast);
   }
 
   private static boolean validationSupported(VariableTree variable) {
@@ -109,7 +107,7 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
     if (variable.type().is(Tree.Kind.PARAMETERIZED_TYPE)) {
       return typeArgumentAnnotationInstances(variable);
     } else {
-      JavaSymbol.TypeJavaSymbol classSymbol = ((JavaType) variable.symbol().type()).getSymbol();
+      Symbol.TypeSymbol classSymbol = variable.symbol().type().symbol();
       return classAndFieldAnnotationInstances(classSymbol);
     }
   }
@@ -131,6 +129,6 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isConstraintAnnotation(SymbolMetadata.AnnotationInstance annotationInstance) {
-    return ((JavaSymbol.TypeJavaSymbol) annotationInstance.symbol()).metadata().isAnnotatedWith(JAVAX_VALIDATION_CONSTRAINT);
+    return annotationInstance.symbol().metadata().isAnnotatedWith(JAVAX_VALIDATION_CONSTRAINT);
   }
 }
