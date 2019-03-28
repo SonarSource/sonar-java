@@ -32,7 +32,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.api.SonarRuntime;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.log.Logger;
@@ -66,7 +68,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
       }
     }
 
-    getSecurityRuleKeys().forEach(key -> sonarWay.activateRule(CheckList.REPOSITORY_KEY, key));
+    getSecurityRuleKeys().forEach(key -> sonarWay.activateRule(key.repository(), key.rule()));
 
     sonarWay.done();
   }
@@ -112,11 +114,14 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
   }
 
   @VisibleForTesting
-  static Set<String> getSecurityRuleKeys() {
+  static Set<RuleKey> getSecurityRuleKeys() {
     try {
       Class<?> javaRulesClass = Class.forName("com.sonar.plugins.security.api.JavaRules");
-      Method getRuleKeysMethod = javaRulesClass.getMethod("getRuleKeys");
-      return (Set<String>) getRuleKeysMethod.invoke(null);
+      Method getRuleKeysMethod = javaRulesClass.getMethod("getSecurityRuleKeys");
+      Set<String> ruleKeys = (Set<String>) getRuleKeysMethod.invoke(null);
+      Method getRepositoryKeyMethod = javaRulesClass.getMethod("getRepositoryKey");
+      String repositoryKey = (String) getRepositoryKeyMethod.invoke(null);
+      return ruleKeys.stream().map(k -> RuleKey.of(repositoryKey, k)).collect(Collectors.toSet());
     } catch (ClassNotFoundException e) {
       LOG.debug("com.sonar.plugins.security.api.JavaRules is not found, no security rules added to Sonar way java profile: " + e.getMessage());
     } catch (NoSuchMethodException e) {
