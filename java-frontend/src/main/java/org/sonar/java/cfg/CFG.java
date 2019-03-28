@@ -763,8 +763,6 @@ public class CFG implements ControlFlowGraph {
           .map(Lists::reverse)
           .flatMap(Collection::stream)
           .forEach(this::build);
-        if (!withoutFallTrough) {
-        }
         if (!hasDefaultCase) {
           hasDefaultCase = containsDefaultCase(labels);
         }
@@ -786,7 +784,7 @@ public class CFG implements ControlFlowGraph {
   }
 
   /**
-   * A switch expression can use the traditional cases with 'column' (with fall-through) or,
+   * A switch expression can use the traditional cases with 'colon' (with fall-through) or,
    * starting with java 12, the 'arrow' cases (without fall-through). Cases can not be mixed.
    *
    * @param switchExpressionTree the switch to evaluate
