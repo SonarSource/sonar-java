@@ -32,7 +32,8 @@ public class AnonymousClassesTooBigCheckTest {
   @Test
   public void custom() {
     AnonymousClassesTooBigCheck check = new AnonymousClassesTooBigCheck();
-    check.max = 6;
+    check.maxAnonymousClass = 6;
+    check.maxLambda = 8;
     JavaCheckVerifier.verify("src/test/files/checks/AnonymousClassesTooBigCheckCustom.java", check);
   }
 

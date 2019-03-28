@@ -37,10 +37,15 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
 
   private static final int DEFAULT_MAX = 20;
 
-  @RuleProperty(key = "Max",
-    description = "Maximum allowed lines in an anonymous class/lambda",
+  @RuleProperty(key = "Max (Anonymous Class)",
+    description = "Maximum allowed lines in an anonymous class",
     defaultValue = "" + DEFAULT_MAX)
-  public int max = DEFAULT_MAX;
+  public int maxAnonymousClass = DEFAULT_MAX;
+
+  @RuleProperty(key = "Max (Lambda)",
+    description = "Maximum allowed lines in a lambda",
+    defaultValue = "" + DEFAULT_MAX)
+  public int maxLambda = DEFAULT_MAX;
 
   private JavaFileScannerContext context;
   /**
@@ -59,9 +64,9 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   public void visitNewClass(NewClassTree tree) {
     if (tree.classBody() != null && !isEnumConstantBody) {
       int lines = getNumberOfLines(tree.classBody());
-      if (lines > max) {
+      if (lines > maxAnonymousClass) {
         context.reportIssue(this, tree.newKeyword(), tree.identifier(),
-          "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.");
+          "Reduce this anonymous class number of lines from " + lines + " to at most " + maxAnonymousClass + ", or make it a named class.");
       }
     }
     isEnumConstantBody = false;
@@ -77,12 +82,12 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
     int lines = getNumberOfLines(lambdaExpressionTree);
-    if (lines > max) {
+    if (lines > maxLambda) {
       SyntaxToken firstToken = lambdaExpressionTree.firstToken();
       SyntaxToken lastSyntaxToken = lambdaExpressionTree.lastToken();
       JavaFileScannerContext.Location lastTokenLocation = new JavaFileScannerContext.Location(lines + " lines", lastSyntaxToken);
       context.reportIssue(this, firstToken, lambdaExpressionTree.arrowToken(),
-        "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".", Lists.newArrayList(lastTokenLocation), null);
+        "Reduce this lambda expression number of lines from " + lines + " to at most " + maxLambda + ".", Lists.newArrayList(lastTokenLocation), null);
     }
     super.visitLambdaExpression(lambdaExpressionTree);
   }
