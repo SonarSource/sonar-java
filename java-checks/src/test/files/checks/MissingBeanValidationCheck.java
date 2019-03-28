@@ -23,6 +23,9 @@ class NonCompliantGroup {
   private User owner; // Noncompliant
 
   private List<User> members; // Noncompliant [[sc=11;ec=21]] {{Add missing "@Valid" on "members" to validate it with "Bean Validation".}}
+
+  private Building.Size<User> office; // Noncompliant [[sc=11;ec=30]]
+  private Building.Size company; // Compliant - Parametrized type, non-specified
 }
 
 class CompliantGroup {
@@ -78,5 +81,9 @@ class Human {
 
   public void eat(Orange orange) { // Compliant
   }
+}
+
+class Building {
+  static class Size<T> { }
 }
 
