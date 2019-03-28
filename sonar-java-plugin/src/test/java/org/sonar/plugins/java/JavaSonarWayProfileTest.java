@@ -87,7 +87,7 @@ public class JavaSonarWayProfileTest {
 
     // one security rule available
     JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S3649"));
-    assertThat(JavaSonarWayProfile.getSecurityRuleKeys()).containsOnly("S3649");
+    assertThat(JavaSonarWayProfile.getSecurityRuleKeys()).containsOnly(RuleKey.of("javasecurity", "S3649"));
   }
 
 }
