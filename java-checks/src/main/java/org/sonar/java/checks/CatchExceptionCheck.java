@@ -50,6 +50,10 @@ public class CatchExceptionCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     TryStatementTree tryStatement = (TryStatementTree) tree;
+    if (!tryStatement.resourceList().isEmpty()) {
+      // classes implementing AutoCloseable interface implements 'close()' methods which throws Exception
+      return;
+    }
     for (CatchTree catchTree : tryStatement.catches()) {
       TypeTree catchType = catchTree.parameter().type();
       if (catchesException(catchType, tryStatement.block())) {
