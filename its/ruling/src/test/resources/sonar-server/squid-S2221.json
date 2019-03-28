@@ -14,9 +14,6 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/RealmAuthenticator.java':[
 114,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ce/ws/IsQueueEmptyWs.java':[
-76,
-],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/FilterParser.java':[
 68,
 ],
@@ -107,7 +104,6 @@
 84,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/BackendCleanup.java':[
-87,
 100,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/Platform.java':[
@@ -155,9 +151,6 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/ServletRequest.java':[
 101,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/WebServiceEngine.java':[
-144,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ws/WsUtils.java':[
 59,
