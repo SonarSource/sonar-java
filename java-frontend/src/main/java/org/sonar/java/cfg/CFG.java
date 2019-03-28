@@ -725,27 +725,46 @@ public class CFG implements ControlFlowGraph {
   }
 
   private void buildSwitchStatement(SwitchStatementTree switchStatementTree) {
+    buildSwitchExpression(switchStatementTree.asSwitchExpression(), switchStatementTree);
+  }
+
+  private void buildSwitchExpression(SwitchExpressionTree switchExpressionTree) {
+    buildSwitchExpression(switchExpressionTree, switchExpressionTree);
+  }
+
+  private void buildSwitchExpression(SwitchExpressionTree switchExpressionTree, Tree terminator) {
+    if (terminator.is(Tree.Kind.SWITCH_EXPRESSION)) {
+      // force a switch expression in the current block
+      currentBlock.elements.add(terminator);
+    }
     Block switchSuccessor = currentBlock;
     // process condition
     currentBlock = createBlock();
-    currentBlock.terminator = switchStatementTree;
+    currentBlock.terminator = terminator;
     switches.addLast(currentBlock);
-    build(switchStatementTree.expression());
+    build(switchExpressionTree.expression());
     Block conditionBlock = currentBlock;
     // process body
     currentBlock = createBlock(switchSuccessor);
     breakTargets.addLast(switchSuccessor);
     boolean hasDefaultCase = false;
-    if (!switchStatementTree.cases().isEmpty()) {
-      CaseGroupTree firstCase = switchStatementTree.cases().get(0);
-      for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
+    if (!switchExpressionTree.cases().isEmpty()) {
+      boolean withoutFallTrough = switchWithoutFallThrough(switchExpressionTree);
+      CaseGroupTree firstCase = switchExpressionTree.cases().get(0);
+      for (CaseGroupTree caseGroupTree : Lists.reverse(switchExpressionTree.cases())) {
+        if (withoutFallTrough) {
+          currentBlock.successors().clear();
+          currentBlock.addSuccessor(switchSuccessor);
+        }
         build(caseGroupTree.body());
-        Lists.reverse(caseGroupTree.labels()).stream()
+        List<CaseLabelTree> labels = caseGroupTree.labels();
+        Lists.reverse(labels).stream()
           .map(CaseLabelTree::expressions)
+          .map(Lists::reverse)
           .flatMap(Collection::stream)
           .forEach(this::build);
         if (!hasDefaultCase) {
-          hasDefaultCase = containsDefaultCase(caseGroupTree.labels());
+          hasDefaultCase = containsDefaultCase(labels);
         }
         currentBlock.setCaseGroup(caseGroupTree);
         switches.getLast().addSuccessor(currentBlock);
@@ -764,22 +783,27 @@ public class CFG implements ControlFlowGraph {
     currentBlock = conditionBlock;
   }
 
-  private void buildSwitchExpression(SwitchExpressionTree tree) {
-    // FIXME When used as expression, switches are considered as a simple element
-    currentBlock.elements.add(tree);
+  /**
+   * A switch expression can use the traditional cases with 'colon' (with fall-through) or,
+   * starting with java 12, the 'arrow' cases (without fall-through). Cases can not be mixed.
+   *
+   * @param switchExpressionTree the switch to evaluate
+   * @return true if the switch uses fall-through
+   */
+  private static boolean switchWithoutFallThrough(SwitchExpressionTree switchExpressionTree) {
+    return switchExpressionTree.cases().stream()
+      .map(CaseGroupTree::labels)
+      .flatMap(List::stream)
+      .noneMatch(CaseLabelTree::isFallThrough);
   }
 
   private static boolean containsDefaultCase(List<CaseLabelTree> labels) {
-    for (CaseLabelTree caseLabel : labels) {
-      if ("default".equals(caseLabel.caseOrDefaultKeyword().text())) {
-        return true;
-      }
-    }
-    return false;
+    return labels.stream().anyMatch(caseLabel -> "default".equals(caseLabel.caseOrDefaultKeyword().text()));
   }
 
   private void buildBreakStatement(BreakStatementTree tree) {
     IdentifierTree label = tree.label();
+    boolean isLabel = false;
     Block targetBlock = null;
     if (label == null) {
       if (breakTargets.isEmpty()) {
@@ -790,9 +814,18 @@ public class CFG implements ControlFlowGraph {
         targetBlock = breakTargets.getLast();
       }
     } else {
-      targetBlock = labelsBreakTarget.get(label.name());
+      isLabel = label.symbol() instanceof Symbol.LabelSymbol;
+      if (isLabel) {
+        targetBlock = labelsBreakTarget.get(label.name());
+      } else {
+        targetBlock = breakTargets.getLast();
+      }
     }
     currentBlock = createUnconditionalJump(tree, targetBlock, currentBlock);
+    ExpressionTree value = tree.value();
+    if (value != null && !isLabel) {
+      build(value);
+    }
     if(currentBlock.exitBlock != null) {
       currentBlock.exitBlock = null;
     }
