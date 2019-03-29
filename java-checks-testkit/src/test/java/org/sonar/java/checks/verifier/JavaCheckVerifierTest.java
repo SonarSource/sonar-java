@@ -132,6 +132,13 @@ public class JavaCheckVerifierTest {
     JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, expectedMessage, visitor);
   }
 
+  @Test
+  public void verify_issue_on_project() {
+    String expectedMessage = "messageOnProject";
+    IssuableSubscriptionVisitor visitor = new FakeVisitor().withIssueOnProject(expectedMessage);
+    JavaCheckVerifier.verifyIssueOnProject(FILENAME_ISSUES, expectedMessage, visitor);
+  }
+
   @Test(expected = IllegalStateException.class)
   public void verify_issue_on_file_incorrect() {
     JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", new FakeVisitor().withDefaultIssues());
@@ -398,6 +405,7 @@ public class JavaCheckVerifierTest {
     Multimap<Integer, String> issues = LinkedListMultimap.create();
     Multimap<Integer, AnalyzerMessage> preciseIssues = LinkedListMultimap.create();
     List<String> issuesOnFile = Lists.newLinkedList();
+    List<String> issuesOnProject = Lists.newLinkedList();
 
     protected FakeVisitor withDefaultIssues() {
       AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, new File("a"), new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 0);
@@ -436,6 +444,11 @@ public class JavaCheckVerifierTest {
       return this;
     }
 
+    private FakeVisitor withIssueOnProject(String message) {
+      issuesOnProject.add(message);
+      return this;
+    }
+
     @Override
     public List<Tree.Kind> nodesToVisit() {
       return ImmutableList.of();
@@ -459,6 +472,9 @@ public class JavaCheckVerifierTest {
       }
       for (String message : issuesOnFile) {
         addIssueOnFile(message);
+      }
+      for (String message : issuesOnProject) {
+        context.addIssue(context.getFile().getParentFile(), this, -1, message);
       }
     }
 

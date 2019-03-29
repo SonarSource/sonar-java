@@ -46,6 +46,7 @@ import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.internal.SonarRuntimeImpl;
@@ -243,7 +244,7 @@ public class SonarComponentsTest {
   public void add_issue_or_parse_error() throws Exception {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
-    SensorContextTester context = SensorContextTester.create(new File(""));
+    SensorContextTester context = SensorContextTester.create(new File("."));
 
     DefaultFileSystem fileSystem = context.fileSystem();
     File file = new File("file.java");
@@ -266,12 +267,18 @@ public class SonarComponentsTest {
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(file, expectedCheck, -5, "message on wrong line", null);
-    sonarComponents.addIssue(file, expectedCheck, 42, "message on line", 1);
-    sonarComponents.addIssue(new File("."), expectedCheck, 42, "message on line", 1);
+    sonarComponents.addIssue(file, expectedCheck, 42, "message on line 42", 1);
+    sonarComponents.addIssue(new File(context.fileSystem().baseDir().toString()), expectedCheck, -1, "message on project directory", 1);
+    sonarComponents.addIssue(new File(".."), expectedCheck, -1, "message on non-project directory", 1);
     sonarComponents.addIssue(new File("unknown_file"), expectedCheck, 42, "message on line", 1);
     sonarComponents.reportIssue(new AnalyzerMessage(expectedCheck, file, 35, "other message", 0));
 
-    assertThat(context.allIssues()).hasSize(3);
+    List<Issue> issues = new ArrayList<>(context.allIssues());
+    assertThat(issues).hasSize(4);
+    assertThat(issues.get(0).primaryLocation().message()).isEqualTo("message on wrong line");
+    assertThat(issues.get(1).primaryLocation().message()).isEqualTo("message on line 42");
+    assertThat(issues.get(2).primaryLocation().message()).isEqualTo("message on project directory");
+    assertThat(issues.get(3).primaryLocation().message()).isEqualTo("other message");
 
     RecognitionException parseError = new RecognitionException(new LexerException("parse error"));
 
@@ -281,6 +288,13 @@ public class SonarComponentsTest {
     context.setRuntime(SonarRuntimeImpl.forSonarQube(V6_7, SonarQubeSide.SCANNER));
     assertThat(sonarComponents.reportAnalysisError(parseError, file)).isFalse();
 
+    assertThat(sonarComponents.fileLength(file)).isEqualTo(45);
+    assertThat(sonarComponents.inputFromIOFile(file)).isNotNull();
+    assertThat(sonarComponents.inputFromIOFileOrDirectory(file)).isNotNull();
+    assertThat(sonarComponents.inputFromIOFileOrDirectory(new File("Unknown"))).isNull();
+    assertThat(sonarComponents.inputFromIOFileOrDirectory(context.fileSystem().baseDir())).isNotNull();
+    sonarComponents.setSensorContext(null);
+    assertThat(sonarComponents.inputFromIOFileOrDirectory(context.fileSystem().baseDir())).isNull();
   }
 
   @Test

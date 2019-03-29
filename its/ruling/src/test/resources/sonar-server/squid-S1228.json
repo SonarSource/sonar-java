@@ -1,11 +1,7 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/ce':[
+'org.sonarsource.sonarqube:sonar-server':[
 0,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/taskprocessor':[
 0,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/text':[
 0,
 ],
 }

@@ -207,6 +207,12 @@ public class JavaCheckVerifier extends CheckVerifier {
     scanFile(filename, check, javaCheckVerifier);
   }
 
+  public static void verifyIssueOnProject(String filename, String message, JavaFileScanner check) {
+    JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
+    javaCheckVerifier.setExpectedProjectIssue(message);
+    scanFile(filename, check, javaCheckVerifier);
+  }
+
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier) {
     List<File> classpath = getClassPath(javaCheckVerifier.testJarsDirectory);
     scanFile(filename, check, javaCheckVerifier, classpath);

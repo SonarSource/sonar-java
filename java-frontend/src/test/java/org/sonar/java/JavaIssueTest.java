@@ -77,7 +77,7 @@ public class JavaIssueTest {
 
     // issue on file
     javaIssue = JavaIssue.create(sensorContext, ruleKey, null);
-    javaIssue.setPrimaryLocationOnFile(file, "file message");
+    javaIssue.setPrimaryLocationOnComponent(file, "file message");
     javaIssue.save();
 
     Mockito.verify(storage, Mockito.times(1)).store(newIssueOnFile);
