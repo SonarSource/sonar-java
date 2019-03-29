@@ -38,7 +38,8 @@ public class PackageInfoCheckTest {
   @Test
   public void no_package_info() {
     PackageInfoCheck check = new PackageInfoCheck();
-    String expectedMessage = "Add a 'package-info.java' file to document the 'src/test/files/checks/packageInfo/nopackageinfo' package";
+    String expectedMessage = "Add a 'package-info.java' file to document the 'src/test/files/checks/packageInfo/nopackageinfo' package"
+      .replace('/', File.separatorChar);
     JavaCheckVerifier.verifyIssueOnProject("src/test/files/checks/packageInfo/nopackageinfo/nopackageinfo.java", expectedMessage, check);
 
     Set<File> set = check.directoriesWithoutPackageFile;
