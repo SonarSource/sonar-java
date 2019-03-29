@@ -23,12 +23,12 @@ pipeline {
     }
     stage('QA') {
       parallel {
-        stage('plugin/DEV/linux') {
+        stage('plugin/DOGFOOD/linux') {
           agent {
             label 'linux'
           }
           steps {
-            runITs("plugin","DEV",JDK_VERSION)
+            runITs("plugin","DOGFOOD",JDK_VERSION)
           }
         }     
         stage('plugin/LATEST_RELEASE[6.7]/linux') {
@@ -111,7 +111,7 @@ pipeline {
 }
 
 def withQAEnv(def body) {
-    withCredentials([string(credentialsId: 'ARTIFACTORY_PRIVATE_API_KEY', variable: 'ARTIFACTORY_PRIVATE_API_KEY')]) {
+    withCredentials([string(credentialsId: 'ARTIFACTORY_PRIVATE_API_KEY', variable: 'ARTIFACTORY_API_KEY')]) {
         body.call()
     }
 }
