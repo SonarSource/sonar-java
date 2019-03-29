@@ -23,6 +23,7 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -53,7 +54,9 @@ public class SquidTest {
     assertThat(issues).hasSize(2);
     assertThat(issues.stream().map(Issue::ruleKey)).allMatch("squid:S1228"::equals);
     assertThat(issues.stream().map(Issue::line)).allMatch(Objects::isNull);
-    assertThat(issues.stream().map(Issue::message)).allMatch(msg -> msg.contains("'src/main/java/package1'") || msg.contains("'src/main/java/package2'"));
+    String sep = "[/\\\\]";
+    Pattern packagePattern = Pattern.compile("'src" + sep + "main" + sep + "java" + sep + "package[12]'");
+    assertThat(issues.stream().map(Issue::message)).allMatch(msg -> packagePattern.matcher(msg).find());
     List<Issue> issuesOnTestPackage = issueClient.find(IssueQuery.create().components("com.sonarsource.it.samples:squid:src/test/java/package1")).list();
     assertThat(issuesOnTestPackage).isEmpty();
   }
