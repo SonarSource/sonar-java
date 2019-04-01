@@ -71,6 +71,16 @@ public class JavaVersionImplTest {
   }
 
   @Test
+  public void java_12() {
+    JavaVersion version = new JavaVersionImpl(12);
+    assertThat(version.isJava6Compatible()).isTrue();
+    assertThat(version.isJava7Compatible()).isTrue();
+    assertThat(version.isJava8Compatible()).isTrue();
+    assertThat(version.isJava12Compatible()).isTrue();
+    assertThat(version.asInt()).isEqualTo(12);
+  }
+
+  @Test
   public void compatibilityMesssages() throws Exception {
     JavaVersion version;
     version = new JavaVersionImpl();
@@ -117,5 +127,10 @@ public class JavaVersionImplTest {
     assertThat(version.isNotSet()).isFalse();
     assertThat(version.asInt()).isEqualTo(10);
     assertThat(version.isJava8Compatible()).isTrue();
+
+    version = JavaVersionImpl.fromString("12");
+    assertThat(version.isNotSet()).isFalse();
+    assertThat(version.asInt()).isEqualTo(12);
+    assertThat(version.isJava12Compatible()).isTrue();
   }
 }

@@ -666,7 +666,8 @@ public final class CheckList {
       CORSCheck.class,
       BasicAuthCheck.class,
       SynchronizedOverrideCheck.class,
-      MissingBeanValidationCheck.class);
+      MissingBeanValidationCheck.class,
+      UseSwitchExpressionCheck.class);
   }
 
   public static List<Class<? extends DebugCheck>> getDebugChecks() {
