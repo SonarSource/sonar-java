@@ -21,6 +21,8 @@ package org.sonar.java;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.model.JavaVersionImpl;
@@ -29,11 +31,6 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -82,10 +79,8 @@ public class JavaVersionAwareVisitorTest {
 
   private void checkIssues(JavaVersion version) {
     messages.clear();
-    ArrayList<File> files = Lists.newArrayList(new File("src/test/files/JavaVersionAwareChecks.java"));
-
     JavaSquid squid = new JavaSquid(version, null, null, null, null, javaChecks);
-    squid.scan(files, Collections.<File>emptyList());
+    squid.scan(Collections.singletonList(TestUtils.inputFile("src/test/files/JavaVersionAwareChecks.java")), Collections.emptyList());
   }
 
   private static class SimpleCheck extends IssuableSubscriptionVisitor {

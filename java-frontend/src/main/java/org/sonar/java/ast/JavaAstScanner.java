@@ -23,13 +23,13 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
-import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
@@ -53,19 +53,19 @@ public class JavaAstScanner {
     this.sonarComponents = sonarComponents;
   }
 
-  public void scan(Collection<File> files) {
+  public void scan(Collection<InputFile> inputFiles) {
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(files.stream().map(File::getAbsolutePath).collect(Collectors.toList()));
+    progressReport.start(inputFiles.stream().map(InputFile::toString).collect(Collectors.toList()));
 
     boolean successfullyCompleted = false;
     boolean cancelled = false;
     try {
-      for (File file : files) {
+      for (InputFile inputFile : inputFiles) {
         if (analysisCancelled()) {
           cancelled = true;
           break;
         }
-        simpleScan(file);
+        simpleScan(inputFile);
         progressReport.nextFile();
       }
       successfullyCompleted = !cancelled;
@@ -83,37 +83,25 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  private void simpleScan(File file) {
-    visitor.setCurrentFile(file);
+  private void simpleScan(InputFile inputFile) {
+    visitor.setCurrentFile(inputFile);
     try {
-      String fileContent = getFileContent(file);
-      Tree ast;
-      if(fileContent.isEmpty()) {
-        ast = parser.parse(file);
-      } else {
-        ast = parser.parse(fileContent);
-      }
+      String fileContent = inputFile.contents();
+      Tree ast = parser.parse(fileContent);
       visitor.visitFile(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);
-      LOG.error("Unable to parse source file : " + file.getAbsolutePath());
+      LOG.error(String.format("Unable to parse source file : '%s'", inputFile));
       LOG.error(e.getMessage());
 
-      parseErrorWalkAndVisit(e, file);
+      parseErrorWalkAndVisit(e, inputFile);
     } catch (Exception e) {
       checkInterrupted(e);
-      throw new AnalysisException(getAnalysisExceptionMessage(file), e);
+      throw new AnalysisException(getAnalysisExceptionMessage(inputFile), e);
     } catch (StackOverflowError error) {
-      LOG.error("A stack overflow error occured while analyzing file: " + file.getAbsolutePath(), error);
+      LOG.error(String.format("A stack overflow error occured while analyzing file: '%s'", inputFile), error);
       throw error;
     }
-  }
-
-  private String getFileContent(File file) {
-    if(sonarComponents == null) {
-      return "";
-    }
-    return sonarComponents.fileContent(file);
   }
 
   private static void checkInterrupted(Exception e) {
@@ -123,17 +111,16 @@ public class JavaAstScanner {
     }
   }
 
-  private void parseErrorWalkAndVisit(RecognitionException e, File file) {
+  private void parseErrorWalkAndVisit(RecognitionException e, InputFile inputFile) {
     try {
-      // Process the exception
-      visitor.processRecognitionException(e, file);
+      visitor.processRecognitionException(e, inputFile);
     } catch (Exception e2) {
-      throw new AnalysisException(getAnalysisExceptionMessage(file), e2);
+      throw new AnalysisException(getAnalysisExceptionMessage(inputFile), e2);
     }
   }
 
-  private static String getAnalysisExceptionMessage(File file) {
-    return "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
+  private static String getAnalysisExceptionMessage(InputFile file) {
+    return String.format("SonarQube is unable to analyze file : '%s'", file);
   }
 
   public void setVisitorBridge(VisitorsBridge visitor) {
@@ -141,19 +128,16 @@ public class JavaAstScanner {
   }
 
   @VisibleForTesting
-  public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge) {
+  public static void scanSingleFileForTests(InputFile file, VisitorsBridge visitorsBridge) {
     scanSingleFileForTests(file, visitorsBridge, new JavaVersionImpl());
   }
 
   @VisibleForTesting
-  public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge, JavaVersion javaVersion) {
-    if (!file.isFile()) {
-      throw new IllegalArgumentException("File '" + file + "' not found.");
-    }
+  public static void scanSingleFileForTests(InputFile inputFile, VisitorsBridge visitorsBridge, JavaVersion javaVersion) {
     JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(), null);
     visitorsBridge.setJavaVersion(javaVersion);
     astScanner.setVisitorBridge(visitorsBridge);
-    astScanner.scan(Collections.singleton(file));
+    astScanner.scan(Collections.singleton(inputFile));
   }
 
 }

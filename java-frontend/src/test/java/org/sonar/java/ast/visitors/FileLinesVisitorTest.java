@@ -19,18 +19,17 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaVersionImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,16 +45,16 @@ public class FileLinesVisitorTest {
   public void setUp() {
     baseDir = new File("src/test/files/metrics");
   }
+
   private void checkLines(String filename, FileLinesContext context) {
+    InputFile inputFile = TestUtils.inputFile(new File(baseDir, filename));
+
     SonarComponents sonarComponents = mock(SonarComponents.class);
-    when(sonarComponents.fileLength(Mockito.any(File.class))).thenAnswer(invocation -> {
-      File arg = (File) invocation.getArguments()[0];
-      return Files.readLines(arg, StandardCharsets.UTF_8).size();
-    });
-    when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
+    when(sonarComponents.fileLinesContextFor(Mockito.any(InputFile.class))).thenReturn(context);
 
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new FileLinesVisitor(sonarComponents));
-    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
+
+    squid.scan(Collections.singletonList(inputFile), Collections.emptyList());
   }
 
   @Test

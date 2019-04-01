@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.resolve.SemanticModel;
@@ -77,30 +78,41 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   public static class TestJavaFileScannerContext extends DefaultJavaFileScannerContext {
 
     private final Set<AnalyzerMessage> issues = new HashSet<>();
+    private final SonarComponents sonarComponents;
 
-    public TestJavaFileScannerContext(CompilationUnitTree tree, File file, SemanticModel semanticModel,
+    public TestJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, SemanticModel semanticModel,
                                       @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean failedParsing) {
-      super(tree, file, semanticModel, sonarComponents, javaVersion, failedParsing);
+      super(tree, inputFile, semanticModel, sonarComponents, javaVersion, failedParsing);
+      this.sonarComponents = sonarComponents;
     }
 
     public Set<AnalyzerMessage> getIssues() {
       return issues;
     }
 
+    /**
+     * @deprecated since SonarJava 5.12 - Should only report on InputComponent
+     */
+    @Deprecated
     @Override
     public void addIssue(File file, JavaCheck javaCheck, int line, String message) {
-      issues.add(new AnalyzerMessage(javaCheck, file, line, message, 0));
+      issues.add(new AnalyzerMessage(javaCheck, sonarComponents.inputFromIOFileOrDirectory(file), line, message, 0));
+    }
+
+    @Override
+    public void addIssueOnProject(JavaCheck javaCheck, String message) {
+      issues.add(new AnalyzerMessage(javaCheck, sonarComponents.project(), null, message, 0));
     }
 
     @Override
     public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Integer cost) {
-      issues.add(new AnalyzerMessage(javaCheck, getFile(), line, message, cost != null ? cost.intValue() : 0));
+      issues.add(new AnalyzerMessage(javaCheck, getInputFile(), line, message, cost != null ? cost.intValue() : 0));
     }
 
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
       List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
-      issues.add(createAnalyzerMessage(getFile(), javaCheck, syntaxNode, null, message, flows, cost));
+      issues.add(createAnalyzerMessage(getInputFile(), javaCheck, syntaxNode, null, message, flows, cost));
     }
 
     @Override
@@ -115,7 +127,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
     @Override
     public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
-      issues.add(createAnalyzerMessage(getFile(), javaCheck, syntaxNode, null, message, flows, cost));
+      issues.add(createAnalyzerMessage(getInputFile(), javaCheck, syntaxNode, null, message, flows, cost));
     }
 
     @Override
@@ -125,12 +137,12 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
     @Override
     public AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, String message) {
-      return createAnalyzerMessage(getFile(), javaCheck, startTree, null, message, Arrays.asList(), null);
+      return createAnalyzerMessage(getInputFile(), javaCheck, startTree, null, message, Arrays.asList(), null);
     }
 
     private AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
       List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());  
-      return createAnalyzerMessage(getFile(), javaCheck, startTree, endTree, message, flows, cost);
+      return createAnalyzerMessage(getInputFile(), javaCheck, startTree, endTree, message, flows, cost);
     }
   }
 }

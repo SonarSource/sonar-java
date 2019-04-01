@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
@@ -52,10 +51,7 @@ public class JavaClasspathTest {
   @Before
   public void setUp() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
-    TestInputFileBuilder inputFile = new TestInputFileBuilder("", "foo.java");
-    inputFile.setLanguage("java");
-    inputFile.setType(InputFile.Type.MAIN);
-    fs.add(inputFile.build());
+    fs.add(TestUtils.emptyInputFile("foo.java"));
     settings = new MapSettings();
     analysisWarnings = mock(AnalysisWarningsWrapper.class);
   }
@@ -112,7 +108,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
   }
-  
+
   @Test
   public void setting_binary_dir_prop_should_fill_elements() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "bin/");
@@ -138,7 +134,7 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
   }
-  
+
   @Test
   public void absolute_aar_file_name_should_be_resolved() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/oklog-1.0.1.aar").getAbsolutePath());
@@ -297,10 +293,7 @@ public class JavaClasspathTest {
   @Test
   public void libraries_should_read_dir_of_class_files() {
     fs = new DefaultFileSystem(new File("src/test/files/"));
-    TestInputFileBuilder inputFile = new TestInputFileBuilder("", "foo.java");
-    inputFile.setLanguage("java");
-    inputFile.setType(InputFile.Type.MAIN);
-    fs.add(inputFile.build());
+    fs.add(TestUtils.emptyInputFile("foo.java"));
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(4);
@@ -320,10 +313,7 @@ public class JavaClasspathTest {
   public void sonar_binaries_should_not_check_for_existence_of_files_when_no_sources() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "toto/**/hello.jar");
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
-    TestInputFileBuilder inputFile = new TestInputFileBuilder("", "plop.java");
-    inputFile.setType(InputFile.Type.TEST);
-    inputFile.setLanguage("java");
-    fs.add(inputFile.build());
+    fs.add(TestUtils.emptyInputFile("plop.java", InputFile.Type.TEST));
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).isEmpty();
   }
@@ -369,23 +359,14 @@ public class JavaClasspathTest {
 
   private void createTwoFilesInFileSystem() {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
-    TestInputFileBuilder inputFile = new TestInputFileBuilder("", "plop.java");
-    inputFile.setType(InputFile.Type.MAIN);
-    inputFile.setLanguage("java");
-    fs.add(inputFile.build());
-    inputFile = new TestInputFileBuilder("", "bar.java");
-    inputFile.setType(InputFile.Type.MAIN);
-    inputFile.setLanguage("java");
-    fs.add(inputFile.build());
+    fs.add(TestUtils.emptyInputFile("plop.java"));
+    fs.add(TestUtils.emptyInputFile("bar.java"));
   }
 
   @Test
   public void classpath_empty_if_only_test_files() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
-    TestInputFileBuilder inputFile = new TestInputFileBuilder("", "plop.java");
-    inputFile.setType(InputFile.Type.TEST);
-    inputFile.setLanguage("java");
-    fs.add(inputFile.build());
+    fs.add(TestUtils.emptyInputFile("plop.java", InputFile.Type.TEST));
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).isEmpty();
   }
@@ -394,10 +375,7 @@ public class JavaClasspathTest {
   public void validate_libraries_only_if_not_filtered_out() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/lib.so").getAbsolutePath());
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
-    TestInputFileBuilder inputFile = new TestInputFileBuilder("", "plop.java");
-    inputFile.setType(InputFile.Type.MAIN);
-    inputFile.setLanguage("java");
-    fs.add(inputFile.build());
+    fs.add(TestUtils.emptyInputFile("plop.java"));
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).isEmpty();
   }

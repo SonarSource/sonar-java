@@ -21,14 +21,14 @@ package org.sonar.java.resolve.targets.bytecodeGenerics;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.List;
 import org.junit.Test;
+import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +38,7 @@ public class SemanticOrderResolution {
   public void verify_generic_substitution() {
     MyVisitor myVisitor = new MyVisitor();
     JavaAstScanner.scanSingleFileForTests(
-      new File("src/test/java/org/sonar/java/resolve/targets/bytecodeGenerics/Main.java"),
+      TestUtils.inputFile("src/test/java/org/sonar/java/resolve/targets/bytecodeGenerics/Main.java"),
       new VisitorsBridge(Lists.newArrayList(myVisitor),
       Lists.newArrayList(new File("target/test-classes")), null));
     assertThat(myVisitor.classes).isEqualTo(2);

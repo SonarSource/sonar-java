@@ -21,48 +21,21 @@ package org.sonar.java;
 
 import java.io.File;
 import java.nio.file.Files;
-import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class TestUtils {
-  private TestUtils() {
-    // utility class, forbidden constructor
+public final class CheckTestUtils {
+
+  private CheckTestUtils() {
+    // Utility class
   }
 
-  public static int[] computeLineEndOffsets(int[] lineStartOffsets, int lastValidOffset) {
-    int[] lineEndOffsets = new int[lineStartOffsets.length];
-    for (int i = 0; i < lineStartOffsets.length - 1; i++) {
-      lineEndOffsets[i] = lineStartOffsets[i + 1] - 1;
-    }
-    lineEndOffsets[lineEndOffsets.length - 1] = lastValidOffset - 1;
-    return lineEndOffsets;
-  }
-
-  public static InputFile emptyInputFile(String filename) {
-    return emptyInputFile(filename, InputFile.Type.MAIN);
-  }
-
-  public static InputFile emptyInputFile(String filename, InputFile.Type type) {
-    return new TestInputFileBuilder("", filename)
-      .setCharset(UTF_8)
-      .setLanguage("java")
-      .setType(type)
-      .build();
-  }
-
-  public static InputFile inputFile(String filepath) {
-    return inputFile("", new File(filepath));
-  }
-
-  public static InputFile inputFile(File file) {
-    return inputFile("", file);
-  }
-
-  public static InputFile inputFile(String moduleKey, File file) {
+  public static DefaultInputFile inputFile(String filename) {
+    File file = new File(filename);
     try {
-      return new TestInputFileBuilder(moduleKey, file.getPath())
+      return new TestInputFileBuilder("", file.getPath())
         .setContents(new String(Files.readAllBytes(file.toPath()), UTF_8))
         .setCharset(UTF_8)
         .setLanguage("java")

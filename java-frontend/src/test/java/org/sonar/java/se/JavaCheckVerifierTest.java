@@ -24,25 +24,24 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import org.assertj.core.api.Fail;
-import org.junit.Test;
-
-import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.statement.ReturnStatementTreeImpl;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
-import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import javax.annotation.Nullable;
+import org.assertj.core.api.Fail;
+import org.junit.Test;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.TestUtils;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -450,21 +449,23 @@ public class JavaCheckVerifierTest {
     ListMultimap<Integer, String> issues = LinkedListMultimap.create();
     ListMultimap<Integer, AnalyzerMessage> preciseIssues = LinkedListMultimap.create();
     List<String> issuesOnFile = Lists.newLinkedList();
+    private static final InputFile FAKE_INPUT_FILE = TestUtils.emptyInputFile("a");
+    private static final InputFile OTHER_FAKE_INPUT_FILE = TestUtils.emptyInputFile("f");
     private AnalyzerMessage issueWithFlow;
 
     private FakeVisitor withDefaultIssues() {
-      AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, new File("a"), new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 3);
-      withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, new File("a"), 3, "no message", 0)));
-      withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, new File("a"), 4, "no message", 0)));
+      AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, FAKE_INPUT_FILE, new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 3);
+      withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, FAKE_INPUT_FILE, 3, "no message", 0)));
+      withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, FAKE_INPUT_FILE, 4, "no message", 0)));
       return this.withIssue(1, "message")
         .withIssue(3, "message1")
         .withIssue(7, "message2")
         .withIssue(8, "message3")
         .withIssue(8, "message3")
         .withPreciseIssue(withMultipleLocation)
-        .withPreciseIssue(new AnalyzerMessage(this, new File("a"), 11, "no message", 4))
-        .withPreciseIssue(new AnalyzerMessage(this, new File("a"), 12, "message12", 0))
-        .withPreciseIssue(new AnalyzerMessage(this, new File("a"), new AnalyzerMessage.TextSpan(14, 5, 15, 11), "message12", 0))
+        .withPreciseIssue(new AnalyzerMessage(this, FAKE_INPUT_FILE, 11, "no message", 4))
+        .withPreciseIssue(new AnalyzerMessage(this, FAKE_INPUT_FILE, 12, "message12", 0))
+        .withPreciseIssue(new AnalyzerMessage(this, FAKE_INPUT_FILE, new AnalyzerMessage.TextSpan(14, 5, 15, 11), "message12", 0))
         .withIssue(17, "message17");
     }
 
@@ -499,7 +500,7 @@ public class JavaCheckVerifierTest {
 
     private FakeVisitor issueWithFlow(@Nullable String message, AnalyzerMessage.TextSpan location) {
       Preconditions.checkState(issueWithFlow == null, "Finish previous issueWithFlow by calling #add");
-      issueWithFlow = new AnalyzerMessage(this, new File("f"), location, message, 0);
+      issueWithFlow = new AnalyzerMessage(this, OTHER_FAKE_INPUT_FILE, location, message, 0);
       return this;
     }
 
@@ -526,7 +527,7 @@ public class JavaCheckVerifierTest {
     private FakeVisitor flowItem(@Nullable String msg, AnalyzerMessage.TextSpan textSpan) {
       List<List<AnalyzerMessage>> flows = issueWithFlow.flows;
       Preconditions.checkState(!flows.isEmpty(), "Call #flow first to create a flow");
-      AnalyzerMessage flowItem = new AnalyzerMessage(this, new File("f"), textSpan, msg, 0);
+      AnalyzerMessage flowItem = new AnalyzerMessage(this, OTHER_FAKE_INPUT_FILE, textSpan, msg, 0);
       flows.get(flows.size() - 1).add(flowItem);
       return this;
     }

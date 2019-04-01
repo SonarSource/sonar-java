@@ -25,9 +25,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.api.batch.fs.InputComponent;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 /**
@@ -48,6 +48,13 @@ public interface JavaFileScannerContext {
    * @param message Message to display to the user
    */
   void addIssueOnFile(JavaCheck check, String message);
+
+  /**
+   * Report an issue at at the project level.
+   * @param check The check raising the issue.
+   * @param message Message to display to the user
+   */
+  void addIssueOnProject(JavaCheck check, String message);
 
   /**
    * Report an issue on a specific line.
@@ -75,7 +82,9 @@ public interface JavaFileScannerContext {
    * @param check The check raising the issue.
    * @param line line on which to report the issue
    * @param message Message to display to the user
+   * @deprecated since SonarJava 5.12 - File are not supported anymore. Use corresponding 'reportIssue' methods, or directly at project level
    */
+  @Deprecated
   void addIssue(File file, JavaCheck check, int line, String message);
 
   /**
@@ -93,9 +102,23 @@ public interface JavaFileScannerContext {
 
   /**
    * File under analysis.
-   * @return the currently analysed file.
+   * @return the currently analyzed file.
+   * @deprecated since SonarJava 5.12 - File are not supported anymore. Use {@link #getInputFile()} or {@link #getProject()} instead
    */
+  @Deprecated
   File getFile();
+
+  /**
+   * InputFile under analysis.
+   * @return the currently analyzed inputFile.
+   */
+  InputFile getInputFile();
+
+  /**
+   * InputComponent representing the project being analyzed
+   * @return the project component
+   */
+  InputComponent getProject();
 
   /**
    * The working directory used by the analysis.
@@ -121,16 +144,6 @@ public interface JavaFileScannerContext {
    * @return the list of syntax nodes incrementing the complexity.
    */
   List<Tree> getComplexityNodes(Tree tree);
-
-  /**
-   * Computes the list of syntax nodes which are contributing to increase the complexity for the given methodTree.
-   * @deprecated use {@link #getComplexityNodes(Tree)} instead
-   * @param enclosingClass not used.
-   * @param methodTree the methodTree to compute the complexity.
-   * @return the list of syntax nodes incrementing the complexity.
-   */
-  @Deprecated
-  List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree);
 
   /**
    * Report an issue.

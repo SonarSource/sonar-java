@@ -20,8 +20,11 @@
 package org.sonar.java.resolve.targets.bytecodeGenerics;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
+import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.resolve.JavaSymbol;
@@ -33,17 +36,17 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.File;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GenericsSubstitutionFromBytecode {
 
   @Test
   public void verify_generic_substitution() {
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/java/org/sonar/java/resolve/targets/bytecodeGenerics/MyImpl.java"), new VisitorsBridge(Lists.newArrayList(new MyVisitor()),
-      Lists.newArrayList(new File("target/test-classes")), null));
+    JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/java/org/sonar/java/resolve/targets/bytecodeGenerics/MyImpl.java"),
+      new VisitorsBridge(
+        Collections.singletonList(new MyVisitor()),
+        Collections.singletonList(new File("target/test-classes")),
+        null));
   }
 
   private static class MyVisitor extends IssuableSubscriptionVisitor {

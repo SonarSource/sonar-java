@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Test;
+import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridge;
@@ -41,7 +42,7 @@ public class ConstantTest {
     File bytecodeDir = new File("target/test-classes");
     Map<String,Object> valuesByFieldName = new HashMap<>();
     JavaAstScanner.scanSingleFileForTests(
-      new File("src/test/java/org/sonar/java/resolve/targets/ClassWithConstants.java"),
+      TestUtils.inputFile("src/test/java/org/sonar/java/resolve/targets/ClassWithConstants.java"),
       new VisitorsBridge(Collections.singleton(new SubscriptionVisitor() {
         @Override
         public List<Tree.Kind> nodesToVisit() {

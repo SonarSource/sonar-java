@@ -21,17 +21,17 @@ package org.sonar.plugins.java.api;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.List;
+import java.util.Set;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -41,7 +41,7 @@ public class IssuableSubscriptionVisitorTest {
   @Test
   public void test_custom_rules_report_issues() throws Exception {
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(new CustomRule()), Lists.<File>newArrayList(), null);
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(7);
   }

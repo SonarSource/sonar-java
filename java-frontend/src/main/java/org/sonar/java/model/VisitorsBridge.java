@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -71,7 +72,7 @@ public class VisitorsBridge {
   private final SonarComponents sonarComponents;
   private final boolean symbolicExecutionEnabled;
   private SemanticModel semanticModel;
-  protected File currentFile;
+  protected InputFile currentFile;
   protected JavaVersion javaVersion;
   private Set<String> classesNotFound = new TreeSet<>();
   private final SquidClassLoader classLoader;
@@ -120,8 +121,8 @@ public class VisitorsBridge {
         try {
           semanticModel = SemanticModel.createFor(tree, classLoader);
         } catch (Exception e) {
-          LOG.error("Unable to create symbol table for : " + currentFile.getAbsolutePath(), e);
-          addAnalysisError(e, currentFile.getPath(), AnalysisError.Kind.SEMANTIC_ERROR);
+          LOG.error(String.format("Unable to create symbol table for : '%s'", currentFile), e);
+          addAnalysisError(e, currentFile, AnalysisError.Kind.SEMANTIC_ERROR);
           sonarComponents.reportAnalysisError(currentFile, e.getMessage());
           return;
         }
@@ -163,15 +164,16 @@ public class VisitorsBridge {
         key = annotation.key();
       }
       LOG.error(
-        String.format("Unable to run check %s - %s on file %s, To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/",
-          scanner.getClass(), key, currentFile.getPath()), e);
-      addAnalysisError(e, currentFile.getPath(), kind);
+        String.format("Unable to run check %s - %s on file '%s', To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/",
+          scanner.getClass(), key, currentFile),
+        e);
+      addAnalysisError(e, currentFile, kind);
     }
   }
 
-  private void addAnalysisError(Exception e, String path, AnalysisError.Kind checkError) {
+  private void addAnalysisError(Exception e, InputFile inputFile, AnalysisError.Kind checkError) {
     if (sonarComponents != null) {
-      sonarComponents.addAnalysisError(new AnalysisError(e, path, checkError));
+      sonarComponents.addAnalysisError(new AnalysisError(e, inputFile.toString(), checkError));
     }
   }
 
@@ -197,7 +199,7 @@ public class VisitorsBridge {
   }
 
   private boolean isNotJavaLangOrSerializable(String packageName) {
-    String name = currentFile.getName();
+    String name = currentFile.filename();
     return !(inJavaLang(packageName) || isAnnotation(packageName, name) || isSerializable(packageName, name));
   }
 
@@ -220,9 +222,9 @@ public class VisitorsBridge {
     }
   }
 
-  public void processRecognitionException(RecognitionException e, File file) {
-    addAnalysisError(e, file.getPath(), AnalysisError.Kind.PARSE_ERROR);
-    if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, file)) {
+  public void processRecognitionException(RecognitionException e, InputFile inputFile) {
+    addAnalysisError(e, inputFile, AnalysisError.Kind.PARSE_ERROR);
+    if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, inputFile)) {
       this.visitFile(null);
       executableScanners.stream()
         .filter(scanner -> scanner instanceof ExceptionHandler)
@@ -231,8 +233,8 @@ public class VisitorsBridge {
 
   }
 
-  public void setCurrentFile(File currentFile) {
-    this.currentFile = currentFile;
+  public void setCurrentFile(InputFile inputFile) {
+    this.currentFile = inputFile;
   }
 
   public void endOfAnalysis() {

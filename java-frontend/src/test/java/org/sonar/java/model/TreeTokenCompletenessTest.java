@@ -22,20 +22,21 @@ package org.sonar.java.model;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
-import org.sonar.plugins.java.api.tree.Tree;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.TestUtils;
+import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -46,9 +47,10 @@ public class TreeTokenCompletenessTest {
 
   @Test
   public void test() {
+    // test itself
     File file = new File("src/test/java/org/sonar/java/model/TreeTokenCompletenessTest.java");
 
-    List<String> basedOnSyntaxTree = readFileFromSyntaxTree(file);
+    List<String> basedOnSyntaxTree = readFileFromSyntaxTree(TestUtils.inputFile(file));
     List<String> basedOnFileLine = readFile(file);
     Map<Integer, String> differences = getDifferences(basedOnSyntaxTree, basedOnFileLine);
 
@@ -58,6 +60,7 @@ public class TreeTokenCompletenessTest {
     // printListString(basedOnSyntaxTree);
     // printDifferences(differences);
 
+    // the difference is on parsing on generic: "line 117 : 'Lists.<File>newArrayList(), null));'"
     assertThat(differences).hasSize(1);
   }
 
@@ -110,12 +113,12 @@ public class TreeTokenCompletenessTest {
     } catch (IOException e) {
       fail("can not read test file");
     }
-    return Lists.newArrayList();
+    return Collections.emptyList();
   }
 
-  private static List<String> readFileFromSyntaxTree(File file) {
+  private static List<String> readFileFromSyntaxTree(InputFile inputFile) {
     TokenPrinter tokenPrinter = new TokenPrinter();
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(Lists.newArrayList(tokenPrinter), Lists.<File>newArrayList(), null));
+    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(Collections.singletonList(tokenPrinter), Lists.<File>newArrayList(), null));
     return tokenPrinter.getPrintedFile();
   }
 

@@ -25,7 +25,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.config.internal.MapSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,10 +39,7 @@ public class JavaTestClasspathTest {
   @Before
   public void setUp() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
-    TestInputFileBuilder inputFile = new TestInputFileBuilder("", "foo.java");
-    inputFile.setLanguage("java");
-    inputFile.setType(InputFile.Type.TEST);
-    fs.add(inputFile.build());
+    fs.add(TestUtils.emptyInputFile("foo.java", InputFile.Type.TEST));
     settings = new MapSettings();
   }
 
@@ -80,10 +76,7 @@ public class JavaTestClasspathTest {
   @Test
   public void empty_libraries_if_only_main_files() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
-    TestInputFileBuilder inputFile = new TestInputFileBuilder("", "plop.java");
-    inputFile.setType(InputFile.Type.MAIN);
-    inputFile.setLanguage("java");
-    fs.add(inputFile.build());
+    fs.add(TestUtils.emptyInputFile("plop.java"));
     javaTestClasspath = createJavaClasspath();
     assertThat(javaTestClasspath.getElements()).isEmpty();
   }

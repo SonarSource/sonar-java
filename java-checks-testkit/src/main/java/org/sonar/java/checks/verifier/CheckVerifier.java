@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -47,7 +46,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Fail;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
@@ -187,17 +186,17 @@ public abstract class CheckVerifier {
     }
   }
 
-  static SonarComponents sonarComponents(File file) {
+  static SonarComponents sonarComponents(InputFile inputFile) {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     context.setSettings(new MapSettings().setProperty("sonar.java.failOnException", true));
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
       @Override
-      public boolean reportAnalysisError(RecognitionException re, File file) {
+      public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         return false;
       }
     };
     sonarComponents.setSensorContext(context);
-    context.fileSystem().add(new TestInputFileBuilder("", file.getPath()).setCharset(StandardCharsets.UTF_8).build());
+    context.fileSystem().add(inputFile);
     return sonarComponents;
   }
 
@@ -341,7 +340,7 @@ public abstract class CheckVerifier {
   }
 
   private static String normalizedFilePath(AnalyzerMessage analyzerMessage) {
-    String absolutePath = analyzerMessage.getFile().getPath();
+    String absolutePath = analyzerMessage.getInputComponent().toString();
     return absolutePath.replace("\\", "/");
   }
 
@@ -358,7 +357,7 @@ public abstract class CheckVerifier {
   private static void assertSingleIssue(Set<AnalyzerMessage> issues, boolean issueOnFile, String expectedMessage) {
     Preconditions.checkState(issues.size() == 1, "A single issue is expected on the file");
     AnalyzerMessage issue = Iterables.getFirst(issues, null);
-    assertThat(!issue.getFile().isDirectory()).isEqualTo(issueOnFile);
+    assertThat(issue.getInputComponent().isFile()).isEqualTo(issueOnFile);
     assertThat(issue.getLine()).isNull();
     assertThat(issue.getMessage()).isEqualTo(expectedMessage);
   }

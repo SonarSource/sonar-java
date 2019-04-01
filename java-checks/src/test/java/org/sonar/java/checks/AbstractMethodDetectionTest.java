@@ -21,16 +21,15 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.util.List;
 import org.junit.Test;
+import org.sonar.java.CheckTestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-
-import java.io.File;
-import java.util.List;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,12 +38,11 @@ public class AbstractMethodDetectionTest {
 
   @Test
   public void detected() {
-
     Visitor visitor = new Visitor(ImmutableList.of(
       MethodMatcher.create().typeDefinition("A").name("method").addParameter("int"),
       MethodMatcher.create().typeDefinition("A").name("method").addParameter("java.lang.String[]")
       ));
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
+    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).hasSize(3);
     assertThat(visitor.lines).containsExactly(15, 17, 19);
@@ -55,10 +53,9 @@ public class AbstractMethodDetectionTest {
     Visitor visitor = new Visitor(ImmutableList.of(
       MethodMatcher.create().typeDefinition("A").name("method").withAnyParameters()
       ));
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
+    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).containsExactly(14, 15, 16, 17, 19);
-
   }
 
   @Test
@@ -66,10 +63,9 @@ public class AbstractMethodDetectionTest {
     Visitor visitor = new Visitor(ImmutableList.of(
       MethodMatcher.create().typeDefinition("A").name("method").withoutParameter()
       ));
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
+    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).containsExactly(14);
-
   }
 
   class Visitor extends AbstractMethodDetection {

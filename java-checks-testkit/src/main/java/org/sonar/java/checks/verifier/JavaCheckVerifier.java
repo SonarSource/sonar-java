@@ -23,6 +23,7 @@ import com.google.common.annotations.Beta;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -35,6 +36,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Fail;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -267,14 +270,14 @@ public class JavaCheckVerifier extends CheckVerifier {
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath, boolean withSemantic) {
     JavaFileScanner expectedIssueCollector = new ExpectedIssueCollector(javaCheckVerifier);
     VisitorsBridgeForTests visitorsBridge;
-    File file = new File(filename);
-    SonarComponents sonarComponents = CheckVerifier.sonarComponents(file);
+    DefaultInputFile inputFile = new TestInputFileBuilder("", new File(filename).getPath()).setCharset(StandardCharsets.UTF_8).build();
+    SonarComponents sonarComponents = CheckVerifier.sonarComponents(inputFile);
     if (withSemantic) {
       visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), Lists.newArrayList(classpath), sonarComponents);
     } else {
       visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), sonarComponents);
     }
-    JavaAstScanner.scanSingleFileForTests(file, visitorsBridge, javaCheckVerifier.javaVersion);
+    JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge, javaCheckVerifier.javaVersion);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     if (testJavaFileScannerContext == null) {
       Fail.fail("Semantic was required but it was not possible to create it. Please checks the logs to find out the reason.");

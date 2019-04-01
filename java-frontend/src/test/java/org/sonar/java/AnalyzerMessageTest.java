@@ -19,9 +19,9 @@
  */
 package org.sonar.java;
 
-import java.io.File;
 import org.assertj.core.api.Fail;
 import org.junit.Test;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -43,13 +43,13 @@ public class AnalyzerMessageTest {
   @Test
   public void testAnalyzerMessage() {
     JavaCheck javaCheck = mock(JavaCheck.class);
-    File file = new File("a");
+    InputFile file = TestUtils.emptyInputFile("a");
     int line = 5;
     String message = "analyzer message";
     int cost = 3;
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, line, message, cost);
     assertThat(analyzerMessage.getCheck()).isEqualTo(javaCheck);
-    assertThat(analyzerMessage.getFile()).isEqualTo(file);
+    assertThat(analyzerMessage.getInputComponent()).isEqualTo(file);
     assertThat(analyzerMessage.getLine()).isEqualTo(line);
     assertThat(analyzerMessage.getMessage()).isEqualTo(message);
     assertThat(analyzerMessage.getCost()).isEqualTo(cost);
@@ -66,12 +66,12 @@ public class AnalyzerMessageTest {
   @Test
   public void testAnalyzerMessageOnFile2() {
     JavaCheck javaCheck = mock(JavaCheck.class);
-    File file = new File("a");
+    InputFile file = TestUtils.emptyInputFile("a");
     String message = "analyzer message";
     int cost = 3;
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, -5, message, cost);
     assertThat(analyzerMessage.getCheck()).isEqualTo(javaCheck);
-    assertThat(analyzerMessage.getFile()).isEqualTo(file);
+    assertThat(analyzerMessage.getInputComponent()).isEqualTo(file);
     assertThat(analyzerMessage.getLine()).isEqualTo(null);
     assertThat(analyzerMessage.getMessage()).isEqualTo(message);
     assertThat(analyzerMessage.getCost()).isEqualTo(cost);
@@ -162,12 +162,12 @@ public class AnalyzerMessageTest {
   @Test
   public void testAnalyzerMessageOnFile() {
     JavaCheck javaCheck = mock(JavaCheck.class);
-    File file = new File("a");
+    InputFile file = TestUtils.emptyInputFile("a");
     String message = "analyzer message";
     int cost = 3;
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, null, message, cost);
     assertThat(analyzerMessage.getCheck()).isEqualTo(javaCheck);
-    assertThat(analyzerMessage.getFile()).isEqualTo(file);
+    assertThat(analyzerMessage.getInputComponent()).isEqualTo(file);
     assertThat(analyzerMessage.getLine()).isEqualTo(null);
     assertThat(analyzerMessage.getMessage()).isEqualTo(message);
     assertThat(analyzerMessage.getCost()).isEqualTo(cost);
@@ -177,12 +177,12 @@ public class AnalyzerMessageTest {
   @Test
   public void testAnalyzerMessageWithoutCost() {
     JavaCheck javaCheck = mock(JavaCheck.class);
-    File file = new File("a");
+    InputFile file = TestUtils.emptyInputFile("a");
     String message = "analyzer message";
     int cost = 0;
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, null, message, cost);
     assertThat(analyzerMessage.getCheck()).isEqualTo(javaCheck);
-    assertThat(analyzerMessage.getFile()).isEqualTo(file);
+    assertThat(analyzerMessage.getInputComponent()).isEqualTo(file);
     assertThat(analyzerMessage.getLine()).isEqualTo(null);
     assertThat(analyzerMessage.getMessage()).isEqualTo(message);
     assertThat(analyzerMessage.getCost()).isNull();
@@ -192,7 +192,7 @@ public class AnalyzerMessageTest {
   @Test
   public void toString_test() throws Exception {
     JavaCheck javaCheck = mock(JavaCheck.class);
-    File file = new File("file");
+    InputFile file = TestUtils.emptyInputFile("file");
     String message = "analyzer message";
     int cost = 0;
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, 12, message, cost);

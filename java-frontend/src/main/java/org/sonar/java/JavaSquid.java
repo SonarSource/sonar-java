@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
@@ -103,18 +104,18 @@ public class JavaSquid {
   }
 
 
-  public void scan(Collection<File> sourceFiles, Collection<File> testFiles) {
+  public void scan(Collection<InputFile> sourceFiles, Collection<InputFile> testFiles) {
     scanSources(sourceFiles);
     scanTests(testFiles);
   }
 
-  private void scanSources(Collection<File> sourceFiles) {
+  private void scanSources(Collection<InputFile> sourceFiles) {
     Profiler profiler = Profiler.create(LOG).startInfo("Java Main Files AST scan");
     astScanner.scan(sourceFiles);
     profiler.stopInfo();
   }
 
-  private void scanTests(Collection<File> testFiles) {
+  private void scanTests(Collection<InputFile> testFiles) {
     Profiler profiler = Profiler.create(LOG).startInfo("Java Test Files AST scan");
     astScannerForTests.scan(testFiles);
     profiler.stopInfo();
