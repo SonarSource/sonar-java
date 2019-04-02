@@ -1,5 +1,5 @@
 {
-  "title": "Use expression switch",
+  "title": "Use Java 12 \"switch\" expression",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -7,7 +7,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    
+    "java12"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-5194",
