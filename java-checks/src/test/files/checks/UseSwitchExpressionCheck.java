@@ -9,7 +9,7 @@ class A {
 
   void foo(DoW day) {
     int numLetters;
-    switch (day) {  // Noncompliant {{Use expression switch to set value of 'numLetters'.}}
+    switch (day) {  // Noncompliant {{Use "switch" expression to set value of "numLetters".}}
       case MONDAY:
       case FRIDAY:
       case SUNDAY:
@@ -32,7 +32,7 @@ class A {
 
   void two_throwing_branches(DoW day) {
     boolean isWeekday = false;
-    switch (day) {  // Noncompliant {{Use expression switch to set value of 'isWeekday'.}}
+    switch (day) {  // Noncompliant {{Use "switch" expression to set value of "isWeekday".}}
       case MONDAY:
       case TUESDAY:
       case WEDNESDAY:
@@ -50,7 +50,7 @@ class A {
   }
 
   void set_field(int x) {
-    switch (x) { // Noncompliant {{Use expression switch to set value of 'field'.}}
+    switch (x) { // Noncompliant {{Use "switch" expression to set value of "field".}}
       case 1:
         this.field = 1;
         break;
@@ -62,14 +62,62 @@ class A {
     }
   }
 
+  void set_field_block(int x) {
+    switch (x) { // Noncompliant {{Use "switch" expression to set value of "field".}}
+      case 1: {
+        this.field = 1;
+        break;
+      }
+      case 2: {
+        field = 2;
+        break;
+      }
+      default: {
+        throw new IllegalStateException();
+      }
+    }
+  }
+
   int return_switch(int x) {
-    switch (x) { // Noncompliant {{Use expression switch to return the value.}}
+    switch (x) { // Noncompliant {{Use "switch" expression to return the value from method.}}
       case 1:
         return 1;
       case 2:
         return 2;
       default:
         throw new IllegalStateException();
+    }
+  }
+
+  int return_switch_block(int x) {
+    switch (x) { // Noncompliant {{Use "switch" expression to return the value from method.}}
+      case 1:
+        return 1;
+      case 2: {
+        return 2;
+      }
+      default: {
+        throw new IllegalStateException();
+      }
+    }
+  }
+
+  void expression_switch_non_compliant() {
+    int numLetters;
+    switch (day) {  // Noncompliant {{Use "switch" expression to set value of "numLetters".}}
+      case MONDAY, FRIDAY, SUNDAY -> {
+        numLetters = 6;
+      }
+      case TUESDAY -> {
+        numLetters = 7;
+      }
+      case THURSDAY, SATURDAY -> {
+        numLetters = 8;
+      }
+      case WEDNESDAY -> {
+        numLetters = 9;
+      }
+      default -> throw new IllegalStateException("Wat: " + day);
     }
   }
 
@@ -175,6 +223,52 @@ class A {
       case 2:
         arr[2] = 2;
         break;
+    }
+  }
+
+  void unknown_symbols(int expr) {
+    switch (expr) {
+      case 1:
+        unknown1 = 42;
+        break;
+      case 2:
+        unkown2 = 666;
+        break;
+    }
+  }
+
+  void expression_switch_compliant() {
+    int numLetters =
+      switch (day) {
+        case MONDAY, FRIDAY, SUNDAY -> 6;
+        case TUESDAY -> 7;
+        case THURSDAY, SATURDAY -> 8;
+        case WEDNESDAY -> 9;
+        default -> throw new IllegalStateException("Wat: " + day);
+      };
+  }
+
+  void empty_body(int expr) {
+    switch (expr) {
+      case 1 -> {
+
+      }
+      case 2 -> throw new IllegalStateException();
+    }
+  }
+
+  void set_field_block_fallthrough(int x) {
+    switch (x) {
+      case 1: {
+        this.field = 1;
+      }
+      case 2: {
+        field = 2;
+        break;
+      }
+      default: {
+        throw new IllegalStateException();
+      }
     }
   }
 
