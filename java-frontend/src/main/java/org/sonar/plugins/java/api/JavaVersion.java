@@ -23,7 +23,7 @@ import com.google.common.annotations.Beta;
 
 /**
  * Represents the java version used by the project under analysis.
- * Destinated to be used by checks to determine if they should report issue depending on java version.
+ * Designed to be used by checks to determine if they should report issue depending on java version.
  */
 @Beta
 public interface JavaVersion {
@@ -45,6 +45,13 @@ public interface JavaVersion {
    * @return true if java version used is >= 8
    */
   boolean isJava8Compatible();
+
+  /**
+   * Test if java version of the project is greater than or equal to 12.
+   * Remark - Contrary to other isJava*Compatible methods, this one will not return true if version is not set
+   * @return true if java version used is >= 12
+   */
+  boolean isJava12Compatible();
 
   /**
    * get java version as integer

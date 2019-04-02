@@ -1,0 +1,49 @@
+<p>Many existing switch statements are essentially simulations of switch expressions, where each arm either assigns to a common target variable or
+returns a value. Expressing this as a statement is roundabout, repetitive, and error-prone.</p>
+<p>Java 12 added support for switch expressions, which provide more succint and less error-prone version of switch.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+void day_of_week(DoW day) {
+    int numLetters;
+    switch (day) {  // Noncompliant
+      case MONDAY:
+      case FRIDAY:
+      case SUNDAY:
+        numLetters = 6;
+        break;
+      case TUESDAY:
+        numLetters = 7;
+        break;
+      case THURSDAY:
+      case SATURDAY:
+        numLetters = 8;
+        break;
+      case WEDNESDAY:
+        numLetters = 9;
+        break;
+      default:
+        throw new IllegalStateException("Wat: " + day);
+    }
+}
+
+int return_switch(int x) {
+    switch (x) { // Noncompliant
+      case 1:
+        return 1;
+      case 2:
+        return 2;
+      default:
+        throw new IllegalStateException();
+    }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+int numLetters = switch (day) {
+    case MONDAY, FRIDAY, SUNDAY -&gt; 6;
+    case TUESDAY                -&gt; 7;
+    case THURSDAY, SATURDAY     -&gt; 8;
+    case WEDNESDAY              -&gt; 9;
+};
+</pre>
+

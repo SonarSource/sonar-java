@@ -1,0 +1,16 @@
+{
+  "title": "Use Java 12 \"switch\" expression",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java12"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-5194",
+  "sqKey": "S5194",
+  "scope": "All"
+}
