@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
-import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.BLOCK;
@@ -45,7 +45,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.BREAK_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.EXPRESSION_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.MEMBER_SELECT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.RETURN_STATEMENT;
-import static org.sonar.plugins.java.api.tree.Tree.Kind.SWITCH_EXPRESSION;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.SWITCH_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.THROW_STATEMENT;
 
 @Rule(key = "S5194")
@@ -53,7 +53,7 @@ public class UseSwitchExpressionCheck extends IssuableSubscriptionVisitor implem
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(SWITCH_EXPRESSION);
+    return Collections.singletonList(SWITCH_STATEMENT);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class UseSwitchExpressionCheck extends IssuableSubscriptionVisitor implem
     if (!hasSemantic()) {
       return;
     }
-    SwitchExpressionTree switchTree = ((SwitchExpressionTree) tree);
+    SwitchStatementTree switchTree = (SwitchStatementTree) tree;
     Symbol switchAssigningVariable = isSwitchAssigningVariable(switchTree);
     if (switchAssigningVariable != null) {
       reportIssue(switchTree.switchKeyword(), "Use \"switch\" expression to set value of \"" + switchAssigningVariable.name() + "\".");
@@ -76,7 +76,7 @@ public class UseSwitchExpressionCheck extends IssuableSubscriptionVisitor implem
   }
 
   @CheckForNull
-  private static Symbol isSwitchAssigningVariable(SwitchExpressionTree switchStatementTree) {
+  private static Symbol isSwitchAssigningVariable(SwitchStatementTree switchStatementTree) {
     Set<Symbol> assignedVariables = switchStatementTree.cases().stream()
       .filter(caseGroup -> !hasSingleStatement(caseGroup.body(), THROW_STATEMENT))
       .map(UseSwitchExpressionCheck::assigningVariable)
@@ -84,7 +84,7 @@ public class UseSwitchExpressionCheck extends IssuableSubscriptionVisitor implem
     return assignedVariables.size() == 1 ? assignedVariables.iterator().next() : null;
   }
 
-  private static boolean isSwitchReturningValue(SwitchExpressionTree switchStatementTree) {
+  private static boolean isSwitchReturningValue(SwitchStatementTree switchStatementTree) {
     return switchStatementTree.cases().stream()
       .map(CaseGroupTree::body)
       .allMatch(body -> hasSingleStatement(body, THROW_STATEMENT, RETURN_STATEMENT));
