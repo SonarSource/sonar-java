@@ -396,4 +396,22 @@ abstract class C {
   }
 
   abstract void doSomething();
+
+  void test_enquing_unknown_exceptions() {
+    int retriesLeft = 10;
+    while (true) {
+      try {
+        return bar();
+      } catch (FooException e) {
+        if (retriesLeft == 0) {
+          throw e;
+        }
+      }
+    }
+  }
+
+  abstract void bar() throws UnknownSymbol;
+
+  public class FooException extends Exception {
+  }
 }
