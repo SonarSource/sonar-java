@@ -85,7 +85,7 @@
 
     <sonar.version>7.4-alpha2</sonar.version>
     <analyzer.commons.version>1.10.2.456</analyzer.commons.version>
-    <orchestrator.version>3.23.0.1973</orchestrator.version>
+    <orchestrator.version>3.24.0.1993</orchestrator.version>
     <sslr.version>1.23</sslr.version>
     <jacoco.version>0.8.3</jacoco.version>
     <asm.version>7.1</asm.version>
