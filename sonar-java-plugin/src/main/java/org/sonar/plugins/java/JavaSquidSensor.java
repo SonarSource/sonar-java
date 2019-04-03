@@ -92,20 +92,16 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.saveAnalysisErrors();
   }
 
-  private Collection<InputFile> getSourceFiles() {
+  private Iterable<InputFile> getSourceFiles() {
     return javaFiles(InputFile.Type.MAIN);
   }
 
-  private Collection<InputFile> getTestFiles() {
+  private Iterable<InputFile> getTestFiles() {
     return javaFiles(InputFile.Type.TEST);
   }
 
-  private Collection<InputFile> javaFiles(InputFile.Type type) {
-    return toList(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(type))));
-  }
-
-  private static List<InputFile> toList(Iterable<InputFile> inputFiles) {
-    return StreamSupport.stream(inputFiles.spliterator(), false).collect(Collectors.toList());
+  private Iterable<InputFile> javaFiles(InputFile.Type type) {
+    return fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(type)));
   }
 
   private JavaVersion getJavaVersion() {

@@ -104,18 +104,18 @@ public class JavaSquid {
   }
 
 
-  public void scan(Collection<InputFile> sourceFiles, Collection<InputFile> testFiles) {
+  public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles) {
     scanSources(sourceFiles);
     scanTests(testFiles);
   }
 
-  private void scanSources(Collection<InputFile> sourceFiles) {
+  private void scanSources(Iterable<InputFile> sourceFiles) {
     Profiler profiler = Profiler.create(LOG).startInfo("Java Main Files AST scan");
     astScanner.scan(sourceFiles);
     profiler.stopInfo();
   }
 
-  private void scanTests(Collection<InputFile> testFiles) {
+  private void scanTests(Iterable<InputFile> testFiles) {
     Profiler profiler = Profiler.create(LOG).startInfo("Java Test Files AST scan");
     astScannerForTests.scan(testFiles);
     profiler.stopInfo();
