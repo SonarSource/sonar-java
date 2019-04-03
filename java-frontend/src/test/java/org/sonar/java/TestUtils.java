@@ -68,7 +68,7 @@ public class TestUtils {
         .setLanguage("java")
         .build();
     } catch (Exception e) {
-      throw new IllegalStateException(String.format("Unable to lead file '%s", file.getAbsolutePath()));
+      throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsolutePath()));
     }
   }
 }
