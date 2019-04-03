@@ -21,10 +21,12 @@ package org.sonar.java.checks.verifier;
 
 import com.google.common.annotations.Beta;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.parser.JavaParser;
@@ -101,7 +103,9 @@ public class MultipleFilesJavaCheckVerifier extends CheckVerifier {
     visitorsBridge.setJavaVersion(new JavaVersionImpl());
     JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(), null);
     astScanner.setVisitorBridge(visitorsBridge);
-    astScanner.scan(filesToScan.stream().map(File::new).collect(Collectors.toList()));
+    astScanner.scan(filesToScan.stream()
+      .map(filename -> new TestInputFileBuilder("", filename).setCharset(StandardCharsets.UTF_8).build())
+      .collect(Collectors.toList()));
 
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     return testJavaFileScannerContext.getIssues();

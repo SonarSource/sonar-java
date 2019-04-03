@@ -19,7 +19,6 @@
  */
 package org.sonar.java.filters;
 
-import java.io.File;
 import java.util.Collections;
 import javax.annotation.Nullable;
 import org.assertj.core.api.AbstractBooleanAssert;
@@ -27,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
+import org.sonar.java.CheckTestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -132,7 +132,7 @@ public class AnyRuleIssueFilterTest {
 
   private static void scanFile(JavaIssueFilter filter) {
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(filter), Collections.emptyList(), null);
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/filters/AnyRuleIssueFilter.java"), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/filters/AnyRuleIssueFilter.java"), visitorsBridge);
   }
 
   private static class AnyRuleOnVariableIssueFilter extends AnyRuleIssueFilter {

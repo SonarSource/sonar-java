@@ -20,71 +20,28 @@
 package org.sonar.java;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.batch.sensor.measure.Measure;
-import org.sonar.api.issue.NoSonarFilter;
-import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
-public class StrutsTest {
+public class StrutsTest extends MeasurerTester {
 
-  private static SensorContextTester context;
+  private static final File PROJECT_DIR = new File("target/test-projects/struts-core-1.3.9");
+  private static final File SOURCE_DIR = new File(PROJECT_DIR, "src");
 
-  private static void initAndScan() {
-    File prjDir = new File("target/test-projects/struts-core-1.3.9");
-    File srcDir = new File(prjDir, "src");
-
-    context = SensorContextTester.create(prjDir);
-    DefaultFileSystem fs = context.fileSystem();
-    Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
-    for (File file : files) {
-      fs.add(new TestInputFileBuilder("",file.getPath()).build());
-    }
-    Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
-    JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
-    JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, measurer, javaResourceLocator, null, new JavaCheck[0]);
-    squid.scan(files, Collections.<File>emptyList());
+  @Override
+  public File projectDir() {
+    return PROJECT_DIR;
   }
 
-  private Map<String, Double> getMetrics() {
-    Map<String, Double> metrics = new HashMap<>();
-    for (InputFile inputFile : context.fileSystem().inputFiles()) {
-      for (Measure measure : context.measures(inputFile.key())) {
-        if (measure.value() != null) {
-          String key = measure.metric().key();
-          double value = 0;
-          try {
-            value = Double.parseDouble("" + measure.value());
-          } catch (NumberFormatException nfe) {
-            //do nothing
-          }
-          if (metrics.get(key) == null) {
-            metrics.put(key, value);
-          } else {
-            metrics.put(key, metrics.get(key) + value);
-          }
-        }
-      }
-    }
-    return metrics;
+  @Override
+  public File sourceDir() {
+    return SOURCE_DIR;
   }
 
   @Test
   public void measures_on_project() throws Exception {
-    initAndScan();
     Map<String, Double> metrics = getMetrics();
 
     assertThat(metrics.get("classes").intValue()).isEqualTo(146);

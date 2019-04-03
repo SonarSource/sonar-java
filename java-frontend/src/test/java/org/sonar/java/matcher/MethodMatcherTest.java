@@ -20,7 +20,6 @@
 package org.sonar.java.matcher;
 
 import com.google.common.collect.ImmutableList;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +29,7 @@ import javax.annotation.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaTree;
@@ -221,7 +221,7 @@ public class MethodMatcherTest {
     matches.put(callSiteIsTest, new ArrayList<>());
 
     JavaAstScanner.scanSingleFileForTests(
-      new File("src/test/files/matcher/Test.java"),
+      TestUtils.inputFile("src/test/files/matcher/Test.java"),
       new VisitorsBridge(Collections.singletonList(new Visitor(matches)), new ArrayList<>(), null));
 
     assertThat(matches.get(objectToString)).containsExactly(6, 19, 27, 39, 40);

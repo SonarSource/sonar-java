@@ -21,12 +21,15 @@ package org.sonar.java.se;
 
 import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.io.FileUtils;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.TestUtils;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.cfg.BytecodeCFG;
 import org.sonar.java.bytecode.cfg.BytecodeCFGMethodVisitor;
@@ -63,11 +66,16 @@ public class SETestUtils {
   }
 
   public static Pair<SymbolicExecutionVisitor, SemanticModel> createSymbolicExecutionVisitorAndSemantic(String fileName, boolean crossFileEnabled, SECheck... checks) {
-    File file = new File(fileName);
-    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(file);
+    InputFile inputFile = TestUtils.inputFile(fileName);
+    CompilationUnitTree cut;
+    try {
+      cut = (CompilationUnitTree) PARSER.parse(inputFile.contents());
+    } catch (IOException e) {
+      throw new IllegalStateException(String.format("Unable to load file for test: '%s'", inputFile));
+    }
     SemanticModel semanticModel = SemanticModel.createFor(cut, CLASSLOADER);
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks), new BehaviorCache(CLASSLOADER, crossFileEnabled));
-    sev.scanFile(new DefaultJavaFileScannerContext(cut, file, semanticModel, null, new JavaVersionImpl(8), true));
+    sev.scanFile(new DefaultJavaFileScannerContext(cut, inputFile, semanticModel, null, new JavaVersionImpl(8), true));
     return new Pair<>(sev, semanticModel);
   }
 

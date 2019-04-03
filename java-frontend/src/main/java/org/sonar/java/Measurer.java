@@ -25,7 +25,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import org.sonar.api.SonarProduct;
-import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.issue.NoSonarFilter;
@@ -44,10 +43,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class Measurer extends SubscriptionVisitor {
 
-  private static final Number[] LIMITS_COMPLEXITY_METHODS = {1, 2, 4, 6, 8, 10, 12};
-  private static final Number[] LIMITS_COMPLEXITY_FILES = {0, 5, 10, 20, 30, 60, 90};
-
-  private final FileSystem fs;
   private final SensorContext sensorContext;
   private final NoSonarFilter noSonarFilter;
   private InputFile sonarFile;
@@ -55,8 +50,7 @@ public class Measurer extends SubscriptionVisitor {
   private final Deque<ClassTree> classTrees = new LinkedList<>();
   private int classes;
 
-  public Measurer(FileSystem fs, SensorContext context, NoSonarFilter noSonarFilter) {
-    this.fs = fs;
+  public Measurer(SensorContext context, NoSonarFilter noSonarFilter) {
     this.sensorContext = context;
     this.noSonarFilter = noSonarFilter;
   }
@@ -64,7 +58,7 @@ public class Measurer extends SubscriptionVisitor {
   public class TestFileMeasurer implements JavaFileScanner {
     @Override
     public void scanFile(JavaFileScannerContext context) {
-      sonarFile = fs.inputFile(fs.predicates().is(context.getFile()));
+      sonarFile = context.getInputFile();
       createCommentLineVisitorAndFindNoSonar(context);
     }
   }
@@ -79,7 +73,7 @@ public class Measurer extends SubscriptionVisitor {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    sonarFile = fs.inputFile(fs.predicates().is(context.getFile()));
+    sonarFile = context.getInputFile();
     CommentLinesVisitor commentLinesVisitor = createCommentLineVisitorAndFindNoSonar(context);
     if(isSonarLintContext()) {
       // No need to compute metrics on SonarLint side, but the no sonar filter is still required

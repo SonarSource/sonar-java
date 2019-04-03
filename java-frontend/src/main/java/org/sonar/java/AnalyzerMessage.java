@@ -20,10 +20,10 @@
 package org.sonar.java;
 
 import com.google.common.base.Preconditions;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
+import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -34,20 +34,20 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class AnalyzerMessage {
 
   private final JavaCheck check;
-  private final File file;
+  private final InputComponent inputComponent;
   private final String message;
   private final int cost;
   @Nullable
   private TextSpan textSpan;
   public final List<List<AnalyzerMessage>> flows = new ArrayList<>();
 
-  public AnalyzerMessage(JavaCheck check, File file, int line, String message, int cost) {
-    this(check, file, line > 0 ? new TextSpan(line) : null, message, cost);
+  public AnalyzerMessage(JavaCheck check, InputComponent inputComponent, int line, String message, int cost) {
+    this(check, inputComponent, line > 0 ? new TextSpan(line) : null, message, cost);
   }
 
-  public AnalyzerMessage(JavaCheck check, File file, @Nullable TextSpan textSpan, String message, int cost) {
+  public AnalyzerMessage(JavaCheck check, InputComponent inputComponent, @Nullable TextSpan textSpan, String message, int cost) {
     this.check = check;
-    this.file = file;
+    this.inputComponent = inputComponent;
     this.message = message;
     this.cost = cost;
     this.textSpan = textSpan;
@@ -57,8 +57,8 @@ public class AnalyzerMessage {
     return check;
   }
 
-  public File getFile() {
-    return file;
+  public InputComponent getInputComponent() {
+    return inputComponent;
   }
 
   /**
@@ -162,6 +162,6 @@ public class AnalyzerMessage {
 
   @Override
   public String toString() {
-    return String.format("'%s' in %s:%d", getMessage(), getFile(), getLine());
+    return String.format("'%s' in %s:%d", message, inputComponent, getLine());
   }
 }

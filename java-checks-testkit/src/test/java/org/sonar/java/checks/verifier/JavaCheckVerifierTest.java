@@ -23,10 +23,19 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.assertj.core.api.Fail;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
@@ -37,15 +46,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -328,7 +329,7 @@ public class JavaCheckVerifierTest {
   @Test
   public void rule_with_constant_remediation_function_should_not_provide_cost() throws Exception {
     FakeVisitor fakeVisitor = new FakeVisitor();
-    fakeVisitor.withPreciseIssue(new AnalyzerMessage(fakeVisitor, new File("a"), new AnalyzerMessage.TextSpan(1), "message", 1));
+    fakeVisitor.withPreciseIssue(new AnalyzerMessage(fakeVisitor, emptyInputFile(), new AnalyzerMessage.TextSpan(1), "message", 1));
     Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", fakeVisitor));
     assertThat(throwable)
       .isInstanceOf(IllegalStateException.class)
@@ -340,7 +341,7 @@ public class JavaCheckVerifierTest {
     @Rule(key = "DoesntExists")
     class WrongJson extends FakeVisitor {}
     WrongJson check = new WrongJson();
-    check.withPreciseIssue(new AnalyzerMessage(check, new File("a"), 1, "message", 0));
+    check.withPreciseIssue(new AnalyzerMessage(check, emptyInputFile(), 1, "message", 0));
     JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", check);
   }
 
@@ -349,7 +350,7 @@ public class JavaCheckVerifierTest {
     @Rule(key = "BrokenJSON")
     class WrongJson extends FakeVisitor {}
     WrongJson check = new WrongJson();
-    check.withPreciseIssue(new AnalyzerMessage(check, new File("a"), 1, "message", 0));
+    check.withPreciseIssue(new AnalyzerMessage(check, emptyInputFile(), 1, "message", 0));
     JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", check);
   }
 
@@ -358,7 +359,7 @@ public class JavaCheckVerifierTest {
     @Rule(key = "ExponentialRemediationFunc")
     class WrongJson extends FakeVisitor {}
     WrongJson check = new WrongJson();
-    check.withPreciseIssue(new AnalyzerMessage(check, new File("a"), 1, "message", 0));
+    check.withPreciseIssue(new AnalyzerMessage(check, emptyInputFile(), 1, "message", 0));
     JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", check);
   }
 
@@ -367,7 +368,7 @@ public class JavaCheckVerifierTest {
     @Rule(key = "UndefinedRemediationFunc")
     class WrongJson extends FakeVisitor {}
     WrongJson check = new WrongJson();
-    check.withPreciseIssue(new AnalyzerMessage(check, new File("a"), 1, "message", 0));
+    check.withPreciseIssue(new AnalyzerMessage(check, emptyInputFile(), 1, "message", 0));
     JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", check);
   }
 
@@ -391,6 +392,13 @@ public class JavaCheckVerifierTest {
       .hasMessage("Rules should be annotated with '@Rule(key = \"...\")' annotation (org.sonar.check.Rule).");
   }
 
+  private static DefaultInputFile emptyInputFile() {
+    return new TestInputFileBuilder("", "randomFile")
+      .setCharset(UTF_8)
+      .setLanguage("java")
+      .build();
+  }
+
   @RspecKey("Dummy_fake_JSON")
   private static class NoJsonVisitor extends FakeVisitor {
   }
@@ -408,18 +416,18 @@ public class JavaCheckVerifierTest {
     List<String> issuesOnProject = Lists.newLinkedList();
 
     protected FakeVisitor withDefaultIssues() {
-      AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, new File("a"), new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 0);
-      withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, new File("a"), 3, "no message", 0)));
-      withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, new File("a"), 4, "no message", 0)));
+      AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, emptyInputFile(), new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 0);
+      withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, emptyInputFile(), 3, "no message", 0)));
+      withMultipleLocation.flows.add(Collections.singletonList(new AnalyzerMessage(this, emptyInputFile(), 4, "no message", 0)));
       return this.withIssue(1, "message")
         .withIssue(3, "message1")
         .withIssue(7, "message2")
         .withIssue(8, "message3")
         .withIssue(8, "message3")
         .withPreciseIssue(withMultipleLocation)
-        .withPreciseIssue(new AnalyzerMessage(this, new File("a"), 11, "no message", 0))
-        .withPreciseIssue(new AnalyzerMessage(this, new File("a"), 12, "message12", 0))
-        .withPreciseIssue(new AnalyzerMessage(this, new File("a"), new AnalyzerMessage.TextSpan(14, 5, 15, 11), "message12", 0))
+        .withPreciseIssue(new AnalyzerMessage(this, emptyInputFile(), 11, "no message", 0))
+        .withPreciseIssue(new AnalyzerMessage(this, emptyInputFile(), 12, "message12", 0))
+        .withPreciseIssue(new AnalyzerMessage(this, emptyInputFile(), new AnalyzerMessage.TextSpan(14, 5, 15, 11), "message12", 0))
         .withIssue(17, "message17");
     }
 
@@ -474,7 +482,7 @@ public class JavaCheckVerifierTest {
         addIssueOnFile(message);
       }
       for (String message : issuesOnProject) {
-        context.addIssue(context.getFile().getParentFile(), this, -1, message);
+        context.addIssueOnProject(this, message);
       }
     }
 
@@ -488,6 +496,5 @@ public class JavaCheckVerifierTest {
         null,
         new InternalSyntaxToken(textSpan.endLine, textSpan.endCharacter - 1, "", Lists.<SyntaxTrivia>newArrayList(), 0, 0, false));
     }
-
   }
 }

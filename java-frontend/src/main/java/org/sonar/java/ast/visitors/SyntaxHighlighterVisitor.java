@@ -22,7 +22,6 @@ package org.sonar.java.ast.visitors;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,8 +77,7 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    File file = context.getFile();
-    highlighting = sonarComponents.highlightableFor(file);
+    highlighting = sonarComponents.highlightableFor(context.getInputFile());
 
     super.scanFile(context);
 

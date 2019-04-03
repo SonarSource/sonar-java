@@ -19,29 +19,27 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultTextPointer;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 
@@ -53,29 +51,32 @@ public class SonarSymbolTableVisitorTest {
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
   private static final String EOL = "\n";
-  private List<String> lines;
   private SensorContextTester context;
-  private DefaultFileSystem fs;
   private SonarComponents sonarComponents;
 
   @Before
   public void setUp() {
     context = SensorContextTester.create(temp.getRoot());
-    fs = context.fileSystem();
-    sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), fs,
+    sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
       mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
   }
 
   @Test
   public void sonar_symbol_table() throws Exception {
-    File file = temp.newFile().getAbsoluteFile();
-    Files.write(Files.toString(new File("src/test/files/highlighter/SonarSymTable.java"), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", EOL), file, StandardCharsets.UTF_8);
-    lines = Files.readLines(file, StandardCharsets.UTF_8);
-    String content  = Joiner.on(EOL).join(lines);
-    fs.add(new TestInputFileBuilder("", file.getName()).initMetadata(content).build());
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(ImmutableList.of(), sonarComponents.getJavaClasspath(), sonarComponents));
-    String componentKey = ":" + file.getName();
+    File source = new File("src/test/files/highlighter/SonarSymTable.java");
+    File target = temp.newFile().getAbsoluteFile();
+
+    String content = Files.asCharSource(source, StandardCharsets.UTF_8)
+      .read()
+      .replaceAll("\\r\\n", "\n")
+      .replaceAll("\\r", "\n")
+      .replaceAll("\\n", EOL);
+    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);
+
+    InputFile inputFile = TestUtils.inputFile(target);
+    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(ImmutableList.of(), sonarComponents.getJavaClasspath(), sonarComponents));
+    String componentKey = inputFile.key();
     verifyUsages(componentKey, 1, 17, reference(5,2), reference(9,10));
     // Example class declaration
     verifyUsages(componentKey, 4, 6);

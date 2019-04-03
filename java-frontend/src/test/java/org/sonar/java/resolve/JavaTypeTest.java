@@ -21,7 +21,12 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import org.junit.Test;
+import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -29,11 +34,6 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -78,7 +78,7 @@ public class JavaTypeTest {
   public void type_is_fully_qualified_name() {
     JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", packageSymbol);
-    JavaSymbol.TypeJavaSymbol typeSymbol2 = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", symbols.rootPackage);
+    JavaSymbol.TypeJavaSymbol typeSymbol2 = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", Symbols.rootPackage);
     ArrayJavaType arrayType = new ArrayJavaType(typeSymbol.type, symbols.arrayClass);
     ClassJavaType classType = (ClassJavaType) typeSymbol.type;
     classType.interfaces = Lists.newArrayList();
@@ -91,7 +91,7 @@ public class JavaTypeTest {
     assertThat(arrayType.is("org.foo.bar.MyType")).isFalse();
     assertThat(arrayType.is("org.foo.bar.SomeClass[]")).isFalse();
     assertThat(symbols.nullType.is("org.foo.bar.SomeClass")).isTrue();
-    assertThat(symbols.unknownType.is("org.foo.bar.SomeClass")).isFalse();
+    assertThat(Symbols.unknownType.is("org.foo.bar.SomeClass")).isFalse();
   }
 
   @Test
@@ -271,7 +271,11 @@ public class JavaTypeTest {
     File bytecodeDir = new File("target/test-classes");
     ClassFullQualifiedNameVerifierVisitor visitor = new ClassFullQualifiedNameVerifierVisitor(bytecodeDir);
     JavaAstScanner.scanSingleFileForTests(
-      new File("src/test/java/org/sonar/java/resolve/targets/FullyQualifiedName.java"), new VisitorsBridge(Collections.singletonList(visitor), Lists.newArrayList(bytecodeDir), null));
+      TestUtils.inputFile("src/test/java/org/sonar/java/resolve/targets/FullyQualifiedName.java"),
+      new VisitorsBridge(
+        Collections.singletonList(visitor),
+        Collections.singletonList(bytecodeDir),
+        null));
   }
 
   private static class ClassFullQualifiedNameVerifierVisitor extends SubscriptionVisitor {

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
@@ -36,9 +35,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
@@ -50,6 +47,7 @@ import org.sonar.java.AnalysisException;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.TestUtils;
 import org.sonar.java.ast.parser.JavaNodeBuilder;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.cfg.CFG;
@@ -81,45 +79,39 @@ public class JavaAstScannerTest {
   public ExpectedException thrown = ExpectedException.none();
   @Rule
   public LogTester logTester = new LogTester();
-  SensorContextTester context;
-  private DefaultFileSystem fs;
+  private SensorContextTester context;
 
   @Before
   public void setUp() throws Exception {
     context = SensorContextTester.create(new File(""));
-    fs = context.fileSystem();
   }
 
   @Test
   public void comments() {
-    File file = new File("src/test/files/metrics/Comments.java");
-    DefaultInputFile resource = new TestInputFileBuilder("", "src/test/files/metrics/Comments.java").build();
-    fs.add(resource);
+    InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/Comments.java");
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, noSonarFilter)));
-    verify(noSonarFilter).noSonarInFile(resource, ImmutableSet.of(15));
+    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new Measurer(context, noSonarFilter)));
+    verify(noSonarFilter).noSonarInFile(inputFile, ImmutableSet.of(15));
   }
 
   @Test
   public void noSonarLines() throws Exception {
-    File file = new File("src/test/files/metrics/NoSonar.java");
-    DefaultInputFile resource = new TestInputFileBuilder("", "src/test/files/metrics/NoSonar.java").build();
-    fs.add(resource);
+    InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, noSonarFilter)));
-    verify(noSonarFilter).noSonarInFile(resource, ImmutableSet.of(8));
+    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new Measurer(context, noSonarFilter)));
+    verify(noSonarFilter).noSonarInFile(inputFile, ImmutableSet.of(8));
     //No Sonar on tests files
     NoSonarFilter noSonarFilterForTest = mock(NoSonarFilter.class);
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, noSonarFilterForTest).new TestFileMeasurer()));
-    verify(noSonarFilterForTest).noSonarInFile(resource, ImmutableSet.of(8));
+    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new Measurer(context, noSonarFilterForTest).new TestFileMeasurer()));
+    verify(noSonarFilterForTest).noSonarInFile(inputFile, ImmutableSet.of(8));
   }
 
   @Test
   public void scan_single_file_with_dumb_file_should_fail() throws Exception {
-    thrown.expect(IllegalArgumentException.class);
+    thrown.expect(AnalysisException.class);
     String filename = "!!dummy";
     thrown.expectMessage(filename);
-    JavaAstScanner.scanSingleFileForTests(new File(filename), new VisitorsBridge(null));
+    JavaAstScanner.scanSingleFileForTests(TestUtils.emptyInputFile(filename), new VisitorsBridge(null));
   }
 
   @Test
@@ -128,7 +120,7 @@ public class JavaAstScannerTest {
     JavaAstScanner scanner = defaultJavaAstScanner();
     scanner.setVisitorBridge(new VisitorsBridge(listener));
 
-    scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
+    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
     verify(listener).processRecognitionException(any(RecognitionException.class));
   }
 
@@ -144,28 +136,28 @@ public class JavaAstScannerTest {
     when(sonarComponents.analysisCancelled()).thenReturn(true);
     JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), sonarComponents);
     scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), Lists.newArrayList(), sonarComponents));
-    scanner.scan(ImmutableList.of(new File("src/test/files/metrics/NoSonar.java")));
+    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java")));
     verifyZeroInteractions(visitor);
   }
 
   @Test
   public void should_interrupt_analysis_when_InterruptedException_is_thrown() {
-    File file = new File("src/test/files/metrics/NoSonar.java");
+    InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
 
     thrown.expectMessage("Analysis cancelled");
     thrown.expect(new AnalysisExceptionBaseMatcher(RecognitionException.class, "instanceof AnalysisException with RecognitionException cause"));
 
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedException()))));
+    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedException()))));
   }
 
   @Test
   public void should_interrupt_analysis_when_InterruptedIOException_is_thrown() {
-    File file = new File("src/test/files/metrics/NoSonar.java");
+    InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
 
     thrown.expectMessage("Analysis cancelled");
     thrown.expect(new AnalysisExceptionBaseMatcher(RecognitionException.class, "instanceof AnalysisException with RecognitionException cause"));
 
-    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedIOException()))));
+    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedIOException()))));
   }
 
   @Test
@@ -174,21 +166,21 @@ public class JavaAstScannerTest {
     SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponent.setSensorContext(context);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singleton(new CheckThrowingException(new NullPointerException("foo"))), new ArrayList<>(), sonarComponent));
-    File scannedFile = new File("src/test/resources/AstScannerNoParseError.txt");
+    InputFile scannedFile = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
 
-    scanner.scan(ImmutableList.of(scannedFile));
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$CheckThrowingException -  on file "
-      + scannedFile.getPath()
-      + ", To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
+    scanner.scan(Collections.singletonList(scannedFile));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$CheckThrowingException -  on file '"
+      + scannedFile.toString()
+      + "', To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
     assertThat(sonarComponent.analysisErrors).hasSize(1);
     assertThat(sonarComponent.analysisErrors.get(0).getKind()).isSameAs(AnalysisError.Kind.CHECK_ERROR);
     logTester.clear();
     scanner.setVisitorBridge(new VisitorsBridge(new AnnotatedCheck(new NullPointerException("foo"))));
-    scannedFile = new File("src/test/resources/AstScannerParseError.txt");
-    scanner.scan(ImmutableList.of(scannedFile));
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(3).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$AnnotatedCheck - AnnotatedCheck on file "
-      + scannedFile.getPath()
-      + ", To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
+    scannedFile = TestUtils.inputFile("src/test/resources/AstScannerParseError.txt");
+    scanner.scan(Collections.singletonList(scannedFile));
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(3).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$AnnotatedCheck - AnnotatedCheck on file '"
+      + scannedFile.toString()
+      + "', To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
   }
 
   @Test
@@ -204,7 +196,7 @@ public class JavaAstScannerTest {
         throw new NullPointerException("nobody expect the spanish inquisition !");
       }
     }), new ArrayList<>(), sonarComponent, SymbolicExecutionMode.ENABLED_WITHOUT_X_FILE));
-    scanner.scan(ImmutableList.of(new File("src/test/resources/se/MethodBehavior.java")));
+    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/se/MethodBehavior.java")));
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
     assertThat(sonarComponent.analysisErrors).hasSize(1);
@@ -216,7 +208,7 @@ public class JavaAstScannerTest {
     thrown.expect(StackOverflowError.class);
     JavaAstScanner scanner = defaultJavaAstScanner();
     scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingSOError()));
-    scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerNoParseError.txt")));
+    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt")));
 
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).get(0))
@@ -230,10 +222,10 @@ public class JavaAstScannerTest {
     JavaAstScanner scanner = defaultJavaAstScanner();
     FakeAuditListener listener = spy(new FakeAuditListener());
     SonarComponents sonarComponents = mock(SonarComponents.class);
-    when(sonarComponents.reportAnalysisError(any(RecognitionException.class), any(File.class))).thenReturn(true);
+    when(sonarComponents.reportAnalysisError(any(RecognitionException.class), any(InputFile.class))).thenReturn(true);
     scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(listener), Lists.newArrayList(), sonarComponents));
-    scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
-    verify(sonarComponents).reportAnalysisError(any(RecognitionException.class), any(File.class));
+    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
+    verify(sonarComponents).reportAnalysisError(any(RecognitionException.class), any(InputFile.class));
     verifyZeroInteractions(listener);
   }
 

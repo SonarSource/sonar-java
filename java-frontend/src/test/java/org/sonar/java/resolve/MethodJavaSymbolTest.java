@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.junit.Test;
+import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaTree;
@@ -50,21 +51,21 @@ public class MethodJavaSymbolTest {
     File bytecodeDir = new File("target/test-classes");
     MethodVisitor methodVisitor = new MethodVisitor(Sets.newHashSet(28, 32, 40, 44, 46, 56, 72, 76, 84, 89, 91, 98, 100, 102), new HashSet<Integer>());
     JavaAstScanner.scanSingleFileForTests(
-      new File("src/test/java/org/sonar/java/resolve/targets/MethodSymbols.java"),
+      TestUtils.inputFile("src/test/java/org/sonar/java/resolve/targets/MethodSymbols.java"),
       new VisitorsBridge(Collections.singleton(methodVisitor), Lists.newArrayList(bytecodeDir), null));
   }
 
   @Test
   public void test_unknowns() {
     MethodVisitor methodVisitor = new MethodVisitor(Sets.newHashSet(16, 21), Sets.newHashSet(7, 15, 17, 31));
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/resolve/MethodSymbols.java"), new VisitorsBridge(methodVisitor));
+    JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/resolve/MethodSymbols.java"), new VisitorsBridge(methodVisitor));
   }
 
   @Test
   public void test_throws() {
     File bytecodeDir = new File("target/test-classes");
     JavaAstScanner.scanSingleFileForTests(
-      new File("src/test/java/org/sonar/java/resolve/targets/MethodThrowingExceptionsUsage.java"),
+      TestUtils.inputFile("src/test/java/org/sonar/java/resolve/targets/MethodThrowingExceptionsUsage.java"),
       new VisitorsBridge(Collections.singleton(new SubscriptionVisitor() {
         @Override
         public List<Tree.Kind> nodesToVisit() {
@@ -118,7 +119,7 @@ public class MethodJavaSymbolTest {
   @Test
   public void test_signature() throws Exception {
     JavaAstScanner.scanSingleFileForTests(
-      new File("src/test/java/org/sonar/java/resolve/targets/MethodCompleteSignature.java"),
+      TestUtils.inputFile("src/test/java/org/sonar/java/resolve/targets/MethodCompleteSignature.java"),
       new VisitorsBridge(Collections.singleton(new SubscriptionVisitor() {
         @Override
         public List<Tree.Kind> nodesToVisit() {
@@ -150,7 +151,7 @@ public class MethodJavaSymbolTest {
       38, true);
 
     JavaAstScanner.scanSingleFileForTests(
-      new File("src/test/java/org/sonar/java/resolve/targets/OverridableMethodSymbols.java"),
+      TestUtils.inputFile("src/test/java/org/sonar/java/resolve/targets/OverridableMethodSymbols.java"),
       new VisitorsBridge(Collections.singleton(new SubscriptionVisitor() {
         @Override
         public List<Tree.Kind> nodesToVisit() {

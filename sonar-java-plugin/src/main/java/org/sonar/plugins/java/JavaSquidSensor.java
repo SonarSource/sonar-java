@@ -20,7 +20,6 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
-import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,22 +86,26 @@ public class JavaSquidSensor implements Sensor {
       .build();
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, checks);
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
-    Measurer measurer = new Measurer(fs, context, noSonarFilter);
+    Measurer measurer = new Measurer(context, noSonarFilter);
     JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles());
     sonarComponents.saveAnalysisErrors();
   }
 
-  private Collection<File> getSourceFiles() {
-    return toFile(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.MAIN))));
+  private Collection<InputFile> getSourceFiles() {
+    return javaFiles(InputFile.Type.MAIN);
   }
 
-  private Collection<File> getTestFiles() {
-    return toFile(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.TEST))));
+  private Collection<InputFile> getTestFiles() {
+    return javaFiles(InputFile.Type.TEST);
   }
 
-  private static Collection<File> toFile(Iterable<InputFile> inputFiles) {
-    return StreamSupport.stream(inputFiles.spliterator(), false).map(InputFile::file).collect(Collectors.toList());
+  private Collection<InputFile> javaFiles(InputFile.Type type) {
+    return toList(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(type))));
+  }
+
+  private static List<InputFile> toList(Iterable<InputFile> inputFiles) {
+    return StreamSupport.stream(inputFiles.spliterator(), false).collect(Collectors.toList());
   }
 
   private JavaVersion getJavaVersion() {

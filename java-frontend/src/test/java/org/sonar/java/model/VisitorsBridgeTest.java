@@ -38,6 +38,7 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.TestUtils;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -81,7 +82,7 @@ public class VisitorsBridgeTest {
   }
 
   private void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
-    visitorsBridge.setCurrentFile(new File(filename));
+    visitorsBridge.setCurrentFile(TestUtils.emptyInputFile(filename));
     visitorsBridge.visitFile(parse(code));
   }
 
@@ -129,7 +130,7 @@ public class VisitorsBridgeTest {
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
     VisitorsBridge visitorsBridge = new VisitorsBridge(Collections.singleton(visitor), new ArrayList<>(), sonarComponents);
-    visitorsBridge.setCurrentFile(currentFile);
+    visitorsBridge.setCurrentFile(TestUtils.emptyInputFile(""));
     try {
       visitorsBridge.visitFile(null);
       assertThat(sonarComponents.analysisErrors).hasSize(1);

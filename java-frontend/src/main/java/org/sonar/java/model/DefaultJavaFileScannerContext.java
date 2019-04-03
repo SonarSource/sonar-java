@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.sonar.api.batch.fs.InputComponent;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
@@ -35,9 +37,7 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
@@ -46,14 +46,14 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final SemanticModel semanticModel;
   private final SonarComponents sonarComponents;
   private final ComplexityVisitor complexityVisitor;
-  private final File file;
+  private final InputFile inputFile;
   private final JavaVersion javaVersion;
   private final boolean fileParsed;
 
-  public DefaultJavaFileScannerContext(CompilationUnitTree tree, File file, SemanticModel semanticModel,
+  public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, SemanticModel semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean fileParsed) {
     this.tree = tree;
-    this.file = file;
+    this.inputFile = inputFile;
     this.semanticModel = semanticModel;
     this.sonarComponents = sonarComponents;
     this.complexityVisitor = new ComplexityVisitor();
@@ -72,13 +72,18 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   @Override
+  public void addIssueOnProject(JavaCheck check, String message) {
+    sonarComponents.addIssue(getProject(), check, -1, message, 0);
+  }
+
+  @Override
   public void addIssue(int line, JavaCheck javaCheck, String message) {
     addIssue(line, javaCheck, message, null);
   }
 
   @Override
   public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Integer cost) {
-    sonarComponents.addIssue(file, javaCheck, line, message, cost);
+    sonarComponents.addIssue(inputFile, javaCheck, line, message, cost);
   }
 
   @Override
@@ -99,9 +104,13 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public String getFileKey() {
-    return file.getAbsolutePath();
+    return inputFile.key();
   }
 
+  /**
+   * @deprecated since SonarJava 5.12 - Use 'reportIssue' instead, or dedicated method to report issue directly on file or project
+   */
+  @Deprecated
   @Override
   public void addIssue(File file, JavaCheck check, int line, String message) {
     if (sonarComponents != null) {
@@ -124,7 +133,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
     throwIfEndOfAnalysisCheck(javaCheck);
 
-    reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, flows, cost));
+    reportIssue(createAnalyzerMessage(inputFile, javaCheck, syntaxNode, null, message, flows, cost));
   }
 
   @Override
@@ -137,17 +146,17 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     throwIfEndOfAnalysisCheck(javaCheck);
 
     List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
-    reportIssue(createAnalyzerMessage(file, javaCheck, startTree, endTree, message, flows, cost));
+    reportIssue(createAnalyzerMessage(inputFile, javaCheck, startTree, endTree, message, flows, cost));
   }
 
   @Override
   public List<String> getFileLines() {
-    return sonarComponents.fileLines(file);
+    return sonarComponents.fileLines(inputFile);
   }
 
   @Override
   public String getFileContent() {
-    return sonarComponents.fileContent(file);
+    return sonarComponents.inputFileContents(inputFile);
   }
 
   public void reportIssue(AnalyzerMessage message) {
@@ -155,24 +164,38 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   public AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, String message) {
-    return createAnalyzerMessage(file, javaCheck, startTree, null, message, new ArrayList<>(), null);
+    return createAnalyzerMessage(inputFile, javaCheck, startTree, null, message, new ArrayList<>(), null);
   }
 
-  protected static AnalyzerMessage createAnalyzerMessage(File file, JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, Iterable<List<Location>> flows,
-    @Nullable Integer cost) {
+  protected static AnalyzerMessage createAnalyzerMessage(InputFile inputFile, JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message,
+    Iterable<List<Location>> flows, @Nullable Integer cost) {
     AnalyzerMessage.TextSpan textSpan = endTree != null ? AnalyzerMessage.textSpanBetween(startTree, endTree) : AnalyzerMessage.textSpanFor(startTree);
-    AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, textSpan, message, cost != null ? cost : 0);
+    AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, inputFile, textSpan, message, cost != null ? cost : 0);
     for (List<Location> flow : flows) {
       List<AnalyzerMessage> sonarqubeFlow =
-      flow.stream().map(l -> new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(l.syntaxNode), l.msg, 0)).collect(Collectors.toList());
+      flow.stream().map(l -> new AnalyzerMessage(javaCheck, inputFile, AnalyzerMessage.textSpanFor(l.syntaxNode), l.msg, 0)).collect(Collectors.toList());
       analyzerMessage.flows.add(sonarqubeFlow);
     }
     return analyzerMessage;
   }
 
+  /**
+   * @deprecated since SonarJava 5.12 - Rely on {@link #getInputFile()} instead
+   */
+  @Deprecated
   @Override
   public File getFile() {
-    return file;
+    return inputFile.file();
+  }
+
+  @Override
+  public InputFile getInputFile() {
+    return inputFile;
+  }
+
+  @Override
+  public InputComponent getProject() {
+    return sonarComponents.project();
   }
 
   @Override
@@ -181,17 +204,12 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   public File getBaseDirectory() {
-    return sonarComponents.getFileSystem().baseDir();
+    return sonarComponents.baseDir();
   }
 
   @Override
   public List<Tree> getComplexityNodes(Tree tree) {
     return complexityVisitor.getNodes(tree);
-  }
-
-  @Override
-  public List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree) {
-    return getComplexityNodes(tree);
   }
 
   private static void throwIfEndOfAnalysisCheck(JavaCheck javaCheck) {

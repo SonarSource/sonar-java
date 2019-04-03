@@ -19,20 +19,16 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -41,6 +37,7 @@ import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -56,19 +53,16 @@ public class SyntaxHighlighterVisitorTest {
   public TemporaryFolder temp = new TemporaryFolder();
 
   private SensorContextTester context;
-  private DefaultFileSystem fs;
   private SonarComponents sonarComponents;
 
   private SyntaxHighlighterVisitor syntaxHighlighterVisitor;
 
-  private List<String> lines;
   private String eol;
 
   @Before
   public void setUp() throws Exception {
     context = SensorContextTester.create(temp.getRoot());
-    fs = context.fileSystem();
-    sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), fs,
+    sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
       mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
     syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents);
@@ -78,34 +72,33 @@ public class SyntaxHighlighterVisitorTest {
   public void parse_error() throws Exception {
     SensorContextTester spy = spy(context);
     File file = temp.newFile().getAbsoluteFile();
-    Files.write("ParseError", file, StandardCharsets.UTF_8);
-    fs.add(new TestInputFileBuilder("", file.getName()).build());
-    scan(file);
+    Files.asCharSink(file, StandardCharsets.UTF_8).write("ParseError");
+    scan(TestUtils.inputFile(file));
     verify(spy, never()).newHighlighting();
   }
 
   @Test
   public void test_LF() throws Exception {
     this.eol = "\n";
-    File file = generateDefaultTestFile();
-    scan(file);
-    verifyHighlighting(file);
+    InputFile inputFile = generateDefaultTestFile();
+    scan(inputFile);
+    verifyHighlighting(inputFile);
   }
 
   @Test
   public void test_CR_LF() throws Exception {
     this.eol = "\r\n";
-    File file = generateDefaultTestFile();
-    scan(file);
-    verifyHighlighting(file);
+    InputFile inputFile = generateDefaultTestFile();
+    scan(inputFile);
+    verifyHighlighting(inputFile);
   }
 
   @Test
   public void test_CR() throws Exception {
     this.eol = "\r";
-    File file = generateDefaultTestFile();
-    scan(file);
-    verifyHighlighting(file);
+    InputFile inputFile = generateDefaultTestFile();
+    scan(inputFile);
+    verifyHighlighting(inputFile);
   }
 
   /**
@@ -114,10 +107,10 @@ public class SyntaxHighlighterVisitorTest {
   @Test
   public void test_restricted_keywords_within_module() throws Exception {
     this.eol = "\n";
-    File file = generateTestFile("src/test/files/highlighter/ModuleExample.java");
-    scan(file);
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/ModuleExample.java");
+    scan(inputFile);
 
-    String componentKey = ":" + file.getName();
+    String componentKey = inputFile.key();
     assertThatHasBeenHighlighted(componentKey, 1, 1, 3, 4, TypeOfText.COMMENT);
     assertThatHasBeenHighlighted(componentKey, 4, 1, 4, 7, TypeOfText.KEYWORD); // import
     assertThatHasBeenHighlighted(componentKey, 6, 1, 8, 4, TypeOfText.STRUCTURED_COMMENT);
@@ -155,10 +148,10 @@ public class SyntaxHighlighterVisitorTest {
   @Test
   public void test_restricted_keywords_outside_module() throws Exception {
     this.eol = "\n";
-    File file = generateTestFile("src/test/files/highlighter/ExampleWithModuleKeywords.java");
-    scan(file);
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/ExampleWithModuleKeywords.java");
+    scan(inputFile);
 
-    String componentKey = ":" + file.getName();
+    String componentKey = inputFile.key();
     assertThatHasBeenHighlighted(componentKey, 1, 1, 3, 4, TypeOfText.COMMENT);
     assertThatHasBeenHighlighted(componentKey, 4, 1, 4, 7, TypeOfText.KEYWORD); // import
     assertThatHasBeenHighlighted(componentKey, 6, 1, 8, 4, TypeOfText.STRUCTURED_COMMENT);
@@ -186,10 +179,10 @@ public class SyntaxHighlighterVisitorTest {
   @Test
   public void test_java10_var() throws Exception {
     this.eol = "\n";
-    File file = generateTestFile("src/test/files/highlighter/Java10Var.java");
-    scan(file);
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/Java10Var.java");
+    scan(inputFile);
 
-    String componentKey = ":" + file.getName();
+    String componentKey = inputFile.key();
     assertThatHasBeenHighlighted(componentKey, 10, 5, 10, 8, TypeOfText.KEYWORD); // var a = ...
     assertThatHasBeenHighlighted(componentKey, 12, 5, 12, 8, TypeOfText.KEYWORD); // var list = ...
     assertThatHasBeenHighlighted(componentKey, 17, 10, 17, 13, TypeOfText.KEYWORD); // for (var counter = ...
@@ -199,26 +192,29 @@ public class SyntaxHighlighterVisitorTest {
     assertThatHasNotBeenHighlighted(componentKey, 51, 12, 51, 15); // Object var;
   }
 
-  private void scan(File file) {
+  private void scan(InputFile inputFile) {
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new JavaCheck[] {syntaxHighlighterVisitor});
-    squid.scan(Lists.newArrayList(file), Collections.<File>emptyList());
+    squid.scan(Collections.singletonList(inputFile), Collections.emptyList());
   }
 
-  private File generateDefaultTestFile() throws IOException {
+  private InputFile generateDefaultTestFile() throws IOException {
     return generateTestFile("src/test/files/highlighter/Example.java");
   }
 
-  private File generateTestFile(String filename) throws IOException {
-    File file = temp.newFile().getAbsoluteFile();
-    Files.write(Files.toString(new File(filename), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, StandardCharsets.UTF_8);
-    lines = Files.readLines(file, StandardCharsets.UTF_8);
-    String content  = Joiner.on(eol).join(lines);
-    fs.add(new TestInputFileBuilder("", file.getName()).initMetadata(content).build());
-    return file;
+  private InputFile generateTestFile(String sourceFile) throws IOException {
+    File source = new File(sourceFile);
+    File target = temp.newFile().getAbsoluteFile();
+    String content = Files.asCharSource(source, StandardCharsets.UTF_8)
+      .read()
+      .replaceAll("\\r\\n", "\n")
+      .replaceAll("\\r", "\n")
+      .replaceAll("\\n", eol);
+    Files.asCharSink(target, StandardCharsets.UTF_8).write(content);
+    return TestUtils.inputFile(target);
   }
 
-  private void verifyHighlighting(File file) throws IOException {
-    String componentKey = ":" + file.getName();
+  private void verifyHighlighting(InputFile inputFile) throws IOException {
+    String componentKey = inputFile.key();
     assertThatHasBeenHighlighted(componentKey, 1, 1, 3, 4, TypeOfText.COMMENT);
     assertThatHasBeenHighlighted(componentKey, 5, 1, 7, 4, TypeOfText.STRUCTURED_COMMENT);
     assertThatHasBeenHighlighted(componentKey, 8, 1, 8, 18, TypeOfText.ANNOTATION);

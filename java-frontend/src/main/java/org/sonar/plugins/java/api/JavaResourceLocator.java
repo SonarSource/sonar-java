@@ -44,15 +44,6 @@ public interface JavaResourceLocator extends JavaFileScanner {
   InputFile findResourceByClassName(String className);
 
   /**
-   * get source file key by class name.
-   * @deprecated since 4.1 : will be dropped with no replacement.
-   * @param className fully qualified name of the analyzed class.
-   * @return key of the source file for the given class.
-   */
-  @Deprecated
-  String findSourceFileKeyByClassName(String className);
-
-  /**
    * .class files to be analyzed.
    * Used by the findbugs plugin.
    * @return a list of .class files corresponding to the source files to be analyzed.

@@ -19,17 +19,12 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Lists;
 import java.io.File;
-import java.io.Serializable;
 import java.util.Collections;
-import javax.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.PathUtils;
 import org.sonar.java.model.JavaVersionImpl;
@@ -41,15 +36,12 @@ import static org.mockito.Mockito.mock;
 public class MeasurerTest {
 
   private static final int NB_OF_METRICS = 7;
+  private static final File BASE_DIR = new File("src/test/files/metrics");
   private SensorContextTester context;
-  private File baseDir;
-  private DefaultFileSystem fs;
 
   @Before
   public void setUp() throws Exception {
-    baseDir = new File("src/test/files/metrics");
-    context = SensorContextTester.create(baseDir);
-    fs = context.fileSystem();
+    context = SensorContextTester.create(BASE_DIR);
   }
 
   @Test
@@ -98,24 +90,17 @@ public class MeasurerTest {
    * Utility method to quickly get metric out of a file.
    */
   private void checkMetric(String filename, String metric, Number expectedValue) {
-    checkMetric(filename, metric, expectedValue, NB_OF_METRICS);
-  }
+    String relativePath = PathUtils.sanitize(new File(BASE_DIR, filename).getPath());
+    InputFile inputFile = TestUtils.inputFile(relativePath);
+    context.fileSystem().add(inputFile);
 
-  private void checkMetric(String filename, String metric, @Nullable Number expectedValue, int numberOfMetrics) {
-    String relativePath = PathUtils.sanitize(new File(baseDir, filename).getPath());
-    TestInputFileBuilder inputFile = new TestInputFileBuilder(context.module().key(), relativePath);
-    inputFile.setModuleBaseDir(fs.baseDirPath());
-    fs.add(inputFile.build());
-    Measurer measurer = new Measurer(fs, context, mock(NoSonarFilter.class));
+    Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, measurer, null, null, new JavaCheck[0]);
-    squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.emptyList());
-    assertThat(context.measures("projectKey:" + relativePath)).hasSize(numberOfMetrics);
-    Measure<Serializable> measure = context.measure("projectKey:" + relativePath, metric);
-    if (expectedValue == null) {
-      assertThat(measure).isNull();
-    } else {
-      assertThat(measure.value()).isEqualTo(expectedValue);
-    }
+
+    squid.scan(Collections.singletonList(inputFile), Collections.emptyList());
+
+    assertThat(context.measures(inputFile.key())).hasSize(NB_OF_METRICS);
+    assertThat(context.measure(inputFile.key(), metric).value()).isEqualTo(expectedValue);
   }
 
 }

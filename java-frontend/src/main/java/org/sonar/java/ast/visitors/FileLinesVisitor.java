@@ -21,11 +21,11 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.java.SonarComponents;
@@ -94,10 +94,9 @@ public class FileLinesVisitor extends SubscriptionVisitor {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     super.scanFile(context);
-    File currentFile = context.getFile();
+    InputFile currentFile = context.getInputFile();
     FileLinesContext fileLinesContext = sonarComponents.fileLinesContextFor(currentFile);
-    int fileLength = sonarComponents.fileLength(currentFile);
-    for (int line = 1; line <= fileLength; line++) {
+    for (int line = 1; line <= currentFile.lines(); line++) {
       fileLinesContext.setIntValue(CoreMetrics.NCLOC_DATA_KEY, line, linesOfCode.contains(line) ? 1 : 0);
       fileLinesContext.setIntValue(CoreMetrics.EXECUTABLE_LINES_DATA_KEY, line, executableLines.contains(line) ? 1 : 0);
     }
