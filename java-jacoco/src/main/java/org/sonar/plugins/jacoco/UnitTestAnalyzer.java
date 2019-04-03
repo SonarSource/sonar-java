@@ -97,7 +97,7 @@ public class UnitTestAnalyzer {
     }
 
     if (classFilesCache.isEmpty()) {
-      JaCoCoExtensions.LOG.info("No JaCoCo analysis of project coverage can be done since there is no class files.");
+      JaCoCoExtensions.LOG.info("No JaCoCo analysis of project coverage can be done since there are no class files.");
       return;
     }
     readExecutionData(report, context);

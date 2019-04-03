@@ -183,7 +183,7 @@ public class JaCoCoSensorTest {
     JaCoCoSensor sensor = new JaCoCoSensor(perspectives, javaResourceLocator, javaClasspath);
     context.settings().setProperty(REPORT_PATH_PROPERTY, "ut.exec");
     sensor.execute(context);
-    assertThat(logTester.logs(LoggerLevel.INFO)).contains("No JaCoCo analysis of project coverage can be done since there is no class files.");
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("No JaCoCo analysis of project coverage can be done since there are no class files.");
     context.settings().setProperty(REPORT_PATH_PROPERTY, "ut.notfound.exec");
     sensor.execute(context);
     List<String> logs = logTester.logs(LoggerLevel.INFO);
@@ -300,7 +300,7 @@ public class JaCoCoSensorTest {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.settings().setProperty(REPORT_PATHS_PROPERTY, jacocoExecutionData.getAbsolutePath());
     sensor.execute(context);
-    assertThat(logTester.logs(LoggerLevel.INFO)).contains("No JaCoCo analysis of project coverage can be done since there is no class files.");
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("No JaCoCo analysis of project coverage can be done since there are no class files.");
   }
 
   @Test
