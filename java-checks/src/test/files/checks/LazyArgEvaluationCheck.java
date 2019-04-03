@@ -17,6 +17,7 @@ class LazyArgEvaluationCheck {
 
   public static final Logger slf4j = LoggerFactory.getLogger(LazyArgEvaluationCheck.class);
   public static final java.util.logging.Logger logger = java.util.logging.Logger.getGlobal();
+  public static final org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
 
   public static void main(String[] args) {
     String csvPath = "";
@@ -27,7 +28,7 @@ class LazyArgEvaluationCheck {
     logger.log(Level.SEVERE, "Something went wrong: " + message);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
 
     logger.log(Level.SEVERE, () -> "Something went wrong: " + message); // since Java 8, we can use Supplier , which will be evaluated lazily
-    
+
     checkState(System.currentTimeMillis() == new Date().getTime(), "Arg must be positive, but got " + System.currentTimeMillis());  // Noncompliant {{Invoke method(s) only conditionally. Use the built-in formatting to construct this argument.}}
 
     Preconditions.checkState(System.currentTimeMillis() > 0, formatMessage());  // Noncompliant {{Invoke method(s) only conditionally. }}
@@ -72,8 +73,8 @@ class LazyArgEvaluationCheck {
       }
     });
   }
-  
-  void slf4j() {
+
+  void slf4j(String csvPath) {
     slf4j.trace("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
     slf4j.debug("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
     slf4j.info("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant {{Use the built-in formatting to construct this argument.}}
@@ -110,8 +111,8 @@ class LazyArgEvaluationCheck {
       slf4j.error("Unable to open file " + csvPath, new RuntimeException());  // Noncompliant
     }
   }
-  
-  void jul() {
+
+  void jul(String csvPath) {
     logger.finest("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
     logger.finer("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
     logger.fine("Unable to open file " + csvPath);  // Noncompliant {{Use the built-in formatting to construct this argument.}}
@@ -128,6 +129,29 @@ class LazyArgEvaluationCheck {
       logger.trace("Unable to open file " + csvPath);  // Compliant - FN, we don't verify that level in "if" matches actual level used in logging
       logger.info("Unable to open file " + csvPath);  // Compliant
     }
+  }
+
+  void log4j(String csvPath, org.apache.logging.log4j.Marker marker) {
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "Unable to open file " + csvPath); // Noncompliant {{Use the built-in formatting to construct this argument.}}
+    log4j.debug("Unable to open file " + csvPath); // Noncompliant
+    log4j.error("Unable to open file " + csvPath); // Noncompliant
+    log4j.fatal("Unable to open file " + csvPath); // Noncompliant
+    log4j.info("Unable to open file " + csvPath); // Noncompliant
+    log4j.trace("Unable to open file " + csvPath); // Noncompliant
+    log4j.warn("Unable to open file " + csvPath); // Noncompliant
+
+    if (log4j.isDebugEnabled()) {
+      log4j.debug("Unable to open file " + csvPath);
+    }
+    if (log4j.isEnabled(org.apache.logging.log4j.Level.DEBUG)) {
+      log4j.debug("Unable to open file " + csvPath);
+    }
+    if (log4j.isEnabled(org.apache.logging.log4j.Level.DEBUG, marker)) {
+      log4j.debug("Unable to open file " + csvPath);
+    }
+    log4j.debug(() -> "hello"); // using supplier
+    log4j.debug(() -> new org.apache.logging.log4j.message.StringFormatterMessageFactory().newMessage("Unable to open file " + csvPath));
+    log4j.debug("Unable to open file {0}", csvPath);
   }
 
 }
