@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -142,10 +143,13 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     private List<List<Type>> computeChains(Symbol m, Type type) {
       Symbol.TypeSymbol typeSymbol = type.symbol();
       Set<ClassJavaType> superTypes = ((JavaSymbol.TypeJavaSymbol) typeSymbol).directSuperTypes();
-      List<List<Type>> result = superTypes.stream()
-        .flatMap(superType -> computeChains(m, superType).stream())
-        .peek(c -> c.add(type))
-        .collect(Collectors.toList());
+      List<List<Type>> result = new ArrayList<>();
+      for (ClassJavaType superType : superTypes) {
+        for (List<Type> chain : computeChains(m, superType)) {
+          chain.add(type);
+          result.add(chain);
+        }
+      }
 
       boolean definesSymbol = definesSymbol(m, typeSymbol);
       boolean isSpecialization = !((JavaType) startType).isParameterized() && ((JavaType) type).isParameterized();
