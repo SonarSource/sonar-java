@@ -2888,6 +2888,50 @@ public class CFGTest {
     build_partial_cfg("continue");
   }
 
+  @Test
+  public void connect_catch_blocks_with_unknown_exception_types() throws Exception {
+    CFG cfg = buildCFG("void fun() { " +
+      " try {" +
+      "   foo();" +
+      " } catch (MyException me) {" +
+      "   bar();" +
+      " } " +
+      "} " +
+      "abstract void foo() throws UnknownSymbol;" +
+      "class MyException extends Exception{}");
+
+    CFGChecker cfgChecker = checker(
+      block(element(TRY_STATEMENT)).successors(2),
+      block(element(IDENTIFIER, "foo"), element(METHOD_INVOCATION)).successors(0).exceptions(0, 1),
+      block(element(VARIABLE, "me"),
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).successors(0).exceptions(0)
+    );
+    cfgChecker.check(cfg);
+  }
+
+  @Test
+  public void connect_catch_blocks_with_unknown_exception_types2() throws Exception {
+    CFG cfg = buildCFG("void fun() { " +
+      " try {" +
+      "   foo();" +
+      " } catch (UnknownSymbol me) {" +
+      "   bar();" +
+      " } " +
+      "} " +
+      "abstract void foo() throws MyException;" +
+      "class MyException extends Exception{}");
+
+    CFGChecker cfgChecker = checker(
+      block(element(TRY_STATEMENT)).successors(2),
+      block(element(IDENTIFIER, "foo"), element(METHOD_INVOCATION)).successors(0).exceptions(0, 1),
+      block(element(VARIABLE, "me"),
+        element(IDENTIFIER, "bar"),
+        element(METHOD_INVOCATION)).successors(0).exceptions(0)
+    );
+    cfgChecker.check(cfg);
+  }
+
   private void build_partial_cfg(String breakOrContinue) {
     String methodCode = "void meth(){ try {fun(); } catch ( Exception e) {e.printStackTrace(); "+breakOrContinue+"; } }";
     CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A {" + methodCode + "}");

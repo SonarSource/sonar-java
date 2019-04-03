@@ -1054,7 +1054,12 @@ public class CFG implements ControlFlowGraph {
       List<Type> thrownTypes = ((Symbol.MethodSymbol) symbol).thrownTypes();
       thrownTypes.forEach(thrownType -> {
         for (Type caughtType : tryStatement.catches.keySet()) {
-          if (thrownType.isSubtypeOf(caughtType) || caughtType.isSubtypeOf(thrownType)) {
+          if (thrownType.isSubtypeOf(caughtType) ||
+            caughtType.isSubtypeOf(thrownType) ||
+            thrownType.isUnknown() ||
+            // note that this condition is not necessary, because unknown type will be added to runtimeCatches due to condition in
+            // org.sonar.java.cfg.CFG.TryStatement#addCatch ,however, it is here for clarity
+            caughtType.isUnknown()) {
             currentBlock.exceptions.add(tryStatement.catches.get(caughtType));
           }
         }
