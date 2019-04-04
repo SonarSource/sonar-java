@@ -97,7 +97,9 @@ public interface JavaFileScannerContext {
   /**
    * FileKey of currently analyzed file.
    * @return the fileKey of the file currently analyzed.
+   * @deprecated since SonarJava 5.12 - Rely on the InputFile key instead, using {@link #getInputFile()}
    */
+  @Deprecated
   String getFileKey();
 
   /**
