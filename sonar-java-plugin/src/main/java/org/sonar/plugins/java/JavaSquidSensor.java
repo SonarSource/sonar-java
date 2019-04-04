@@ -20,10 +20,7 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
@@ -36,7 +33,6 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
@@ -44,6 +40,7 @@ import org.sonar.java.checks.CheckList;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 
 @Phase(name = Phase.Name.PRE)
@@ -55,19 +52,17 @@ public class JavaSquidSensor implements Sensor {
 
   private final SonarComponents sonarComponents;
   private final FileSystem fs;
-  private final DefaultJavaResourceLocator javaResourceLocator;
+  private final JavaResourceLocator javaResourceLocator;
   private final Configuration settings;
   private final NoSonarFilter noSonarFilter;
-  private final PostAnalysisIssueFilter postAnalysisIssueFilter;
 
   public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs,
-                         DefaultJavaResourceLocator javaResourceLocator, Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
+    JavaResourceLocator javaResourceLocator, Configuration settings, NoSonarFilter noSonarFilter) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.fs = fs;
     this.javaResourceLocator = javaResourceLocator;
     this.settings = settings;
-    this.postAnalysisIssueFilter = postAnalysisIssueFilter;
   }
 
   @Override
@@ -77,7 +72,6 @@ public class JavaSquidSensor implements Sensor {
 
   @Override
   public void execute(SensorContext context) {
-    javaResourceLocator.setSensorContext(context);
     sonarComponents.setSensorContext(context);
 
     List<Class<? extends JavaCheck>> checks = ImmutableList.<Class<? extends JavaCheck>>builder()
@@ -86,7 +80,10 @@ public class JavaSquidSensor implements Sensor {
       .build();
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, checks);
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
+
     Measurer measurer = new Measurer(context, noSonarFilter);
+    PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter();
+
     JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles());
     sonarComponents.saveAnalysisErrors();

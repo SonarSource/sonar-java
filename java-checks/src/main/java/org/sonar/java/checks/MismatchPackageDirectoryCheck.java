@@ -35,20 +35,18 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
   private JavaFileScannerContext context;
   private static final String MESSAGE = "This file \"{0}\" should be located in \"{1}\" directory, not in \"{2}\"";
 
-
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     scan(context.getTree());
   }
 
-
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
     PackageDeclarationTree packageDeclaration = tree.packageDeclaration();
     if (packageDeclaration != null) {
       String packageName = PackageUtils.packageName(packageDeclaration, File.separator);
-      File javaFile = context.getFile();
+      File javaFile = context.getInputFile().file();
       String dir = javaFile.getParent();
       if (!dir.endsWith(packageName)) {
         String dirWithoutDots = dir.replace(".", File.separator);
@@ -56,8 +54,7 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
         if (dirWithoutDots.endsWith(packageName)) {
           context.reportIssue(this, packageDeclaration.packageName(), issueMessage + "(Do not use dots in directory names).");
         } else {
-          context.reportIssue(
-            this, packageDeclaration.packageName(), issueMessage + ".");
+          context.reportIssue(this, packageDeclaration.packageName(), issueMessage + ".");
         }
       }
     }

@@ -41,13 +41,9 @@ public abstract class AnyRuleIssueFilter extends BaseTreeVisitor implements Java
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    componentKey = context.getInputFile().key();
     excludedLines.clear();
     scan(context.getTree());
-  }
-
-  @Override
-  public void setComponentKey(String componentKey) {
-    this.componentKey = componentKey;
   }
 
   @Override

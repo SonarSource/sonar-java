@@ -37,7 +37,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.sonar.api.SonarQubeSide;
-import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
@@ -285,7 +284,7 @@ public class SonarComponentsTest {
     sonarComponents.addIssue(inputFile, expectedCheck, 42, "message on line 42", 1);
     sonarComponents.reportIssue(new AnalyzerMessage(expectedCheck, inputFile, 35, "other message", 0));
 
-    sonarComponents.addIssue(new File(context.fileSystem().baseDir().toString()), expectedCheck, -1, "message on project directory", 1);
+    sonarComponents.addIssue(new File(fileSystem.baseDir().toString()), expectedCheck, -1, "message on project directory", 1);
     sonarComponents.addIssue(new File(".."), expectedCheck, -1, "message on non-project directory", 1);
 
     List<Issue> issues = new ArrayList<>(context.allIssues());
@@ -325,9 +324,9 @@ public class SonarComponentsTest {
     assertThat(sonarComponents.inputFromIOFile(file)).isNotNull();
     assertThat(sonarComponents.inputFromIOFileOrDirectory(file)).isNotNull();
     assertThat(sonarComponents.inputFromIOFileOrDirectory(new File("Unknown"))).isNull();
-    assertThat(sonarComponents.inputFromIOFileOrDirectory(context.fileSystem().baseDir())).isNotNull();
+    assertThat(sonarComponents.inputFromIOFileOrDirectory(fileSystem.baseDir())).isNotNull();
     sonarComponents.setSensorContext(null);
-    assertThat(sonarComponents.inputFromIOFileOrDirectory(context.fileSystem().baseDir())).isNull();
+    assertThat(sonarComponents.inputFromIOFileOrDirectory(fileSystem.baseDir())).isNull();
   }
 
   @Test
@@ -344,8 +343,7 @@ public class SonarComponentsTest {
       + "}\n").build();
 
     SensorContextTester context = SensorContextTester.create(new File(""));
-    FileSystem fileSystem = context.fileSystem();
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null, null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), null, null, checkFactory, new CheckRegistrar[] {expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
     AnalyzerMessage.TextSpan emptyTextSpan = new AnalyzerMessage.TextSpan(3, 10, 3, 10);

@@ -20,7 +20,6 @@
 package org.sonar.java.filters;
 
 import com.google.common.collect.Lists;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
 import org.junit.Before;
@@ -28,12 +27,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
-import org.sonar.java.AnalysisException;
+import org.sonar.java.CheckTestUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
@@ -46,25 +42,17 @@ public class PostAnalysisIssueFilterTest {
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
-  private static final String FILE_KEY = "PostAnalysisIssueFilter.java";
-  private static final String MODULE_BASE_DIR = "src/test/files/filters";
+  private static final InputFile INPUT_FILE = CheckTestUtils.inputFile("src/test/files/filters/PostAnalysisIssueFilter.java");
   private static JavaFileScannerContext context;
   private PostAnalysisIssueFilter postAnalysisIssueFilter;
   private static final ArrayList<FakeJavaIssueFilter> ISSUE_FILTERS = Lists.newArrayList(new FakeJavaIssueFilter(true), new FakeJavaIssueFilter(false));
 
   @Before
   public void setUp() {
-    File absoluteBaseDir = new File(MODULE_BASE_DIR).getAbsoluteFile();
-    DefaultFileSystem fileSystem = new DefaultFileSystem(absoluteBaseDir);
-    DefaultInputFile inputFile = new TestInputFileBuilder("", absoluteBaseDir, new File(absoluteBaseDir, FILE_KEY))
-    .setLanguage("java")
-    .setType(InputFile.Type.MAIN).build();
-    fileSystem.add(inputFile);
-    postAnalysisIssueFilter = new PostAnalysisIssueFilter(fileSystem);
+    postAnalysisIssueFilter = new PostAnalysisIssueFilter();
 
     context = mock(JavaFileScannerContext.class);
-    when(context.getFile()).thenReturn(inputFile.file());
-    when(context.getFileKey()).thenReturn(inputFile.file().getAbsolutePath());
+    when(context.getInputFile()).thenReturn(INPUT_FILE);
   }
 
   @Test
@@ -99,26 +87,14 @@ public class PostAnalysisIssueFilterTest {
     postAnalysisIssueFilter.scanFile(context);
 
     for (FakeJavaIssueFilter filter : ISSUE_FILTERS) {
-      assertThat(filter.componentKey).isEqualTo(":PostAnalysisIssueFilter.java");
       assertThat(filter.scanned).isTrue();
     }
-  }
-
-  @Test
-  public void missing_component_trigger_Exception() {
-    thrown.expect(AnalysisException.class);
-
-    postAnalysisIssueFilter.setIssueFilters(ISSUE_FILTERS);
-    when(context.getFile()).thenReturn(new File(""));
-
-    postAnalysisIssueFilter.scanFile(context);
   }
 
   private static class FakeJavaIssueFilter implements JavaIssueFilter {
 
     private final boolean accepted;
     private boolean scanned = false;
-    private String componentKey;
 
     FakeJavaIssueFilter(boolean accept) {
       this.accepted = accept;
@@ -127,11 +103,6 @@ public class PostAnalysisIssueFilterTest {
     @Override
     public void scanFile(JavaFileScannerContext context) {
       scanned = true;
-    }
-
-    @Override
-    public void setComponentKey(String componentKey) {
-      this.componentKey = componentKey;
     }
 
     @Override

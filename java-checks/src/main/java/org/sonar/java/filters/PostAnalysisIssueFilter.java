@@ -21,11 +21,8 @@ package org.sonar.java.filters;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
-import org.sonar.java.AnalysisException;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
@@ -37,11 +34,6 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueF
     new SuppressWarningFilter(),
     new GeneratedCodeFilter());
   private Iterable<JavaIssueFilter> issueFilers;
-  private final FileSystem fileSystem;
-
-  public PostAnalysisIssueFilter(FileSystem fileSystem) {
-    this.fileSystem = fileSystem;
-  }
 
   @VisibleForTesting
   void setIssueFilters(Iterable<? extends JavaIssueFilter> issueFilters) {
@@ -68,13 +60,7 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueF
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    InputFile component = fileSystem.inputFile(fileSystem.predicates().is(context.getFile()));
-    if (component == null) {
-      throw new AnalysisException("Component not found: " + context.getFileKey());
-    }
-    String componentKey = component.key();
     for (JavaIssueFilter javaIssueFilter : getIssueFilters()) {
-      javaIssueFilter.setComponentKey(componentKey);
       javaIssueFilter.scanFile(context);
     }
   }

@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.java.CheckTestUtils;
@@ -39,8 +40,8 @@ import static org.mockito.Mockito.when;
 
 public class AnyRuleIssueFilterTest {
 
+  private static final InputFile INPUT_FILE = CheckTestUtils.inputFile("src/test/files/filters/AnyRuleIssueFilter.java");
   private static final String REPOSITORY_KEY = "walrus";
-  private static final String COMPONENT_KEY = "test:test.MyTest";
   private static final String RULE_KEY = "S42";
   private AnyRuleIssueFilter filter;
   private FilterableIssue issue;
@@ -48,12 +49,11 @@ public class AnyRuleIssueFilterTest {
   @Before
   public void setup() {
     issue = mock(FilterableIssue.class);
-    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
+    when(issue.componentKey()).thenReturn(INPUT_FILE.key());
     when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, RULE_KEY));
 
     filter = new AnyRuleOnVariableIssueFilter();
 
-    filter.setComponentKey(COMPONENT_KEY);
     scanFile(filter);
   }
 
@@ -132,7 +132,7 @@ public class AnyRuleIssueFilterTest {
 
   private static void scanFile(JavaIssueFilter filter) {
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(filter), Collections.emptyList(), null);
-    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/filters/AnyRuleIssueFilter.java"), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(INPUT_FILE, visitorsBridge);
   }
 
   private static class AnyRuleOnVariableIssueFilter extends AnyRuleIssueFilter {

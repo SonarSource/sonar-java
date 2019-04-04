@@ -19,18 +19,17 @@
  */
 package org.sonar.java.checks;
 
+import java.io.File;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-
-import java.io.File;
 
 @Rule(key = "S4032")
 public class UselessPackageInfoCheck implements JavaFileScanner {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    File file = context.getFile();
+    File file = context.getInputFile().file();
     if ("package-info.java".equals(file.getName()) && isOnlyFileFromPackage(file)) {
       context.addIssueOnFile(this, "Remove this package.");
     }
