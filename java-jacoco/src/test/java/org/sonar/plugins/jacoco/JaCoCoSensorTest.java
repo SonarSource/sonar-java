@@ -39,6 +39,7 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.test.MutableTestCase;
@@ -70,6 +71,10 @@ import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_PATH_PROPERTY;
 public class JaCoCoSensorTest {
 
   private static final Version SQ_6_7 = Version.create(6, 7);
+  private static final String REPORT_PATH_IS_DEPRECATED = "Property 'sonar.jacoco.reportPath' is deprecated (JaCoCo binary format). 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).";
+  private static final String REPORT_PATHS_IS_DEPRECATED = "Property 'sonar.jacoco.reportPaths' is deprecated (JaCoCo binary format). 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).";
+  private static final String IT_REPORT_PATH_IS_DEPRECATED = "Property 'sonar.jacoco.itReportPath' is deprecated (JaCoCo binary format). 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).";
+  private static final String XML_REPORT_FOUND = "JaCoCo XML report found, skipping processing of binary JaCoCo exec report.";
   private File jacocoExecutionData;
   private File outputDir;
   private ResourcePerspectives perspectives;
@@ -129,34 +134,26 @@ public class JaCoCoSensorTest {
   public void test_read_execution_data_after_6_2_using_deprecated_prop() throws Exception {
     context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
     runAnalysis();
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Property 'sonar.jacoco.reportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
-  }
-
-  @Test
-  public void no_warning_with_both_prop_set() throws Exception {
-    context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
-    context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
-    context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
-    runAnalysis();
-    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.reportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
-    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.itReportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(REPORT_PATH_IS_DEPRECATED);
   }
 
   @Test
   public void no_warning_with_xml_prop_set() throws Exception {
     context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
     context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
+    context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
     context.settings().setProperty(JaCoCoSensor.JACOCO_XML_PROPERTY, "jacoco.xml");
     runAnalysisWithoutAssert();
-    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.reportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
-    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Property 'sonar.jacoco.itReportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
+    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain(REPORT_PATH_IS_DEPRECATED);
+    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain(IT_REPORT_PATH_IS_DEPRECATED);
+    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain(REPORT_PATHS_IS_DEPRECATED);
   }
 
   @Test
   public void test_read_execution_data_after_6_2_using_deprecated_it_prop() throws Exception {
     context.settings().setProperty(IT_REPORT_PATH_PROPERTY, "jacoco.exec");
     runAnalysis();
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Property 'sonar.jacoco.itReportPath' is deprecated. 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).");
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(IT_REPORT_PATH_IS_DEPRECATED);
   }
 
   @Test
@@ -287,17 +284,17 @@ public class JaCoCoSensorTest {
   }
 
   @Test
-  public void do_not_save_measure_on_resource_which_doesnt_exist_in_the_context() {
+  public void do_not_save_measure_on_resource_which_doesnt_exist_in_the_context() throws Exception {
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-    SensorContextTester context = spy(SensorContextTester.create(new File("")));
+    SensorContextTester context = spy(SensorContextTester.create(temp.newFolder()));
     sensor.execute(context);
     verify(context, never()).newCoverage();
   }
 
   @Test
-  public void should_do_nothing_if_output_dir_does_not_exists() {
+  public void should_do_nothing_if_output_dir_does_not_exists() throws Exception {
     when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(new File("nowhere")));
-    SensorContextTester context = SensorContextTester.create(new File(""));
+    SensorContextTester context = SensorContextTester.create(temp.newFolder());
     context.settings().setProperty(REPORT_PATHS_PROPERTY, jacocoExecutionData.getAbsolutePath());
     sensor.execute(context);
     assertThat(logTester.logs(LoggerLevel.INFO)).contains("No JaCoCo analysis of project coverage can be done since there are no class files.");
@@ -336,9 +333,8 @@ public class JaCoCoSensorTest {
   public void should_log_warning_for_deprecated_properties() throws Exception {
     context.settings().setProperty(REPORT_PATHS_PROPERTY, "jacoco.exec");
     runAnalysis();
-    String msg = "'sonar.jacoco.reportPaths' is deprecated (JaCoCo binary format). 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).";
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains(msg);
-    assertThat(analysisWarnings.warnings).contains(msg);
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(REPORT_PATHS_IS_DEPRECATED);
+    assertThat(analysisWarnings.warnings).contains(REPORT_PATHS_IS_DEPRECATED);
   }
 
   @Test
@@ -369,6 +365,59 @@ public class JaCoCoSensorTest {
     DefaultSensorDescriptor sensorDescriptor = new DefaultSensorDescriptor();
     sensor.describe(sensorDescriptor);
     assertThat(sensorOptimizer.shouldExecute(sensorDescriptor)).isTrue();
+  }
+
+  @Test
+  public void log_skip_processing() throws Exception {
+    context.settings().setProperty(REPORT_PATH_PROPERTY, "jacoco.exec");
+    context.settings().setProperty("sonar.coverage.jacoco.xmlReportPaths", "jacoco.xml");
+    runAnalysisWithoutAssert();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains(XML_REPORT_FOUND);
+  }
+
+  @Test
+  public void log_skip_processing_only_if_binary_report_found() throws Exception {
+    context = SensorContextTester.create(temp.newFolder());
+    context.settings().setProperty("sonar.coverage.jacoco.xmlReportPaths", "jacoco.xml");
+    sensor = new JaCoCoSensor(perspectives, javaResourceLocator, javaClasspath, analysisWarnings);
+    sensor.execute(context);
+    assertThat(logTester.logs()).doesNotContain(XML_REPORT_FOUND);
+  }
+
+  @Test
+  public void log_warning_when_using_default_location() throws Exception {
+    useDefaultSettings();
+    makeDefaultJacocoBinary();
+    runAnalysisWithoutAssert();
+    assertThat(logTester.logs()).contains(REPORT_PATHS_IS_DEPRECATED);
+  }
+
+  @Test
+  public void do_not_log_warning_when_using_default_location_with_xml() throws Exception {
+    outputDir = temp.newFolder();
+    context = SensorContextTester.create(outputDir);
+    useDefaultSettings();
+    makeDefaultJacocoXmlReport();
+    makeDefaultJacocoBinary();
+    sensor.execute(context);
+    assertThat(logTester.logs()).contains(XML_REPORT_FOUND);
+    assertThat(logTester.logs()).doesNotContain(REPORT_PATHS_IS_DEPRECATED);
+  }
+
+  private void useDefaultSettings() {
+    context.setSettings(new MapSettings(new PropertyDefinitions(JaCoCoExtensions.getExtensions())));
+  }
+
+  private void makeDefaultJacocoXmlReport() throws IOException {
+    File defaultJaCoCoXmlLocation = new File(outputDir, "target/site/jacoco/jacoco.xml");
+    defaultJaCoCoXmlLocation.getParentFile().mkdirs();
+    defaultJaCoCoXmlLocation.createNewFile();
+  }
+
+  private void makeDefaultJacocoBinary() throws IOException {
+    File defaultJaCoCoLocation = new File(outputDir, "target/jacoco.exec");
+    defaultJaCoCoLocation.getParentFile().mkdirs();
+    Files.copy(TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest/jacoco.exec"), defaultJaCoCoLocation);
   }
 
   static class TestAnalysisWarnings extends AnalysisWarningsWrapper {

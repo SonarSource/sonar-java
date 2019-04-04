@@ -19,11 +19,14 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.collect.ImmutableSet;
 import java.io.File;
-import java.util.HashSet;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -43,11 +46,11 @@ import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_PATH_PROPERTY;
 public class JaCoCoSensor implements Sensor {
 
   private static final String JACOCO_MERGED_FILENAME = "jacoco-merged.exec";
-  private static final Set<String> DEPRECATED_PROPERTIES = ImmutableSet.of(REPORT_PATH_PROPERTY, IT_REPORT_PATH_PROPERTY);
   private final ResourcePerspectives perspectives;
   private final JavaResourceLocator javaResourceLocator;
   private final JavaClasspath javaClasspath;
   static final String JACOCO_XML_PROPERTY = "sonar.coverage.jacoco.xmlReportPaths";
+  private static final String[] JACOCO_XML_DEFAULT_PATHS = {"target/site/jacoco/jacoco.xml", "build/reports/jacoco/test/jacocoTestReport.xml"};
   private AnalysisWarningsWrapper analysisWarnings;
 
   /**
@@ -73,44 +76,54 @@ public class JaCoCoSensor implements Sensor {
 
   @Override
   public void execute(SensorContext context) {
-    warnAboutDeprecatedProperties(context.config());
-    if (context.config().hasKey(JACOCO_XML_PROPERTY)) {
-      LOG.debug("Property '{}' was specified, skipping processing of binary JaCoCo exec report.", JACOCO_XML_PROPERTY);
-      return;
-    }
-    Set<File> reportPaths = getReportPaths(context);
-    if (reportPaths.isEmpty()) {
-      return;
-    }
-    // Merge JaCoCo reports
-    File reportMerged;
-    if (reportPaths.size() == 1) {
-      reportMerged = reportPaths.iterator().next();
-    } else {
-      reportMerged = new File(context.fileSystem().workDir(), JACOCO_MERGED_FILENAME);
-      reportMerged.getParentFile().mkdirs();
-      JaCoCoReportMerger.mergeReports(reportMerged, reportPaths.toArray(new File[0]));
-    }
-    new UnitTestAnalyzer(reportMerged, perspectives, javaResourceLocator, javaClasspath, analysisWarnings).analyse(context);
-  }
-
-  private void warnAboutDeprecatedProperties(Configuration config) {
+    Configuration config = context.config();
     if (config.hasKey(REPORT_MISSING_FORCE_ZERO)) {
       addAnalysisWarning("Property '%s' is deprecated and its value will be ignored.", REPORT_MISSING_FORCE_ZERO);
     }
-    DEPRECATED_PROPERTIES.forEach(deprecatedProperty -> {
-      if (config.hasKey(deprecatedProperty) && !config.hasKey(REPORT_PATHS_PROPERTY) && !config.hasKey(JACOCO_XML_PROPERTY)) {
-        addAnalysisWarning("Property '%s' is deprecated. '%s' should be used instead (JaCoCo XML format).", deprecatedProperty, JACOCO_XML_PROPERTY);
+    List<Report> reports = getReportPaths(context);
+    if (reports.isEmpty()) {
+      return;
+    }
+    boolean hasXmlReport = hasXmlReport(context);
+    warnAboutDeprecatedProperties(config, reports, hasXmlReport);
+    if (hasXmlReport) {
+      LOG.debug("JaCoCo XML report found, skipping processing of binary JaCoCo exec report.", JACOCO_XML_PROPERTY);
+      return;
+    }
+    File reportMerged = mergeJacocoReports(context, reports);
+    new UnitTestAnalyzer(reportMerged, perspectives, javaResourceLocator, javaClasspath, analysisWarnings).analyse(context);
+  }
+
+  private static File mergeJacocoReports(SensorContext context, List<Report> reportPaths) {
+    // Merge JaCoCo reports
+    File reportMerged;
+    if (reportPaths.size() == 1) {
+      reportMerged = reportPaths.get(0).file;
+    } else {
+      reportMerged = new File(context.fileSystem().workDir(), JACOCO_MERGED_FILENAME);
+      reportMerged.getParentFile().mkdirs();
+      File[] reports = reportPaths.stream().map(report -> report.file).toArray(File[]::new);
+      JaCoCoReportMerger.mergeReports(reportMerged, reports);
+    }
+    return reportMerged;
+  }
+
+  private void warnAboutDeprecatedProperties(Configuration config, List<Report> reports, boolean hasXmlReport) {
+    Set<String> usedProperties = reports.stream().map(report -> report.propertyKey).collect(Collectors.toSet());
+    usedProperties.forEach(deprecatedProperty -> {
+      if (!hasXmlReport) {
+        addAnalysisWarning("Property '%s' is deprecated (JaCoCo binary format). '%s' should be used instead (JaCoCo XML format).", deprecatedProperty, JACOCO_XML_PROPERTY);
+      } else if (config.hasKey(deprecatedProperty)) {
+        // only log for those properties which were set explicitly
+        LOG.info("Both '{}' and '{}' were set. '{}' is deprecated therefore, only '{}' will be taken into account.",
+          deprecatedProperty, JACOCO_XML_PROPERTY, deprecatedProperty, JACOCO_XML_PROPERTY);
       }
     });
-    if (config.hasKey(REPORT_PATHS_PROPERTY)) {
-      if (config.hasKey(JACOCO_XML_PROPERTY)) {
-        LOG.info("Both '{}' and '{}' were set. '{}' is deprecated therefore, only '{}' will be taken into account.",
-          REPORT_PATHS_PROPERTY, JACOCO_XML_PROPERTY, REPORT_PATHS_PROPERTY, JACOCO_XML_PROPERTY);
-      } else {
-        addAnalysisWarning("'%s' is deprecated (JaCoCo binary format). '%s' should be used instead (JaCoCo XML format).", REPORT_PATHS_PROPERTY, JACOCO_XML_PROPERTY);
-      }
-    }
+  }
+
+  private static boolean hasXmlReport(SensorContext context) {
+    return context.config().hasKey(JACOCO_XML_PROPERTY) ||
+      Arrays.stream(JACOCO_XML_DEFAULT_PATHS).map(path -> context.fileSystem().baseDir().toPath().resolve(path)).anyMatch(Files::isRegularFile);
   }
 
   private void addAnalysisWarning(String format, Object... args) {
@@ -119,8 +132,8 @@ public class JaCoCoSensor implements Sensor {
     analysisWarnings.addUnique(msg);
   }
 
-  private static Set<File> getReportPaths(SensorContext context) {
-    Set<File> reportPaths = new HashSet<>();
+  private static List<Report> getReportPaths(SensorContext context) {
+    List<Report> reports = new ArrayList<>();
     Configuration settings = context.config();
     FileSystem fs = context.fileSystem();
     for (String reportPath : settings.getStringArray(REPORT_PATHS_PROPERTY)) {
@@ -130,12 +143,12 @@ public class JaCoCoSensor implements Sensor {
           LOG.info("JaCoCo report not found: '{}'", reportPath);
         }
       } else {
-        reportPaths.add(report);
+        reports.add(new Report(report, REPORT_PATHS_PROPERTY));
       }
     }
-    getReport(settings, fs, REPORT_PATH_PROPERTY, "JaCoCo UT report not found: '{}'").ifPresent(reportPaths::add);
-    getReport(settings, fs, IT_REPORT_PATH_PROPERTY, "JaCoCo IT report not found: '{}'").ifPresent(reportPaths::add);
-    return reportPaths;
+    getReport(settings, fs, REPORT_PATH_PROPERTY, "JaCoCo UT report not found: '{}'").ifPresent(file -> reports.add(new Report(file, REPORT_PATH_PROPERTY)));
+    getReport(settings, fs, IT_REPORT_PATH_PROPERTY, "JaCoCo IT report not found: '{}'").ifPresent(file -> reports.add(new Report(file, IT_REPORT_PATH_PROPERTY)));
+    return reports;
   }
 
   private static Optional<File> getReport(Configuration settings, FileSystem fs, String reportPathPropertyKey, String msg) {
@@ -157,4 +170,13 @@ public class JaCoCoSensor implements Sensor {
     return getClass().getSimpleName();
   }
 
+  static class Report {
+    File file;
+    String propertyKey;
+
+    Report(File file, String propertyKey) {
+      this.file = file;
+      this.propertyKey = propertyKey;
+    }
+  }
 }
