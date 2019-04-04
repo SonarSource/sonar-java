@@ -102,9 +102,13 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     return fileParsed;
   }
 
+  /**
+   * @deprecated since SonarJava 5.12 - Use key of InputFile instead, using {@link #getInputFile()}.
+   */
+  @Deprecated
   @Override
   public String getFileKey() {
-    return inputFile.key();
+    return inputFile.file().getAbsolutePath();
   }
 
   /**

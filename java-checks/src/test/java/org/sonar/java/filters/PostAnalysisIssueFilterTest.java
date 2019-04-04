@@ -64,7 +64,7 @@ public class PostAnalysisIssueFilterTest {
 
     context = mock(JavaFileScannerContext.class);
     when(context.getFile()).thenReturn(inputFile.file());
-    when(context.getFileKey()).thenReturn(inputFile.key());
+    when(context.getFileKey()).thenReturn(inputFile.file().getAbsolutePath());
   }
 
   @Test

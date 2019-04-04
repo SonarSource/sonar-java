@@ -96,7 +96,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     javaFilesCache.scanFile(context);
     for (Map.Entry<String, File> classIOFileEntry : javaFilesCache.getResourcesCache().entrySet()) {
       resourcesByClass.put(classIOFileEntry.getKey(), context.getInputFile());
-      sourceFileByClass.put(classIOFileEntry.getKey(), context.getFileKey());
+      sourceFileByClass.put(classIOFileEntry.getKey(), context.getInputFile().key());
     }
   }
 }

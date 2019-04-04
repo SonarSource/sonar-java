@@ -92,7 +92,7 @@ public class DefaultJavaFileScannerContextTest {
 
   @Test
   public void get_file_key() {
-    assertThat(context.getFileKey()).isEqualTo(JAVA_INPUT_FILE.key());
+    assertThat(context.getFileKey()).isEqualTo(JAVA_INPUT_FILE.file().getAbsolutePath());
   }
 
   @Test
