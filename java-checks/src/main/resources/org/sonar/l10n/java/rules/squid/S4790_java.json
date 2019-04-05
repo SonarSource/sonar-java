@@ -4,6 +4,8 @@
   "status": "ready",
   "tags": [
     "cwe",
+    "spring",
+    "owasp-a6",
     "sans-top25-porous",
     "owasp-a3"
   ],
@@ -20,10 +22,13 @@
     "CWE": [
       759,
       760,
-      916
+      916,
+      328,
+      327
     ],
     "OWASP": [
-      "A3"
+      "A3",
+      "A6"
     ]
   }
 }

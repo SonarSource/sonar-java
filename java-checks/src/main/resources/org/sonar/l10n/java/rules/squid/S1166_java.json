@@ -7,16 +7,23 @@
     "constantCost": "10min"
   },
   "tags": [
+    "cwe",
     "error-handling",
     "owasp-a10",
     "cert",
     "suspicious"
   ],
   "standards": [
+    "CWE",
     "CERT"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1166",
   "sqKey": "S1166",
-  "scope": "Main"
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      778
+    ]
+  }
 }
