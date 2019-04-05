@@ -27,14 +27,11 @@ import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.io.File;
 import java.util.List;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.wsclient.issue.Issue;
-import org.sonar.wsclient.issue.IssueClient;
-import org.sonar.wsclient.issue.IssueQuery;
+import org.sonarqube.ws.Issues.Issue;
 import org.sonarqube.ws.WsComponents;
 import org.sonarqube.ws.WsMeasures;
 
@@ -90,10 +87,10 @@ public class JavaTest {
       .setCleanPackageSonarGoals();
     orchestrator.executeBuild(build);
 
-    IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
-    List<Issue> issues = issueClient.find(IssueQuery.create().components("org.sonarsource.java:test-project:pom.xml")).list();
+    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.java:test-project:pom.xml");
+
     assertThat(issues).hasSize(1);
-    assertThat(issues.iterator().next().ruleKey()).isEqualTo("squid:S3423");
+    assertThat(issues.iterator().next().getRule()).isEqualTo("squid:S3423");
   }
 
   @Test
@@ -119,7 +116,6 @@ public class JavaTest {
       .setGoals("sonar:sonar");
     result = orchestrator.executeBuildQuietly(inspection);
     assertThat(result.getLastStatus()).isEqualTo(0);
-
   }
 
   /**
@@ -135,13 +131,12 @@ public class JavaTest {
 
     assertThat(getMeasureAsInteger("org.example:example", "violations")).isEqualTo(2);
 
-    IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
-    List<Issue> issues = issueClient.find(IssueQuery.create().components("org.example:example:src/main/java/EclispeI18NFiltered.java")).list();
+    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.example:example:src/main/java/EclispeI18NFiltered.java");
+
     assertThat(issues).hasSize(2);
     for (Issue issue : issues) {
-      assertThat(issue.ruleKey()).matches(value -> "squid:S1444".equals(value) || "squid:ClassVariableVisibilityCheck".equals(value));
-
-      assertThat(issue.line()).isEqualTo(17);
+      assertThat(issue.getRule()).matches(value -> "squid:S1444".equals(value) || "squid:ClassVariableVisibilityCheck".equals(value));
+      assertThat(issue.getLine()).isEqualTo(17);
     }
   }
 

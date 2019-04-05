@@ -22,14 +22,17 @@ package com.sonar.it.java.suite;
 import com.google.common.collect.Iterables;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.container.Server;
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.sonarqube.ws.Issues.Issue;
 import org.sonarqube.ws.client.HttpConnector;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.WsClientFactories;
+import org.sonarqube.ws.client.issue.SearchWsRequest;
 
 import static com.sonar.orchestrator.container.Server.ADMIN_LOGIN;
 import static com.sonar.orchestrator.container.Server.ADMIN_PASSWORD;
@@ -65,6 +68,13 @@ public class TestUtils {
 
   public static File projectPom(String projectName) {
     return new File(homeDir(), "projects/" + projectName + "/pom.xml");
+  }
+
+  public static List<Issue> issuesForComponent(Orchestrator orchestrator, String componentKey) {
+    return newWsClient(orchestrator)
+      .issues()
+      .search(new SearchWsRequest().setComponentKeys(Collections.singletonList(componentKey)))
+      .getIssuesList();
   }
 
   static WsClient newWsClient(Orchestrator orchestrator) {

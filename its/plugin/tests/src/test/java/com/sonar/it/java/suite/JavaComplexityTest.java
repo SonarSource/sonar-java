@@ -27,9 +27,7 @@ import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonar.wsclient.issue.Issue;
-import org.sonar.wsclient.issue.IssueClient;
-import org.sonar.wsclient.issue.IssueQuery;
+import org.sonarqube.ws.Issues.Issue;
 
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasure;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
@@ -99,13 +97,12 @@ public class JavaComplexityTest {
 
   @Test
   public void complexity_sqale_computation() throws Exception {
-    IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
+    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, PROJECT);
 
-    List<Issue> issues = issueClient.find(IssueQuery.create().componentRoots(PROJECT)).list();
     assertThat(issues).hasSize(3);
     Set<String> debts = Sets.newHashSet();
     for (Issue issue : issues) {
-      debts.add(issue.debt());
+      debts.add(issue.getDebt());
     }
     assertThat(debts).hasSize(2).containsOnly("11min", "12min");
   }
