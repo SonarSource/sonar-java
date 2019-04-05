@@ -12,9 +12,9 @@ included in the document.</p>
 <p>To disable external entity processing for <code>XMLInputFactory</code>, configure one of the properties
 <code>XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES</code> or <code>XMLInputFactory.SUPPORT_DTD</code> to false.</p>
 <p>To disable external entity processing for <code>SAXParserFactory</code>, <code>XMLReader</code> or <code>DocumentBuilderFactory</code> configure
-one of the properties <code>XMLConstants.FEATURE_SECURE_PROCESSING</code> or <code>"http://apache.org/xml/features/disallow-doctype-decl"</code> to
+one of the features <code>XMLConstants.FEATURE_SECURE_PROCESSING</code> or <code>"http://apache.org/xml/features/disallow-doctype-decl"</code> to
 true.</p>
-<p>To disable external entity processing for <code>Validator</code> , configure both properties <code>XMLConstants.ACCESS_EXTERNAL_DTD</code>,
+<p>To disable external entity processing for <code>Validator</code>, configure both properties <code>XMLConstants.ACCESS_EXTERNAL_DTD</code>,
 <code>XMLConstants.ACCESS_EXTERNAL_SCHEMA</code> to the empty string <code>""</code>.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
@@ -46,7 +46,6 @@ try (FileInputStream fis = new FileInputStream(malicousSample)) {
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/611.html">MITRE, CWE-611</a> - Information Exposure Through XML External Entity Reference </li>
   <li> <a href="http://cwe.mitre.org/data/definitions/827.html">MITRE, CWE-827</a> - Improper Control of Document Type Definition </li>
-  <li> OWASP Top 10 2017 Category A1 - Injection </li>
   <li> OWASP Top 10 2017 Category A4 - XML External Entities (XXE) </li>
   <li> <a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet">OWASP XXE Prevention Cheat Sheet</a> </li>
   <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#XXE_XMLSTREAMREADER">XXE_XMLSTREAMREADER</a> </li>

@@ -1,13 +1,37 @@
-<p>A couple <code>Collection</code> methods can be called with arguments of an incorrect type, but doing so is pointless and likely the result of
-using the wrong argument. This rule will raise an issue when the type of the argument to <code>List.contains</code> or <code>List.remove</code> is
-unrelated to the type used for the list declaration.</p>
+<p>The <code>java.util.Collection</code> API has methods that accept <code>Object</code> parameters such as <code>Collection.remove(Object o)</code>,
+and <code>Collection.contains(Object o)</code>. When the actual type of the object provided to these methods is not consistent with the type declared
+on the <code>Collection</code> instantiation, those methods will always return <code>false</code> or <code>null</code>. This is most likely unintended
+and hides a design problem.</p>
+<p>This rule raises an issue when the type of the argument of the following APIs is unrelated to the type used for the <code>Collection</code>
+declaration:</p>
+<p>- <code>Collection.remove(Object o)</code></p>
+<p>- <code>Collection.contains(Object o)</code></p>
+<p>- <code>List.indexOf(Object o)</code></p>
+<p>- <code>List.lastIndexOf(Object o)</code></p>
+<p>- <code>Map.containsKey(Object key)</code></p>
+<p>- <code>Map.containsValue(Object value)</code></p>
+<p>- <code>Map.get(Object key)</code></p>
+<p>- <code>Map.getOrDefault(Object key, V defaultValue)</code></p>
+<p>- <code>Map.remove(Object key)</code></p>
+<p>- <code>Map.remove(Object key, Object value)</code></p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-List&lt;String&gt; list = new ArrayList&lt;String&gt;();
-Integer integer = Integer.valueOf(1);
+public class S2175 {
 
-if (list.contains(integer)) {  // Noncompliant. Always false.
-  list.remove(integer); // Noncompliant. list.add(integer) doesn't compile, so this will always return false
+  public static void main(String[] args) {
+    String foo = "42";
+    Map&lt;Integer, Object&gt; map = new HashMap&lt;&gt;();
+    map.remove(foo); // Noncompliant; will return 'null' for sure because 'map' is handling only Integer keys
+
+    // ...
+
+    List&lt;String&gt; list = new ArrayList&lt;String&gt;();
+    Integer integer = Integer.valueOf(1);
+    if (list.contains(integer)) { // Noncompliant; always false.
+      list.remove(integer); // Noncompliant; list.add(integer) doesn't compile, so this will always return 'false'
+    }
+  }
+
 }
 </pre>
 <h2>See</h2>
