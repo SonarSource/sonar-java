@@ -1,11 +1,13 @@
+import org.assertj.core.api.AbstractListAssert;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Fail;
 import org.assertj.core.api.JUnitSoftAssertions;
 import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.BDDAssertions;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class AssertionsInTestsCheckAssertJ {
+public abstract class AssertionsInTestsCheckAssertJ {
 
   interface Visitor {
     void visit(Object object);
@@ -182,6 +184,40 @@ public class AssertionsInTestsCheckAssertJ {
   @Test
   public void assertion_from_unknown_symbol() {
     org.sonarsource.unknown.symbol.UnknownClass.assertSomething();
+  }
+
+  abstract boolean booleanMethod();
+  abstract Object[] arrayMethod();
+  abstract java.util.List<String> listStringMethod();
+
+  @Test
+  public void bdd_assertions_with_boolean() { // Compliant
+    BDDAssertions.then(booleanMethod()).isTrue();
+  }
+
+  @Test
+  public void bdd_assertions_with_array_assert() { // Cmpliant
+    BDDAssertions.then(arrayMethod()).contains("A", "B");
+  }
+
+  @Test
+  public void bdd_assertions_with_list() { // Compliant
+    BDDAssertions.then(listStringMethod())
+      .contains("Bob", "Alice")
+      .doesNotContain("Maurice");
+  }
+
+  @Test
+  public void bdd_assertions_split_with_intermediate_assertion() { // Compliant
+    AbstractListAssert<?, ? extends List<? extends String>, String> thenResult = BDDAssertions.then(listStringMethod());
+    thenResult
+      .contains("Bob", "Alice")
+      .doesNotContain("Maurice");
+  }
+
+  @Test
+  public void bdd_assertions_example_without_assertion() { // Noncompliant - nothing is asserted here
+    BDDAssertions.then(listStringMethod());
   }
 
   @Test

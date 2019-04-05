@@ -597,11 +597,7 @@ public class Resolve {
   }
 
   private static List<JavaType> erasure(List<JavaType> types) {
-    List<JavaType> erasedTypes = new ArrayList<>(types.size());
-    for (JavaType type : types) {
-      erasedTypes.add(type.erasure());
-    }
-    return erasedTypes;
+    return types.stream().map(JavaType::erasure).collect(Collectors.toList());
   }
 
   private static boolean applicableWithUncheckedConversion(JavaSymbol.MethodJavaSymbol candidate, JavaType callSite, List<JavaType> typeParams) {
@@ -745,17 +741,21 @@ public class Resolve {
     if (m2.type == null || !m2.isKind(JavaSymbol.MTH)) {
       return m1;
     }
+
+    JavaSymbol.MethodJavaSymbol m1MethodSymbol = (JavaSymbol.MethodJavaSymbol) m1;
+    JavaSymbol.MethodJavaSymbol m2MethodSymbol = (JavaSymbol.MethodJavaSymbol) m2;
+
     TypeSubstitution m2Substitution = null;
-    boolean m1IsGeneric = ((JavaSymbol.MethodJavaSymbol) m1).isParametrized();
-    boolean m2IsGeneric = ((JavaSymbol.MethodJavaSymbol) m2).isParametrized();
+    boolean m1IsGeneric = m1MethodSymbol.isParametrized();
+    boolean m2IsGeneric = m2MethodSymbol.isParametrized();
     if (m2IsGeneric) {
-      m2Substitution = typeSubstitutionSolver.getTypeSubstitution((JavaSymbol.MethodJavaSymbol) m2, callSite, ImmutableList.of(), argTypes);
+      m2Substitution = typeSubstitutionSolver.getTypeSubstitution(m2MethodSymbol, callSite, ImmutableList.of(), argTypes);
     }
     if (m2Substitution == null) {
       m2Substitution = new TypeSubstitution();
     }
-    boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2, argTypes, m1Substitution, m2Substitution);
-    boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1, argTypes, m2Substitution, m1Substitution);
+    boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1MethodSymbol, m2MethodSymbol, argTypes, m1Substitution, m2Substitution);
+    boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2MethodSymbol, m1MethodSymbol, argTypes, m2Substitution, m1Substitution);
     if (m1SignatureMoreSpecific && m2SignatureMoreSpecific) {
       // JLS8 18.5.4 naive implementation of most specific when inferring of parametric method is involved
       if(!m1IsGeneric && m2IsGeneric) {
@@ -775,12 +775,12 @@ public class Resolve {
   /**
    * @return true, if signature of m1 is more specific than signature of m2
    */
-  private boolean isSignatureMoreSpecific(JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes, TypeSubstitution m1Substitution, TypeSubstitution m2Substitution) {
+  private boolean isSignatureMoreSpecific(JavaSymbol.MethodJavaSymbol m1, JavaSymbol.MethodJavaSymbol m2, List<JavaType> argTypes,
+                                          TypeSubstitution m1Substitution, TypeSubstitution m2Substitution) {
     List<JavaType> m1ArgTypes = ((MethodJavaType) m1.type).argTypes;
     List<JavaType> m2ArgTypes = ((MethodJavaType) m2.type).argTypes;
-    JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) m1;
-    boolean m1VarArity = methodJavaSymbol.isVarArgs();
-    boolean m2VarArity = ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs();
+    boolean m1VarArity = m1.isVarArgs();
+    boolean m2VarArity = m2.isVarArgs();
     if (m1VarArity != m2VarArity) {
       // last arg is an array
       boolean lastArgIsArray = !argTypes.isEmpty() && argTypes.get(argTypes.size() -1).isArray() && (argTypes.size() == m2ArgTypes.size() || argTypes.size() == m1ArgTypes.size());
@@ -793,9 +793,16 @@ public class Resolve {
     if(!hasCompatibleArity(m1ArgTypes.size(), m2ArgTypes.size(), m2VarArity)) {
       return false;
     }
-    m1ArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m1ArgTypes, m1Substitution);
-    m2ArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m2ArgTypes, m2Substitution);
-    return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, m2VarArity, true);
+    List<JavaType> m1SubstitutedArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m1ArgTypes, m1Substitution);
+    List<JavaType> m2SubstitutedArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m2ArgTypes, m2Substitution);
+    if (m1SubstitutedArgTypes.equals(m2SubstitutedArgTypes)
+      // approximation for generic methods
+      || (m1.isParametrized() && m2.isParametrized() && erasure(m1SubstitutedArgTypes).equals(erasure(m2SubstitutedArgTypes)))) {
+      // Same types once substituted, so we should select the most specific one before substitution.
+      // i.e: 'T[]' is more specific than 'T', or 'List<T>' is more specific than 'T'
+      return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, m2VarArity, true);
+    }
+    return isArgumentsAcceptable(m1SubstitutedArgTypes, m2SubstitutedArgTypes, m2VarArity, true);
   }
 
   private static List<JavaType> expandVarArgsToFitSize(List<JavaType> m1ArgTypes, int size) {
