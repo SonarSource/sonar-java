@@ -1027,6 +1027,18 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void most_specific_generic_method() throws Exception {
+    Result result = Result.createFor("references/MostSpecificGenericMethodCall");
+    JavaSymbol foo = result.symbol("foo", 11);
+    JavaSymbol fooArray = result.symbol("foo", 12);
+    JavaSymbol fooParameterized = result.symbol("foo", 13);
+
+    assertThat(result.reference(6, 5)).as("Method with Array type argument not resolved").isSameAs(fooArray);
+    assertThat(result.reference(7, 5)).as("Method with Parameterized type argument not resolved").isSameAs(fooParameterized);
+    assertThat(result.reference(8, 5)).isSameAs(foo);
+  }
+
+  @Test
   public void MethodCall() {
     Result result = Result.createFor("references/MethodCall");
     assertThat(result.reference(10, 5)).isSameAs(result.symbol("target"));
