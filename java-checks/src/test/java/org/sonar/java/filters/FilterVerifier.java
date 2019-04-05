@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Fail;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
@@ -52,9 +53,6 @@ import static org.mockito.Mockito.when;
 public class FilterVerifier {
 
   public static void verify(String filename, JavaIssueFilter filter, JavaCheck... extraJavaChecks) {
-    // set the component to the filter
-    filter.setComponentKey(filename);
-
     IssueCollector issueCollector = new IssueCollector();
     ArrayList<JavaCheck> visitors = Lists.<JavaCheck>newArrayList(filter, issueCollector);
 
@@ -70,7 +68,8 @@ public class FilterVerifier {
     projectClasspath.add(new File("target/test-classes"));
 
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, null);
-    JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile(filename), visitorsBridge);
+    InputFile inputFile = CheckTestUtils.inputFile(filename);
+    JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
 
     Multimap<Integer, String> issuesByLines = HashMultimap.create();
@@ -79,7 +78,7 @@ public class FilterVerifier {
       String ruleKey = AnnotationUtils.getAnnotation(analyzerMessage.getCheck().getClass(), Rule.class).key();
       FilterableIssue issue = mock(FilterableIssue.class);
       when(issue.ruleKey()).thenReturn(RuleKey.of("repo", ruleKey));
-      when(issue.componentKey()).thenReturn(filename);
+      when(issue.componentKey()).thenReturn(inputFile.key());
       when(issue.line()).thenReturn(issueLine);
 
       if (issueCollector.rejectedIssuesLines.contains(issueLine)) {

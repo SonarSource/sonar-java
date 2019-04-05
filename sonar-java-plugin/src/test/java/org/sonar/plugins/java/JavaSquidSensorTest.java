@@ -44,7 +44,6 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
-import org.sonar.api.platform.Server;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.api.utils.Version;
@@ -55,7 +54,6 @@ import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
-import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.plugins.java.api.JavaCheck;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,7 +69,6 @@ public class JavaSquidSensorTest {
 
   private static final CheckFactory checkFactory = mock(CheckFactory.class);
   private static final Checks<Object> checks = mock(Checks.class);
-  private static final Server server = mock(Server.class);
 
   static {
     when(checks.addAnnotatedChecks(any(Iterable.class))).thenReturn(checks);
@@ -84,7 +81,7 @@ public class JavaSquidSensorTest {
 
   @Test
   public void test_toString() {
-    assertThat(new JavaSquidSensor(null, null, null, null, null, null).toString()).isEqualTo("JavaSquidSensor");
+    assertThat(new JavaSquidSensor(null, null, null, null, null).toString()).isEqualTo("JavaSquidSensor");
   }
 
   @Test
@@ -104,11 +101,10 @@ public class JavaSquidSensorTest {
     DefaultFileSystem fs = context.fileSystem();
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(new JavaClasspath(settings.asConfig(), fs));
-    PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, postAnalysisIssueFilter);
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter);
 
     jss.execute(context);
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(96));
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(93));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
@@ -193,9 +189,8 @@ public class JavaSquidSensorTest {
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory);
     DefaultJavaResourceLocator javaResourceLocator = mock(DefaultJavaResourceLocator.class);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter(fs);
 
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, new MapSettings().asConfig(),noSonarFilter, postAnalysisIssueFilter);
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, new MapSettings().asConfig(), noSonarFilter);
     jss.execute(context);
   }
 

@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
@@ -28,7 +27,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -36,22 +34,15 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 
 public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
-  private static final Logger LOG = Loggers.get(JavaResourceLocator.class);
+  private static final Logger LOG = Loggers.get(DefaultJavaResourceLocator.class);
 
   private final JavaClasspath javaClasspath;
   @VisibleForTesting
   Map<String, InputFile> resourcesByClass;
-  private final Map<String, String> sourceFileByClass;
-  private SensorContext sensorContext;
 
   public DefaultJavaResourceLocator(JavaClasspath javaClasspath) {
     this.javaClasspath = javaClasspath;
     resourcesByClass = Maps.newHashMap();
-    sourceFileByClass = Maps.newHashMap();
-  }
-
-  public void setSensorContext(SensorContext sensorContext) {
-    this.sensorContext = sensorContext;
   }
 
   @Override
@@ -91,12 +82,9 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    Preconditions.checkNotNull(sensorContext);
+    InputFile inputFile = context.getInputFile();
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     javaFilesCache.scanFile(context);
-    for (Map.Entry<String, File> classIOFileEntry : javaFilesCache.getResourcesCache().entrySet()) {
-      resourcesByClass.put(classIOFileEntry.getKey(), context.getInputFile());
-      sourceFileByClass.put(classIOFileEntry.getKey(), context.getInputFile().key());
-    }
+    javaFilesCache.getClassNames().forEach(className -> resourcesByClass.put(className, inputFile));
   }
 }

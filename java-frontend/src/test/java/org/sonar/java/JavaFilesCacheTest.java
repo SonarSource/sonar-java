@@ -19,7 +19,7 @@
  */
 package org.sonar.java;
 
-import java.io.File;
+import java.util.Set;
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
@@ -33,15 +33,16 @@ public class JavaFilesCacheTest {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/resources/JavaFilesCacheTestFile.java"), new VisitorsBridge(javaFilesCache));
 
-    assertThat(javaFilesCache.resourcesCache.keySet()).hasSize(8);
-    assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile");
-    assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A");
-    assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$plop");
-    assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A$I");
-    assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A$1B");
-    assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A$1B$1");
-    assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A$2");
-    assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTestFile$A$3");
+    Set<String> classNames = javaFilesCache.getClassNames();
+    assertThat(classNames).hasSize(8);
+    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile");
+    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A");
+    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$plop");
+    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A$I");
+    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A$1B");
+    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A$1B$1");
+    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A$2");
+    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A$3");
   }
 
 }

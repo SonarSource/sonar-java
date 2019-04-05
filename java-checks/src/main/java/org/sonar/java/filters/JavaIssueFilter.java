@@ -19,15 +19,12 @@
  */
 package org.sonar.java.filters;
 
+import java.util.Set;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
-import java.util.Set;
-
 public interface JavaIssueFilter extends JavaFileScanner {
-
-  void setComponentKey(String componentKey);
 
   boolean accept(FilterableIssue issue);
 
