@@ -20,14 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.List;
 
 @Rule(key = "S2230")
 public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisitor {
@@ -39,12 +37,11 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
 
   @Override
   public void visitNode(Tree tree) {
-    MethodTree method = (MethodTree) tree;
-    boolean isPublic = method.modifiers().contains(Modifier.PUBLIC);
-    if (hasSemantic()) {
-      isPublic = method.symbol().isPublic();
+    if (!hasSemantic()) {
+      return;
     }
-    if (!isPublic && hasTransactionalAnnotation(method)) {
+    MethodTree method = (MethodTree) tree;
+    if (!method.symbol().isPublic() && hasTransactionalAnnotation(method)) {
       reportIssue(method.simpleName(), "Make this method \"public\" or remove the \"@Transactional\" annotation");
     }
   }
