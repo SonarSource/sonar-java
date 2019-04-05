@@ -26,10 +26,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonar.wsclient.SonarClient;
-import org.sonar.wsclient.issue.Issue;
-import org.sonar.wsclient.issue.IssueClient;
-import org.sonar.wsclient.issue.IssueQuery;
+import org.sonarqube.ws.Common.Severity;
+import org.sonarqube.ws.Issues.Issue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,12 +47,12 @@ public class ExternalReportTest {
     if (externalIssuesSupported()) {
       assertThat(issues).hasSize(1);
       Issue issue = issues.get(0);
-      assertThat(issue.componentKey()).isEqualTo("com.sonarsource.it.projects:checkstyle-external-report:src/main/java/Main.java");
-      assertThat(issue.ruleKey()).isEqualTo("external_checkstyle:javadoc.JavadocPackageCheck");
-      assertThat(issue.line()).isNull();
-      assertThat(issue.message()).isEqualTo("Missing package-info.java file.");
-      assertThat(issue.severity()).isEqualTo("MAJOR");
-      assertThat(issue.debt()).isEqualTo("5min");
+      assertThat(issue.getComponent()).isEqualTo("com.sonarsource.it.projects:checkstyle-external-report:src/main/java/Main.java");
+      assertThat(issue.getRule()).isEqualTo("external_checkstyle:javadoc.JavadocPackageCheck");
+      assertThat(issue.getLine()).isEqualTo(0);
+      assertThat(issue.getMessage()).isEqualTo("Missing package-info.java file.");
+      assertThat(issue.getSeverity()).isEqualTo(Severity.MAJOR);
+      assertThat(issue.getDebt()).isEqualTo("5min");
     } else {
       assertThat(issues).isEmpty();
     }
@@ -72,12 +70,12 @@ public class ExternalReportTest {
     if (externalIssuesSupported()) {
       assertThat(issues).hasSize(1);
       Issue issue = issues.get(0);
-      assertThat(issue.componentKey()).isEqualTo(projectKey + ":src/main/java/Main.java");
-      assertThat(issue.ruleKey()).isEqualTo("external_pmd:UnusedLocalVariable");
-      assertThat(issue.line()).isEqualTo(3);
-      assertThat(issue.message()).isEqualTo("Avoid unused local variables such as 'unused'.");
-      assertThat(issue.severity()).isEqualTo("MAJOR");
-      assertThat(issue.debt()).isEqualTo("5min");
+      assertThat(issue.getComponent()).isEqualTo(projectKey + ":src/main/java/Main.java");
+      assertThat(issue.getRule()).isEqualTo("external_pmd:UnusedLocalVariable");
+      assertThat(issue.getLine()).isEqualTo(3);
+      assertThat(issue.getMessage()).isEqualTo("Avoid unused local variables such as 'unused'.");
+      assertThat(issue.getSeverity()).isEqualTo(Severity.MAJOR);
+      assertThat(issue.getDebt()).isEqualTo("5min");
     } else {
       assertThat(issues).isEmpty();
     }
@@ -96,12 +94,12 @@ public class ExternalReportTest {
     if (externalIssuesSupported) {
       assertThat(issues).hasSize(1);
       Issue issue = issues.get(0);
-      assertThat(issue.componentKey()).isEqualTo(projectKey + ":src/main/java/org/myapp/Main.java");
-      assertThat(issue.ruleKey()).isEqualTo("external_spotbugs:HE_EQUALS_USE_HASHCODE");
-      assertThat(issue.line()).isEqualTo(6);
-      assertThat(issue.message()).isEqualTo("org.myapp.Main defines equals and uses Object.hashCode()");
-      assertThat(issue.severity()).isEqualTo("MAJOR");
-      assertThat(issue.debt()).isEqualTo("5min");
+      assertThat(issue.getComponent()).isEqualTo(projectKey + ":src/main/java/org/myapp/Main.java");
+      assertThat(issue.getRule()).isEqualTo("external_spotbugs:HE_EQUALS_USE_HASHCODE");
+      assertThat(issue.getLine()).isEqualTo(6);
+      assertThat(issue.getMessage()).isEqualTo("org.myapp.Main defines equals and uses Object.hashCode()");
+      assertThat(issue.getSeverity()).isEqualTo(Severity.MAJOR);
+      assertThat(issue.getDebt()).isEqualTo("5min");
     } else {
       assertThat(issues).isEmpty();
     }
@@ -112,9 +110,9 @@ public class ExternalReportTest {
   }
 
   private List<Issue> getExternalIssues(String projectKey) {
-    IssueClient issueClient = SonarClient.create(orchestrator.getServer().getUrl()).issueClient();
-    return issueClient.find(IssueQuery.create().componentRoots(projectKey)).list().stream()
-      .filter(issue -> issue.ruleKey().startsWith("external_"))
+    return TestUtils.issuesForComponent(orchestrator, projectKey)
+      .stream()
+      .filter(issue -> issue.getRule().startsWith("external_"))
       .collect(Collectors.toList());
   }
 

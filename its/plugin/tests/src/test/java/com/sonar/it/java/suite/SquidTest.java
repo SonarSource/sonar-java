@@ -22,14 +22,11 @@ package com.sonar.it.java.suite;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonar.wsclient.issue.Issue;
-import org.sonar.wsclient.issue.IssueClient;
-import org.sonar.wsclient.issue.IssueQuery;
+import org.sonarqube.ws.Issues.Issue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,15 +46,16 @@ public class SquidTest {
 
   @Test
   public void should_detect_missing_package_info() throws Exception {
-    IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
-    List<Issue> issues = issueClient.find(IssueQuery.create().components("com.sonarsource.it.samples:squid")).list();
+    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "com.sonarsource.it.samples:squid");
+
     assertThat(issues).hasSize(2);
-    assertThat(issues.stream().map(Issue::ruleKey)).allMatch("squid:S1228"::equals);
-    assertThat(issues.stream().map(Issue::line)).allMatch(Objects::isNull);
+    assertThat(issues.stream().map(Issue::getRule)).allMatch("squid:S1228"::equals);
+    assertThat(issues.stream().map(Issue::getLine)).allMatch(line -> line == 0);
     String sep = "[/\\\\]";
     Pattern packagePattern = Pattern.compile("'src" + sep + "main" + sep + "java" + sep + "package[12]'");
-    assertThat(issues.stream().map(Issue::message)).allMatch(msg -> packagePattern.matcher(msg).find());
-    List<Issue> issuesOnTestPackage = issueClient.find(IssueQuery.create().components("com.sonarsource.it.samples:squid:src/test/java/package1")).list();
+    assertThat(issues.stream().map(Issue::getMessage)).allMatch(msg -> packagePattern.matcher(msg).find());
+
+    List<Issue> issuesOnTestPackage = TestUtils.issuesForComponent(orchestrator, "com.sonarsource.it.samples:squid:src/test/java/package1");
     assertThat(issuesOnTestPackage).isEmpty();
   }
 
