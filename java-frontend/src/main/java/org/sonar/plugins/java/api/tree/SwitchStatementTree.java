@@ -33,9 +33,9 @@ import java.util.List;
  *   }
  * </pre>
  *
- * @since SonarJava 5.12: wrapper on top of a {@link SwitchExpressionTree}
- *
  * @since Java 1.3
+ * @since SonarJava 5.12: Starting from this version and introduction of support of Java 12, this Tree is now only a wrapper on top of a {@link SwitchExpressionTree}.
+ *        Syntactically, each SwitchStatementTree now has a SwitchExpressionTree as direct and only child.
  */
 @Beta
 public interface SwitchStatementTree extends StatementTree {
@@ -56,8 +56,8 @@ public interface SwitchStatementTree extends StatementTree {
   SyntaxToken closeBraceToken();
 
   /**
-   * Switch expressions introduced with support Java 12
-   * @since SonarJava 5.12
+   * Consider the statement as a Switch expression
+   * @since SonarJava 5.12: Support of Java 12
    */
   SwitchExpressionTree asSwitchExpression();
 }

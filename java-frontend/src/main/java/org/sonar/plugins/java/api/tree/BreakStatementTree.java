@@ -20,7 +20,6 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
-
 import javax.annotation.Nullable;
 
 /**
@@ -34,6 +33,12 @@ import javax.annotation.Nullable;
  * </pre>
  *
  * @since Java 1.3
+ *
+ * <pre>
+ *   break {@link #value()} ;
+ * </pre>
+ *
+ * @since Java 12 (SonarJava 5.12 - Support of Java 12)
  */
 @Beta
 public interface BreakStatementTree extends StatementTree {
@@ -44,7 +49,8 @@ public interface BreakStatementTree extends StatementTree {
   IdentifierTree label();
 
   /**
-   * @since 5.12 (Java 12 new features)
+   * Within switch-expressions, break statements are used to return values.
+   * @since SonarJava 5.12: Support of Java 12
    */
   @Nullable
   ExpressionTree value();
