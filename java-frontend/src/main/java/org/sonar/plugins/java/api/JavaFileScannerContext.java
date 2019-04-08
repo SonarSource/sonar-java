@@ -58,8 +58,7 @@ public interface JavaFileScannerContext {
   void addIssueOnProject(JavaCheck check, String message);
 
   /**
-   * Report an issue on a specific line.
-   * @see {@link JavaFileScannerContext#reportIssue(JavaCheck, Tree, String)} which should be prefered as reporting will be more precise.
+   * Report an issue on a specific line. Prefer {@link JavaFileScannerContext#reportIssue(JavaCheck, Tree, String)} for more precise reporting.
    * @param line line on which to report the issue
    * @param check The check raising the issue.
    * @param message Message to display to the user
@@ -67,8 +66,7 @@ public interface JavaFileScannerContext {
   void addIssue(int line, JavaCheck check, String message);
 
   /**
-   * Report an issue on a specific line.
-   * @see {@link JavaFileScannerContext#reportIssue(JavaCheck, Tree, String, List, Integer)} which should be prefered as reporting will be more precise.
+   * Report an issue on a specific line. Prefer {@link JavaFileScannerContext#reportIssue(JavaCheck, Tree, String, List, Integer)} for more precise reporting.
    * @param line line on which to report the issue
    * @param check The check raising the issue.
    * @param message Message to display to the user
@@ -83,7 +81,8 @@ public interface JavaFileScannerContext {
    * @param check The check raising the issue.
    * @param line line on which to report the issue
    * @param message Message to display to the user
-   * @deprecated since SonarJava 5.12: File are not supported anymore. Use corresponding 'reportIssue' methods, or directly at project level
+   * @deprecated since SonarJava 5.12: Adding issues using {@link File} is deprecated. Use corresponding
+   * '{@link #reportIssue(JavaCheck, Tree, String)}' methods, or add issues at project level {@link #addIssueOnProject(JavaCheck, String)}
    */
   @Deprecated
   void addIssue(File file, JavaCheck check, int line, String message);
@@ -106,20 +105,20 @@ public interface JavaFileScannerContext {
   /**
    * File under analysis.
    * @return the currently analyzed file.
-   * @deprecated since SonarJava 5.12: File are not supported anymore. Use {@link #getInputFile()} or {@link #getProject()} instead
+   * @deprecated since SonarJava 5.12: Using {@link File} is deprecated. Use {@link #getInputFile()} or {@link #getProject()} instead
    */
   @Deprecated
   File getFile();
 
   /**
    * InputFile under analysis.
-   * @return the currently analyzed inputFile.
+   * @return the currently analyzed {@link InputFile}.
    * @since SonarJava 5.12: Dropping support of file-related methods
    */
   InputFile getInputFile();
 
   /**
-   * InputComponent representing the project being analyzed
+   * {@link InputComponent} representing the project being analyzed
    * @return the project component
    * @since SonarJava 5.12: Dropping support of file-related methods
    */
@@ -132,7 +131,7 @@ public interface JavaFileScannerContext {
   File getWorkingDirectory();
 
   /**
-   * Java version defined for the analysis using sonar.java.version parameter.
+   * Java version defined for the analysis using {@code sonar.java.version} parameter.
    * @return JavaVersion object with API to act on it.
    */
   JavaVersion getJavaVersion();
