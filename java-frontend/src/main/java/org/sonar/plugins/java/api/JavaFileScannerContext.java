@@ -53,6 +53,7 @@ public interface JavaFileScannerContext {
    * Report an issue at at the project level.
    * @param check The check raising the issue.
    * @param message Message to display to the user
+   * @since SonarJava 5.12: Dropping support of file-related methods
    */
   void addIssueOnProject(JavaCheck check, String message);
 
@@ -82,7 +83,7 @@ public interface JavaFileScannerContext {
    * @param check The check raising the issue.
    * @param line line on which to report the issue
    * @param message Message to display to the user
-   * @deprecated since SonarJava 5.12 - File are not supported anymore. Use corresponding 'reportIssue' methods, or directly at project level
+   * @deprecated since SonarJava 5.12: File are not supported anymore. Use corresponding 'reportIssue' methods, or directly at project level
    */
   @Deprecated
   void addIssue(File file, JavaCheck check, int line, String message);
@@ -97,7 +98,7 @@ public interface JavaFileScannerContext {
   /**
    * FileKey of currently analyzed file.
    * @return the fileKey of the file currently analyzed.
-   * @deprecated since SonarJava 5.12 - Rely on the InputFile key instead, using {@link #getInputFile()}
+   * @deprecated since SonarJava 5.12: Rely on the InputFile key instead, using {@link #getInputFile()}
    */
   @Deprecated
   String getFileKey();
@@ -105,7 +106,7 @@ public interface JavaFileScannerContext {
   /**
    * File under analysis.
    * @return the currently analyzed file.
-   * @deprecated since SonarJava 5.12 - File are not supported anymore. Use {@link #getInputFile()} or {@link #getProject()} instead
+   * @deprecated since SonarJava 5.12: File are not supported anymore. Use {@link #getInputFile()} or {@link #getProject()} instead
    */
   @Deprecated
   File getFile();
@@ -113,12 +114,14 @@ public interface JavaFileScannerContext {
   /**
    * InputFile under analysis.
    * @return the currently analyzed inputFile.
+   * @since SonarJava 5.12: Dropping support of file-related methods
    */
   InputFile getInputFile();
 
   /**
    * InputComponent representing the project being analyzed
    * @return the project component
+   * @since SonarJava 5.12: Dropping support of file-related methods
    */
   InputComponent getProject();
 

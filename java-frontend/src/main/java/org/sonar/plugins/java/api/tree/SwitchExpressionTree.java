@@ -33,7 +33,7 @@ import java.util.List;
  *   }
  * </pre>
  *
- * @since Java 12
+ * @since Java 12 (SonarJava 5.12 - Support of Java 12)
  */
 @Beta
 public interface SwitchExpressionTree extends ExpressionTree {
