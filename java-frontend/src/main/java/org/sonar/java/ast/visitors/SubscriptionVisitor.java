@@ -20,7 +20,6 @@
 package org.sonar.java.ast.visitors;
 
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -37,7 +36,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
   private EnumSet<Tree.Kind> nodesToVisit;
   private boolean visitToken;
   private boolean visitTrivia;
-  private SemanticModel semanticModel;
+  private Object semanticModel;
 
   public abstract List<Tree.Kind> nodesToVisit();
 
@@ -59,7 +58,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
 
   public void setContext(JavaFileScannerContext context) {
     this.context = context;
-    semanticModel = (SemanticModel) context.getSemanticModel();
+    semanticModel = context.getSemanticModel();
   }
 
   public void leaveFile(JavaFileScannerContext context) {
