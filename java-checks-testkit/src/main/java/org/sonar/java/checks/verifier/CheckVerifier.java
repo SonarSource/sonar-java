@@ -201,7 +201,9 @@ public abstract class CheckVerifier {
   }
 
   private void assertMultipleIssue(Set<AnalyzerMessage> issues) throws AssertionError {
-    Preconditions.checkState(!issues.isEmpty(), "At least one issue expected");
+    if (issues.isEmpty()) {
+      Fail.fail("At least one issue expected");
+    }
     List<Integer> unexpectedLines = Lists.newLinkedList();
     RemediationFunction remediationFunction = remediationFunction(issues.iterator().next());
     for (AnalyzerMessage issue : issues) {
