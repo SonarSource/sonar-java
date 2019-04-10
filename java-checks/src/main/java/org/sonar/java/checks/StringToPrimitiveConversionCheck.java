@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -52,7 +51,7 @@ public class StringToPrimitiveConversionCheck extends IssuableSubscriptionVisito
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.VARIABLE)) {
-        VariableTreeImpl variableTree = (VariableTreeImpl) tree;
+        VariableTree variableTree = (VariableTree) tree;
         Type variableType = variableTree.type().symbolType();
         PrimitiveCheck primitiveCheck = getPrimitiveCheck(variableType);
         ExpressionTree initializer = variableTree.initializer();
