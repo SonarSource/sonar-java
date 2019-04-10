@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -89,7 +88,7 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
   @Override
   public void visitMethod(MethodTree tree) {
     if (tree.is(Tree.Kind.METHOD)) {
-      checkMethodTree((MethodTreeImpl) tree);
+      checkMethodTree(tree);
     }
     super.visitMethod(tree);
   }
@@ -111,7 +110,7 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
     super.visitNewClass(tree);
   }
 
-  private void checkMethodTree(MethodTreeImpl methodTree) {
+  private void checkMethodTree(MethodTree methodTree) {
     TypeTree returnTypeTree = methodTree.returnType();
     Type returnType = returnTypeTree != null ? returnTypeTree.symbolType() : null;
     if (returnType != null && isVarTypeErrorProne(returnType)) {
