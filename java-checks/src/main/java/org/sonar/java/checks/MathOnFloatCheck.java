@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -44,8 +43,7 @@ public class MathOnFloatCheck extends BaseTreeVisitor implements JavaFileScanner
       if (withinStringConcatenation(tree)) {
         return;
       }
-      BinaryExpressionTreeImpl expressionTree = (BinaryExpressionTreeImpl) tree;
-      if (expressionTree.symbolType().is("float")) {
+      if (tree.symbolType().is("float")) {
         context.reportIssue(this, tree, "Use a \"double\" or \"BigDecimal\" instead.");
         // do not look for other issues in sub-tree
         return;
