@@ -5,7 +5,7 @@ git:
   submodules: false
 
 install: true
-jdk: openjdk11
+jdk: oraclejdk11
 script: "./travis.sh"
 env:
   - TEST=CI

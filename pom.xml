@@ -94,6 +94,8 @@
 
     <!-- Release: enable publication to Bintray -->
     <artifactsToPublish>${project.groupId}:sonar-java-plugin:jar</artifactsToPublish>
+
+    <version.compiler.plugin>3.8.0</version.compiler.plugin>
   </properties>
 
   <dependencyManagement>
