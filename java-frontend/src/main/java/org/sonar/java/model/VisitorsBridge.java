@@ -28,6 +28,7 @@ import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -50,6 +51,8 @@ import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.ecj.ECompilationUnit;
+import org.sonar.java.ecj.ETree;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.java.se.SymbolicExecutionVisitor;
@@ -117,6 +120,7 @@ public class VisitorsBridge {
     boolean fileParsed = parsedTree != null;
     if (fileParsed && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
       tree = (CompilationUnitTree) parsedTree;
+      if (false) // FIXME
       if (isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
         try {
           semanticModel = SemanticModel.createFor(tree, classLoader);
@@ -273,6 +277,15 @@ public class VisitorsBridge {
     }
 
     private void visitChildren(Tree tree) {
+      if (tree instanceof ETree) {
+        Iterator<? extends Tree> childrenIterator = ((ETree) tree).children();
+        while (childrenIterator.hasNext()) {
+          Tree child = childrenIterator.next();
+          visit(child);
+        }
+        return;
+      }
+
       JavaTree javaTree = (JavaTree) tree;
       if (!javaTree.isLeaf()) {
         for (Tree next : javaTree.getChildren()) {

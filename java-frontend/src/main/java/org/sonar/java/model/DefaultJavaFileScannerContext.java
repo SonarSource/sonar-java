@@ -89,7 +89,9 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   @Nullable
   public Object getSemanticModel() {
-    return semanticModel;
+    // FIXME
+//    return semanticModel;
+    return new Object();
   }
 
   @Override

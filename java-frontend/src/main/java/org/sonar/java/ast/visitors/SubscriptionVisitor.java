@@ -19,6 +19,7 @@
  */
 package org.sonar.java.ast.visitors;
 
+import org.sonar.java.ecj.ETree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -27,6 +28,7 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class SubscriptionVisitor implements JavaFileScanner {
@@ -120,6 +122,15 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
   }
 
   private void visitChildren(Tree tree) {
+    if (tree instanceof ETree) {
+      Iterator<? extends Tree> childrenIterator = ((ETree) tree).children();
+      while (childrenIterator.hasNext()) {
+        Tree child = childrenIterator.next();
+        visit(child);
+      }
+      return;
+    }
+
     JavaTree javaTree = (JavaTree) tree;
     if (!javaTree.isLeaf()) {
       for (Tree next : javaTree.getChildren()) {

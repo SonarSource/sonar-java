@@ -34,6 +34,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ecj.EcjParser;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -87,6 +88,8 @@ public class JavaAstScanner {
     try {
       String fileContent = inputFile.contents();
       Tree ast = parser.parse(fileContent);
+      ast = EcjParser.parse(inputFile.contents());
+      // TODO sema:
       visitor.visitFile(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);
