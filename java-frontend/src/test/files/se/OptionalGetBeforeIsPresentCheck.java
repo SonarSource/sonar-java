@@ -87,14 +87,14 @@ abstract class A {
   }
 
   private void usingIsEmpty() {
-    Optional<Object> op = Optional.emtpy();
+    Optional<Object> op = Optional.empty();
     if (!op.isEmpty()) {
       op.get(); // Compliant - dead code
     }
   }
 
   private void usingIsEmpty2() {
-    Optional<Object> op = Optional.emtpy();
+    Optional<Object> op = Optional.empty();
     if (op.isEmpty()) {
       // Noop
     } else {
