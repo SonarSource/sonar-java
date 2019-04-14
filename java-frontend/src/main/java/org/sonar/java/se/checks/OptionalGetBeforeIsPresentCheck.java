@@ -50,6 +50,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
   private static final MethodMatcher OPTIONAL_OF = optionalMethod("of").withAnyParameters();
   private static final MethodMatcher OPTIONAL_OF_NULLABLE = optionalMethod("ofNullable").withAnyParameters();
   private static final MethodMatcher OPTIONAL_FILTER = optionalMethod("filter").withAnyParameters();
+  private static final MethodMatcher OPTIONAL_IS_EMPTY = optionalMethod("isEmpty").withoutParameter();
 
   private enum OptionalConstraint implements Constraint {
     PRESENT, NOT_PRESENT;
@@ -179,6 +180,35 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     }
   }
 
+  private static class IsEmptySymbolicValue extends SymbolicValue {
+
+    private final SymbolicValue optionalSV;
+
+    IsEmptySymbolicValue(SymbolicValue optionalSV) {
+      this.optionalSV = optionalSV;
+    }
+
+    @Override
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+      OptionalConstraint optionalConstraint = programState.getConstraint(optionalSV, OptionalConstraint.class);
+      if (isImpossibleState(booleanConstraint, optionalConstraint)) {
+        return Collections.emptyList();
+      }
+      if (optionalConstraint == OptionalConstraint.NOT_PRESENT || optionalConstraint == OptionalConstraint.PRESENT) {
+        return Collections.singletonList(programState);
+      }
+      OptionalConstraint newConstraint = booleanConstraint.isFalse() ? OptionalConstraint.PRESENT : OptionalConstraint.NOT_PRESENT;
+
+      return optionalSV.setConstraint(programState, newConstraint);
+    }
+
+    private static boolean isImpossibleState(BooleanConstraint booleanConstraint, OptionalConstraint optionalConstraint) {
+      return (optionalConstraint == OptionalConstraint.PRESENT && booleanConstraint.isTrue())
+              || (optionalConstraint == OptionalConstraint.NOT_PRESENT && booleanConstraint.isFalse());
+    }
+
+  }
+
   private static class PreStatementVisitor extends CheckerTreeNodeVisitor {
 
     private final CheckerContext context;
@@ -197,6 +227,8 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       SymbolicValue peek = programState.peekValue();
       if (OPTIONAL_IS_PRESENT.matches(tree)) {
         constraintManager.setValueFactory(() -> new IsPresentSymbolicValue(peek));
+      } else if (OPTIONAL_IS_EMPTY.matches(tree)) {
+        constraintManager.setValueFactory(() -> new IsEmptySymbolicValue(peek));
       } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(peek)) {
         context.addExceptionalYield(peek, programState, "java.util.NoSuchElementException", check);
         reportIssue(tree);
