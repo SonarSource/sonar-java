@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -54,8 +54,8 @@ public class CommandLineArgumentsCheck extends IssuableSubscriptionVisitor {
     ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.METHOD)) {
-        MethodTreeImpl methodTree = (MethodTreeImpl) member;
-        if (methodTree.isMainMethod()) {
+        MethodTree methodTree = (MethodTree) member;
+        if (MethodTreeUtils.isMainMethod(methodTree)) {
           checkMainMethodArgsUsage(methodTree);
         } else if ("run".equals(methodTree.simpleName().name())) {
           checkArgs4J(methodTree.simpleName(), classTree);

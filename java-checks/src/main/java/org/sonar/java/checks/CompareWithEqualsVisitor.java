@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -61,7 +61,7 @@ public abstract class CompareWithEqualsVisitor extends BaseTreeVisitor implement
   protected abstract void checkEqualityExpression(BinaryExpressionTree tree);
 
   private static boolean isEquals(MethodTree tree) {
-    return ((MethodTreeImpl) tree).isEqualsMethod();
+    return MethodTreeUtils.isEqualsMethod(tree);
   }
 
   protected static boolean isNullComparison(Type leftOpType, Type rightOpType) {

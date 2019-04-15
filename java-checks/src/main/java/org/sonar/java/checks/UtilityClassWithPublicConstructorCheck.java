@@ -22,8 +22,8 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -71,7 +71,7 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   private static boolean containsMainMethod(ClassTree classTree) {
     return classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
-      .anyMatch(method -> ((MethodTreeImpl) method).isMainMethod());
+      .anyMatch(method -> MethodTreeUtils.isMainMethod((MethodTree) method));
   }
 
   private static boolean anonymousClass(ClassTree classTree) {

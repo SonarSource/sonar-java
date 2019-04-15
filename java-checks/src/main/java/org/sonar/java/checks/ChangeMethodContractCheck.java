@@ -22,11 +22,12 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -47,7 +48,7 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     if(!hasSemantic()) {
       return;
     }
-    MethodTreeImpl methodTree = (MethodTreeImpl) tree;
+    MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     Symbol.MethodSymbol overridee = methodSymbol.overriddenSymbol();
     if (overridee != null && overridee.isMethodSymbol()) {
@@ -55,8 +56,8 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkContractChange(MethodTreeImpl methodTree, Symbol.MethodSymbol overridee) {
-    if (methodTree.isEqualsMethod() && methodTree.parameters().get(0).symbol().metadata().isAnnotatedWith(JAVAX_ANNOTATION_NONNULL)) {
+  private void checkContractChange(MethodTree methodTree, Symbol.MethodSymbol overridee) {
+    if (MethodTreeUtils.isEqualsMethod(methodTree) && methodTree.parameters().get(0).symbol().metadata().isAnnotatedWith(JAVAX_ANNOTATION_NONNULL)) {
       reportIssue(methodTree.parameters().get(0), "Equals method should accept null parameters and return false.");
       return;
     }

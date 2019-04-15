@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -62,7 +62,7 @@ public class EqualsOverridenWithHashCodeCheck extends IssuableSubscriptionVisito
   }
 
   private static boolean isEquals(MethodTree methodTree) {
-    return ((MethodTreeImpl) methodTree).isEqualsMethod();
+    return MethodTreeUtils.isEqualsMethod(methodTree);
   }
 
   private static boolean isHashCode(MethodTree methodTree) {

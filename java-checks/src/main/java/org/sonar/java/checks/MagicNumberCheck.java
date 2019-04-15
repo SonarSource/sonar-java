@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -119,7 +119,7 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitMethod(MethodTree tree) {
-    if (!((MethodTreeImpl) tree).isHashCodeMethod()) {
+    if (!MethodTreeUtils.isHashCodeMethod(tree)) {
       super.visitMethod(tree);
     }
   }
