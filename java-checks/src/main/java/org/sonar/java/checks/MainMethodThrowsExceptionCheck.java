@@ -21,8 +21,9 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -37,8 +38,8 @@ public class MainMethodThrowsExceptionCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public void visitNode(Tree tree) {
-    MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    if (methodTree.isMainMethod() && !methodTree.throwsClauses().isEmpty()) {
+    MethodTree methodTree = (MethodTree) tree;
+    if (MethodTreeUtils.isMainMethod(methodTree) && !methodTree.throwsClauses().isEmpty()) {
       reportIssue(methodTree.throwsToken(), "Remove this throws clause.");
     }
   }

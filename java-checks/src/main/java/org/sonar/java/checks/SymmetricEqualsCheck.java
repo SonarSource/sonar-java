@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2162")
@@ -45,8 +46,8 @@ public class SymmetricEqualsCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-      if (methodTree.isEqualsMethod() && methodTree.block() != null) {
+      MethodTree methodTree = (MethodTree) tree;
+      if (MethodTreeUtils.isEqualsMethod(methodTree) && methodTree.block() != null) {
         methodTree.block().accept(new SymmetryBrokePatterns(methodTree.symbol()));
       }
     }

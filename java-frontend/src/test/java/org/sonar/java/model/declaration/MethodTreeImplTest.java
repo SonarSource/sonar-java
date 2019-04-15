@@ -145,40 +145,6 @@ public class MethodTreeImplTest {
   }
 
   @Test
-  public void is_main_method() throws Exception {
-    assertThat(getUniqueMethod("class A { public static void main(String[] args){} }").isMainMethod()).isTrue();
-    assertThat(getUniqueMethod("class A { public static void main(String... args){} }").isMainMethod()).isTrue();
-    assertThat(getUniqueMethod("class A { public void main(String[] args){} }").isMainMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { static void main(String[] args){} }").isMainMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public static void amain(String[] args){} }").isMainMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public static void main(String args){} }").isMainMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public static int main(String[] args){} }").isMainMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public static void main(String[] args, String[] second){} }").isMainMethod()).isFalse();
-  }
-
-  @Test
-  public void is_equals_method() throws Exception {
-    assertThat(getUniqueMethod("class A { public boolean equals(Object o){} }").isEqualsMethod()).isTrue();
-    assertThat(getUniqueMethod("class A { private boolean equals(Object o){} }").isEqualsMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public static boolean equals(Object o){} }").isEqualsMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public boolean equal(Object o){} }").isEqualsMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public boolean equals(Object o, int a){} }").isEqualsMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public boolean equals(int a){} }").isEqualsMethod()).isFalse();
-    assertThat(getUniqueMethod("class equals { public equals(Object o){} }").isEqualsMethod()).isFalse();
-    assertThat(getUniqueMethod("interface I { public abstract boolean equals(Object o); }").isEqualsMethod()).isTrue();
-  }
-
-  @Test
-  public void is_hashcode_method() throws Exception {
-    assertThat(getUniqueMethod("class A { public int hashCode(){} }").isHashCodeMethod()).isTrue();
-    assertThat(getUniqueMethod("class A { public static int hashCode(){} }").isHashCodeMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { private int hashCode(){} }").isHashCodeMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public int hashcode(){} }").isHashCodeMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public boolean hashCode(){} }").isHashCodeMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public int hashCode(int a){} }").isHashCodeMethod()).isFalse();
-  }
-
-  @Test
   public void is_toString_method() throws Exception {
     assertThat(getUniqueMethod("class A { public String toString(){} }").isToStringMethod()).isTrue();
     assertThat(getUniqueMethod("class A { public java.lang.String toString(){} }").isToStringMethod()).isTrue();

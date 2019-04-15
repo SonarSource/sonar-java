@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -52,7 +52,7 @@ public class MainInServletCheck extends IssuableSubscriptionVisitor {
     Symbol.TypeSymbol symbol = node.symbol();
     if (isServletOrEjb(symbol)) {
       for (Tree member : node.members()) {
-        if (member.is(Tree.Kind.METHOD) && ((MethodTreeImpl) member).isMainMethod()) {
+        if (member.is(Tree.Kind.METHOD) && MethodTreeUtils.isMainMethod((MethodTree) member)) {
           reportIssue(((MethodTree) member).simpleName(), "Remove this unwanted \"main\" method.");
         }
       }

@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -110,7 +110,7 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
   }
 
   private static boolean isNotMainMethod(MethodTree tree) {
-    return !((MethodTreeImpl) tree).isMainMethod();
+    return !MethodTreeUtils.isMainMethod(tree);
   }
 
 }
