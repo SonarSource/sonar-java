@@ -25,6 +25,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -32,6 +33,7 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -45,12 +47,13 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     "\"NoSuchElementException\" will be thrown when invoking method \"%s()\" without verifying Optional parameter.");
   private static final MethodMatcher OPTIONAL_GET = optionalMethod("get").withoutParameter();
   private static final MethodMatcher OPTIONAL_ORELSE = optionalMethod("orElse").withAnyParameters();
-  private static final MethodMatcher OPTIONAL_IS_PRESENT = optionalMethod("isPresent").withoutParameter();
+  private static final MethodMatcherCollection OPTIONAL_TEST_METHODS = MethodMatcherCollection.create(
+    optionalMethod("isPresent").withoutParameter(),
+    optionalMethod("isEmpty").withoutParameter());
   private static final MethodMatcher OPTIONAL_EMPTY = optionalMethod("empty").withoutParameter();
   private static final MethodMatcher OPTIONAL_OF = optionalMethod("of").withAnyParameters();
   private static final MethodMatcher OPTIONAL_OF_NULLABLE = optionalMethod("ofNullable").withAnyParameters();
   private static final MethodMatcher OPTIONAL_FILTER = optionalMethod("filter").withAnyParameters();
-  private static final MethodMatcher OPTIONAL_IS_EMPTY = optionalMethod("isEmpty").withoutParameter();
 
   private enum OptionalConstraint implements Constraint {
     PRESENT, NOT_PRESENT;
@@ -144,16 +147,23 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
 
   }
 
-  private static class IsPresentSymbolicValue extends SymbolicValue {
+  /**
+   * Used to wrap symbolic value resulting from invocation of Optional test methods:
+   * - isPresent() (jdk 8)
+   * - isEmpty() (jdk 11)
+   */
+  private static class OptionalTestMethodSymbolicValue extends SymbolicValue {
 
     private final SymbolicValue optionalSV;
+    private final boolean isIsEmpty;
 
-    public IsPresentSymbolicValue(SymbolicValue sv) {
+    public OptionalTestMethodSymbolicValue(SymbolicValue sv, Symbol testMethod) {
       this.optionalSV = sv;
+      this.isIsEmpty = "isEmpty".equals(testMethod.name());
     }
 
     /**
-     * Will be called only after calling Optional.isPresent()
+     * Will be called only after calling Optional.isPresent() or Optional.isEmpty()
      */
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
@@ -164,49 +174,25 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
       if (optionalConstraint == OptionalConstraint.NOT_PRESENT || optionalConstraint == OptionalConstraint.PRESENT) {
         return Collections.singletonList(programState);
       }
-      OptionalConstraint newConstraint = booleanConstraint.isTrue() ? OptionalConstraint.PRESENT : OptionalConstraint.NOT_PRESENT;
 
-      return optionalSV.setConstraint(programState, newConstraint);
+      return optionalSV.setConstraint(programState, expectedOptionalConstraint(booleanConstraint));
     }
 
-    private static boolean isImpossibleState(BooleanConstraint booleanConstraint, OptionalConstraint optionalConstraint) {
-      return (optionalConstraint == OptionalConstraint.PRESENT && booleanConstraint.isFalse())
-        || (optionalConstraint == OptionalConstraint.NOT_PRESENT && booleanConstraint.isTrue());
+    private boolean isImpossibleState(BooleanConstraint booleanConstraint, @Nullable OptionalConstraint optionalConstraint) {
+      return optionalConstraint == expectedOptionalConstraint(booleanConstraint.isTrue() ? BooleanConstraint.FALSE : BooleanConstraint.TRUE);
+    }
+
+    private OptionalConstraint expectedOptionalConstraint(BooleanConstraint booleanConstraint) {
+      if (booleanConstraint.isTrue()) {
+        return isIsEmpty ? OptionalConstraint.NOT_PRESENT : OptionalConstraint.PRESENT;
+      }
+      return isIsEmpty ? OptionalConstraint.PRESENT : OptionalConstraint.NOT_PRESENT;
     }
 
     @Override
     public boolean references(SymbolicValue other) {
       return optionalSV.equals(other) || optionalSV.references(other);
     }
-  }
-
-  private static class IsEmptySymbolicValue extends SymbolicValue {
-
-    private final SymbolicValue optionalSV;
-
-    IsEmptySymbolicValue(SymbolicValue optionalSV) {
-      this.optionalSV = optionalSV;
-    }
-
-    @Override
-    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      OptionalConstraint optionalConstraint = programState.getConstraint(optionalSV, OptionalConstraint.class);
-      if (isImpossibleState(booleanConstraint, optionalConstraint)) {
-        return Collections.emptyList();
-      }
-      if (optionalConstraint == OptionalConstraint.NOT_PRESENT || optionalConstraint == OptionalConstraint.PRESENT) {
-        return Collections.singletonList(programState);
-      }
-      OptionalConstraint newConstraint = booleanConstraint.isFalse() ? OptionalConstraint.PRESENT : OptionalConstraint.NOT_PRESENT;
-
-      return optionalSV.setConstraint(programState, newConstraint);
-    }
-
-    private static boolean isImpossibleState(BooleanConstraint booleanConstraint, OptionalConstraint optionalConstraint) {
-      return (optionalConstraint == OptionalConstraint.PRESENT && booleanConstraint.isTrue())
-              || (optionalConstraint == OptionalConstraint.NOT_PRESENT && booleanConstraint.isFalse());
-    }
-
   }
 
   private static class PreStatementVisitor extends CheckerTreeNodeVisitor {
@@ -225,10 +211,8 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       SymbolicValue peek = programState.peekValue();
-      if (OPTIONAL_IS_PRESENT.matches(tree)) {
-        constraintManager.setValueFactory(() -> new IsPresentSymbolicValue(peek));
-      } else if (OPTIONAL_IS_EMPTY.matches(tree)) {
-        constraintManager.setValueFactory(() -> new IsEmptySymbolicValue(peek));
+      if (OPTIONAL_TEST_METHODS.anyMatch(tree)) {
+        constraintManager.setValueFactory(() -> new OptionalTestMethodSymbolicValue(peek, tree.symbol()));
       } else if (OPTIONAL_GET.matches(tree) && presenceHasNotBeenChecked(peek)) {
         context.addExceptionalYield(peek, programState, "java.util.NoSuchElementException", check);
         reportIssue(tree);
