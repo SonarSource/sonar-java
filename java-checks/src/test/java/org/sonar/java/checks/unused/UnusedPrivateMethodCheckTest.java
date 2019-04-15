@@ -22,6 +22,7 @@ package org.sonar.java.checks.unused;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+@org.junit.Ignore("Symbol.usages")
 public class UnusedPrivateMethodCheckTest {
 
   @Test

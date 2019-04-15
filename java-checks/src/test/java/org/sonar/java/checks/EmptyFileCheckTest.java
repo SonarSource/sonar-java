@@ -39,6 +39,7 @@ public class EmptyFileCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithPackage.java", new EmptyFileCheck());
   }
 
+  @org.junit.Ignore("syntax error")
   @Test
   public void with_module() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithModule.java", new EmptyFileCheck());

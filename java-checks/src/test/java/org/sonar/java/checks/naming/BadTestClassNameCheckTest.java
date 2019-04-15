@@ -22,6 +22,7 @@ package org.sonar.java.checks.naming;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+@org.junit.Ignore("SymbolMetadata")
 public class BadTestClassNameCheckTest {
   @Test
   public void test() {

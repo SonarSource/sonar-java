@@ -22,6 +22,7 @@ package org.sonar.java.checks.synchronization;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+@org.junit.Ignore("Symbol.declaration")
 public class WriteObjectTheOnlySynchronizedMethodCheckTest {
 
   @Test
