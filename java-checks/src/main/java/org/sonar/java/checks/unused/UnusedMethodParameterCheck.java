@@ -29,10 +29,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.Javadoc;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -118,7 +118,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isExcluded(MethodTree tree) {
-    return ((MethodTreeImpl) tree).isMainMethod()
+    return MethodTreeUtils.isMainMethod(tree)
       || isAnnotated(tree)
       || isOverriding(tree)
       || isSerializableMethod(tree)

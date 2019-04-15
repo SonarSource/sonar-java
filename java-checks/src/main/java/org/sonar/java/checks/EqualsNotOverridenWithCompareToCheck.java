@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -72,7 +72,7 @@ public class EqualsNotOverridenWithCompareToCheck extends IssuableSubscriptionVi
   }
 
   private static boolean isEqualsMethod(MethodTree method) {
-    return ((MethodTreeImpl) method).isEqualsMethod();
+    return MethodTreeUtils.isEqualsMethod(method);
   }
 
   private static boolean isComparable(ClassTree tree) {

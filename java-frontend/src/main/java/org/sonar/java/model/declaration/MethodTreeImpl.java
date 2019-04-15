@@ -325,63 +325,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return "Override".equals(id.name());
   }
 
-  public boolean isMainMethod() {
-    return isPublicStatic() && isNamed("main") && returnsVoid() && hasStringArrayParameter();
-  }
-
-  private boolean isPublicStatic() {
-    return isStatic() && isPublic();
-  }
-
-  private boolean hasStringArrayParameter() {
-    return parameters.size() == 1 && isParameterStringArray();
-  }
-
-  private boolean isParameterStringArray() {
-    VariableTree variableTree = parameters.get(0);
-    boolean result = false;
-    if (variableTree.type().is(Tree.Kind.ARRAY_TYPE)) {
-      ArrayTypeTree arrayTypeTree = (ArrayTypeTree) variableTree.type();
-      result = arrayTypeTree.type().symbolType().isClass() && "String".equals(arrayTypeTree.type().symbolType().name());
-    }
-    return result;
-  }
-
-  private boolean returnsVoid() {
-    return returnsPrimitive("void");
-  }
-
   private boolean isNamed(String name) {
     return name.equals(simpleName().name());
-  }
-
-  public boolean isEqualsMethod() {
-    boolean hasEqualsSignature = isNamed("equals") && returnsBoolean() && hasObjectParameter();
-    return isPublic() && !isStatic() && hasEqualsSignature;
-  }
-
-  private boolean hasObjectParameter() {
-    return parameters.size()==1 && parameters.get(0).type().symbolType().is("java.lang.Object");
-  }
-
-  private boolean returnsBoolean() {
-    return returnsPrimitive("boolean");
-  }
-
-  private boolean returnsPrimitive(String primitive) {
-    if (returnType != null) {
-      return returnType.is(Tree.Kind.PRIMITIVE_TYPE) && primitive.equals(((PrimitiveTypeTree) returnType).keyword().text());
-    }
-    return false;
-  }
-
-  public boolean isHashCodeMethod() {
-    boolean hasHashCodeSignature = isNamed("hashCode") && parameters.isEmpty() && returnsInt();
-    return isPublic() && !isStatic() && hasHashCodeSignature;
-  }
-
-  private boolean returnsInt() {
-    return returnsPrimitive("int");
   }
 
   public boolean isToStringMethod() {
