@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +61,9 @@ abstract class ESymbol implements Symbol {
     return this.binding.hashCode();
   }
 
+  /**
+   * @see JavaSymbol.MethodJavaSymbol#isConstructor() name of constructor
+   */
   @Override
   public final String name() {
     if (binding.getKind() == IBinding.METHOD && ((IMethodBinding) binding).isConstructor()) {
@@ -424,6 +428,7 @@ class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
 }
 
 @MethodsAreNonnullByDefault
+@ParametersAreNonnullByDefault
 class EType implements Type {
   private final AST ast;
   private final ITypeBinding typeBinding;

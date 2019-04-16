@@ -21,22 +21,23 @@ public class SyntaxErrorsTest {
 
   @Test
   public void test() throws Exception {
-    Files.walkFileTree(Paths.get("../java-checks/src/test/files/checks"), new SimpleFileVisitor<Path>() {
-      @Override
-      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        if (!file.endsWith("CheckListParseErrorTest.java")
-          && !file.endsWith("ParsingError.java")
-          && !file.endsWith("UseSwitchExpressionCheck.java") // Java 12
-        ) {
-          parse(file);
-        }
-        return FileVisitResult.CONTINUE;
-      }
-    });
+    Files.walk(Paths.get("../java-checks/src/test/files/checks"))
+      .filter(Files::isRegularFile)
+      .filter(path -> path.toString().endsWith(".java")
+        && !path.endsWith("CheckListParseErrorTest.java")
+        && !path.endsWith("ParsingError.java")
+        && !path.endsWith("UseSwitchExpressionCheck.java") // Java 12
+      )
+      .forEach(SyntaxErrorsTest::parse);
   }
 
-  private static void parse(Path file) throws IOException {
-    String source = new String(Files.readAllBytes(file));
+  private static void parse(Path file) {
+    String source;
+    try {
+      source = new String(Files.readAllBytes(file));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
 
     ASTParser astParser = ASTParser.newParser(AST.JLS11);
     astParser.setResolveBindings(true);

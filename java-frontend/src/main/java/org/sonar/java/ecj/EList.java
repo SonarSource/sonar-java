@@ -48,12 +48,12 @@ class EList<T extends Tree> extends ETree implements ListTree<T> {
 
   @Override
   public Object[] toArray() {
-    throw new UnexpectedAccessException();
+    return elements.toArray();
   }
 
   @Override
   public <T1> T1[] toArray(T1[] a) {
-    throw new UnexpectedAccessException();
+    return elements.toArray(a);
   }
 
   @Deprecated

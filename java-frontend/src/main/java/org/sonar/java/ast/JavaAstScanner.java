@@ -88,8 +88,8 @@ public class JavaAstScanner {
     try {
       String fileContent = inputFile.contents();
       Tree ast = parser.parse(fileContent);
-      ast = EcjParser.parse(inputFile.contents());
-      // TODO sema:
+      ast = EcjParser.parse(fileContent);
+      // TODO remove old sema:
       visitor.visitFile(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);

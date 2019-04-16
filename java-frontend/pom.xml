@@ -86,6 +86,85 @@
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
       <version>3.17.0</version>
+      <exclusions>
+        <!-- itself ~ 7 MB -->
+
+        <!-- DIRECT DEPENDENCIES -->
+        <!--
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.resources</artifactId>
+        </exclusion>
+        -->
+        <!--
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.runtime</artifactId>
+        </exclusion>
+        -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.filesystem</artifactId>
+        </exclusion>
+        <!--
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.text</artifactId>
+        </exclusion>
+        -->
+
+        <!-- FROM org.eclipse.core.resources 3.13.300 -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.expressions</artifactId>
+        </exclusion>
+
+        <!-- FROM org.eclipse.core.runtime 3.15.200 -->
+        <!--
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.osgi</artifactId>
+        </exclusion>
+        -->
+        <!--
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.equinox.common</artifactId>
+        </exclusion>
+        -->
+        <!--
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.jobs</artifactId>
+        </exclusion>
+        -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.equinox.registry</artifactId>
+        </exclusion>
+        <!--
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.equinox.preferences</artifactId>
+        </exclusion>
+        -->
+        <!--
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.contenttype</artifactId>
+        </exclusion>
+        -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.equinox.app</artifactId>
+        </exclusion>
+
+        <!-- FROM org.eclipse.text 3.8.100 -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.commands</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
