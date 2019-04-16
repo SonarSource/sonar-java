@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_JavaTree)
 public class CombineCatchCheckTest {
 
   @Test
@@ -30,6 +29,7 @@ public class CombineCatchCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/CombineCatchCheck_no_version.java", new CombineCatchCheck());
   }
 
+  @org.junit.Ignore("java version")
   @Test
   public void java_version_set() {
     JavaCheckVerifier.verify("src/test/files/checks/CombineCatchCheck.java", new CombineCatchCheck(), 7);

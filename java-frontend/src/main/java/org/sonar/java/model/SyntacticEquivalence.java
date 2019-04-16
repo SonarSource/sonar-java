@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Objects;
+import org.sonar.java.ecj.ETree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -56,7 +57,35 @@ public final class SyntacticEquivalence {
   * @return true, if nodes are syntactically equivalent
   */
   public static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode) {
+    if (leftNode instanceof ETree || rightNode instanceof ETree) {
+      return areEquivalent((ETree) leftNode, (ETree) rightNode);
+    }
     return areEquivalent((JavaTree) leftNode, (JavaTree) rightNode);
+  }
+
+  public static boolean areEquivalent(@Nullable ETree leftNode, @Nullable ETree rightNode) {
+    if (leftNode == rightNode) {
+      return true;
+    }
+    if (leftNode == null || rightNode == null) {
+      return false;
+    }
+    if (leftNode.kind() != rightNode.kind()) {
+      return false;
+    }
+
+    if (leftNode.is(Tree.Kind.TOKEN)) {
+      return ((SyntaxToken) leftNode).text().equals(((SyntaxToken) rightNode).text());
+    }
+
+    Iterator<? extends Tree> iteratorA = leftNode.children();
+    Iterator<? extends Tree> iteratorB = rightNode.children();
+    while (iteratorA.hasNext() && iteratorB.hasNext()) {
+      if (!areEquivalent(iteratorA.next(), iteratorB.next())) {
+        return false;
+      }
+    }
+    return !iteratorA.hasNext() && !iteratorB.hasNext();
   }
 
   private static boolean areEquivalent(@Nullable JavaTree leftNode, @Nullable JavaTree rightNode) {
