@@ -32,4 +32,12 @@ public class JavaRules {
   public static Set<String> getRuleKeys() {
     return ruleKeys;
   }
+
+  public static Set<String> getSecurityRuleKeys() {
+    return ruleKeys;
+  }
+
+  public static String getRepositoryKey() {
+    return "security-repo-key";
+  }
 }
