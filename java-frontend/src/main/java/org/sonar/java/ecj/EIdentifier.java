@@ -82,7 +82,9 @@ class EIdentifier extends EExpression implements IdentifierTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.forArray();
+    return Iterators.forArray(
+      identifierToken()
+    );
   }
 
   /**

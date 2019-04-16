@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
 
-@org.junit.Ignore("cast to ParametrizedTypeJavaType")
+@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_ParametrizedTypeJavaType)
 public class EnumSetCheckTest {
 
   @Test

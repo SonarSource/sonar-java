@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore("TypeSymbol.lookupSymbols")
+@org.junit.Ignore(godin.IgnoreReasons.LOOKUP_SYMBOLS)
 public class ThreadOverridesRunCheckTest {
 
   @Test

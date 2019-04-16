@@ -22,6 +22,7 @@ package org.sonar.java.checks.spring;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+@org.junit.Ignore(godin.IgnoreReasons.SYMBOL_DECLARATION)
 public class SpringComponentWithNonAutowiredMembersCheckTest {
 
   private String basePath = "src/test/files/checks/spring/SpringComponentWithNonAutowiredMembersCheck/";

@@ -232,7 +232,7 @@ public final class EcjParser {
         CompilationUnit e = (CompilationUnit) node;
         this.compilationUnit = e;
 
-        // HACK
+        // TODO HACK
         for (Object o : e.getCommentList()) {
           Comment comment = (Comment) o;
           ESyntaxTrivia trivia = new ESyntaxTrivia();
@@ -364,15 +364,28 @@ public final class EcjParser {
         EMethod t = new EMethod();
         t.ast = e.getAST();
         t.binding = e.resolveBinding();
+        for (Object o : e.modifiers()) {
+          t.modifiers.elements.add(
+            (ModifierTree) convert((ASTNode) o)
+          );
+        }
         t.returnType = convertType(e.getType());
         t.simpleName = convertSimpleName(e.getName());
         t.closeParenToken = firstTokenAfter(e.getName(), TerminalTokens.TokenNameRPAREN);
         return t;
       }
       case ASTNode.INITIALIZER: {
-        // TODO StaticInitializerTree
         Initializer e = (Initializer) node;
-        return convertBlock(e.getBody());
+        EBlock t = convertBlock(e.getBody());
+        if (Modifier.isStatic(e.getModifiers())) {
+          EStaticInitializer t2 = new EStaticInitializer();
+          t2.staticKeyword = createSyntaxToken(e, "static");
+          t2.body.addAll(t.body);
+          t2.openBraceToken = t.openBraceToken();
+          t2.closeBraceToken = t.closeBraceToken();
+          return t2;
+        }
+        return t;
       }
 
       default:
@@ -1246,7 +1259,7 @@ public final class EcjParser {
     }
   }
 
-  private BlockTree convertBlock(Block e) {
+  private EBlock convertBlock(Block e) {
     if (e == null) {
       return null;
     }

@@ -22,7 +22,7 @@ package org.sonar.java.checks.serialization;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore("TypeSymbol.lookupSymbols")
+@org.junit.Ignore(godin.IgnoreReasons.LOOKUP_SYMBOLS)
 public class SerialVersionUidCheckTest {
   @Test
   public void test() {

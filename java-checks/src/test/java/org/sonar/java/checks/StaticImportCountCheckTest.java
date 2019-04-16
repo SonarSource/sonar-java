@@ -48,7 +48,7 @@ public class StaticImportCountCheckTest {
     JavaCheckVerifier.verifyNoIssue(TEST_FILES_DIR + "MixedStandardAndStaticImportsCompliant.java", check);
   }
 
-  @org.junit.Ignore("syntax error")
+  @org.junit.Ignore(godin.IgnoreReasons.SYNTAX_ERROR)
   @Test
   public void cu_with_custom_threshold_noncompliant() {
     StaticImportCountCheck check = new StaticImportCountCheck();

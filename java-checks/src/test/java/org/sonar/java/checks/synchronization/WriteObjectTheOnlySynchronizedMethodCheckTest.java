@@ -22,7 +22,7 @@ package org.sonar.java.checks.synchronization;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore("Symbol.declaration")
+@org.junit.Ignore(godin.IgnoreReasons.SYMBOL_DECLARATION)
 public class WriteObjectTheOnlySynchronizedMethodCheckTest {
 
   @Test

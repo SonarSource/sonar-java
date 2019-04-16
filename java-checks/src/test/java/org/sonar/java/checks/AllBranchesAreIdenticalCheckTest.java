@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore("syntax error")
+@org.junit.Ignore(godin.IgnoreReasons.SYNTAX_ERROR)
 public class AllBranchesAreIdenticalCheckTest {
 
   @Test

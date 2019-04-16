@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore("MethodSymbol.overriddenSymbol")
+@org.junit.Ignore(godin.IgnoreReasons.overriddenSymbol)
 public class TooManyMethodsCheckTest {
 
   @Test

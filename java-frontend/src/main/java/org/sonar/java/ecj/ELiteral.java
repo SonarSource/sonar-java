@@ -49,6 +49,8 @@ class ELiteral extends EExpression implements LiteralTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.forArray();
+    return Iterators.forArray(
+      token()
+    );
   }
 }

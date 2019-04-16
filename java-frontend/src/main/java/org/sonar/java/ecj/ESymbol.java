@@ -5,6 +5,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -61,6 +62,9 @@ abstract class ESymbol implements Symbol {
 
   @Override
   public final String name() {
+    if (binding.getKind() == IBinding.METHOD && ((IMethodBinding) binding).isConstructor()) {
+      return "<init>";
+    }
     return binding.getName();
   }
 
@@ -81,6 +85,8 @@ abstract class ESymbol implements Symbol {
       return new ETypeSymbol(ast, b.getDeclaringClass());
 
     } else if (binding.getKind() == IBinding.METHOD) {
+      // TODO what about FileHandlingCheck: new FileReader("") {}
+
       IMethodBinding b = (IMethodBinding) binding;
       return new ETypeSymbol(ast, b.getDeclaringClass());
 
@@ -93,8 +99,14 @@ abstract class ESymbol implements Symbol {
       }
       ITypeBinding declaringClass = b.getDeclaringClass();
       if (declaringClass == null) {
-        // FIXME e.g. owner of top-level classes should be b.getPackage() , otherwise NPE in UtilityClassWithPublicConstructorCheck ?
-        throw new NotImplementedException();
+        // TODO e.g. owner of top-level classes should be b.getPackage() , otherwise NPE in UtilityClassWithPublicConstructorCheck ?
+        return new ESymbol(ast, b.getPackage()) {
+          @Nullable
+          @Override
+          public TypeSymbol enclosingClass() {
+            return null;
+          }
+        };
       }
       return new ETypeSymbol(ast, declaringClass);
 

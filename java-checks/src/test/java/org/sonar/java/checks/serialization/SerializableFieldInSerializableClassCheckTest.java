@@ -22,7 +22,7 @@ package org.sonar.java.checks.serialization;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore("Type.erasure")
+@org.junit.Ignore(godin.IgnoreReasons.TYPE_ERASURE)
 public class SerializableFieldInSerializableClassCheckTest {
 
   @Test

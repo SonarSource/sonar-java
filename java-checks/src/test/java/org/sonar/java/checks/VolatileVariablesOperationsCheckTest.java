@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class VolatileVariablesOperationsCheckTest {
 
-  @org.junit.Ignore("syntax error")
+  @org.junit.Ignore(godin.IgnoreReasons.SYNTAX_ERROR)
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/VolatileVariablesOperationsCheck.java", new VolatileVariablesOperationsCheck());

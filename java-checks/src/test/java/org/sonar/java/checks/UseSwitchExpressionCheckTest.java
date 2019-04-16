@@ -24,13 +24,13 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class UseSwitchExpressionCheckTest {
 
-  @org.junit.Ignore("syntax error")
+  @org.junit.Ignore(godin.IgnoreReasons.SYNTAX_ERROR)
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/UseSwitchExpressionCheck.java", new UseSwitchExpressionCheck(), 12);
   }
 
-  @org.junit.Ignore("syntax error")
+  @org.junit.Ignore(godin.IgnoreReasons.SYNTAX_ERROR)
   @Test
   public void test_no_issue_on_java11() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UseSwitchExpressionCheck.java", new UseSwitchExpressionCheck(), 11);

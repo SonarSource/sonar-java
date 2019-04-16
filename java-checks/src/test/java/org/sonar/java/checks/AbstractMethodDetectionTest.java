@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@org.junit.Ignore("cast to JavaTree")
+@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_JavaTree)
 public class AbstractMethodDetectionTest {
 
   @Test

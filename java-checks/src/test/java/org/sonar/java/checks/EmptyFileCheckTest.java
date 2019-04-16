@@ -39,7 +39,7 @@ public class EmptyFileCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithPackage.java", new EmptyFileCheck());
   }
 
-  @org.junit.Ignore("syntax error")
+  @org.junit.Ignore(godin.IgnoreReasons.SYNTAX_ERROR)
   @Test
   public void with_module() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithModule.java", new EmptyFileCheck());

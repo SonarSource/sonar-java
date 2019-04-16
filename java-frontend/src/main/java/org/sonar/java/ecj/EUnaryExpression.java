@@ -37,13 +37,6 @@ abstract class EUnaryExpression extends EExpression implements UnaryExpressionTr
     return kind;
   }
 
-  @Override
-  Iterator<? extends Tree> childrenIterator() {
-    return Iterators.singletonIterator(
-      expression()
-    );
-  }
-
   static class Prefix extends EUnaryExpression {
     @Nullable
     @Override
@@ -55,6 +48,14 @@ abstract class EUnaryExpression extends EExpression implements UnaryExpressionTr
     @Override
     public SyntaxToken lastToken() {
       return expression().lastToken();
+    }
+
+    @Override
+    Iterator<? extends Tree> childrenIterator() {
+      return Iterators.forArray(
+        operatorToken(),
+        expression()
+      );
     }
   }
 
@@ -69,6 +70,14 @@ abstract class EUnaryExpression extends EExpression implements UnaryExpressionTr
     @Override
     public SyntaxToken lastToken() {
       return operatorToken();
+    }
+
+    @Override
+    Iterator<? extends Tree> childrenIterator() {
+      return Iterators.forArray(
+        expression(),
+        operatorToken()
+      );
     }
   }
 }
