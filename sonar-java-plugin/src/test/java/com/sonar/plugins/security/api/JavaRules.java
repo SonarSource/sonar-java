@@ -28,14 +28,8 @@ import java.util.Set;
 public class JavaRules {
 
   public static Set<String> ruleKeys = new HashSet<>();
-  private static final String REPO_KEY = "javasecurity";
 
-  public static Set<String> getSecurityRuleKeys() {
+  public static Set<String> getRuleKeys() {
     return ruleKeys;
   }
-
-  public static String getRepositoryKey() {
-    return REPO_KEY;
-  }
-
 }
