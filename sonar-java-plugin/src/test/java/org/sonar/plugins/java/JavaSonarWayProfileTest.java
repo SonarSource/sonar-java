@@ -83,11 +83,12 @@ public class JavaSonarWayProfileTest {
   public void should_contains_security_rules_if_present() {
     // no security rules available
     JavaRules.ruleKeys = new HashSet<>();
-    assertThat(JavaSonarWayProfile.getSecurityRuleKeys()).isEmpty();
+    assertThat(JavaSonarWayProfile.getSecurityRuleKeys(true)).isEmpty();
 
     // one security rule available
     JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S3649"));
-    assertThat(JavaSonarWayProfile.getSecurityRuleKeys()).containsOnly(RuleKey.of("javasecurity", "S3649"));
+    assertThat(JavaSonarWayProfile.getSecurityRuleKeys(true)).containsOnly(RuleKey.of("squid", "S3649"));
+    assertThat(JavaSonarWayProfile.getSecurityRuleKeys(false)).containsOnly(RuleKey.of("security-repo-key", "S3649"));
   }
 
 }

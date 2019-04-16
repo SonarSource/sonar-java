@@ -68,7 +68,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
       }
     }
 
-    getSecurityRuleKeys().forEach(key -> sonarWay.activateRule(key.repository(), key.rule()));
+    getSecurityRuleKeys(isSonarSecurityBefore78()).forEach(key -> sonarWay.activateRule(key.repository(), key.rule()));
 
     sonarWay.done();
   }
@@ -92,7 +92,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
       String key = ruleAnnotation.key();
       org.sonar.java.RspecKey rspecKeyAnnotation = AnnotationUtils.getAnnotation(checkClass, org.sonar.java.RspecKey.class);
       String rspecKey = key;
-      if(rspecKeyAnnotation != null) {
+      if (rspecKeyAnnotation != null) {
         rspecKey = rspecKeyAnnotation.value();
       }
       result.put(rspecKey, key);
@@ -114,18 +114,25 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
   }
 
   @VisibleForTesting
-  static Set<RuleKey> getSecurityRuleKeys() {
+  static Set<RuleKey> getSecurityRuleKeys(boolean sonarSecurityBefore78) {
     try {
       Class<?> javaRulesClass = Class.forName("com.sonar.plugins.security.api.JavaRules");
-      Method getRuleKeysMethod = javaRulesClass.getMethod("getSecurityRuleKeys");
+      String ruleKeysMethod = sonarSecurityBefore78 ? "getRuleKeys" : "getSecurityRuleKeys";
+      Method getRuleKeysMethod = javaRulesClass.getMethod(ruleKeysMethod);
       Set<String> ruleKeys = (Set<String>) getRuleKeysMethod.invoke(null);
-      Method getRepositoryKeyMethod = javaRulesClass.getMethod("getRepositoryKey");
-      String repositoryKey = (String) getRepositoryKeyMethod.invoke(null);
+      String repositoryKey;
+      if (sonarSecurityBefore78) {
+        repositoryKey = CheckList.REPOSITORY_KEY;
+      } else {
+        Method getRepositoryKeyMethod = javaRulesClass.getMethod("getRepositoryKey");
+        repositoryKey = (String) getRepositoryKeyMethod.invoke(null);
+      }
       return ruleKeys.stream().map(k -> RuleKey.of(repositoryKey, k)).collect(Collectors.toSet());
+
     } catch (ClassNotFoundException e) {
       LOG.debug("com.sonar.plugins.security.api.JavaRules is not found, no security rules added to Sonar way java profile: " + e.getMessage());
     } catch (NoSuchMethodException e) {
-      LOG.debug("com.sonar.plugins.security.api.JavaRules#getRuleKeys is not found, no security rules added to Sonar way java profile: " + e.getMessage());
+      LOG.debug("Method is not found, no security rules added to Sonar way java profile: " + e.getMessage());
     } catch (IllegalAccessException e) {
       LOG.debug("[IllegalAccessException] no security rules added to Sonar way java profile: " + e.getMessage());
     } catch (InvocationTargetException e) {
@@ -133,6 +140,17 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
     }
 
     return new HashSet<>();
+  }
+
+  private static boolean isSonarSecurityBefore78() {
+    try {
+      Class<?> javaRulesClass = Class.forName("com.sonar.plugins.security.api.JavaRules");
+      javaRulesClass.getMethod("getRepositoryKey");
+      return false;
+
+    } catch (NoSuchMethodException | ClassNotFoundException e) {
+      return true;
+    }
   }
 
   static class Profile {
