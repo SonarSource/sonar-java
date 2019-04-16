@@ -145,17 +145,6 @@ public class MethodTreeImplTest {
   }
 
   @Test
-  public void is_toString_method() throws Exception {
-    assertThat(getUniqueMethod("class A { public String toString(){} }").isToStringMethod()).isTrue();
-    assertThat(getUniqueMethod("class A { public java.lang.String toString(){} }").isToStringMethod()).isTrue();
-    assertThat(getUniqueMethod("class A { public static String toString(){} }").isToStringMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { private String toString(){} }").isToStringMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public String tostring(){} }").isToStringMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public int toString(){} }").isToStringMethod()).isFalse();
-    assertThat(getUniqueMethod("class A { public String toString(String foo){} }").isToStringMethod()).isFalse();
-  }
-
-  @Test
   public void varargs_flag() {
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) getUniqueMethod("class A { public static void main(String[] args){} }").symbol();
     assertThat((methodSymbol.flags() & Flags.VARARGS) != 0).isFalse();

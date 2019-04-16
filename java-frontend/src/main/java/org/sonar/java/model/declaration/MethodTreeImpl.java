@@ -32,7 +32,6 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -41,7 +40,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -294,10 +292,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE);
   }
 
-  private boolean isPublic() {
-    return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
-  }
-
   public boolean isAnnotatedOverride() {
     for (AnnotationTree annotationTree : modifiers.annotations()) {
       if (isJavaLangOverride(annotationTree.annotationType())) {
@@ -325,19 +319,4 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return "Override".equals(id.name());
   }
 
-  private boolean isNamed(String name) {
-    return name.equals(simpleName().name());
-  }
-
-  public boolean isToStringMethod() {
-    boolean hasToStringSignature = isNamed("toString") && parameters.isEmpty() && returnsString();
-    return isPublic() && !isStatic() && hasToStringSignature;
-  }
-
-  private boolean returnsString() {
-    if (returnType != null) {
-      return returnType.symbolType().is("java.lang.String");
-    }
-    return false;
-  }
 }
