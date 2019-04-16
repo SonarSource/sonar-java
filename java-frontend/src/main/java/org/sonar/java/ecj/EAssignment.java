@@ -13,7 +13,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EAssignment extends EExpression implements AssignmentExpressionTree {
-
   Kind kind;
   ExpressionTree variable;
   SyntaxToken operatorToken;

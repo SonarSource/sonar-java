@@ -14,7 +14,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EIfStatement extends EStatement implements IfStatementTree {
-
   SyntaxToken ifKeyword;
   ExpressionTree condition;
   SyntaxToken closeParenToken;

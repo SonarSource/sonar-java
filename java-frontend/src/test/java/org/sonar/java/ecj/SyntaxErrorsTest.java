@@ -17,7 +17,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SyntaxTest {
+public class SyntaxErrorsTest {
 
   @Test
   public void test() throws Exception {

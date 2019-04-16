@@ -36,7 +36,7 @@ class ELabeledStatement extends EStatement implements LabeledStatementTree {
 
   @Override
   public Symbol.LabelSymbol symbol() {
-    throw new UnsupportedOperationException();
+    throw new NotImplementedException();
   }
 
   @Override

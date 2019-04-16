@@ -12,7 +12,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class ELiteral extends EExpression implements LiteralTree {
-
   Kind kind;
   SyntaxToken token;
 

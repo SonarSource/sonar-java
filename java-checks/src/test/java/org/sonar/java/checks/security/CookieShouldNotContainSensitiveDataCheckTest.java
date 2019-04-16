@@ -22,7 +22,6 @@ package org.sonar.java.checks.security;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore("SymbolMetadata")
 public class CookieShouldNotContainSensitiveDataCheckTest {
 
   @Test

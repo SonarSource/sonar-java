@@ -33,7 +33,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@org.junit.Ignore("SymbolMetadata")
+@org.junit.Ignore("MethodSymbol.overriddenSymbol")
 @RunWith(Parameterized.class)
 public class AssertionsInTestsCheckTest {
 

@@ -13,7 +13,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EParenthesizedExpression extends EExpression implements ParenthesizedTree {
-
   SyntaxToken openParenToken;
   ExpressionTree expression;
   SyntaxToken closeParenToken;

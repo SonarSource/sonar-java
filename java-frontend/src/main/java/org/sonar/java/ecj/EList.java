@@ -23,7 +23,7 @@ class EList<T extends Tree> extends ETree implements ListTree<T> {
 
   @Override
   public List<SyntaxToken> separators() {
-    throw new UnsupportedOperationException();
+    throw new NotImplementedException();
   }
 
   @Override
@@ -121,7 +121,7 @@ class EList<T extends Tree> extends ETree implements ListTree<T> {
 
   @Override
   public int indexOf(Object o) {
-    throw new UnexpectedAccessException();
+    return elements.indexOf(o);
   }
 
   @Override

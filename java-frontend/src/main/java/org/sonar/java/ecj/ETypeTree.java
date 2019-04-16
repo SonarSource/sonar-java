@@ -10,6 +10,7 @@ import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -34,6 +35,49 @@ abstract class ETypeTree extends ETree implements TypeTree {
       return Symbols.unknownType;
     }
     return new EType(ast, binding);
+  }
+}
+
+@MethodsAreNonnullByDefault
+@ParametersAreNonnullByDefault
+class EPrimitiveType extends ETypeTree implements PrimitiveTypeTree {
+  SyntaxToken keyword;
+
+  @Override
+  public List<AnnotationTree> annotations() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public SyntaxToken keyword() {
+    return keyword;
+  }
+
+  @Override
+  public void accept(TreeVisitor visitor) {
+    visitor.visitPrimitiveType(this);
+  }
+
+  @Override
+  public Kind kind() {
+    return Kind.PRIMITIVE_TYPE;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken firstToken() {
+    return keyword;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken lastToken() {
+    return keyword;
+  }
+
+  @Override
+  Iterator<? extends Tree> childrenIterator() {
+    return Iterators.forArray();
   }
 }
 
@@ -139,7 +183,7 @@ class EArrayType extends ETypeTree implements ArrayTypeTree {
   @Nullable
   @Override
   public SyntaxToken closeBracketToken() {
-    throw new UnsupportedOperationException();
+    throw new UnexpectedAccessException();
   }
 
   @Nullable

@@ -115,7 +115,7 @@ class EClassInstanceCreation extends EExpression implements NewClassTree {
 
     @Override
     public SyntaxToken closeBracketToken() {
-      throw new UnsupportedOperationException();
+      throw new NotImplementedException();
     }
 
     @Override

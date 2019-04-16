@@ -14,7 +14,6 @@ import java.util.List;
 
 @MethodsAreNonnullByDefault
 public class EBlock extends EStatement implements BlockTree {
-
   SyntaxToken openBraceToken;
   List<StatementTree> body = new ArrayList<>();
   SyntaxToken closeBraceToken;

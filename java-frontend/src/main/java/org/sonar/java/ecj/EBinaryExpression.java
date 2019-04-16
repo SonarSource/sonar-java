@@ -13,7 +13,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EBinaryExpression extends EExpression implements BinaryExpressionTree {
-
   Kind kind;
   ExpressionTree leftOperand;
   SyntaxToken operatorToken;

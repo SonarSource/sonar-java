@@ -19,8 +19,11 @@ import java.util.List;
 @MethodsAreNonnullByDefault
 class ETryStatement extends EStatement implements TryStatementTree {
   SyntaxToken tryKeyword;
+  EList<Tree> resources = new EList<>();
+  SyntaxToken closeParenToken;
   BlockTree body;
   List<CatchTree> catches = new ArrayList<>();
+  SyntaxToken finallyKeyword;
   BlockTree finallyBlock;
 
   @Override
@@ -36,19 +39,18 @@ class ETryStatement extends EStatement implements TryStatementTree {
 
   @Override
   public ListTree<VariableTree> resources() {
-    throw new UnsupportedOperationException();
+    throw new UnexpectedAccessException();
   }
 
   @Override
   public ListTree<Tree> resourceList() {
-    // FIXME
-    return new EList<>();
+    return resources;
   }
 
   @Nullable
   @Override
   public SyntaxToken closeParenToken() {
-    throw new UnsupportedOperationException();
+    return closeParenToken;
   }
 
   @Override
@@ -64,7 +66,7 @@ class ETryStatement extends EStatement implements TryStatementTree {
   @Nullable
   @Override
   public SyntaxToken finallyKeyword() {
-    throw new UnsupportedOperationException();
+    return finallyKeyword;
   }
 
   @Nullable

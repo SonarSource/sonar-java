@@ -17,7 +17,6 @@ import java.util.List;
 
 @MethodsAreNonnullByDefault
 class EArrayAccess extends EExpression implements ArrayAccessExpressionTree {
-
   ExpressionTree expression;
   EArrayDimension dimension = new EArrayDimension();
 

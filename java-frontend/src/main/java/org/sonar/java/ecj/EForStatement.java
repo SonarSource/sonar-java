@@ -15,11 +15,11 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EForStatement extends EStatement implements ForStatementTree {
-
   SyntaxToken forKeyword;
   EList<StatementTree> initializer = new EList<>();
   ExpressionTree condition;
   EList<StatementTree> update = new EList<>();
+  SyntaxToken closeParenToken;
   StatementTree statement;
 
   @Override
@@ -60,7 +60,7 @@ class EForStatement extends EStatement implements ForStatementTree {
 
   @Override
   public SyntaxToken closeParenToken() {
-    throw new UnsupportedOperationException();
+    return closeParenToken;
   }
 
   @Override

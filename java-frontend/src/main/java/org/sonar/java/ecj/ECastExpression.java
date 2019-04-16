@@ -15,7 +15,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class ECastExpression extends EExpression implements TypeCastTree {
-
   SyntaxToken openParenToken;
   TypeTree type;
   ExpressionTree expression;

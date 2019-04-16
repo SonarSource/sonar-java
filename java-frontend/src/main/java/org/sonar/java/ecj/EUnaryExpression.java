@@ -13,7 +13,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 abstract class EUnaryExpression extends EExpression implements UnaryExpressionTree {
-
   Kind kind;
   SyntaxToken operatorToken;
   ExpressionTree expression;

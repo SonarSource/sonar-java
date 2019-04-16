@@ -20,7 +20,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EVariable extends ETree implements VariableTree {
-
   AST ast;
   IVariableBinding binding;
 
@@ -68,7 +67,7 @@ class EVariable extends ETree implements VariableTree {
   @Nullable
   @Override
   public SyntaxToken endToken() {
-    throw new UnsupportedOperationException();
+    throw new NotImplementedException();
   }
 
   @Override

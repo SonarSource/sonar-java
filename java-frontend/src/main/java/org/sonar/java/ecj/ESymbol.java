@@ -2,6 +2,7 @@ package org.sonar.java.ecj;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -29,6 +30,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -53,6 +55,11 @@ abstract class ESymbol implements Symbol {
   }
 
   @Override
+  public final int hashCode() {
+    return this.binding.hashCode();
+  }
+
+  @Override
   public final String name() {
     return binding.getName();
   }
@@ -61,27 +68,39 @@ abstract class ESymbol implements Symbol {
   public final Symbol owner() {
     if (binding.getKind() == IBinding.VARIABLE) {
       IVariableBinding b = (IVariableBinding) binding;
-      if (b.getDeclaringMethod() != null) {
+      ITypeBinding declaringClass = b.getDeclaringClass();
+      IMethodBinding declaringMethod = b.getDeclaringMethod();
+      if (declaringClass == null && declaringMethod == null) {
+        throw new NotImplementedException("variable in a static or instance initializer");
+      }
+      if (declaringMethod != null) {
         // local variable
-        return new EMethodSymbol(ast, b.getDeclaringMethod());
+        return new EMethodSymbol(ast, declaringMethod);
       }
       // field
       return new ETypeSymbol(ast, b.getDeclaringClass());
 
     } else if (binding.getKind() == IBinding.METHOD) {
-      return new ETypeSymbol(ast, ((IMethodBinding) binding).getDeclaringClass());
+      IMethodBinding b = (IMethodBinding) binding;
+      return new ETypeSymbol(ast, b.getDeclaringClass());
 
     } else if (binding.getKind() == IBinding.TYPE) {
       ITypeBinding b = (ITypeBinding) binding;
-      if (b.getDeclaringMethod() != null) {
+      IMethodBinding declaringMethod = b.getDeclaringMethod();
+      if (declaringMethod != null) {
         // local class
-        return new EMethodSymbol(ast, b.getDeclaringMethod());
+        return new EMethodSymbol(ast, declaringMethod);
       }
-      // TODO owner of top-level classes?
-      // FIXME getDeclaringClass can return null
-      return new ETypeSymbol(ast, b.getDeclaringClass());
+      ITypeBinding declaringClass = b.getDeclaringClass();
+      if (declaringClass == null) {
+        // FIXME e.g. owner of top-level classes should be b.getPackage() , otherwise NPE in UtilityClassWithPublicConstructorCheck ?
+        throw new NotImplementedException();
+      }
+      return new ETypeSymbol(ast, declaringClass);
+
+    } else {
+      throw new NotImplementedException("kind: " + binding.getKind());
     }
-    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -92,7 +111,8 @@ abstract class ESymbol implements Symbol {
     if (isVariableSymbol()) {
       return new EType(ast, ((IVariableBinding) binding).getType());
     }
-    throw new UnsupportedOperationException();
+    // TODO Method in StandardCharsetsConstantsCheck
+    throw new NotImplementedException("Kind: " + binding.getKind());
   }
 
   @Override
@@ -185,7 +205,30 @@ abstract class ESymbol implements Symbol {
 
   @Override
   public final SymbolMetadata metadata() {
-    throw new UnexpectedAccessException();
+    return new SymbolMetadata() {
+      @Override
+      public boolean isAnnotatedWith(String fullyQualifiedName) {
+        for (IAnnotationBinding a : binding.getAnnotations()) {
+          if (fullyQualifiedName.equals(a.getAnnotationType().getQualifiedName())) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      @CheckForNull
+      @Override
+      public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
+        // FIXME note that AnnotationValue.value can be Tree
+        return Collections.emptyList();
+      }
+
+      @Override
+      public List<AnnotationInstance> annotations() {
+        // FIXME
+        return Collections.emptyList();
+      }
+    };
   }
 
   @Override
@@ -209,8 +252,13 @@ class EVariableSymbol extends ESymbol implements Symbol.VariableSymbol {
   @Nullable
   @Override
   public TypeSymbol enclosingClass() {
+    IVariableBinding b = (IVariableBinding) binding;
+    ITypeBinding declaringClass = b.getDeclaringClass();
     // FIXME Godin: likely incorrect for local variables
-    return new ETypeSymbol(ast, ((IVariableBinding) binding).getDeclaringClass());
+    if (declaringClass == null) {
+      throw new NotImplementedException();
+    }
+    return new ETypeSymbol(ast, declaringClass);
   }
 
   @Nullable
@@ -281,7 +329,11 @@ class ETypeSymbol extends ESymbol implements Symbol.TypeSymbol {
   @Override
   public TypeSymbol enclosingClass() {
     // FIXME Godin: likely incorrect
-    return new ETypeSymbol(ast, binding.getDeclaringClass());
+    ITypeBinding declaringClass = binding.getDeclaringClass();
+    if (declaringClass == null) {
+      return null;
+    }
+    return new ETypeSymbol(ast, declaringClass);
   }
 
   @Nullable
@@ -295,7 +347,7 @@ class ETypeSymbol extends ESymbol implements Symbol.TypeSymbol {
    */
   @Override
   public String toString() {
-    throw new UnsupportedOperationException();
+    throw new NotImplementedException();
   }
 }
 
@@ -355,7 +407,7 @@ class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
    */
   @Override
   public String toString() {
-    throw new UnsupportedOperationException();
+    throw new NotImplementedException();
   }
 }
 
@@ -482,6 +534,6 @@ class EType implements Type {
    */
   @Override
   public String toString() {
-    throw new UnsupportedOperationException();
+    throw new NotImplementedException();
   }
 }

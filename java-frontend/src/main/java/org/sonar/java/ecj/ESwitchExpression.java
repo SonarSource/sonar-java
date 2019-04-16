@@ -1,7 +1,6 @@
 package org.sonar.java.ecj;
 
 import com.google.common.collect.Iterators;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -136,6 +135,7 @@ class ESwitchExpression extends EExpression implements SwitchExpressionTree {
   static class ECaseLabel extends ETree implements CaseLabelTree {
     SyntaxToken caseOrDefaultKeyword;
     ExpressionTree expression;
+    SyntaxToken colonToken;
 
     @Override
     public SyntaxToken caseOrDefaultKeyword() {
@@ -144,7 +144,7 @@ class ESwitchExpression extends EExpression implements SwitchExpressionTree {
 
     @Override
     public boolean isFallThrough() {
-      throw new UnsupportedOperationException();
+      throw new NotImplementedException();
     }
 
     @Nullable
@@ -161,12 +161,12 @@ class ESwitchExpression extends EExpression implements SwitchExpressionTree {
 
     @Override
     public SyntaxToken colonToken() {
-      throw new UnexpectedAccessException();
+      return colonToken;
     }
 
     @Override
     public SyntaxToken colonOrArrowToken() {
-      throw new UnsupportedOperationException();
+      throw new NotImplementedException();
     }
 
     @Override
@@ -183,6 +183,12 @@ class ESwitchExpression extends EExpression implements SwitchExpressionTree {
     @Override
     public SyntaxToken firstToken() {
       return caseOrDefaultKeyword();
+    }
+
+    @Nullable
+    @Override
+    public SyntaxToken lastToken() {
+      return colonToken();
     }
 
     @Override

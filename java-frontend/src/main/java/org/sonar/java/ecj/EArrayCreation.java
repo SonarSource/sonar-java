@@ -15,10 +15,10 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 @MethodsAreNonnullByDefault
 class EArrayCreation extends EExpression implements NewArrayTree {
-
   SyntaxToken newKeyword;
   TypeTree type;
   SyntaxToken openBraceToken;
@@ -68,6 +68,15 @@ class EArrayCreation extends EExpression implements NewArrayTree {
   @Override
   public Kind kind() {
     return Kind.NEW_ARRAY;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken firstToken() {
+    if (newKeyword != null) {
+      return newKeyword;
+    }
+    return Objects.requireNonNull(openBraceToken);
   }
 
   @Override

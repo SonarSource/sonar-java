@@ -14,7 +14,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EWhileStatement extends EStatement implements WhileStatementTree {
-
   SyntaxToken whileKeyword;
   ExpressionTree condition;
   SyntaxToken closeParenToken;

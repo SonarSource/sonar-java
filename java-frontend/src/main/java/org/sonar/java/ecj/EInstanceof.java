@@ -14,7 +14,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EInstanceof extends EExpression implements InstanceOfTree {
-
   TypeTree type;
   SyntaxToken instanceofKeyword;
   ExpressionTree expression;

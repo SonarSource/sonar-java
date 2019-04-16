@@ -14,9 +14,8 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 public class EMethodReference extends EExpression implements MethodReferenceTree {
-
   Tree expression;
-  IdentifierTree method;
+  EIdentifier method;
 
   @Override
   public Tree expression() {
@@ -25,7 +24,7 @@ public class EMethodReference extends EExpression implements MethodReferenceTree
 
   @Override
   public SyntaxToken doubleColon() {
-    throw new UnsupportedOperationException();
+    throw new UnexpectedAccessException();
   }
 
   @Nullable
@@ -48,6 +47,18 @@ public class EMethodReference extends EExpression implements MethodReferenceTree
   @Override
   public Kind kind() {
     return Kind.METHOD_REFERENCE;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken firstToken() {
+    return expression.firstToken();
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken lastToken() {
+    return method.lastToken();
   }
 
   @Override

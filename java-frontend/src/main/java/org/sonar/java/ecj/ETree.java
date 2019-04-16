@@ -13,7 +13,6 @@ import java.util.Objects;
 @ParametersAreNonnullByDefault
 @MethodsAreNonnullByDefault
 public abstract class ETree implements Tree {
-
   Tree parent;
 
   @Override
@@ -36,7 +35,7 @@ public abstract class ETree implements Tree {
   @Nullable
   @Override
   public SyntaxToken firstToken() {
-    throw new UnsupportedOperationException(getClass().getCanonicalName());
+    throw new NotImplementedException(getClass().getCanonicalName());
   }
 
   @Nullable

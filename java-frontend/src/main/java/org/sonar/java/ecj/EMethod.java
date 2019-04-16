@@ -22,7 +22,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,6 +35,7 @@ class EMethod extends ETree implements MethodTree {
   IdentifierTree simpleName;
   List<VariableTree> parameters = new ArrayList<>();
   SyntaxToken closeParenToken;
+  SyntaxToken throwsToken;
   EList<TypeTree> throwsClauses = new EList<>();
   BlockTree block;
 
@@ -78,7 +78,7 @@ class EMethod extends ETree implements MethodTree {
 
   @Override
   public SyntaxToken throwsToken() {
-    throw new UnsupportedOperationException();
+    return throwsToken;
   }
 
   @Override
@@ -129,7 +129,7 @@ class EMethod extends ETree implements MethodTree {
   @Nullable
   @Override
   public ControlFlowGraph cfg() {
-    throw new UnsupportedOperationException();
+    throw new NotImplementedException();
   }
 
   @Override
@@ -153,6 +153,9 @@ class EMethod extends ETree implements MethodTree {
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       modifiers(),
+      typeParameters(),
+      returnType(),
+      simpleName(),
       block()
     );
   }

@@ -13,7 +13,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EReturnStatement extends EStatement implements ReturnStatementTree {
-
   SyntaxToken returnKeyword;
   ExpressionTree expression;
   SyntaxToken semicolonToken;

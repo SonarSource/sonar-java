@@ -12,7 +12,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EEmptyStatement extends EStatement implements EmptyStatementTree {
-
   SyntaxToken semicolonToken;
 
   @Override

@@ -13,7 +13,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EExpressionStatement extends EStatement implements ExpressionStatementTree {
-
   ExpressionTree expression;
   SyntaxToken semicolonToken;
 

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore("SymbolMetadata")
+@org.junit.Ignore("cast to MethodJavaSymbol")
 public class NoTestInTestClassCheckTest {
 
   @Test

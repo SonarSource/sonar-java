@@ -6,7 +6,6 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import javax.annotation.Nullable;
 
 abstract class EStatement extends ETree implements StatementTree {
-
   @Nullable
   @Override
   public abstract SyntaxToken firstToken();
@@ -14,5 +13,4 @@ abstract class EStatement extends ETree implements StatementTree {
   @Nullable
   @Override
   public abstract SyntaxToken lastToken();
-
 }

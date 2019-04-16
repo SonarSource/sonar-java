@@ -27,7 +27,7 @@ class EMemberSelect extends EExpression implements MemberSelectExpressionTree {
 
   @Override
   public SyntaxToken operatorToken() {
-    throw new UnsupportedOperationException();
+    throw new NotImplementedException();
   }
 
   @Override

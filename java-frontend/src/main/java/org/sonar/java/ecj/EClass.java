@@ -23,12 +23,12 @@ import java.util.List;
 
 @MethodsAreNonnullByDefault
 class EClass extends ETree implements ClassTree {
-
   AST ast;
   ITypeBinding binding;
 
   Kind kind;
   EModifiers modifiers = new EModifiers();
+  SyntaxToken declarationKeyword;
   EIdentifier simpleName;
   TypeTree superClass;
   EList<TypeTree> superInterfaces = new EList<>();
@@ -44,7 +44,7 @@ class EClass extends ETree implements ClassTree {
   @Nullable
   @Override
   public SyntaxToken declarationKeyword() {
-    throw new UnsupportedOperationException();
+    return declarationKeyword;
   }
 
   @Nullable
@@ -105,6 +105,12 @@ class EClass extends ETree implements ClassTree {
 
   @Nullable
   @Override
+  public SyntaxToken firstToken() {
+    return modifiers.firstToken() != null ? modifiers.firstToken() : declarationKeyword;
+  }
+
+  @Nullable
+  @Override
   public SyntaxToken lastToken() {
     return closeBraceToken();
   }
@@ -112,8 +118,13 @@ class EClass extends ETree implements ClassTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.concat(
-      Iterators.forArray(modifiers),
-      members.iterator()
+      Iterators.forArray(
+        modifiers(),
+        simpleName(),
+        typeParameters(),
+        superInterfaces()
+      ),
+      members().iterator()
     );
   }
 }

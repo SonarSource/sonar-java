@@ -14,7 +14,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EBreakStatement extends EStatement implements BreakStatementTree {
-
   SyntaxToken breakKeyword;
   IdentifierTree label;
   SyntaxToken semicolonToken;
@@ -33,7 +32,7 @@ class EBreakStatement extends EStatement implements BreakStatementTree {
   @Nullable
   @Override
   public ExpressionTree value() {
-    throw new UnsupportedOperationException();
+    throw new NotImplementedException();
   }
 
   @Override

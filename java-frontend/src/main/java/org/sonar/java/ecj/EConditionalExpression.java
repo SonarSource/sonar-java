@@ -13,7 +13,6 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EConditionalExpression extends EExpression implements ConditionalExpressionTree {
-
   ExpressionTree condition;
   SyntaxToken questionToken;
   ExpressionTree trueExpression;

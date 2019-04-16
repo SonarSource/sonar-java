@@ -16,7 +16,6 @@ import java.util.List;
 @MethodsAreNonnullByDefault
 @ParametersAreNonnullByDefault
 class ESyntaxToken extends ETree implements SyntaxToken {
-
   private int line;
   private int column;
   private String text;

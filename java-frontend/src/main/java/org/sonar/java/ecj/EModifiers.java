@@ -42,6 +42,24 @@ class EModifiers extends EList<ModifierTree> implements ModifiersTree {
   public Kind kind() {
     return Kind.MODIFIERS;
   }
+
+  @Override
+  public void accept(TreeVisitor visitor) {
+    // TODO weird method name
+    visitor.visitModifier(this);
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken firstToken() {
+    return elements.isEmpty() ? null : elements.get(0).firstToken();
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken lastToken() {
+    return elements.isEmpty() ? null : elements.get(elements.size() - 1).lastToken();
+  }
 }
 
 @MethodsAreNonnullByDefault
@@ -96,6 +114,15 @@ class EAnnotation extends EExpression implements AnnotationTree {
   @Override
   public SyntaxToken firstToken() {
     return atToken();
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken lastToken() {
+    if (arguments.closeParenToken != null) {
+      return arguments.closeParenToken;
+    }
+    return annotationType.lastToken();
   }
 
   @Override

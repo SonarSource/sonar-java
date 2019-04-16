@@ -26,7 +26,6 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-@org.junit.Ignore("SymbolMetadata")
 public class UndocumentedApiCheckTest {
 
   @Test

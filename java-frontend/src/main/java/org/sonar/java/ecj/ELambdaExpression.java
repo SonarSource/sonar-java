@@ -15,9 +15,9 @@ import java.util.List;
 
 @MethodsAreNonnullByDefault
 class ELambdaExpression extends EExpression implements LambdaExpressionTree {
-
   SyntaxToken openParenToken;
   List<VariableTree> parameters = new ArrayList<>();
+  SyntaxToken arrowToken;
   Tree body;
 
   @Nullable
@@ -34,12 +34,12 @@ class ELambdaExpression extends EExpression implements LambdaExpressionTree {
   @Nullable
   @Override
   public SyntaxToken closeParenToken() {
-    throw new UnsupportedOperationException();
+    throw new UnexpectedAccessException();
   }
 
   @Override
   public SyntaxToken arrowToken() {
-    throw new UnsupportedOperationException();
+    return arrowToken;
   }
 
   @Override
