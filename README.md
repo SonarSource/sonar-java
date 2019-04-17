@@ -22,7 +22,7 @@ Useful links
 * [Issue tracking](https://jira.sonarsource.com/browse/SONARJAVA/)
 * [Available rules](https://rules.sonarsource.com/java)
 * [SonarQube Community Forum](https://community.sonarsource.com/)
-* [Demo project analysis](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.sonarqube%3Asonarqube)
+* [Demo project analysis](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava)
 
 Have question or feedback?
 --------------------------
