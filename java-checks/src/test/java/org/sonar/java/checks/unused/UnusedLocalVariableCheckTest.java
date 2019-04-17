@@ -22,7 +22,9 @@ package org.sonar.java.checks.unused;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.SYMBOL_USAGES)
+/**
+ * @see org.eclipse.jdt.core.JavaCore#COMPILER_PB_UNUSED_LOCAL
+ */
 public class UnusedLocalVariableCheckTest {
 
   @Test

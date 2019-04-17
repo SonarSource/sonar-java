@@ -26,7 +26,7 @@ import java.util.List;
 
 @MethodsAreNonnullByDefault
 abstract class ETypeTree extends ETree implements TypeTree {
-  AST ast;
+  Ctx ast;
   ITypeBinding binding;
 
   @Override

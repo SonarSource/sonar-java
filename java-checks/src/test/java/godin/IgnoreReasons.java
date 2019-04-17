@@ -1,7 +1,5 @@
 package godin;
 
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -25,21 +23,6 @@ public final class IgnoreReasons {
    * Require implementation of {@link Type#erasure()}
    */
   public static final String TYPE_ERASURE = "Type.erasure";
-
-  /**
-   * Require implementation of {@link Symbol#usages()}
-   */
-  public static final String SYMBOL_USAGES = "Symbol.usages";
-
-  /**
-   * Require implementation of {@link Symbol#declaration()}
-   */
-  public static final String SYMBOL_DECLARATION = "Symbol.declaration";
-
-  /**
-   * Require implementation of {@link MethodSymbol#overriddenSymbol()}
-   */
-  public static final String overriddenSymbol = "MethodSymbol.overriddenSymbol";
 
   /**
    * Cast to {@link org.sonar.java.resolve.JavaSymbol.VariableJavaSymbol}
@@ -75,6 +58,11 @@ public final class IgnoreReasons {
    * Cast to {@link org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol}
    */
   public static final String CAST_TO_TypeJavaSymbol = "cast to TypeJavaSymbol";
+
+  /**
+   * Cast to {@link org.sonar.java.model.InternalSyntaxToken}
+   */
+  public static final String CAST_TO_InternalSyntaxToken = "cast to InternalSyntaxToken";
 
   private IgnoreReasons() {
   }

@@ -1,8 +1,9 @@
 package org.sonar.java.ecj;
 
 import com.google.common.collect.Iterators;
-import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -27,7 +28,7 @@ import java.util.List;
 
 @MethodsAreNonnullByDefault
 class EMethod extends ETree implements MethodTree {
-  AST ast;
+  Ctx ast;
   IMethodBinding binding;
 
   EModifiers modifiers = new EModifiers();
@@ -119,10 +120,23 @@ class EMethod extends ETree implements MethodTree {
     return new EMethodSymbol(ast, binding);
   }
 
+  /**
+   * @see MethodTreeImpl#isOverriding()
+   */
   @Nullable
   @Override
   public Boolean isOverriding() {
-    // FIXME
+    // TODO what about unresolved?
+    if (binding != null) {
+      for (IAnnotationBinding annotation : binding.getAnnotations()) {
+        if ("java.lang.Override".equals(
+          annotation.getAnnotationType().getQualifiedName()
+        )) {
+          return true;
+        }
+      }
+      return EMethodSymbol.find(binding::overrides, binding.getDeclaringClass()) != null;
+    }
     return false;
   }
 
@@ -151,12 +165,17 @@ class EMethod extends ETree implements MethodTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.forArray(
-      modifiers(),
-      typeParameters(),
-      returnType(),
-      simpleName(),
-      block()
+    return Iterators.concat(
+      Iterators.forArray(
+        modifiers(),
+        typeParameters(),
+        returnType(),
+        simpleName()
+      ),
+      parameters.iterator(),
+      Iterators.forArray(
+        block()
+      )
     );
   }
 }

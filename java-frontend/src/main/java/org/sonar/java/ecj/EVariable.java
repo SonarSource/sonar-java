@@ -20,7 +20,7 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EVariable extends ETree implements VariableTree {
-  AST ast;
+  Ctx ast;
   IVariableBinding binding;
 
   EModifiers modifiers = new EModifiers();
@@ -84,6 +84,15 @@ class EVariable extends ETree implements VariableTree {
   @Override
   public SyntaxToken firstToken() {
     return type.firstToken();
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken lastToken() {
+    if (initializer != null) {
+      return initializer.lastToken();
+    }
+    return simpleName.lastToken();
   }
 
   @Override

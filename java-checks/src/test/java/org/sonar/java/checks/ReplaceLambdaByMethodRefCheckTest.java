@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.SYMBOL_USAGES)
 public class ReplaceLambdaByMethodRefCheckTest {
 
   private static final String FILENAME = "src/test/files/checks/ReplaceLambdaByMethodRefCheck.java";

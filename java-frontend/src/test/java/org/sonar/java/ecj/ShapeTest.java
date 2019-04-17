@@ -2,6 +2,9 @@ package org.sonar.java.ecj;
 
 import com.google.common.collect.Iterators;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
@@ -26,13 +29,25 @@ public class ShapeTest {
     test("class C { void m() { m( 1 - 2 - 3 ); } }");
   }
 
+  /**
+   * @see MethodDeclaration#extraDimensions()
+   * @see VariableDeclarationFragment#extraDimensions()
+   * @see SingleVariableDeclaration#extraDimensions()
+   */
+  @Test
+  public void extra_dimensions() {
+    test("interface I { int m(int p[])[]; int v[] = null; }");
+  }
+
   private static void test(String source) {
     JavaTree oldTree = (JavaTree) JavaParser.createParser().parse(source);
     String expected = toString(oldTree);
     System.out.println(expected);
 
     ETree newTree = (ETree) EcjParser.parse(source);
-    assertEquals(expected, toString(newTree));
+    String actual = toString(newTree);
+
+    assertEquals(expected, actual);
   }
 
   private static String toString(Tree node) {

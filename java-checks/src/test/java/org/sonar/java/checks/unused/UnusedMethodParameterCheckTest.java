@@ -22,6 +22,9 @@ package org.sonar.java.checks.unused;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+/**
+ * @see org.eclipse.jdt.core.JavaCore#COMPILER_PB_UNUSED_PARAMETER
+ */
 @org.junit.Ignore(godin.IgnoreReasons.CAST_TO_MethodJavaSymbol)
 public class UnusedMethodParameterCheckTest {
 

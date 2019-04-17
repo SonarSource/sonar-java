@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.ContinueStatement;
 import org.eclipse.jdt.core.dom.CreationReference;
+import org.eclipse.jdt.core.dom.Dimension;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EmptyStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
@@ -122,6 +123,7 @@ public final class EcjParser {
   private char[] sourceChars;
   private CompilationUnit compilationUnit;
   private TokenManager tokenManager;
+  private Ctx ast;
 
   private EcjParser() {
   }
@@ -230,6 +232,7 @@ public final class EcjParser {
         ECompilationUnit t = new ECompilationUnit();
         CompilationUnit e = (CompilationUnit) node;
         this.compilationUnit = e;
+        this.ast = new Ctx(e.getAST());
 
         // TODO HACK
         for (Object o : e.getCommentList()) {
@@ -277,17 +280,17 @@ public final class EcjParser {
       case ASTNode.ANNOTATION_TYPE_DECLARATION:
       case ASTNode.ENUM_DECLARATION:
       case ASTNode.TYPE_DECLARATION: {
-        EClass t = new EClass();
         AbstractTypeDeclaration e = (AbstractTypeDeclaration) node;
+        EClass t = new EClass();
+        t.ast = ast;
+        t.binding = e.resolveBinding();
+        ast.declaration(t.binding, t);
 
         for (Object o : e.modifiers()) {
           t.modifiers.elements.add(
             (ModifierTree) convert((ASTNode) o)
           );
         }
-
-        t.ast = e.getAST();
-        t.binding = e.resolveBinding();
 
         if (e.getNodeType() == ASTNode.ENUM_DECLARATION) {
           t.kind = Tree.Kind.ENUM;
@@ -330,17 +333,21 @@ public final class EcjParser {
         return t;
       }
       case ASTNode.METHOD_DECLARATION: {
-        EMethod t = new EMethod();
         MethodDeclaration e = (MethodDeclaration) node;
-        t.ast = e.getAST();
+        EMethod t = new EMethod();
+        t.ast = ast;
         t.binding = e.resolveBinding();
+        ast.declaration(t.binding, t);
 
         for (Object o : e.modifiers()) {
           t.modifiers.elements.add(
             (ModifierTree) convert((ASTNode) o)
           );
         }
-        t.returnType = convertType(e.getReturnType2());
+        t.returnType = applyExtraDimensions(
+          convertType(e.getReturnType2()),
+          e.extraDimensions()
+        );
         t.simpleName = convertSimpleName(e.getName());
         for (Object o : e.parameters()) {
           t.parameters.add(createVariable((SingleVariableDeclaration) o));
@@ -361,7 +368,7 @@ public final class EcjParser {
       case ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION: {
         AnnotationTypeMemberDeclaration e = (AnnotationTypeMemberDeclaration) node;
         EMethod t = new EMethod();
-        t.ast = e.getAST();
+        t.ast = ast;
         t.binding = e.resolveBinding();
         for (Object o : e.modifiers()) {
           t.modifiers.elements.add(
@@ -405,11 +412,17 @@ public final class EcjParser {
       for (Object o : fieldDeclaration.fragments()) {
         VariableDeclarationFragment fragment = (VariableDeclarationFragment) o;
         EVariable t = new EVariable();
-        t.ast = fragment.getAST();
+        t.ast = ast;
         t.binding = fragment.resolveBinding();
+        ast.declaration(t.binding, t);
+
         t.modifiers = modifiers;
         // TODO type is also shared
-        t.type = convertType(fieldDeclaration.getType());
+        t.type = applyExtraDimensions(
+          convertType(fieldDeclaration.getType()),
+          fragment.extraDimensions()
+        );
+
         t.simpleName = convertSimpleName(fragment.getName());
         if (fragment.getInitializer() != null) {
           t.equalToken = firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL);
@@ -422,20 +435,38 @@ public final class EcjParser {
     }
   }
 
+  private TypeTree applyExtraDimensions(TypeTree type, List extraDimensions) {
+    for (Object o : extraDimensions) {
+      Dimension e = (Dimension) o;
+      EArrayType t = new EArrayType();
+      t.type = type;
+      t.openBracketToken = lastTokenIn(e, TerminalTokens.TokenNameLBRACKET);
+      type = t;
+    }
+    return type;
+  }
+
   private EVariable createVariable(SingleVariableDeclaration e) {
     EVariable t = new EVariable();
-    t.ast = e.getAST();
+    t.ast = ast;
     t.binding = e.resolveBinding();
+    ast.declaration(t.binding, t);
+
     for (Object o : e.modifiers()) {
       t.modifiers.elements.add(
         (ModifierTree) convert((ASTNode) o)
       );
     }
 
-    t.type = convertType(e.getType());
+    // TODO are extraDimensions and varargs mutually exclusive?
+    t.type = applyExtraDimensions(
+      convertType(e.getType()),
+      e.extraDimensions()
+    );
+
     if (e.isVarargs()) {
       EArrayType a = new EArrayType();
-      a.ast = e.getAST();
+      a.ast = ast;
       a.binding = e.resolveBinding() == null ? null : e.resolveBinding().getType();
       a.type = t.type;
       a.ellipsisToken = firstTokenAfter(e.getType(), TerminalTokens.TokenNameELLIPSIS);
@@ -452,14 +483,20 @@ public final class EcjParser {
 
   private EVariable createVariable(VariableDeclarationStatement declaration, VariableDeclarationFragment fragment) {
     EVariable t = new EVariable();
-    t.ast = fragment.getAST();
+    t.ast = ast;
     t.binding = fragment.resolveBinding();
+    ast.declaration(t.binding, t);
+
     for (Object o : declaration.modifiers()) {
       t.modifiers.elements.add(
         (ModifierTree) convert((ASTNode) o)
       );
     }
-    t.type = convertType(declaration.getType());
+    t.type = applyExtraDimensions(
+      convertType(declaration.getType()),
+      fragment.extraDimensions()
+    );
+
     t.simpleName = convertSimpleName(fragment.getName());
     if (fragment.getInitializer() != null) {
       t.equalToken = firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL);
@@ -476,7 +513,7 @@ public final class EcjParser {
       case ASTNode.PRIMITIVE_TYPE: {
         PrimitiveType e = (PrimitiveType) node;
         EPrimitiveType t = new EPrimitiveType();
-        t.ast = e.getAST();
+        t.ast = ast;
         t.binding = e.resolveBinding();
         t.keyword = createSyntaxToken(node, e.getPrimitiveTypeCode().toString());
         return t;
@@ -488,7 +525,7 @@ public final class EcjParser {
       case ASTNode.UNION_TYPE: {
         UnionType e = (UnionType) node;
         EUnionType t = new EUnionType();
-        t.ast = e.getAST();
+        t.ast = ast;
         t.binding = e.resolveBinding();
         for (Object o : e.types()) {
           t.typeAlternatives.elements.add(convertType((Type) o));
@@ -499,7 +536,7 @@ public final class EcjParser {
         // TODO vararg
         ArrayType e = (ArrayType) node;
         EArrayType t = new EArrayType();
-        t.ast = e.getAST();
+        t.ast = ast;
         t.binding = e.resolveBinding();
         t.type = convertType(e.getElementType());
         t.openBracketToken = firstTokenAfter(e.getElementType(), TerminalTokens.TokenNameLBRACKET);
@@ -509,7 +546,7 @@ public final class EcjParser {
       case ASTNode.PARAMETERIZED_TYPE: {
         ParameterizedType e = (ParameterizedType) node;
         EParameterizedType t = new EParameterizedType();
-        t.ast = e.getAST();
+        t.ast = ast;
         t.binding = e.resolveBinding();
         t.type = convertType(e.getType());
         t.typeArguments = new EClassInstanceCreation.ETypeArguments();
@@ -530,7 +567,7 @@ public final class EcjParser {
         IntersectionType e = (IntersectionType) node;
         // FIXME
         EIdentifier t = new EIdentifier();
-        t.ast = e.getAST();
+        t.ast = ast;
         t.typeBinding = e.resolveBinding();
         t.identifierToken = createSyntaxToken(e, "");
         return t;
@@ -571,9 +608,12 @@ public final class EcjParser {
             // TODO only one?
             VariableDeclarationFragment e3 = (VariableDeclarationFragment) e2.fragments().get(0);
             EVariable t2 = new EVariable();
-            t2.ast = e3.getAST();
+            t2.ast = ast;
             t2.binding = e3.resolveBinding();
-            t2.type = convertType(e2.getType());
+            t2.type = applyExtraDimensions(
+              convertType(e2.getType()),
+              e3.extraDimensions()
+            );
             t2.simpleName = convertSimpleName(e3.getName());
             t2.initializer = convertExpression(e3.getInitializer());
           } else {
@@ -736,8 +776,9 @@ public final class EcjParser {
             VariableDeclarationExpression e2 = (VariableDeclarationExpression) o;
             // TODO only one?
             VariableDeclarationFragment e3 = (VariableDeclarationFragment) e2.fragments().get(0);
+            // TODO e3.extraDimensions() ?
             EVariable t2 = new EVariable();
-            t2.ast = e3.getAST();
+            t2.ast = ast;
             t2.binding = e3.resolveBinding();
             t2.type = convertType(e2.getType());
             t2.simpleName = convertSimpleName(e3.getName());
@@ -790,7 +831,7 @@ public final class EcjParser {
         EIdentifier i = new EIdentifier();
         i.identifierToken = createSyntaxToken(e, "this");
         EMethodInvocation mi = new EMethodInvocation();
-        mi.ast = e.getAST();
+        mi.ast = ast;
         mi.binding = e.resolveConstructorBinding();
         mi.methodSelect = i;
         for (Object o : e.arguments()) {
@@ -806,7 +847,7 @@ public final class EcjParser {
         EIdentifier i = new EIdentifier();
         i.identifierToken = createSyntaxToken(e, "super");
         EMethodInvocation mi = new EMethodInvocation();
-        mi.ast = e.getAST();
+        mi.ast = ast;
         mi.binding = e.resolveConstructorBinding();
         mi.methodSelect = i;
         for (Object o : e.arguments()) {
@@ -866,9 +907,10 @@ public final class EcjParser {
       return null;
     }
     EIdentifier t = new EIdentifier();
-    t.ast = e.getAST();
+    t.ast = ast;
     t.typeBinding = e.resolveTypeBinding();
     t.binding = e.resolveBinding();
+
     t.identifierToken = createSyntaxToken(e, e.getIdentifier());
     return t;
   }
@@ -878,7 +920,7 @@ public final class EcjParser {
       return null;
     }
     EExpression t = createExpression(node);
-    t.ast = node.getAST();
+    t.ast = ast;
     t.typeBinding = node.resolveTypeBinding();
     return t;
   }
@@ -888,13 +930,17 @@ public final class EcjParser {
       return null;
     }
     switch (node.getNodeType()) {
-      case ASTNode.SIMPLE_NAME:
-        return convertSimpleName((SimpleName) node);
+      case ASTNode.SIMPLE_NAME: {
+        EIdentifier t = convertSimpleName((SimpleName) node);
+        ast.usage(t.binding, t);
+        return t;
+      }
       case ASTNode.QUALIFIED_NAME: {
         QualifiedName e = (QualifiedName) node;
         EMemberSelect t = new EMemberSelect();
         t.lhs = convertExpression(e.getQualifier());
         t.rhs = convertSimpleName(e.getName());
+        ast.usage(t.rhs.binding, t.rhs);
         return t;
       }
       case ASTNode.FIELD_ACCESS: {
@@ -902,6 +948,7 @@ public final class EcjParser {
         EMemberSelect t = new EMemberSelect();
         t.lhs = convertExpression(e.getExpression());
         t.rhs = convertSimpleName(e.getName());
+        ast.usage(t.rhs.binding, t.rhs);
         return t;
       }
       case ASTNode.SUPER_FIELD_ACCESS: {
@@ -912,6 +959,7 @@ public final class EcjParser {
         // super.name
         t.lhs = convertExpression(e.getQualifier());
         t.rhs = convertSimpleName(e.getName());
+        ast.usage(t.rhs.binding, t.rhs);
         return t;
       }
       case ASTNode.THIS_EXPRESSION: {
@@ -924,7 +972,7 @@ public final class EcjParser {
           EMemberSelect t = new EMemberSelect();
           t.lhs = convertExpression(e.getQualifier());
           t.rhs = new EIdentifier(); // TODO bindings ?
-          t.rhs.ast = e.getAST();
+          t.rhs.ast = ast;
           t.rhs.typeBinding = e.resolveTypeBinding();
           t.rhs.identifierToken = createSyntaxToken(node, "this");
           return t;
@@ -991,7 +1039,7 @@ public final class EcjParser {
       case ASTNode.CLASS_INSTANCE_CREATION: {
         ClassInstanceCreation e = (ClassInstanceCreation) node;
         EClassInstanceCreation t = new EClassInstanceCreation();
-        t.ast = e.getAST();
+        t.ast = ast;
         t.binding = e.resolveConstructorBinding();
         // TODO position
         t.newKeyword = createSyntaxToken(e, "new");
@@ -1004,7 +1052,7 @@ public final class EcjParser {
 
         if (e.getAnonymousClassDeclaration() != null) {
           t.classBody = new EClass();
-          t.classBody.ast = e.getAnonymousClassDeclaration().getAST();
+          t.classBody.ast = ast;
           t.classBody.binding = e.getAnonymousClassDeclaration().resolveBinding();
           // TODO always class?
           t.classBody.kind = Tree.Kind.CLASS;
@@ -1030,7 +1078,7 @@ public final class EcjParser {
       case ASTNode.INFIX_EXPRESSION: {
         InfixExpression e = (InfixExpression) node;
         EBinaryExpression t = new EBinaryExpression();
-        t.ast = e.getAST();
+        t.ast = ast;
         t.typeBinding = e.resolveTypeBinding();
         Op op = operators.get(e.getOperator());
         t.kind = op.kind;
@@ -1040,7 +1088,7 @@ public final class EcjParser {
         for (Object o : e.extendedOperands()) {
           Expression e2 = (Expression) o;
           EBinaryExpression t2 = new EBinaryExpression();
-          t2.ast = e2.getAST();
+          t2.ast = ast;
           t2.typeBinding = e2.resolveTypeBinding();
           t2.kind = op.kind;
           t2.leftOperand = t;
@@ -1053,16 +1101,18 @@ public final class EcjParser {
       case ASTNode.METHOD_INVOCATION: {
         MethodInvocation e = (MethodInvocation) node;
         EMethodInvocation t = new EMethodInvocation();
-        t.ast = e.getAST();
+        t.ast = ast;
         t.binding = e.resolveMethodBinding();
 
         if (e.getExpression() == null) {
           t.methodSelect = convertSimpleName(e.getName());
+          ast.usage(t.binding, (EIdentifier) t.methodSelect);
         } else {
           EMemberSelect t2 = new EMemberSelect();
           t.methodSelect = t2; // TODO typeBinding ?
           t2.lhs = convertExpression(e.getExpression());
           t2.rhs = convertSimpleName(e.getName());
+          ast.usage(t2.rhs.binding, t2.rhs);
         }
 
         t.arguments.openParenToken = firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN);
@@ -1075,16 +1125,18 @@ public final class EcjParser {
       case ASTNode.SUPER_METHOD_INVOCATION: {
         SuperMethodInvocation e = (SuperMethodInvocation) node;
         EMethodInvocation t = new EMethodInvocation();
-        t.ast = e.getAST();
+        t.ast = ast;
         t.binding = e.resolveMethodBinding();
 
         if (e.getQualifier() == null) {
           t.methodSelect = convertSimpleName(e.getName());
+          ast.usage(t.binding, (EIdentifier) t.methodSelect);
         } else {
           EMemberSelect t2 = new EMemberSelect();
           t.methodSelect = t2; // TODO typeBinding ?
           t2.lhs = convertExpression(e.getQualifier());
           t2.rhs = convertSimpleName(e.getName());
+          ast.usage(t2.rhs.binding, t2.rhs);
         }
 
         t.arguments.openParenToken = firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN);
@@ -1116,7 +1168,7 @@ public final class EcjParser {
         EUnaryExpression.Prefix t = new EUnaryExpression.Prefix();
         Op op = operators.get(e.getOperator());
         t.kind = op.kind;
-        t.operatorToken = createSyntaxToken(e, e.getOperand().toString());
+        t.operatorToken = createSyntaxToken(e, e.getOperator().toString());
         t.expression = convertExpression(e.getOperand());
         return t;
       }
@@ -1138,7 +1190,7 @@ public final class EcjParser {
           VariableDeclaration ev = (VariableDeclaration) o;
           if (ev.getNodeType() == ASTNode.VARIABLE_DECLARATION_FRAGMENT) {
             EVariable tv = new EVariable();
-            tv.ast = ev.getAST();
+            tv.ast = ast;
             tv.binding = ev.resolveBinding();
             tv.type = new EInferedType();
             tv.simpleName = convertSimpleName(ev.getName());
@@ -1171,6 +1223,7 @@ public final class EcjParser {
         EMethodReference t = new EMethodReference();
         t.expression = convertExpression(e.getExpression());
         t.method = convertSimpleName(e.getName());
+        ast.usage(t.method.binding, t.method);
         return t;
       }
       case ASTNode.SUPER_METHOD_REFERENCE: {
@@ -1178,6 +1231,7 @@ public final class EcjParser {
         EMethodReference t = new EMethodReference();
         t.expression = convertExpression(e.getQualifier());
         t.method = convertSimpleName(e.getName());
+        ast.usage(t.method.binding, t.method);
         return t;
       }
       case ASTNode.TYPE_METHOD_REFERENCE: {
@@ -1185,6 +1239,7 @@ public final class EcjParser {
         EMethodReference t = new EMethodReference();
         t.expression = convertType(e.getType());
         t.method = convertSimpleName(e.getName());
+        ast.usage(t.method.binding, t.method);
         return t;
       }
       case ASTNode.NULL_LITERAL: {
@@ -1226,7 +1281,7 @@ public final class EcjParser {
       case ASTNode.SINGLE_MEMBER_ANNOTATION: {
         Annotation e = (Annotation) node;
         EAnnotation t = new EAnnotation();
-        t.ast = e.getAST();
+        t.ast = ast;
         t.typeBinding = e.resolveTypeBinding();
 
         // TODO IdentifierTree implements TypeTree

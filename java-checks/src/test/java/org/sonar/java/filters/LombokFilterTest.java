@@ -21,7 +21,7 @@ package org.sonar.java.filters;
 
 import org.junit.Test;
 
-@org.junit.Ignore(godin.IgnoreReasons.SYMBOL_USAGES)
+@org.junit.Ignore(godin.IgnoreReasons.LOOKUP_SYMBOLS)
 public class LombokFilterTest {
 
   @Test

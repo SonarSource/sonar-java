@@ -23,7 +23,7 @@ import java.util.List;
 
 @MethodsAreNonnullByDefault
 class EClass extends ETree implements ClassTree {
-  AST ast;
+  Ctx ast;
   ITypeBinding binding;
 
   Kind kind;

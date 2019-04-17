@@ -20,9 +20,9 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EClassInstanceCreation extends EExpression implements NewClassTree {
-  SyntaxToken newKeyword;
   IMethodBinding binding;
 
+  SyntaxToken newKeyword;
   TypeTree identifier;
   EMethodInvocation.EArguments arguments = new EMethodInvocation.EArguments();
   EClass classBody;

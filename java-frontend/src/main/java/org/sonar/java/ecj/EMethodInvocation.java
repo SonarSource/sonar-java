@@ -19,7 +19,7 @@ import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
 class EMethodInvocation extends EExpression implements MethodInvocationTree {
-  AST ast;
+  Ctx ast;
   IMethodBinding binding;
 
   ExpressionTree methodSelect;

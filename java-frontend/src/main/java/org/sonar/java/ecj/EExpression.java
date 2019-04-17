@@ -12,7 +12,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsAreNonnullByDefault
 @ParametersAreNonnullByDefault
 abstract class EExpression extends ETree implements ExpressionTree {
-  AST ast;
+  Ctx ast;
   ITypeBinding typeBinding;
 
   @Override
