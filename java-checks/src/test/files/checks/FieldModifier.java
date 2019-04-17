@@ -20,6 +20,7 @@ class D {
   static int var3; // Compliant
 }
 enum E {
+  ;
   @com.google.common.annotations.VisibleForTesting
   int varEnum; // Compliant
   @com.google.common.annotations.VisibleForTesting
