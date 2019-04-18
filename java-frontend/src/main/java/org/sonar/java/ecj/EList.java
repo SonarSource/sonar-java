@@ -6,7 +6,6 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,7 +16,6 @@ import java.util.ListIterator;
  * @see org.sonar.java.ast.parser.ListTreeImpl
  */
 @MethodsAreNonnullByDefault
-@ParametersAreNonnullByDefault
 class EList<T extends Tree> extends ETree implements ListTree<T> {
   List<T> elements = new ArrayList<>();
 

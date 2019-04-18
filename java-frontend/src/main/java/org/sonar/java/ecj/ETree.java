@@ -1,16 +1,15 @@
 package org.sonar.java.ecj;
 
 import com.google.common.collect.Iterators;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Iterator;
 import java.util.Objects;
 
-@ParametersAreNonnullByDefault
 @MethodsAreNonnullByDefault
 public abstract class ETree implements Tree {
   Tree parent;
@@ -52,8 +51,26 @@ public abstract class ETree implements Tree {
     );
   }
 
-  /**
-   * @return excluding tokens
-   */
   abstract Iterator<? extends Tree> childrenIterator();
+
+  @Override
+  public final boolean equals(Object obj) {
+    return super.equals(obj);
+  }
+
+  @Override
+  public final int hashCode() {
+    return super.hashCode();
+  }
+
+  /**
+   * @see org.sonar.java.model.expression.IdentifierTreeImpl
+   */
+  @Override
+  public final String toString() {
+    if (kind() == Kind.IDENTIFIER) {
+      return ((IdentifierTree) this).name();
+    }
+    return super.toString();
+  }
 }

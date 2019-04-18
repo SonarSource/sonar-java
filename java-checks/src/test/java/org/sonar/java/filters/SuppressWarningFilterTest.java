@@ -25,6 +25,7 @@ import org.sonar.java.checks.TodoTagPresenceCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 
+@org.junit.Ignore(godin.IgnoreReasons.COMMENTS)
 public class SuppressWarningFilterTest {
   /**
    * Constant used in test for rule key.

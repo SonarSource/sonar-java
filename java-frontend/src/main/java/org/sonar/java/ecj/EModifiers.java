@@ -128,6 +128,7 @@ class EAnnotation extends EExpression implements AnnotationTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
+      atToken(),
       annotationType(),
       arguments()
     );

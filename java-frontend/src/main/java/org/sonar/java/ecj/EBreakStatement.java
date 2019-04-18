@@ -15,7 +15,7 @@ import java.util.Iterator;
 @MethodsAreNonnullByDefault
 class EBreakStatement extends EStatement implements BreakStatementTree {
   SyntaxToken breakKeyword;
-  IdentifierTree label;
+  ExpressionTree labelOrValue;
   SyntaxToken semicolonToken;
 
   @Override
@@ -26,13 +26,13 @@ class EBreakStatement extends EStatement implements BreakStatementTree {
   @Nullable
   @Override
   public IdentifierTree label() {
-    return label;
+    return labelOrValue instanceof IdentifierTree ? (IdentifierTree) labelOrValue : null;
   }
 
   @Nullable
   @Override
   public ExpressionTree value() {
-    throw new NotImplementedException();
+    return labelOrValue;
   }
 
   @Override
@@ -64,6 +64,8 @@ class EBreakStatement extends EStatement implements BreakStatementTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.forArray();
+    return Iterators.forArray(
+      labelOrValue
+    );
   }
 }

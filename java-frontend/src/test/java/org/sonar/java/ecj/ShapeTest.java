@@ -8,8 +8,10 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
@@ -18,7 +20,13 @@ public class ShapeTest {
 
   @Test
   public void wip() {
-    test("class C { C c = new C() { }; }");
+    test("package p; import org.*;");
+  }
+
+  @Test
+  public void shift_vs_greater_token() {
+    test("class C { Map<Object, List<Object>> f; }");
+    test("class C { Map<Object, List<Object> > f; }");
   }
 
   /**
@@ -60,7 +68,11 @@ public class ShapeTest {
     for (int i = 0; i < indent; i++) {
       out.append(' ');
     }
-    out.append(node.kind()).append('\n');
+    out.append(node.kind());
+    if (node.is(Tree.Kind.IDENTIFIER)) {
+      out.append(' ').append(((IdentifierTree) node).name());
+    }
+    out.append('\n');
     indent += 2;
 
     Iterator<? extends Tree> i = iteratorFor(node);
@@ -71,6 +83,9 @@ public class ShapeTest {
   }
 
   private static Iterator<Tree> iteratorFor(Tree node) {
+    if (node.kind() == Tree.Kind.INFERED_TYPE) {
+      return Collections.emptyIterator();
+    }
     final Iterator<Tree> iterator;
     if (node instanceof ETree) {
       iterator = (Iterator<Tree>) ((ETree) node).children();

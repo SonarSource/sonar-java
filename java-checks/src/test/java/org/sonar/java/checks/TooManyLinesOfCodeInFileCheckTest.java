@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@org.junit.Ignore("cast to InternalSyntaxToken")
+@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_InternalSyntaxToken)
 public class TooManyLinesOfCodeInFileCheckTest {
 
   @Test

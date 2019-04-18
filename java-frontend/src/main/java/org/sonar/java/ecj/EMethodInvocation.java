@@ -1,7 +1,6 @@
 package org.sonar.java.ecj;
 
 import com.google.common.collect.Iterators;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -47,7 +46,7 @@ class EMethodInvocation extends EExpression implements MethodInvocationTree {
     if (binding == null) {
       return Symbols.unknownSymbol;
     }
-    return new EMethodSymbol(ast, binding);
+    return ast.methodSymbol(binding);
   }
 
   @Override

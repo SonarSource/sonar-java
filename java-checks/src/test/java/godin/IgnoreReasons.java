@@ -1,11 +1,24 @@
 package godin;
 
+import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.TypeArguments;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public final class IgnoreReasons {
 
-  public static final String COMMENTS = "comments";
+  /**
+   * Require implementation of {@link VariableTree#endToken()}
+   */
+  public static final String EVariable_endToken = "EVariable.endToken";
+
+  public static final String TREE_SHAPE = "problem with shape of tree: ";
+
+  /**
+   * trivias
+   */
+  public static final String COMMENTS = "comments aka trivias";
 
   public static final String SYNTAX_ERROR = "syntax error";
 
@@ -63,6 +76,11 @@ public final class IgnoreReasons {
    * Cast to {@link org.sonar.java.model.InternalSyntaxToken}
    */
   public static final String CAST_TO_InternalSyntaxToken = "cast to InternalSyntaxToken";
+
+  /**
+   * Cast to {@link MethodJavaType}
+   */
+  public static final String CAST_TO_MethodJavaType = "cast to MethodJavaType";
 
   private IgnoreReasons() {
   }

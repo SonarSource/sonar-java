@@ -15,6 +15,7 @@ import java.util.Iterator;
 @MethodsAreNonnullByDefault
 public class EMethodReference extends EExpression implements MethodReferenceTree {
   Tree expression;
+  TypeArguments typeArguments;
   EIdentifier method;
 
   @Override
@@ -30,8 +31,7 @@ public class EMethodReference extends EExpression implements MethodReferenceTree
   @Nullable
   @Override
   public TypeArguments typeArguments() {
-    // FIXME
-    return new EClassInstanceCreation.ETypeArguments();
+    return typeArguments;
   }
 
   @Override

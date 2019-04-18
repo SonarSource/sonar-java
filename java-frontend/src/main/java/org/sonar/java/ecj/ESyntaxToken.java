@@ -8,13 +8,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 @MethodsAreNonnullByDefault
-@ParametersAreNonnullByDefault
 class ESyntaxToken extends ETree implements SyntaxToken {
   private int line;
   private int column;

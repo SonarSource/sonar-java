@@ -1,7 +1,6 @@
 package org.sonar.java.ecj;
 
 import com.google.common.collect.Iterators;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -30,6 +29,8 @@ class EClass extends ETree implements ClassTree {
   EModifiers modifiers = new EModifiers();
   SyntaxToken declarationKeyword;
   EIdentifier simpleName;
+  // FIXME
+  ETypeParameters typeParameters = new ETypeParameters();
   TypeTree superClass;
   EList<TypeTree> superInterfaces = new EList<>();
   SyntaxToken openBraceToken;
@@ -55,8 +56,7 @@ class EClass extends ETree implements ClassTree {
 
   @Override
   public TypeParameters typeParameters() {
-    // FIXME
-    return new ETypeParameters();
+    return typeParameters;
   }
 
   @Nullable
@@ -90,7 +90,7 @@ class EClass extends ETree implements ClassTree {
     if (binding == null) {
       return Symbols.unknownSymbol;
     }
-    return new ETypeSymbol(ast, binding);
+    return ast.typeSymbol(binding);
   }
 
   @Override
@@ -122,6 +122,7 @@ class EClass extends ETree implements ClassTree {
         modifiers(),
         simpleName(),
         typeParameters(),
+        superClass(),
         superInterfaces()
       ),
       members().iterator()

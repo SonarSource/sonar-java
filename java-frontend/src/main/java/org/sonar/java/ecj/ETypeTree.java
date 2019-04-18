@@ -1,7 +1,6 @@
 package org.sonar.java.ecj;
 
 import com.google.common.collect.Iterators;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -19,7 +18,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -34,12 +32,11 @@ abstract class ETypeTree extends ETree implements TypeTree {
     if (binding == null) {
       return Symbols.unknownType;
     }
-    return new EType(ast, binding);
+    return ast.type(binding);
   }
 }
 
 @MethodsAreNonnullByDefault
-@ParametersAreNonnullByDefault
 class EPrimitiveType extends ETypeTree implements PrimitiveTypeTree {
   SyntaxToken keyword;
 
@@ -85,7 +82,6 @@ class EPrimitiveType extends ETypeTree implements PrimitiveTypeTree {
  * {@link org.sonar.plugins.java.api.tree.InferedTypeTree}
  */
 @MethodsAreNonnullByDefault
-@ParametersAreNonnullByDefault
 class EInferedType extends ETypeTree {
   @Override
   public List<AnnotationTree> annotations() {
@@ -147,13 +143,13 @@ class EUnionType extends ETypeTree implements UnionTypeTree {
   @Nullable
   @Override
   public SyntaxToken firstToken() {
-    return null;
+    return typeAlternatives.get(0).firstToken();
   }
 
   @Nullable
   @Override
   public SyntaxToken lastToken() {
-    return null;
+    return typeAlternatives.get(typeAlternatives.size() - 1).lastToken();
   }
 
   @Override
@@ -222,7 +218,7 @@ class EArrayType extends ETypeTree implements ArrayTypeTree {
 @MethodsAreNonnullByDefault
 class EParameterizedType extends ETypeTree implements ParameterizedTypeTree {
   TypeTree type;
-  TypeArguments typeArguments;
+  EClassInstanceCreation.ETypeArguments typeArguments;
 
   @Override
   public TypeTree type() {

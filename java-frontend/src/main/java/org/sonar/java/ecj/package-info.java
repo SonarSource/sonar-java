@@ -7,4 +7,5 @@
  *
  * TODO get rid of {@link org.sonar.java.ecj.ESymbol#equals(java.lang.Object)} and {@link org.sonar.java.ecj.ESymbol#hashCode()}
  */
+@javax.annotation.ParametersAreNonnullByDefault
 package org.sonar.java.ecj;

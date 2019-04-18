@@ -32,6 +32,8 @@ class EMethod extends ETree implements MethodTree {
   IMethodBinding binding;
 
   EModifiers modifiers = new EModifiers();
+  // FIXME
+  ETypeParameters typeParameters = new ETypeParameters();
   TypeTree returnType;
   IdentifierTree simpleName;
   List<VariableTree> parameters = new ArrayList<>();
@@ -47,8 +49,7 @@ class EMethod extends ETree implements MethodTree {
 
   @Override
   public TypeParameters typeParameters() {
-    // FIXME
-    return new ETypeParameters();
+    return typeParameters;
   }
 
   @Nullable
@@ -117,7 +118,7 @@ class EMethod extends ETree implements MethodTree {
     if (binding == null) {
       return Symbols.unknownMethodSymbol;
     }
-    return new EMethodSymbol(ast, binding);
+    return ast.methodSymbol(binding);
   }
 
   /**

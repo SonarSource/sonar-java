@@ -6,11 +6,9 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
-@ParametersAreNonnullByDefault
 public class ESyntaxTrivia extends ETree implements SyntaxTrivia {
   String comment;
   int line;

@@ -23,6 +23,7 @@ class EArrayCreation extends EExpression implements NewArrayTree {
   TypeTree type;
   SyntaxToken openBraceToken;
   EList<ExpressionTree> initializers = new EList<>();
+  SyntaxToken closeBraceToken;
 
   // TODO Godin: I guess that nullable to support array initializers?
   @Nullable
@@ -57,7 +58,7 @@ class EArrayCreation extends EExpression implements NewArrayTree {
   @Nullable
   @Override
   public SyntaxToken closeBraceToken() {
-    throw new UnexpectedAccessException();
+    return closeBraceToken;
   }
 
   @Override
@@ -77,6 +78,15 @@ class EArrayCreation extends EExpression implements NewArrayTree {
       return newKeyword;
     }
     return Objects.requireNonNull(openBraceToken);
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken lastToken() {
+    if (closeBraceToken != null) {
+      return closeBraceToken;
+    }
+    return type.lastToken();
   }
 
   @Override

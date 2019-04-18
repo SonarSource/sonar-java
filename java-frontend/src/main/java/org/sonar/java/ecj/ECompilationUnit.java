@@ -21,6 +21,7 @@ public class ECompilationUnit extends ETree implements CompilationUnitTree {
   List<ImportClauseTree> imports = new ArrayList<>();
   List<Tree> types = new ArrayList<>();
 
+  // FIXME
   ESyntaxToken eofToken = new ESyntaxToken(0, 0, "");
 
   @Nullable
@@ -64,6 +65,8 @@ public class ECompilationUnit extends ETree implements CompilationUnitTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.concat(
+      Iterators.forArray(packageDeclaration),
+      imports.iterator(),
       types.iterator(),
       Iterators.forArray(eofToken)
     );

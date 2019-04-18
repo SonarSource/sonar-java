@@ -71,21 +71,24 @@ class EIfStatement extends EStatement implements IfStatementTree {
   @Nullable
   @Override
   public SyntaxToken firstToken() {
-    return ifKeyword();
+    return ifKeyword;
   }
 
   @Nullable
   @Override
   public SyntaxToken lastToken() {
-    return elseStatement == null ? thenStatement.lastToken() : elseStatement.lastToken();
+    if (elseStatement != null) {
+      return elseStatement.lastToken();
+    }
+    return thenStatement.lastToken();
   }
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
-      condition(),
-      thenStatement(),
-      elseStatement()
+      condition,
+      thenStatement,
+      elseStatement
     );
   }
 }

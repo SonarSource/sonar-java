@@ -51,6 +51,7 @@ import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.NameQualifiedType;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.ParameterizedType;
@@ -59,6 +60,7 @@ import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.QualifiedName;
+import org.eclipse.jdt.core.dom.QualifiedType;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
@@ -87,6 +89,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
+import org.eclipse.jdt.core.dom.WildcardType;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.parser.Scanner;
 import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
@@ -101,6 +104,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -115,8 +119,6 @@ import java.util.stream.Stream;
 
 /**
  * TODO how to replace internal {@link TerminalTokens} on public {@link org.eclipse.jdt.core.compiler.ITerminalSymbols} given that their values are different?
- *
- * TODO add {@link javax.annotation.ParametersAreNonnullByDefault} so that it can be placed in package-info for all classes ?
  */
 public final class EcjParser {
 
@@ -142,6 +144,11 @@ public final class EcjParser {
   public static Tree parse(String source) {
     ASTParser astParser = ASTParser.newParser(AST.JLS11);
     astParser.setResolveBindings(true);
+
+    // Enable bindings recovery, otherwise there won't be bindings for example for variables whose type can't be resolved,
+    // TODO however seems that anyway variable won't be bound in cases such as "known.unknown<Object> v; v = null;"
+    astParser.setBindingsRecovery(true);
+
     // TODO check astParser.setStatementsRecovery();
     astParser.setEnvironment(
       classpath(),
@@ -223,14 +230,14 @@ public final class EcjParser {
     }
   }
 
-  private Tree convert(ASTNode node) {
+  private Tree convert(@Nullable ASTNode node) {
     if (node == null) {
       return null;
     }
     switch (node.getNodeType()) {
       case ASTNode.COMPILATION_UNIT: {
-        ECompilationUnit t = new ECompilationUnit();
         CompilationUnit e = (CompilationUnit) node;
+        ECompilationUnit t = new ECompilationUnit();
         this.compilationUnit = e;
         this.ast = new Ctx(e.getAST());
 
@@ -245,8 +252,11 @@ public final class EcjParser {
         }
 
         if (e.getPackage() != null) {
+          // TODO e.getPackage().annotations()
           t.packageDeclaration = new EPackageDeclaration();
+          t.packageDeclaration.packageKeyword = firstTokenBefore(e.getPackage().getName(), TerminalTokens.TokenNamepackage);
           t.packageDeclaration.name = convertExpression(e.getPackage().getName());
+          t.packageDeclaration.semicolonToken = lastTokenIn(e.getPackage(), TerminalTokens.TokenNameSEMICOLON);
         }
 
         for (Object o : e.imports()) {
@@ -255,6 +265,13 @@ public final class EcjParser {
           d.importKeyword = createSyntaxToken(i, "import");
           d.isStatic = i.isStatic();
           d.qualifiedIdentifier = convertExpression(i.getName());
+          if (i.isOnDemand()) {
+            EMemberSelect onDemand = new EMemberSelect();
+            onDemand.lhs = d.qualifiedIdentifier;
+            onDemand.rhs = new EIdentifier();
+            onDemand.rhs.identifierToken = lastTokenIn(i, TerminalTokens.TokenNameMULTIPLY);
+            d.qualifiedIdentifier = onDemand;
+          }
           d.semicolonToken = lastTokenIn(i, TerminalTokens.TokenNameSEMICOLON);
           t.imports.add(d);
         }
@@ -505,7 +522,7 @@ public final class EcjParser {
     return t;
   }
 
-  private TypeTree convertType(Type node) {
+  private TypeTree convertType(@Nullable Type node) {
     if (node == null) {
       return null;
     }
@@ -520,6 +537,7 @@ public final class EcjParser {
       }
       case ASTNode.SIMPLE_TYPE: {
         SimpleType e = (SimpleType) node;
+        // TODO e.annotations()
         return (TypeTree) convertExpression(e.getName());
       }
       case ASTNode.UNION_TYPE: {
@@ -548,20 +566,33 @@ public final class EcjParser {
         EParameterizedType t = new EParameterizedType();
         t.ast = ast;
         t.binding = e.resolveBinding();
+
         t.type = convertType(e.getType());
         t.typeArguments = new EClassInstanceCreation.ETypeArguments();
-        // TODO e.typeArguments()
+        t.typeArguments.openBracketToken = firstTokenAfter(e.getType(), TerminalTokens.TokenNameLESS);
+        for (Object o : e.typeArguments()) {
+          t.typeArguments.elements.add(convertType((Type) o));
+        }
+        // TerminalTokens.TokenNameUNSIGNED_RIGHT_SHIFT vs TerminalTokens.TokenNameGREATER
+        t.typeArguments.closeBracketToken = createSyntaxToken(e.getStartPosition() + e.getLength() - 1, ">");
         return t;
       }
       case ASTNode.QUALIFIED_TYPE: {
-//        QualifiedType e = (QualifiedType) node;
-      }
-      case ASTNode.WILDCARD_TYPE: {
-//        WildcardType e = (WildcardType) node;
+        QualifiedType e = (QualifiedType) node;
+        // FIXME
+        throw new UnexpectedAccessException("ASTNode.QUALIFIED_TYPE");
       }
       case ASTNode.NAME_QUALIFIED_TYPE: {
-//        NameQualifiedType e = (NameQualifiedType) node;
-        throw new UnexpectedAccessException();
+        NameQualifiedType e = (NameQualifiedType) node;
+        // FIXME
+        throw new UnexpectedAccessException("ASTNode.NAME_QUALIFIED_TYPE");
+      }
+      case ASTNode.WILDCARD_TYPE: {
+        WildcardType e = (WildcardType) node;
+        // FIXME
+        EIdentifier t = new EIdentifier();
+        t.identifierToken = createSyntaxToken(e, "");
+        return t;
       }
       case ASTNode.INTERSECTION_TYPE: {
         IntersectionType e = (IntersectionType) node;
@@ -577,7 +608,7 @@ public final class EcjParser {
     }
   }
 
-  private StatementTree convertStatement(Statement node) {
+  private StatementTree convertStatement(@Nullable Statement node) {
     if (node == null) {
       return null;
     }
@@ -616,6 +647,7 @@ public final class EcjParser {
             );
             t2.simpleName = convertSimpleName(e3.getName());
             t2.initializer = convertExpression(e3.getInitializer());
+            t.initializer.elements.add(t2);
           } else {
             EExpressionStatement t2 = new EExpressionStatement();
             t2.expression = convertExpression((Expression) o);
@@ -658,7 +690,7 @@ public final class EcjParser {
         BreakStatement e = (BreakStatement) node;
         EBreakStatement t = new EBreakStatement();
         t.breakKeyword = createSyntaxToken(node, "break");
-        t.label = convertSimpleName(e.getLabel());
+        t.labelOrValue = convertSimpleName(e.getLabel());
         t.semicolonToken = lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON);
         return t;
       }
@@ -894,6 +926,14 @@ public final class EcjParser {
     );
   }
 
+  private SyntaxToken createSyntaxToken(int position, String text) {
+    return new ESyntaxToken(
+      compilationUnit.getLineNumber(position),
+      compilationUnit.getColumnNumber(position),
+      text
+    );
+  }
+
   private SyntaxToken createSyntaxToken(ASTNode node, String text) {
     return new ESyntaxToken(
       compilationUnit.getLineNumber(node.getStartPosition()),
@@ -902,7 +942,7 @@ public final class EcjParser {
     );
   }
 
-  private EIdentifier convertSimpleName(SimpleName e) {
+  private EIdentifier convertSimpleName(@Nullable SimpleName e) {
     if (e == null) {
       return null;
     }
@@ -915,7 +955,7 @@ public final class EcjParser {
     return t;
   }
 
-  private ExpressionTree convertExpression(Expression node) {
+  private ExpressionTree convertExpression(@Nullable Expression node) {
     if (node == null) {
       return null;
     }
@@ -925,7 +965,7 @@ public final class EcjParser {
     return t;
   }
 
-  private EExpression createExpression(Expression node) {
+  private EExpression createExpression(@Nullable Expression node) {
     if (node == null) {
       return null;
     }
@@ -1000,12 +1040,12 @@ public final class EcjParser {
         t.type = convertType(e.getType());
         // TODO
         // e.dimensions()
-        // FIXME
-        t.openBraceToken = createSyntaxToken(e, "{");
         if (e.getInitializer() != null) {
+          t.openBraceToken = createSyntaxToken(e.getInitializer(), "{");
           for (Object o : e.getInitializer().expressions()) {
             t.initializers.elements.add(convertExpression((Expression) o));
           }
+          t.closeBraceToken = lastTokenIn(e.getInitializer(), TerminalTokens.TokenNameRBRACE);
         }
         return t;
       }
@@ -1016,6 +1056,7 @@ public final class EcjParser {
         for (Object o : e.expressions()) {
           t.initializers.elements.add(convertExpression((Expression) o));
         }
+        t.closeBraceToken = lastTokenIn(e, TerminalTokens.TokenNameRBRACE);
         return t;
       }
       case ASTNode.ASSIGNMENT: {
@@ -1044,6 +1085,10 @@ public final class EcjParser {
         // TODO position
         t.newKeyword = createSyntaxToken(e, "new");
         t.identifier = convertType(e.getType());
+
+        // identifier should be bound to constructor and not to type - see CallToDeprecatedMethodCheck
+        getIdentifier(t.identifier).binding = t.binding;
+
         t.arguments.openParenToken = firstTokenAfter(e.getType(), TerminalTokens.TokenNameLPAREN);
         for (Object o : e.arguments()) {
           t.arguments.elements.add(convertExpression((Expression) o));
@@ -1252,7 +1297,22 @@ public final class EcjParser {
         NumberLiteral e = (NumberLiteral) node;
         ELiteral t = new ELiteral();
         t.token = createSyntaxToken(e, e.getToken());
-        t.kind = Tree.Kind.INT_LITERAL;
+        switch (e.resolveTypeBinding().getName()) {
+          case "int":
+            t.kind = Tree.Kind.INT_LITERAL;
+            break;
+          case "long":
+            t.kind = Tree.Kind.LONG_LITERAL;
+            break;
+          case "float":
+            t.kind = Tree.Kind.FLOAT_LITERAL;
+            break;
+          case "double":
+            t.kind = Tree.Kind.DOUBLE_LITERAL;
+            break;
+          default:
+            throw new IllegalStateException();
+        }
         return t;
       }
       case ASTNode.CHARACTER_LITERAL: {
@@ -1313,7 +1373,23 @@ public final class EcjParser {
     }
   }
 
-  private EBlock convertBlock(Block e) {
+  /**
+   * @see org.sonar.java.model.expression.NewClassTreeImpl#constructorSymbol()
+   */
+  private EIdentifier getIdentifier(TypeTree t) {
+    switch (t.kind()) {
+      case IDENTIFIER:
+        return (EIdentifier) t;
+      case MEMBER_SELECT:
+        return ((EMemberSelect) t).rhs;
+      case PARAMETERIZED_TYPE:
+        return getIdentifier(((EParameterizedType) t).type);
+      default:
+        throw new IllegalStateException(t.kind().toString());
+    }
+  }
+
+  private EBlock convertBlock(@Nullable Block e) {
     if (e == null) {
       return null;
     }

@@ -25,6 +25,7 @@ import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadLocalVariableNameCheck;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 
+@org.junit.Ignore(godin.IgnoreReasons.COMMENTS)
 public class GeneratedCodeFilterTest {
 
   @Test

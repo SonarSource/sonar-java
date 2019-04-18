@@ -26,7 +26,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,9 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -52,16 +48,31 @@ abstract class ESymbol implements Symbol {
 
   @Override
   public final boolean equals(Object obj) {
-    if (obj instanceof ESymbol) {
-      ESymbol other = (ESymbol) obj;
-      return this.binding == other.binding;
-    }
-    return false;
+    return super.equals(obj);
   }
 
   @Override
   public final int hashCode() {
-    return this.binding.hashCode();
+    return super.hashCode();
+  }
+
+  /**
+   * @see JavaSymbol.VariableJavaSymbol#toString()
+   * @see JavaSymbol.MethodJavaSymbol#toString()
+   * @see JavaSymbol.TypeJavaSymbol#toString()
+   */
+  @Override
+  public final String toString() {
+    switch (binding.getKind()) {
+      case IBinding.VARIABLE:
+        return owner().name() + "#" + name();
+      case IBinding.METHOD:
+        return owner().name() + "#" + name() + "()";
+      case IBinding.TYPE:
+        return name();
+      default:
+        throw new UnexpectedAccessException();
+    }
   }
 
   /**
@@ -72,6 +83,11 @@ abstract class ESymbol implements Symbol {
     if (binding.getKind() == IBinding.METHOD && ((IMethodBinding) binding).isConstructor()) {
       return "<init>";
     }
+
+    if (binding.getKind() == IBinding.TYPE) {
+      return ((ITypeBinding) binding).getErasure().getName();
+    }
+
     return binding.getName();
   }
 
@@ -86,23 +102,23 @@ abstract class ESymbol implements Symbol {
       }
       if (declaringMethod != null) {
         // local variable
-        return new EMethodSymbol(ast, declaringMethod);
+        return ast.methodSymbol(declaringMethod);
       }
       // field
-      return new ETypeSymbol(ast, b.getDeclaringClass());
+      return ast.typeSymbol(b.getDeclaringClass());
 
     } else if (binding.getKind() == IBinding.METHOD) {
       // TODO what about FileHandlingCheck: new FileReader("") {}
 
       IMethodBinding b = (IMethodBinding) binding;
-      return new ETypeSymbol(ast, b.getDeclaringClass());
+      return ast.typeSymbol(b.getDeclaringClass());
 
     } else if (binding.getKind() == IBinding.TYPE) {
       ITypeBinding b = (ITypeBinding) binding;
       IMethodBinding declaringMethod = b.getDeclaringMethod();
       if (declaringMethod != null) {
         // local class
-        return new EMethodSymbol(ast, declaringMethod);
+        return ast.methodSymbol(declaringMethod);
       }
       ITypeBinding declaringClass = b.getDeclaringClass();
       if (declaringClass == null) {
@@ -115,7 +131,7 @@ abstract class ESymbol implements Symbol {
           }
         };
       }
-      return new ETypeSymbol(ast, declaringClass);
+      return ast.typeSymbol(declaringClass);
 
     } else {
       throw new NotImplementedException("kind: " + binding.getKind());
@@ -125,12 +141,12 @@ abstract class ESymbol implements Symbol {
   @Override
   public final Type type() {
     if (isTypeSymbol()) {
-      return new EType(ast, (ITypeBinding) binding);
+      return ast.type((ITypeBinding) binding);
     }
     if (isVariableSymbol()) {
-      return new EType(ast, ((IVariableBinding) binding).getType());
+      return ast.type(((IVariableBinding) binding).getType());
     }
-    // TODO Method in StandardCharsetsConstantsCheck
+    // TODO Method in StandardCharsetsConstantsCheck and RedundantTypeCastCheck
     throw new NotImplementedException("Kind: " + binding.getKind());
   }
 
@@ -228,7 +244,7 @@ abstract class ESymbol implements Symbol {
       @Override
       public boolean isAnnotatedWith(String fullyQualifiedName) {
         for (IAnnotationBinding a : binding.getAnnotations()) {
-          if (fullyQualifiedName.equals(a.getAnnotationType().getQualifiedName())) {
+          if (fullyQualifiedName.equals(a.getAnnotationType().getBinaryName())) {
             return true;
           }
         }
@@ -244,8 +260,9 @@ abstract class ESymbol implements Symbol {
 
       @Override
       public List<AnnotationInstance> annotations() {
-        // FIXME
-        return Collections.emptyList();
+        return Arrays.stream(binding.getAnnotations())
+          .map(x -> new EAnnotationInstance(ast, x))
+          .collect(Collectors.toList());
       }
     };
   }
@@ -264,7 +281,32 @@ abstract class ESymbol implements Symbol {
 }
 
 @MethodsAreNonnullByDefault
+class EAnnotationInstance implements SymbolMetadata.AnnotationInstance {
+  private final Ctx ast;
+  private final IAnnotationBinding binding;
+
+  EAnnotationInstance(Ctx ast, IAnnotationBinding binding) {
+    this.ast = ast;
+    this.binding = binding;
+  }
+
+  @Override
+  public Symbol symbol() {
+    return ast.typeSymbol(binding.getAnnotationType());
+  }
+
+  @Override
+  public List<SymbolMetadata.AnnotationValue> values() {
+    // FIXME
+    return Collections.emptyList();
+  }
+}
+
+@MethodsAreNonnullByDefault
 class EVariableSymbol extends ESymbol implements Symbol.VariableSymbol {
+  /**
+   * Use {@link Ctx#variableSymbol(IVariableBinding)}
+   */
   EVariableSymbol(Ctx ast, IVariableBinding binding) {
     super(ast, binding);
   }
@@ -278,7 +320,7 @@ class EVariableSymbol extends ESymbol implements Symbol.VariableSymbol {
     if (declaringClass == null) {
       throw new NotImplementedException();
     }
-    return new ETypeSymbol(ast, declaringClass);
+    return ast.typeSymbol(declaringClass);
   }
 
   @Nullable
@@ -286,20 +328,15 @@ class EVariableSymbol extends ESymbol implements Symbol.VariableSymbol {
   public VariableTree declaration() {
     return (VariableTree) super.declaration();
   }
-
-  /**
-   * FIXME see {@link JavaSymbol.VariableJavaSymbol#toString()}
-   */
-  @Override
-  public String toString() {
-    throw new UnexpectedAccessException();
-  }
 }
 
 @MethodsAreNonnullByDefault
 class ETypeSymbol extends ESymbol implements Symbol.TypeSymbol {
   private final ITypeBinding binding;
 
+  /**
+   * Use {@link Ctx#typeSymbol(ITypeBinding)}
+   */
   ETypeSymbol(Ctx ast, ITypeBinding binding) {
     super(ast, binding);
     this.binding = binding;
@@ -314,13 +351,13 @@ class ETypeSymbol extends ESymbol implements Symbol.TypeSymbol {
     if (binding.getSuperclass() == null) {
       return Symbols.unknownType;
     }
-    return new EType(ast, binding.getSuperclass());
+    return ast.type(binding.getSuperclass());
   }
 
   @Override
   public List<Type> interfaces() {
     return Arrays.stream(binding.getInterfaces())
-      .map(b -> new EType(ast, b))
+      .map(ast::type)
       .collect(Collectors.toList());
   }
 
@@ -329,14 +366,15 @@ class ETypeSymbol extends ESymbol implements Symbol.TypeSymbol {
     Collection<Symbol> members = new ArrayList<>();
     ITypeBinding typeBinding = binding;
     for (ITypeBinding b : typeBinding.getDeclaredTypes()) {
-      members.add(new ETypeSymbol(ast, b));
+      members.add(ast.typeSymbol(b));
     }
     for (IVariableBinding b : typeBinding.getDeclaredFields()) {
-      members.add(new EVariableSymbol(ast, b));
+      members.add(ast.variableSymbol(b));
     }
     for (IMethodBinding b : typeBinding.getDeclaredMethods()) {
-      members.add(new EMethodSymbol(ast, b));
+      members.add(ast.methodSymbol(b));
     }
+    // TODO old implementation also provides "this" and "super" - see AbstractClassWithoutAbstractMethodCheck
     return members;
   }
 
@@ -353,7 +391,7 @@ class ETypeSymbol extends ESymbol implements Symbol.TypeSymbol {
     if (declaringClass == null) {
       return null;
     }
-    return new ETypeSymbol(ast, declaringClass);
+    return ast.typeSymbol(declaringClass);
   }
 
   @Nullable
@@ -361,20 +399,15 @@ class ETypeSymbol extends ESymbol implements Symbol.TypeSymbol {
   public ClassTree declaration() {
     return (ClassTree) super.declaration();
   }
-
-  /**
-   * FIXME see {@link org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol#toString()}
-   */
-  @Override
-  public String toString() {
-    throw new NotImplementedException();
-  }
 }
 
 @MethodsAreNonnullByDefault
 class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
   private final IMethodBinding binding;
 
+  /**
+   * Use {@link Ctx#methodSymbol(IMethodBinding)}
+   */
   EMethodSymbol(Ctx ast, IMethodBinding binding) {
     super(ast, binding);
     this.binding = binding;
@@ -383,19 +416,19 @@ class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
   @Override
   public List<Type> parameterTypes() {
     return Arrays.stream(binding.getParameterTypes())
-      .map(b -> new EType(ast, b))
+      .map(ast::type)
       .collect(Collectors.toList());
   }
 
   @Override
   public TypeSymbol returnType() {
-    return new ETypeSymbol(ast, binding.getReturnType());
+    return ast.typeSymbol(binding.getReturnType());
   }
 
   @Override
   public List<Type> thrownTypes() {
     return Arrays.stream(binding.getExceptionTypes())
-      .map(b -> new EType(ast, b))
+      .map(ast::type)
       .collect(Collectors.toList());
   }
 
@@ -408,7 +441,7 @@ class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
     // TODO what about unresolved?
     IMethodBinding overrides = find(binding::overrides, binding.getDeclaringClass());
     if (overrides != null) {
-      return new EMethodSymbol(ast, overrides);
+      return ast.methodSymbol(overrides);
     }
     return null;
   }
@@ -440,7 +473,7 @@ class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
   @Nullable
   @Override
   public TypeSymbol enclosingClass() {
-    return new ETypeSymbol(ast, binding.getDeclaringClass());
+    return ast.typeSymbol(binding.getDeclaringClass());
   }
 
   @Nullable
@@ -448,22 +481,16 @@ class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
   public MethodTree declaration() {
     return (MethodTree) super.declaration();
   }
-
-  /**
-   * FIXME see {@link JavaSymbol.MethodJavaSymbol#toString()}
-   */
-  @Override
-  public String toString() {
-    throw new NotImplementedException();
-  }
 }
 
 @MethodsAreNonnullByDefault
-@ParametersAreNonnullByDefault
 class EType implements Type {
   private final Ctx ast;
   private final ITypeBinding typeBinding;
 
+  /**
+   * Use {@link Ctx#type(ITypeBinding)}
+   */
   EType(Ctx ast, ITypeBinding typeBinding) {
     this.ast = Objects.requireNonNull(ast);
     this.typeBinding = Objects.requireNonNull(typeBinding);
@@ -479,9 +506,13 @@ class EType implements Type {
 
   @Override
   public boolean isSubtypeOf(String fullyQualifiedName) {
-    return typeBinding.isSubTypeCompatible(
-      findType(ast.ast, fullyQualifiedName)
-    );
+    // for example "byte" in IntegerToHexStringCheck
+    ITypeBinding type = ast.ast.resolveWellKnownType(fullyQualifiedName);
+
+    if (type == null) {
+      type = findType(ast.ast, fullyQualifiedName);
+    }
+    return typeBinding.isSubTypeCompatible(type);
   }
 
   private static ITypeBinding findType(AST ast, String fqn) {
@@ -541,7 +572,7 @@ class EType implements Type {
 
   @Override
   public boolean isUnknown() {
-    return false;
+    return typeBinding.isRecovered();
   }
 
   @Override
@@ -556,9 +587,14 @@ class EType implements Type {
       || isPrimitive(Primitives.DOUBLE);
   }
 
+  /**
+   * TODO typeBinding.getBinaryName() for ThrowsSeveralCheckedExceptionCheck ?
+   *
+   * @see JavaSymbol.TypeJavaSymbol#getFullyQualifiedName()
+   */
   @Override
   public String fullyQualifiedName() {
-    return typeBinding.getQualifiedName();
+    return typeBinding.getErasure().getQualifiedName();
   }
 
   @Override
@@ -569,7 +605,7 @@ class EType implements Type {
 
   @Override
   public Symbol.TypeSymbol symbol() {
-    return new ETypeSymbol(ast, typeBinding);
+    return ast.typeSymbol(typeBinding);
   }
 
   @Override
@@ -578,24 +614,20 @@ class EType implements Type {
   }
 
   /**
-   * FIXME see {@link JavaType#toString()}
+   * @see JavaType#toString()
    */
   @Override
-  public String toString() {
-    throw new NotImplementedException();
+  public final String toString() {
+    return symbol().toString();
   }
 
   @Override
   public final boolean equals(Object obj) {
-    if (obj instanceof EType) {
-      EType other = (EType) obj;
-      return this.typeBinding == other.typeBinding;
-    }
-    return false;
+    return super.equals(obj);
   }
 
   @Override
-  public int hashCode() {
-    return this.typeBinding.hashCode();
+  public final int hashCode() {
+    return super.hashCode();
   }
 }

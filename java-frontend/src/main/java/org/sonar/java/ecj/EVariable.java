@@ -1,7 +1,6 @@
 package org.sonar.java.ecj;
 
 import com.google.common.collect.Iterators;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -61,7 +60,7 @@ class EVariable extends ETree implements VariableTree {
     if (binding == null) {
       return Symbols.unknownSymbol;
     }
-    return new EVariableSymbol(ast, binding);
+    return ast.variableSymbol(binding);
   }
 
   @Nullable
@@ -83,12 +82,18 @@ class EVariable extends ETree implements VariableTree {
   @Nullable
   @Override
   public SyntaxToken firstToken() {
+    if (type.is(Kind.INFERED_TYPE)) {
+      // for LambdaTypeParameterCheckTest
+      // TODO do everywhere?
+      return simpleName.firstToken();
+    }
     return type.firstToken();
   }
 
   @Nullable
   @Override
   public SyntaxToken lastToken() {
+    // FIXME modifiers
     if (initializer != null) {
       return initializer.lastToken();
     }

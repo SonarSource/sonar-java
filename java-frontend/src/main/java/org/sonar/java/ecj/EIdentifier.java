@@ -42,11 +42,11 @@ class EIdentifier extends EExpression implements IdentifierTree {
     }
     switch (binding.getKind()) {
       case IBinding.TYPE:
-        return new ETypeSymbol(ast, (ITypeBinding) binding);
+        return ast.typeSymbol((ITypeBinding) binding);
       case IBinding.VARIABLE:
-        return new EVariableSymbol(ast, (IVariableBinding) binding);
+        return ast.variableSymbol((IVariableBinding) binding);
       case IBinding.METHOD:
-        return new EMethodSymbol(ast, (IMethodBinding) binding);
+        return ast.methodSymbol((IMethodBinding) binding);
       default:
         return Symbols.unknownSymbol;
     }
@@ -85,13 +85,5 @@ class EIdentifier extends EExpression implements IdentifierTree {
     return Iterators.forArray(
       identifierToken()
     );
-  }
-
-  /**
-   * {@link org.sonar.java.model.expression.IdentifierTreeImpl}
-   */
-  @Override
-  public String toString() {
-    return name();
   }
 }

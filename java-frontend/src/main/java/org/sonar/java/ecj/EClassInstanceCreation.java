@@ -23,6 +23,7 @@ class EClassInstanceCreation extends EExpression implements NewClassTree {
   IMethodBinding binding;
 
   SyntaxToken newKeyword;
+  TypeArguments typeArguments;
   TypeTree identifier;
   EMethodInvocation.EArguments arguments = new EMethodInvocation.EArguments();
   EClass classBody;
@@ -46,10 +47,10 @@ class EClassInstanceCreation extends EExpression implements NewClassTree {
     return newKeyword;
   }
 
+  @Nullable
   @Override
   public TypeArguments typeArguments() {
-    // FIXME
-    return new ETypeArguments();
+    return typeArguments;
   }
 
   @Override
@@ -73,7 +74,7 @@ class EClassInstanceCreation extends EExpression implements NewClassTree {
     if (binding == null) {
       return Symbols.unknownSymbol;
     }
-    return new EMethodSymbol(ast, binding);
+    return ast.methodSymbol(binding);
   }
 
   @Override
@@ -108,14 +109,17 @@ class EClassInstanceCreation extends EExpression implements NewClassTree {
   }
 
   static class ETypeArguments extends EList<Tree> implements TypeArguments {
+    SyntaxToken openBracketToken;
+    SyntaxToken closeBracketToken;
+
     @Override
     public SyntaxToken openBracketToken() {
-      throw new UnexpectedAccessException();
+      return openBracketToken;
     }
 
     @Override
     public SyntaxToken closeBracketToken() {
-      throw new NotImplementedException();
+      return closeBracketToken;
     }
 
     @Override
@@ -123,9 +127,16 @@ class EClassInstanceCreation extends EExpression implements NewClassTree {
       return Kind.TYPE_ARGUMENTS;
     }
 
+    @Nullable
     @Override
-    Iterator<? extends Tree> childrenIterator() {
-      return Iterators.forArray();
+    public SyntaxToken firstToken() {
+      return openBracketToken;
+    }
+
+    @Nullable
+    @Override
+    public SyntaxToken lastToken() {
+      return closeBracketToken;
     }
   }
 }

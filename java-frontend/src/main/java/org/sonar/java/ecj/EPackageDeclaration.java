@@ -9,22 +9,26 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Collections;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 @MethodsAreNonnullByDefault
 class EPackageDeclaration extends ETree implements PackageDeclarationTree {
+  List<AnnotationTree> annotations = new ArrayList<>();
+  SyntaxToken packageKeyword;
   ExpressionTree name;
+  SyntaxToken semicolonToken;
 
   @Override
   public List<AnnotationTree> annotations() {
-    return Collections.emptyList();
+    return annotations;
   }
 
   @Override
   public SyntaxToken packageKeyword() {
-    throw new UnexpectedAccessException();
+    return packageKeyword;
   }
 
   @Override
@@ -34,7 +38,7 @@ class EPackageDeclaration extends ETree implements PackageDeclarationTree {
 
   @Override
   public SyntaxToken semicolonToken() {
-    throw new UnexpectedAccessException();
+    return semicolonToken;
   }
 
   @Override
@@ -47,10 +51,21 @@ class EPackageDeclaration extends ETree implements PackageDeclarationTree {
     return Kind.PACKAGE;
   }
 
+  @Nullable
+  @Override
+  public SyntaxToken lastToken() {
+    return semicolonToken;
+  }
+
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.singletonIterator(
-      packageName()
+    return Iterators.concat(
+      annotations().iterator(),
+      Iterators.forArray(
+        packageKeyword(),
+        packageName(),
+        semicolonToken()
+      )
     );
   }
 }

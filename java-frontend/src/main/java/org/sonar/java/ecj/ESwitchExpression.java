@@ -144,19 +144,21 @@ class ESwitchExpression extends EExpression implements SwitchExpressionTree {
 
     @Override
     public boolean isFallThrough() {
-      throw new NotImplementedException();
+      // TODO Java 12
+      return true;
     }
 
     @Nullable
     @Override
     public ExpressionTree expression() {
+      // TODO Java 12
       return expression;
     }
 
     @Override
     public List<ExpressionTree> expressions() {
-      // FIXME
-      return Collections.singletonList(expression);
+      // TODO Java 12
+      return expression == null ? Collections.emptyList() : Collections.singletonList(expression);
     }
 
     @Override
@@ -166,7 +168,7 @@ class ESwitchExpression extends EExpression implements SwitchExpressionTree {
 
     @Override
     public SyntaxToken colonOrArrowToken() {
-      throw new NotImplementedException();
+      return colonToken;
     }
 
     @Override
@@ -188,14 +190,12 @@ class ESwitchExpression extends EExpression implements SwitchExpressionTree {
     @Nullable
     @Override
     public SyntaxToken lastToken() {
-      return colonToken();
+      return colonOrArrowToken();
     }
 
     @Override
     Iterator<? extends Tree> childrenIterator() {
-      return Iterators.singletonIterator(
-        expression()
-      );
+      return expressions().iterator();
     }
   }
 }
