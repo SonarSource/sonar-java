@@ -46,7 +46,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends IssuableSubscriptio
       Collection<Symbol> members = typeSymbol.memberSymbols();
       int nbAbstractMethod = countAbstractMethods(members);
       // don't count this and super as members
-      int nbOfMembers = members.size() - 2;
+      int nbOfMembers = members.size()/* - 2*/;
       if (hasDefaultConstructor(members)) {
         //remove default constructor from members
         nbOfMembers -=1;
