@@ -59,6 +59,7 @@ public interface NewClassTree extends ExpressionTree {
   /**
    * @since Java 1.5
    */
+  @Nullable
   TypeArguments typeArguments();
 
   TypeTree identifier();
