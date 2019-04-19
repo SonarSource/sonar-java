@@ -108,9 +108,15 @@ abstract class ESymbol implements Symbol {
       return ast.typeSymbol(b.getDeclaringClass());
 
     } else if (binding.getKind() == IBinding.METHOD) {
-      // TODO what about FileHandlingCheck: new FileReader("") {}
-
       IMethodBinding b = (IMethodBinding) binding;
+
+      if (b.getDeclaringClass().isAnonymous() && b.isConstructor()) {
+        // TODO
+        // see constructor in FileHandlingCheck: new FileReader("") {}
+        // and method of interface in HostnameVerifierImplementationCheck
+        return ast.typeSymbol(b.getDeclaringClass().getSuperclass());
+      }
+
       return ast.typeSymbol(b.getDeclaringClass());
 
     } else if (binding.getKind() == IBinding.TYPE) {
@@ -146,7 +152,10 @@ abstract class ESymbol implements Symbol {
     if (isVariableSymbol()) {
       return ast.type(((IVariableBinding) binding).getType());
     }
-    // TODO Method in StandardCharsetsConstantsCheck and RedundantTypeCastCheck
+    // TODO method in StandardCharsetsConstantsCheck and RedundantTypeCastCheck , package in InnerClassTooManyLinesCheck
+    if (isPackageSymbol()) {
+      return Symbols.unknownType;
+    }
     throw new NotImplementedException("Kind: " + binding.getKind());
   }
 
@@ -316,9 +325,9 @@ class EVariableSymbol extends ESymbol implements Symbol.VariableSymbol {
   public TypeSymbol enclosingClass() {
     IVariableBinding b = (IVariableBinding) binding;
     ITypeBinding declaringClass = b.getDeclaringClass();
-    // FIXME Godin: likely incorrect for local variables
     if (declaringClass == null) {
-      throw new NotImplementedException();
+      // local variable
+      return ast.typeSymbol(b.getDeclaringMethod().getDeclaringClass());
     }
     return ast.typeSymbol(declaringClass);
   }

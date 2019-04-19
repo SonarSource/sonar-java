@@ -20,7 +20,7 @@ public class ShapeTest {
 
   @Test
   public void wip() {
-    test("package p; import org.*;");
+    test("class C { void m() { Subclass.super.m(); } }");
   }
 
   @Test
@@ -45,6 +45,58 @@ public class ShapeTest {
   @Test
   public void extra_dimensions() {
     test("interface I { int m(int p[])[]; int v[] = null; }");
+  }
+
+  @Test
+  public void enum_declaration() {
+    test("enum E implements I { }");
+  }
+
+  @Test
+  public void initializer() {
+    test("class C { {} }");
+    test("class C { static {} }");
+  }
+
+  @Test
+  public void super_constructor_invocation() {
+    test("class C { C() { super(); } }");
+  }
+
+  @Test
+  public void super_method_invocation() {
+    test("class C { void m() { super.toString(); } }");
+    test("class C { void m() { C.super.toString(); } }");
+  }
+
+  @Test
+  public void expression_this() {
+    test("class C { void m() { equals( this ); } }");
+    test("class C { void m() { equals( C.this ); } }");
+  }
+
+  @Test
+  public void statements() {
+    statement(";");
+
+    statement("label: ;");
+
+    statement("if (true) { }");
+    statement("if (true) { } else { }");
+
+    statement("while (true) ;");
+
+    statement("do { } while (true);");
+
+    statement("synchronized (this) { }");
+
+    statement("try { } finally { }");
+    statement("try { } catch (Exception e) { }");
+    statement("try { } catch (Exception e) { } finally { }");
+  }
+
+  private static void statement(String source) {
+    test("class C { void m() { " + source + " } }");
   }
 
   private static void test(String source) {
@@ -82,7 +134,7 @@ public class ShapeTest {
     }
   }
 
-  private static Iterator<Tree> iteratorFor(Tree node) {
+  static Iterator<Tree> iteratorFor(Tree node) {
     if (node.kind() == Tree.Kind.INFERED_TYPE) {
       return Collections.emptyIterator();
     }

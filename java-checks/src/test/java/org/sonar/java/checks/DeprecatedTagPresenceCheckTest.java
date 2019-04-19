@@ -24,6 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class DeprecatedTagPresenceCheckTest {
 
+  @org.junit.Ignore(godin.IgnoreReasons.COMMENTS)
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/DeprecatedTagPresenceCheck.java", new DeprecatedTagPresenceCheck());

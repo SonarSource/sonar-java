@@ -14,6 +14,7 @@ import java.util.List;
 
 @MethodsAreNonnullByDefault
 public class EBlock extends EStatement implements BlockTree {
+  Kind kind = Tree.Kind.BLOCK;
   SyntaxToken openBraceToken;
   List<StatementTree> body = new ArrayList<>();
   SyntaxToken closeBraceToken;
@@ -40,7 +41,7 @@ public class EBlock extends EStatement implements BlockTree {
 
   @Override
   public Kind kind() {
-    return Kind.BLOCK;
+    return kind;
   }
 
   @Nullable

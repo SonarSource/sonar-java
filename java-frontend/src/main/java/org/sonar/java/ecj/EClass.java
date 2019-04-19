@@ -106,7 +106,15 @@ class EClass extends ETree implements ClassTree {
   @Nullable
   @Override
   public SyntaxToken firstToken() {
-    return modifiers.firstToken() != null ? modifiers.firstToken() : declarationKeyword;
+    // TODO suboptimal
+    Iterator<? extends Tree> childrenIterator = childrenIterator();
+    while (childrenIterator.hasNext()) {
+      Tree child = childrenIterator.next();
+      if (child != null && !child.is(Kind.TYPE_PARAMETERS) && !child.is(Kind.LIST) && child.firstToken() != null) {
+        return child.firstToken();
+      }
+    }
+    throw new IllegalStateException();
   }
 
   @Nullable
@@ -123,7 +131,8 @@ class EClass extends ETree implements ClassTree {
         simpleName(),
         typeParameters(),
         superClass(),
-        superInterfaces()
+        superInterfaces(),
+        openBraceToken()
       ),
       members().iterator()
     );

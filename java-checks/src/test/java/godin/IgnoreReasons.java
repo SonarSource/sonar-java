@@ -9,6 +9,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public final class IgnoreReasons {
 
   /**
+   * I think that either implementation or test is incorrect.
+   */
+  public static final String INCORRECT = "incorrect";
+
+  /**
    * Require implementation of {@link VariableTree#endToken()}
    */
   public static final String EVariable_endToken = "EVariable.endToken";
