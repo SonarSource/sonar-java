@@ -64,7 +64,7 @@ public class Example {
      }
 
   @Override
-  public void throws_Exception() throws Exception { //Compliant because of overrides
+  public void throws_Exception2() throws Exception { //Compliant because of overrides
 
   }
 
