@@ -2,6 +2,7 @@ class ExtendsThread extends Thread {
 }
 
 enum Enum {
+  ;
   public static final String STRING = "string".intern(); // Compliant, should not fail with NPE
 }
 

@@ -4,7 +4,7 @@ class A {
   }
 
   public enum Cake {
-    LEMON_TART, CHEESE_CAKE
+    LEMON_TART, CHEESE_CAKE;
 
     boolean foo(Object o) {
       return equals(o); // compliant when called inside an enum (no member select).
