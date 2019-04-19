@@ -63,7 +63,8 @@ class Fis {
     FileOutputStream outstream = new FileOutputStream("out2.txt"); // Noncompliant
     FileOutputStream outstream2 = new FileOutputStream("out2.txt", true); // Noncompliant
     RandomAccessFile file = new RandomAccessFile("test.txt", mode); // Noncompliant
-    FileOutputStream outstream3 = new FileOutputStream(file, true); // compliant
+//// The constructor FileOutputStream(RandomAccessFile, boolean) is undefined
+//    FileOutputStream outstream3 = new FileOutputStream(file, true); // compliant
   }
 }
 class ApacheFileUtils {
@@ -79,7 +80,8 @@ class Guava {
            LineProcessor<Object> callback, int fileThreshold, boolean resetOnFinalize) throws Exception {
 
     com.google.common.io.Files.createTempDir(); // Noncompliant
-    com.google.common.io.Files.fileTreeTraverser(); // not testable : method is package protected before being removed from guava.
+//// The method fileTreeTraverser() from the type Files is not visible
+//    com.google.common.io.Files.fileTreeTraverser(); // not testable : method is package protected before being removed from guava.
     com.google.common.io.Files.fileTraverser(); // Noncompliant
     com.google.common.io.MoreFiles.directoryTreeTraverser(); // not testable : method has been removed from guava.
     com.google.common.io.MoreFiles.fileTraverser(); // Noncompliant

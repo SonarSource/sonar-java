@@ -3,7 +3,8 @@ import javax.net.ssl.SSLContext;
 class A {
 
   void foo(String protocol, String provider) {
-    bar(SSLContext.getInstance());
+//// The method getInstance(String) in the type SSLContext is not applicable for the arguments ()
+//    bar(SSLContext.getInstance());
 
     bar(SSLContext.getInstance(protocol));
 
