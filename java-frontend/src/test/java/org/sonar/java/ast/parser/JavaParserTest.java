@@ -19,6 +19,7 @@
  */
 package org.sonar.java.ast.parser;
 
+import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -27,8 +28,22 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
 
 public class JavaParserTest {
+
+  @Test
+  public void should_throw_exception_when_missing_semicolon_after_enum_constants() {
+    ActionParser<Tree> parser = JavaParser.createParser();
+    parser.parse("enum E { ; int field; }");
+
+    try {
+      parser.parse("enum E { int field; }");
+      fail("exception expected");
+    } catch (RuntimeException e) {
+      assertEquals("missing semicolon after enum constants", e.getCause().getCause().getMessage());
+    }
+  }
 
   @Test
   public void parent_link_should_be_computed() {

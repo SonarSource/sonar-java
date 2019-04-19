@@ -522,6 +522,10 @@ public class TreeFactory {
       }
     }
 
+    if (enumDeclarations.isPresent() && !semicolonToken.isPresent()) {
+      throw new IllegalStateException("missing semicolon after enum constants");
+    }
+
     ClassTreeImpl result = newClassBody(Kind.ENUM, openBraceToken, Optional.of((List<JavaTree>) ImmutableList.<JavaTree>builder().addAll(members).build()), closeBraceToken);
 
     result.completeDeclarationKeyword(enumToken);

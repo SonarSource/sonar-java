@@ -458,7 +458,7 @@ public class JavaGrammar {
           b.optional(f.newTuple12(b.token(JavaKeyword.IMPLEMENTS), QUALIFIED_IDENTIFIER_LIST())),
           b.token(JavaPunctuator.LWING),
           b.zeroOrMore(ENUM_CONSTANT()),
-          // TODO Grammar has been relaxed
+          // Grammar has been relaxed
           b.optional(b.token(JavaPunctuator.SEMI)),
           b.zeroOrMore(CLASS_MEMBER()),
           b.token(JavaPunctuator.RWING)));
