@@ -38,7 +38,7 @@ class Foo {
     
     unknown++;
     this.unknown++;
-    java.util.Stream<Object> s;
+    java.util.stream.Stream<Object> s;
     s.map(v -> "");
 
     try (Stream foo3 = new Stream()) {
