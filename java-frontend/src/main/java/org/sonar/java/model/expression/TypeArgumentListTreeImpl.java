@@ -67,11 +67,6 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
   }
 
   @Override
-  public boolean isLeaf() {
-    return false;
-  }
-
-  @Override
   public Kind kind() {
     return Kind.TYPE_ARGUMENTS;
   }
