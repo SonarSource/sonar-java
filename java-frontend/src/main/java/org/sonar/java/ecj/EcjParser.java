@@ -1226,9 +1226,15 @@ public final class EcjParser {
         ArrayCreation e = (ArrayCreation) node;
         EArrayCreation t = new EArrayCreation();
         t.newKeyword = firstTokenIn(e, TerminalTokens.TokenNamenew);
+        // TODO type node is incorrect
         t.type = convertType(e.getType());
-        // TODO
-        // e.dimensions()
+
+        for (Object o : e.dimensions()) {
+          EArrayAccess.EArrayDimension t2 = new EArrayAccess.EArrayDimension();
+          t2.expression = convertExpression((Expression) o);
+          t.dimensions.add(t2);
+        }
+
         if (e.getInitializer() != null) {
           t.openBraceToken = firstTokenIn(e.getInitializer(), TerminalTokens.TokenNameLBRACE);
           for (Object o : e.getInitializer().expressions()) {

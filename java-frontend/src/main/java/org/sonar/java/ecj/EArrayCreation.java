@@ -12,7 +12,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +22,7 @@ class EArrayCreation extends EExpression implements NewArrayTree {
   SyntaxToken newKeyword;
   TypeTree type;
   SyntaxToken openBraceToken;
+  List<ArrayDimensionTree> dimensions = new ArrayList<>();
   EList<ExpressionTree> initializers = new EList<>();
   SyntaxToken closeBraceToken;
 
@@ -40,8 +41,7 @@ class EArrayCreation extends EExpression implements NewArrayTree {
 
   @Override
   public List<ArrayDimensionTree> dimensions() {
-    // FIXME
-    return Collections.emptyList();
+    return dimensions;
   }
 
   @Nullable
@@ -91,12 +91,17 @@ class EArrayCreation extends EExpression implements NewArrayTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.forArray(
-      newKeyword(),
-      type(),
-      openBraceToken(),
-      initializers(),
-      closeBraceToken()
+    return Iterators.concat(
+      Iterators.forArray(
+        newKeyword(),
+        type()
+      ),
+      dimensions().iterator(),
+      Iterators.forArray(
+        openBraceToken(),
+        initializers(),
+        closeBraceToken()
+      )
     );
   }
 }

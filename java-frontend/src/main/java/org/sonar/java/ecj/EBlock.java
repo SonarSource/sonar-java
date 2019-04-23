@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @MethodsAreNonnullByDefault
-public class EBlock extends EStatement implements BlockTree {
+class EBlock extends EStatement implements BlockTree {
   Kind kind = Tree.Kind.BLOCK;
   SyntaxToken openBraceToken;
   List<StatementTree> body = new ArrayList<>();

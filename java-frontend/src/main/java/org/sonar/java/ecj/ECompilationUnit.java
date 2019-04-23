@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @MethodsAreNonnullByDefault
-public class ECompilationUnit extends ETree implements CompilationUnitTree {
+class ECompilationUnit extends ETree implements CompilationUnitTree {
   EPackageDeclaration packageDeclaration;
   List<ImportClauseTree> imports = new ArrayList<>();
   List<Tree> types = new ArrayList<>();

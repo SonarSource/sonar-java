@@ -51,7 +51,6 @@ import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.ecj.ECompilationUnit;
 import org.sonar.java.ecj.ETree;
 import org.sonar.java.ecj.EcjParser;
 import org.sonar.java.resolve.SemanticModel;

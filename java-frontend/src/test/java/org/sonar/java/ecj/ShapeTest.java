@@ -23,7 +23,7 @@ public class ShapeTest {
 
   @Test
   public void wip() {
-    test("class C { }");
+    test("class C { void m() { e( new int[0][1][2] ); } }");
   }
 
   @Test
@@ -35,6 +35,11 @@ public class ShapeTest {
   public void shift_vs_greater_token() {
     test("class C { Map<Object, List<Object>> f; }");
     test("class C { Map<Object, List<Object> > f; }");
+  }
+
+  @Test
+  public void empty_declaration() {
+    test(";");
   }
 
   /**

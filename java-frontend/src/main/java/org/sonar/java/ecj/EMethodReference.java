@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
-public class EMethodReference extends EExpression implements MethodReferenceTree {
+class EMethodReference extends EExpression implements MethodReferenceTree {
   Tree expression;
   TypeArguments typeArguments;
   EIdentifier method;

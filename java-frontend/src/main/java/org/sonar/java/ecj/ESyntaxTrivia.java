@@ -9,7 +9,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 @MethodsAreNonnullByDefault
-public class ESyntaxTrivia extends ETree implements SyntaxTrivia {
+class ESyntaxTrivia extends ETree implements SyntaxTrivia {
   String comment;
   int line;
   int column;
