@@ -522,7 +522,7 @@ class EType implements Type, Type.ArrayType {
   @Override
   public boolean isSubtypeOf(String fullyQualifiedName) {
     if (fullyQualifiedName.endsWith("]")) {
-      // TODO use ITypeBinding.createArrayType
+      // TODO e.g in InstanceOfAlwaysTrueCheck , use ITypeBinding.createArrayType
       throw new NotImplementedException("isSubtypeOf array");
     }
 

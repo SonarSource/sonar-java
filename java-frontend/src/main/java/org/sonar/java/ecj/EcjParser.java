@@ -129,7 +129,6 @@ public final class EcjParser {
 
   public static final boolean ENABLED = true;
 
-  private char[] sourceChars;
   private CompilationUnit compilationUnit;
   private TokenManager tokenManager;
   private Ctx ast;
@@ -219,7 +218,6 @@ public final class EcjParser {
 
     EcjParser converter = new EcjParser();
     converter.tokenManager = new TokenManager(tokens, source, new DefaultCodeFormatterOptions(new HashMap<>()));
-    converter.sourceChars = sourceChars;
     Tree tree = converter.convert(astNode);
     setParents(tree);
 
@@ -722,18 +720,18 @@ public final class EcjParser {
       }
       case ASTNode.WILDCARD_TYPE: {
         WildcardType e = (WildcardType) node;
-        // FIXME
+        // FIXME WildcardTree
         EIdentifier t = new EIdentifier();
-        t.identifierToken = createSyntaxToken(e, "");
+        t.identifierToken = /* TODO first only in absence of annotations */ firstTokenIn(e, TerminalTokens.TokenNameQUESTION);
         return t;
       }
       case ASTNode.INTERSECTION_TYPE: {
         IntersectionType e = (IntersectionType) node;
-        // FIXME
+        // FIXME part of TypeCastTree
         EIdentifier t = new EIdentifier();
         t.ast = ast;
         t.typeBinding = e.resolveBinding();
-        t.identifierToken = createSyntaxToken(e, "");
+        t.identifierToken = firstTokenAfter((Type) e.types().get(0), TerminalTokens.TokenNameAND);
         return t;
       }
       default:
@@ -1102,19 +1100,6 @@ public final class EcjParser {
     return new ESyntaxToken(
       compilationUnit.getLineNumber(position),
       compilationUnit.getColumnNumber(position),
-      text
-    );
-  }
-
-  /**
-   * @deprecated because does not handle comments, use {@link #firstTokenIn(ASTNode, int)} instead
-   */
-  @Deprecated
-  private SyntaxToken createSyntaxToken(ASTNode node, String text) {
-    assert "".equals(text);
-    return new ESyntaxToken(
-      compilationUnit.getLineNumber(node.getStartPosition()),
-      compilationUnit.getColumnNumber(node.getStartPosition()),
       text
     );
   }
