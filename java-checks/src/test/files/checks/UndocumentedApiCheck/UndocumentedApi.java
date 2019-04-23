@@ -280,7 +280,7 @@ public class MyRunner extends Foo {
    */
   public interface Foo {
 
-    public foo(); // Noncompliant
+    void foo(); // Noncompliant
 
   }
 
