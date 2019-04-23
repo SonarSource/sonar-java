@@ -98,7 +98,9 @@ abstract class ESymbol implements Symbol {
       ITypeBinding declaringClass = b.getDeclaringClass();
       IMethodBinding declaringMethod = b.getDeclaringMethod();
       if (declaringClass == null && declaringMethod == null) {
-        throw new NotImplementedException("variable in a static or instance initializer");
+        // variable in a static or instance initializer
+        // FIXME see HiddenFieldCheck
+        return Symbols.unknownSymbol;
       }
       if (declaringMethod != null) {
         // local variable
@@ -146,17 +148,17 @@ abstract class ESymbol implements Symbol {
 
   @Override
   public final Type type() {
-    if (isTypeSymbol()) {
-      return ast.type((ITypeBinding) binding);
+    switch (binding.getKind()) {
+      case IBinding.TYPE:
+        return ast.type((ITypeBinding) binding);
+      case IBinding.VARIABLE:
+        return ast.type(((IVariableBinding) binding).getType());
+      // TODO METHOD in StandardCharsetsConstantsCheck , RedundantTypeCastCheck and MethodIdenticalImplementationsCheck , PACKAGE in InnerClassTooManyLinesCheck
+      case IBinding.PACKAGE:
+        return Symbols.unknownType;
+      default:
+        throw new NotImplementedException("Kind: " + binding.getKind());
     }
-    if (isVariableSymbol()) {
-      return ast.type(((IVariableBinding) binding).getType());
-    }
-    // TODO method in StandardCharsetsConstantsCheck and RedundantTypeCastCheck , package in InnerClassTooManyLinesCheck
-    if (isPackageSymbol()) {
-      return Symbols.unknownType;
-    }
-    throw new NotImplementedException("Kind: " + binding.getKind());
   }
 
   @Override
@@ -166,6 +168,10 @@ abstract class ESymbol implements Symbol {
 
   @Override
   public final boolean isTypeSymbol() {
+    if (binding.isRecovered()) {
+      // TODO see SAMAnnotatedCheck
+      return false;
+    }
     return binding.getKind() == IBinding.TYPE;
   }
 
@@ -493,7 +499,7 @@ class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
 }
 
 @MethodsAreNonnullByDefault
-class EType implements Type {
+class EType implements Type, Type.ArrayType {
   private final Ctx ast;
   private final ITypeBinding typeBinding;
 
@@ -515,6 +521,11 @@ class EType implements Type {
 
   @Override
   public boolean isSubtypeOf(String fullyQualifiedName) {
+    if (fullyQualifiedName.endsWith("]")) {
+      // TODO use ITypeBinding.createArrayType
+      throw new NotImplementedException("isSubtypeOf array");
+    }
+
     // for example "byte" in IntegerToHexStringCheck
     ITypeBinding type = ast.ast.resolveWellKnownType(fullyQualifiedName);
 
@@ -619,7 +630,7 @@ class EType implements Type {
 
   @Override
   public Type erasure() {
-    throw new UnexpectedAccessException();
+    return ast.type(typeBinding.getErasure());
   }
 
   /**
@@ -638,5 +649,13 @@ class EType implements Type {
   @Override
   public final int hashCode() {
     return super.hashCode();
+  }
+
+  @Override
+  public Type elementType() {
+    if (!isArray()) {
+      throw new IllegalStateException();
+    }
+    return ast.type(typeBinding.getElementType());
   }
 }

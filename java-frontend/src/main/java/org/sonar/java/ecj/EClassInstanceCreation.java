@@ -93,12 +93,6 @@ class EClassInstanceCreation extends EExpression implements NewClassTree {
     return enclosingExpression() != null ? enclosingExpression().firstToken() : newKeyword();
   }
 
-  @Nullable
-  @Override
-  public SyntaxToken lastToken() {
-    return classBody() != null ? classBody().lastToken() : arguments().lastToken();
-  }
-
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(

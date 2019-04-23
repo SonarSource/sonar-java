@@ -40,8 +40,16 @@ public abstract class ETree implements Tree {
   @Nullable
   @Override
   public SyntaxToken lastToken() {
-    // FIXME
-    return firstToken();
+    // TODO suboptimal
+    SyntaxToken result = null;
+    Iterator<? extends Tree> childrenIterator = children();
+    while (childrenIterator.hasNext()) {
+      Tree child = childrenIterator.next();
+      if (child.lastToken() != null) {
+        result = child.lastToken();
+      }
+    }
+    return result;
   }
 
   public final Iterator<? extends Tree> children() {

@@ -53,6 +53,7 @@ import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.ecj.ECompilationUnit;
 import org.sonar.java.ecj.ETree;
+import org.sonar.java.ecj.EcjParser;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.java.se.SymbolicExecutionVisitor;
@@ -120,7 +121,7 @@ public class VisitorsBridge {
     boolean fileParsed = parsedTree != null;
     if (fileParsed && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
       tree = (CompilationUnitTree) parsedTree;
-      if (false) // FIXME
+      if (!EcjParser.ENABLED) // FIXME
       if (isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
         try {
           semanticModel = SemanticModel.createFor(tree, classLoader);

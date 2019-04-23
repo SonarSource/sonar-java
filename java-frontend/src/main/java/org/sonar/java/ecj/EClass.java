@@ -29,7 +29,6 @@ class EClass extends ETree implements ClassTree {
   EModifiers modifiers = new EModifiers();
   SyntaxToken declarationKeyword;
   EIdentifier simpleName;
-  // FIXME
   ETypeParameters typeParameters = new ETypeParameters();
   TypeTree superClass;
   EList<TypeTree> superInterfaces = new EList<>();

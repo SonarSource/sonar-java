@@ -32,7 +32,6 @@ class EMethod extends ETree implements MethodTree {
   IMethodBinding binding;
 
   EModifiers modifiers = new EModifiers();
-  // FIXME
   ETypeParameters typeParameters = new ETypeParameters();
   TypeTree returnType;
   IdentifierTree simpleName;

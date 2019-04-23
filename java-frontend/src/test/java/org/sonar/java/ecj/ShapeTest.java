@@ -20,7 +20,7 @@ public class ShapeTest {
 
   @Test
   public void wip() {
-    test("class C { void m() { Subclass.super.m(); } }");
+    test("class C<TYPE> { }");
   }
 
   @Test

@@ -85,6 +85,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.TypeMethodReference;
+import org.eclipse.jdt.core.dom.TypeParameter;
 import org.eclipse.jdt.core.dom.UnionType;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
@@ -104,6 +105,7 @@ import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
@@ -123,6 +125,8 @@ import java.util.stream.Stream;
  * TODO how to replace internal {@link TerminalTokens} on public {@link org.eclipse.jdt.core.compiler.ITerminalSymbols} given that their values are different?
  */
 public final class EcjParser {
+
+  public static final boolean ENABLED = true;
 
   private char[] sourceChars;
   private CompilationUnit compilationUnit;
@@ -324,6 +328,16 @@ public final class EcjParser {
         } else {
           t.kind = ((TypeDeclaration) e).isInterface() ? Tree.Kind.INTERFACE : Tree.Kind.CLASS;
 
+          for (Object o : ((TypeDeclaration) e).typeParameters()) {
+            t.typeParameters.elements.add((TypeParameterTree) convert(
+              (TypeParameter) o
+            ));
+          }
+          if (!t.typeParameters.isEmpty()) {
+            t.typeParameters.openBracketToken = firstTokenAfter(e.getName(), TerminalTokens.TokenNameLESS);
+            t.typeParameters.closeBracketToken = firstTokenAfter((ASTNode) ((TypeDeclaration) e).typeParameters().get(((TypeDeclaration) e).typeParameters().size() - 1), TerminalTokens.TokenNameGREATER);
+          }
+
           t.superClass = convertType(
             ((TypeDeclaration) e).getSuperclassType()
           );
@@ -405,6 +419,12 @@ public final class EcjParser {
             (ModifierTree) convert((ASTNode) o)
           );
         }
+        // TODO t.typeParameters.openBracketToken
+        for (Object o : e.typeParameters()) {
+          t.typeParameters.elements.add((TypeParameterTree) convert(
+            (TypeParameter) o
+          ));
+        }
         t.returnType = applyExtraDimensions(
           convertType(e.getReturnType2()),
           e.extraDimensions()
@@ -452,6 +472,17 @@ public final class EcjParser {
           t2.openBraceToken = t.openBraceToken();
           t2.closeBraceToken = t.closeBraceToken();
           return t2;
+        }
+        return t;
+      }
+      case ASTNode.TYPE_PARAMETER: {
+        TypeParameter e = (TypeParameter) node;
+        ETypeParameter t = new ETypeParameter();
+        t.identifier = convertSimpleName(e.getName());
+        for (Object o : e.typeBounds()) {
+          t.bounds.elements.add(
+            convertType((Type) o)
+          );
         }
         return t;
       }

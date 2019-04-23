@@ -26,6 +26,7 @@ public class DeadStoreCheckTest {
 
   @Test
   public void test() {
+    // TODO LiveVariables produces different result
     JavaCheckVerifier.verify("src/test/files/checks/DeadStoreCheck.java", new DeadStoreCheck());
   }
 

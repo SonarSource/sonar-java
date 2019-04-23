@@ -27,15 +27,12 @@ public final class IgnoreReasons {
 
   public static final String SYNTAX_ERROR = "syntax error";
 
+  public static final String EMPTY_STATEMENT = "empty statement";
+
   /**
    * Require implementation of {@link TypeSymbol#lookupSymbols(String)}
    */
   public static final String LOOKUP_SYMBOLS = "TypeSymbol.lookupSymbols";
-
-  /**
-   * Require implementation of {@link Type#erasure()}
-   */
-  public static final String TYPE_ERASURE = "Type.erasure";
 
   /**
    * Cast to {@link org.sonar.java.resolve.JavaSymbol.VariableJavaSymbol}
@@ -81,6 +78,11 @@ public final class IgnoreReasons {
    * Cast to {@link MethodJavaType}
    */
   public static final String CAST_TO_MethodJavaType = "cast to MethodJavaType";
+
+  /**
+   * Cast to given type.
+   */
+  public static final String CAST_TO = "cast to ";
 
   private IgnoreReasons() {
   }
