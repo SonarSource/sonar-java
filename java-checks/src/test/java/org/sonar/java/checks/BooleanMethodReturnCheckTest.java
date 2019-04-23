@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.REMOVE_DUPLICATE_METHOD)
 public class BooleanMethodReturnCheckTest {
 
   @Test

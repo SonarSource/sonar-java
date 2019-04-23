@@ -44,7 +44,7 @@ class B {
   }
 
   @CheckForNull
-  public java.lang.Boolean myMethod() {
+  public java.lang.Boolean myMethod2() {
     return null; // compliant method is annotated with @CheckForNull
   }
 }

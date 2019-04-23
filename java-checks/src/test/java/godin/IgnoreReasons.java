@@ -28,11 +28,6 @@ public final class IgnoreReasons {
   public static final String SYNTAX_ERROR = "syntax error";
 
   /**
-   * Removal of duplicate method allows to pass test
-   */
-  public static final String REMOVE_DUPLICATE_METHOD = "duplicate method";
-
-  /**
    * Require implementation of {@link TypeSymbol#lookupSymbols(String)}
    */
   public static final String LOOKUP_SYMBOLS = "TypeSymbol.lookupSymbols";
