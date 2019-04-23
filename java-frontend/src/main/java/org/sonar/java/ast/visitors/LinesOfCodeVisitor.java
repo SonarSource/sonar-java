@@ -45,8 +45,11 @@ public class LinesOfCodeVisitor extends SubscriptionVisitor{
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
-    if (!((InternalSyntaxToken) syntaxToken).isEOF()) {
+    if (!syntaxToken.text().equals("")) {
       lines.add(syntaxToken.line());
     }
+//    if (!((InternalSyntaxToken) syntaxToken).isEOF()) {
+//      lines.add(syntaxToken.line());
+//    }
   }
 }

@@ -65,11 +65,6 @@ public final class IgnoreReasons {
   public static final String CAST_TO_TypeJavaSymbol = "cast to TypeJavaSymbol";
 
   /**
-   * Cast to {@link org.sonar.java.model.InternalSyntaxToken}
-   */
-  public static final String CAST_TO_InternalSyntaxToken = "cast to InternalSyntaxToken";
-
-  /**
    * Cast to {@link MethodJavaType}
    */
   public static final String CAST_TO_MethodJavaType = "cast to MethodJavaType";
