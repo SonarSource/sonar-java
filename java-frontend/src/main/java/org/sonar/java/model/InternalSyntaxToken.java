@@ -59,10 +59,6 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
     this.isEOF = isEOF;
   }
 
-  public int fromIndex() {
-    return startIndex;
-  }
-
   @Override
   public SyntaxToken firstToken() {
     return this;
