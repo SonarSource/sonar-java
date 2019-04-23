@@ -84,7 +84,7 @@ public class LoopsOnSameSetCheck extends IssuableSubscriptionVisitor {
       if (forEachSymbols.containsKey(symbol)) {
         addIssue(node, forEachSymbols.get(symbol));
       } else {
-        forEachSymbols.put(symbol, ((JavaTree) node).getLine());
+        forEachSymbols.put(symbol, node.firstToken().line());
       }
     }
   }
