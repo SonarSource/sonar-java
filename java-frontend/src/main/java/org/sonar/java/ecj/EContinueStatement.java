@@ -57,6 +57,10 @@ class EContinueStatement extends EStatement implements ContinueStatementTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.forArray();
+    return Iterators.forArray(
+      continueKeyword(),
+      label(),
+      semicolonToken()
+    );
   }
 }

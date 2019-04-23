@@ -28,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class UndocumentedApiCheckTest {
 
-  @org.junit.Ignore(godin.IgnoreReasons.COMMENTS)
   @Test
   public void test() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
@@ -37,7 +36,6 @@ public class UndocumentedApiCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java", check);
   }
 
-  @org.junit.Ignore(godin.IgnoreReasons.COMMENTS)
   @Test
   public void testMissingConfiguration() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
@@ -68,7 +66,6 @@ public class UndocumentedApiCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiExclusion.java", check);
   }
 
-  @org.junit.Ignore(godin.IgnoreReasons.COMMENTS)
   @Test
   public void testIncompleteJavadoc() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();

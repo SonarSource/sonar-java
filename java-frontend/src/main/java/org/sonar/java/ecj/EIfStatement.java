@@ -86,8 +86,10 @@ class EIfStatement extends EStatement implements IfStatementTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
+      ifKeyword,
       condition,
       thenStatement,
+      elseKeyword(),
       elseStatement
     );
   }

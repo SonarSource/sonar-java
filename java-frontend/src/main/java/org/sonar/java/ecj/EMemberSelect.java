@@ -18,6 +18,7 @@ import java.util.List;
 @MethodsAreNonnullByDefault
 class EMemberSelect extends EExpression implements MemberSelectExpressionTree {
   ExpressionTree lhs;
+  SyntaxToken dotToken;
   EIdentifier rhs;
 
   @Override
@@ -27,7 +28,7 @@ class EMemberSelect extends EExpression implements MemberSelectExpressionTree {
 
   @Override
   public SyntaxToken operatorToken() {
-    throw new NotImplementedException();
+    return dotToken;
   }
 
   @Override
@@ -67,6 +68,7 @@ class EMemberSelect extends EExpression implements MemberSelectExpressionTree {
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       expression(),
+      operatorToken(),
       identifier()
     );
   }

@@ -1,5 +1,6 @@
 package org.sonar.java.ecj;
 
+import com.google.common.collect.Iterators;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -58,6 +59,10 @@ public class EBlock extends EStatement implements BlockTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return body.iterator();
+    return Iterators.concat(
+      Iterators.singletonIterator(openBraceToken),
+      body.iterator(),
+      Iterators.singletonIterator(closeBraceToken)
+    );
   }
 }

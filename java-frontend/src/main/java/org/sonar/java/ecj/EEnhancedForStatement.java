@@ -81,6 +81,7 @@ class EEnhancedForStatement extends EStatement implements ForEachStatement {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
+      forKeyword(),
       variable(),
       expression(),
       statement()

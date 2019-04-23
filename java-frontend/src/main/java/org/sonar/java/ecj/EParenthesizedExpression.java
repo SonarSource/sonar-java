@@ -56,8 +56,10 @@ class EParenthesizedExpression extends EExpression implements ParenthesizedTree 
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.singletonIterator(
-      expression()
+    return Iterators.forArray(
+      openParenToken(),
+      expression(),
+      closeParenToken()
     );
   }
 }

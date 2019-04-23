@@ -93,6 +93,7 @@ class EForStatement extends EStatement implements ForStatementTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
+      forKeyword(),
       initializer(),
       condition(),
       update(),

@@ -9,10 +9,13 @@ import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,7 +23,12 @@ public class ShapeTest {
 
   @Test
   public void wip() {
-    test("class C<TYPE> { }");
+    test("class C { }");
+  }
+
+  @Test
+  public void err() {
+    test("class C { interface Foo { public m(); // comment\n } interface Bar { } }");
   }
 
   @Test
@@ -121,6 +129,12 @@ public class ShapeTest {
       out.append(' ');
     }
     out.append(node.kind());
+    if (node.is(Tree.Kind.TRIVIA)) {
+      out.append(' ').append(((SyntaxTrivia) node).comment());
+    }
+    if (node.is(Tree.Kind.TOKEN)) {
+      out.append(' ').append(((SyntaxToken) node).text());
+    }
     if (node.is(Tree.Kind.IDENTIFIER)) {
       out.append(' ').append(((IdentifierTree) node).name());
     }
@@ -134,8 +148,11 @@ public class ShapeTest {
     }
   }
 
-  static Iterator<Tree> iteratorFor(Tree node) {
-    if (node.kind() == Tree.Kind.INFERED_TYPE) {
+  static Iterator<? extends Tree> iteratorFor(Tree node) {
+    if (node.kind() == Tree.Kind.TOKEN) {
+      return ((SyntaxToken) node).trivias().iterator();
+    }
+    if (node.kind() == Tree.Kind.INFERED_TYPE || node.kind() == Tree.Kind.TRIVIA) {
       return Collections.emptyIterator();
     }
     final Iterator<Tree> iterator;
@@ -146,7 +163,7 @@ public class ShapeTest {
     }
     return Iterators.filter(
       iterator,
-      child -> child != null && !child.is(Tree.Kind.TOKEN)
+      child -> child != null && !child.is(Tree.Kind.TOKEN) && /* not empty list: */ !(child.is(Tree.Kind.LIST) && ((List) child).isEmpty())
     );
   }
 

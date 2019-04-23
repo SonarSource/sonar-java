@@ -127,13 +127,15 @@ class EClass extends ETree implements ClassTree {
     return Iterators.concat(
       Iterators.forArray(
         modifiers(),
+        declarationKeyword(),
         simpleName(),
         typeParameters(),
         superClass(),
         superInterfaces(),
         openBraceToken()
       ),
-      members().iterator()
+      members().iterator(),
+      Iterators.forArray(closeBraceToken)
     );
   }
 }

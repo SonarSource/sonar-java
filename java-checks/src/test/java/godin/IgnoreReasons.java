@@ -20,11 +20,6 @@ public final class IgnoreReasons {
 
   public static final String TREE_SHAPE = "problem with shape of tree: ";
 
-  /**
-   * trivias
-   */
-  public static final String COMMENTS = "comments aka trivias";
-
   public static final String SYNTAX_ERROR = "syntax error";
 
   public static final String EMPTY_STATEMENT = "empty statement";

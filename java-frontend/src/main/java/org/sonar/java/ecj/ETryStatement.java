@@ -106,7 +106,10 @@ class ETryStatement extends EStatement implements TryStatementTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.concat(
-      Iterators.singletonIterator(block()),
+      Iterators.forArray(
+        tryKeyword(),
+        block()
+      ),
       catches().iterator(),
       Iterators.singletonIterator(finallyBlock())
     );

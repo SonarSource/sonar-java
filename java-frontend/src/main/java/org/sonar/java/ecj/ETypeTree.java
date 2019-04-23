@@ -74,7 +74,7 @@ class EPrimitiveType extends ETypeTree implements PrimitiveTypeTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.forArray();
+    return Iterators.forArray(keyword());
   }
 }
 

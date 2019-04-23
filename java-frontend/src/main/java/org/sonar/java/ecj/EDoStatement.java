@@ -80,8 +80,10 @@ class EDoStatement extends EStatement implements DoWhileStatementTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
+      doKeyword(),
       statement(),
-      condition()
+      condition(),
+      semicolonToken()
     );
   }
 }

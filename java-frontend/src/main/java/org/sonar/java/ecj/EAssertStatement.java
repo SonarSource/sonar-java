@@ -70,7 +70,10 @@ class EAssertStatement extends EStatement implements AssertStatementTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
-      condition()
+      assertKeyword(),
+      condition(),
+      detail(),
+      semicolonToken()
     );
   }
 }

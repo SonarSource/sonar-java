@@ -57,7 +57,9 @@ class EThrowStatement extends EStatement implements ThrowStatementTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
-      expression()
+      throwKeyword(),
+      expression(),
+      semicolonToken()
     );
   }
 }

@@ -50,6 +50,9 @@ class EExpressionStatement extends EStatement implements ExpressionStatementTree
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.singletonIterator(expression);
+    return Iterators.forArray(
+      expression,
+      semicolonToken()
+    );
   }
 }

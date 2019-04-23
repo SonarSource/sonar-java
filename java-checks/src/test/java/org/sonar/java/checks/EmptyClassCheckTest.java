@@ -26,6 +26,7 @@ public class EmptyClassCheckTest {
 
   @Test
   public void test() {
+    // TODO empty declaration
     JavaCheckVerifier.verify("src/test/files/checks/EmptyClass.java", new EmptyClassCheck());
   }
 }

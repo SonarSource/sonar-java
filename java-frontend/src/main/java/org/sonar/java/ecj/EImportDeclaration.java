@@ -69,7 +69,10 @@ class EImportDeclaration extends ETree implements ImportTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
-      qualifiedIdentifier()
+      importKeyword(),
+      // TODO staticKeyword
+      qualifiedIdentifier(),
+      semicolonToken()
     );
   }
 }

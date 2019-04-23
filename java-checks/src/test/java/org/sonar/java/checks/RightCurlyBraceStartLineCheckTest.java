@@ -26,6 +26,7 @@ public class RightCurlyBraceStartLineCheckTest {
 
   @Test
   public void test() {
+    // TODO @ token
     JavaCheckVerifier.verify("src/test/files/checks/RightCurlyBraceStartLineCheck.java", new RightCurlyBraceStartLineCheck());
   }
 }

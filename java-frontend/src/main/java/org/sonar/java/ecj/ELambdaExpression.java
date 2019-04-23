@@ -72,7 +72,9 @@ class ELambdaExpression extends EExpression implements LambdaExpressionTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.concat(
+      Iterators.singletonIterator(openParenToken()),
       parameters().iterator(),
+      // TODO closeParenToken
       Iterators.singletonIterator(body())
     );
   }

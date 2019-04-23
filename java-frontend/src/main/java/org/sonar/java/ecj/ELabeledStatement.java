@@ -65,6 +65,7 @@ class ELabeledStatement extends EStatement implements LabeledStatementTree {
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       label(),
+      colonToken(),
       statement()
     );
   }

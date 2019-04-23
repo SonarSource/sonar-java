@@ -43,6 +43,6 @@ class EEmptyStatement extends EStatement implements EmptyStatementTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.forArray();
+    return Iterators.singletonIterator(semicolonToken());
   }
 }

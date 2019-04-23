@@ -65,7 +65,9 @@ class EBreakStatement extends EStatement implements BreakStatementTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
-      labelOrValue
+      breakKeyword,
+      labelOrValue,
+      semicolonToken()
     );
   }
 }

@@ -92,8 +92,11 @@ class EArrayCreation extends EExpression implements NewArrayTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
+      newKeyword(),
       type(),
-      initializers()
+      openBraceToken(),
+      initializers(),
+      closeBraceToken()
     );
   }
 }

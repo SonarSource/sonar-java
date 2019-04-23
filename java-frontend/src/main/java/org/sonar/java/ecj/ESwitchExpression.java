@@ -86,8 +86,17 @@ class ESwitchExpression extends EExpression implements SwitchExpressionTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.concat(
-      Iterators.singletonIterator(expression()),
-      cases().iterator()
+      Iterators.forArray(
+        switchKeyword(),
+        // TODO openParenToken
+        expression(),
+        closeParenToken(),
+        openBraceToken()
+      ),
+      cases().iterator(),
+      Iterators.forArray(
+        closeBraceToken()
+      )
     );
   }
 
@@ -195,7 +204,11 @@ class ESwitchExpression extends EExpression implements SwitchExpressionTree {
 
     @Override
     Iterator<? extends Tree> childrenIterator() {
-      return expressions().iterator();
+      return Iterators.concat(
+        Iterators.singletonIterator(caseOrDefaultKeyword()),
+        expressions().iterator(),
+        Iterators.singletonIterator(colonOrArrowToken())
+      );
     }
   }
 }

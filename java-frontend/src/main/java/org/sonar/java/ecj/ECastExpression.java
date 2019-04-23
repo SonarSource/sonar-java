@@ -75,7 +75,9 @@ class ECastExpression extends EExpression implements TypeCastTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
+      openParenToken(),
       type(),
+      // TODO closeParenToken(),
       expression()
     );
   }

@@ -69,6 +69,7 @@ class ESynchronizedStatement extends EStatement implements SynchronizedStatement
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
+      synchronizedKeyword(),
       expression(),
       block()
     );

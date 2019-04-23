@@ -66,6 +66,7 @@ class EModifiers extends EList<ModifierTree> implements ModifiersTree {
 class EModifierKeyword extends ESyntaxToken implements ModifierKeywordTree {
   EModifierKeyword(SyntaxToken syntaxToken) {
     super(syntaxToken.line(), syntaxToken.column(), syntaxToken.text());
+    trivias.addAll(syntaxToken.trivias());
   }
 
   @Override

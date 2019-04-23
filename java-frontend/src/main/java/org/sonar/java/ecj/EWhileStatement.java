@@ -69,7 +69,10 @@ class EWhileStatement extends EStatement implements WhileStatementTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
+      whileKeyword(),
+      // TODO openParenToken
       condition(),
+      closeParenToken(),
       statement()
     );
   }

@@ -96,6 +96,7 @@ class EClassInstanceCreation extends EExpression implements NewClassTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
+      newKeyword(),
       identifier(),
       arguments(),
       classBody()

@@ -57,8 +57,10 @@ class EReturnStatement extends EStatement implements ReturnStatementTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.singletonIterator(
-      expression()
+    return Iterators.forArray(
+      returnKeyword(),
+      expression(),
+      semicolonToken()
     );
   }
 }

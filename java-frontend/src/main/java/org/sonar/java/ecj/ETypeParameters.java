@@ -1,5 +1,6 @@
 package org.sonar.java.ecj;
 
+import com.google.common.collect.Iterators;
 import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -41,5 +42,14 @@ class ETypeParameters extends EList<TypeParameterTree> implements TypeParameters
   @Override
   public SyntaxToken lastToken() {
     return closeBracketToken;
+  }
+
+  @Override
+  Iterator<? extends Tree> childrenIterator() {
+    return Iterators.concat(
+      Iterators.singletonIterator(openBracketToken()),
+      super.iterator(),
+      Iterators.singletonIterator(closeBracketToken())
+    );
   }
 }

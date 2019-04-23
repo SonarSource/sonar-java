@@ -59,6 +59,7 @@ class EBinaryExpression extends EExpression implements BinaryExpressionTree {
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       leftOperand(),
+      operatorToken(),
       rightOperand()
     );
   }

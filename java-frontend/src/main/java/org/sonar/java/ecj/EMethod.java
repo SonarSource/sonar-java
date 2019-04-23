@@ -174,6 +174,8 @@ class EMethod extends ETree implements MethodTree {
       ),
       parameters.iterator(),
       Iterators.forArray(
+        throwsToken(),
+        throwsClauses(),
         block()
       )
     );

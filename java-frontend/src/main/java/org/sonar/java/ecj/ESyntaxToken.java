@@ -17,7 +17,7 @@ class ESyntaxToken extends ETree implements SyntaxToken {
   private int line;
   private int column;
   private String text;
-  List<SyntaxTrivia> trivias = new ArrayList<>();
+  List<SyntaxTrivia> trivias = new ArrayList<>(); // TODO suboptimal
 
   ESyntaxToken(int line, int column, String text) {
     this.line = line;

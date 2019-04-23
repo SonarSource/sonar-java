@@ -20,9 +20,7 @@ public class ECompilationUnit extends ETree implements CompilationUnitTree {
   EPackageDeclaration packageDeclaration;
   List<ImportClauseTree> imports = new ArrayList<>();
   List<Tree> types = new ArrayList<>();
-
-  // FIXME
-  ESyntaxToken eofToken = new ESyntaxToken(0, 0, "");
+  SyntaxToken eofToken;
 
   @Nullable
   @Override

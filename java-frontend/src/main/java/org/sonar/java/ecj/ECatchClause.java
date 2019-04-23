@@ -69,6 +69,7 @@ class ECatchClause extends ETree implements CatchTree {
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
+      catchKeyword,
       parameter,
       block
     );

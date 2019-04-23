@@ -70,7 +70,9 @@ class EConditionalExpression extends EExpression implements ConditionalExpressio
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       condition(),
+      questionToken(),
       trueExpression(),
+      colonToken(),
       falseExpression()
     );
   }

@@ -111,5 +111,14 @@ class EMethodInvocation extends EExpression implements MethodInvocationTree {
     public Kind kind() {
       return Kind.ARGUMENTS;
     }
+
+    @Override
+    Iterator<? extends Tree> childrenIterator() {
+      return Iterators.concat(
+        Iterators.singletonIterator(openParenToken()),
+        super.childrenIterator(),
+        Iterators.singletonIterator(closeParenToken())
+      );
+    }
   }
 }

@@ -59,6 +59,7 @@ class EAssignment extends EExpression implements AssignmentExpressionTree {
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       variable(),
+      operatorToken(),
       expression()
     );
   }
