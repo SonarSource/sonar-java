@@ -121,8 +121,8 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       Symbol symbol = tree.symbol();
-      Type type = symbol.type();
       if (symbol.isVariableSymbol()) {
+        Type type = symbol.type();
         if (type.isUnknown()) {
           hasUnknownVariableType = true;
         } else {
