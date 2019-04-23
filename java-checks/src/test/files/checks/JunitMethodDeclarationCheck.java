@@ -4,12 +4,15 @@ import junit.framework.TestSuite;
 
 public class A extends TestCase{
   Test suite() {  }  // Noncompliant {{Make this method "public".}}
-  public static boolean suite() {  }  // Noncompliant {{This method should return either a "junit.framework.Test" or a "junit.framework.TestSuite".}}
+//// Duplicate method suite() in type A
+//  public static boolean suite() {  }  // Noncompliant {{This method should return either a "junit.framework.Test" or a "junit.framework.TestSuite".}}
   public static Test suit() {  }  // Noncompliant {{This method should be named "suite" not "suit".}}
   public static void suit() {  }  // Noncompliant [[sc=22;ec=26]] {{This method should be named "suite" not "suit".}}
   public static TestSuite suit() {  }  // Noncompliant {{This method should be named "suite" not "suit".}}
-  public static Test suite(int count) {  } // Noncompliant {{This method does not accept parameters.}}
-  public Test suite() {  } // Noncompliant {{Make this method "static".}}
+//// Duplicate method suite() in type A
+//  public static Test suite(int count) {  } // Noncompliant {{This method does not accept parameters.}}
+//// Duplicate method suite() in type A
+//  public Test suite() {  } // Noncompliant {{Make this method "static".}}
 
   public void setup() {  } // Noncompliant {{This method should be named "setUp" not "setup".}}
   public void setUp(int par) {  } // Noncompliant {{This method does not accept parameters.}}
@@ -20,10 +23,14 @@ public class A extends TestCase{
   public int tearDown() {  }  // Noncompliant {{Make this method return "void".}}
   void tearDown() {  }  // Noncompliant {{Make this method "public".}}
 
-  public static Test suite() {  }
-  public static TestSuite suite() {  }
-  public void setUp() {  }
-  public void tearDown() {  }
+//// Duplicate method suite() in type A
+//  public static Test suite() {  }
+//// Duplicate method suite() in type A
+//  public static TestSuite suite() {  }
+//// Duplicate method setUp() in type A
+//  public void setUp() {  }
+//// Duplicate method tearDown() in type A
+//  public void tearDown() {  }
 
   Foo coverage1() {}
 }
