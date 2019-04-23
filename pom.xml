@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.sonarsource.parent</groupId>
     <artifactId>parent</artifactId>
-    <version>51</version>
+    <version>52</version>
   </parent>
 
   <groupId>org.sonarsource.java</groupId>
@@ -96,6 +96,8 @@
     <artifactsToPublish>${project.groupId}:sonar-java-plugin:jar</artifactsToPublish>
 
     <version.compiler.plugin>3.8.0</version.compiler.plugin>
+    <!-- FIXME: warnings on javadoc should be fixed -->
+    <doclint>none</doclint>
   </properties>
 
   <dependencyManagement>
@@ -290,17 +292,6 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration />
         </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <configuration>
-            <!--
-              Force version of source to Java 8 in order to produce Javadoc relying on package-based architecture.
-              Without this parameter, producing Javadoc with JDK 11.0.2 makes analysis fail.
-            -->
-            <source>8</source>
-          </configuration>
-        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -311,19 +302,9 @@
       <activation>
         <jdk>[9,)</jdk>
       </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <configuration>
-                <release>8</release>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
+      <properties>
+        <maven.compiler.release>8</maven.compiler.release>
+      </properties>
     </profile>
   </profiles>
 </project>
