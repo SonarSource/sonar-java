@@ -15,6 +15,7 @@ import java.util.Iterator;
 @MethodsAreNonnullByDefault
 class EWhileStatement extends EStatement implements WhileStatementTree {
   SyntaxToken whileKeyword;
+  SyntaxToken openParenToken;
   ExpressionTree condition;
   SyntaxToken closeParenToken;
   StatementTree statement;
@@ -26,7 +27,7 @@ class EWhileStatement extends EStatement implements WhileStatementTree {
 
   @Override
   public SyntaxToken openParenToken() {
-    throw new UnexpectedAccessException();
+    return openParenToken;
   }
 
   @Override
@@ -70,7 +71,7 @@ class EWhileStatement extends EStatement implements WhileStatementTree {
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       whileKeyword(),
-      // TODO openParenToken
+      openParenToken(),
       condition(),
       closeParenToken(),
       statement()

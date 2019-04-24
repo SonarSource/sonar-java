@@ -15,6 +15,7 @@ import java.util.Iterator;
 @MethodsAreNonnullByDefault
 class ESynchronizedStatement extends EStatement implements SynchronizedStatementTree {
   SyntaxToken synchronizedKeyword;
+  SyntaxToken openParenToken;
   ExpressionTree expression;
   SyntaxToken closeParenToken;
   BlockTree block;
@@ -26,7 +27,7 @@ class ESynchronizedStatement extends EStatement implements SynchronizedStatement
 
   @Override
   public SyntaxToken openParenToken() {
-    throw new UnexpectedAccessException();
+    return openParenToken;
   }
 
   @Override
@@ -70,7 +71,9 @@ class ESynchronizedStatement extends EStatement implements SynchronizedStatement
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       synchronizedKeyword(),
+      openParenToken(),
       expression(),
+      closeParenToken(),
       block()
     );
   }

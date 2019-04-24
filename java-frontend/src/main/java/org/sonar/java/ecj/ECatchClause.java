@@ -15,6 +15,7 @@ import java.util.Iterator;
 @MethodsAreNonnullByDefault
 class ECatchClause extends ETree implements CatchTree {
   SyntaxToken catchKeyword;
+  SyntaxToken openParenToken;
   VariableTree parameter;
   SyntaxToken closeParenToken;
   BlockTree block;
@@ -26,7 +27,7 @@ class ECatchClause extends ETree implements CatchTree {
 
   @Override
   public SyntaxToken openParenToken() {
-    throw new UnexpectedAccessException();
+    return openParenToken;
   }
 
   @Override
@@ -70,7 +71,9 @@ class ECatchClause extends ETree implements CatchTree {
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       catchKeyword,
+      openParenToken,
       parameter,
+      closeParenToken,
       block
     );
   }

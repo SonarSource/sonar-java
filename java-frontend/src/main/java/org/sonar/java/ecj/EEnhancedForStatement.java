@@ -16,7 +16,9 @@ import java.util.Iterator;
 @MethodsAreNonnullByDefault
 class EEnhancedForStatement extends EStatement implements ForEachStatement {
   SyntaxToken forKeyword;
+  SyntaxToken openParenToken;
   VariableTree variable;
+  SyntaxToken colonToken;
   ExpressionTree expression;
   SyntaxToken closeParenToken;
   StatementTree statement;
@@ -28,7 +30,7 @@ class EEnhancedForStatement extends EStatement implements ForEachStatement {
 
   @Override
   public SyntaxToken openParenToken() {
-    throw new UnexpectedAccessException();
+    return openParenToken;
   }
 
   @Override
@@ -38,7 +40,7 @@ class EEnhancedForStatement extends EStatement implements ForEachStatement {
 
   @Override
   public SyntaxToken colonToken() {
-    throw new UnexpectedAccessException();
+    return colonToken;
   }
 
   @Override
@@ -82,8 +84,11 @@ class EEnhancedForStatement extends EStatement implements ForEachStatement {
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       forKeyword(),
+      openParenToken(),
       variable(),
+      colonToken(),
       expression(),
+      closeParenToken(),
       statement()
     );
   }

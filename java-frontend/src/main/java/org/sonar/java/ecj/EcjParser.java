@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CharacterLiteral;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+import org.eclipse.jdt.core.dom.Comment;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
@@ -99,6 +100,7 @@ import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
@@ -107,7 +109,6 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -138,13 +139,16 @@ public final class EcjParser {
 
   // TODO only for tests
   private static String[] classpath() {
+    List<String> r = new ArrayList<>();
+    r.add("target/test-classes"); // for example for PrintfMisuseCheck
     try (Stream<Path> s = Files.list(Paths.get("target/test-jars"))) {
-      return s
+      s
         .map(p -> p.toAbsolutePath().toString())
-        .toArray(String[]::new);
+        .forEach(r::add);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+    return r.toArray(new String[0]);
   }
 
   public static Tree parse(String source) {
@@ -224,26 +228,45 @@ public final class EcjParser {
     // TODO remove:
     tree.accept(new BaseTreeVisitor());
 
-    if (countTrivias(tree) != converter.compilationUnit.getCommentList().size()) {
-      // TODO ClassCouplingCheck , CommentedOutCodeLineCheck , EmptyClassCheck , ModifiersOrderCheck , RedundantCloseCheck , ReplaceLambdaByMethodRefCheck
-      // TODO RightCurlyBraceStartLineCheck , UndocumentedApiCheck , SpringScanDefaultPackageCheck
-      System.err.println("Incorrect number of trivias");
+    List<String> trivias = new ArrayList<>();
+    collectTrivias(trivias, tree);
+    List<String> comments = new ArrayList<>();
+    for (Object o : converter.compilationUnit.getCommentList()) {
+      Comment c = (Comment) o;
+      comments.add(
+        converter.compilationUnit.getLineNumber(c.getStartPosition())
+          + ":"
+          + converter.tokenManager.getSource().substring(c.getStartPosition(), c.getStartPosition() + c.getLength())
+      );
+    }
+    if (trivias.size() != comments.size()) {
+      // TODO
+      // ClassCouplingCheck - semicolon in enum
+      // CommentedOutCodeLineCheck - semicolon in native method
+      // EmptyClassCheck - empty declaration
+      // ModifiersOrderCheck - @
+      // ReplaceLambdaByMethodRefCheck
+      // RightCurlyBraceStartLineCheck - @
+      System.err.println("Incorrect number of trivias:");
+      System.err.println(trivias);
+      System.err.println(comments);
+
+      comments.removeAll(trivias);
+      System.err.println(comments);
     }
 
     return tree;
   }
 
-  private static int countTrivias(Tree node) {
+  private static void collectTrivias(List<String> result, Tree node) {
     if (node.is(Tree.Kind.TOKEN)) {
-      return ((SyntaxToken) node).trivias().size();
+      ((SyntaxToken) node).trivias().forEach(syntaxTrivia -> result.add(syntaxTrivia.startLine() + ":" + syntaxTrivia.comment()));
     }
-    int sum = 0;
     Iterator<? extends Tree> childrenIterator = ((ETree) node).children();
     while (childrenIterator.hasNext()) {
       Tree child = childrenIterator.next();
-      sum += countTrivias(child);
+      collectTrivias(result, child);
     }
-    return sum;
   }
 
   private static void setParents(Tree node) {
@@ -269,7 +292,11 @@ public final class EcjParser {
         t.eofToken = firstTokenAfter(e, TerminalTokens.TokenNameEOF);
 
         if (e.getPackage() != null) {
-          // TODO e.getPackage().annotations()
+
+          if (!e.getPackage().annotations().isEmpty()) {
+            throw new NotImplementedException();
+          }
+
           t.packageDeclaration = new EPackageDeclaration();
           t.packageDeclaration.packageKeyword = firstTokenBefore(e.getPackage().getName(), TerminalTokens.TokenNamepackage);
           t.packageDeclaration.name = convertExpression(e.getPackage().getName());
@@ -470,6 +497,10 @@ public final class EcjParser {
           e.extraDimensions()
         );
         t.simpleName = convertSimpleName(e.getName());
+        t.openParenToken = firstTokenAfter(
+          e.getName(),
+          TerminalTokens.TokenNameLPAREN
+        );
         for (Object o : e.parameters()) {
           t.parameters.add(createVariable((SingleVariableDeclaration) o));
         }
@@ -578,6 +609,7 @@ public final class EcjParser {
       EArrayType t = new EArrayType();
       t.type = type;
       t.openBracketToken = lastTokenIn(e, TerminalTokens.TokenNameLBRACKET);
+      t.closeBracketToken = lastTokenIn(e, TerminalTokens.TokenNameRBRACKET);
       type = t;
     }
     return type;
@@ -692,8 +724,14 @@ public final class EcjParser {
       }
       case ASTNode.SIMPLE_TYPE: {
         SimpleType e = (SimpleType) node;
-        // TODO e.annotations()
-        return (TypeTree) convertExpression(e.getName());
+        TypeTree t = (TypeTree) convertExpression(e.getName());
+        List<AnnotationTree> annotations = t instanceof EIdentifier ? ((EIdentifier) t).annotations : ((EMemberSelect) t).annotations;
+        for (Object o : e.annotations()) {
+          annotations.add(
+            (AnnotationTree) convert((Annotation) o)
+          );
+        }
+        return t;
       }
       case ASTNode.UNION_TYPE: {
         UnionType e = (UnionType) node;
@@ -744,9 +782,23 @@ public final class EcjParser {
       }
       case ASTNode.WILDCARD_TYPE: {
         WildcardType e = (WildcardType) node;
-        // FIXME WildcardTree
-        EIdentifier t = new EIdentifier();
-        t.identifierToken = /* TODO first only in absence of annotations */ firstTokenIn(e, TerminalTokens.TokenNameQUESTION);
+        EWildcard t = new EWildcard();
+        t.ast = ast;
+        t.binding = e.resolveBinding();
+
+        if (!e.annotations().isEmpty()) {
+          throw new NotImplementedException();
+        }
+
+        t.queryToken = /* TODO first only in absence of annotations */ firstTokenIn(e, TerminalTokens.TokenNameQUESTION);
+        if (e.getBound() != null) {
+          if (e.isUpperBound()) {
+            t.extendsOrSuperToken = firstTokenBefore(e.getBound(), TerminalTokens.TokenNameextends);
+          } else {
+            t.queryToken = firstTokenIn(e.getBound(), TerminalTokens.TokenNamesuper);
+          }
+          t.bound = convertType(e.getBound());
+        }
         return t;
       }
       case ASTNode.INTERSECTION_TYPE: {
@@ -823,6 +875,7 @@ public final class EcjParser {
         WhileStatement e = (WhileStatement) node;
         EWhileStatement t = new EWhileStatement();
         t.whileKeyword = firstTokenIn(e, TerminalTokens.TokenNamewhile);
+        t.openParenToken = firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN);
         t.condition = convertExpression(e.getExpression());
         t.closeParenToken = firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN);
         t.statement = convertStatement(e.getBody());
@@ -832,6 +885,7 @@ public final class EcjParser {
         IfStatement e = (IfStatement) node;
         EIfStatement t = new EIfStatement();
         t.ifKeyword = firstTokenIn(e, TerminalTokens.TokenNameif);
+        t.openParenToken = firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN);
         t.condition = convertExpression(e.getExpression());
         t.closeParenToken = firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN);
         t.thenStatement = convertStatement(e.getThenStatement());
@@ -855,7 +909,9 @@ public final class EcjParser {
         t.doKeyword = firstTokenIn(e, TerminalTokens.TokenNamedo);
         t.statement = convertStatement(e.getBody());
         t.whileKeyword = firstTokenAfter(e.getBody(), TerminalTokens.TokenNamewhile);
+        t.semicolonToken = firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN);
         t.condition = convertExpression(e.getExpression());
+        t.semicolonToken = firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN);
         t.semicolonToken = lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON);
         return t;
       }
@@ -864,7 +920,10 @@ public final class EcjParser {
         EAssertStatement t = new EAssertStatement();
         t.assertKeyword = firstTokenIn(e, TerminalTokens.TokenNameassert);
         t.condition = convertExpression(e.getExpression());
-        t.detail = convertExpression(e.getMessage());
+        if (e.getMessage() != null) {
+          t.colonToken = firstTokenBefore(e.getMessage(), TerminalTokens.TokenNameCOLON);
+          t.detail = convertExpression(e.getMessage());
+        }
         t.semicolonToken = lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON);
         return t;
       }
@@ -873,6 +932,7 @@ public final class EcjParser {
         ESwitchStatement t = new ESwitchStatement();
 
         t.switchExpression.switchKeyword = firstTokenIn(e, TerminalTokens.TokenNameswitch);
+        t.switchExpression.closeParenToken = firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN);
         t.switchExpression.expression = convertExpression(e.getExpression());
         t.switchExpression.closeParenToken = firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN);
         t.switchExpression.openBraceToken = firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameLBRACE);
@@ -907,6 +967,7 @@ public final class EcjParser {
         SynchronizedStatement e = (SynchronizedStatement) node;
         ESynchronizedStatement t = new ESynchronizedStatement();
         t.synchronizedKeyword = firstTokenIn(e, TerminalTokens.TokenNamesynchronized);
+        t.openParenToken = firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN);
         t.expression = convertExpression(e.getExpression());
         t.closeParenToken = firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN);
         t.block = convertBlock(e.getBody());
@@ -939,7 +1000,9 @@ public final class EcjParser {
         EnhancedForStatement e = (EnhancedForStatement) node;
         EEnhancedForStatement t = new EEnhancedForStatement();
         t.forKeyword = firstTokenIn(e, TerminalTokens.TokenNamefor);
+        t.openParenToken = firstTokenBefore(e.getParameter(), TerminalTokens.TokenNameLPAREN);
         t.variable = createVariable(e.getParameter());
+        t.colonToken = firstTokenAfter(e.getParameter(), TerminalTokens.TokenNameCOLON);
         t.expression = convertExpression(e.getExpression());
         t.closeParenToken = firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN);
         t.statement = convertStatement(e.getBody());
@@ -978,6 +1041,7 @@ public final class EcjParser {
           }
         }
         if (!e.resources().isEmpty()) {
+          t.openParenToken = firstTokenBefore(e.getBody(), TerminalTokens.TokenNameLPAREN);
           t.closeParenToken = firstTokenBefore(e.getBody(), TerminalTokens.TokenNameRPAREN);
         }
 
@@ -987,6 +1051,7 @@ public final class EcjParser {
           CatchClause e2 = (CatchClause) o;
           ECatchClause t2 = new ECatchClause();
           t2.catchKeyword = firstTokenIn(e2, TerminalTokens.TokenNamecatch);
+          t2.closeParenToken = firstTokenBefore(e2.getException(), TerminalTokens.TokenNameLPAREN);
           t2.parameter = createVariable(e2.getException());
           t2.closeParenToken = firstTokenAfter(e2.getException(), TerminalTokens.TokenNameRPAREN);
           t2.block = convertBlock(e2.getBody());
@@ -1218,16 +1283,20 @@ public final class EcjParser {
         }
       }
       case ASTNode.TYPE_LITERAL: {
-        // FIXME void.class
         TypeLiteral e = (TypeLiteral) node;
-        EIdentifier t = new EIdentifier();
-        t.identifierToken = firstTokenIn(e, TerminalTokens.TokenNameclass);
+        // TODO binding?
+        EMemberSelect t = new EMemberSelect();
+        t.lhs = (ExpressionTree) convertType(e.getType());
+        t.dotToken = lastTokenIn(e, TerminalTokens.TokenNameDOT);
+        t.rhs = new EIdentifier();
+        t.rhs.identifierToken = lastTokenIn(e, TerminalTokens.TokenNameclass);
         return t;
       }
       case ASTNode.ARRAY_ACCESS: {
         ArrayAccess e = (ArrayAccess) node;
         EArrayAccess t = new EArrayAccess();
         t.expression = convertExpression(e.getArray());
+        t.dimension.openBracketToken = firstTokenBefore(e.getIndex(), TerminalTokens.TokenNameLBRACKET);
         t.dimension.expression = convertExpression(e.getIndex());
         t.dimension.closeBracketToken = firstTokenAfter(e.getIndex(), TerminalTokens.TokenNameRBRACKET);
         return t;
@@ -1240,8 +1309,11 @@ public final class EcjParser {
         t.type = convertType(e.getType());
 
         for (Object o : e.dimensions()) {
+          Expression e2 = (Expression) o;
           EArrayAccess.EArrayDimension t2 = new EArrayAccess.EArrayDimension();
-          t2.expression = convertExpression((Expression) o);
+          t2.openBracketToken = firstTokenBefore(e2, TerminalTokens.TokenNameLBRACKET);
+          t2.expression = convertExpression(e2);
+          t2.closeBracketToken = firstTokenAfter(e2, TerminalTokens.TokenNameRBRACKET);
           t.dimensions.add(t2);
         }
 
@@ -1279,6 +1351,7 @@ public final class EcjParser {
         ECastExpression t = new ECastExpression();
         t.openParenToken = firstTokenIn(e, TerminalTokens.TokenNameLPAREN);
         t.type = convertType(e.getType());
+        t.closeParenToken = firstTokenAfter(e.getType(), TerminalTokens.TokenNameRPAREN);
         t.expression = convertExpression(e.getExpression());
         return t;
       }
@@ -1447,6 +1520,7 @@ public final class EcjParser {
         ELambdaExpression t = new ELambdaExpression();
         if (e.hasParentheses()) {
           t.openParenToken = firstTokenIn(e, TerminalTokens.TokenNameLPAREN);
+          t.closeParenToken = firstTokenBefore(e.getBody(), TerminalTokens.TokenNameRPAREN);
         }
         for (Object o : e.parameters()) {
           VariableDeclaration ev = (VariableDeclaration) o;
@@ -1477,6 +1551,7 @@ public final class EcjParser {
         t.expression = convertType(e.getType());
         t.method = new EIdentifier();
         // FIXME bindings
+        // TODO e.typeArguments()
         t.method.identifierToken = lastTokenIn(e, TerminalTokens.TokenNamenew);
         return t;
       }
@@ -1492,6 +1567,7 @@ public final class EcjParser {
         SuperMethodReference e = (SuperMethodReference) node;
         EMethodReference t = new EMethodReference();
         t.expression = convertExpression(e.getQualifier());
+        // TODO e.typeArguments()
         t.method = convertSimpleName(e.getName());
         ast.usage(t.method.binding, t.method);
         return t;
@@ -1500,6 +1576,7 @@ public final class EcjParser {
         TypeMethodReference e = (TypeMethodReference) node;
         EMethodReference t = new EMethodReference();
         t.expression = convertType(e.getType());
+        // TODO e.typeArguments()
         t.method = convertSimpleName(e.getName());
         ast.usage(t.method.binding, t.method);
         return t;

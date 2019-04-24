@@ -1,16 +1,11 @@
 package org.sonar.java.ecj;
 
-import org.eclipse.jdt.core.compiler.CharOperation;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
-import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.Symbols;
@@ -22,11 +17,9 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -153,9 +146,11 @@ abstract class ESymbol implements Symbol {
         return ast.type((ITypeBinding) binding);
       case IBinding.VARIABLE:
         return ast.type(((IVariableBinding) binding).getType());
-      // TODO METHOD in StandardCharsetsConstantsCheck , RedundantTypeCastCheck and MethodIdenticalImplementationsCheck , PACKAGE in InnerClassTooManyLinesCheck
       case IBinding.PACKAGE:
         return Symbols.unknownType;
+      case IBinding.METHOD:
+        // TODO METHOD in StandardCharsetsConstantsCheck , RedundantTypeCastCheck and MethodIdenticalImplementationsCheck , PACKAGE in InnerClassTooManyLinesCheck
+        throw new NotImplementedException("METHOD");
       default:
         throw new NotImplementedException("Kind: " + binding.getKind());
     }
@@ -491,45 +486,12 @@ class EType implements Type, Type.ArrayType {
     );
   }
 
+  /**
+   * TODO cross test with {@link JavaType#isSubtypeOf(String)}
+   */
   @Override
   public boolean isSubtypeOf(String fullyQualifiedName) {
-    if (fullyQualifiedName.endsWith("]")) {
-      // TODO e.g in InstanceOfAlwaysTrueCheck , use ITypeBinding.createArrayType
-      throw new NotImplementedException("isSubtypeOf array");
-    }
-
-    // for example "byte" in IntegerToHexStringCheck
-    ITypeBinding type = ast.ast.resolveWellKnownType(fullyQualifiedName);
-
-    if (type == null) {
-      type = findType(ast.ast, fullyQualifiedName);
-    }
-    return typeBinding.isSubTypeCompatible(type);
-  }
-
-  private static ITypeBinding findType(AST ast, String fqn) {
-    try {
-      // BindingResolver bindingResolver = ast.getBindingResolver();
-      // ReferenceBinding referenceBinding = bindingResolver
-      //  .lookupEnvironment()
-      //  .getType(CharOperation.splitOn('.', fqn.toCharArray()));
-
-      Method methodGetBindingResolver = ast.getClass().getDeclaredMethod("getBindingResolver");
-      methodGetBindingResolver.setAccessible(true);
-      Object bindingResolver = methodGetBindingResolver.invoke(ast);
-
-      Method methodLookupEnvironment = bindingResolver.getClass().getDeclaredMethod("lookupEnvironment");
-      methodLookupEnvironment.setAccessible(true);
-      LookupEnvironment lookupEnvironment = (LookupEnvironment) methodLookupEnvironment.invoke(bindingResolver);
-
-      ReferenceBinding referenceBinding = lookupEnvironment.getType(CharOperation.splitOn('.', fqn.toCharArray()));
-
-      Method methodGetTypeBinding = bindingResolver.getClass().getDeclaredMethod("getTypeBinding", TypeBinding.class);
-      methodGetTypeBinding.setAccessible(true);
-      return (ITypeBinding) methodGetTypeBinding.invoke(bindingResolver, referenceBinding);
-    } catch (ReflectiveOperationException e) {
-      throw new RuntimeException(e);
-    }
+    return typeBinding.isSubTypeCompatible(Hack.resolveType(ast.ast, fullyQualifiedName));
   }
 
   @Override

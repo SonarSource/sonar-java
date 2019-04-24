@@ -61,6 +61,7 @@ class EArrayAccess extends EExpression implements ArrayAccessExpressionTree {
   }
 
   static class EArrayDimension extends ETree implements ArrayDimensionTree {
+    SyntaxToken openBracketToken;
     ExpressionTree expression;
     SyntaxToken closeBracketToken;
 
@@ -72,7 +73,7 @@ class EArrayAccess extends EExpression implements ArrayAccessExpressionTree {
 
     @Override
     public SyntaxToken openBracketToken() {
-      throw new UnexpectedAccessException();
+      return openBracketToken;
     }
 
     @Nullable
@@ -99,7 +100,7 @@ class EArrayAccess extends EExpression implements ArrayAccessExpressionTree {
     @Nullable
     @Override
     public SyntaxToken firstToken() {
-      return expression.firstToken();
+      return openBracketToken;
     }
 
     @Nullable
@@ -110,8 +111,10 @@ class EArrayAccess extends EExpression implements ArrayAccessExpressionTree {
 
     @Override
     Iterator<? extends Tree> childrenIterator() {
-      return Iterators.singletonIterator(
-        expression()
+      return Iterators.forArray(
+        openBracketToken(),
+        expression(),
+        closeBracketToken()
       );
     }
   }

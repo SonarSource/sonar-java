@@ -154,6 +154,9 @@ class EList<T extends Tree> extends ETree implements ListTree<T> {
     return Kind.LIST;
   }
 
+  /**
+   * TODO see InterleaveIterable in {@link org.sonar.java.ast.parser.ListTreeImpl}
+   */
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return elements.iterator();

@@ -15,6 +15,7 @@ import java.util.Iterator;
 class EAssertStatement extends EStatement implements AssertStatementTree {
   SyntaxToken assertKeyword;
   ExpressionTree condition;
+  SyntaxToken colonToken;
   ExpressionTree detail;
   SyntaxToken semicolonToken;
 
@@ -31,7 +32,7 @@ class EAssertStatement extends EStatement implements AssertStatementTree {
   @Nullable
   @Override
   public SyntaxToken colonToken() {
-    throw new UnexpectedAccessException();
+    return colonToken;
   }
 
   @Nullable
@@ -72,6 +73,7 @@ class EAssertStatement extends EStatement implements AssertStatementTree {
     return Iterators.forArray(
       assertKeyword(),
       condition(),
+      colonToken(),
       detail(),
       semicolonToken()
     );

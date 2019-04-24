@@ -19,6 +19,7 @@ import java.util.List;
 @MethodsAreNonnullByDefault
 class ETryStatement extends EStatement implements TryStatementTree {
   SyntaxToken tryKeyword;
+  SyntaxToken openParenToken;
   EList<Tree> resources = new EList<>();
   SyntaxToken closeParenToken;
   BlockTree body;
@@ -34,9 +35,10 @@ class ETryStatement extends EStatement implements TryStatementTree {
   @Nullable
   @Override
   public SyntaxToken openParenToken() {
-    throw new UnexpectedAccessException();
+    return openParenToken;
   }
 
+  @Deprecated
   @Override
   public ListTree<VariableTree> resources() {
     throw new UnexpectedAccessException();
@@ -108,6 +110,9 @@ class ETryStatement extends EStatement implements TryStatementTree {
     return Iterators.concat(
       Iterators.forArray(
         tryKeyword(),
+        openParenToken(),
+        resourceList(),
+        closeParenToken(),
         block()
       ),
       catches().iterator(),

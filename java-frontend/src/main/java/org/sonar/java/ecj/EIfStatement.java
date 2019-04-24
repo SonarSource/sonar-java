@@ -15,6 +15,7 @@ import java.util.Iterator;
 @MethodsAreNonnullByDefault
 class EIfStatement extends EStatement implements IfStatementTree {
   SyntaxToken ifKeyword;
+  SyntaxToken openParenToken;
   ExpressionTree condition;
   SyntaxToken closeParenToken;
   StatementTree thenStatement;
@@ -28,7 +29,7 @@ class EIfStatement extends EStatement implements IfStatementTree {
 
   @Override
   public SyntaxToken openParenToken() {
-    throw new UnexpectedAccessException();
+    return openParenToken;
   }
 
   @Override
@@ -87,7 +88,9 @@ class EIfStatement extends EStatement implements IfStatementTree {
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       ifKeyword,
+      openParenToken,
       condition,
+      closeParenToken,
       thenStatement,
       elseKeyword(),
       elseStatement

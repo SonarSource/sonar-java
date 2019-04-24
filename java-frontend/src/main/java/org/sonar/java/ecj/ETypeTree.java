@@ -42,6 +42,7 @@ class EPrimitiveType extends ETypeTree implements PrimitiveTypeTree {
 
   @Override
   public List<AnnotationTree> annotations() {
+    // TODO
     return Collections.emptyList();
   }
 
@@ -79,6 +80,7 @@ class EPrimitiveType extends ETypeTree implements PrimitiveTypeTree {
 }
 
 /**
+ * TODO actually we are lucky that there is no casts to class
  * {@link org.sonar.plugins.java.api.tree.InferedTypeTree}
  */
 @MethodsAreNonnullByDefault
@@ -127,6 +129,7 @@ class EUnionType extends ETypeTree implements UnionTypeTree {
 
   @Override
   public List<AnnotationTree> annotations() {
+    // union type can't have annotations
     return Collections.emptyList();
   }
 
@@ -160,10 +163,17 @@ class EUnionType extends ETypeTree implements UnionTypeTree {
 
 @MethodsAreNonnullByDefault
 class EArrayType extends ETypeTree implements ArrayTypeTree {
-  // TODO are next two mutually exclusive?
   TypeTree type;
+  // TODO are next two mutually exclusive?
   SyntaxToken ellipsisToken;
+  SyntaxToken closeBracketToken;
   SyntaxToken openBracketToken;
+
+  @Override
+  public List<AnnotationTree> annotations() {
+    // array type can't have annotations?
+    return Collections.emptyList();
+  }
 
   @Override
   public TypeTree type() {
@@ -179,18 +189,13 @@ class EArrayType extends ETypeTree implements ArrayTypeTree {
   @Nullable
   @Override
   public SyntaxToken closeBracketToken() {
-    throw new UnexpectedAccessException();
+    return closeBracketToken;
   }
 
   @Nullable
   @Override
   public SyntaxToken ellipsisToken() {
     return ellipsisToken;
-  }
-
-  @Override
-  public List<AnnotationTree> annotations() {
-    return Collections.emptyList();
   }
 
   @Override
@@ -211,7 +216,12 @@ class EArrayType extends ETypeTree implements ArrayTypeTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.forArray(type);
+    return Iterators.forArray(
+      type,
+      ellipsisToken(),
+      openBracketToken(),
+      closeBracketToken()
+    );
   }
 }
 
@@ -221,6 +231,12 @@ class EParameterizedType extends ETypeTree implements ParameterizedTypeTree {
   EClassInstanceCreation.ETypeArguments typeArguments;
 
   @Override
+  public List<AnnotationTree> annotations() {
+    // parameterized type can't have annotations
+    return Collections.emptyList();
+  }
+
+  @Override
   public TypeTree type() {
     return type;
   }
@@ -228,11 +244,6 @@ class EParameterizedType extends ETypeTree implements ParameterizedTypeTree {
   @Override
   public TypeArguments typeArguments() {
     return typeArguments;
-  }
-
-  @Override
-  public List<AnnotationTree> annotations() {
-    return Collections.emptyList();
   }
 
   @Override

@@ -17,6 +17,7 @@ import java.util.List;
 class ELambdaExpression extends EExpression implements LambdaExpressionTree {
   SyntaxToken openParenToken;
   List<VariableTree> parameters = new ArrayList<>();
+  SyntaxToken closeParenToken;
   SyntaxToken arrowToken;
   Tree body;
 
@@ -34,7 +35,7 @@ class ELambdaExpression extends EExpression implements LambdaExpressionTree {
   @Nullable
   @Override
   public SyntaxToken closeParenToken() {
-    throw new UnexpectedAccessException();
+    return closeParenToken;
   }
 
   @Override
@@ -74,8 +75,11 @@ class ELambdaExpression extends EExpression implements LambdaExpressionTree {
     return Iterators.concat(
       Iterators.singletonIterator(openParenToken()),
       parameters().iterator(),
-      // TODO closeParenToken
-      Iterators.singletonIterator(body())
+      Iterators.forArray(
+        closeParenToken(),
+        arrowToken(),
+        body()
+      )
     );
   }
 }

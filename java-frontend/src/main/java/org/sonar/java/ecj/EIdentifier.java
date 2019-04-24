@@ -15,6 +15,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -23,7 +24,13 @@ import java.util.List;
 class EIdentifier extends EExpression implements IdentifierTree {
   IBinding binding;
 
+  List<AnnotationTree> annotations = new ArrayList<>(); // TODO suboptimal
   SyntaxToken identifierToken;
+
+  @Override
+  public List<AnnotationTree> annotations() {
+    return annotations;
+  }
 
   @Override
   public SyntaxToken identifierToken() {
@@ -53,12 +60,6 @@ class EIdentifier extends EExpression implements IdentifierTree {
   }
 
   @Override
-  public List<AnnotationTree> annotations() {
-    // FIXME
-    return Collections.emptyList();
-  }
-
-  @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitIdentifier(this);
   }
@@ -82,8 +83,9 @@ class EIdentifier extends EExpression implements IdentifierTree {
 
   @Override
   Iterator<? extends Tree> childrenIterator() {
-    return Iterators.forArray(
-      identifierToken()
+    return Iterators.concat(
+      annotations().iterator(),
+      Iterators.forArray(identifierToken())
     );
   }
 }

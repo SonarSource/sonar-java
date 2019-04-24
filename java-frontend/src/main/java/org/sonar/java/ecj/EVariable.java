@@ -83,6 +83,9 @@ class EVariable extends ETree implements VariableTree {
   @Nullable
   @Override
   public SyntaxToken firstToken() {
+    if (!modifiers.isEmpty()) {
+      return modifiers.get(0).firstToken();
+    }
     if (type.is(Kind.INFERED_TYPE)) {
       // for LambdaTypeParameterCheckTest
       // TODO do everywhere?

@@ -24,6 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+// TODO multiple variables
 public class TrailingCommentCheckTest {
 
   @Test

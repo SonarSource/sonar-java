@@ -17,7 +17,9 @@ class EDoStatement extends EStatement implements DoWhileStatementTree {
   SyntaxToken doKeyword;
   StatementTree statement;
   SyntaxToken whileKeyword;
+  SyntaxToken openParenToken;
   ExpressionTree condition;
+  SyntaxToken closeParenToken;
   SyntaxToken semicolonToken;
 
   @Override
@@ -37,7 +39,7 @@ class EDoStatement extends EStatement implements DoWhileStatementTree {
 
   @Override
   public SyntaxToken openParenToken() {
-    throw new UnexpectedAccessException();
+    return openParenToken;
   }
 
   @Override
@@ -47,7 +49,7 @@ class EDoStatement extends EStatement implements DoWhileStatementTree {
 
   @Override
   public SyntaxToken closeParenToken() {
-    throw new UnexpectedAccessException();
+    return closeParenToken;
   }
 
   @Override
@@ -82,7 +84,10 @@ class EDoStatement extends EStatement implements DoWhileStatementTree {
     return Iterators.forArray(
       doKeyword(),
       statement(),
+      whileKeyword(),
+      openParenToken(),
       condition(),
+      closeParenToken(),
       semicolonToken()
     );
   }

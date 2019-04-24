@@ -20,6 +20,7 @@ import java.util.List;
 @MethodsAreNonnullByDefault
 class ESwitchExpression extends EExpression implements SwitchExpressionTree {
   SyntaxToken switchKeyword;
+  SyntaxToken openParenToken;
   ExpressionTree expression;
   SyntaxToken closeParenToken;
   SyntaxToken openBraceToken;
@@ -33,7 +34,7 @@ class ESwitchExpression extends EExpression implements SwitchExpressionTree {
 
   @Override
   public SyntaxToken openParenToken() {
-    throw new UnexpectedAccessException();
+    return openParenToken;
   }
 
   @Override
@@ -88,7 +89,7 @@ class ESwitchExpression extends EExpression implements SwitchExpressionTree {
     return Iterators.concat(
       Iterators.forArray(
         switchKeyword(),
-        // TODO openParenToken
+        openParenToken(),
         expression(),
         closeParenToken(),
         openBraceToken()

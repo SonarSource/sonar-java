@@ -35,6 +35,7 @@ class EMethod extends ETree implements MethodTree {
   ETypeParameters typeParameters = new ETypeParameters();
   TypeTree returnType;
   IdentifierTree simpleName;
+  SyntaxToken openParenToken;
   List<VariableTree> parameters = new ArrayList<>();
   SyntaxToken closeParenToken;
   SyntaxToken throwsToken;
@@ -64,7 +65,7 @@ class EMethod extends ETree implements MethodTree {
 
   @Override
   public SyntaxToken openParenToken() {
-    throw new UnexpectedAccessException();
+    return openParenToken;
   }
 
   @Override
@@ -159,8 +160,15 @@ class EMethod extends ETree implements MethodTree {
   @Nullable
   @Override
   public SyntaxToken firstToken() {
-    // FIXME depends
-    return simpleName().firstToken();
+    // TODO suboptimal
+    Iterator<? extends Tree> childrenIterator = childrenIterator();
+    while (childrenIterator.hasNext()) {
+      Tree child = childrenIterator.next();
+      if (child != null && !child.is(Kind.TYPE_PARAMETERS) && !child.is(Kind.LIST) && child.firstToken() != null) {
+        return child.firstToken();
+      }
+    }
+    throw new IllegalStateException();
   }
 
   @Override
@@ -170,10 +178,12 @@ class EMethod extends ETree implements MethodTree {
         modifiers(),
         typeParameters(),
         returnType(),
-        simpleName()
+        simpleName(),
+        openParenToken()
       ),
       parameters.iterator(),
       Iterators.forArray(
+        closeParenToken(),
         throwsToken(),
         throwsClauses(),
         block()

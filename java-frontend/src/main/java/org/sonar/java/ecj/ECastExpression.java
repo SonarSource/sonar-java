@@ -17,6 +17,7 @@ import java.util.Iterator;
 class ECastExpression extends EExpression implements TypeCastTree {
   SyntaxToken openParenToken;
   TypeTree type;
+  SyntaxToken closeParenToken;
   ExpressionTree expression;
 
   @Override
@@ -42,7 +43,7 @@ class ECastExpression extends EExpression implements TypeCastTree {
 
   @Override
   public SyntaxToken closeParenToken() {
-    throw new UnexpectedAccessException();
+    return closeParenToken;
   }
 
   @Override
@@ -77,7 +78,8 @@ class ECastExpression extends EExpression implements TypeCastTree {
     return Iterators.forArray(
       openParenToken(),
       type(),
-      // TODO closeParenToken(),
+      // TODO andToken(), bounds(),
+      closeParenToken(),
       expression()
     );
   }
