@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_JavaTree)
+@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_JavaTree + ": getChildren")
 public class ReturnOfBooleanExpressionsCheckTest {
   @Test
   public void test() {
