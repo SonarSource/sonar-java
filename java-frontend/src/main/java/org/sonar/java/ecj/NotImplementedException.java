@@ -6,7 +6,7 @@ class NotImplementedException extends UnsupportedOperationException {
   NotImplementedException() {
   }
 
-  public NotImplementedException(String msg) {
+  NotImplementedException(String msg) {
     super(msg);
   }
 }

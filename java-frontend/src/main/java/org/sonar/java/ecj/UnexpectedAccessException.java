@@ -9,7 +9,7 @@ class UnexpectedAccessException extends UnsupportedOperationException {
   UnexpectedAccessException() {
   }
 
-  public UnexpectedAccessException(String msg) {
+  UnexpectedAccessException(String msg) {
     super(msg);
   }
 }

@@ -27,6 +27,7 @@ class EVariable extends ETree implements VariableTree {
   EIdentifier simpleName;
   SyntaxToken equalToken;
   ExpressionTree initializer;
+  SyntaxToken endToken;
 
   @Override
   public ModifiersTree modifiers() {
@@ -66,7 +67,7 @@ class EVariable extends ETree implements VariableTree {
   @Nullable
   @Override
   public SyntaxToken endToken() {
-    throw new NotImplementedException();
+    return endToken;
   }
 
   @Override
@@ -90,23 +91,14 @@ class EVariable extends ETree implements VariableTree {
     return type.firstToken();
   }
 
-  @Nullable
-  @Override
-  public SyntaxToken lastToken() {
-    // FIXME modifiers
-    if (initializer != null) {
-      return initializer.lastToken();
-    }
-    return simpleName.lastToken();
-  }
-
   @Override
   Iterator<? extends Tree> childrenIterator() {
     return Iterators.forArray(
       modifiers(),
       type(),
       simpleName(),
-      initializer()
+      initializer(),
+      endToken()
     );
   }
 }

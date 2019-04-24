@@ -23,7 +23,7 @@ public class ShapeTest {
 
   @Test
   public void wip() {
-    test("class C { void m() { e( new int[0][1][2] ); } }");
+    test("class C { int a, b; }");
   }
 
   @Test

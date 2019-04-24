@@ -223,7 +223,27 @@ public final class EcjParser {
 
     // TODO remove:
     tree.accept(new BaseTreeVisitor());
+
+    if (countTrivias(tree) != converter.compilationUnit.getCommentList().size()) {
+      // TODO ClassCouplingCheck , CommentedOutCodeLineCheck , EmptyClassCheck , ModifiersOrderCheck , RedundantCloseCheck , ReplaceLambdaByMethodRefCheck
+      // TODO RightCurlyBraceStartLineCheck , UndocumentedApiCheck , SpringScanDefaultPackageCheck
+      System.err.println("Incorrect number of trivias");
+    }
+
     return tree;
+  }
+
+  private static int countTrivias(Tree node) {
+    if (node.is(Tree.Kind.TOKEN)) {
+      return ((SyntaxToken) node).trivias().size();
+    }
+    int sum = 0;
+    Iterator<? extends Tree> childrenIterator = ((ETree) node).children();
+    while (childrenIterator.hasNext()) {
+      Tree child = childrenIterator.next();
+      sum += countTrivias(child);
+    }
+    return sum;
   }
 
   private static void setParents(Tree node) {
@@ -522,8 +542,9 @@ public final class EcjParser {
           (ModifierTree) convert((ASTNode) o)
         );
       }
-      for (Object o : fieldDeclaration.fragments()) {
-        VariableDeclarationFragment fragment = (VariableDeclarationFragment) o;
+
+      for (int i = 0; i < fieldDeclaration.fragments().size(); i++) {
+        VariableDeclarationFragment fragment = (VariableDeclarationFragment) fieldDeclaration.fragments().get(i);
         EVariable t = new EVariable();
         t.ast = ast;
         t.binding = fragment.resolveBinding();
@@ -541,6 +562,9 @@ public final class EcjParser {
           t.equalToken = firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL);
           t.initializer = convertExpression(fragment.getInitializer());
         }
+
+        t.endToken = firstTokenAfter(fragment, i + 1 < fieldDeclaration.fragments().size() ? TerminalTokens.TokenNameCOMMA : TerminalTokens.TokenNameSEMICOLON);
+
         members.add(t);
       }
     } else {
@@ -980,6 +1004,7 @@ public final class EcjParser {
         VariableDeclarationStatement e = (VariableDeclarationStatement) node;
         // TODO all fragments
         EVariable t = createVariable(e, (VariableDeclarationFragment) e.fragments().get(0));
+        t.endToken = lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON);
         return t;
       }
       case ASTNode.TYPE_DECLARATION_STATEMENT: {
