@@ -25,7 +25,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 /**
  * @see org.eclipse.jdt.core.JavaCore#COMPILER_PB_UNUSED_PARAMETER
  */
-@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_MethodJavaSymbol)
+@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_MethodJavaSymbol + ": isOverridable")
 public class UnusedMethodParameterCheckTest {
 
   @Test

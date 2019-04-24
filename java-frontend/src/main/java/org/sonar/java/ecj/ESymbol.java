@@ -318,34 +318,6 @@ class EAnnotationInstance implements SymbolMetadata.AnnotationInstance {
 }
 
 @MethodsAreNonnullByDefault
-class EVariableSymbol extends ESymbol implements Symbol.VariableSymbol {
-  /**
-   * Use {@link Ctx#variableSymbol(IVariableBinding)}
-   */
-  EVariableSymbol(Ctx ast, IVariableBinding binding) {
-    super(ast, binding);
-  }
-
-  @Nullable
-  @Override
-  public TypeSymbol enclosingClass() {
-    IVariableBinding b = (IVariableBinding) binding;
-    ITypeBinding declaringClass = b.getDeclaringClass();
-    if (declaringClass == null) {
-      // local variable
-      return ast.typeSymbol(b.getDeclaringMethod().getDeclaringClass());
-    }
-    return ast.typeSymbol(declaringClass);
-  }
-
-  @Nullable
-  @Override
-  public VariableTree declaration() {
-    return (VariableTree) super.declaration();
-  }
-}
-
-@MethodsAreNonnullByDefault
 class ETypeSymbol extends ESymbol implements Symbol.TypeSymbol {
   private final ITypeBinding binding;
 

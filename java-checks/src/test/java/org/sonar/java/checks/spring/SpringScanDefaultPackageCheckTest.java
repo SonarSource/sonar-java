@@ -22,7 +22,7 @@ package org.sonar.java.checks.spring;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_VariableJavaSymbol)
+@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_VariableJavaSymbol + ": ConstantUtils")
 public class SpringScanDefaultPackageCheckTest {
 
   @Test

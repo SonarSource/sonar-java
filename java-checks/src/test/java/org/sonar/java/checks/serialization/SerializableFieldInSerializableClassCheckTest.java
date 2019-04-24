@@ -22,7 +22,7 @@ package org.sonar.java.checks.serialization;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_JavaType)
+@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_JavaType + ": isTagged(TYPEVAR)")
 public class SerializableFieldInSerializableClassCheckTest {
 
   @Test

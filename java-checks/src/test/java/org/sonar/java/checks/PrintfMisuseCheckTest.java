@@ -23,7 +23,7 @@ import java.util.Random;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_VariableJavaSymbol)
+@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_VariableJavaSymbol + ": ConstantUtils")
 public class PrintfMisuseCheckTest {
 
   // used inside the tested file

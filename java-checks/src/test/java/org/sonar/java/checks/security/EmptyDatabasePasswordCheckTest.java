@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
-@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_VariableJavaSymbol)
+@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_VariableJavaSymbol + ": ConstantUtils")
 public class EmptyDatabasePasswordCheckTest {
   /**
    * Constants used inside "src/test/files/checks/security/EmptyDatabasePasswordCheck.java" file
