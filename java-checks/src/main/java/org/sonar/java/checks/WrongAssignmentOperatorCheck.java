@@ -42,6 +42,8 @@ public class WrongAssignmentOperatorCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    // TODO delete this
+    System.out.println("visiting...");
     AssignmentExpressionTree aeTree = (AssignmentExpressionTree) tree;
     SyntaxToken operatorToken = aeTree.operatorToken();
     SyntaxToken expressionFirstToken = aeTree.expression().firstToken();
