@@ -1161,6 +1161,33 @@ public class TreeFactory {
   }
 
   public ExpressionStatementTreeImpl expressionStatement(ExpressionTree expression, InternalSyntaxToken semicolonToken) {
+    if (!expression.is(
+      Kind.ASSIGNMENT,
+      Kind.MULTIPLY_ASSIGNMENT,
+      Kind.DIVIDE_ASSIGNMENT,
+      Kind.REMAINDER_ASSIGNMENT,
+      Kind.PLUS_ASSIGNMENT,
+      Kind.MINUS_ASSIGNMENT,
+      Kind.LEFT_SHIFT_ASSIGNMENT,
+      Kind.RIGHT_SHIFT_ASSIGNMENT,
+      Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
+      Kind.AND_ASSIGNMENT,
+      Kind.XOR_ASSIGNMENT,
+      Kind.OR_ASSIGNMENT,
+
+      Kind.PREFIX_INCREMENT,
+      Kind.PREFIX_DECREMENT,
+      Kind.POSTFIX_INCREMENT,
+      Kind.POSTFIX_DECREMENT,
+      Kind.METHOD_INVOCATION,
+      Kind.NEW_CLASS
+    )) {
+      // TODO because grammar relaxed
+      // https://github.com/SonarSource/sonar-java/blame/59e0a75069d7887d0d17bfb081211b1c4361c634/java-squid/src/main/java/org/sonar/java/ast/parser/JavaGrammarImpl.java#L536
+      // https://docs.oracle.com/javase/specs/jls/se12/html/jls-14.html#jls-14.8
+      // https://docs.oracle.com/javase/specs/jls/se6/html/statements.html#14.8
+      throw new IllegalStateException(expression.kind().toString());
+    }
     return new ExpressionStatementTreeImpl(expression, semicolonToken);
   }
 
