@@ -30,7 +30,6 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.ArrayJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -225,8 +224,8 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       .map(NewArrayTree.class::cast)
       .map(ExpressionTree::symbolType)
       .filter(Type::isArray)
-      .map(ArrayJavaType.class::cast)
-      .map(ArrayJavaType::elementType)
+      .map(Type.ArrayType.class::cast)
+      .map(Type.ArrayType::elementType)
       .filter(type -> type.is(JAVA_LANG_STRING))
       .isPresent();
   }
