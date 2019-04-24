@@ -34,4 +34,8 @@ public class EVariableSymbol extends ESymbol implements Symbol.VariableSymbol {
   public VariableTree declaration() {
     return (VariableTree) super.declaration();
   }
+
+  public Object constantValue() {
+    return ((IVariableBinding) binding).getConstantValue();
+  }
 }

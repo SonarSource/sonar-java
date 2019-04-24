@@ -29,7 +29,6 @@ public class CryptographicKeySizeCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/security/CryptographicKeySizeCheck/RSA.java", new CryptographicKeySizeCheck());
   }
 
-  @org.junit.Ignore(godin.IgnoreReasons.CAST_TO_VariableJavaSymbol + ": ConstantUtils")
   @Test
   public void test_Blowfish() {
     JavaCheckVerifier.verify("src/test/files/checks/security/CryptographicKeySizeCheck/Blowfish.java", new CryptographicKeySizeCheck());

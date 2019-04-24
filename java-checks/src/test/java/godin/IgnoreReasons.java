@@ -30,11 +30,6 @@ public final class IgnoreReasons {
   public static final String LOOKUP_SYMBOLS = "TypeSymbol.lookupSymbols";
 
   /**
-   * Cast to {@link org.sonar.java.resolve.JavaSymbol.VariableJavaSymbol}
-   */
-  public static final String CAST_TO_VariableJavaSymbol = "cast to VariableJavaSymbol";
-
-  /**
    * Cast to {@link org.sonar.java.model.JavaTree}
    */
   public static final String CAST_TO_JavaTree = "cast to JavaTree";
