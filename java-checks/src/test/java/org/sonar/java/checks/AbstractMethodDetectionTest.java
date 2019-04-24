@@ -27,14 +27,12 @@ import org.sonar.java.CheckTestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_JavaTree)
 public class AbstractMethodDetectionTest {
 
   @Test
@@ -85,12 +83,12 @@ public class AbstractMethodDetectionTest {
 
     @Override
     protected void onMethodInvocationFound(MethodInvocationTree tree) {
-      lines.add(((JavaTree) tree).getLine());
+      lines.add(tree.firstToken().line());
     }
 
     @Override
     protected void onMethodReferenceFound(MethodReferenceTree methodReferenceTree) {
-      lines.add(((JavaTree) methodReferenceTree).getLine());
+      lines.add(methodReferenceTree.firstToken().line());
     }
   }
 
