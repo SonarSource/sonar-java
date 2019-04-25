@@ -126,6 +126,6 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isConstructor(Symbol methodSymbol) {
-    return ((JavaSymbol.MethodJavaSymbol) methodSymbol).isConstructor();
+    return "<init>".equals(methodSymbol.name());
   }
 }
