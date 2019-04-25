@@ -544,6 +544,8 @@ class EType implements Type, Type.ArrayType {
   /**
    * TODO typeBinding.getBinaryName() for ThrowsSeveralCheckedExceptionCheck ?
    *
+   * TODO old implementation returns {@code <nulltype>} for null literals
+   *
    * @see JavaSymbol.TypeJavaSymbol#getFullyQualifiedName()
    */
   @Override
@@ -551,6 +553,9 @@ class EType implements Type, Type.ArrayType {
     return typeBinding.getErasure().getQualifiedName();
   }
 
+  /**
+   * TODO old implementation returns {@code <nulltype>} for null literals
+   */
   @Override
   public String name() {
     // TODO unsure about erasure, but it allowed to pass ValueBasedObjectUsedForLockCheck

@@ -13,8 +13,11 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 
+/**
+ * TODO extends {@link EVariable} like {@link org.sonar.java.model.declaration.EnumConstantTreeImpl} - see BadConstantNameCheck
+ */
 @MethodsAreNonnullByDefault
-class EEnumConstant extends ETree implements EnumConstantTree {
+class EEnumConstant extends EVariable implements EnumConstantTree {
   EModifiers modifiers = new EModifiers();
   IdentifierTree simpleName;
   EClassInstanceCreation initializer;
