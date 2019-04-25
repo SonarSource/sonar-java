@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultiset;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.SymbolMetadataResolve;
@@ -79,16 +78,16 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean differentReturnType(JavaSymbol.MethodJavaSymbol method, JavaSymbol.MethodJavaSymbol overridee) {
-    JavaType methodResultType = resultType(method);
-    JavaType overrideeResultType = resultType(overridee);
+    Type methodResultType = resultType(method);
+    Type overrideeResultType = resultType(overridee);
     return specializationOfReturnType(methodResultType.erasure(), overrideeResultType.erasure()) || useRawTypeOfParametrizedType(methodResultType, overrideeResultType);
   }
 
-  private static JavaType resultType(JavaSymbol.MethodJavaSymbol method) {
+  private static Type resultType(JavaSymbol.MethodJavaSymbol method) {
     return ((MethodJavaType) method.type()).resultType();
   }
 
-  private static boolean specializationOfReturnType(JavaType methodResultType, JavaType overrideeResultType) {
+  private static boolean specializationOfReturnType(Type methodResultType, Type overrideeResultType) {
     return !methodResultType.isVoid()
       && (methodResultType.isSubtypeOf(overrideeResultType) && !overrideeResultType.isSubtypeOf(methodResultType));
   }
