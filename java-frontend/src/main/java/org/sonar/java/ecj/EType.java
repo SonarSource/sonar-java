@@ -11,8 +11,8 @@ import java.util.Objects;
 
 @MethodsAreNonnullByDefault
 class EType implements Type, Type.ArrayType {
-  private final Ctx ast;
-  private final ITypeBinding typeBinding;
+  final Ctx ast;
+  final ITypeBinding typeBinding;
 
   /**
    * Use {@link Ctx#type(ITypeBinding)}
@@ -141,4 +141,5 @@ class EType implements Type, Type.ArrayType {
     }
     return ast.type(typeBinding.getElementType());
   }
+
 }

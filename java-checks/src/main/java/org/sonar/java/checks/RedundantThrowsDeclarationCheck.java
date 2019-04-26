@@ -27,11 +27,11 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.checks.helpers.Javadoc;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -148,7 +148,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       return false;
     }
 
-    if (thrownExceptions.stream().anyMatch(t -> ((JavaType) t).isTagged(JavaType.TYPEVAR))) {
+    if (thrownExceptions.stream().anyMatch(t -> TypeUtils.isTypeVar(t))) {
       // should be handled by SONARJAVA-1778 - type substitution not applied on thrown type when parameterized on parametric methods
       return false;
     }

@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.JavaType;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -67,7 +67,7 @@ public class OptionalAsParameterCheck extends IssuableSubscriptionVisitor {
   private static Optional<String> expectedTypeInsteadOfOptional(Type type) {
     if (type.is(JAVA_UTIL_OPTIONAL) || type.is(GUAVA_OPTIONAL)) {
       String msg;
-      if (((JavaType) type).isParameterized()) {
+      if (TypeUtils.isParameterized(type)) {
         ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) type;
         String parameterTypeName = ptjt.substitution(ptjt.typeParameters().get(0)).erasure().name();
         msg = formatMsg(parameterTypeName);

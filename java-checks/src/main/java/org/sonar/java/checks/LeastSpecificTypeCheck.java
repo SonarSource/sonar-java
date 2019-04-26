@@ -27,12 +27,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -152,7 +152,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       }
 
       boolean definesSymbol = definesSymbol(m, typeSymbol);
-      boolean isSpecialization = !((JavaType) startType).isParameterized() && ((JavaType) type).isParameterized();
+      boolean isSpecialization = !TypeUtils.isParameterized(startType) && TypeUtils.isParameterized(type);
       if (definesSymbol && !isSpecialization && result.isEmpty()) {
         result.add(Lists.newArrayList(type));
       }

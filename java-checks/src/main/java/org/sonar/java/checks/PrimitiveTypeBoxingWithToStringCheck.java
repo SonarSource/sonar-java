@@ -20,10 +20,10 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -98,7 +98,7 @@ public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implem
     MethodMatcher valueOfMatcher = MethodMatcher.create()
       .typeDefinition(type.fullyQualifiedName())
       .name("valueOf")
-      .addParameter(((JavaType) type).primitiveType().fullyQualifiedName());
+      .addParameter(TypeUtils.primitiveType(type).fullyQualifiedName());
     return valueOfMatcher.matches((MethodInvocationTree) abstractTypedTree);
   }
 }

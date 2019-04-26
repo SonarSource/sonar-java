@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
@@ -92,7 +93,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isPrimitiveWrapperInConditional(Type expressionType, TypeCastTree typeCastTree) {
     Tree parent = skipParentheses(typeCastTree.parent());
-    return parent.is(Tree.Kind.CONDITIONAL_EXPRESSION) && (((JavaType) expressionType).isPrimitiveWrapper() || expressionType.isPrimitive());
+    return parent.is(Tree.Kind.CONDITIONAL_EXPRESSION) && (TypeUtils.isPrimitiveWrapper(expressionType) || expressionType.isPrimitive());
   }
 
   @CheckForNull

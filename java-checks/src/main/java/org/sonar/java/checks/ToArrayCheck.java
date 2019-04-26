@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -55,7 +55,7 @@ public class ToArrayCheck extends AbstractMethodDetection {
   private void checkCast(Type type, MethodInvocationTree mit) {
     if (type.isArray() && !type.is("java.lang.Object[]")) {
       Type elementType = ((Type.ArrayType) type).elementType();
-      if (!((JavaType) elementType).isTagged(JavaType.TYPEVAR)) {
+      if (TypeUtils.isTypeVar(type)) {
         reportIssue(mit, "Pass \"new " + elementType.name() + "[0]\" as argument to \"toArray\".");
       }
     }

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.checks.helpers.ValueBasedUtils;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ModifiersUtils;
@@ -80,7 +81,7 @@ public class ValueBasedObjectsShouldNotBeSerializedCheck extends IssuableSubscri
     // we check first the ParametrizedTypeJavaType, in order to filter out the non-serializable
     // generic value-based class Optional<T>
     JavaType javaType = (JavaType) type;
-    if (javaType.isParameterized()) {
+    if (TypeUtils.isParameterized(javaType)) {
       ParametrizedTypeJavaType parameterizedType = (ParametrizedTypeJavaType) javaType;
       return isSubtypeOfCollectionApi(parameterizedType) &&
         parameterizedType.typeParameters().stream()

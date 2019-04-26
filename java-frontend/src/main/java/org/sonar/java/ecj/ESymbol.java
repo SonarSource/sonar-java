@@ -464,4 +464,3 @@ class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
     return (MethodTree) super.declaration();
   }
 }
-

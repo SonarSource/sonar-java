@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.JavaType;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -53,7 +53,7 @@ public class PrimitiveWrappersInTernaryOperatorCheck extends IssuableSubscriptio
   }
 
   private static boolean isPrimitiveWrapper(Type type) {
-    return ((JavaType) type).isPrimitiveWrapper();
+    return TypeUtils.isPrimitiveWrapper(type);
   }
 
 }

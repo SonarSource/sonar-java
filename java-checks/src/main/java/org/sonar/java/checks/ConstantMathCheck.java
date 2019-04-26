@@ -21,11 +21,11 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -114,8 +114,8 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isIntOrLong(ExpressionTree expression) {
-    JavaType type = (JavaType) expression.symbolType();
-    return isIntegral(type) || (type.isPrimitiveWrapper() && isIntegral(type.primitiveType()));
+    Type type = expression.symbolType();
+    return isIntegral(type) || TypeUtils.isPrimitiveWrapper(type) && isIntegral(TypeUtils.primitiveType(type));
   }
 
   private static boolean isTruncation(MethodInvocationTree methodTree) {

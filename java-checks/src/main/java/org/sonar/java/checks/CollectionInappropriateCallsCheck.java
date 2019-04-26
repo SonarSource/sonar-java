@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -126,7 +127,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
 
   private static boolean autoboxing(Type argumentType, Type collectionParameterType) {
     return argumentType.isPrimitive()
-      && ((JavaType) collectionParameterType).isPrimitiveWrapper()
-      && isSubtypeOf(((JavaType) argumentType).primitiveWrapperType(), collectionParameterType);
+      && TypeUtils.isPrimitiveWrapper(collectionParameterType)
+      && isSubtypeOf(TypeUtils.primitiveWrapperType(argumentType), collectionParameterType);
   }
 }

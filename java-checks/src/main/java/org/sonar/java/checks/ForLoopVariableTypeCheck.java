@@ -25,6 +25,7 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.resolve.ArrayJavaType;
 import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaType;
@@ -79,7 +80,7 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
   @CheckForNull
   private static JavaType getCollectionItemType(ExpressionTree expression) {
     JavaType expressionType = (JavaType) expression.symbolType();
-    if (expressionType.isSubtypeOf("java.util.Collection") && !expressionType.isParameterized()) {
+    if (expressionType.isSubtypeOf("java.util.Collection") && !TypeUtils.isParameterized(expressionType)) {
       // Ignoring raw collections (too many FP)
       return null;
     }
@@ -89,7 +90,7 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
       ClassJavaType clazz = (ClassJavaType) expressionType;
       return clazz.superTypes()
         .stream()
-        .filter(t -> t.is("java.lang.Iterable") && t.isParameterized())
+        .filter(t -> t.is("java.lang.Iterable") && TypeUtils.isParameterized(t))
         .findFirst()
         .map(iter -> {
           ParametrizedTypeJavaType ptype = (ParametrizedTypeJavaType) iter;

@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -101,7 +102,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
 
   private static Optional<String> matchFunctionalInterface(Type type) {
     JavaType javaType = (JavaType) type;
-    if (!javaType.isParameterized()) {
+    if (!TypeUtils.isParameterized(javaType)) {
       return Optional.empty();
     }
     ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) javaType;

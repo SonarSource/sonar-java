@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -44,7 +45,7 @@ public class CompareToNotOverloadedCheck extends IssuableSubscriptionVisitor {
       ownerType.superTypes().stream().filter(supertype -> supertype.is("java.lang.Comparable")).findFirst().ifPresent(
         comparableType -> {
           String name = "Object";
-          if (comparableType.isParameterized()) {
+          if (TypeUtils.isParameterized(comparableType)) {
             ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) comparableType;
             name = ptjt.substitution(ptjt.typeParameters().get(0)).symbol().name();
           }
