@@ -2,27 +2,35 @@ package org.sonar.java.ecj;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Unit test for {@link Hack}.
+ */
 public class HackTest {
 
   private final AST ast = createAST();
 
   @Test
-  public void test() {
+  public void should_resolve_type_by_name() {
     assertThat(Hack.resolveType(ast, "int"))
       .isNotNull();
 
     assertThat(Hack.resolveType(ast, "java.lang.IllegalStateException"))
       .isNotNull();
+    // unlike
+    assertThat(ast.resolveWellKnownType("java.lang.IllegalStateException"))
+      .isNull();
 
     assertThat(Hack.resolveType(ast, "java.util.Map$Entry"))
       .isNotNull();
 
-    assertThat(Hack.resolveType(ast, "java.lang.Object[]"))
-      .isNotNull();
+    ITypeBinding resolved = Hack.resolveType(ast, "java.lang.Object[][]");
+    assertThat(resolved).isNotNull();
+    assertThat(resolved.getDimensions()).isEqualTo(2);
 
     // TODO assert that not recovered?
   }
@@ -37,7 +45,7 @@ public class HackTest {
       true
     );
     parser.setSource("".toCharArray());
-    parser.setUnitName("Example.java");
+    parser.setUnitName("Test.java");
     return parser.createAST(null).getAST();
   }
 

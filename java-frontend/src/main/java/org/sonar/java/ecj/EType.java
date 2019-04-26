@@ -1,8 +1,13 @@
 package org.sonar.java.ecj;
 
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.sonar.java.resolve.ArrayJavaType;
+import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
+import org.sonar.java.resolve.MethodJavaType;
+import org.sonar.java.resolve.TypeVariableJavaType;
+import org.sonar.java.resolve.WildCardType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
@@ -10,7 +15,7 @@ import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
 import java.util.Objects;
 
 @MethodsAreNonnullByDefault
-class EType implements Type, Type.ArrayType {
+final class EType implements Type, Type.ArrayType {
   final Ctx ast;
   final ITypeBinding typeBinding;
 
@@ -22,22 +27,39 @@ class EType implements Type, Type.ArrayType {
     this.typeBinding = Objects.requireNonNull(typeBinding);
   }
 
+  /**
+   * TODO check {@link JavaType#is(String)}
+   * TODO check {@link ClassJavaType#is(String)}
+   * TODO check {@link ArrayJavaType#is(String)}
+   */
   @Override
   public boolean is(String fullyQualifiedName) {
-    // TODO unsure about erasure, but it allowed to pass GetClassLoaderCheckTest
-    return fullyQualifiedName.equals(
-      typeBinding.getErasure().getQualifiedName()
-    );
+    if (typeBinding.isNullType()) {
+      // as in our implementation
+      return true;
+    }
+    return fullyQualifiedName.equals(fullyQualifiedName());
   }
 
   /**
-   * TODO cross test with {@link JavaType#isSubtypeOf(String)}
+   * TODO check {@link JavaType#isSubtypeOf(String)}
+   * TODO check {@link ClassJavaType#isSubtypeOf(String)}
+   * TODO check {@link ArrayJavaType#isSubtypeOf(String)}
+   * TODO check {@link TypeVariableJavaType#isSubtypeOf(String)}
+   * TODO check {@link WildCardType#isSubtypeOf(String)}
    */
   @Override
   public boolean isSubtypeOf(String fullyQualifiedName) {
     return typeBinding.isSubTypeCompatible(Hack.resolveType(ast.ast, fullyQualifiedName));
   }
 
+  /**
+   * TODO check {@link JavaType#isSubtypeOf(Type)}
+   * TODO check {@link ClassJavaType#isSubtypeOf(Type)}
+   * TODO check {@link ArrayJavaType#isSubtypeOf(Type)}
+   * TODO check {@link TypeVariableJavaType#isSubtypeOf(Type)}
+   * TODO check {@link WildCardType#isSubtypeOf(Type)}
+   */
   @Override
   public boolean isSubtypeOf(Type superType) {
     return isSubtypeOf(superType.fullyQualifiedName());
@@ -50,7 +72,11 @@ class EType implements Type, Type.ArrayType {
 
   @Override
   public boolean isClass() {
-    return typeBinding.isClass();
+    return typeBinding.isClass()
+      // in our implementation also
+      || typeBinding.isEnum()
+      || typeBinding.isInterface()
+      || typeBinding.isAnnotation(); // TODO isAnnotation redundant with isInterface
   }
 
   @Override
@@ -60,7 +86,9 @@ class EType implements Type, Type.ArrayType {
 
   @Override
   public boolean isPrimitive() {
-    return typeBinding.isPrimitive();
+    return typeBinding.isPrimitive()
+      // in our implementation also
+      && !isVoid();
   }
 
   @Override
@@ -86,23 +114,32 @@ class EType implements Type, Type.ArrayType {
   }
 
   /**
-   * TODO typeBinding.getBinaryName() for ThrowsSeveralCheckedExceptionCheck ?
-   *
-   * TODO old implementation returns {@code <nulltype>} for null literals
-   *
    * @see JavaSymbol.TypeJavaSymbol#getFullyQualifiedName()
    */
   @Override
   public String fullyQualifiedName() {
+    if (typeBinding.isNullType()) {
+      return "<nulltype>";
+    }
+    if (typeBinding.isTypeVariable()) {
+      return typeBinding.getQualifiedName();
+    }
+    if (typeBinding.isMember()) {
+      // TODO helped for ThrowsSeveralCheckedExceptionCheck and others, add test
+      return typeBinding.getBinaryName();
+//      return typeBinding.getDeclaringClass().getErasure().getQualifiedName() + "$" + typeBinding.getErasure().getName();
+    }
     return typeBinding.getErasure().getQualifiedName();
   }
 
-  /**
-   * TODO old implementation returns {@code <nulltype>} for null literals
-   */
   @Override
   public String name() {
-    // TODO unsure about erasure, but it allowed to pass ValueBasedObjectUsedForLockCheck
+    if (typeBinding.isNullType()) {
+      return "<nulltype>";
+    }
+    if (typeBinding.isTypeVariable()) {
+      return typeBinding.getName();
+    }
     return typeBinding.getErasure().getName();
   }
 
@@ -111,19 +148,27 @@ class EType implements Type, Type.ArrayType {
     return ast.typeSymbol(typeBinding);
   }
 
+  /**
+   * TODO check
+   */
   @Override
   public Type erasure() {
     return ast.type(typeBinding.getErasure());
   }
 
   /**
-   * @see JavaType#toString()
+   * TODO check {@link JavaType#toString()}
+   * TODO check {@link ArrayJavaType#toString()}
+   * TODO check {@link MethodJavaType#toString()}
    */
   @Override
   public final String toString() {
     return symbol().toString();
   }
 
+  /**
+   * TODO check {@link ArrayJavaType#equals(Object)}
+   */
   @Override
   public final boolean equals(Object obj) {
     return super.equals(obj);
@@ -137,9 +182,10 @@ class EType implements Type, Type.ArrayType {
   @Override
   public Type elementType() {
     if (!isArray()) {
+      // in our implementation only ArrayJavaType implements this method
       throw new IllegalStateException();
     }
-    return ast.type(typeBinding.getElementType());
+    return ast.type(typeBinding.getComponentType());
   }
 
 }

@@ -41,6 +41,7 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -103,6 +104,7 @@ import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -153,13 +155,17 @@ public final class EcjParser {
 
   public static Tree parse(String source) {
     ASTParser astParser = ASTParser.newParser(AST.JLS11);
-    astParser.setResolveBindings(true);
+    Map<String, String> options = new HashMap<>();
+    options.put(JavaCore.COMPILER_SOURCE, "11");
+    astParser.setCompilerOptions(options);
 
+    astParser.setResolveBindings(true);
     // Enable bindings recovery, otherwise there won't be bindings for example for variables whose type can't be resolved,
     // TODO however seems that anyway variable won't be bound in cases such as "known.unknown<Object> v; v = null;"
     astParser.setBindingsRecovery(true);
 
     // TODO check astParser.setStatementsRecovery();
+
     astParser.setEnvironment(
       classpath(),
       new String[]{},
@@ -167,9 +173,6 @@ public final class EcjParser {
       true
     );
     astParser.setUnitName("Example.java");
-    Map<String, String> options = new HashMap<>();
-    options.put(JavaCore.COMPILER_SOURCE, "11");
-    astParser.setCompilerOptions(options);
 
     char[] sourceChars = source.toCharArray();
     astParser.setSource(sourceChars);
@@ -225,6 +228,8 @@ public final class EcjParser {
     Tree tree = converter.convert(astNode);
     setParents(tree);
 
+    tree.accept(new Cleanup());
+
     // TODO remove:
     tree.accept(new BaseTreeVisitor());
 
@@ -256,6 +261,23 @@ public final class EcjParser {
     }
 
     return tree;
+  }
+
+  static class Cleanup extends BaseTreeVisitor {
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+//// TODO failed attempt to deal with "best match" - see for example "object.equals()" in SillyEqualsCheck
+//      EMethodInvocation t = (EMethodInvocation) tree;
+//      if (t.binding != null && t.binding.getParameterTypes().length != tree.arguments().size()) {
+//        t.binding = null;
+//        if (t.methodSelect.is(Tree.Kind.IDENTIFIER)) {
+//          ((EIdentifier) t.methodSelect).binding = null;
+//        } else {
+//          ((EMemberSelect) t.methodSelect).rhs.binding = null;
+//        }
+//      }
+      super.visitMethodInvocation(tree);
+    }
   }
 
   private static void collectTrivias(List<String> result, Tree node) {
@@ -795,7 +817,7 @@ public final class EcjParser {
           if (e.isUpperBound()) {
             t.extendsOrSuperToken = firstTokenBefore(e.getBound(), TerminalTokens.TokenNameextends);
           } else {
-            t.queryToken = firstTokenIn(e.getBound(), TerminalTokens.TokenNamesuper);
+            t.queryToken = firstTokenBefore(e.getBound(), TerminalTokens.TokenNamesuper);
           }
           t.bound = convertType(e.getBound());
         }

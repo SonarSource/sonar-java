@@ -13,6 +13,8 @@
  *
  * TODO make {@link org.sonar.plugins.java.api.tree.ListTree} immutable
  *
+ * TODO make fields {@link javax.annotation.Nonnull} by default
+ *
  * TODO incorrect number of trivias in some tests
  *
  * TODO review differences:

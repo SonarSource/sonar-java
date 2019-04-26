@@ -91,9 +91,10 @@ public class MyClass {
     List<?> listOfObjectsExtended = listOfStrings;
     listOfObjectsExtended.equals(listOfStrings); // Compliant
 
-    // Compliant
-    object.equals();
-    object.hashCode();
+//// TODO in case of semantic error ECJ provides "best match" binding which can be inconsistent with syntax - for example number of parameters and arguments
+//    // Compliant
+//    object.equals();
+//    object.hashCode();
   }
 
   public <T> void parameterizedMethod1(T o) {

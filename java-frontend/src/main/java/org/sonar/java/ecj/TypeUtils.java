@@ -81,4 +81,15 @@ public final class TypeUtils {
     throw new UnsupportedOperationException("isParameterized for " + type);
   }
 
+  /**
+   * TODO try to implement
+   * {@link org.sonar.java.resolve.ParametrizedTypeJavaType#substitution(org.sonar.java.resolve.TypeVariableJavaType)}
+   * using
+   * {@link org.eclipse.jdt.internal.compiler.lookup.Substitution#substitute(org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding)}
+   **/
+  public static void substitution(Type p, Type tv) {
+    assert ((EType) tv).typeBinding.isTypeVariable();
+    assert ((EType) p).typeBinding.isParameterizedType();
+  }
+
 }
