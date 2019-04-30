@@ -26,7 +26,7 @@ public class BooleanLiteralCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/BooleanEqualityComparisonCheck.java", new BooleanLiteralCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/BooleanLiteralCheck.java", new BooleanLiteralCheck());
   }
 
 }
