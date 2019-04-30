@@ -50,6 +50,10 @@ final class EType implements Type, Type.ArrayType {
    */
   @Override
   public boolean isSubtypeOf(String fullyQualifiedName) {
+    if (isArray() && "java.io.Serializable".equals(fullyQualifiedName)) {
+      // as in our implementation
+      return false;
+    }
     return typeBinding.isSubTypeCompatible(Hack.resolveType(ast.ast, fullyQualifiedName));
   }
 
@@ -62,7 +66,9 @@ final class EType implements Type, Type.ArrayType {
    */
   @Override
   public boolean isSubtypeOf(Type superType) {
-    return isSubtypeOf(superType.fullyQualifiedName());
+    return typeBinding.isSubTypeCompatible(
+      ((EType) superType).typeBinding
+    );
   }
 
   @Override

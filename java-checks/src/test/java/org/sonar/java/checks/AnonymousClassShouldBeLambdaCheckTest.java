@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_TypeJavaSymbol + ": superTypes")
 public class AnonymousClassShouldBeLambdaCheckTest {
 
   private static final String FILENAME = "src/test/files/checks/AnonymousClassShouldBeLambdaCheck.java";

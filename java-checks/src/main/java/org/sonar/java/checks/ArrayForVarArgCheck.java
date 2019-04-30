@@ -20,9 +20,9 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.MethodSymbolUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -72,15 +72,15 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
 
     if (sym.isMethodSymbol() && !args.isEmpty()) {
       ExpressionTree lastArg = args.get(args.size() - 1);
-      JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) sym;
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) sym;
       MethodJavaType methodType = getMethodType(methodSymbol, methodName);
       checkInvokedMethod(methodSymbol, methodType, lastArg);
     }
   }
 
   @CheckForNull
-  private static MethodJavaType getMethodType(JavaSymbol.MethodJavaSymbol methodSymbol, Tree methodName) {
-    if (!methodSymbol.isParametrized()) {
+  private static MethodJavaType getMethodType(Symbol.MethodSymbol methodSymbol, Tree methodName) {
+    if (!MethodSymbolUtils.isParametrized(methodSymbol)) {
       return null;
     }
     Type type = null;
@@ -97,8 +97,8 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
     return null;
   }
 
-  private void checkInvokedMethod(JavaSymbol.MethodJavaSymbol methodSymbol, @Nullable MethodJavaType methodType, ExpressionTree lastArg) {
-    if (methodSymbol.isVarArgs() && lastArg.is(Tree.Kind.NEW_ARRAY)) {
+  private void checkInvokedMethod(Symbol.MethodSymbol methodSymbol, @Nullable MethodJavaType methodType, ExpressionTree lastArg) {
+    if (MethodSymbolUtils.isVarArgs(methodSymbol) && lastArg.is(Tree.Kind.NEW_ARRAY)) {
       if (lastParamHasSameType(methodSymbol, methodType, lastArg.symbolType())) {
         String message = "Remove this array creation";
         NewArrayTree newArrayTree = (NewArrayTree) lastArg;
@@ -119,17 +119,17 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean isCallingOverload(JavaSymbol.MethodJavaSymbol methodSymbol, ExpressionTree lastArg) {
+  private static boolean isCallingOverload(Symbol.MethodSymbol methodSymbol, ExpressionTree lastArg) {
     MethodTree enclosing = ExpressionUtils.getEnclosingMethod(lastArg);
     return enclosing != null && haveSameParamButLast(enclosing.symbol(), methodSymbol);
   }
 
-  private static boolean haveSameParamButLast(Symbol.MethodSymbol enclosing, JavaSymbol.MethodJavaSymbol methodSymbol) {
+  private static boolean haveSameParamButLast(Symbol.MethodSymbol enclosing, Symbol.MethodSymbol methodSymbol) {
     return enclosing.name().equals(methodSymbol.name())
       && IntStream.range(0, enclosing.parameterTypes().size()).allMatch(i -> enclosing.parameterTypes().get(i) == methodSymbol.parameterTypes().get(i));
   }
 
-  private static boolean lastParamHasSameType(JavaSymbol.MethodJavaSymbol methodSymbol, @Nullable MethodJavaType methodType, Type lastArgType) {
+  private static boolean lastParamHasSameType(Symbol.MethodSymbol methodSymbol, @Nullable MethodJavaType methodType, Type lastArgType) {
     Type lastParamType = methodType != null ? getLastParameterType(methodType.argTypes()) : getLastParameterType(methodSymbol.parameterTypes());
     return lastArgType.equals(lastParamType);
   }

@@ -27,11 +27,11 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.checks.helpers.Javadoc;
+import org.sonar.java.ecj.MethodSymbolUtils;
 import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -75,7 +75,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   private void checkMethodThrownList(MethodTree methodTree, ListTree<TypeTree> thrownList) {
     Set<Type> thrownExceptions = thrownExceptionsFromBody(methodTree);
     boolean hasTryWithResourceInBody = hasTryWithResourceInBody(methodTree);
-    boolean isOverridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();
+    boolean isOverridableMethod = MethodSymbolUtils.isOverridable(methodTree.symbol());
     List<String> undocumentedExceptionNames = new Javadoc(methodTree).undocumentedThrownExceptions();
     Set<String> reported = new HashSet<>();
 

@@ -25,8 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.resolve.ClassJavaType;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -85,22 +84,22 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     if (hasOnlyOneMethod(classBody.members())) {
       // When overriding only one method of a functional interface, it can only be the single abstract method
       // and not one of the default methods. No need to check that the method signature matches.
-      JavaSymbol.TypeJavaSymbol symbol = (JavaSymbol.TypeJavaSymbol) classBody.symbol();
+      Symbol.TypeSymbol symbol = classBody.symbol();
       // should be anonymous class of interface and not abstract class
-      return symbol.getInterfaces().size() == 1
-        && symbol.getSuperclass().is(JAVA_LANG_OBJECT)
-        && hasSingleAbstractMethodInHierarchy(symbol.superTypes());
+      return symbol.interfaces().size() == 1
+        && symbol.superClass().is(JAVA_LANG_OBJECT)
+        && hasSingleAbstractMethodInHierarchy(TypeUtils.superTypes(symbol.type()));
     }
     return false;
   }
 
-  private static boolean hasSingleAbstractMethodInHierarchy(Set<ClassJavaType> superTypes) {
+  private static boolean hasSingleAbstractMethodInHierarchy(Set<Type> superTypes) {
     return superTypes.stream()
       .filter(type -> !type.is(JAVA_LANG_OBJECT))
-      .map(ClassJavaType::getSymbol)
+      .map(Type::symbol)
       // collect all the methods declared in hierarchy
       .flatMap(superType -> superType.memberSymbols().stream().filter(Symbol::isMethodSymbol).filter(Symbol::isAbstract))
-      .map(JavaSymbol.MethodJavaSymbol.class::cast)
+      .map(Symbol.MethodSymbol.class::cast)
       // remove objects methods redefined in interfaces
       .filter(symbol -> !isObjectMethod(symbol))
       // always take same symbol if method is redeclared over and over in hierarchy
@@ -109,7 +108,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
       .size() == 1;
   }
 
-  private static boolean isObjectMethod(JavaSymbol.MethodJavaSymbol methodSymbol) {
+  private static boolean isObjectMethod(Symbol.MethodSymbol methodSymbol) {
     Symbol overridenSymbol = methodSymbol.overriddenSymbol();
     return overridenSymbol != null && overridenSymbol.owner().type().is(JAVA_LANG_OBJECT);
   }

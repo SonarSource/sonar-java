@@ -30,10 +30,10 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.ecj.MethodSymbolUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -81,7 +81,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       return;
     }
     List<String> undocumentedParameters = new Javadoc(methodTree).undocumentedParameters();
-    boolean overridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();
+    boolean overridableMethod = MethodSymbolUtils.isOverridable(methodTree.symbol());
     List<IdentifierTree> unused = Lists.newArrayList();
     for (VariableTree var : methodTree.parameters()) {
       Symbol symbol = var.symbol();

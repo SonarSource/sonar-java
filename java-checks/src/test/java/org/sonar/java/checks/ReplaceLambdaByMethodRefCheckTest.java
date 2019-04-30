@@ -28,6 +28,7 @@ public class ReplaceLambdaByMethodRefCheckTest {
 
   @Test
   public void java8() {
+    // TODO line 6: IntStream cannot be resolved
     JavaCheckVerifier.verify(FILENAME, new ReplaceLambdaByMethodRefCheck(), 8);
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME, new ReplaceLambdaByMethodRefCheck(), 8);
   }
@@ -39,6 +40,7 @@ public class ReplaceLambdaByMethodRefCheckTest {
 
   @Test
   public void no_version() {
+    // TODO line 6: IntStream cannot be resolved
     JavaCheckVerifier.verify("src/test/files/checks/ReplaceLambdaByMethodRefCheck_no_version.java", new ReplaceLambdaByMethodRefCheck());
   }
 }

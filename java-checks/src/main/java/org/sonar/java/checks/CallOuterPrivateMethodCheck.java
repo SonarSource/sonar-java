@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.MethodSymbolUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -123,7 +123,7 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
       int formalArity = methodUsed.parameterTypes().size();
       int invokedArity = mit.arguments().size();
       return formalArity == invokedArity ||
-        (((JavaSymbol.MethodJavaSymbol) methodUsed).isVarArgs() && invokedArity >= formalArity - 1);
+        MethodSymbolUtils.isVarArgs(methodUsed) && invokedArity >= formalArity - 1;
     }
 
     private void reportIssueOnMethod(@Nullable MethodTree declaration, Symbol.TypeSymbol classSymbol) {

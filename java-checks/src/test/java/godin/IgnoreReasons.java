@@ -35,11 +35,6 @@ public final class IgnoreReasons {
   public static final String CAST_TO_JavaTree = "cast to JavaTree";
 
   /**
-   * Cast to {@link org.sonar.java.resolve.JavaType}
-   */
-  public static final String CAST_TO_JavaType = "cast to JavaType";
-
-  /**
    * Cast to {@link org.sonar.java.resolve.SemanticModel}
    */
   public static final String CAST_TO_SemanticModel = "cast to SemanticModel";

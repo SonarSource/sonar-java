@@ -26,6 +26,7 @@ public class DataHashingCheckTest {
 
   @Test
   public void test() {
+    // TODO line 29: The method sha384() is undefined for the type Hashing
     JavaCheckVerifier.verify("src/test/files/checks/security/DataHashingCheck.java", new DataHashingCheck());
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/DataHashingCheck.java", new DataHashingCheck());
   }

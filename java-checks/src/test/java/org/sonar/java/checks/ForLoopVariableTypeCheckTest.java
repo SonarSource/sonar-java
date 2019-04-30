@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.SYNTAX_ERROR + godin.IgnoreReasons.CAST_TO_ParametrizedTypeJavaType + ": substitution + public erasure")
+@org.junit.Ignore(godin.IgnoreReasons.SYNTAX_ERROR + godin.IgnoreReasons.CAST_TO + ": WildCardType")
 public class ForLoopVariableTypeCheckTest {
 
   private static final String FILENAME = "src/test/files/checks/ForLoopVariableTypeCheck.java";

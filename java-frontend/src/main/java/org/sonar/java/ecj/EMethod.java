@@ -136,7 +136,7 @@ class EMethod extends ETree implements MethodTree {
           return true;
         }
       }
-      return EMethodSymbol.find(binding::overrides, binding.getDeclaringClass()) != null;
+      return EMethodSymbol.find(ast, binding::overrides, binding.getDeclaringClass()) != null;
     }
     return false;
   }

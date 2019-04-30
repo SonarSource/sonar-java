@@ -22,11 +22,11 @@ package org.sonar.java.checks.security;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_JavaType + ": directSuperTypes")
 public class ControllingPermissionsCheckTest {
 
   @Test
   public void test() {
+    // TODO line 34: The hierarchy of the type F is inconsistent
     JavaCheckVerifier.verify("src/test/files/checks/security/ControllingPermissionsCheck.java", new ControllingPermissionsCheck());
   }
 

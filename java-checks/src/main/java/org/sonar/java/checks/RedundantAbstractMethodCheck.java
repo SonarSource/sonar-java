@@ -22,13 +22,13 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultiset;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.MethodSymbolUtils;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.MethodJavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
-import org.sonar.java.resolve.SymbolMetadataResolve;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -70,25 +70,25 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
       || differentAnnotations(method.metadata(), overridee.metadata());
   }
 
-  private static boolean removingParametrizedAspect(JavaSymbol.MethodJavaSymbol method, JavaSymbol.MethodJavaSymbol overridee) {
-    return !method.isParametrized() && overridee.isParametrized();
+  private static boolean removingParametrizedAspect(Symbol.MethodSymbol method, Symbol.MethodSymbol overridee) {
+    return !MethodSymbolUtils.isParametrized(method) && MethodSymbolUtils.isParametrized(overridee);
   }
 
   private static boolean differentThrows(JavaSymbol.MethodJavaSymbol method, JavaSymbol.MethodJavaSymbol overridee) {
     return !ImmutableMultiset.copyOf(method.thrownTypes()).equals(ImmutableMultiset.copyOf(overridee.thrownTypes()));
   }
 
-  private static boolean differentReturnType(JavaSymbol.MethodJavaSymbol method, JavaSymbol.MethodJavaSymbol overridee) {
-    JavaType methodResultType = resultType(method);
-    JavaType overrideeResultType = resultType(overridee);
+  private static boolean differentReturnType(JavaSymbol.MethodJavaSymbol method, Symbol.MethodSymbol overridee) {
+    Type methodResultType = resultType(method);
+    Type overrideeResultType = resultType(overridee);
     return specializationOfReturnType(methodResultType.erasure(), overrideeResultType.erasure()) || useRawTypeOfParametrizedType(methodResultType, overrideeResultType);
   }
 
-  private static JavaType resultType(JavaSymbol.MethodJavaSymbol method) {
+  private static Type resultType(Symbol.MethodSymbol method) {
     return ((MethodJavaType) method.type()).resultType();
   }
 
-  private static boolean specializationOfReturnType(JavaType methodResultType, JavaType overrideeResultType) {
+  private static boolean specializationOfReturnType(Type methodResultType, Type overrideeResultType) {
     return !methodResultType.isVoid()
       && (methodResultType.isSubtypeOf(overrideeResultType) && !overrideeResultType.isSubtypeOf(methodResultType));
   }
@@ -108,7 +108,7 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean useRawTypeOfParametrizedType(Type methodParam, Type overrideeParam) {
-    return overrideeParam instanceof ParametrizedTypeJavaType && methodParam.equals(overrideeParam.erasure());
+    return TypeUtils.isParameterized(overrideeParam) && methodParam.equals(overrideeParam.erasure());
   }
 
   private static boolean differentAnnotations(List<JavaSymbol> methodParamSymbols, List<JavaSymbol> overrideeParamSymbols) {
@@ -120,7 +120,7 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private static boolean differentAnnotations(SymbolMetadataResolve methodMetadata, SymbolMetadataResolve overrideeMetadata) {
+  private static boolean differentAnnotations(SymbolMetadata methodMetadata, SymbolMetadata overrideeMetadata) {
     for (AnnotationInstance annotation : methodMetadata.annotations()) {
       Type type = annotation.symbol().type();
       if (!type.is("java.lang.Override") && !overrideeMetadata.isAnnotatedWith(type.fullyQualifiedName())) {

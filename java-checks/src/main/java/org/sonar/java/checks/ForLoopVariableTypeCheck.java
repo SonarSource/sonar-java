@@ -26,10 +26,7 @@ import javax.annotation.CheckForNull;
 
 import org.sonar.check.Rule;
 import org.sonar.java.ecj.TypeUtils;
-import org.sonar.java.resolve.ArrayJavaType;
-import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.WildCardType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -78,24 +75,21 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
   }
 
   @CheckForNull
-  private static JavaType getCollectionItemType(ExpressionTree expression) {
-    JavaType expressionType = (JavaType) expression.symbolType();
+  private static Type getCollectionItemType(ExpressionTree expression) {
+    Type expressionType = expression.symbolType();
     if (expressionType.isSubtypeOf("java.util.Collection") && !TypeUtils.isParameterized(expressionType)) {
       // Ignoring raw collections (too many FP)
       return null;
     }
     if (expressionType.isArray()) {
-      return ((ArrayJavaType) expressionType).elementType();
+      return ((Type.ArrayType) expressionType).elementType();
     } else if(expressionType.isClass()) {
-      ClassJavaType clazz = (ClassJavaType) expressionType;
-      return clazz.superTypes()
+      return TypeUtils.superTypes(expressionType)
         .stream()
         .filter(t -> t.is("java.lang.Iterable") && TypeUtils.isParameterized(t))
         .findFirst()
-        .map(iter -> {
-          ParametrizedTypeJavaType ptype = (ParametrizedTypeJavaType) iter;
-          return ptype.substitution(ptype.typeParameters().get(0));
-        }).orElse(null);
+        .map(t -> TypeUtils.typeArguments(t).get(0))
+        .orElse(null);
     }
     return null;
   }
@@ -103,8 +97,8 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
   private static boolean isMostPreciseType(Type variableType, Type collectionItemType) {
     if (collectionItemType instanceof WildCardType) {
       return ((WildCardType) collectionItemType).isSubtypeOfBound((JavaType) variableType);
-    } else if (collectionItemType instanceof ParametrizedTypeJavaType) {
-      return ((ParametrizedTypeJavaType) collectionItemType).erasure().equals(variableType.erasure());
+    } else if (TypeUtils.isParameterized(collectionItemType)) {
+      return collectionItemType.erasure().equals(variableType.erasure());
     } else {
       return variableType.equals(collectionItemType);
     }

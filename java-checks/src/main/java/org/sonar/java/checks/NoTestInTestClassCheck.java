@@ -26,8 +26,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.ecj.MethodSymbolUtils;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -175,7 +175,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     }
     Stream<Symbol.MethodSymbol> defaultMethodsFromInterfaces = symbol.interfaces().stream()
       .flatMap(i -> getAllMembers(i.symbol(), false, visitedSymbols))
-      .filter(m -> ((JavaSymbol.MethodJavaSymbol) m).isDefault());
+      .filter(m -> MethodSymbolUtils.isDefault(m));
     members = Stream.concat(members, defaultMethodsFromInterfaces);
     for (Symbol s : symbol.memberSymbols()) {
       if (isNested(s) || isPublicStaticConcrete(s)) {

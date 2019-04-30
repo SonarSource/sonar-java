@@ -41,7 +41,6 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
-import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -250,7 +249,7 @@ public final class EcjParser {
       // CommentedOutCodeLineCheck - semicolon in native method
       // EmptyClassCheck - empty declaration
       // ModifiersOrderCheck - @
-      // ReplaceLambdaByMethodRefCheck
+      // ReplaceLambdaByMethodRefCheck - comments inside non-default method in interface
       // RightCurlyBraceStartLineCheck - @
       System.err.println("Incorrect number of trivias:");
       System.err.println(trivias);
@@ -1550,7 +1549,12 @@ public final class EcjParser {
             EVariable tv = new EVariable();
             tv.ast = ast;
             tv.binding = ev.resolveBinding();
-            tv.type = new EInferedType();
+
+            EInferedType inferedType = new EInferedType();
+            inferedType.ast = ast;
+            inferedType.binding = tv.binding != null ? tv.binding.getType() : null;
+            tv.type = inferedType;
+
             tv.simpleName = convertSimpleName(ev.getName());
             t.parameters.add(tv);
           } else {

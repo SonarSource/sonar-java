@@ -55,7 +55,7 @@ public class ToArrayCheck extends AbstractMethodDetection {
   private void checkCast(Type type, MethodInvocationTree mit) {
     if (type.isArray() && !type.is("java.lang.Object[]")) {
       Type elementType = ((Type.ArrayType) type).elementType();
-      if (TypeUtils.isTypeVar(type)) {
+      if (!TypeUtils.isTypeVar(elementType)) {
         reportIssue(mit, "Pass \"new " + elementType.name() + "[0]\" as argument to \"toArray\".");
       }
     }

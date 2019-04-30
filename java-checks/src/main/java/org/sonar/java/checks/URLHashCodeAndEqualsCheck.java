@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -75,11 +75,9 @@ public class URLHashCodeAndEqualsCheck extends IssuableSubscriptionVisitor {
 
   @CheckForNull
   private static Type getFirstTypeParameter(Type type) {
-    if (type instanceof ParametrizedTypeJavaType) {
-      ParametrizedTypeJavaType parametrizedTypeType = (ParametrizedTypeJavaType) type;
-      return parametrizedTypeType.typeParameters().stream()
+    if (TypeUtils.isParameterized(type)) {
+      return TypeUtils.typeArguments(type).stream()
         .findFirst()
-        .map(parametrizedTypeType::substitution)
         .orElse(null);
     }
     return null;

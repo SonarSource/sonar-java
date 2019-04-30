@@ -338,6 +338,12 @@ public class ETypeTest {
       .isEqualTo("Array");
     assertThat(our.fullyQualifiedName())
       .isEqualTo("$Array");
+
+    assertThat(e.isSubtypeOf("java.io.Serializable"))
+      .isFalse()
+      .isEqualTo(our.isSubtypeOf("java.io.Serializable"))
+      // even if
+      .isNotEqualTo(e.typeBinding.isSubTypeCompatible(Hack.resolveType(e.ast.ast, "java.io.Serializable")));
   }
 
   @Test

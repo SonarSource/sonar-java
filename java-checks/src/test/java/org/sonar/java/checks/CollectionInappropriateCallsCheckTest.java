@@ -22,11 +22,11 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@org.junit.Ignore(godin.IgnoreReasons.CAST_TO_ParametrizedTypeJavaType + ": typeParameters")
 public class CollectionInappropriateCallsCheckTest {
 
   @Test
   public void test() {
+    // TODO captures
     JavaCheckVerifier.verify("src/test/files/checks/CollectionInappropriateCallsCheck.java", new CollectionInappropriateCallsCheck());
   }
 }

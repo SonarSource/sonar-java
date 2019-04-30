@@ -26,15 +26,12 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.MethodSymbolUtils;
 import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
-import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -89,7 +86,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   private static boolean isCallToParametrizedOrUnknownMethod(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTree) expressionTree).symbol();
-      return symbol.isUnknown() || ((JavaSymbol.MethodJavaSymbol) symbol).isParametrized();
+      return symbol.isUnknown() || MethodSymbolUtils.isParametrized(((Symbol.MethodSymbol) symbol));
     }
     return false;
   }
@@ -103,14 +100,10 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
 
   @Nullable
   private static Type getTypeParameter(Type collectionType) {
-    if (collectionType.is("java.util.Collection") && collectionType instanceof ParametrizedTypeJavaType) {
-      ParametrizedTypeJavaType parametrizedType = (ParametrizedTypeJavaType) collectionType;
-      TypeVariableJavaType first = Iterables.getFirst(parametrizedType.typeParameters(), null);
-      if (first != null) {
-        return parametrizedType.substitution(first);
-      }
-    } else if (collectionType instanceof ParametrizedTypeJavaType) {
-      return ((JavaType) collectionType).directSuperTypes().stream().map(CollectionInappropriateCallsCheck::getTypeParameter).filter(Objects::nonNull).findFirst().orElse(null);
+    if (collectionType.is("java.util.Collection") && TypeUtils.isParameterized(collectionType)) {
+      return Iterables.getFirst(TypeUtils.typeArguments(collectionType), null);
+    } else if (TypeUtils.isParameterized(collectionType)) {
+      return TypeUtils.directSuperTypes(collectionType).stream().map(CollectionInappropriateCallsCheck::getTypeParameter).filter(Objects::nonNull).findFirst().orElse(null);
     }
     return null;
   }

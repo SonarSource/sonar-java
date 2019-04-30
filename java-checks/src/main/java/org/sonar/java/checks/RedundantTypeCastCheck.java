@@ -26,12 +26,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.MethodSymbolUtils;
 import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -47,7 +45,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S1905")
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
-  private static final Predicate<JavaSymbol> NON_DEFAULT_METHOD_PREDICATE = symbol -> !symbol.isDefault();
+  private static final Predicate<Symbol.MethodSymbol> NON_DEFAULT_METHOD_PREDICATE = symbol -> !MethodSymbolUtils.isDefault(symbol);
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -105,7 +103,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       while (!method.is(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION)) {
         method = method.parent();
       }
-      target = method.is(Tree.Kind.LAMBDA_EXPRESSION) ? null : ((MethodJavaType) ((MethodTree) method).symbol().type()).resultType();
+      target = method.is(Tree.Kind.LAMBDA_EXPRESSION) ? null : ((MethodTree) method).symbol().returnType().type();
     } else if (parent.is(Tree.Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) parent;
       target = variableTree.symbol().type();
@@ -145,24 +143,24 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       return true;
     }
     // intersection type on lambda should not raise an issue : required to make lambda serializable for instance
-    if (((JavaType) childType).isTagged(JavaType.INTERSECTION)) {
+    if (TypeUtils.isIntersection(childType)) {
       return false;
     }
 
-    List<MethodJavaSymbol> childMethods = getMethodSymbolsOf(childType).collect(Collectors.toList());
+    List<Symbol.MethodSymbol> childMethods = getMethodSymbolsOf(childType).collect(Collectors.toList());
     return childMethods.isEmpty() || (childMethods.size() == 1 && isSingleAbstractMethodOverride(childMethods.get(0), parentType));
   }
 
-  private static boolean isSingleAbstractMethodOverride(MethodJavaSymbol childMethod, Type parentType) {
-    MethodJavaSymbol overriddenSymbol = childMethod.overriddenSymbol();
-    return !childMethod.isDefault() && overriddenSymbol != null
+  private static boolean isSingleAbstractMethodOverride(Symbol.MethodSymbol childMethod, Type parentType) {
+    Symbol.MethodSymbol overriddenSymbol = childMethod.overriddenSymbol();
+    return !MethodSymbolUtils.isDefault(childMethod) && overriddenSymbol != null
       && getMethodSymbolsOf(parentType).filter(NON_DEFAULT_METHOD_PREDICATE).anyMatch(overriddenSymbol::equals);
   }
 
-  private static Stream<MethodJavaSymbol> getMethodSymbolsOf(Type type) {
+  private static Stream<Symbol.MethodSymbol> getMethodSymbolsOf(Type type) {
     return type.symbol().memberSymbols().stream()
       .filter(Symbol::isMethodSymbol)
-      .map(MethodJavaSymbol.class::cast);
+      .map(Symbol.MethodSymbol.class::cast);
   }
 
   private static boolean isRedundantNumericalCast(Type cast, Type expressionType) {

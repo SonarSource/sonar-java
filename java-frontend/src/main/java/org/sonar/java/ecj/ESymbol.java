@@ -385,7 +385,7 @@ class ETypeSymbol extends ESymbol implements Symbol.TypeSymbol {
 
 @MethodsAreNonnullByDefault
 class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
-  private final IMethodBinding binding;
+  final IMethodBinding binding;
 
   /**
    * Use {@link Ctx#methodSymbol(IMethodBinding)}
@@ -421,7 +421,7 @@ class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
   @Override
   public MethodSymbol overriddenSymbol() {
     // TODO what about unresolved?
-    IMethodBinding overrides = find(binding::overrides, binding.getDeclaringClass());
+    IMethodBinding overrides = find(ast, binding::overrides, binding.getDeclaringClass());
     if (overrides != null) {
       return ast.methodSymbol(overrides);
     }
@@ -429,20 +429,25 @@ class EMethodSymbol extends ESymbol implements Symbol.MethodSymbol {
   }
 
   @Nullable
-  static IMethodBinding find(Predicate<IMethodBinding> predicate, ITypeBinding t) {
+  static IMethodBinding find(Ctx ctx, Predicate<IMethodBinding> predicate, ITypeBinding t) {
     for (IMethodBinding candidate : t.getDeclaredMethods()) {
       if (predicate.test(candidate)) {
         return candidate;
       }
     }
     for (ITypeBinding i : t.getInterfaces()) {
-      IMethodBinding r = find(predicate, i);
+      IMethodBinding r = find(ctx, predicate, i);
       if (r != null) {
         return r;
       }
     }
     if (t.getSuperclass() != null) {
-      return find(predicate, t.getSuperclass());
+      return find(ctx, predicate, t.getSuperclass());
+    } else {
+      ITypeBinding objectType = ctx.ast.resolveWellKnownType("java.lang.Object");
+      if (t != objectType) {
+        return find(ctx, predicate, objectType);
+      }
     }
     return null;
   }

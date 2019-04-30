@@ -1,4 +1,10 @@
 /**
+ * TODO what is the difference between
+ * {@link org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol#superTypes()}
+ * and
+ * {@link org.sonar.java.resolve.ClassJavaType#superTypes()}
+ * ?
+ *
  * TODO remove {@link org.sonar.java.model.JavaTree#getLine()} which is unfortunately not the same as
  * {@link org.sonar.plugins.java.api.tree.Tree#firstToken() firstToken()}.{@link org.sonar.plugins.java.api.tree.SyntaxToken#line() line()}
  * see for example {@link org.sonar.java.model.declaration.MethodTreeImpl#getLine()}

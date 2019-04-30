@@ -23,12 +23,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.ecj.TypeUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.resolve.ClassJavaType;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -133,17 +133,17 @@ public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleNewClassTree(NewClassTree tree) {
-    ((JavaType) tree.symbolType()).directSuperTypes().stream()
+    TypeUtils.directSuperTypes(tree.symbolType()).stream()
       .filter(directSuperType -> isGrantedAuthority(directSuperType) || isForbiddenForAnonymousClass(tree, directSuperType))
       .findFirst()
       .ifPresent(ct -> reportIssue(tree.identifier()));
   }
 
-  private static boolean isGrantedAuthority(ClassJavaType dst) {
+  private static boolean isGrantedAuthority(Type dst) {
     return dst.is(ORG_SPRINGFRAMEWORK_SECURITY_CORE_GRANTED_AUTHORITY);
   }
 
-  private static boolean isForbiddenForAnonymousClass(NewClassTree tree, ClassJavaType dst) {
+  private static boolean isForbiddenForAnonymousClass(NewClassTree tree, Type dst) {
     return tree.classBody() != null && (INTERFACES.stream().anyMatch(dst::is) || dst.is(GLOBAL_METHOD_SECURITY_CONFIGURATION));
   }
 
