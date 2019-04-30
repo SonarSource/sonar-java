@@ -1,9 +1,19 @@
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
-class Foo {
-  
-  void foo() {
+abstract class Foo {
+
+  int b, i, index, node;
+  Integer plop, something;
+  int[] foo, _stack;
+  Foo obj;
+
+  @interface MyAnnotation {
+    String value();
+  }
+
+  Foo foo() {
     int a = 0;                   // Compliant
     a = 0;                       // Compliant
     System.out.println(a);       // Compliant
@@ -24,55 +34,65 @@ class Foo {
     if ((plop = something) != null) { // Compliant
     }
 
-    if ((a = b = 0) != null) { // Noncompliant
+    if ((a = b = 0) != 1) { // Noncompliant
     }
 
     while ((foo = bar()) == null) { // Compliant
     }
 
-    while ((foo = bar()) <= 0) { // Compliant
+    while ((foo = bar())[0] <= 0) { // Compliant
     }
 
-    while ((foo = bar()) < 0) { // Compliant
+    while ((foo = bar())[0] < 0) { // Compliant
     }
 
-    while ((foo = bar()) >= 0) { // Compliant
+    while ((foo = bar())[0] >= 0) { // Compliant
     }
 
-    while ((foo = bar()) > 0) { // Compliant
+    while ((foo = bar())[0] > 0) { // Compliant
     }
 
-    while ((a = foo()).foo != 0) { // Compliant
+    while ((obj = foo()).index != 0) { // Compliant
     }
 
     while ((a += 0) > 42) { // Compliant
     }
 
-    a + 0;
-    (a = foo()) + 5; // Noncompliant
+    i = a + 0;
+    i = (a = bar()[0]) + 5; // Noncompliant
 
     while (null != (foo = bar())) { // Compliant
     }
 
     if ((a += b) > 0) { // Noncompliant
     }
+
+    return null;
   }
 
   boolean field;
+  EventBus eventBus;
 
-  @MyAnnotation(name="toto", type=Type.SubType) // Compliant
-  void bar(){
-    eventBus.register((NextPlayer) event -> field = !field);
-    eventBus.register((NextPlayer) event -> {field = !field;});
-    eventBus.register((NextPlayer) event -> {if(field = !field) return false;}); // Noncompliant
+  @MyAnnotation(value = "toto") // Compliant
+  int[] bar() {
+    eventBus.register(event -> field = !field);
+    eventBus.register(event -> { field = !field; });
+    eventBus.register(event -> { if(field = !field) return; }); // Noncompliant
+    return null;
+  }
+
+  interface EventBus {
+    void register(Consumer<Object> test);
   }
 
   void sonarJava1516() {
     Set<Integer> ids;
     while ((ids = getNextIds()).size() > 0) { // Compliant
-      log.info("Result: {}", ids);
+      defaultValue();
     }
   }
+
+  abstract Set<Integer> getNextIds();
 
   void sonarJava1516_bis(List<Integer> ids) {
     Integer a;
@@ -81,21 +101,28 @@ class Foo {
     }
   }
 
+  int j, c, len;
+  byte[] bresult;
+  char[] lineBuffer;
+
   void sonarJava2193() {
     int i = j = 0; // Compliant
     int l = i;
     int k = (l += 1); // Compliant
     double a = b = c = defaultValue();
-    Object[] result;
+    byte[] result;
     result = (bresult = new byte[len]);
     char[] buf = lineBuffer = new char[128];
   }
 
+  abstract int defaultValue();
+
   class SonarJava2821 {
-    private int field = 0;
+    private Integer field = 0;
+
     void fun(List<Integer> list) {
       list.forEach(e -> field += e); // Compliant : ignore assignment expression in lambda
-      list.forEach(e -> field.intValue() &= e); // Compliant : ignore assignment expression in lambda
+      list.forEach(e -> SonarJava2821.this.field &= e); // Compliant : ignore assignment expression in lambda
       list.forEach(e -> field = field + e); // Compliant : ignore assignment expression in lambda
     }
   }
