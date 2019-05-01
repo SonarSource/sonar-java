@@ -41,6 +41,7 @@ class EMethod extends ETree implements MethodTree {
   SyntaxToken throwsToken;
   EList<TypeTree> throwsClauses = new EList<>();
   BlockTree block;
+  SyntaxToken semicolonToken;
 
   @Override
   public ModifiersTree modifiers() {
@@ -97,7 +98,7 @@ class EMethod extends ETree implements MethodTree {
   @Nullable
   @Override
   public SyntaxToken semicolonToken() {
-    throw new UnexpectedAccessException();
+    return semicolonToken;
   }
 
   @Nullable
@@ -186,7 +187,8 @@ class EMethod extends ETree implements MethodTree {
         closeParenToken(),
         throwsToken(),
         throwsClauses(),
-        block()
+        block(),
+        semicolonToken()
       )
     );
   }

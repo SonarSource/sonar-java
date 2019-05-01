@@ -17,6 +17,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 
+/**
+ * TODO doesn't extend {@link EStatement} because unlike others does not implement {@link EStatement#lastToken()}
+ */
 @MethodsAreNonnullByDefault
 class EVariable extends ETree implements VariableTree {
   Ctx ast;

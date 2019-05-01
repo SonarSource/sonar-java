@@ -34,6 +34,36 @@ public class ShapeTest {
   }
 
   @Test
+  public void empty_declarations() {
+    test("/* first */ ;");
+
+    test("package p; /* after package declaration */ ;");
+
+    test("import i; /* after import */ ;");
+
+    test("interface I { /* first */ ; }");
+
+    test("interface I { void m(); /* after method without body */ ; }");
+
+    test("class C { void m() { } /* after method with body */ ; }");
+
+    test("enum E { C ; /* after enum constants */ ; }");
+  }
+
+  @Test
+  public void enum_declaration() {
+    test("enum E { C }");
+    test("enum E { C , }");
+    test("enum E { C , ; }");
+  }
+
+  @Test
+  public void weird() {
+    // TODO seen in ReplaceLambdaByMethodRefCheck
+    test("interface I { void m() { something(); /* comment */ something(); } }");
+  }
+
+  @Test
   public void err() {
     test("class C { interface Foo { public m(); // comment\n } interface Bar { } }");
   }
@@ -42,11 +72,6 @@ public class ShapeTest {
   public void shift_vs_greater_token() {
     test("class C { Map<Object, List<Object>> f; }");
     test("class C { Map<Object, List<Object> > f; }");
-  }
-
-  @Test
-  public void empty_declaration() {
-    test(";");
   }
 
   /**
@@ -65,11 +90,6 @@ public class ShapeTest {
   @Test
   public void extra_dimensions() {
     test("interface I { int m(int p[])[]; int v[] = null; }");
-  }
-
-  @Test
-  public void enum_declaration() {
-    test("enum E implements I { }");
   }
 
   @Test

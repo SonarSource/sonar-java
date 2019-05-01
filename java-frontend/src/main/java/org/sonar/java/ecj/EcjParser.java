@@ -41,6 +41,7 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -224,7 +225,7 @@ public final class EcjParser {
 
     EcjParser converter = new EcjParser();
     converter.tokenManager = new TokenManager(tokens, source, new DefaultCodeFormatterOptions(new HashMap<>()));
-    Tree tree = converter.convert(astNode);
+    Tree tree = converter.convertCompilationUnit(astNode);
     setParents(tree);
 
     tree.accept(new Cleanup());
@@ -245,9 +246,6 @@ public final class EcjParser {
     }
     if (trivias.size() != comments.size()) {
       // TODO
-      // ClassCouplingCheck - semicolon in enum
-      // CommentedOutCodeLineCheck - semicolon in native method
-      // EmptyClassCheck - empty declaration
       // ModifiersOrderCheck - @
       // ReplaceLambdaByMethodRefCheck - comments inside non-default method in interface
       // RightCurlyBraceStartLineCheck - @
@@ -299,197 +297,208 @@ public final class EcjParser {
     }
   }
 
-  private Tree convert(@Nullable ASTNode node) {
-    if (node == null) {
-      return null;
+  private ECompilationUnit convertCompilationUnit(CompilationUnit e) {
+    ECompilationUnit t = new ECompilationUnit();
+    this.compilationUnit = e;
+    this.ast = new Ctx(e.getAST());
+
+    t.eofToken = firstTokenAfter(e, TerminalTokens.TokenNameEOF);
+
+    // FIXME completely empty file
+    processEmptyDeclarations(0, t.imports);
+
+    if (e.getPackage() != null) {
+
+      if (!e.getPackage().annotations().isEmpty()) {
+        throw new NotImplementedException();
+      }
+
+      t.packageDeclaration = new EPackageDeclaration();
+      t.packageDeclaration.packageKeyword = firstTokenBefore(e.getPackage().getName(), TerminalTokens.TokenNamepackage);
+      t.packageDeclaration.name = convertExpression(e.getPackage().getName());
+      t.packageDeclaration.semicolonToken = lastTokenIn(e.getPackage(), TerminalTokens.TokenNameSEMICOLON);
+
+      int lastToken = tokenManager.lastIndexIn(e.getPackage(), TerminalTokens.TokenNameSEMICOLON);
+      processEmptyDeclarations(lastToken, t.imports);
     }
-    switch (node.getNodeType()) {
-      case ASTNode.COMPILATION_UNIT: {
-        CompilationUnit e = (CompilationUnit) node;
-        ECompilationUnit t = new ECompilationUnit();
-        this.compilationUnit = e;
-        this.ast = new Ctx(e.getAST());
 
-        t.eofToken = firstTokenAfter(e, TerminalTokens.TokenNameEOF);
+    for (Object o : e.imports()) {
+      ImportDeclaration i = (ImportDeclaration) o;
+      EImportDeclaration d = new EImportDeclaration();
+      d.importKeyword = firstTokenIn(i, TerminalTokens.TokenNameimport);
+      d.isStatic = i.isStatic();
+      d.qualifiedIdentifier = convertExpression(i.getName());
+      if (i.isOnDemand()) {
+        EMemberSelect onDemand = new EMemberSelect();
+        onDemand.lhs = d.qualifiedIdentifier;
+        onDemand.rhs = new EIdentifier();
+        onDemand.rhs.identifierToken = lastTokenIn(i, TerminalTokens.TokenNameMULTIPLY);
+        d.qualifiedIdentifier = onDemand;
+      }
+      d.semicolonToken = lastTokenIn(i, TerminalTokens.TokenNameSEMICOLON);
+      t.imports.add(d);
 
-        if (e.getPackage() != null) {
+      int lastToken = tokenManager.lastIndexIn(i, TerminalTokens.TokenNameSEMICOLON);
+      processEmptyDeclarations(lastToken, t.imports);
+    }
 
-          if (!e.getPackage().annotations().isEmpty()) {
-            throw new NotImplementedException();
-          }
-
-          t.packageDeclaration = new EPackageDeclaration();
-          t.packageDeclaration.packageKeyword = firstTokenBefore(e.getPackage().getName(), TerminalTokens.TokenNamepackage);
-          t.packageDeclaration.name = convertExpression(e.getPackage().getName());
-          t.packageDeclaration.semicolonToken = lastTokenIn(e.getPackage(), TerminalTokens.TokenNameSEMICOLON);
-        }
-
-        for (Object o : e.imports()) {
-          ImportDeclaration i = (ImportDeclaration) o;
-          EImportDeclaration d = new EImportDeclaration();
-          d.importKeyword = firstTokenIn(i, TerminalTokens.TokenNameimport);
-          d.isStatic = i.isStatic();
-          d.qualifiedIdentifier = convertExpression(i.getName());
-          if (i.isOnDemand()) {
-            EMemberSelect onDemand = new EMemberSelect();
-            onDemand.lhs = d.qualifiedIdentifier;
-            onDemand.rhs = new EIdentifier();
-            onDemand.rhs.identifierToken = lastTokenIn(i, TerminalTokens.TokenNameMULTIPLY);
-            d.qualifiedIdentifier = onDemand;
-          }
-          d.semicolonToken = lastTokenIn(i, TerminalTokens.TokenNameSEMICOLON);
-          t.imports.add(d);
-        }
-
-        // TODO must be in unit named "module-info.java"
+    // TODO must be in unit named "module-info.java"
 //        convert(e.getModule());
 
-        for (Object type : e.types()) {
-          t.types.add(convert((AbstractTypeDeclaration) type));
-        }
-        return t;
+    for (Object type : e.types()) {
+      processBodyDeclaration((AbstractTypeDeclaration) type, t.types());
+    }
+    return t;
+  }
+
+  private EClass convertTypeDeclaration(AbstractTypeDeclaration e) {
+    EClass t = new EClass();
+    t.ast = ast;
+    t.binding = e.resolveBinding();
+    ast.declaration(t.binding, t);
+
+    convertModifiers(e.modifiers(), t.modifiers);
+
+    if (e.getNodeType() == ASTNode.ENUM_DECLARATION) {
+      t.kind = Tree.Kind.ENUM;
+
+      for (Object o : ((EnumDeclaration) e).superInterfaceTypes()) {
+        t.superInterfaces.elements.add(convertType(
+          (Type) o
+        ));
       }
-      case ASTNode.NORMAL_ANNOTATION:
-      case ASTNode.MARKER_ANNOTATION:
-      case ASTNode.SINGLE_MEMBER_ANNOTATION:
-        return convertExpression((Expression) node);
-      case ASTNode.MODIFIER: {
-        Modifier e = (Modifier) node;
-        switch (e.getKeyword().toString()) {
-          case "public":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamepublic));
-          case "protected":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNameprotected));
-          case "private":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNameprivate));
-          case "static":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamestatic));
-          case "abstract":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNameabstract));
-          case "final":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamefinal));
-          case "native":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamenative));
-          case "synchronized":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamesynchronized));
-          case "transient":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNametransient));
-          case "volatile":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamevolatile));
-          case "strictfp":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamestrictfp));
-          case "default":
-            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamedefault));
-          default:
-            throw new IllegalStateException(e.getKeyword().toString());
-        }
+    } else if (e.getNodeType() == ASTNode.ANNOTATION_TYPE_DECLARATION) {
+      t.kind = Tree.Kind.ANNOTATION_TYPE;
+    } else {
+      t.kind = ((TypeDeclaration) e).isInterface() ? Tree.Kind.INTERFACE : Tree.Kind.CLASS;
+
+      for (Object o : ((TypeDeclaration) e).typeParameters()) {
+        t.typeParameters.elements.add(convertTypeParameter((TypeParameter) o));
       }
+      if (!t.typeParameters.isEmpty()) {
+        t.typeParameters.openBracketToken = firstTokenAfter(e.getName(), TerminalTokens.TokenNameLESS);
+        t.typeParameters.closeBracketToken = firstTokenAfter((ASTNode) ((TypeDeclaration) e).typeParameters().get(((TypeDeclaration) e).typeParameters().size() - 1), TerminalTokens.TokenNameGREATER);
+      }
+
+      t.superClass = convertType(
+        ((TypeDeclaration) e).getSuperclassType()
+      );
+
+      for (Object o : ((TypeDeclaration) e).superInterfaceTypes()) {
+        t.superInterfaces.elements.add(convertType(
+          (Type) o
+        ));
+      }
+    }
+
+    switch (t.kind) {
+      case ENUM:
+        t.declarationKeyword = firstTokenBefore(e.getName(), TerminalTokens.TokenNameenum);
+        break;
+      case CLASS:
+        t.declarationKeyword = firstTokenBefore(e.getName(), TerminalTokens.TokenNameclass);
+        break;
+      case INTERFACE:
+      case ANNOTATION_TYPE:
+        t.declarationKeyword = firstTokenBefore(e.getName(), TerminalTokens.TokenNameinterface);
+        break;
+    }
+
+    t.simpleName = convertSimpleName(e.getName());
+
+    int openBraceToken = tokenManager.firstIndexAfter(e.getName(), TerminalTokens.TokenNameLBRACE);
+    processEmptyDeclarations(openBraceToken, t.members);
+    t.openBraceToken = createSyntaxToken(openBraceToken);
+
+    if (e.getNodeType() == ASTNode.ENUM_DECLARATION) {
+      for (Object o : ((EnumDeclaration) e).enumConstants()) {
+        t.members.add(
+          processEnumConstantDeclaration((EnumConstantDeclaration) o)
+        );
+      }
+      // TODO empty declarations after enum constants
+    }
+
+    for (Object o : e.bodyDeclarations()) {
+      processBodyDeclaration((BodyDeclaration) o, t.members);
+    }
+
+    t.closeBraceToken = lastTokenIn(e, TerminalTokens.TokenNameRBRACE);
+    return t;
+  }
+
+  private EEnumConstant processEnumConstantDeclaration(EnumConstantDeclaration e) {
+    EEnumConstant t = new EEnumConstant();
+    convertModifiers(e.modifiers(), t.modifiers);
+    t.simpleName = convertSimpleName(e.getName());
+    ((EIdentifier) t.simpleName).binding = e.resolveConstructorBinding(); // see CallToDeprecatedMethodCheck
+    t.initializer = new EClassInstanceCreation();
+    t.initializer.identifier = t.simpleName;
+
+    for (Object o : e.arguments()) {
+      t.initializer.arguments.elements.add(convertExpression((Expression) o));
+    }
+
+    if (e.getAnonymousClassDeclaration() != null) {
+      t.initializer.classBody = new EClass();
+      t.initializer.classBody.ast = ast;
+      t.initializer.classBody.binding = e.getAnonymousClassDeclaration().resolveBinding();
+
+      t.initializer.classBody.kind = Tree.Kind.CLASS;
+      t.initializer.classBody.openBraceToken = firstTokenIn(e.getAnonymousClassDeclaration(), TerminalTokens.TokenNameLBRACE);
+      for (Object o : e.getAnonymousClassDeclaration().bodyDeclarations()) {
+        processBodyDeclaration((BodyDeclaration) o, t.initializer.classBody.members);
+      }
+      t.initializer.classBody.closeBraceToken = lastTokenIn(e.getAnonymousClassDeclaration(), TerminalTokens.TokenNameRBRACE);
+    }
+    return t;
+  }
+
+  private void processBodyDeclaration(ASTNode node, List<Tree> members) {
+    final int lastToken;
+
+    switch (node.getNodeType()) {
+      default:
+        throw new IllegalStateException();
       case ASTNode.ANNOTATION_TYPE_DECLARATION:
       case ASTNode.ENUM_DECLARATION:
       case ASTNode.TYPE_DECLARATION: {
-        AbstractTypeDeclaration e = (AbstractTypeDeclaration) node;
-        EClass t = new EClass();
+        members.add(convertTypeDeclaration((AbstractTypeDeclaration) node));
+        lastToken = tokenManager.lastIndexIn(node, TerminalTokens.TokenNameRBRACE);
+        break;
+      }
+      case ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION: {
+        AnnotationTypeMemberDeclaration e = (AnnotationTypeMemberDeclaration) node;
+        EMethod t = new EMethod();
         t.ast = ast;
         t.binding = e.resolveBinding();
-        ast.declaration(t.binding, t);
-
-        for (Object o : e.modifiers()) {
-          t.modifiers.elements.add(
-            (ModifierTree) convert((ASTNode) o)
-          );
-        }
-
-        if (e.getNodeType() == ASTNode.ENUM_DECLARATION) {
-          t.kind = Tree.Kind.ENUM;
-
-          for (Object o : ((EnumDeclaration) e).superInterfaceTypes()) {
-            t.superInterfaces.elements.add(convertType(
-              (Type) o
-            ));
-          }
-        } else if (e.getNodeType() == ASTNode.ANNOTATION_TYPE_DECLARATION) {
-          t.kind = Tree.Kind.ANNOTATION_TYPE;
-        } else {
-          t.kind = ((TypeDeclaration) e).isInterface() ? Tree.Kind.INTERFACE : Tree.Kind.CLASS;
-
-          for (Object o : ((TypeDeclaration) e).typeParameters()) {
-            t.typeParameters.elements.add((TypeParameterTree) convert(
-              (TypeParameter) o
-            ));
-          }
-          if (!t.typeParameters.isEmpty()) {
-            t.typeParameters.openBracketToken = firstTokenAfter(e.getName(), TerminalTokens.TokenNameLESS);
-            t.typeParameters.closeBracketToken = firstTokenAfter((ASTNode) ((TypeDeclaration) e).typeParameters().get(((TypeDeclaration) e).typeParameters().size() - 1), TerminalTokens.TokenNameGREATER);
-          }
-
-          t.superClass = convertType(
-            ((TypeDeclaration) e).getSuperclassType()
-          );
-
-          for (Object o : ((TypeDeclaration) e).superInterfaceTypes()) {
-            t.superInterfaces.elements.add(convertType(
-              (Type) o
-            ));
-          }
-        }
-
-        switch (t.kind) {
-          case ENUM:
-            t.declarationKeyword = firstTokenBefore(e.getName(), TerminalTokens.TokenNameenum);
-            break;
-          case CLASS:
-            t.declarationKeyword = firstTokenBefore(e.getName(), TerminalTokens.TokenNameclass);
-            break;
-          case INTERFACE:
-          case ANNOTATION_TYPE:
-            t.declarationKeyword = firstTokenBefore(e.getName(), TerminalTokens.TokenNameinterface);
-            break;
-        }
-
+        convertModifiers(e.modifiers(), t.modifiers);
+        t.returnType = convertType(e.getType());
         t.simpleName = convertSimpleName(e.getName());
-        t.openBraceToken = firstTokenAfter(e.getName(), TerminalTokens.TokenNameLBRACE);
-        if (e.getNodeType() == ASTNode.ENUM_DECLARATION) {
-          for (Object o : ((EnumDeclaration) e).enumConstants()) {
-            processBodyDeclaration((BodyDeclaration) o, t.members);
-          }
-        }
-        for (Object o : e.bodyDeclarations()) {
-          processBodyDeclaration((BodyDeclaration) o, t.members);
-        }
-        t.closeBraceToken = lastTokenIn(e, TerminalTokens.TokenNameRBRACE);
-
-        return t;
+        t.openParenToken = firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN);
+        t.closeParenToken = firstTokenAfter(e.getName(), TerminalTokens.TokenNameRPAREN);
+        // FIXME e.getDefault()
+        t.semicolonToken = lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON);
+        lastToken = tokenManager.lastIndexIn(e, TerminalTokens.TokenNameSEMICOLON);
+        members.add(t);
+        break;
       }
-      case ASTNode.ENUM_CONSTANT_DECLARATION: {
-        EnumConstantDeclaration e = (EnumConstantDeclaration) node;
-        EEnumConstant t = new EEnumConstant();
-        for (Object o : e.modifiers()) {
-          t.modifiers.elements.add(
-            (ModifierTree) convert((ASTNode) o)
-          );
+      case ASTNode.INITIALIZER: {
+        Initializer e = (Initializer) node;
+        EBlock t = convertBlock(e.getBody());
+        t.kind = Tree.Kind.INITIALIZER;
+        if (Modifier.isStatic(e.getModifiers())) {
+          EStaticInitializer t2 = new EStaticInitializer();
+          t2.staticKeyword = firstTokenIn(e, TerminalTokens.TokenNamestatic);
+          t2.body.addAll(t.body);
+          t2.openBraceToken = t.openBraceToken();
+          t2.closeBraceToken = t.closeBraceToken();
+          members.add(t2);
+        } else {
+          members.add(t);
         }
-        t.simpleName = convertSimpleName(e.getName());
-        ((EIdentifier) t.simpleName).binding = e.resolveConstructorBinding(); // see CallToDeprecatedMethodCheck
-        t.initializer = new EClassInstanceCreation();
-        t.initializer.identifier = t.simpleName;
-
-        for (Object o : e.arguments()) {
-          t.initializer.arguments.elements.add(convertExpression((Expression) o));
-        }
-
-        if (e.getAnonymousClassDeclaration() != null) {
-          t.initializer.classBody = new EClass();
-          t.initializer.classBody.ast = ast;
-          t.initializer.classBody.binding = e.getAnonymousClassDeclaration().resolveBinding();
-
-          t.initializer.classBody.kind = Tree.Kind.CLASS;
-          t.initializer.classBody.openBraceToken = firstTokenIn(e.getAnonymousClassDeclaration(), TerminalTokens.TokenNameLBRACE);
-          for (Object o : e.getAnonymousClassDeclaration().bodyDeclarations()) {
-            processBodyDeclaration((BodyDeclaration) o, t.initializer.classBody.members);
-          }
-          t.initializer.classBody.closeBraceToken = lastTokenIn(e.getAnonymousClassDeclaration(), TerminalTokens.TokenNameRBRACE);
-        }
-        return t;
+        lastToken = tokenManager.lastIndexIn(node, TerminalTokens.TokenNameRBRACE);
+        break;
       }
       case ASTNode.METHOD_DECLARATION: {
         MethodDeclaration e = (MethodDeclaration) node;
@@ -498,17 +507,11 @@ public final class EcjParser {
         t.binding = e.resolveBinding();
         ast.declaration(t.binding, t);
 
-        for (Object o : e.modifiers()) {
-          t.modifiers.elements.add(
-            (ModifierTree) convert((ASTNode) o)
-          );
-        }
+        convertModifiers(e.modifiers(), t.modifiers);
 
         if (!e.typeParameters().isEmpty()) {
           for (Object o : e.typeParameters()) {
-            t.typeParameters.elements.add((TypeParameterTree) convert(
-              (TypeParameter) o
-            ));
+            t.typeParameters.elements.add(convertTypeParameter((TypeParameter) o));
           }
           t.typeParameters.openBracketToken = firstTokenBefore((TypeParameter) e.typeParameters().get(0), TerminalTokens.TokenNameLESS);
           t.typeParameters.closeBracketToken = firstTokenAfter((TypeParameter) e.typeParameters().get(e.typeParameters().size() - 1), TerminalTokens.TokenNameGREATER);
@@ -535,92 +538,73 @@ public final class EcjParser {
             t.throwsClauses.elements.add(convertType((Type) o));
           }
         }
-        t.block = convertBlock(e.getBody());
-        return t;
-      }
-      case ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION: {
-        AnnotationTypeMemberDeclaration e = (AnnotationTypeMemberDeclaration) node;
-        EMethod t = new EMethod();
-        t.ast = ast;
-        t.binding = e.resolveBinding();
-        for (Object o : e.modifiers()) {
-          t.modifiers.elements.add(
-            (ModifierTree) convert((ASTNode) o)
-          );
-        }
-        t.returnType = convertType(e.getType());
-        t.simpleName = convertSimpleName(e.getName());
-        t.closeParenToken = firstTokenAfter(e.getName(), TerminalTokens.TokenNameRPAREN);
-        return t;
-      }
-      case ASTNode.INITIALIZER: {
-        Initializer e = (Initializer) node;
-        EBlock t = convertBlock(e.getBody());
-        t.kind = Tree.Kind.INITIALIZER;
-        if (Modifier.isStatic(e.getModifiers())) {
-          EStaticInitializer t2 = new EStaticInitializer();
-          t2.staticKeyword = firstTokenIn(e, TerminalTokens.TokenNamestatic);
-          t2.body.addAll(t.body);
-          t2.openBraceToken = t.openBraceToken();
-          t2.closeBraceToken = t.closeBraceToken();
-          return t2;
-        }
-        return t;
-      }
-      case ASTNode.TYPE_PARAMETER: {
-        TypeParameter e = (TypeParameter) node;
-        ETypeParameter t = new ETypeParameter();
-        t.identifier = convertSimpleName(e.getName());
-        for (Object o : e.typeBounds()) {
-          t.bounds.elements.add(
-            convertType((Type) o)
-          );
-        }
-        return t;
-      }
 
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
+        if (e.getBody() != null) {
+          t.block = convertBlock(e.getBody());
+          lastToken = tokenManager.lastIndexIn(e, TerminalTokens.TokenNameRBRACE);
+        } else {
+          t.semicolonToken = lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON);
+          lastToken = tokenManager.lastIndexIn(e, TerminalTokens.TokenNameSEMICOLON);
+        }
+        members.add(t);
+        break;
+      }
+      case ASTNode.FIELD_DECLARATION: {
+        FieldDeclaration fieldDeclaration = (FieldDeclaration) node;
+        // modifiers are shared
+        EModifiers modifiers = new EModifiers();
+
+        convertModifiers(fieldDeclaration.modifiers(), modifiers);
+
+        for (int i = 0; i < fieldDeclaration.fragments().size(); i++) {
+          VariableDeclarationFragment fragment = (VariableDeclarationFragment) fieldDeclaration.fragments().get(i);
+          EVariable t = new EVariable();
+          t.ast = ast;
+          t.binding = fragment.resolveBinding();
+          ast.declaration(t.binding, t);
+
+          t.modifiers = modifiers;
+          // TODO type is also shared
+          t.type = applyExtraDimensions(
+            convertType(fieldDeclaration.getType()),
+            fragment.extraDimensions()
+          );
+
+          t.simpleName = convertSimpleName(fragment.getName());
+          if (fragment.getInitializer() != null) {
+            t.equalToken = firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL);
+            t.initializer = convertExpression(fragment.getInitializer());
+          }
+
+          t.endToken = firstTokenAfter(fragment, i + 1 < fieldDeclaration.fragments().size() ? TerminalTokens.TokenNameCOMMA : TerminalTokens.TokenNameSEMICOLON);
+
+          members.add(t);
+        }
+
+        lastToken = tokenManager.lastIndexIn(node, TerminalTokens.TokenNameSEMICOLON);
+        break;
+      }
     }
+
+    processEmptyDeclarations(lastToken, members);
   }
 
-  private void processBodyDeclaration(BodyDeclaration e, List<Tree> members) {
-    if (e.getNodeType() == ASTNode.FIELD_DECLARATION) {
-      FieldDeclaration fieldDeclaration = (FieldDeclaration) e;
-      // modifiers are shared
-      EModifiers modifiers = new EModifiers();
-      for (Object o : fieldDeclaration.modifiers()) {
-        modifiers.elements.add(
-          (ModifierTree) convert((ASTNode) o)
-        );
-      }
+  private void processEmptyDeclarations(int i, List members) {
+    while (true) {
+      do {
+        i++;
+      } while (
+        tokenManager.get(i).tokenType == TerminalTokens.TokenNameWHITESPACE
+          || tokenManager.get(i).tokenType == TerminalTokens.TokenNameCOMMENT_LINE
+          || tokenManager.get(i).tokenType == TerminalTokens.TokenNameCOMMENT_BLOCK);
 
-      for (int i = 0; i < fieldDeclaration.fragments().size(); i++) {
-        VariableDeclarationFragment fragment = (VariableDeclarationFragment) fieldDeclaration.fragments().get(i);
-        EVariable t = new EVariable();
-        t.ast = ast;
-        t.binding = fragment.resolveBinding();
-        ast.declaration(t.binding, t);
-
-        t.modifiers = modifiers;
-        // TODO type is also shared
-        t.type = applyExtraDimensions(
-          convertType(fieldDeclaration.getType()),
-          fragment.extraDimensions()
-        );
-
-        t.simpleName = convertSimpleName(fragment.getName());
-        if (fragment.getInitializer() != null) {
-          t.equalToken = firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL);
-          t.initializer = convertExpression(fragment.getInitializer());
-        }
-
-        t.endToken = firstTokenAfter(fragment, i + 1 < fieldDeclaration.fragments().size() ? TerminalTokens.TokenNameCOMMA : TerminalTokens.TokenNameSEMICOLON);
-
+      if (tokenManager.get(i).tokenType == TerminalTokens.TokenNameSEMICOLON) {
+        EEmptyStatement t = new EEmptyStatement();
+        t.semicolonToken = createSyntaxToken(i);
         members.add(t);
+      } else {
+        break;
       }
-    } else {
-      members.add(convert(e));
     }
   }
 
@@ -636,17 +620,72 @@ public final class EcjParser {
     return type;
   }
 
+  private void convertModifiers(List source, EModifiers target) {
+    for (Object o : source) {
+      target.elements.add(convertModifier((IExtendedModifier) o));
+    }
+  }
+
+  private ModifierTree convertModifier(IExtendedModifier node) {
+    switch (((ASTNode) node).getNodeType()) {
+      default:
+        throw new IllegalStateException();
+      case ASTNode.NORMAL_ANNOTATION:
+      case ASTNode.MARKER_ANNOTATION:
+      case ASTNode.SINGLE_MEMBER_ANNOTATION:
+        return (AnnotationTree) convertExpression((Expression) node);
+      case ASTNode.MODIFIER: {
+        Modifier e = (Modifier) node;
+        switch (e.getKeyword().toString()) {
+          default:
+            throw new IllegalStateException(e.getKeyword().toString());
+          case "public":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamepublic));
+          case "protected":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNameprotected));
+          case "private":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNameprivate));
+          case "static":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamestatic));
+          case "abstract":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNameabstract));
+          case "final":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamefinal));
+          case "native":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamenative));
+          case "synchronized":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamesynchronized));
+          case "transient":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNametransient));
+          case "volatile":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamevolatile));
+          case "strictfp":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamestrictfp));
+          case "default":
+            return new EModifierKeyword(firstTokenIn(e, TerminalTokens.TokenNamedefault));
+        }
+      }
+    }
+  }
+
+  private ETypeParameter convertTypeParameter(TypeParameter e) {
+    ETypeParameter t = new ETypeParameter();
+    t.identifier = convertSimpleName(e.getName());
+    for (Object o : e.typeBounds()) {
+      t.bounds.elements.add(
+        convertType((Type) o)
+      );
+    }
+    return t;
+  }
+
   private EVariable createVariable(SingleVariableDeclaration e) {
     EVariable t = new EVariable();
     t.ast = ast;
     t.binding = e.resolveBinding();
     ast.declaration(t.binding, t);
 
-    for (Object o : e.modifiers()) {
-      t.modifiers.elements.add(
-        (ModifierTree) convert((ASTNode) o)
-      );
-    }
+    convertModifiers(e.modifiers(), t.modifiers);
 
     // TODO are extraDimensions and varargs mutually exclusive?
     t.type = applyExtraDimensions(
@@ -677,11 +716,8 @@ public final class EcjParser {
     t.binding = fragment.resolveBinding();
     ast.declaration(t.binding, t);
 
-    for (Object o : declaration.modifiers()) {
-      t.modifiers.elements.add(
-        (ModifierTree) convert((ASTNode) o)
-      );
-    }
+    convertModifiers(declaration.modifiers(), t.modifiers);
+
     t.type = applyExtraDimensions(
       convertType(declaration.getType()),
       fragment.extraDimensions()
@@ -700,6 +736,8 @@ public final class EcjParser {
       return null;
     }
     switch (node.getNodeType()) {
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.PRIMITIVE_TYPE: {
         PrimitiveType e = (PrimitiveType) node;
         EPrimitiveType t = new EPrimitiveType();
@@ -749,7 +787,7 @@ public final class EcjParser {
         List<AnnotationTree> annotations = t instanceof EIdentifier ? ((EIdentifier) t).annotations : ((EMemberSelect) t).annotations;
         for (Object o : e.annotations()) {
           annotations.add(
-            (AnnotationTree) convert((Annotation) o)
+            (AnnotationTree) convertExpression((Expression) o)
           );
         }
         return t;
@@ -831,8 +869,6 @@ public final class EcjParser {
         t.identifierToken = firstTokenAfter((Type) e.types().get(0), TerminalTokens.TokenNameAND);
         return t;
       }
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
   }
 
@@ -841,6 +877,8 @@ public final class EcjParser {
       return null;
     }
     switch (node.getNodeType()) {
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.BLOCK:
         return convertBlock((Block) node);
       case ASTNode.EMPTY_STATEMENT: {
@@ -1095,9 +1133,7 @@ public final class EcjParser {
       }
       case ASTNode.TYPE_DECLARATION_STATEMENT: {
         TypeDeclarationStatement e = (TypeDeclarationStatement) node;
-        return (EClass) convert(
-          e.getDeclaration()
-        );
+        return convertTypeDeclaration(e.getDeclaration());
       }
       case ASTNode.CONSTRUCTOR_INVOCATION: {
         ConstructorInvocation e = (ConstructorInvocation) node;
@@ -1137,9 +1173,6 @@ public final class EcjParser {
         i.binding = mi.binding; // see LDAPDeserializationCheck
         return t;
       }
-
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
   }
 
@@ -1228,7 +1261,7 @@ public final class EcjParser {
     return t;
   }
 
-  private ExpressionTree convertExpression(@Nullable Expression node) {
+  private EExpression convertExpression(@Nullable Expression node) {
     if (node == null) {
       return null;
     }
@@ -1243,6 +1276,8 @@ public final class EcjParser {
       return null;
     }
     switch (node.getNodeType()) {
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.SIMPLE_NAME: {
         EIdentifier t = convertSimpleName((SimpleName) node);
         ast.usage(t.binding, t);
@@ -1691,9 +1726,6 @@ public final class EcjParser {
         }
         return t;
       }
-
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
   }
 
@@ -1702,14 +1734,14 @@ public final class EcjParser {
    */
   private EIdentifier getIdentifier(TypeTree t) {
     switch (t.kind()) {
+      default:
+        throw new IllegalStateException(t.kind().toString());
       case IDENTIFIER:
         return (EIdentifier) t;
       case MEMBER_SELECT:
         return ((EMemberSelect) t).rhs;
       case PARAMETERIZED_TYPE:
         return getIdentifier(((EParameterizedType) t).type);
-      default:
-        throw new IllegalStateException(t.kind().toString());
     }
   }
 
