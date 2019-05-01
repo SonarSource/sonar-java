@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S3077")
 public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor {
 
-  private static final String REF_MESSAGE = "Remove the \"volatile\" keyword from this field.";
+  private static final String REF_MESSAGE = "Remember that declaring a reference \"volatile\" does not guarantee safe publication of the members of the referenced object";
   private static final String ARRAY_MESSAGE = "Use an \"Atomic%sArray\" instead.";
 
   @Override
