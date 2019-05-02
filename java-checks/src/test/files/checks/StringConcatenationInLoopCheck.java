@@ -8,7 +8,7 @@ class A {
     String s = "";
     Inner inner = new Inner();
     int i = 0;
-    for (; i++; i < 10) {
+    for (; i < 10; i++) {
       s = i + " : " + s; // Noncompliant {{Use a StringBuilder instead.}}
       s += i;// Noncompliant {{Use a StringBuilder instead.}}
       inner.s1 = i + " : " + inner.s1; // Noncompliant {{Use a StringBuilder instead.}}
