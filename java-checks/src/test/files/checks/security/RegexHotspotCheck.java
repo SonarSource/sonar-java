@@ -21,7 +21,7 @@ class A {
     matcher.find(12); //compliant, excluded
 
     String htmlString = "some input";
-    !Pattern.matches(".*<script>.*", htmlString); // Noncompliant, even if the pattern is hard-coded
+    boolean a = !Pattern.matches(".*<script>.*", htmlString); // Noncompliant, even if the pattern is hard-coded
   }
 
   void methodRef() {

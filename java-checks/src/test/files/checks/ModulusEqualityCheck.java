@@ -5,17 +5,19 @@ import java.util.Queue;
 
 class A {
 
+  boolean b;
+
   void myMethod(int x, int y, Integer z) {
-     x % 2 == 1; // Noncompliant [[sc=8;ec=9]] {{The results of this modulus operation may not be positive.}}
-     x % 2 == -1; // Noncompliant {{The results of this modulus operation may not be negative.}}
-     2 % x == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
-     1 == x % 2; // Noncompliant {{The results of this modulus operation may not be positive.}}
-     z.intValue() % 2 == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
-     x % 2 == y;
-     x % 2 == 0;
-     x % 2 != 1;
+     b = x % 2 == 1; // Noncompliant [[sc=12;ec=13]] {{The results of this modulus operation may not be positive.}}
+     b = x % 2 == -1; // Noncompliant {{The results of this modulus operation may not be negative.}}
+     b = 2 % x == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
+     b = 1 == x % 2; // Noncompliant {{The results of this modulus operation may not be positive.}}
+     b = z.intValue() % 2 == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
+     b = x % 2 == y;
+     b = x % 2 == 0;
+     b = x % 2 != 1;
      int i = 5;
-     i % 2 == 1;
+     b = i % 2 == 1;
   }
 
   void myOtherMethod(Collection c, List l, String s, int[] a, Queue<String> q) {

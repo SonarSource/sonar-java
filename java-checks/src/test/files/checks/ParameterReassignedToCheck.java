@@ -33,8 +33,6 @@ class A {
     ++a; // compliant
     a--; // compliant
     --a; // compliant
-    !a;
-    ~a;
     int b = 0;
     b++;
     this.a++;

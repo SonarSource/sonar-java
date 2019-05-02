@@ -17,7 +17,7 @@ class A {
     for (int i = 1; i != 4; aMethod()) {}       // Noncompliant
     for (int i = 1; i != 4; i++)    { i = 5;    } // Noncompliant
     for (int i = 1; i != 4; i++)    { j = i+=1; } // Noncompliant
-    for (int i = 1; i != 4; i++)    { -(i++);   } // Noncompliant
+    for (int i = 1; i != 4; i++)    { k = -(i++); } // Noncompliant
     for (int i = 1; i != 4; i++)    { j = -i; }
     for (int i = 1; i != 4; i++)    { j = 5;  }
     for (int i = 1; i != 4; i++)    { x(j++); }

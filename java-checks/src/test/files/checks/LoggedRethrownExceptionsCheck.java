@@ -162,7 +162,7 @@ class A {
 
     } catch (SQLException e) { // Compliant
       throw new MySQLException(contextInfo, e);
-      foo;
+      foo++;
     }
 
     try {

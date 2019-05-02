@@ -121,7 +121,7 @@ public class TestClassGetClassEquals6 {
   public boolean equals(Object that) { // Compliant
     if(that.getClass().equals(Object.class)) {
     }
-    (Object) that;
+    return true;
   }
 }
 
@@ -130,7 +130,7 @@ public class TestClassGetClassEquals7 {
   public boolean equals(Object that) { // Compliant
     if(Object.class.equals(that.getClass())) {
     }
-    (Object) that;
+    return true;
   }
 }
 

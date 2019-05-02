@@ -5,6 +5,7 @@ import static java.util.Calendar.MONTH;
 class A {
 
   public final static int MINUTE = Calendar.MINUTE;
+  boolean b;
 
   int foo() {
     Date d = new Date();
@@ -59,17 +60,17 @@ class A {
 
     cal.set(Calendar.DAY_OF_WEEK_IN_MONTH, 11);
 
-    cal.get(Calendar.MONTH) == 11;
-    cal.get(Calendar.MONTH) == foo();
-    cal.get(Calendar.MONTH) == 12; // Noncompliant {{"12" is not a valid value for "MONTH".}}
-    cal.get(Calendar.DAY_OF_MONTH) != 11;
-    cal.get(Calendar.DAY_OF_MONTH) != foo();
-    cal.get(Calendar.DAY_OF_MONTH) != 32; // Noncompliant {{"32" is not a valid value for "DAY_OF_MONTH".}}
-    31 == d.getDate();
-    foo() == d.getDate();
-    32 == d.getDate(); // Noncompliant {{"32" is not a valid value for "getDate".}}
-    d1.getSeconds() == -1;// Noncompliant {{"-1" is not a valid value for "getSeconds".}}
-    calendar.get(Calendar.DST_OFFSET) == 0;
+    b = cal.get(Calendar.MONTH) == 11;
+    b = cal.get(Calendar.MONTH) == foo();
+    b = cal.get(Calendar.MONTH) == 12; // Noncompliant {{"12" is not a valid value for "MONTH".}}
+    b = cal.get(Calendar.DAY_OF_MONTH) != 11;
+    b = cal.get(Calendar.DAY_OF_MONTH) != foo();
+    b = cal.get(Calendar.DAY_OF_MONTH) != 32; // Noncompliant {{"32" is not a valid value for "DAY_OF_MONTH".}}
+    b = 31 == d.getDate();
+    b = foo() == d.getDate();
+    b = 32 == d.getDate(); // Noncompliant {{"32" is not a valid value for "getDate".}}
+    b = d1.getSeconds() == -1;// Noncompliant {{"-1" is not a valid value for "getSeconds".}}
+    b = calendar.get(Calendar.DST_OFFSET) == 0;
   }
 }
 

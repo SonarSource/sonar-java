@@ -57,7 +57,7 @@ public class App {
     authorizeRequests.antMatchers("/login").permitAll(); // false-negative, limitation
 
     // coverage
-    http
+    object o = http
       .authorizeRequests()
       .antMatchers().urlMappings;
 
