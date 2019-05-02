@@ -60,7 +60,7 @@ public class Bar4 {
 
 @Configuration
 @EnableAutoConfiguration(excludeName = {
-    "org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration"
+    "org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration",
     "org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration"
 })
 public class Bar5 {
