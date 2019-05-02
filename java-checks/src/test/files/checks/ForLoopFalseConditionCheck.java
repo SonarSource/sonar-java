@@ -19,7 +19,7 @@ class A {
     for (int i = 1; i <-x; ) {}
     for (         ; j < 5; ) {}
     for (    j = 9; j < 5; ) {} // Noncompliant
-    for (   x == 1; j < 5; ) {}
+    for (   x += 1; j < 5; ) {}
     for (int i    ; i < 5; ) {}
     for (int i = 1;      ; ) {}
     for (int i = 0; i < 0x10; ) {}

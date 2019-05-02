@@ -13,7 +13,7 @@ class A {
       StackTraceElement element = getElement();
       A.class.getSimpleName().equals(element.getClassName()); // Compliant
       Class valueClass;
-      (List.class.getName().equals(valueClass.getName())); // Noncompliant {{Use "isAssignableFrom" instead.}}
+      boolean b = (List.class.getName().equals(valueClass.getName())); // Noncompliant {{Use "isAssignableFrom" instead.}}
       A.class.getSimpleName().equals(foo("A")); // Compliant
     }
 

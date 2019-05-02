@@ -55,7 +55,7 @@ class Foo {
     }
 
     for (int i = 0; i < 42; i++) {
-      (int)i;                               // Compliant
+      System.out.println(i);                // Compliant
     }
 
     for (int i = 0; i < 10; i++) {

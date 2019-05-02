@@ -39,7 +39,7 @@ public class A {
   void compliant() {
     if (condition)
       action();
-    outerAction;
+    outerAction();
 
     if (condition) {
       firstActionInBlock();

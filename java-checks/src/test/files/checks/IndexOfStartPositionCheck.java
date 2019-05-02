@@ -41,6 +41,6 @@ class A {
     }
 
     // coverage
-    1 > 2;
+   boolean b = 1 > 2;
   }
 }

@@ -152,7 +152,7 @@ class A {
       System.out.println("foo");
     }
     if (true) {
-      1;
+      f();
     }
 
     if (true) f();
