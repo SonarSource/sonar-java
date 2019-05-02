@@ -16,7 +16,7 @@ class A {
     count1++; // Noncompliant {{Use an "AtomicInteger" for this field; its operations are atomic.}}
     ++this.count1; // Noncompliant {{Use an "AtomicInteger" for this field; its operations are atomic.}}
     (count2)++; // Noncompliant {{Use an "AtomicLong" for this field; its operations are atomic.}}
-    (++count2); // Noncompliant {{Use an "AtomicLong" for this field; its operations are atomic.}}
+    count1 = (++count2); // Noncompliant {{Use an "AtomicLong" for this field; its operations are atomic.}}
     count3++; // Noncompliant {{Use an "AtomicInteger" for this field; its operations are atomic.}}
     ++count3; // Noncompliant
     count4++; // Noncompliant {{Use an "AtomicLong" for this field; its operations are atomic.}}
@@ -33,7 +33,7 @@ class A {
     count1--; // Noncompliant {{Use an "AtomicInteger" for this field; its operations are atomic.}}
     --count1; // Noncompliant
     (count2)--; // Noncompliant {{Use an "AtomicLong" for this field; its operations are atomic.}}
-    (--count2); // Noncompliant
+    count1 = (--count2); // Noncompliant
     count3--; // Noncompliant
     --count3; // Noncompliant
     count4--; // Noncompliant
