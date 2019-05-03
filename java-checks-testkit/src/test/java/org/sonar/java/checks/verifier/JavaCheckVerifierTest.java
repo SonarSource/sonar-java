@@ -21,7 +21,6 @@ package org.sonar.java.checks.verifier;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Fail;
@@ -43,7 +43,6 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -412,8 +411,8 @@ public class JavaCheckVerifierTest {
 
     Multimap<Integer, String> issues = LinkedListMultimap.create();
     Multimap<Integer, AnalyzerMessage> preciseIssues = LinkedListMultimap.create();
-    List<String> issuesOnFile = Lists.newLinkedList();
-    List<String> issuesOnProject = Lists.newLinkedList();
+    List<String> issuesOnFile = new LinkedList<>();
+    List<String> issuesOnProject = new LinkedList<>();
 
     protected FakeVisitor withDefaultIssues() {
       AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, emptyInputFile(), new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 0);
@@ -489,12 +488,12 @@ public class JavaCheckVerifierTest {
     private static Tree mockTree(final AnalyzerMessage analyzerMessage) {
       AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
       if (textSpan.onLine()) {
-        return new InternalSyntaxToken(textSpan.startLine, 0, "mock", Lists.<SyntaxTrivia>newArrayList(), 0, 0, false);
+        return new InternalSyntaxToken(textSpan.startLine, 0, "mock", new ArrayList<>(), 0, 0, false);
       }
       return new ReturnStatementTreeImpl(
-        new InternalSyntaxToken(textSpan.startLine, textSpan.startCharacter - 1, "", Lists.<SyntaxTrivia>newArrayList(), 0, 0, false),
+        new InternalSyntaxToken(textSpan.startLine, textSpan.startCharacter - 1, "", new ArrayList<>(), 0, 0, false),
         null,
-        new InternalSyntaxToken(textSpan.endLine, textSpan.endCharacter - 1, "", Lists.<SyntaxTrivia>newArrayList(), 0, 0, false));
+        new InternalSyntaxToken(textSpan.endLine, textSpan.endCharacter - 1, "", new ArrayList<>(), 0, 0, false));
     }
   }
 }

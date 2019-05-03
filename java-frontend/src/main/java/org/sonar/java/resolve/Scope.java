@@ -22,7 +22,6 @@ package org.sonar.java.resolve;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +91,7 @@ public class Scope {
 
     @Override
     public List<JavaSymbol> lookup(String name) {
-      List<JavaSymbol> symbolsList = Lists.newArrayList();
+      List<JavaSymbol> symbolsList = new ArrayList<>();
       for (JavaSymbol site : symbols.values()) {
         JavaSymbol symbol = bytecodeCompleter.loadClass(bytecodeCompleter.formFullName(name, site));
         if (symbol.kind < JavaSymbol.ERRONEOUS) {
@@ -114,7 +113,7 @@ public class Scope {
 
     @Override
     public List<JavaSymbol> lookup(String name) {
-      List<JavaSymbol> symbolsList = Lists.newArrayList();
+      List<JavaSymbol> symbolsList = new ArrayList<>();
       for (JavaSymbol site : symbols.values()) {
         // site is a package, try to load referenced type.
         if ((site.kind & JavaSymbol.PCK) != 0) {

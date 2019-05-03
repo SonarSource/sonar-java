@@ -20,8 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.CheckForNull;
@@ -218,7 +218,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     MINUTE(60, "setMinutes", "getMinutes", "MINUTE", "minute"),
     SECOND(61, "setSeconds", "getSeconds", "SECOND", "second");
 
-    private static Map<String, Integer> thresholdByName = Maps.newHashMap();
+    private static Map<String, Integer> thresholdByName = new HashMap<>();
 
     static {
       for (Threshold value : Threshold.values()) {

@@ -19,10 +19,10 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -72,11 +72,11 @@ public class TypesTest {
     shouldBeSubtype(arrayTypeInt, Arrays.asList(symbols.objectType));
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", symbols.defaultPackage);
     ClassJavaType classType = (ClassJavaType) typeSymbol.type;
-    classType.interfaces = Lists.newArrayList();
+    classType.interfaces = new ArrayList<>();
     JavaSymbol.TypeJavaSymbol subtypeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MySubtype", symbols.defaultPackage);
     ClassJavaType subClassType = (ClassJavaType) subtypeSymbol.type;
     subClassType.supertype = classType;
-    subClassType.interfaces = Lists.newArrayList();
+    subClassType.interfaces = new ArrayList<>();
     shouldBeSubtype(subClassType, Arrays.<JavaType>asList(classType, subClassType));
 
   }

@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -38,6 +37,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import javax.annotation.Nullable;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -102,7 +102,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscr
   }
 
   private static Collection<Symbol> filterMethodsAndFields(Collection<Symbol> symbols) {
-    List<Symbol> filtered = Lists.newArrayList();
+    List<Symbol> filtered = new ArrayList<>();
     for (Symbol symbol : symbols) {
       if ((symbol.isVariableSymbol() && !isThisOrSuper(symbol)) || (symbol.isMethodSymbol() && !isConstructor(symbol))) {
         filtered.add(symbol);

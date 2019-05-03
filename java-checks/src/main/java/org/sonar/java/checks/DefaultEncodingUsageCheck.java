@@ -20,7 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -109,7 +110,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   private static final MethodMatcherCollection FILEUTILS_WRITE_WITH_CHARSET_MATCHERS =
     MethodMatcherCollection.create(FILEUTILS_WRITE_WITH_CHARSET.toArray(new MethodMatcher[0]));
 
-  private Set<Tree> excluded = Sets.newHashSet();
+  private Set<Tree> excluded = new HashSet<>();
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {

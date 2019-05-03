@@ -20,7 +20,8 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -30,8 +31,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class CommentLinesVisitor extends SubscriptionVisitor {
 
-  private Set<Integer> comments = Sets.newHashSet();
-  private Set<Integer> noSonarLines = Sets.newHashSet();
+  private Set<Integer> comments = new HashSet<>();
+  private Set<Integer> noSonarLines = new HashSet<>();
   private boolean seenFirstToken;
 
   @Override

@@ -24,9 +24,9 @@ import org.junit.Test;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +52,7 @@ public class ListTreeImplTest {
   public void emptySeparators() throws Exception {
     Tree tree1 = new EmptyStatementTreeImpl(null);
     List<Tree> trees = Lists.newArrayList(tree1);
-    List<SyntaxToken> separators = Lists.newArrayList();
+    List<SyntaxToken> separators = new ArrayList<>();
     ListTreeImpl<Tree> listTree = new MyList(trees, separators);
     Iterable<Tree> result = listTree.children();
     assertThat(Lists.newArrayList(result)).containsExactly(tree1);
@@ -65,6 +65,6 @@ public class ListTreeImplTest {
   }
 
   private SyntaxToken createToken(String value) {
-    return new InternalSyntaxToken(1,1, value, Lists.<SyntaxTrivia>newArrayList(), 0,0,false);
+    return new InternalSyntaxToken(1,1, value, new ArrayList<>(), 0,0,false);
   }
 }

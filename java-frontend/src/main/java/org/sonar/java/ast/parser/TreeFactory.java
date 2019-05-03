@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.Optional;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -499,7 +500,7 @@ public class TreeFactory {
     Optional<List<JavaTree>> enumDeclarations,
     InternalSyntaxToken closeBraceToken) {
 
-    List<JavaTree> members = Lists.newLinkedList();
+    List<JavaTree> members = new LinkedList<>();
     EnumConstantTreeImpl lastEnumConstant = null;
     if (enumConstants.isPresent()) {
       for (EnumConstantTreeImpl enumConstant : enumConstants.get()) {
@@ -1612,7 +1613,7 @@ public class TreeFactory {
   }
 
   public TypeTree annotationIdentifier(InternalSyntaxToken firstIdentifier, Optional<List<Tuple<InternalSyntaxToken, InternalSyntaxToken>>> rests) {
-    List<InternalSyntaxToken> children = Lists.newArrayList();
+    List<InternalSyntaxToken> children = new ArrayList<>();
     children.add(firstIdentifier);
     if (rests.isPresent()) {
       for (Tuple<InternalSyntaxToken, InternalSyntaxToken> rest : rests.get()) {

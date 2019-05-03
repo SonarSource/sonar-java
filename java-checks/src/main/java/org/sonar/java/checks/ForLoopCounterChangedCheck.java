@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -33,13 +32,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Rule(key = "ForLoopCounterChangedCheck")
 @RspecKey("S127")
 public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private final Set<String> loopCounters = Sets.newHashSet();
+  private final Set<String> loopCounters = new HashSet<>();
   private JavaFileScannerContext context;
 
   @Override
@@ -51,7 +51,7 @@ public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitForStatement(ForStatementTree tree) {
-    Set<String> pendingLoopCounters = Sets.newHashSet();
+    Set<String> pendingLoopCounters = new HashSet<>();
     for (StatementTree statementTree : tree.initializer()) {
       if (statementTree.is(Tree.Kind.VARIABLE)) {
         pendingLoopCounters.add(((VariableTree) statementTree).simpleName().name());

@@ -21,9 +21,9 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
@@ -77,7 +77,7 @@ public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
   }
 
   private static List<Symbol> getBooleanParametersAsSymbol(List<VariableTree> parameters) {
-    List<Symbol> booleanParameters = Lists.newLinkedList();
+    List<Symbol> booleanParameters = new LinkedList<>();
     for (VariableTree variableTree : parameters) {
       if (isBooleanVariable(variableTree)) {
         booleanParameters.add(variableTree.symbol());

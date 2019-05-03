@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -29,10 +28,11 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetection {
-  private Deque<Boolean> withinSynchronizedBlock = Lists.newLinkedList();
+  private Deque<Boolean> withinSynchronizedBlock = new LinkedList<>();
 
   @Override
   public void setContext(JavaFileScannerContext context) {

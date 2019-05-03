@@ -23,6 +23,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,7 +83,7 @@ public class BytecodeEGWalkerTest {
     List<SymbolicValue> invocationArguments = Lists.newArrayList(svFirstArg, svsecondArg);
     List<ObjectConstraint> collect = methodBehavior.yields().stream().map(my -> {
 
-      Collection<ProgramState> ps = my.statesAfterInvocation(invocationArguments, Lists.newArrayList(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
+      Collection<ProgramState> ps = my.statesAfterInvocation(invocationArguments, new ArrayList<>(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
       assertThat(ps).hasSize(1);
       ProgramState next = ps.iterator().next();
       return next.getConstraint(svResult, ObjectConstraint.class);
@@ -94,7 +95,7 @@ public class BytecodeEGWalkerTest {
       methodBehavior.happyPathYields().filter(my -> ObjectConstraint.NULL.equals(my.resultConstraint().get(ObjectConstraint.class))).collect(Collectors.toList());
     assertThat(nullConstraintOnResult).hasSize(1);
     HappyPathYield nullConstraintResult = nullConstraintOnResult.get(0);
-    Collection<ProgramState> ps = nullConstraintResult.statesAfterInvocation(invocationArguments, Lists.newArrayList(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
+    Collection<ProgramState> ps = nullConstraintResult.statesAfterInvocation(invocationArguments, new ArrayList<>(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
     assertThat(ps).hasSize(1);
     ObjectConstraint constraint = ps.iterator().next().getConstraint(svsecondArg, ObjectConstraint.class);
     assertThat(constraint).isSameAs(ObjectConstraint.NULL);
@@ -113,7 +114,7 @@ public class BytecodeEGWalkerTest {
 
     assertThat(oneYield).hasSize(1);
     HappyPathYield yield = oneYield.get(0);
-    Collection<ProgramState> pss = yield.statesAfterInvocation(invocationArguments, Lists.newArrayList(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
+    Collection<ProgramState> pss = yield.statesAfterInvocation(invocationArguments, new ArrayList<>(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
     assertThat(pss).hasSize(1);
     ProgramState ps = pss.iterator().next();
     assertThat(ps.getConstraint(svFirstArg, ObjectConstraint.class)).isNull();
@@ -125,7 +126,7 @@ public class BytecodeEGWalkerTest {
 
     assertThat(oneYield).hasSize(1);
     yield = oneYield.get(0);
-    pss = yield.statesAfterInvocation(invocationArguments, Lists.newArrayList(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
+    pss = yield.statesAfterInvocation(invocationArguments, new ArrayList<>(), ProgramState.EMPTY_STATE, () -> svResult).collect(Collectors.toList());
     assertThat(pss).hasSize(1);
     ps = pss.iterator().next();
     assertThat(ps.getConstraint(svFirstArg, ObjectConstraint.class)).isNull();

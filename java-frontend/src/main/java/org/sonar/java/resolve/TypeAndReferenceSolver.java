@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +106,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   private final Resolve resolve;
   private final ParametrizedTypeCache parametrizedTypeCache;
 
-  private final Map<Tree, JavaType> types = Maps.newHashMap();
+  private final Map<Tree, JavaType> types = new HashMap<>();
   Resolve.Env env;
 
   public TypeAndReferenceSolver(SemanticModel semanticModel, Symbols symbols, Resolve resolve, ParametrizedTypeCache parametrizedTypeCache) {

@@ -20,7 +20,6 @@
 package org.sonar.java.checks.unused;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -82,7 +81,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     }
     List<String> undocumentedParameters = new Javadoc(methodTree).undocumentedParameters();
     boolean overridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();
-    List<IdentifierTree> unused = Lists.newArrayList();
+    List<IdentifierTree> unused = new ArrayList<>();
     for (VariableTree var : methodTree.parameters()) {
       Symbol symbol = var.symbol();
       if (symbol.usages().isEmpty()

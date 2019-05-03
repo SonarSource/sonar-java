@@ -19,9 +19,10 @@
  */
 package com.sonar.it.java.suite;
 
-import com.google.common.collect.Sets;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.BeforeClass;
@@ -100,7 +101,7 @@ public class JavaComplexityTest {
     List<Issue> issues = TestUtils.issuesForComponent(orchestrator, PROJECT);
 
     assertThat(issues).hasSize(3);
-    Set<String> debts = Sets.newHashSet();
+    Set<String> debts = new HashSet<>();
     for (Issue issue : issues) {
       debts.add(issue.getDebt());
     }

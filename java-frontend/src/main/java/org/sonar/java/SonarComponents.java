@@ -203,7 +203,7 @@ public class SonarComponents {
 
   public List<File> getJavaClasspath() {
     if (javaClasspath == null) {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
     return javaClasspath.getElements();
   }
@@ -233,7 +233,7 @@ public class SonarComponents {
   }
 
   public Collection<JavaCheck> testCheckClasses() {
-    List<JavaCheck> visitors = Lists.newArrayList();
+    List<JavaCheck> visitors = new ArrayList<>();
     for (Checks<JavaCheck> checksElement : testChecks) {
       Collection<JavaCheck> checksCollection = checksElement.all();
       if (!checksCollection.isEmpty()) {

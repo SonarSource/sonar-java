@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +50,7 @@ public class LeastUpperBoundTest {
   @Before
   public void setUp() {
     ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
-    Symbols symbols = new Symbols(new BytecodeCompleter(new SquidClassLoader(Lists.<File>newArrayList()), parametrizedTypeCache));
+    Symbols symbols = new Symbols(new BytecodeCompleter(new SquidClassLoader(new ArrayList<>()), parametrizedTypeCache));
     TypeSubstitutionSolver typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
     intType = symbols.intType;
     longType = symbols.longType;
@@ -79,7 +80,7 @@ public class LeastUpperBoundTest {
   @Test
   public void lub_should_fail_if_no_type_provided() {
     try {
-      leastUpperBound.leastUpperBound(Sets.<Type>newHashSet());
+      leastUpperBound.leastUpperBound(new HashSet<>());
       Fail.fail("should have failed");
     } catch (Exception e) {
       assertThat(e).isInstanceOf(IllegalArgumentException.class);

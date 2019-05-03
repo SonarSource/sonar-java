@@ -34,6 +34,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import org.assertj.core.api.Fail;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -222,7 +223,7 @@ public class JavaCheckVerifier extends CheckVerifier {
   }
 
   static List<File> getClassPath(String jarsDirectory) {
-    List<File> classpath = Lists.newLinkedList();
+    List<File> classpath = new LinkedList<>();
     Path testJars = Paths.get(jarsDirectory);
     if (testJars.toFile().exists()) {
       classpath = getFilesRecursively(testJars, new String[] {"jar", "zip"});

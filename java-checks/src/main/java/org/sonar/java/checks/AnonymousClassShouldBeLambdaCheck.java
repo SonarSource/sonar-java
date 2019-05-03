@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,7 +58,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    enumConstants = Lists.newArrayList();
+    enumConstants = new ArrayList<>();
     scan(context.getTree());
   }
 

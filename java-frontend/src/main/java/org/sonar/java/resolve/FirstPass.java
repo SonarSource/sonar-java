@@ -21,7 +21,8 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -67,7 +68,7 @@ public class FirstPass extends BaseTreeVisitor {
   private static final String CONSTRUCTOR_NAME = "<init>";
   private final SemanticModel semanticModel;
 
-  private final List<JavaSymbol> uncompleted = Lists.newArrayList();
+  private final List<JavaSymbol> uncompleted = new ArrayList<>();
   private final SecondPass completer;
   private final Symbols symbols;
   private final ParametrizedTypeCache parametrizedTypeCache;

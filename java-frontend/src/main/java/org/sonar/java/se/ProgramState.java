@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -208,7 +207,7 @@ public class ProgramState {
 
     // FIXME can be made more efficient by reusing sub collection of PStack instead of copying to the new list
     PStack<SymbolicValueSymbol> newStack = stack;
-    List<SymbolicValueSymbol> result = Lists.newArrayList();
+    List<SymbolicValueSymbol> result = new ArrayList<>();
     for (int i = 0; i < nbElements && !newStack.isEmpty(); i++) {
       result.add(newStack.peek());
       newStack = newStack.pop();

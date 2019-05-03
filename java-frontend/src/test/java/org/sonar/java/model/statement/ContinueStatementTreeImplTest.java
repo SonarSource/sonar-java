@@ -19,12 +19,13 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,6 +58,6 @@ public class ContinueStatementTreeImplTest {
   }
 
   private static InternalSyntaxToken createToken(String value) {
-    return new InternalSyntaxToken(1, 1, value, Lists.newArrayList(), 0, 0, false);
+    return new InternalSyntaxToken(1, 1, value, new ArrayList<>(), 0, 0, false);
   }
 }

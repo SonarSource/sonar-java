@@ -21,10 +21,10 @@ package org.sonar.java.cfg;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -120,8 +120,8 @@ public class CFG implements ControlFlowGraph {
 
   private final Deque<Block> switches = new LinkedList<>();
   private String pendingLabel = null;
-  private Map<String, Block> labelsBreakTarget = Maps.newHashMap();
-  private Map<String, Block> labelsContinueTarget = Maps.newHashMap();
+  private Map<String, Block> labelsBreakTarget = new HashMap<>();
+  private Map<String, Block> labelsContinueTarget = new HashMap<>();
 
   private CFG(List<? extends Tree> trees, Symbol.MethodSymbol symbol, boolean ignoreBreakAndContinue) {
     methodSymbol = symbol;

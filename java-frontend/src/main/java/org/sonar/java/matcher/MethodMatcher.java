@@ -20,7 +20,6 @@
 package org.sonar.java.matcher;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.CheckForNull;
@@ -95,7 +94,7 @@ public class MethodMatcher {
 
   public MethodMatcher addParameter(TypeCriteria parameterTypeCriteria) {
     if (parameters == null) {
-      parameterTypes = Lists.newArrayList();
+      parameterTypes = new ArrayList<>();
       parameters = ParametersCriteria.of(parameterTypes);
     } else {
       Preconditions.checkState(parameterTypes != null, "parameters is already initialized and doesn't support addParameter.");

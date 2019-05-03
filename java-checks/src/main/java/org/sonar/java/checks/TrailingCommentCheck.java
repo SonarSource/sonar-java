@@ -21,7 +21,8 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -66,7 +67,7 @@ public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
     if (pattern == null) {
       pattern = Pattern.compile(legalCommentPattern);
     }
-    visitedTokens = Sets.newHashSet();
+    visitedTokens = new HashSet<>();
     super.setContext(context);
   }
 

@@ -38,6 +38,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -202,7 +203,7 @@ public abstract class CheckVerifier {
 
   private void assertMultipleIssue(Set<AnalyzerMessage> issues) throws AssertionError {
     Preconditions.checkState(!issues.isEmpty(), "At least one issue expected");
-    List<Integer> unexpectedLines = Lists.newLinkedList();
+    List<Integer> unexpectedLines = new LinkedList<>();
     RemediationFunction remediationFunction = remediationFunction(issues.iterator().next());
     for (AnalyzerMessage issue : issues) {
       validateIssue(expected, unexpectedLines, issue, remediationFunction);

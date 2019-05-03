@@ -20,7 +20,8 @@
 package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -48,11 +49,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3330")
 public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
-  private final List<Symbol.VariableSymbol> compliantConstructorInitializations = Lists.newArrayList();
-  private final List<Symbol.VariableSymbol> ignoredVariables = Lists.newArrayList();
-  private final List<Symbol.VariableSymbol> variablesToReport = Lists.newArrayList();
-  private final List<MethodInvocationTree> settersToReport = Lists.newArrayList();
-  private final List<NewClassTree> newClassToReport = Lists.newArrayList();
+  private final List<Symbol.VariableSymbol> compliantConstructorInitializations = new ArrayList<>();
+  private final List<Symbol.VariableSymbol> ignoredVariables = new ArrayList<>();
+  private final List<Symbol.VariableSymbol> variablesToReport = new ArrayList<>();
+  private final List<MethodInvocationTree> settersToReport = new ArrayList<>();
+  private final List<NewClassTree> newClassToReport = new ArrayList<>();
 
   private static final List<String> IGNORED_COOKIE_NAMES = ImmutableList.of("csrf", "xsrf");
 

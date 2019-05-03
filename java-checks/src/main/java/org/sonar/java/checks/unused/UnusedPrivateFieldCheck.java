@@ -22,7 +22,8 @@ package org.sonar.java.checks.unused;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,7 +64,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     Tree.Kind.XOR_ASSIGNMENT,
     Tree.Kind.OR_ASSIGNMENT};
 
-  private List<ClassTree> classes = Lists.newArrayList();
+  private List<ClassTree> classes = new ArrayList<>();
   private ListMultimap<Symbol, IdentifierTree> assignments = ArrayListMultimap.create();
   private Set<String> unknownIdentifiers = new HashSet<>();
   private boolean hasNativeMethod = false;

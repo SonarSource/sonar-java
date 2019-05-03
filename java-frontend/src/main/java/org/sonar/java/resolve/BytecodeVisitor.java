@@ -21,7 +21,6 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassVisitor;
@@ -37,6 +36,7 @@ import org.sonar.api.utils.log.Loggers;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -449,7 +449,7 @@ public class BytecodeVisitor extends ClassVisitor {
     @Override
     public void visitFormalTypeParameter(String name) {
       JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(name, symbol);
-      ((TypeVariableJavaType) typeVariableSymbol.type).bounds = Lists.newArrayList();
+      ((TypeVariableJavaType) typeVariableSymbol.type).bounds = new ArrayList<>();
       if(symbol.isTypeSymbol()) {
         JavaSymbol.TypeJavaSymbol typeJavaSymbol = (JavaSymbol.TypeJavaSymbol) symbol;
         typeJavaSymbol.typeParameters.enter(typeVariableSymbol);
@@ -473,7 +473,7 @@ public class BytecodeVisitor extends ClassVisitor {
     public ReadMethodSignature(JavaSymbol.MethodJavaSymbol methodSymbol) {
       super(ASM_API_VERSION);
       this.methodSymbol = methodSymbol;
-      ((MethodJavaType) methodSymbol.type).argTypes = Lists.newArrayList();
+      ((MethodJavaType) methodSymbol.type).argTypes = new ArrayList<>();
     }
 
     @Override
@@ -562,7 +562,7 @@ public class BytecodeVisitor extends ClassVisitor {
     private final JavaSymbol.MethodJavaSymbol methodSymbol;
     JavaType typeRead;
     String bytecodeName;
-    List<JavaType> typeArguments = Lists.newArrayList();
+    List<JavaType> typeArguments = new ArrayList<>();
 
     public ReadType() {
       super(ASM_API_VERSION);
@@ -578,7 +578,7 @@ public class BytecodeVisitor extends ClassVisitor {
     public void visitInnerClassType(String name) {
       bytecodeName += "$" + name;
       typeRead = getClassSymbol(bytecodeName).type;
-      typeArguments = Lists.newArrayList();
+      typeArguments = new ArrayList<>();
     }
 
     @Override
@@ -637,7 +637,7 @@ public class BytecodeVisitor extends ClassVisitor {
 
     @Override
     public void visitTypeVariable(String name) {
-      List<JavaSymbol> lookup = Lists.newArrayList();
+      List<JavaSymbol> lookup = new ArrayList<>();
       JavaSymbol currentSymbol = classSymbol;
       if(methodSymbol != null) {
         currentSymbol = methodSymbol;

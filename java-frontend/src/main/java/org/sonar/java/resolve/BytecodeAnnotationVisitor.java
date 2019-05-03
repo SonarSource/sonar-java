@@ -19,7 +19,7 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Type;
@@ -69,7 +69,7 @@ public class BytecodeAnnotationVisitor extends AnnotationVisitor {
 
   @Override
   public AnnotationVisitor visitArray(final String name) {
-    final List<Object> valuesList = Lists.newArrayList();
+    final List<Object> valuesList = new ArrayList<>();
     // TODO handle arrays of annotation
     return new AnnotationVisitor(ASM_API_VERSION, this) {
       @Override

@@ -22,9 +22,10 @@ package org.sonar.java.filters;
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -49,7 +50,7 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
   }
 
   private static Map<Class<? extends JavaCheck>, String> rulesKeysByRulesClass(Set<Class<? extends JavaCheck>> rules) {
-    Map<Class<? extends JavaCheck>, String> results = Maps.newHashMap();
+    Map<Class<? extends JavaCheck>, String> results = new HashMap<>();
     for (Class<? extends JavaCheck> ruleClass : rules) {
       Rule ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, Rule.class);
       if (ruleAnnotation != null) {

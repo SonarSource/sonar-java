@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -169,7 +170,7 @@ public class BytecodeCompleterTest {
 
     //Check interfaces
     assertThat(arrayList.getInterfaces()).hasSize(4);
-    List<String> interfacesName = Lists.newArrayList();
+    List<String> interfacesName = new ArrayList<>();
     for (JavaType interfaceType : arrayList.getInterfaces()) {
       interfacesName.add(interfaceType.symbol.name);
     }

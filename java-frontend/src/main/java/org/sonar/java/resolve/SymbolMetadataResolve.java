@@ -19,7 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +33,7 @@ public class SymbolMetadataResolve implements SymbolMetadata {
   private List<AnnotationInstance> annotations;
 
   SymbolMetadataResolve() {
-    annotations = Lists.newArrayList();
+    annotations = new ArrayList<>();
   }
 
   @Override

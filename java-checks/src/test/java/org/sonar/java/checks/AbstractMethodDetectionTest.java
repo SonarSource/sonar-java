@@ -20,7 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import org.sonar.java.CheckTestUtils;
@@ -70,7 +71,7 @@ public class AbstractMethodDetectionTest {
 
   class Visitor extends AbstractMethodDetection {
 
-    public List<Integer> lines = Lists.newArrayList();
+    public List<Integer> lines = new ArrayList<>();
     private List<MethodMatcher> methodInvocationMatchers;
 
     public Visitor(List<MethodMatcher> methodInvocationMatchers) {

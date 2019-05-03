@@ -19,12 +19,12 @@
  */
 package org.sonar.java.bytecode;
 
-import com.google.common.collect.Lists;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,7 +37,7 @@ public final class ClassLoaderBuilder {
   }
 
   public static SquidClassLoader create(Collection<File> bytecodeFilesOrDirectories) {
-    List<File> files = Lists.newArrayList();
+    List<File> files = new ArrayList<>();
     for (File file : bytecodeFilesOrDirectories) {
       if (file.isFile() && file.getPath().endsWith(".class")) {
         LOG.info("SonarQube Squid ClassLoader was expecting a JAR file instead of CLASS file : '" + file.getAbsolutePath() + "'");

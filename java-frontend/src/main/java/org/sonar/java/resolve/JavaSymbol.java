@@ -333,7 +333,7 @@ public class JavaSymbol implements Symbol {
     public TypeJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(TYP, flags, name, owner);
       this.type = new ClassJavaType(this);
-      this.typeVariableTypes = Lists.newArrayList();
+      this.typeVariableTypes = new ArrayList<>();
       if (owner.isMethodSymbol()) {
         // declaration of a class or an anonymous class in a method
         internalName = ((TypeJavaSymbol) owner.owner).registerClassInternalName(name);
@@ -556,12 +556,12 @@ public class JavaSymbol implements Symbol {
       super(MTH, flags, name, owner);
       super.type = type;
       this.returnType = ((MethodJavaType) type).resultType.symbol;
-      this.typeVariableTypes = Lists.newArrayList();
+      this.typeVariableTypes = new ArrayList<>();
     }
 
     public MethodJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(MTH, flags, name, owner);
-      this.typeVariableTypes = Lists.newArrayList();
+      this.typeVariableTypes = new ArrayList<>();
     }
 
     @Override

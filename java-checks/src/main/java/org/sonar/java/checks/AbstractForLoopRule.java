@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -38,6 +37,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.sonar.java.model.LiteralUtils.intLiteralValue;
@@ -97,7 +97,7 @@ public abstract class AbstractForLoopRule extends IssuableSubscriptionVisitor {
     }
 
     public static Iterable<ForLoopInitializer> list(ForStatementTree forStatement) {
-      List<ForLoopInitializer> list = Lists.newArrayList();
+      List<ForLoopInitializer> list = new ArrayList<>();
       for (StatementTree statement : forStatement.initializer()) {
         if (statement.is(Tree.Kind.VARIABLE)) {
           VariableTree variable = (VariableTree) statement;

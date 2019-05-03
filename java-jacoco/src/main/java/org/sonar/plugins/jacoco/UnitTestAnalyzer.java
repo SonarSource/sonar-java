@@ -19,11 +19,10 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -91,7 +90,7 @@ public class UnitTestAnalyzer {
 
   public final void analyse(SensorContext context) {
     supportCoverageByTest = !context.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(7, 7));
-    classFilesCache = Maps.newHashMap();
+    classFilesCache = new HashMap<>();
     for (File classesDir : javaClasspath.getBinaryDirs()) {
       populateClassFilesCache(classesDir, "");
     }
@@ -198,7 +197,7 @@ public class UnitTestAnalyzer {
   }
 
   private Collection<File> classFilesOfStore(ExecutionDataStore executionDataStore) {
-    Collection<File> result = Lists.newArrayList();
+    Collection<File> result = new ArrayList<>();
     for (ExecutionData data : executionDataStore.getContents()) {
       String vmClassName = data.getName();
       File classFile = classFilesCache.get(vmClassName);

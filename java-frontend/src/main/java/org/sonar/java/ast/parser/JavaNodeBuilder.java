@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.Token;
@@ -33,6 +32,7 @@ import org.sonar.java.model.InternalSyntaxTrivia;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JavaNodeBuilder implements NodeBuilder {
@@ -58,7 +58,7 @@ public class JavaNodeBuilder implements NodeBuilder {
   }
 
   private static List<SyntaxTrivia> createTrivias(List<Trivia> trivias) {
-    List<SyntaxTrivia> result = Lists.newArrayList();
+    List<SyntaxTrivia> result = new ArrayList<>();
     for (Trivia trivia : trivias) {
       Token trivialToken = trivia.getToken();
       result.add(InternalSyntaxTrivia.create(trivialToken.getValue(), trivialToken.getLine(), trivialToken.getColumn()));
