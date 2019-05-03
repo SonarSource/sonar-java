@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -28,6 +27,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2235")
@@ -35,7 +35,7 @@ public class CatchIllegalMonitorStateExceptionCheck extends IssuableSubscription
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CATCH);
+    return Collections.singletonList(Tree.Kind.CATCH);
   }
 
   @Override

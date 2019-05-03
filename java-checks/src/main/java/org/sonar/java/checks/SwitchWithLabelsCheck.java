@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -28,6 +27,7 @@ import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CASE_GROUP;
@@ -38,7 +38,7 @@ public class SwitchWithLabelsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(CASE_GROUP);
+    return Collections.singletonList(CASE_GROUP);
   }
 
   @Override

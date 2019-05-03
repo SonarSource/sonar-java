@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaSymbol;
@@ -35,6 +34,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public class AnnotationDefaultArgumentCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.ANNOTATION);
+    return Collections.singletonList(Tree.Kind.ANNOTATION);
   }
 
   @Override

@@ -19,10 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -47,7 +47,7 @@ public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.METHOD);
+    return Collections.singletonList(Kind.METHOD);
   }
 
   @Override

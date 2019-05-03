@@ -20,7 +20,6 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -281,7 +280,7 @@ public class FirstPass extends BaseTreeVisitor {
 
       // add 'public static E valueOf(String name)'
       JavaSymbol.MethodJavaSymbol valueOfMethod = new JavaSymbol.MethodJavaSymbol((symbol.flags & Flags.ACCESS_FLAGS) | Flags.STATIC, "valueOf", symbol);
-      MethodJavaType valueOfMethodType = new MethodJavaType(ImmutableList.<JavaType>of(symbols.stringType), symbol.type, Collections.emptyList(), symbol);
+      MethodJavaType valueOfMethodType = new MethodJavaType(Collections.singletonList(symbols.stringType), symbol.type, Collections.emptyList(), symbol);
       valueOfMethod.setMethodType(valueOfMethodType);
       valueOfMethod.parameters = new Scope(valueOfMethod);
       valueOfMethod.parameters.enter(new JavaSymbol.VariableJavaSymbol(0, "name", symbols.stringType, valueOfMethod));

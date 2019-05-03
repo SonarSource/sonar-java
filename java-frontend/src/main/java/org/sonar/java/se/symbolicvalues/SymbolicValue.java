@@ -52,7 +52,7 @@ public class SymbolicValue {
       if(constraint instanceof ObjectConstraint) {
         return super.setConstraint(programState, (ObjectConstraint) constraint);
       }
-      return ImmutableList.of(programState);
+      return Collections.singletonList(programState);
     }
 
     @Override
@@ -142,14 +142,14 @@ public class SymbolicValue {
       if(nullConstraint.isNull()) {
         // null constraints get rid of all other constraints
         ConstraintsByDomain onlyNullConstraint = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
-        return ImmutableList.of(programState.addConstraints(this, onlyNullConstraint));
+        return Collections.singletonList(programState.addConstraints(this, onlyNullConstraint));
       } else {
-        return ImmutableList.of(programState.addConstraint(this, nullConstraint));
+        return Collections.singletonList(programState.addConstraint(this, nullConstraint));
       }
     } else if (constraint != nullConstraint) {
       return Collections.emptyList();
     }
-    return ImmutableList.of(programState);
+    return Collections.singletonList(programState);
   }
 
   public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
@@ -157,7 +157,7 @@ public class SymbolicValue {
     if (!booleanConstraint.isValidWith(cstraint)) {
       return Collections.emptyList();
     }
-    return ImmutableList.of(programState.addConstraint(this, booleanConstraint));
+    return Collections.singletonList(programState.addConstraint(this, booleanConstraint));
   }
 
   public List<ProgramState> setConstraint(ProgramState programState, Constraint constraint) {
@@ -168,7 +168,7 @@ public class SymbolicValue {
     }
     Constraint csrtaint = programState.getConstraint(this, constraint.getClass());
     if (constraint.isValidWith(csrtaint)) {
-      return ImmutableList.of(programState.addConstraint(this, constraint));
+      return Collections.singletonList(programState.addConstraint(this, constraint));
     }
     return Collections.emptyList();
   }
@@ -208,12 +208,12 @@ public class SymbolicValue {
 
     @Override
     public List<SymbolicValue> computedFrom() {
-      return ImmutableList.of(operand);
+      return Collections.singletonList(operand);
     }
 
     @Override
     public List<Symbol> computedFromSymbols() {
-      return operandSymbol == null ? operand.computedFromSymbols() : ImmutableList.of(operandSymbol);
+      return operandSymbol == null ? operand.computedFromSymbols() : Collections.singletonList(operandSymbol);
     }
   }
 
@@ -278,11 +278,11 @@ public class SymbolicValue {
         if (ps.size() == 1 && ps.get(0).equals(programState)) {
           // FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint
           // should store the deduced type.
-          return ImmutableList.of(programState.addConstraint(this, new TypedConstraint(Symbols.unknownType.fullyQualifiedName())));
+          return Collections.singletonList(programState.addConstraint(this, new TypedConstraint(Symbols.unknownType.fullyQualifiedName())));
         }
         return ps;
       }
-      return ImmutableList.of(programState);
+      return Collections.singletonList(programState);
     }
   }
 

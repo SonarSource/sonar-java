@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.CheckForNull;
@@ -39,7 +39,7 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.ANNOTATION);
+    return Collections.singletonList(Tree.Kind.ANNOTATION);
   }
 
   @Override

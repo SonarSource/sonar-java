@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.text.DecimalFormat;
@@ -74,7 +73,7 @@ public class VisitorsBridgeTest {
 
       @Override
       public List<Kind> nodesToVisit() {
-        return ImmutableList.of(Tree.Kind.METHOD);
+        return Collections.singletonList(Tree.Kind.METHOD);
       }
     }), new ArrayList<>(), null);
     checkFile(contstructFileName("org", "foo", "bar", "Foo.java"), "class Foo { arrrrrrgh", visitorsBridgeWithParsingIssue);

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.spring;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -37,7 +37,7 @@ public class SpringSecurityDisableCSRFCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create()
+    return Collections.singletonList(MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer"))
       .name("disable").withoutParameter());
   }

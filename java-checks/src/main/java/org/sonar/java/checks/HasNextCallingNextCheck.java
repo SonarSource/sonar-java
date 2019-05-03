@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -40,7 +40,7 @@ public class HasNextCallingNextCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD);
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -98,7 +97,7 @@ public class MethodJavaSymbolTest {
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.METHOD);
+      return Collections.singletonList(Tree.Kind.METHOD);
     }
 
     @Override

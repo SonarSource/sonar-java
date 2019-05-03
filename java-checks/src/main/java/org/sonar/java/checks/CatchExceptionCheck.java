@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -44,7 +44,7 @@ public class CatchExceptionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.TRY_STATEMENT);
+    return Collections.singletonList(Kind.TRY_STATEMENT);
   }
 
   @Override

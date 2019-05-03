@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1860")
@@ -45,7 +46,7 @@ public class SynchronizationOnStringOrBoxedCheck extends IssuableSubscriptionVis
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.SYNCHRONIZED_STATEMENT);
+    return Collections.singletonList(Tree.Kind.SYNCHRONIZED_STATEMENT);
   }
 
   @Override

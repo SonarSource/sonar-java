@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
@@ -42,7 +42,7 @@ public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS);
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -133,7 +132,7 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.INTERFACE);
+    return Collections.singletonList(Tree.Kind.INTERFACE);
   }
 
   @Override

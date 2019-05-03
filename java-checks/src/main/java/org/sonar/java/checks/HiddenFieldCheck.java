@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -167,7 +168,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
     }
 
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.VARIABLE);
+      return Collections.singletonList(Tree.Kind.VARIABLE);
     }
 
     public List<Tree.Kind> excludedNodes() {

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2065")
@@ -40,7 +40,7 @@ public class TransientFieldInNonSerializableCheck extends IssuableSubscriptionVi
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS);
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override

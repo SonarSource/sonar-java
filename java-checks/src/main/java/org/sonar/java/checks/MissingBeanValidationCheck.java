@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -44,7 +44,7 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS);
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override

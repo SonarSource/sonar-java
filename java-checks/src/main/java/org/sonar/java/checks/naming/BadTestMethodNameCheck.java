@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.naming;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
@@ -46,7 +46,7 @@ public class BadTestMethodNameCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD);
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override

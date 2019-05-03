@@ -90,7 +90,7 @@ public class Flow {
   }
 
   public static Flow of(JavaFileScannerContext.Location location) {
-    return new Flow(ImmutableList.of(location), false);
+    return new Flow(Collections.singletonList(Objects.requireNonNull(location)), false);
   }
 
   public static Flow of(Flow currentFlow) {

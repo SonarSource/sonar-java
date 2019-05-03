@@ -19,8 +19,7 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.ImmutableList;
-
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,7 +36,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TOKEN);
+    return Collections.singletonList(Tree.Kind.TOKEN);
   }
 
   public void analyzeCommentLines(CompilationUnitTree tree) {

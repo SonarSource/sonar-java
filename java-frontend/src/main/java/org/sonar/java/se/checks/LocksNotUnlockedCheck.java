@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -79,9 +78,9 @@ public class LocksNotUnlockedCheck extends SECheck {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-        return ImmutableList.of(programState.addConstraintTransitively(operand, LockConstraint.LOCKED));
+        return Collections.singletonList(programState.addConstraintTransitively(operand, LockConstraint.LOCKED));
       } else {
-        return ImmutableList.of(programState.addConstraintTransitively(operand, LockConstraint.UNLOCKED));
+        return Collections.singletonList(programState.addConstraintTransitively(operand, LockConstraint.UNLOCKED));
       }
     }
 

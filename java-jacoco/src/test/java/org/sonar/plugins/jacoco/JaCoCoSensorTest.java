@@ -19,11 +19,11 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -168,7 +168,7 @@ public class JaCoCoSensorTest {
     String path2 = TestUtils.getResource("org/sonar/plugins/jacoco/JaCoCo_incompatible_merge/jacoco-it-0.7.5.exec").getPath();
     context.settings().setProperty(REPORT_PATH_PROPERTY, "");
     context.settings().setProperty(REPORT_PATHS_PROPERTY, path1 + "," + path2);
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(outputDir));
     sensor.execute(context);
     assertThat(logTester.logs(LoggerLevel.INFO)).contains("Analysing " + path1);
     assertThat(logTester.logs(LoggerLevel.INFO)).contains("Analysing " + path2);
@@ -202,7 +202,7 @@ public class JaCoCoSensorTest {
 
   private void runAnalysisWithoutAssert() {
     when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(outputDir));
     sensor.execute(context);
   }
 
@@ -214,7 +214,7 @@ public class JaCoCoSensorTest {
       new File(jacocoExecutionData.getParentFile(), "/org/example/App.class"));
     DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(10).build();
     when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(outputDir));
 
     MutableTestable testAbleFile = mock(MutableTestable.class);
     when(perspectives.as(eq(MutableTestable.class), eq(resource))).thenReturn(testAbleFile);
@@ -249,7 +249,7 @@ public class JaCoCoSensorTest {
 
     DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(25).build();
     when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(outputDir));
 
     MutableTestable testAbleFile = mock(MutableTestable.class);
     when(perspectives.as(eq(MutableTestable.class), eq(resource))).thenReturn(testAbleFile);
@@ -285,7 +285,7 @@ public class JaCoCoSensorTest {
 
   @Test
   public void do_not_save_measure_on_resource_which_doesnt_exist_in_the_context() throws Exception {
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(outputDir));
     SensorContextTester context = spy(SensorContextTester.create(temp.newFolder()));
     sensor.execute(context);
     verify(context, never()).newCoverage();
@@ -293,7 +293,7 @@ public class JaCoCoSensorTest {
 
   @Test
   public void should_do_nothing_if_output_dir_does_not_exists() throws Exception {
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(new File("nowhere")));
+    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(new File("nowhere")));
     SensorContextTester context = SensorContextTester.create(temp.newFolder());
     context.settings().setProperty(REPORT_PATHS_PROPERTY, jacocoExecutionData.getAbsolutePath());
     sensor.execute(context);
@@ -312,7 +312,7 @@ public class JaCoCoSensorTest {
     DefaultInputFile resource = new TestInputFileBuilder("", "").setLines(10).build();
 
     when(javaResourceLocator.findResourceByClassName(anyString())).thenReturn(resource);
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(outputDir));
 
     SensorContextTester context = SensorContextTester.create(outputDir);
     context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_7, SonarQubeSide.SCANNER));

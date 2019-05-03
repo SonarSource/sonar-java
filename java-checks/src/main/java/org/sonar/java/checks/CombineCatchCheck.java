@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2147")
@@ -39,7 +39,7 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TRY_STATEMENT);
+    return Collections.singletonList(Tree.Kind.TRY_STATEMENT);
   }
 
   @Override

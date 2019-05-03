@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -36,6 +36,6 @@ public class ThreadSleepInTestsCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.lang.Thread").name("sleep").withAnyParameters());
+    return Collections.singletonList(MethodMatcher.create().typeDefinition("java.lang.Thread").name("sleep").withAnyParameters());
   }
 }

@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1871")
@@ -162,7 +163,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   }
 
   private void createIssue(Tree node, String message, Tree secondary) {
-    reportIssue(node, message, ImmutableList.of(new JavaFileScannerContext.Location("Original", secondary)), null);
+    reportIssue(node, message, Collections.singletonList(new JavaFileScannerContext.Location("Original", secondary)), null);
   }
 
   private static String issueMessage(String type, Tree node) {

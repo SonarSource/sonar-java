@@ -19,7 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -138,17 +137,17 @@ public class ResolveTest {
     assertThat(resolve.isSubClass(c, base)).isFalse();
 
     // class implements base interface
-    ((ClassJavaType) c.type).interfaces = ImmutableList.of(base.type);
+    ((ClassJavaType) c.type).interfaces = Collections.singletonList(base.type);
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // class implements interface, but not base interface
     JavaSymbol.TypeJavaSymbol i = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "class", packageJavaSymbol);
     ((ClassJavaType) i.type).interfaces = Collections.emptyList();
-    ((ClassJavaType) c.type).interfaces = ImmutableList.of(i.type);
+    ((ClassJavaType) c.type).interfaces = Collections.singletonList(i.type);
     assertThat(resolve.isSubClass(c, base)).isFalse();
 
     // class implements interface, which implements base
-    ((ClassJavaType) c.type).interfaces = ImmutableList.of(base.type);
+    ((ClassJavaType) c.type).interfaces = Collections.singletonList(base.type);
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // class extends superclass
@@ -158,7 +157,7 @@ public class ResolveTest {
     assertThat(resolve.isSubClass(c, base)).isFalse();
 
     // class extends superclass, which implements base
-    ((ClassJavaType) ((ClassJavaType) c.type).supertype).interfaces = ImmutableList.of(base.type);
+    ((ClassJavaType) ((ClassJavaType) c.type).supertype).interfaces = Collections.singletonList(base.type);
     assertThat(resolve.isSubClass(c, base)).isTrue();
   }
 

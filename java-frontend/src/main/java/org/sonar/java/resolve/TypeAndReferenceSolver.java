@@ -831,7 +831,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     JavaType parentType = (constructedType.isTagged(JavaType.DEFERRED) || identifierType.symbol().isInterface()) ? identifierType : constructedType;
     ClassJavaType anonymousClassType = (ClassJavaType) classBody.symbol().type();
     if (parentType.getSymbol().isInterface()) {
-      anonymousClassType.interfaces = ImmutableList.of(parentType);
+      anonymousClassType.interfaces = Collections.singletonList(parentType);
       anonymousClassType.supertype = symbols.objectType;
     } else {
       anonymousClassType.supertype = parentType;

@@ -21,6 +21,8 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
@@ -81,7 +83,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.EXPRESSION_STATEMENT);
+    return Collections.singletonList(Tree.Kind.EXPRESSION_STATEMENT);
   }
 
   @Override

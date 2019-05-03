@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.java.model.ExpressionUtils;
@@ -53,7 +53,7 @@ public abstract class AbstractInjectionChecker extends IssuableSubscriptionVisit
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
+    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
   }
 
   protected boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking) {

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.util.Arrays;
@@ -101,7 +100,7 @@ public class TypeAndReferenceSolverTest {
 
     // int method()
     argMethodSymbol = new JavaSymbol.MethodJavaSymbol(0, "argMethod", classSymbol);
-    ((JavaSymbol.MethodJavaSymbol)argMethodSymbol).setMethodType(new MethodJavaType(ImmutableList.of(symbols.intType), symbols.intType, Collections.emptyList(), classSymbol));
+    ((JavaSymbol.MethodJavaSymbol)argMethodSymbol).setMethodType(new MethodJavaType(Collections.singletonList(symbols.intType), symbols.intType, Collections.emptyList(), classSymbol));
     classSymbol.members.enter(argMethodSymbol);
 
     classSymbol.members.enter(new JavaSymbol.VariableJavaSymbol(0, "this", classType, classSymbol));

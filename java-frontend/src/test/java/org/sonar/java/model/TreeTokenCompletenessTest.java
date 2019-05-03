@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.io.File;
@@ -129,7 +128,7 @@ public class TreeTokenCompletenessTest {
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.TOKEN);
+      return Collections.singletonList(Tree.Kind.TOKEN);
     }
 
     @Override

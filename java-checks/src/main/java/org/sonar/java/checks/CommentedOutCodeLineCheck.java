@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +49,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TRIVIA);
+    return Collections.singletonList(Tree.Kind.TRIVIA);
   }
 
   @Override

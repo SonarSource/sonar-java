@@ -182,7 +182,7 @@ public class TypeSubstitutionSolverTest {
 
   private TypeVariableJavaType getTypeVariable(String variableName) {
     TypeVariableJavaType typeVariableJavaType = new TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol(variableName, Symbols.unknownSymbol));
-    typeVariableJavaType.bounds = ImmutableList.of(symbols.objectType);
+    typeVariableJavaType.bounds = Collections.singletonList(symbols.objectType);
     return typeVariableJavaType;
   }
 

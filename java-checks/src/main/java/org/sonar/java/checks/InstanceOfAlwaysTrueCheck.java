@@ -19,20 +19,20 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1850")
 public class InstanceOfAlwaysTrueCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.INSTANCE_OF);
+    return Collections.singletonList(Tree.Kind.INSTANCE_OF);
   }
 
   @Override

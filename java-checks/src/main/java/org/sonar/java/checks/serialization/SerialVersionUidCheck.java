@@ -20,7 +20,6 @@
 package org.sonar.java.checks.serialization;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
@@ -37,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2057")
@@ -44,7 +44,7 @@ public class SerialVersionUidCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS);
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override

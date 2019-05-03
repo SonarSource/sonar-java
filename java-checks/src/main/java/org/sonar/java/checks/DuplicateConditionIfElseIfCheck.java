@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -29,6 +28,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.Collections;
 
 @Rule(key = "S1862")
 public class DuplicateConditionIfElseIfCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -54,7 +55,7 @@ public class DuplicateConditionIfElseIfCheck extends BaseTreeVisitor implements 
           this,
           ifStatement.condition(),
           "This branch can not be reached because the condition duplicates a previous condition in the same sequence of \"if/else if\" statements",
-          ImmutableList.of(new JavaFileScannerContext.Location("Original", condition)),
+          Collections.singletonList(new JavaFileScannerContext.Location("Original", condition)),
           null
         );
       }

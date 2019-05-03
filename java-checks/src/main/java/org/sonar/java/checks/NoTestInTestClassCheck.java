@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +49,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.COMPILATION_UNIT);
+    return Collections.singletonList(Kind.COMPILATION_UNIT);
   }
 
   @Override

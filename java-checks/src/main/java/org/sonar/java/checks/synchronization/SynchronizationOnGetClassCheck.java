@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.synchronization;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -30,6 +29,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR;
@@ -45,7 +45,7 @@ public class SynchronizationOnGetClassCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(SYNCHRONIZED_STATEMENT);
+    return Collections.singletonList(SYNCHRONIZED_STATEMENT);
   }
 
   @Override

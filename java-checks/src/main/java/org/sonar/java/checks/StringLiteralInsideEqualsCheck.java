@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -30,6 +29,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1132")
@@ -37,7 +37,7 @@ public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.METHOD_INVOCATION);
+    return Collections.singletonList(Kind.METHOD_INVOCATION);
   }
 
   @Override

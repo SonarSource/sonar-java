@@ -1191,11 +1191,11 @@ public class TreeFactory {
 
   public BlockStatementListTreeImpl newInnerClassOrEnum(ModifiersTreeImpl modifiers, ClassTreeImpl classTree) {
     classTree.completeModifiers(modifiers);
-    return new BlockStatementListTreeImpl(ImmutableList.<StatementTree>of(classTree));
+    return new BlockStatementListTreeImpl(Collections.singletonList(classTree));
   }
 
   public BlockStatementListTreeImpl wrapInBlockStatements(StatementTree statement) {
-    return new BlockStatementListTreeImpl(ImmutableList.of(statement));
+    return new BlockStatementListTreeImpl(Collections.singletonList(statement));
   }
 
   // End of statements
@@ -1489,7 +1489,7 @@ public class TreeFactory {
   }
 
   public LambdaParameterListTreeImpl singleInferedParameter(VariableTreeImpl parameter) {
-    return new LambdaParameterListTreeImpl(null, ImmutableList.of(parameter), null);
+    return new LambdaParameterListTreeImpl(null, Collections.singletonList(parameter), null);
   }
 
   public VariableTreeImpl newSimpleParameter(InternalSyntaxToken identifierToken) {

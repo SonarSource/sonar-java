@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.synchronization;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.matcher.MethodMatcher;
@@ -31,6 +30,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.sonar.java.model.ModifiersUtils.hasModifier;
@@ -42,7 +42,7 @@ public class WriteObjectTheOnlySynchronizedMethodCheck extends IssuableSubscript
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(METHOD);
+    return Collections.singletonList(METHOD);
   }
 
   @Override

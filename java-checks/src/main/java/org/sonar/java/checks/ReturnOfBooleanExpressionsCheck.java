@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -44,7 +44,7 @@ public class ReturnOfBooleanExpressionsCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.IF_STATEMENT);
+    return Collections.singletonList(Kind.IF_STATEMENT);
   }
 
   @Override

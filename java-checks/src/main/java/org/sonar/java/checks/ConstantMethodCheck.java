@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -39,7 +39,7 @@ public class ConstantMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.METHOD);
+    return Collections.singletonList(Kind.METHOD);
   }
 
   @Override

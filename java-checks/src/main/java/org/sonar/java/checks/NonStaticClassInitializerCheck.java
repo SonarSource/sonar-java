@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1171")
@@ -32,7 +32,7 @@ public class NonStaticClassInitializerCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.INITIALIZER);
+    return Collections.singletonList(Tree.Kind.INITIALIZER);
   }
 
   @Override

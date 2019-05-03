@@ -20,7 +20,6 @@
 package org.sonar.java.filters;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import java.io.File;
@@ -127,7 +126,7 @@ public class FilterVerifier {
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.TRIVIA);
+      return Collections.singletonList(Tree.Kind.TRIVIA);
     }
 
     @Override

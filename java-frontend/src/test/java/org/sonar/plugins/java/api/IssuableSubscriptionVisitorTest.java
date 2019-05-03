@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,7 +60,7 @@ public class IssuableSubscriptionVisitorTest {
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.COMPILATION_UNIT);
+      return Collections.singletonList(Tree.Kind.COMPILATION_UNIT);
     }
 
     @Override

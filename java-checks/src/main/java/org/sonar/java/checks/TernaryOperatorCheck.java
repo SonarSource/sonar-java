@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1774")
@@ -32,7 +32,7 @@ public class TernaryOperatorCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CONDITIONAL_EXPRESSION);
+    return Collections.singletonList(Tree.Kind.CONDITIONAL_EXPRESSION);
   }
 
   @Override

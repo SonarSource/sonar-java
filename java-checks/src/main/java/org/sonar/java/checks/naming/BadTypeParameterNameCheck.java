@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.naming;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
@@ -30,6 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -48,7 +48,7 @@ public class BadTypeParameterNameCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.TYPE_PARAMETER);
+    return Collections.singletonList(Kind.TYPE_PARAMETER);
   }
 
   @Override

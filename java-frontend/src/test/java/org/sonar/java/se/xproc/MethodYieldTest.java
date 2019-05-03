@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.xproc;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
@@ -97,10 +96,10 @@ public class MethodYieldTest {
     MethodYield methodYield = mb.happyPathYields()
       .filter(y -> y.resultConstraint() != null && y.resultConstraint().get(ObjectConstraint.class) != ObjectConstraint.NULL).findFirst().get();
 
-    Set<Flow> flowReturnValue = methodYield.flow(ImmutableList.of(-1), Lists.newArrayList(ObjectConstraint.class));
+    Set<Flow> flowReturnValue = methodYield.flow(Collections.singletonList(-1), Lists.newArrayList(ObjectConstraint.class));
     assertThat(flowReturnValue.iterator().next().isEmpty()).isFalse();
 
-    Set<Flow> flowFirstParam = methodYield.flow(ImmutableList.of(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
+    Set<Flow> flowFirstParam = methodYield.flow(Collections.singletonList(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class));
     assertThat(flowFirstParam.iterator().next().isEmpty()).isFalse();
   }
 
@@ -115,7 +114,7 @@ public class MethodYieldTest {
   @Test
   public void flow_is_empty_when_yield_has_no_node() {
     MethodYield methodYield = new HappyPathYield(null, mockMethodBehavior(1, false));
-    assertThat(methodYield.flow(ImmutableList.of(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class))).isEmpty();
+    assertThat(methodYield.flow(Collections.singletonList(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class))).isEmpty();
   }
 
   @Test

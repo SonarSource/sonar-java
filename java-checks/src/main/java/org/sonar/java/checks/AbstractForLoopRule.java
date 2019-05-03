@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -38,6 +37,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.sonar.java.model.LiteralUtils.intLiteralValue;
@@ -46,7 +46,7 @@ public abstract class AbstractForLoopRule extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.FOR_STATEMENT);
+    return Collections.singletonList(Tree.Kind.FOR_STATEMENT);
   }
 
   @Override

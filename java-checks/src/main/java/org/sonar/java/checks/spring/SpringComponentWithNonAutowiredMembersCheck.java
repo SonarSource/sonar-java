@@ -20,7 +20,8 @@
 package org.sonar.java.checks.spring;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
+
+import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -43,7 +44,7 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS);
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override

@@ -19,7 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
@@ -92,7 +91,7 @@ public class JavaVersionAwareVisitorTest {
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.CLASS);
+      return Collections.singletonList(Tree.Kind.CLASS);
     }
 
     @Override

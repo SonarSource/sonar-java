@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -38,6 +37,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1181")
@@ -48,7 +48,7 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TRY_STATEMENT);
+    return Collections.singletonList(Tree.Kind.TRY_STATEMENT);
   }
 
   @Override

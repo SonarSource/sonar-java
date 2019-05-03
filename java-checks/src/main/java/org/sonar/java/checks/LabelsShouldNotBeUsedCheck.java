@@ -19,13 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "LabelsShouldNotBeUsedCheck")
@@ -34,7 +34,7 @@ public class LabelsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.LABELED_STATEMENT);
+    return Collections.singletonList(Tree.Kind.LABELED_STATEMENT);
   }
 
   @Override

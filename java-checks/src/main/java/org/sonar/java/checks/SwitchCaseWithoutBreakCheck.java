@@ -44,7 +44,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.SWITCH_STATEMENT);
+    return Collections.singletonList(Tree.Kind.SWITCH_STATEMENT);
   }
 
   @Override

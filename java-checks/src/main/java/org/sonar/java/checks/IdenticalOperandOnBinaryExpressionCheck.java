@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1764")
@@ -97,7 +98,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
       reportIssue(
         rightOperand,
         "Correct one of the identical sub-expressions on both sides of operator \"" + binaryExpressionTree.operatorToken().text() + "\"",
-        ImmutableList.of(new JavaFileScannerContext.Location("", equivalentOperand)),
+        Collections.singletonList(new JavaFileScannerContext.Location("", equivalentOperand)),
         null);
     }
   }
@@ -111,7 +112,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
           reportIssue(
             rightOp,
             "Correct one of the identical sub-expressions on both sides of equals.",
-            ImmutableList.of(new JavaFileScannerContext.Location("", leftOp)),
+            Collections.singletonList(new JavaFileScannerContext.Location("", leftOp)),
             null);
         }
       }
@@ -122,7 +123,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
         reportIssue(
           rightOp,
           "Correct one of the identical argument sub-expressions.",
-          ImmutableList.of(new JavaFileScannerContext.Location("", leftOp)),
+          Collections.singletonList(new JavaFileScannerContext.Location("", leftOp)),
           null);
       }
     }

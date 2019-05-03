@@ -214,7 +214,7 @@ public class FileLinesVisitor extends SubscriptionVisitor {
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(TOKEN);
+      return Collections.singletonList(TOKEN);
     }
 
     @Override

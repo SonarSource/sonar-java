@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -104,8 +105,8 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
 
   @Test
   public void test_report_issue_with_flow() throws Exception {
-    ImmutableList<JavaFileScannerContext.Location> flow1 = ImmutableList.of(new JavaFileScannerContext.Location("flow1", tree));
-    ImmutableList<JavaFileScannerContext.Location> flow2 = ImmutableList.of(new JavaFileScannerContext.Location("flow2", tree));
+    List<JavaFileScannerContext.Location> flow1 = Collections.singletonList(new JavaFileScannerContext.Location("flow1", tree));
+    List<JavaFileScannerContext.Location> flow2 = Collections.singletonList(new JavaFileScannerContext.Location("flow2", tree));
     ImmutableSet<List<JavaFileScannerContext.Location>> flows = ImmutableSet.of(flow1, flow2);
     scannerContext.reportIssueWithFlow(check, tree, "msg", flows, null);
     Issue issue = sensorContext.allIssues().iterator().next();
@@ -114,8 +115,8 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
 
   @Test
   public void test_report_se_issue_with_flow() throws Exception {
-    ImmutableList<JavaFileScannerContext.Location> flow1 = ImmutableList.of(new JavaFileScannerContext.Location("SE flow1", tree));
-    ImmutableList<JavaFileScannerContext.Location> flow2 = ImmutableList.of(new JavaFileScannerContext.Location("SE flow2", tree));
+    List<JavaFileScannerContext.Location> flow1 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow1", tree));
+    List<JavaFileScannerContext.Location> flow2 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow2", tree));
     ImmutableSet<List<JavaFileScannerContext.Location>> flows = ImmutableSet.of(flow1, flow2);
 
     scannerContext.reportIssueWithFlow(seCheck, tree, "msg", flows, null);

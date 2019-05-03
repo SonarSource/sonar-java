@@ -129,7 +129,7 @@ public class SecondPass implements JavaSymbol.Completer {
         // JLS8 - 8.8.1 & 8.8.9 : constructors of inner class have an implicit first arg of its directly enclosing class type
         JavaSymbol owner = symbol.owner();
         if (!owner.isPackageSymbol()) {
-          argTypes = ImmutableList.of(owner.enclosingClass().type);
+          argTypes = Collections.singletonList(Objects.requireNonNull(owner.enclosingClass().type));
         }
       }
       JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(symbol.flags & Flags.ACCESS_FLAGS, CONSTRUCTOR_NAME, symbol);

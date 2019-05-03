@@ -27,6 +27,8 @@ import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -126,7 +128,7 @@ public class MethodMatcherCollectionTest {
     MethodMatcher matcher2 = mock(MethodMatcher.class);
     when(matcher2.matches(any(MethodTree.class))).thenReturn(true);
     MethodMatcherCollection mmc = MethodMatcherCollection.create();
-    mmc.addAll(ImmutableList.of(matcher1));
+    mmc.addAll(Collections.singletonList(matcher1));
     assertThat(mmc.anyMatch(mock(MethodTree.class))).isFalse();
     mmc.addAll(ImmutableList.of(matcher1, matcher2));
     assertThat(mmc.anyMatch(mock(MethodTree.class))).isTrue();

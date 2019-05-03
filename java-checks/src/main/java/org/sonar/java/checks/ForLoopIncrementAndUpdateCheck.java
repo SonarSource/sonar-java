@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 
 import org.sonar.check.Rule;
@@ -41,6 +40,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +53,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.FOR_STATEMENT);
+    return Collections.singletonList(Tree.Kind.FOR_STATEMENT);
   }
 
   @Override

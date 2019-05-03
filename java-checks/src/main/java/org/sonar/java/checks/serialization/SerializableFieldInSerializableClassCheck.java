@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.serialization;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaType;
@@ -39,6 +38,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S1948")
@@ -46,7 +46,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS);
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override

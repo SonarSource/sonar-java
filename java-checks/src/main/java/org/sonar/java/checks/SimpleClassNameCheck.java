@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -45,7 +45,7 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.COMPILATION_UNIT);
+    return Collections.singletonList(Kind.COMPILATION_UNIT);
   }
 
   @Override

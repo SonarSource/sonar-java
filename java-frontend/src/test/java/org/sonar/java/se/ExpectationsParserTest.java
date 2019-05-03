@@ -60,7 +60,7 @@ public class ExpectationsParserTest {
     assertThat(issue.get(START_COLUMN)).isEqualTo(3);
     assertThat(issue.get(END_COLUMN)).isEqualTo(7);
     assertThat(issue.get(END_LINE)).isEqualTo(Expectations.Parser.LineRef.fromString("4"));
-    assertThat(issue.get(SECONDARY_LOCATIONS)).isEqualTo(ImmutableList.of(5));
+    assertThat(issue.get(SECONDARY_LOCATIONS)).isEqualTo(Collections.singletonList(5));
     assertThat(issue.get(MESSAGE)).isNull();
   }
 

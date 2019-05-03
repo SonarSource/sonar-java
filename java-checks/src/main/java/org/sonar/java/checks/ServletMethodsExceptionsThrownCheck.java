@@ -68,7 +68,7 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
         tryCatches.pop();
         tryCatches.add(Collections.emptyList());
       } else if (tree.is(Tree.Kind.THROW_STATEMENT)) {
-        addIssueIfNotCatched(ImmutableList.of(((ThrowStatementTree) tree).expression().symbolType()), tree, "Add a \"try/catch\" block.");
+        addIssueIfNotCatched(Collections.singletonList(((ThrowStatementTree) tree).expression().symbolType()), tree, "Add a \"try/catch\" block.");
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         checkMethodInvocation((MethodInvocationTree) tree);
       }

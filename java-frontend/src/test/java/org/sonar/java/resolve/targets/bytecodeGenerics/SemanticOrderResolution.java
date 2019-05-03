@@ -19,9 +19,9 @@
  */
 package org.sonar.java.resolve.targets.bytecodeGenerics;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 import org.sonar.java.TestUtils;
@@ -49,7 +49,7 @@ public class SemanticOrderResolution {
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.CLASS);
+      return Collections.singletonList(Tree.Kind.CLASS);
     }
 
     @Override

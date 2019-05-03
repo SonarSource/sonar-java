@@ -19,7 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -191,7 +190,7 @@ public class TypeInferenceSolverTest {
 
   private TypeVariableJavaType getTypeVariable(String variableName) {
     TypeVariableJavaType typeVariableJavaType = new TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol(variableName, Symbols.unknownSymbol));
-    typeVariableJavaType.bounds = ImmutableList.of(symbols.objectType);
+    typeVariableJavaType.bounds = Collections.singletonList(symbols.objectType);
     return typeVariableJavaType;
   }
 

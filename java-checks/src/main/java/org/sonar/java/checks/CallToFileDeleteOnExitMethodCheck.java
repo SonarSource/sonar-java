@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
@@ -34,7 +34,7 @@ public class CallToFileDeleteOnExitMethodCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.io.File").name("deleteOnExit").withoutParameter());
+    return Collections.singletonList(MethodMatcher.create().typeDefinition("java.io.File").name("deleteOnExit").withoutParameter());
   }
 
   @Override

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
 import org.sonar.check.Rule;
@@ -28,6 +27,7 @@ import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2959")
@@ -35,7 +35,7 @@ public class UnnecessarySemicolonCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TRY_STATEMENT);
+    return Collections.singletonList(Tree.Kind.TRY_STATEMENT);
   }
 
   @Override

@@ -19,8 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang.BooleanUtils;
@@ -39,7 +40,7 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD);
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override

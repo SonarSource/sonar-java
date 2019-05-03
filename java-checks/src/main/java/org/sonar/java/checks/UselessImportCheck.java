@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -234,7 +234,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.TRIVIA);
+      return Collections.singletonList(Tree.Kind.TRIVIA);
     }
 
     public void checkImportsFromComments(CompilationUnitTree cut, Set<String> pendingImports) {
