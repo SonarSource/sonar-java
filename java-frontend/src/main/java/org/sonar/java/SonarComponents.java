@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
@@ -197,7 +198,7 @@ public class SonarComponents {
   }
 
   public NewHighlighting highlightableFor(InputFile inputFile) {
-    Preconditions.checkNotNull(context);
+    Objects.requireNonNull(context);
     return context.newHighlighting().onFile(inputFile);
   }
 
@@ -259,8 +260,8 @@ public class SonarComponents {
 
   public void reportIssue(AnalyzerMessage analyzerMessage) {
     JavaCheck check = analyzerMessage.getCheck();
-    Preconditions.checkNotNull(check);
-    Preconditions.checkNotNull(analyzerMessage.getMessage());
+    Objects.requireNonNull(check);
+    Objects.requireNonNull(analyzerMessage.getMessage());
     RuleKey key = getRuleKey(check);
     if (key == null) {
       return;
@@ -275,7 +276,7 @@ public class SonarComponents {
 
   @VisibleForTesting
   void reportIssue(AnalyzerMessage analyzerMessage, RuleKey key, InputComponent fileOrProject, @Nullable Double cost) {
-    Preconditions.checkNotNull(context);
+    Objects.requireNonNull(context);
     JavaIssue issue = JavaIssue.create(context, key, cost);
     AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
     if (textSpan == null) {

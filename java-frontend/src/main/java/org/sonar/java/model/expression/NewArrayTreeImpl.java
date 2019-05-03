@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
 
@@ -54,8 +55,8 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
 
     // TODO maybe type should not be null?
     this.type = null;
-    this.dimensions = Preconditions.checkNotNull(dimensions);
-    this.initializers = Preconditions.checkNotNull(initializers);
+    this.dimensions = Objects.requireNonNull(dimensions);
+    this.initializers = Objects.requireNonNull(initializers);
   }
 
   public NewArrayTreeImpl complete(TypeTree type) {

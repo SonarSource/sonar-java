@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -31,6 +30,8 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.Objects;
 
 public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
   private final InternalSyntaxToken forKeyword;
@@ -46,11 +47,11 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
     super(Kind.FOR_EACH_STATEMENT);
     this.forKeyword = forKeyword;
     this.openParenToken = openParenToken;
-    this.variable = Preconditions.checkNotNull(variable);
+    this.variable = Objects.requireNonNull(variable);
     this.colonToken = colonToken;
-    this.expression = Preconditions.checkNotNull(expression);
+    this.expression = Objects.requireNonNull(expression);
     this.closeParenToken = closeParenToken;
-    this.statement = Preconditions.checkNotNull(statement);
+    this.statement = Objects.requireNonNull(statement);
   }
 
   @Override

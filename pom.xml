@@ -309,6 +309,8 @@
               <failOnUnresolvableSignatures>false</failOnUnresolvableSignatures>
               <signatures>
                 <![CDATA[
+                com.google.common.base.Preconditions#checkNotNull(java.lang.Object) @ use java.util.Objects#requireNonNull(java.lang.Object) instead
+
                 com.google.common.collect.ImmutableList#of() @ use java.util.Collections#emptyList() instead
                 com.google.common.collect.ImmutableSet#of() @ use java.util.Collections#emptySet() instead
 

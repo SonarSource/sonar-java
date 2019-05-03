@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -229,7 +230,7 @@ public abstract class JavaTree implements Tree {
     public PackageDeclarationTreeImpl(List<AnnotationTree> annotations, SyntaxToken packageKeyword, ExpressionTree packageName, SyntaxToken semicolonToken) {
       super(Tree.Kind.PACKAGE);
 
-      this.annotations = Preconditions.checkNotNull(annotations);
+      this.annotations = Objects.requireNonNull(annotations);
       this.packageKeyword = packageKeyword;
       this.packageName = packageName;
       this.semicolonToken = semicolonToken;
@@ -450,7 +451,7 @@ public abstract class JavaTree implements Tree {
 
     public UnionTypeTreeImpl(TypeUnionListTreeImpl typeAlternatives) {
       super(Kind.UNION_TYPE);
-      this.typeAlternatives = Preconditions.checkNotNull(typeAlternatives);
+      this.typeAlternatives = Objects.requireNonNull(typeAlternatives);
     }
 
     @Override
@@ -556,8 +557,8 @@ public abstract class JavaTree implements Tree {
 
     public ParameterizedTypeTreeImpl(TypeTree type, TypeArgumentListTreeImpl typeArguments) {
       super(Kind.PARAMETERIZED_TYPE);
-      this.type = Preconditions.checkNotNull(type);
-      this.typeArguments = Preconditions.checkNotNull(typeArguments);
+      this.type = Objects.requireNonNull(type);
+      this.typeArguments = Objects.requireNonNull(typeArguments);
       this.annotations = Collections.emptyList();
     }
 

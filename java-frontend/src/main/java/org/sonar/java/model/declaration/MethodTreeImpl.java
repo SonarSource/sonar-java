@@ -22,6 +22,7 @@ package org.sonar.java.model.declaration;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
@@ -101,14 +102,14 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.typeParameters = new TypeParameterListTreeImpl();
     this.modifiers = null;
     this.returnType = returnType;
-    this.simpleName = Preconditions.checkNotNull(simpleName);
-    this.parameters = Preconditions.checkNotNull(parameters);
+    this.simpleName = Objects.requireNonNull(simpleName);
+    this.parameters = Objects.requireNonNull(parameters);
     this.openParenToken = parameters.openParenToken();
     this.closeParenToken = parameters.closeParenToken();
     this.block = block;
     this.semicolonToken = semicolonToken;
     this.throwsToken = throwsToken;
-    this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
+    this.throwsClauses = Objects.requireNonNull(throwsClauses);
     this.defaultToken = null;
     this.defaultValue = null;
   }

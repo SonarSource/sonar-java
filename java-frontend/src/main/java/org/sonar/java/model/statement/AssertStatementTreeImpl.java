@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.Objects;
 
 public class AssertStatementTreeImpl extends JavaTree implements AssertStatementTree {
 
@@ -46,7 +46,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   public AssertStatementTreeImpl(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
     super(Kind.ASSERT_STATEMENT);
     this.assertToken = assertToken;
-    this.condition = Preconditions.checkNotNull(condition);
+    this.condition = Objects.requireNonNull(condition);
     this.colonToken = null;
     this.detail = null;
     this.semicolonToken = semicolonToken;
@@ -55,12 +55,12 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   public AssertStatementTreeImpl(InternalSyntaxToken colonToken, ExpressionTree detail) {
     super(Kind.ASSERT_STATEMENT);
     this.colonToken = colonToken;
-    this.detail = Preconditions.checkNotNull(detail);
+    this.detail = Objects.requireNonNull(detail);
   }
 
   public AssertStatementTreeImpl complete(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
     this.assertToken = assertToken;
-    this.condition = Preconditions.checkNotNull(condition);
+    this.condition = Objects.requireNonNull(condition);
     this.semicolonToken = semicolonToken;
 
     return this;

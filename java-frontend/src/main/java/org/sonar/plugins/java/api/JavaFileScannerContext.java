@@ -20,7 +20,6 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
-import com.google.common.base.Preconditions;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
@@ -225,7 +224,7 @@ public interface JavaFileScannerContext {
 
     public Location(String msg, Tree syntaxNode) {
       this.msg = msg;
-      this.syntaxNode = Preconditions.checkNotNull(syntaxNode);
+      this.syntaxNode = Objects.requireNonNull(syntaxNode);
     }
 
     @Override

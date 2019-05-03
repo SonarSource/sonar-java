@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import org.sonar.check.Rule;
@@ -50,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -215,7 +215,7 @@ public class NullDereferenceCheck extends SECheck {
   private static List<ProgramState> setNullConstraint(CheckerContext context, Tree syntaxNode) {
     SymbolicValue val = context.getState().peekValue();
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
-      Preconditions.checkNotNull(val);
+      Objects.requireNonNull(val);
       List<ProgramState> states = new ArrayList<>();
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NULL));
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NOT_NULL));

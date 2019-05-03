@@ -20,7 +20,6 @@
 package org.sonar.java.collections;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -58,15 +57,15 @@ abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
   @SuppressWarnings("unchecked")
   @Override
   public AVLTree<K, V> put(K key, V value) {
-    Preconditions.checkNotNull(key);
-    Preconditions.checkNotNull(value);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(value);
     return put(key, value, this);
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public AVLTree<K, V> remove(K key) {
-    Preconditions.checkNotNull(key);
+    Objects.requireNonNull(key);
     return remove(key, this);
   }
 
@@ -74,7 +73,7 @@ abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
   @Nullable
   @Override
   public V get(K key) {
-    Preconditions.checkNotNull(key);
+    Objects.requireNonNull(key);
     final int h = key.hashCode();
     AVLTree t = this;
     while (!t.isEmpty()) {

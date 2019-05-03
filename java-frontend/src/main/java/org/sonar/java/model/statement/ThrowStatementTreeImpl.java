@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -29,6 +28,8 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import java.util.Objects;
+
 public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTree {
   private final InternalSyntaxToken throwKeyword;
   private final ExpressionTree expression;
@@ -37,7 +38,7 @@ public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTr
   public ThrowStatementTreeImpl(InternalSyntaxToken throwKeyword, ExpressionTree expression, InternalSyntaxToken semicolonToken) {
     super(Kind.THROW_STATEMENT);
     this.throwKeyword = throwKeyword;
-    this.expression = Preconditions.checkNotNull(expression);
+    this.expression = Objects.requireNonNull(expression);
     this.semicolonToken = semicolonToken;
   }
 

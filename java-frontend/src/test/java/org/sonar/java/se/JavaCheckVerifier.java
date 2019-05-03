@@ -281,7 +281,7 @@ public class JavaCheckVerifier {
   }
 
   private static void validateLocation(Map<Expectations.IssueAttribute, Object> attrs, AnalyzerMessage.TextSpan textSpan) {
-    Preconditions.checkNotNull(textSpan);
+    Objects.requireNonNull(textSpan);
     assertAttributeMatch(normalizeColumn(textSpan.startCharacter), attrs, START_COLUMN);
     assertAttributeMatch(textSpan.endLine, attrs, END_LINE);
     assertAttributeMatch(normalizeColumn(textSpan.endCharacter), attrs, END_COLUMN);

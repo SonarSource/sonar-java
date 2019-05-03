@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   private final InternalSyntaxToken forKeyword;
@@ -51,13 +51,13 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
     super(Kind.FOR_STATEMENT);
     this.forKeyword = forKeyword;
     this.openParenToken = openParenToken;
-    this.initializer = Preconditions.checkNotNull(initializer);
+    this.initializer = Objects.requireNonNull(initializer);
     this.firstSemicolonToken = firstSemicolonToken;
     this.condition = condition;
     this.secondSemicolonToken = secondSemicolonToken;
-    this.update = Preconditions.checkNotNull(update);
+    this.update = Objects.requireNonNull(update);
     this.closeParenToken = closeParenToken;
-    this.statement = Preconditions.checkNotNull(statement);
+    this.statement = Objects.requireNonNull(statement);
   }
 
   @Override

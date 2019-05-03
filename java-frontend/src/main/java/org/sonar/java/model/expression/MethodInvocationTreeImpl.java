@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.TypeArguments;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.Objects;
 
 public class MethodInvocationTreeImpl extends AbstractTypedTree implements MethodInvocationTree {
 
@@ -48,9 +49,9 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
 
   public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, ArgumentListTreeImpl arguments) {
     super(Kind.METHOD_INVOCATION);
-    this.methodSelect = Preconditions.checkNotNull(methodSelect);
+    this.methodSelect = Objects.requireNonNull(methodSelect);
     this.typeArguments = typeArguments;
-    this.arguments = Preconditions.checkNotNull(arguments);
+    this.arguments = Objects.requireNonNull(arguments);
   }
 
   @Override

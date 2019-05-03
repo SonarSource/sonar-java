@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -28,6 +27,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import java.util.Objects;
 
 public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements AssignmentExpressionTree {
 
@@ -43,7 +44,7 @@ public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements A
 
     this.variable = variable;
     this.operatorToken = operatorToken;
-    this.expression = Preconditions.checkNotNull(expression);
+    this.expression = Objects.requireNonNull(expression);
   }
 
   @Override

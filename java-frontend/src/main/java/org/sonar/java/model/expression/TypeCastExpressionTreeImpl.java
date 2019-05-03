@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.Objects;
 
 public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements TypeCastTree {
 
@@ -48,19 +49,19 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
 
   public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
     super(Kind.TYPE_CAST);
-    this.type = Preconditions.checkNotNull(type);
+    this.type = Objects.requireNonNull(type);
     this.bounds = BoundListTreeImpl.emptyList();
     this.closeParenToken = closeParenToken;
-    this.expression = Preconditions.checkNotNull(expression);
+    this.expression = Objects.requireNonNull(expression);
     andToken = null;
   }
 
   public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken andToken, ListTree<Tree> bounds, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
     super(Kind.TYPE_CAST);
-    this.type = Preconditions.checkNotNull(type);
+    this.type = Objects.requireNonNull(type);
     this.bounds = bounds;
     this.closeParenToken = closeParenToken;
-    this.expression = Preconditions.checkNotNull(expression);
+    this.expression = Objects.requireNonNull(expression);
     this.andToken = andToken;
   }
 

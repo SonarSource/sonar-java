@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.NewClassTreeImpl;
@@ -33,12 +32,13 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConstantTree {
 
   public EnumConstantTreeImpl(ModifiersTree modifiers, IdentifierTree simpleName, NewClassTreeImpl initializer,
     @Nullable InternalSyntaxToken separatorToken) {
-    super(Kind.ENUM_CONSTANT, modifiers, simpleName, Preconditions.checkNotNull(initializer));
+    super(Kind.ENUM_CONSTANT, modifiers, simpleName, Objects.requireNonNull(initializer));
     if (separatorToken != null) {
       this.setEndToken(separatorToken);
     }

@@ -22,6 +22,7 @@ package org.sonar.java.se.checks;
 import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
@@ -94,7 +95,7 @@ public class OptionalGetBeforeIsPresentCheck extends SECheck {
     }
     MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
     SymbolicValue peekValue = programState.peekValue();
-    Preconditions.checkNotNull(peekValue);
+    Objects.requireNonNull(peekValue);
     if (OPTIONAL_EMPTY.matches(mit)) {
       return peekValue.setConstraint(programState, OptionalConstraint.NOT_PRESENT);
     }

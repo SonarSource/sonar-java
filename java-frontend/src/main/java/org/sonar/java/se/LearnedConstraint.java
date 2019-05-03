@@ -19,17 +19,17 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.base.Preconditions;
-
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+
+import java.util.Objects;
 
 public class LearnedConstraint {
   final SymbolicValue sv;
   final Constraint constraint;
 
   public LearnedConstraint(SymbolicValue sv, Constraint constraint) {
-    Preconditions.checkNotNull(constraint);
+    Objects.requireNonNull(constraint);
     this.sv = sv;
     this.constraint = constraint;
   }

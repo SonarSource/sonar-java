@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.sonar.java.ast.parser.BlockStatementListTreeImpl;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
   private final List<CaseLabelTree> labels;
@@ -39,8 +39,8 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
 
   public CaseGroupTreeImpl(List<CaseLabelTreeImpl> labels, BlockStatementListTreeImpl body) {
     super(JavaLexer.SWITCH_BLOCK_STATEMENT_GROUP);
-    this.labels = ImmutableList.<CaseLabelTree>builder().addAll(Preconditions.checkNotNull(labels)).build();
-    this.body = Preconditions.checkNotNull(body);
+    this.labels = ImmutableList.<CaseLabelTree>builder().addAll(Objects.requireNonNull(labels)).build();
+    this.body = Objects.requireNonNull(body);
   }
 
   @Override

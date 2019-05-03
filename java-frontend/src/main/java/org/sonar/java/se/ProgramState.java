@@ -361,7 +361,7 @@ public class ProgramState {
 
   private static PMap<SymbolicValue, Integer> decreaseReference(PMap<SymbolicValue, Integer> givenReferences, SymbolicValue sv) {
     Integer value = givenReferences.get(sv);
-    Preconditions.checkNotNull(value);
+    Objects.requireNonNull(value);
     return givenReferences.put(sv, value - 1);
   }
 

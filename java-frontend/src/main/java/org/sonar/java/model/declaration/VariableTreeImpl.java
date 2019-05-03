@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.Objects;
 
 public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ModifiersTree modifiers;
@@ -81,8 +82,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   public VariableTreeImpl(Kind kind, ModifiersTree modifiers, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
     super(kind);
-    this.modifiers = Preconditions.checkNotNull(modifiers);
-    this.simpleName = Preconditions.checkNotNull(simpleName);
+    this.modifiers = Objects.requireNonNull(modifiers);
+    this.simpleName = Objects.requireNonNull(simpleName);
     this.initializer = initializer;
   }
 

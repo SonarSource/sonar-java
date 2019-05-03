@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -29,6 +28,8 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import java.util.Objects;
 
 public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStatementTree {
   private final StatementTree statement;
@@ -44,8 +45,8 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
     InternalSyntaxToken semicolonToken) {
 
     super(Kind.DO_STATEMENT);
-    this.statement = Preconditions.checkNotNull(statement);
-    this.condition = Preconditions.checkNotNull(condition);
+    this.statement = Objects.requireNonNull(statement);
+    this.condition = Objects.requireNonNull(condition);
     this.doKeyword = doKeyword;
     this.whileKeyword = whileKeyword;
     this.openParenToken = openParenToken;

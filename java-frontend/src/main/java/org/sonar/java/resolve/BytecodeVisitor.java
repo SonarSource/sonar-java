@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.sonar.java.resolve.BytecodeCompleter.ASM_API_VERSION;
@@ -198,8 +199,8 @@ public class BytecodeVisitor extends ClassVisitor {
 
   @Override
   public FieldVisitor visitField(int flags, String name, String desc, @Nullable String signature, @Nullable Object value) {
-    Preconditions.checkNotNull(name);
-    Preconditions.checkNotNull(desc);
+    Objects.requireNonNull(name);
+    Objects.requireNonNull(desc);
     if (isNotSynthetic(flags)) {
       //Flags from asm lib are defined in Opcodes class and map to flags defined in Flags class
       int filteredFlags = Flags.filterAccessBytecodeFlags(flags);
@@ -219,8 +220,8 @@ public class BytecodeVisitor extends ClassVisitor {
 
   @Override
   public MethodVisitor visitMethod(int flags, String name, String desc, @Nullable String signature, @Nullable String[] exceptions) {
-    Preconditions.checkNotNull(name);
-    Preconditions.checkNotNull(desc);
+    Objects.requireNonNull(name);
+    Objects.requireNonNull(desc);
     if (isNotSynthetic(flags)) {
       if((flags & Opcodes.ACC_BRIDGE) != 0) {
         LOG.warn("bridge method {} not marked as synthetic in class {}", name, className);

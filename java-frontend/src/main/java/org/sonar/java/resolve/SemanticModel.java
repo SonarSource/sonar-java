@@ -20,7 +20,6 @@
 package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import javax.annotation.CheckForNull;
@@ -38,6 +37,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class SemanticModel {
@@ -137,7 +137,7 @@ public class SemanticModel {
   }
 
   public void associateSymbol(Tree tree, Symbol symbol) {
-    Preconditions.checkNotNull(symbol);
+    Objects.requireNonNull(symbol);
     symbolsTree.put(tree, symbol);
   }
 

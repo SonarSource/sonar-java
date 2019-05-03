@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -61,9 +62,9 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
     super(Kind.MEMBER_SELECT);
 
     this.nestedDimensions = null;
-    this.expression = Preconditions.checkNotNull(expression);
+    this.expression = Objects.requireNonNull(expression);
     this.dotToken = dotToken;
-    this.identifier = Preconditions.checkNotNull(identifier);
+    this.identifier = Objects.requireNonNull(identifier);
     this.annotations = Collections.emptyList();
   }
 

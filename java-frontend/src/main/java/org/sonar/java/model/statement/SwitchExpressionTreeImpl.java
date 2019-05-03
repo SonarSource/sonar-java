@@ -19,12 +19,13 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbols;
@@ -51,10 +52,10 @@ public class SwitchExpressionTreeImpl extends JavaTree implements SwitchExpressi
     super(Kind.SWITCH_EXPRESSION);
     this.switchKeyword = switchKeyword;
     this.openParenToken = openParenToken;
-    this.expression = Preconditions.checkNotNull(expression);
+    this.expression = Objects.requireNonNull(expression);
     this.closeParenToken = closeParenToken;
     this.openBraceToken = openBraceToken;
-    this.cases = ImmutableList.<CaseGroupTree>builder().addAll(Preconditions.checkNotNull(groups)).build();
+    this.cases = ImmutableList.<CaseGroupTree>builder().addAll(Objects.requireNonNull(groups)).build();
     this.closeBraceToken = closeBraceToken;
   }
 

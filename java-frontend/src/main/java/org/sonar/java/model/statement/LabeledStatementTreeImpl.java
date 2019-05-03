@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -32,6 +31,8 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import java.util.Objects;
+
 public class LabeledStatementTreeImpl extends JavaTree implements LabeledStatementTree {
   private final IdentifierTree label;
   private final InternalSyntaxToken colonToken;
@@ -40,9 +41,9 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
 
   public LabeledStatementTreeImpl(IdentifierTree label, InternalSyntaxToken colonToken, StatementTree statement) {
     super(Kind.LABELED_STATEMENT);
-    this.label = Preconditions.checkNotNull(label);
+    this.label = Objects.requireNonNull(label);
     this.colonToken = colonToken;
-    this.statement = Preconditions.checkNotNull(statement);
+    this.statement = Objects.requireNonNull(statement);
   }
 
   @Override
