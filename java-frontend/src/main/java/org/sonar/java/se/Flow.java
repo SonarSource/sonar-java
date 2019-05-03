@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -27,6 +26,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class Flow {
@@ -41,7 +41,7 @@ public class Flow {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(elements, exceptional);
+    return Objects.hash(elements, exceptional);
   }
 
   @Override
@@ -56,7 +56,7 @@ public class Flow {
       return false;
     }
     Flow other = (Flow) obj;
-    return Objects.equal(elements, other.elements)
+    return Objects.equals(elements, other.elements)
       && exceptional == other.exceptional;
   }
 

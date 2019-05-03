@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Objects;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -27,6 +26,7 @@ import javax.annotation.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public final class SyntacticEquivalence {
 
@@ -86,7 +86,7 @@ public final class SyntacticEquivalence {
    */
   private static boolean areLeafsEquivalent(JavaTree leftNode, JavaTree rightNode) {
     if (leftNode instanceof SyntaxToken) {
-      return Objects.equal(((SyntaxToken) leftNode).text(), ((SyntaxToken) rightNode).text());
+      return Objects.equals(((SyntaxToken) leftNode).text(), ((SyntaxToken) rightNode).text());
     } else if (leftNode.is(Tree.Kind.INFERED_TYPE)) {
       return rightNode.is(Tree.Kind.INFERED_TYPE);
     } else {

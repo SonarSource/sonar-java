@@ -321,6 +321,7 @@
                 com.google.common.collect.Lists#newLinkedList()
                 com.google.common.collect.Maps#newHashMap()
                 com.google.common.collect.Sets#newHashSet()
+                com.google.common.base.Objects @ use java.util.Objects instead
                 ]]>
               </signatures>
             </configuration>
