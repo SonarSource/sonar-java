@@ -32,8 +32,8 @@ class A {
     return b;
   }
 
-  void plop() {
-    a;
+  void voidMethod() {
+    doSomething();
   }
 
   private int doSomething() {

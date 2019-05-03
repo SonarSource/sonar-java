@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -45,10 +46,11 @@ public class SyntaxTreeNameFinderTest {
 
   @Test
   public void testClassCast() {
-    MethodTree tree = buildSyntaxTree("public boolean equals(Object obj) {((String) obj).length;}");
+    MethodTree tree = buildSyntaxTree("public boolean equals(Object obj) {((String) obj).length();}");
     BlockTree block = tree.block();
     StatementTree statementTree = block.body().get(0);
-    MemberSelectExpressionTree mse = (MemberSelectExpressionTree) ((ExpressionStatementTree) statementTree).expression();
+    MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) statementTree).expression();
+    MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
     assertThat(SyntaxTreeNameFinder.getName(mse)).isEqualTo("obj");
   }
 

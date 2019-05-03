@@ -946,7 +946,7 @@ public class Class extends SuperClass {
 
   public void test_array(boolean local1, boolean local2, int[] array) {
     local1 = false;
-    array[local2 = true];
+    array[(local2 = true) ? 0 : 1] = 42; // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     if (local1) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     if (local2) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
@@ -1343,7 +1343,7 @@ class SuperClass {
     boolean reusable = entry instanceof ImmutableMapEntry
         && entry.isReusable();
     printState();
-    reusable ? entry : new Object(); // compliant both path are explored.
+    Object o = reusable ? entry : new Object(); // compliant both path are explored.
     return;
   }
 
