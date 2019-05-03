@@ -21,8 +21,9 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
+
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,7 +54,7 @@ public abstract class AnyRuleIssueFilter extends BaseTreeVisitor implements Java
 
   @Override
   public final Set<Class<? extends JavaCheck>> filteredRules() {
-    return ImmutableSet.of();
+    return Collections.emptySet();
   }
 
   public void excludeLines(Tree tree) {

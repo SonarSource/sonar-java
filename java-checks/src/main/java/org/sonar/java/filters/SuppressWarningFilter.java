@@ -22,12 +22,12 @@ package org.sonar.java.filters;
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +61,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   @Override
   public Set<Class<? extends JavaCheck>> filteredRules() {
-    return ImmutableSet.of();
+    return Collections.emptySet();
   }
 
   @Override

@@ -108,7 +108,7 @@ public class BaseTreeVisitorIssueFilterTest {
     filter = new BaseTreeVisitorIssueFilter() {
       @Override
       public Set<Class<? extends JavaCheck>> filteredRules() {
-        return ImmutableSet.of();
+        return Collections.emptySet();
       }
     };
     // no component is set

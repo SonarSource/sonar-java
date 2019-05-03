@@ -310,6 +310,7 @@
               <signatures>
                 <![CDATA[
                 com.google.common.collect.ImmutableList#of() @ use java.util.Collections#emptyList() instead
+                com.google.common.collect.ImmutableSet#of() @ use java.util.Collections#emptySet() instead
 
                 # According to javadoc of following methods
                 # "for Java 7 and later: this method is now unnecessary and should be treated as deprecated"

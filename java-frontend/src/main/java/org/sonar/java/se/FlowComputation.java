@@ -152,7 +152,7 @@ public class FlowComputation {
   }
 
   private static <T> Set<T> setFromNullable(@Nullable T val) {
-    return val == null ? ImmutableSet.of() : ImmutableSet.of(val);
+    return val == null ? Collections.emptySet() : ImmutableSet.of(val);
   }
 
   private Set<Flow> run(final ExplodedGraph.Node node, PSet<Symbol> trackedSymbols) {
@@ -698,7 +698,7 @@ public class FlowComputation {
     private Set<Flow> flowFromYields(ExplodedGraph.Edge edge) {
       Set<MethodYield> methodYields = edge.yields();
       if (methodYields.isEmpty()) {
-        return ImmutableSet.of();
+        return Collections.emptySet();
       }
 
       List<Integer> argumentIndices = correspondingArgumentIndices(symbolicValues, edge.parent);
@@ -716,7 +716,7 @@ public class FlowComputation {
       }
       if (argumentIndices.isEmpty()) {
         // no need to compute any flow on yields : no arg nor return value are corresponding to tracked SVs
-        return ImmutableSet.of();
+        return Collections.emptySet();
       }
       return methodYields.stream()
         .map(y -> y.flow(argumentIndices, domains))
