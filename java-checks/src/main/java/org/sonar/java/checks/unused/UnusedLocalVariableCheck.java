@@ -20,7 +20,6 @@
 package org.sonar.java.checks.unused;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
 
 import org.sonar.check.Rule;
@@ -40,6 +39,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S1481")
@@ -72,7 +72,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(
+    return Arrays.asList(
       Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER,
       Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT,
       Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.COMPILATION_UNIT);

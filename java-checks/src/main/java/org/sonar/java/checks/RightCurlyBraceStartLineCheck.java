@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -29,6 +28,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "RightCurlyBraceStartLineCheck")
@@ -37,7 +37,7 @@ public class RightCurlyBraceStartLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(
+    return Arrays.asList(
       Tree.Kind.BLOCK,
       Tree.Kind.STATIC_INITIALIZER,
       Tree.Kind.INITIALIZER,

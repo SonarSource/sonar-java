@@ -19,11 +19,11 @@
  */
 package org.sonar.java.matcher;
 
-import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -227,7 +227,7 @@ public class MethodMatcherFactoryTest {
 
     @Override
     public List<Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+      return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
     }
   }
 }

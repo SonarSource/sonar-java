@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.synchronization;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,7 +54,7 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(METHOD, CONSTRUCTOR);
+    return Arrays.asList(METHOD, CONSTRUCTOR);
   }
 
   @Override

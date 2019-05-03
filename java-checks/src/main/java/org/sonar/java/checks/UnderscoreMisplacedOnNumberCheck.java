@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -42,7 +41,7 @@ public class UnderscoreMisplacedOnNumberCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.INT_LITERAL, Kind.LONG_LITERAL);
+    return Arrays.asList(Kind.INT_LITERAL, Kind.LONG_LITERAL);
   }
 
   @Override

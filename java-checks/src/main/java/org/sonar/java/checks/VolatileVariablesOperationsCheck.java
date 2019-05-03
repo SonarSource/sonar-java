@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -43,7 +43,7 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(
+    return Arrays.asList(
       Tree.Kind.PREFIX_INCREMENT,
       Tree.Kind.POSTFIX_INCREMENT,
       Tree.Kind.PREFIX_DECREMENT,

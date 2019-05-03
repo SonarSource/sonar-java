@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
 import org.sonar.check.Rule;
@@ -41,6 +40,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import javax.annotation.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck")
@@ -54,7 +54,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubs
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Kind.METHOD_INVOCATION);
+    return Arrays.asList(Tree.Kind.METHOD, Kind.METHOD_INVOCATION);
   }
 
   @Override

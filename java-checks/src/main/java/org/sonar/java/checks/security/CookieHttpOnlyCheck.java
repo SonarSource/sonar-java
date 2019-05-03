@@ -136,7 +136,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(
+    return Arrays.asList(
       Tree.Kind.VARIABLE,
       Tree.Kind.ASSIGNMENT,
       Tree.Kind.METHOD_INVOCATION,

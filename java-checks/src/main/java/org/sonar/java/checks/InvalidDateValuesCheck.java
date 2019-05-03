@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,10 +69,10 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.<Tree.Kind>builder().addAll(super.nodesToVisit())
-      .add(Tree.Kind.EQUAL_TO)
-      .add(Tree.Kind.NOT_EQUAL_TO)
-      .build();
+    ArrayList<Tree.Kind> kinds = new ArrayList<>(super.nodesToVisit());
+    kinds.add(Tree.Kind.EQUAL_TO);
+    kinds.add(Tree.Kind.NOT_EQUAL_TO);
+    return kinds;
   }
 
   @Override

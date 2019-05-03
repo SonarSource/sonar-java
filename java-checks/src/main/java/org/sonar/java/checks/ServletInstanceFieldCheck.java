@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
@@ -54,7 +53,7 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.VARIABLE, Kind.METHOD);
+    return Arrays.asList(Tree.Kind.VARIABLE, Kind.METHOD);
   }
 
   @Override

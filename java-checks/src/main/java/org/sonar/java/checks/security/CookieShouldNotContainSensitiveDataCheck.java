@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
@@ -92,7 +91,7 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_REFERENCE, Tree.Kind.METHOD);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_REFERENCE, Tree.Kind.METHOD);
   }
 
   @Override

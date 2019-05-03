@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -29,6 +28,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S1182")
@@ -38,7 +38,7 @@ public class CloneMethodCallsSuperCloneCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.METHOD, Kind.METHOD_INVOCATION);
+    return Arrays.asList(Kind.METHOD, Kind.METHOD_INVOCATION);
   }
 
   @Override

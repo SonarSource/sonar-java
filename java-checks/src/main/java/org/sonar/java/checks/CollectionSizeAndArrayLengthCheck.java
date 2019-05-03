@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S3981")
@@ -45,11 +44,11 @@ public class CollectionSizeAndArrayLengthCheck extends IssuableSubscriptionVisit
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.unmodifiableList(Arrays.asList(
+    return Arrays.asList(
       Tree.Kind.GREATER_THAN_OR_EQUAL_TO,
       Tree.Kind.GREATER_THAN,
       Tree.Kind.LESS_THAN,
-      Tree.Kind.LESS_THAN_OR_EQUAL_TO));
+      Tree.Kind.LESS_THAN_OR_EQUAL_TO);
   }
 
   @Override

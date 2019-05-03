@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,26 +63,25 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.<Tree.Kind>builder()
-      .add(Tree.Kind.DIVIDE)
-      .add(Tree.Kind.REMAINDER)
-      .add(Tree.Kind.MINUS)
-      .add(Tree.Kind.LEFT_SHIFT)
-      .add(Tree.Kind.RIGHT_SHIFT)
-      .add(Tree.Kind.UNSIGNED_RIGHT_SHIFT)
-      .add(Tree.Kind.LESS_THAN)
-      .add(Tree.Kind.GREATER_THAN)
-      .add(Tree.Kind.LESS_THAN_OR_EQUAL_TO)
-      .add(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
-      .add(Tree.Kind.EQUAL_TO)
-      .add(Tree.Kind.NOT_EQUAL_TO)
-      .add(Tree.Kind.AND)
-      .add(Tree.Kind.XOR)
-      .add(Tree.Kind.OR)
-      .add(Tree.Kind.CONDITIONAL_AND)
-      .add(Tree.Kind.CONDITIONAL_OR)
-      .add(Tree.Kind.METHOD_INVOCATION)
-      .build();
+    return Arrays.asList(
+      Tree.Kind.DIVIDE,
+      Tree.Kind.REMAINDER,
+      Tree.Kind.MINUS,
+      Tree.Kind.LEFT_SHIFT,
+      Tree.Kind.RIGHT_SHIFT,
+      Tree.Kind.UNSIGNED_RIGHT_SHIFT,
+      Tree.Kind.LESS_THAN,
+      Tree.Kind.GREATER_THAN,
+      Tree.Kind.LESS_THAN_OR_EQUAL_TO,
+      Tree.Kind.GREATER_THAN_OR_EQUAL_TO,
+      Tree.Kind.EQUAL_TO,
+      Tree.Kind.NOT_EQUAL_TO,
+      Tree.Kind.AND,
+      Tree.Kind.XOR,
+      Tree.Kind.OR,
+      Tree.Kind.CONDITIONAL_AND,
+      Tree.Kind.CONDITIONAL_OR,
+      Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override

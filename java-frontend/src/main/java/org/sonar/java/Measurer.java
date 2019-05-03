@@ -19,8 +19,8 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.ImmutableList;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,7 +65,7 @@ public class Measurer extends SubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE,
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE,
         Tree.Kind.NEW_CLASS, Tree.Kind.ENUM_CONSTANT,
         Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }

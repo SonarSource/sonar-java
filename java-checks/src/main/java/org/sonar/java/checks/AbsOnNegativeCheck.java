@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import javax.annotation.CheckForNull;
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S2676")
@@ -72,7 +72,7 @@ public class AbsOnNegativeCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.UNARY_MINUS);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.UNARY_MINUS);
   }
 
   @Override

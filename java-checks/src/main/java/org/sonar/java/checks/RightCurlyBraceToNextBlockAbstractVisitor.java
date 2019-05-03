@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -29,13 +28,14 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class RightCurlyBraceToNextBlockAbstractVisitor extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.IF_STATEMENT, Tree.Kind.TRY_STATEMENT);
+    return Arrays.asList(Tree.Kind.IF_STATEMENT, Tree.Kind.TRY_STATEMENT);
   }
 
   @Override

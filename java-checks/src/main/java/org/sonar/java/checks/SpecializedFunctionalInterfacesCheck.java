@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -45,7 +45,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.VARIABLE);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.VARIABLE);
   }
 
   @Override

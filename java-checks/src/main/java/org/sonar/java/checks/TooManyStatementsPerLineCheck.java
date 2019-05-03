@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
 import org.sonar.check.Rule;
@@ -50,6 +49,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(key = "S00122")
@@ -58,7 +58,7 @@ public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.STATIC_INITIALIZER, Kind.INITIALIZER);
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.STATIC_INITIALIZER, Kind.INITIALIZER);
   }
 
   @Override

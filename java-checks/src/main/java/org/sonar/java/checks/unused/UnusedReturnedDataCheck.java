@@ -20,6 +20,8 @@
 package org.sonar.java.checks.unused;
 
 import com.google.common.collect.ImmutableList;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.CheckForNull;
@@ -50,7 +52,7 @@ public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO);
+    return Arrays.asList(Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO);
   }
 
   @Override

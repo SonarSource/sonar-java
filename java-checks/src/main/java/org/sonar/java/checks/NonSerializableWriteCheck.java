@@ -19,9 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
@@ -48,7 +47,7 @@ public class NonSerializableWriteCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.INSTANCE_OF);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.INSTANCE_OF);
   }
 
   @Override

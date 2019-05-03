@@ -19,8 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
@@ -42,7 +43,7 @@ public class NonShortCircuitLogicCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.AND, Tree.Kind.OR);
+    return Arrays.asList(Tree.Kind.AND, Tree.Kind.OR);
   }
 
   @Override

@@ -19,8 +19,8 @@
  */
 package org.sonar.java.resolve.targets.bytecodeGenerics;
 
-import com.google.common.collect.ImmutableList;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class GenericsSubstitutionFromBytecode {
     JavaType substitution;
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.ASSIGNMENT, Tree.Kind.CLASS);
+      return Arrays.asList(Tree.Kind.ASSIGNMENT, Tree.Kind.CLASS);
     }
 
     @Override

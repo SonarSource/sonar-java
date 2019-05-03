@@ -20,6 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +54,7 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT);
   }
 
   @Override
