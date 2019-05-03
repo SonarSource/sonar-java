@@ -133,7 +133,7 @@ public class CheckListTest {
         .isNotNull();
     }
 
-    Set<String> keys = Sets.newHashSet();
+    Set<String> keys = new HashSet<>();
     Set<String> names = Sets.newHashSet();
     CustomRulesDefinition definition = new CustomRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();

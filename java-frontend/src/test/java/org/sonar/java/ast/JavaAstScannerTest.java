@@ -135,7 +135,7 @@ public class JavaAstScannerTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.analysisCancelled()).thenReturn(true);
     JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), sonarComponents);
-    scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), Lists.newArrayList(), sonarComponents));
+    scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), new ArrayList<>(), sonarComponents));
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java")));
     verifyZeroInteractions(visitor);
   }
@@ -223,7 +223,7 @@ public class JavaAstScannerTest {
     FakeAuditListener listener = spy(new FakeAuditListener());
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.reportAnalysisError(any(RecognitionException.class), any(InputFile.class))).thenReturn(true);
-    scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(listener), Lists.newArrayList(), sonarComponents));
+    scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(listener), new ArrayList<>(), sonarComponents));
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
     verify(sonarComponents).reportAnalysisError(any(RecognitionException.class), any(InputFile.class));
     verifyZeroInteractions(listener);

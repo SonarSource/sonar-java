@@ -19,8 +19,6 @@
  */
 package org.sonar.java.matcher;
 
-import com.google.common.collect.Lists;
-
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
@@ -29,11 +27,12 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MethodMatcherCollection {
 
-  private List<MethodMatcher> matchers = Lists.newLinkedList();
+  private List<MethodMatcher> matchers = new LinkedList<>();
 
   private MethodMatcherCollection() {
   }

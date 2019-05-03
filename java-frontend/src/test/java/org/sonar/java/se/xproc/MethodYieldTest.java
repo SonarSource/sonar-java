@@ -85,7 +85,7 @@ public class MethodYieldTest {
     ps = ps.put(sym, sv1);
 
     MethodYield methodYield = mb.happyPathYields().findFirst().get();
-    Stream<ProgramState> generatedStatesFromFirstYield = methodYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), Lists.newArrayList(), ps, () -> sv3);
+    Stream<ProgramState> generatedStatesFromFirstYield = methodYield.statesAfterInvocation(Lists.newArrayList(sv1, sv2), new ArrayList<>(), ps, () -> sv3);
     assertThat(generatedStatesFromFirstYield).hasSize(1);
   }
 

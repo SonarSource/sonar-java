@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 import javax.annotation.CheckForNull;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.AbstractTypedTree;
@@ -45,7 +44,7 @@ public class SemanticModel {
 
   private final Map<Tree, Symbol> symbolsTree = new HashMap<>();
 
-  private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
+  private final Map<Symbol, Resolve.Env> symbolEnvs = new HashMap<>();
   private final BiMap<Tree, Resolve.Env> envs = HashBiMap.create();
   private final BytecodeCompleter bytecodeCompleter;
 

@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -35,6 +34,7 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,7 +85,7 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
       return allowedWarnings;
     }
 
-    allowedWarnings = Lists.newArrayList();
+    allowedWarnings = new ArrayList<>();
     Iterable<String> listOfWarnings = Splitter.on(",").trimResults().split(warningsCommaSeparated);
     for (String warning : listOfWarnings) {
       if (StringUtils.isNotBlank(warning)) {
@@ -97,7 +97,7 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static List<String> getSuppressedWarnings(ExpressionTree argument) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
       result.add(LiteralUtils.trimQuotes(((LiteralTree) argument).value()));
     } else if (argument.is(Tree.Kind.NEW_ARRAY)) {

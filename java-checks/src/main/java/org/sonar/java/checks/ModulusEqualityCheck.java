@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -37,12 +36,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(key = "S2197")
 public class ModulusEqualityCheck extends IssuableSubscriptionVisitor {
 
-  private List<Symbol> methodParams = Lists.newArrayList();
+  private List<Symbol> methodParams = new ArrayList<>();
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {

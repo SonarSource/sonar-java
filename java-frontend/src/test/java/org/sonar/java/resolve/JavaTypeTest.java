@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -81,7 +82,7 @@ public class JavaTypeTest {
     JavaSymbol.TypeJavaSymbol typeSymbol2 = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", Symbols.rootPackage);
     ArrayJavaType arrayType = new ArrayJavaType(typeSymbol.type, symbols.arrayClass);
     ClassJavaType classType = (ClassJavaType) typeSymbol.type;
-    classType.interfaces = Lists.newArrayList();
+    classType.interfaces = new ArrayList<>();
     assertThat(symbols.byteType.is("byte")).isTrue();
     assertThat(symbols.byteType.is("int")).isFalse();
     assertThat(classType.is("org.foo.bar.MyType")).isTrue();

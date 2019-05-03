@@ -19,10 +19,10 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.Lists;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class InitializerListTreeImpl extends ListTreeImpl<ExpressionTree> {
@@ -31,6 +31,6 @@ public class InitializerListTreeImpl extends ListTreeImpl<ExpressionTree> {
   }
 
   public static InitializerListTreeImpl emptyList() {
-    return new InitializerListTreeImpl(Lists.<ExpressionTree>newArrayList(), Lists.<SyntaxToken>newArrayList());
+    return new InitializerListTreeImpl(new ArrayList<>(), new ArrayList<>());
   }
 }

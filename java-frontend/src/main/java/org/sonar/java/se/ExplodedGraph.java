@@ -21,7 +21,6 @@ package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import org.sonar.java.se.xproc.MethodYield;
@@ -38,7 +37,7 @@ import java.util.Set;
 
 public class ExplodedGraph {
 
-  private final Map<Node, Node> nodes = Maps.newHashMap();
+  private final Map<Node, Node> nodes = new HashMap<>();
   private final Multimap<ProgramPoint, Node> nodesByProgramPoint = LinkedListMultimap.create();
 
   /**

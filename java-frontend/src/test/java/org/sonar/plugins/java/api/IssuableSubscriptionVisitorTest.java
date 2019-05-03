@@ -21,7 +21,7 @@ package org.sonar.plugins.java.api;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
@@ -40,7 +40,7 @@ public class IssuableSubscriptionVisitorTest {
 
   @Test
   public void test_custom_rules_report_issues() throws Exception {
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(new CustomRule()), Lists.<File>newArrayList(), null);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(new CustomRule()), new ArrayList<>(), null);
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(7);
@@ -67,7 +67,7 @@ public class IssuableSubscriptionVisitorTest {
     public void visitNode(Tree tree) {
       reportIssue(tree, "issue on tree");
       addIssue(1, "issue on 1st line");
-      reportIssue(tree, "message", Lists.<JavaFileScannerContext.Location>newArrayList(), 0);
+      reportIssue(tree, "message", new ArrayList<>(), 0);
       addIssueOnFile("issue on file");
       reportIssue(tree, "issue on tree");
       reportIssue(tree, "issue on tree", ImmutableList.<JavaFileScannerContext.Location>of(), null);

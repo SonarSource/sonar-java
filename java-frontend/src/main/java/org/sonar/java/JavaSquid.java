@@ -23,6 +23,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -73,8 +74,8 @@ public class JavaSquid {
       codeVisitors = Iterables.concat(measurers, codeVisitors);
       testCodeVisitors.add(measurer.new TestFileMeasurer());
     }
-    List<File> classpath = Lists.newArrayList();
-    List<File> testClasspath = Lists.newArrayList();
+    List<File> classpath = new ArrayList<>();
+    List<File> testClasspath = new ArrayList<>();
     if (sonarComponents != null) {
       if(!sonarComponents.isSonarLintContext()) {
         codeVisitors = Iterables.concat(codeVisitors, Arrays.asList(new FileLinesVisitor(sonarComponents), new SyntaxHighlighterVisitor(sonarComponents)));

@@ -21,8 +21,9 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -162,7 +163,7 @@ public class SecondPass implements JavaSymbol.Completer {
 
   private void completeTypeParameters(TypeParameters typeParameters, Resolve.Env env) {
     for (TypeParameterTree typeParameterTree : typeParameters) {
-      List<JavaType> bounds = Lists.newArrayList();
+      List<JavaType> bounds = new ArrayList<>();
       if(typeParameterTree.bounds().isEmpty()) {
         bounds.add(symbols.objectType);
       } else {
@@ -175,7 +176,7 @@ public class SecondPass implements JavaSymbol.Completer {
   }
 
   private static void checkHierarchyCycles(JavaType baseType) {
-    Set<ClassJavaType> types = Sets.newHashSet();
+    Set<ClassJavaType> types = new HashSet<>();
     ClassJavaType type = (ClassJavaType) baseType;
     while (type != null) {
       if (!types.add(type)) {
@@ -198,7 +199,7 @@ public class SecondPass implements JavaSymbol.Completer {
     }
 
     JavaType returnType = null;
-    List<JavaType> argTypes = Lists.newArrayList();
+    List<JavaType> argTypes = new ArrayList<>();
     // no return type for constructor
     if (!CONSTRUCTOR_NAME.equals(symbol.name)) {
       returnType = resolveType(env, methodTree.returnType());

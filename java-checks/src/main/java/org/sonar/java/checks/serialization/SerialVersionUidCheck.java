@@ -21,7 +21,6 @@ package org.sonar.java.checks.serialization;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
@@ -37,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(key = "S2057")
@@ -70,7 +70,7 @@ public class SerialVersionUidCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkModifiers(Symbol.VariableSymbol serialVersionUidSymbol) {
-    List<String> missingModifiers = Lists.newArrayList();
+    List<String> missingModifiers = new ArrayList<>();
     if (!serialVersionUidSymbol.isStatic()) {
       missingModifiers.add("static");
     }

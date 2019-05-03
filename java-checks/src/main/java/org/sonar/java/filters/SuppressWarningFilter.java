@@ -23,9 +23,10 @@ import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -124,7 +125,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   private void handleSuppressWarning(List<AnnotationTree> annotationTrees, Tree tree) {
     int startLine = -1;
-    List<String> rules = Lists.newArrayList();
+    List<String> rules = new ArrayList<>();
     for (AnnotationTree annotationTree : annotationTrees) {
       if (isSuppressWarningsAnnotation(annotationTree)) {
         startLine = startLineIncludingTrivia(tree);
@@ -160,7 +161,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
   }
 
   private static List<String> getRulesFromExpression(ExpressionTree expression) {
-    List<String> args = Lists.newArrayList();
+    List<String> args = new ArrayList<>();
     if (expression.is(Tree.Kind.NEW_ARRAY)) {
       for (ExpressionTree initializer : ((NewArrayTree) expression).initializers()) {
         args.addAll(getRulesFromExpression(initializer));

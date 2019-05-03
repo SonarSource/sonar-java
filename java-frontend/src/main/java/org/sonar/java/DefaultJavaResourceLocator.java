@@ -22,9 +22,9 @@ package org.sonar.java;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Maps;
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
@@ -42,7 +42,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   public DefaultJavaResourceLocator(JavaClasspath javaClasspath) {
     this.javaClasspath = javaClasspath;
-    resourcesByClass = Maps.newHashMap();
+    resourcesByClass = new HashMap<>();
   }
 
   @Override

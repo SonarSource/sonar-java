@@ -20,17 +20,17 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class LinesOfCodeVisitor extends SubscriptionVisitor{
 
-  private Set<Integer> lines = Sets.newHashSet();
+  private Set<Integer> lines = new HashSet<>();
 
   public int linesOfCode(Tree tree) {
     lines.clear();

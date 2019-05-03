@@ -19,10 +19,10 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Lists;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationValue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AnnotationInstanceResolve implements SymbolMetadata.AnnotationInstance {
@@ -32,7 +32,7 @@ public class AnnotationInstanceResolve implements SymbolMetadata.AnnotationInsta
 
   AnnotationInstanceResolve(JavaSymbol.TypeJavaSymbol symbol) {
     this.typeSymbol = symbol;
-    this.values = Lists.newArrayList();
+    this.values = new ArrayList<>();
   }
 
   void addValue(AnnotationValue annotationValue) {

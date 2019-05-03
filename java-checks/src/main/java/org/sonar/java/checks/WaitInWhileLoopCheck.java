@@ -20,8 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2274")
 public class WaitInWhileLoopCheck extends AbstractMethodDetection {
 
-  private Deque<Boolean> inWhileLoop = Lists.newLinkedList();
+  private Deque<Boolean> inWhileLoop = new LinkedList<>();
 
   @Override
   public void setContext(JavaFileScannerContext context) {

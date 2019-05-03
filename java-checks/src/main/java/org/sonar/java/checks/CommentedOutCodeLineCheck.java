@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -75,7 +74,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
    */
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    List<Integer> commentedOutCodeLines = Lists.newArrayList();
+    List<Integer> commentedOutCodeLines = new ArrayList<>();
     for (SyntaxTrivia syntaxTrivia : comments) {
       commentedOutCodeLines.addAll(handleCommentsForTrivia(syntaxTrivia));
     }

@@ -20,10 +20,10 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ParametrizedTypeJavaType extends ClassJavaType {
@@ -57,7 +57,7 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
     if (typeSubstitution != null) {
       return typeSubstitution.typeVariables();
     }
-    return Lists.newArrayList();
+    return new ArrayList<>();
   }
 
   @Override
