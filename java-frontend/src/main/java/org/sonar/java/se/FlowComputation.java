@@ -152,7 +152,7 @@ public class FlowComputation {
   }
 
   private static <T> Set<T> setFromNullable(@Nullable T val) {
-    return val == null ? Collections.emptySet() : ImmutableSet.of(val);
+    return val == null ? Collections.emptySet() : Collections.singleton(val);
   }
 
   private Set<Flow> run(final ExplodedGraph.Node node, PSet<Symbol> trackedSymbols) {

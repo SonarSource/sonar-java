@@ -74,7 +74,7 @@ public class CollectionMethodsWithLinearComplexityCheck extends IssuableSubscrip
     builder.put(collectionRemove, ImmutableSet.of(ARRAY_LIST, COPY_ON_WRITE_ARRAY_SET, COPY_ON_WRITE_ARRAY_LIST));
 
     MethodMatcher listGet = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.List")).name("get").addParameter("int");
-    builder.put(listGet, ImmutableSet.of(LINKED_LIST));
+    builder.put(listGet, Collections.singleton(LINKED_LIST));
     matcherActualTypeMap = builder.build();
   }
 

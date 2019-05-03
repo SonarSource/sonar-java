@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -40,7 +39,7 @@ import java.util.Set;
 @Rule(key = "S2387")
 public class ChildClassShadowFieldCheck extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> IGNORED_FIELDS = ImmutableSet.of("serialVersionUID");
+  private static final Set<String> IGNORED_FIELDS = Collections.singleton("serialVersionUID");
 
   @Override
   public List<Kind> nodesToVisit() {

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
@@ -91,7 +90,7 @@ public class JavaAstScannerTest {
     InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/Comments.java");
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new Measurer(context, noSonarFilter)));
-    verify(noSonarFilter).noSonarInFile(inputFile, ImmutableSet.of(15));
+    verify(noSonarFilter).noSonarInFile(inputFile, Collections.singleton(15));
   }
 
   @Test
@@ -99,11 +98,11 @@ public class JavaAstScannerTest {
     InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new Measurer(context, noSonarFilter)));
-    verify(noSonarFilter).noSonarInFile(inputFile, ImmutableSet.of(8));
+    verify(noSonarFilter).noSonarInFile(inputFile, Collections.singleton(8));
     //No Sonar on tests files
     NoSonarFilter noSonarFilterForTest = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new Measurer(context, noSonarFilterForTest).new TestFileMeasurer()));
-    verify(noSonarFilterForTest).noSonarInFile(inputFile, ImmutableSet.of(8));
+    verify(noSonarFilterForTest).noSonarInFile(inputFile, Collections.singleton(8));
   }
 
   @Test

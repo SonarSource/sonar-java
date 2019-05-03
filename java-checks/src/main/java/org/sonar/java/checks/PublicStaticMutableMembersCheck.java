@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,7 +87,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
     "com.google.common.collect.ImmutableCollection"
   );
 
-  private static final Set<String> ACCEPTED_NEW_TYPES = ImmutableSet.of(
+  private static final Set<String> ACCEPTED_NEW_TYPES = Collections.singleton(
     "org.apache.commons.collections4.list.UnmodifiableList"
   );
 

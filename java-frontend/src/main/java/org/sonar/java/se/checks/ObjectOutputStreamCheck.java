@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableSet;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
@@ -33,6 +32,8 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.Collections;
 
 @Rule(key = "S2689")
 public class ObjectOutputStreamCheck extends SECheck {
@@ -107,7 +108,7 @@ public class ObjectOutputStreamCheck extends SECheck {
             newClassTree.arguments().get(0),
             this,
             "Do not use a FileOutputStream in append mode.",
-            ImmutableSet.of(Flow.of(new JavaFileScannerContext.Location("FileOutputStream created here.", constraint.node))));
+            Collections.singleton(Flow.of(new JavaFileScannerContext.Location("FileOutputStream created here.", constraint.node))));
         }
       }
     }
