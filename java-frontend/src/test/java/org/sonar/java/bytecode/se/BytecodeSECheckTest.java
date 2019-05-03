@@ -22,8 +22,6 @@ package org.sonar.java.bytecode.se;
 import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
