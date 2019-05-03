@@ -555,7 +555,7 @@ class NullPointerTest {
     if (null == coverageMethod()) { } // Coverage
     if (a == null) { } // Coverage
     if (a != null) { } // Coverage
-    undefined.field; // Coverage
+    a[0] = undefined.field; // Coverage
     a = 1 + 2; // Coverage
   }
 

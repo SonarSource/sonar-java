@@ -124,12 +124,12 @@ class ZeroConstraint {
 
   void t1() {
     int i = maybeZero(); // flow@zero1 {{'maybeZero()' can return zero.}} flow@zero1 {{Implies 'i' can be zero.}}
-    1 / i; // Noncompliant [[flows=zero1]] flow@zero1
+    int j = 1 / i; // Noncompliant [[flows=zero1]] flow@zero1
   }
 
   void t() {
     int i = zero(); // flow@zero2 {{'zero()' returns zero.}} flow@zero2 {{Implies 'i' is zero.}}
-    1 / i; // Noncompliant [[flows=zero2]] flow@zero2
+    int j = 1 / i; // Noncompliant [[flows=zero2]] flow@zero2
   }
 }
 
