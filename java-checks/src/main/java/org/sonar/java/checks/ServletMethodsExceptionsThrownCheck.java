@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -65,7 +66,7 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
         tryCatches.add(getCatchedExceptions(((TryStatementTree) tree).catches()));
       } else if (tree.is(Tree.Kind.CATCH)) {
         tryCatches.pop();
-        tryCatches.add(ImmutableList.<Type>of());
+        tryCatches.add(Collections.emptyList());
       } else if (tree.is(Tree.Kind.THROW_STATEMENT)) {
         addIssueIfNotCatched(ImmutableList.of(((ThrowStatementTree) tree).expression().symbolType()), tree, "Add a \"try/catch\" block.");
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {

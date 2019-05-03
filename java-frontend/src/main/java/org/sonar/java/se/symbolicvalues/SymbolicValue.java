@@ -44,7 +44,7 @@ public class SymbolicValue {
 
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
 
     @Override
@@ -147,7 +147,7 @@ public class SymbolicValue {
         return ImmutableList.of(programState.addConstraint(this, nullConstraint));
       }
     } else if (constraint != nullConstraint) {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
     return ImmutableList.of(programState);
   }
@@ -155,7 +155,7 @@ public class SymbolicValue {
   public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
     Constraint cstraint = programState.getConstraint(this, booleanConstraint.getClass());
     if (!booleanConstraint.isValidWith(cstraint)) {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
     return ImmutableList.of(programState.addConstraint(this, booleanConstraint));
   }
@@ -170,7 +170,7 @@ public class SymbolicValue {
     if (constraint.isValidWith(csrtaint)) {
       return ImmutableList.of(programState.addConstraint(this, constraint));
     }
-    return ImmutableList.of();
+    return Collections.emptyList();
   }
 
   public ProgramState setSingleConstraint(ProgramState programState, ObjectConstraint nullConstraint) {
@@ -271,7 +271,7 @@ public class SymbolicValue {
         ObjectConstraint constraint = programState.getConstraint(operand, ObjectConstraint.class);
         if (constraint !=null && constraint.isNull()) {
           // irrealizable constraint : instance of true if operand is null
-          return ImmutableList.of();
+          return Collections.emptyList();
         }
         // if instanceof is true then we know for sure that expression is not null.
         List<ProgramState> ps = operand.setConstraint(programState, ObjectConstraint.NOT_NULL);

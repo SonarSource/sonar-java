@@ -274,14 +274,14 @@ public class FirstPass extends BaseTreeVisitor {
       // add 'public static E[] values()'
       JavaSymbol.MethodJavaSymbol valuesMethod = new JavaSymbol.MethodJavaSymbol((symbol.flags & Flags.ACCESS_FLAGS) | Flags.STATIC, "values", symbol);
       ArrayJavaType enumArrayType = new ArrayJavaType(symbol.type, symbols.arrayClass);
-      MethodJavaType valuesMethodType = new MethodJavaType(ImmutableList.<JavaType>of(), enumArrayType, ImmutableList.<JavaType>of(), symbol);
+      MethodJavaType valuesMethodType = new MethodJavaType(Collections.emptyList(), enumArrayType, Collections.emptyList(), symbol);
       valuesMethod.setMethodType(valuesMethodType);
       valuesMethod.parameters = new Scope(valuesMethod);
       classEnv.scope.enter(valuesMethod);
 
       // add 'public static E valueOf(String name)'
       JavaSymbol.MethodJavaSymbol valueOfMethod = new JavaSymbol.MethodJavaSymbol((symbol.flags & Flags.ACCESS_FLAGS) | Flags.STATIC, "valueOf", symbol);
-      MethodJavaType valueOfMethodType = new MethodJavaType(ImmutableList.<JavaType>of(symbols.stringType), symbol.type, ImmutableList.<JavaType>of(), symbol);
+      MethodJavaType valueOfMethodType = new MethodJavaType(ImmutableList.<JavaType>of(symbols.stringType), symbol.type, Collections.emptyList(), symbol);
       valueOfMethod.setMethodType(valueOfMethodType);
       valueOfMethod.parameters = new Scope(valueOfMethod);
       valueOfMethod.parameters.enter(new JavaSymbol.VariableJavaSymbol(0, "name", symbols.stringType, valueOfMethod));

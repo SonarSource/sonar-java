@@ -20,7 +20,6 @@
 package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -53,7 +52,7 @@ public class JavaCheckVerifierTest {
   private static final IssuableSubscriptionVisitor NO_EFFECT_VISITOR = new IssuableSubscriptionVisitor() {
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
   };
 
@@ -541,7 +540,7 @@ public class JavaCheckVerifierTest {
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
 
     @Override

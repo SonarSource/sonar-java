@@ -38,6 +38,7 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -338,7 +339,7 @@ public class BytecodeVisitor extends ClassVisitor {
 
   private List<JavaType> getCompletedClassSymbolsType(@Nullable String[] bytecodeNames) {
     if (bytecodeNames == null) {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
     return Arrays.stream(bytecodeNames).map(bName -> getClassSymbol(bName).type).collect(Collectors.toList());
   }

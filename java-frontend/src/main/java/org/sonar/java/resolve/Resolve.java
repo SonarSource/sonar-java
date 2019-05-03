@@ -749,7 +749,7 @@ public class Resolve {
     boolean m1IsGeneric = m1MethodSymbol.isParametrized();
     boolean m2IsGeneric = m2MethodSymbol.isParametrized();
     if (m2IsGeneric) {
-      m2Substitution = typeSubstitutionSolver.getTypeSubstitution(m2MethodSymbol, callSite, ImmutableList.of(), argTypes);
+      m2Substitution = typeSubstitutionSolver.getTypeSubstitution(m2MethodSymbol, callSite, Collections.emptyList(), argTypes);
     }
     if (m2Substitution == null) {
       m2Substitution = new TypeSubstitution();

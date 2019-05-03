@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -124,7 +123,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
-    reportIssue(javaCheck, tree, message, ImmutableList.of(), null);
+    reportIssue(javaCheck, tree, message, Collections.emptyList(), null);
   }
 
   @Override
@@ -142,7 +141,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
-    reportIssue(javaCheck, startTree, endTree, message, ImmutableList.of(), null);
+    reportIssue(javaCheck, startTree, endTree, message, Collections.emptyList(), null);
   }
 
   @Override

@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements ModifiersTree {
@@ -51,7 +52,7 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
   }
 
   public static ModifiersTreeImpl emptyModifiers() {
-    return new ModifiersTreeImpl(ImmutableList.<ModifierTree>of());
+    return new ModifiersTreeImpl(Collections.emptyList());
   }
 
   @Override

@@ -475,7 +475,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public List<AnnotationTree> annotations() {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
   }
 
@@ -514,7 +514,7 @@ public abstract class JavaTree implements Tree {
     public PrimitiveTypeTreeImpl(InternalSyntaxToken token) {
       super(Kind.PRIMITIVE_TYPE);
       this.token = token;
-      this.annotations = ImmutableList.of();
+      this.annotations = Collections.emptyList();
     }
 
     @Override
@@ -558,7 +558,7 @@ public abstract class JavaTree implements Tree {
       super(Kind.PARAMETERIZED_TYPE);
       this.type = Preconditions.checkNotNull(type);
       this.typeArguments = Preconditions.checkNotNull(typeArguments);
-      this.annotations = ImmutableList.<AnnotationTree>of();
+      this.annotations = Collections.emptyList();
     }
 
     @Override

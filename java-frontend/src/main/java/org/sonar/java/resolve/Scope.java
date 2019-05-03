@@ -21,9 +21,9 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -62,7 +62,7 @@ public class Scope {
     while (scope != null && !scope.symbols.containsKey(name)) {
       scope = scope.next;
     }
-    return scope == null ? ImmutableList.<JavaSymbol>of() : scope.symbols.get(name);
+    return scope == null ? Collections.emptyList() : scope.symbols.get(name);
   }
 
   public List<JavaSymbol> scopeSymbols() {

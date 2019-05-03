@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import java.io.File;
 import java.util.ArrayList;
@@ -117,7 +116,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
-      issues.add(createAnalyzerMessage(javaCheck, startTree, endTree, message, ImmutableList.of(), null));
+      issues.add(createAnalyzerMessage(javaCheck, startTree, endTree, message, Collections.emptyList(), null));
     }
 
     @Override

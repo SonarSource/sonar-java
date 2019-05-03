@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTree {
@@ -41,7 +42,7 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
 
   public ArrayDimensionTreeImpl(SyntaxToken openBracketToken, @Nullable ExpressionTree expression, SyntaxToken closeBracketToken) {
     super(Tree.Kind.ARRAY_DIMENSION);
-    this.annotations = ImmutableList.of();
+    this.annotations = Collections.emptyList();
     this.openBracketToken = openBracketToken;
     this.expression = expression;
     this.closeBracketToken = closeBracketToken;

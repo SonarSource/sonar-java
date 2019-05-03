@@ -141,7 +141,7 @@ public class TypeInferenceSolverTest {
   private JavaType createType(String string, JavaType superType) {
     JavaSymbol.TypeJavaSymbol symbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "A", symbols.defaultPackage);
     ClassJavaType type = (ClassJavaType) symbol.type;
-    type.interfaces = ImmutableList.of();
+    type.interfaces = Collections.emptyList();
     type.supertype = superType;
     return type;
   }
@@ -196,7 +196,7 @@ public class TypeInferenceSolverTest {
   }
 
   private TypeSubstitution typeSubstitutionForTypeParameters(List<JavaType> formals, List<JavaType> args, boolean varargs, TypeVariableJavaType... typeParameters) {
-    MethodJavaType methodType = new MethodJavaType(formals, symbols.voidType, ImmutableList.<JavaType>of(), symbols.objectType.symbol);
+    MethodJavaType methodType = new MethodJavaType(formals, symbols.voidType, Collections.emptyList(), symbols.objectType.symbol);
     int flags = Flags.PUBLIC;
     if (varargs) {
       flags |= Flags.VARARGS;

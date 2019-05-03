@@ -126,7 +126,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       .anyMatch(RelationState.UNFULFILLED::equals);
 
     if (unfulfilled) {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
     knownRelations.add(this);
     return getNewProgramStates(initialProgramState, newRelations, knownRelations);

@@ -26,6 +26,7 @@ import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map.Entry;
 
 /**
@@ -146,7 +147,7 @@ public class Symbols {
 
     predefClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "", rootPackage);
     predefClass.members = new Scope(predefClass);
-    ((ClassJavaType) predefClass.type).interfaces = ImmutableList.of();
+    ((ClassJavaType) predefClass.type).interfaces = Collections.emptyList();
 
     // TODO should have type "noType":
     noSymbol = new JavaSymbol.TypeJavaSymbol(0, "", rootPackage);
@@ -222,7 +223,7 @@ public class Symbols {
     JavaSymbol.TypeJavaSymbol symbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, name, rootPackage);
     symbol.members = new Scope(symbol);
     predefClass.members.enter(symbol);
-    ((ClassJavaType) symbol.type).interfaces = ImmutableList.of();
+    ((ClassJavaType) symbol.type).interfaces = Collections.emptyList();
     symbol.type.tag = tag;
     return symbol.type;
   }
@@ -269,7 +270,7 @@ public class Symbols {
   }
 
   private void enterBinop(String name, JavaType left, JavaType right, JavaType result) {
-    JavaType type = new MethodJavaType(ImmutableList.of(left, right), result, ImmutableList.<JavaType>of(), methodClass);
+    JavaType type = new MethodJavaType(ImmutableList.of(left, right), result, Collections.emptyList(), methodClass);
     JavaSymbol symbol = new JavaSymbol.MethodJavaSymbol(Flags.PUBLIC | Flags.STATIC, name, type, predefClass);
     predefClass.members.enter(symbol);
   }

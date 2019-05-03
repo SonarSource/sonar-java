@@ -21,9 +21,9 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.Closeables;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -188,7 +188,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
         if (!bytecodeName.endsWith("package-info") && isNotAnnotation(flags)) {
           classesNotFound.add(bytecodeName);
         }
-        ((ClassJavaType) symbol.type).interfaces = ImmutableList.of();
+        ((ClassJavaType) symbol.type).interfaces = Collections.emptyList();
         ((ClassJavaType) symbol.type).supertype = Symbols.unknownType;
       }
 

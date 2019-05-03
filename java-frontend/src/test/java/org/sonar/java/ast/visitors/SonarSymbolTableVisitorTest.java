@@ -19,11 +19,11 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Rule;
@@ -75,7 +75,7 @@ public class SonarSymbolTableVisitorTest {
     Files.asCharSink(target, StandardCharsets.UTF_8).write(content);
 
     InputFile inputFile = TestUtils.inputFile(target);
-    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(ImmutableList.of(), sonarComponents.getJavaClasspath(), sonarComponents));
+    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(Collections.emptyList(), sonarComponents.getJavaClasspath(), sonarComponents));
     String componentKey = inputFile.key();
     verifyUsages(componentKey, 1, 17, reference(5,2), reference(9,10));
     // Example class declaration

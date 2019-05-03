@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -81,7 +82,7 @@ public class SecondPass implements JavaSymbol.Completer {
     if ("".equals(symbol.name)) {
       // Anonymous Class Declaration
       // FIXME(Godin): This case avoids NPE which occurs because semanticModel has no associations for anonymous classes.
-      type.interfaces = ImmutableList.of();
+      type.interfaces = Collections.emptyList();
       return;
     }
 
@@ -123,7 +124,7 @@ public class SecondPass implements JavaSymbol.Completer {
 
     // Register default constructor
     if (tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM) && symbol.lookupSymbols(CONSTRUCTOR_NAME).isEmpty()) {
-      List<JavaType> argTypes = ImmutableList.of();
+      List<JavaType> argTypes = Collections.emptyList();
       if (!symbol.isStatic()) {
         // JLS8 - 8.8.1 & 8.8.9 : constructors of inner class have an implicit first arg of its directly enclosing class type
         JavaSymbol owner = symbol.owner();
@@ -132,7 +133,7 @@ public class SecondPass implements JavaSymbol.Completer {
         }
       }
       JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(symbol.flags & Flags.ACCESS_FLAGS, CONSTRUCTOR_NAME, symbol);
-      MethodJavaType defaultConstructorType = new MethodJavaType(argTypes, null, ImmutableList.of(), symbol);
+      MethodJavaType defaultConstructorType = new MethodJavaType(argTypes, null, Collections.emptyList(), symbol);
       defaultConstructor.setMethodType(defaultConstructorType);
       defaultConstructor.parameters = new Scope(defaultConstructor);
       symbol.members.enter(defaultConstructor);

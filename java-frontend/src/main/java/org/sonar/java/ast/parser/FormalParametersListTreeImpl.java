@@ -19,12 +19,12 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
+import java.util.Collections;
 import java.util.List;
 
 public class FormalParametersListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
@@ -33,7 +33,7 @@ public class FormalParametersListTreeImpl extends ListTreeImpl<VariableTreeImpl>
   private InternalSyntaxToken closeParenToken;
 
   public FormalParametersListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.FORMAL_PARAMETERS, ImmutableList.<VariableTreeImpl>of());
+    super(JavaLexer.FORMAL_PARAMETERS, Collections.emptyList());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
