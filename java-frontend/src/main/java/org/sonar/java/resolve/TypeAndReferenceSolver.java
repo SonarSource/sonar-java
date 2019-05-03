@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -784,7 +785,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (newClassTreeImpl.isTypeSet()) {
       return;
     }
-    List<JavaType> typeArgumentsTypes = ImmutableList.of();
+    List<JavaType> typeArgumentsTypes = Collections.emptyList();
     if (tree.typeArguments() != null) {
       resolveAs((List<Tree>) tree.typeArguments(), JavaSymbol.TYP);
       typeArgumentsTypes = tree.typeArguments().stream().map(this::getType).collect(Collectors.toList());
@@ -834,7 +835,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       anonymousClassType.supertype = symbols.objectType;
     } else {
       anonymousClassType.supertype = parentType;
-      anonymousClassType.interfaces = ImmutableList.of();
+      anonymousClassType.interfaces = Collections.emptyList();
     }
     anonymousClassType.symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", anonymousClassType.supertype, anonymousClassType.symbol));
     scan(classBody);
@@ -878,7 +879,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   private Resolve.Resolution resolveConstructorSymbol(IdentifierTree identifier, Type type, Resolve.Env methodEnv, List<JavaType> argTypes) {
-    return resolveConstructorSymbol(identifier, type, methodEnv, argTypes, ImmutableList.of());
+    return resolveConstructorSymbol(identifier, type, methodEnv, argTypes, Collections.emptyList());
   }
 
   private Resolve.Resolution resolveConstructorSymbol(IdentifierTree identifier, Type type, Resolve.Env methodEnv, List<JavaType> argTypes, List<JavaType> typeArgumentsTypes) {
@@ -1136,7 +1137,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       for (ExpressionTree expressionTree : arguments) {
         AssignmentExpressionTree aet = (AssignmentExpressionTree) expressionTree;
         IdentifierTree variable = (IdentifierTree) aet.variable();
-        JavaSymbol identInType = resolve.findMethod(semanticModel.getEnv(tree), getType(tree.annotationType()), variable.name(), ImmutableList.<JavaType>of()).symbol();
+        JavaSymbol identInType = resolve.findMethod(semanticModel.getEnv(tree), getType(tree.annotationType()), variable.name(), Collections.emptyList()).symbol();
         associateReference(variable, identInType);
         JavaType type = identInType.type;
         if (type == null) {

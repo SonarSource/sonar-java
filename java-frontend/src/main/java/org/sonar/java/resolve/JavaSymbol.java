@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -889,7 +890,7 @@ public class JavaSymbol implements Symbol {
 
     @Override
     public List<JavaType> getInterfaces() {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
 
     @Override

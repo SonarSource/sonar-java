@@ -24,10 +24,10 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "ClassCyclomaticComplexity")
@@ -55,7 +55,7 @@ public class ClassComplexityCheck extends IssuableSubscriptionVisitor {
       reportIssue(
         report,
         "The Cyclomatic Complexity of this class is " + size + " which is greater than " + max + " authorized.",
-        ImmutableList.<JavaFileScannerContext.Location>of(),
+        Collections.emptyList(),
         size - max);
     }
   }

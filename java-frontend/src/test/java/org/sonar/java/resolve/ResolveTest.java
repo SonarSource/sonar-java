@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import java.io.File;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -133,7 +134,7 @@ public class ResolveTest {
     c = new JavaSymbol.TypeJavaSymbol(0, "class", packageJavaSymbol);
 
     // base not implemented by class
-    ((ClassJavaType) c.type).interfaces = ImmutableList.of();
+    ((ClassJavaType) c.type).interfaces = Collections.emptyList();
     assertThat(resolve.isSubClass(c, base)).isFalse();
 
     // class implements base interface
@@ -142,7 +143,7 @@ public class ResolveTest {
 
     // class implements interface, but not base interface
     JavaSymbol.TypeJavaSymbol i = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "class", packageJavaSymbol);
-    ((ClassJavaType) i.type).interfaces = ImmutableList.of();
+    ((ClassJavaType) i.type).interfaces = Collections.emptyList();
     ((ClassJavaType) c.type).interfaces = ImmutableList.of(i.type);
     assertThat(resolve.isSubClass(c, base)).isFalse();
 
@@ -151,9 +152,9 @@ public class ResolveTest {
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // class extends superclass
-    ((ClassJavaType) c.type).interfaces = ImmutableList.of();
+    ((ClassJavaType) c.type).interfaces = Collections.emptyList();
     ((ClassJavaType) c.type).supertype = new JavaSymbol.TypeJavaSymbol(0, "superclass", packageJavaSymbol).type;
-    ((ClassJavaType) ((ClassJavaType) c.type).supertype).interfaces = ImmutableList.of();
+    ((ClassJavaType) ((ClassJavaType) c.type).supertype).interfaces = Collections.emptyList();
     assertThat(resolve.isSubClass(c, base)).isFalse();
 
     // class extends superclass, which implements base

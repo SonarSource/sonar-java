@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import org.fest.assertions.Fail;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -197,7 +198,7 @@ public class ExpectationsParserTest {
       MESSAGE, "issue msg",
       START_COLUMN, 1,
       END_COLUMN, 2,
-      FLOWS, ImmutableList.of()
+      FLOWS, Collections.emptyList()
     ));
     assertThat(iaf.flows).hasSize(1);
     Expectations.FlowComment flow = iaf.flows.iterator().next();

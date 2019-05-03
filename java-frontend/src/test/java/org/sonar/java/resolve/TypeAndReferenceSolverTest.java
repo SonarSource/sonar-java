@@ -83,7 +83,7 @@ public class TypeAndReferenceSolverTest {
     classSymbol = new JavaSymbol.TypeJavaSymbol(0, "MyClass", p);
     classType = (ClassJavaType) classSymbol.type;
     classType.supertype = symbols.objectType;
-    classType.interfaces = ImmutableList.of();
+    classType.interfaces = Collections.emptyList();
     classSymbol.members = new Scope(classSymbol);
     p.members.enter(classSymbol);
     // int[][] var;
@@ -96,19 +96,19 @@ public class TypeAndReferenceSolverTest {
 
     // int method()
     methodSymbol = new JavaSymbol.MethodJavaSymbol(0, "method", classSymbol);
-    ((JavaSymbol.MethodJavaSymbol)methodSymbol).setMethodType(new MethodJavaType(ImmutableList.<JavaType>of(), symbols.intType, ImmutableList.<JavaType>of(), classSymbol));
+    ((JavaSymbol.MethodJavaSymbol)methodSymbol).setMethodType(new MethodJavaType(Collections.emptyList(), symbols.intType, Collections.emptyList(), classSymbol));
     classSymbol.members.enter(methodSymbol);
 
     // int method()
     argMethodSymbol = new JavaSymbol.MethodJavaSymbol(0, "argMethod", classSymbol);
-    ((JavaSymbol.MethodJavaSymbol)argMethodSymbol).setMethodType(new MethodJavaType(ImmutableList.of(symbols.intType), symbols.intType, ImmutableList.<JavaType>of(), classSymbol));
+    ((JavaSymbol.MethodJavaSymbol)argMethodSymbol).setMethodType(new MethodJavaType(ImmutableList.of(symbols.intType), symbols.intType, Collections.emptyList(), classSymbol));
     classSymbol.members.enter(argMethodSymbol);
 
     classSymbol.members.enter(new JavaSymbol.VariableJavaSymbol(0, "this", classType, classSymbol));
     classSymbol.members.enter(new JavaSymbol.VariableJavaSymbol(0, "super", classType.supertype, classSymbol));
 
     JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(classSymbol.flags & Flags.ACCESS_FLAGS, "<init>", classSymbol);
-    MethodJavaType defaultConstructorType = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), classSymbol);
+    MethodJavaType defaultConstructorType = new MethodJavaType(Collections.emptyList(), null, Collections.emptyList(), classSymbol);
     defaultConstructor.setMethodType(defaultConstructorType);
     classSymbol.members.enter(defaultConstructor);
 

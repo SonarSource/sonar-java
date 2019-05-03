@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,7 +72,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   }
 
   public TryStatementTreeImpl(InternalSyntaxToken finallyKeyword, BlockTreeImpl finallyBlock) {
-    this(ImmutableList.<CatchTreeImpl>of(), finallyKeyword, finallyBlock);
+    this(Collections.emptyList(), finallyKeyword, finallyBlock);
   }
 
   public TryStatementTreeImpl(

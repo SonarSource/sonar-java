@@ -20,6 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
+import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
@@ -47,7 +49,7 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     if (StringUtils.isEmpty(methodName)) {
-      return ImmutableList.of();
+      return Collections.emptyList();
     }
     MethodMatcher invocationMatcher = MethodMatcher.create().name(methodName);
     if (StringUtils.isNotEmpty(className)) {

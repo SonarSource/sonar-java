@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
@@ -70,7 +71,7 @@ public class IssuableSubscriptionVisitorTest {
       reportIssue(tree, "message", new ArrayList<>(), 0);
       addIssueOnFile("issue on file");
       reportIssue(tree, "issue on tree");
-      reportIssue(tree, "issue on tree", ImmutableList.<JavaFileScannerContext.Location>of(), null);
+      reportIssue(tree, "issue on tree", Collections.emptyList(), null);
       reportIssue(tree, tree, "issue from tree to tree");
     }
   }

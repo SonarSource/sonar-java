@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -85,7 +86,7 @@ public class Flow {
   }
 
   public static Flow empty() {
-    return new Flow(ImmutableList.of(), false);
+    return new Flow(Collections.emptyList(), false);
   }
 
   public static Flow of(JavaFileScannerContext.Location location) {

@@ -20,6 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -158,7 +160,7 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of();
+    return Collections.emptyList();
   }
 
 }
