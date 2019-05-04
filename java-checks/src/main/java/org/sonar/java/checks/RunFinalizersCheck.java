@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
@@ -34,10 +34,9 @@ public class RunFinalizersCheck extends AbstractMethodDetection implements JavaV
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.<MethodMatcher>builder()
-        .add(MethodMatcher.create().typeDefinition("java.lang.Runtime").name("runFinalizersOnExit").addParameter("boolean"))
-        .add(MethodMatcher.create().typeDefinition("java.lang.System").name("runFinalizersOnExit").addParameter("boolean"))
-        .build();
+    return Arrays.asList(
+      MethodMatcher.create().typeDefinition("java.lang.Runtime").name("runFinalizersOnExit").addParameter("boolean"),
+      MethodMatcher.create().typeDefinition("java.lang.System").name("runFinalizersOnExit").addParameter("boolean"));
   }
 
   @Override

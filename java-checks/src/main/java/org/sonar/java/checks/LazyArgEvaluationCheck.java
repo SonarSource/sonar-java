@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
@@ -105,7 +104,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
       }
 
       private static List<MethodMatcher> slf4jVariants(Supplier<MethodMatcher> prototype) {
-        return ImmutableList.of(
+        return Arrays.asList(
           prototype.get().parameters(STRING),
           prototype.get().parameters(STRING, anyType()),
           prototype.get().parameters(STRING, anyType(), anyType()),
@@ -167,7 +166,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
       private static final Predicate<Type> SUPPLIER = TypeCriteria.subtypeOf("org.apache.logging.log4j.util.Supplier")
         .or(TypeCriteria.subtypeOf("org.apache.logging.log4j.util.MessageSupplier"));
 
-      private static final List<MethodMatcher> TESTS = ImmutableList.of(
+      private static final List<MethodMatcher> TESTS = Arrays.asList(
         MethodMatcher.create().typeDefinition(LOGGER).name("isEnabled").addParameter(LEVEL),
         MethodMatcher.create().typeDefinition(LOGGER).name("isEnabled").addParameter(LEVEL).addParameter(MARKER));
 

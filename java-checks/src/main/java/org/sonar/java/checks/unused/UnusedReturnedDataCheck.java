@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks.unused;
 
-import com.google.common.collect.ImmutableList;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +38,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2677")
 public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<MethodMatcher> CHECKED_METHODS = ImmutableList.of(
+  private static final List<MethodMatcher> CHECKED_METHODS = Arrays.asList(
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.io.BufferedReader"))
       .name("readLine")

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -35,11 +35,10 @@ public class WaitOnConditionCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     TypeCriteria conditionSubType = TypeCriteria.subtypeOf("java.util.concurrent.locks.Condition");
-    return ImmutableList.<MethodMatcher>builder()
-      .add(MethodMatcher.create().callSite(conditionSubType).name("wait").withoutParameter())
-      .add(MethodMatcher.create().callSite(conditionSubType).name("wait").addParameter("long"))
-      .add(MethodMatcher.create().callSite(conditionSubType).name("wait").addParameter("long").addParameter("int"))
-      .build();
+    return Arrays.asList(
+      MethodMatcher.create().callSite(conditionSubType).name("wait").withoutParameter(),
+      MethodMatcher.create().callSite(conditionSubType).name("wait").addParameter("long"),
+      MethodMatcher.create().callSite(conditionSubType).name("wait").addParameter("long").addParameter("int"));
   }
 
   @Override

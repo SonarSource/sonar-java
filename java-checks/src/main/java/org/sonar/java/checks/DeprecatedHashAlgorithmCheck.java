@@ -20,8 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -147,23 +148,25 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    Builder<MethodMatcher> builder = ImmutableList.<MethodMatcher>builder()
+    ArrayList<MethodMatcher> matchers = new ArrayList<>();
+    matchers
       .add(MethodMatcher.create()
         .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
         .name("getDigest")
         .addParameter(JAVA_LANG_STRING));
     for (String methodName : ALGORITHM_BY_METHOD_NAME.keySet()) {
-      builder.add(MethodMatcher.create()
+      matchers.add(MethodMatcher.create()
         .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
         .name(methodName)
         .withAnyParameters());
     }
     for (String cryptoApi : CRYPTO_APIS) {
-      builder
+      matchers
         .add(MethodMatcher.create()
           .typeDefinition(cryptoApi)
           .name(GET_INSTANCE)
-          .addParameter(JAVA_LANG_STRING))
+          .addParameter(JAVA_LANG_STRING));
+      matchers
         .add(MethodMatcher.create()
           .typeDefinition(cryptoApi)
           .name(GET_INSTANCE)
@@ -171,15 +174,15 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
           .addParameter(TypeCriteria.anyType()));
     }
     for (DeprecatedSpringPasswordEncoder pe : DeprecatedSpringPasswordEncoder.values()) {
-      builder.add(MethodMatcher.create().typeDefinition(pe.classFqn).name(pe.methodName).withAnyParameters());
+      matchers.add(MethodMatcher.create().typeDefinition(pe.classFqn).name(pe.methodName).withAnyParameters());
     }
     for (String methodName : ImmutableList.of("md5", "sha1")) {
-      builder.add(MethodMatcher.create()
+      matchers.add(MethodMatcher.create()
         .typeDefinition("com.google.common.hash.Hashing")
         .name(methodName)
         .withoutParameter());
     }
-    return builder.build();
+    return matchers;
   }
 
   @Override

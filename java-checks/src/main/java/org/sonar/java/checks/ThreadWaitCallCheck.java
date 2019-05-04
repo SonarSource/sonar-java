@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -39,11 +39,11 @@ public class ThreadWaitCallCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     TypeCriteria subtypeOfThread = TypeCriteria.subtypeOf("java.lang.Thread");
-    return ImmutableList.<MethodMatcher>builder()
-      .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait").withoutParameter())
-      .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long"))
-      .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long").addParameter("int"))
-      .add(MethodMatcher.create().callSite(subtypeOfThread).name("notify").withoutParameter())
-      .add(MethodMatcher.create().callSite(subtypeOfThread).name("notifyAll").withoutParameter()).build();
+    return Arrays.asList(
+      MethodMatcher.create().callSite(subtypeOfThread).name("wait").withoutParameter(),
+      MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long"),
+      MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long").addParameter("int"),
+      MethodMatcher.create().callSite(subtypeOfThread).name("notify").withoutParameter(),
+      MethodMatcher.create().callSite(subtypeOfThread).name("notifyAll").withoutParameter());
   }
 }

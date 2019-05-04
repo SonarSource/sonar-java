@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
@@ -64,14 +63,14 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.unmodifiableList(Arrays.asList(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition(GUAVA_BASE_ENCODING).name("base64").withoutParameter(),
       MethodMatcher.create().typeDefinition(GUAVA_BASE_ENCODING).name("base64Url").withoutParameter(),
       MethodMatcher.create().typeDefinition(GUAVA_OPTIONAL).name("absent").withoutParameter(),
       MethodMatcher.create().typeDefinition(GUAVA_OPTIONAL).name("fromNullable").withAnyParameters(),
       MethodMatcher.create().typeDefinition(GUAVA_OPTIONAL).name("of").withAnyParameters(),
       MethodMatcher.create().typeDefinition(GUAVA_JOINER).name("on").withAnyParameters()
-    ));
+    );
   }
 
   @Override

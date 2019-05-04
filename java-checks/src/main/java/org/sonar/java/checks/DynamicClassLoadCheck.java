@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
@@ -34,7 +34,7 @@ public class DynamicClassLoadCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Class")).name("forName").withAnyParameters(),
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.ClassLoader")).name("loadClass").withAnyParameters()
     );

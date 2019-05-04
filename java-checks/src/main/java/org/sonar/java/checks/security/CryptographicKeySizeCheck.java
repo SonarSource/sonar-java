@@ -19,8 +19,9 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
@@ -43,7 +44,7 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition(KEY_GENERATOR).name(GET_INSTANCE_METHOD).addParameter(STRING),
       MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name(GET_INSTANCE_METHOD).addParameter(STRING));
   }

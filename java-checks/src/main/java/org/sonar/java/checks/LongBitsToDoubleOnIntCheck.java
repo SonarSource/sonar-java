@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -33,9 +33,7 @@ public class LongBitsToDoubleOnIntCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.<MethodMatcher>builder()
-      .add(MethodMatcher.create().typeDefinition("java.lang.Double").name("longBitsToDouble").addParameter("long"))
-      .build();
+    return Collections.singletonList(MethodMatcher.create().typeDefinition("java.lang.Double").name("longBitsToDouble").addParameter("long"));
   }
 
   @Override

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -32,7 +32,7 @@ public class StreamPeekCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition("java.util.stream.Stream").name("peek").withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.util.stream.IntStream").name("peek").withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.util.stream.LongStream").name("peek").withAnyParameters(),

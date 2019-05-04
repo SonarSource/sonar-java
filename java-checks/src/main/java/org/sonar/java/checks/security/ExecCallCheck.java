@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -37,7 +37,7 @@ public class ExecCallCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition("java.lang.Runtime").name("exec").withAnyParameters(),
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.apache.commons.exec.Executor")).name("execute").withAnyParameters(),
       MethodMatcher.create().typeDefinition(PROCESS_BUILDER).name("command").withAnyParameters(),

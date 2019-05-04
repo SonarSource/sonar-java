@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
@@ -32,6 +30,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -43,7 +42,7 @@ public class StringMethodsWithLocaleCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       stringMethod().name("toUpperCase").withoutParameter(),
       stringMethod().name("toLowerCase").withoutParameter(),
       STRING_FORMAT

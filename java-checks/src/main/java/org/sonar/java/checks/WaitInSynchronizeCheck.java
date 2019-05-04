@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
@@ -50,11 +50,11 @@ public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.<MethodMatcher>builder()
-      .add(MethodMatcher.create().name("wait").withoutParameter())
-      .add(MethodMatcher.create().name("wait").addParameter("long"))
-      .add(MethodMatcher.create().name("wait").addParameter("long").addParameter("int"))
-      .add(MethodMatcher.create().name("notify").withoutParameter())
-      .add(MethodMatcher.create().name("notifyAll").withoutParameter()).build();
+    return Arrays.asList(
+      MethodMatcher.create().name("wait").withoutParameter(),
+      MethodMatcher.create().name("wait").addParameter("long"),
+      MethodMatcher.create().name("wait").addParameter("long").addParameter("int"),
+      MethodMatcher.create().name("notify").withoutParameter(),
+      MethodMatcher.create().name("notifyAll").withoutParameter());
   }
 }

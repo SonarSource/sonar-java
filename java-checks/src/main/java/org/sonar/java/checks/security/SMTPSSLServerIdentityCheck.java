@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -64,7 +63,7 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(ENABLING_SSL_METHODS, HASHTABLE_PUT);
+    return Arrays.asList(ENABLING_SSL_METHODS, HASHTABLE_PUT);
   }
 
   @Override

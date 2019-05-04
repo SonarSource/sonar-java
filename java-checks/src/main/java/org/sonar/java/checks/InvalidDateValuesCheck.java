@@ -136,15 +136,14 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    ImmutableList.Builder<MethodMatcher> builder = ImmutableList.builder();
+    ArrayList<MethodMatcher> matchers = new ArrayList<>();
     for (String dateSetMethod : DATE_SET_METHODS) {
-      builder.add(dateMethodInvocationMatcherSetter(JAVA_UTIL_DATE, dateSetMethod));
-      builder.add(dateMethodInvocationMatcherSetter(JAVA_SQL_DATE, dateSetMethod));
+      matchers.add(dateMethodInvocationMatcherSetter(JAVA_UTIL_DATE, dateSetMethod));
+      matchers.add(dateMethodInvocationMatcherSetter(JAVA_SQL_DATE, dateSetMethod));
     }
-    return builder
-      .add(MethodMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("set").addParameter("int").addParameter("int"))
-      .add(MethodMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withAnyParameters())
-      .build();
+    matchers.add(MethodMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("set").addParameter("int").addParameter("int"));
+    matchers.add(MethodMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withAnyParameters());
+    return matchers;
   }
 
   private static MethodMatcher dateMethodInvocationMatcherGetter(String type, String methodName) {

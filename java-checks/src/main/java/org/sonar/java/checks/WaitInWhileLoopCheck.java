@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -86,7 +84,7 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().name("wait").withoutParameter(),
       MethodMatcher.create().name("wait").addParameter("long"),
       MethodMatcher.create().name("wait").addParameter("long").addParameter("int"),

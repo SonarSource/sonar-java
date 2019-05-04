@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,7 +55,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.<MethodMatcher>builder().add(
+    ArrayList<MethodMatcher> matchers = new ArrayList<>(slf4jMethods());
+    matchers.addAll(Arrays.asList(
       MethodMatcher.create().typeDefinition("java.lang.String").name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withAnyParameters(),
@@ -65,9 +65,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
       MethodMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withAnyParameters(),
       MESSAGE_FORMAT,
       JAVA_UTIL_LOGGER
-      )
-      .addAll(slf4jMethods())
-      .build();
+      ));
+    return matchers;
   }
 
   private static Collection<MethodMatcher> slf4jMethods() {

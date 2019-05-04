@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -47,7 +47,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       collectionMethodInvocation("remove"),
       collectionMethodInvocation("contains")
     );

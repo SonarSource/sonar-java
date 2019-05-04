@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
@@ -47,7 +47,7 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition(PATTERN).name("compile").addParameter(STRING),
       MethodMatcher.create().typeDefinition(STRING).name("matches").withAnyParameters(),
       MethodMatcher.create().typeDefinition(STRING).name("split").withAnyParameters(),

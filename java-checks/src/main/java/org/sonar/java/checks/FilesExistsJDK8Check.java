@@ -19,8 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
@@ -52,7 +53,7 @@ public class FilesExistsJDK8Check extends AbstractMethodDetection implements Jav
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition(JAVA_NIO_FILE_FILES).name(EXISTS).withAnyParameters(),
       MethodMatcher.create().typeDefinition(JAVA_NIO_FILE_FILES).name("notExists").withAnyParameters(),
       MethodMatcher.create().typeDefinition(JAVA_NIO_FILE_FILES).name("isRegularFile").withAnyParameters(),

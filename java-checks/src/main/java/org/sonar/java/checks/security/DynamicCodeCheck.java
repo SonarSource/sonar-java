@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.security;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
@@ -36,7 +36,7 @@ public class DynamicCodeCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
+    return Arrays.asList(
       MethodMatcher.create().typeDefinition(JAVA_LANG_CLASS).name("forName").withAnyParameters(),
       MethodMatcher.create().typeDefinition(JAVA_LANG_CLASS).name("getMethod").withAnyParameters(),
       MethodMatcher.create().typeDefinition(JAVA_LANG_CLASS).name("getMethods").withoutParameter(),
