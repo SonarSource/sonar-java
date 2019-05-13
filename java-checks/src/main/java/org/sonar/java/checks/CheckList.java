@@ -67,7 +67,6 @@ import org.sonar.java.checks.security.SecureXmlTransformerCheck;
 import org.sonar.java.checks.security.SocketUsageCheck;
 import org.sonar.java.checks.security.StandardInputReadCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
-import org.sonar.java.checks.security.XPathUsageCheck;
 import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
 import org.sonar.java.checks.security.ZipEntryCheck;
 import org.sonar.java.checks.serialization.BlindSerialVersionUidCheck;
@@ -649,7 +648,6 @@ public final class CheckList {
       CommandLineArgumentsCheck.class,
       StandardInputReadCheck.class,
       SocketUsageCheck.class,
-      XPathUsageCheck.class,
       BlindSerialVersionUidCheck.class,
       JdbcDriverExplicitLoadingCheck.class,
       StandardCharsetsConstantsCheck.class,
