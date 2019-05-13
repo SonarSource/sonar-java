@@ -55,7 +55,6 @@ import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
 import org.sonar.java.checks.security.DynamicCodeCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
-import org.sonar.java.checks.security.ExecCallCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.HttpRequestsHotspotCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
@@ -637,7 +636,6 @@ public final class CheckList {
       JacksonDeserializationCheck.class,
       ObjectDeserializationCheck.class,
       SpringEndpointsCheck.class,
-      ExecCallCheck.class,
       EmptyDatabasePasswordCheck.class,
       StreamPeekCheck.class,
       LogConfigurationCheck.class,
