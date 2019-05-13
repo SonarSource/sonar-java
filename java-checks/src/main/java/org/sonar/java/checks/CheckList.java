@@ -53,7 +53,6 @@ import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.DataEncryptionCheck;
 import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
-import org.sonar.java.checks.security.DynamicCodeCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
@@ -636,7 +635,6 @@ public final class CheckList {
       StreamPeekCheck.class,
       LogConfigurationCheck.class,
       VolatileNonPrimitiveFieldCheck.class,
-      DynamicCodeCheck.class,
       GetClassLoaderCheck.class,
       ObjectOutputStreamCheck.class,
       VolatileVariablesOperationsCheck.class,
