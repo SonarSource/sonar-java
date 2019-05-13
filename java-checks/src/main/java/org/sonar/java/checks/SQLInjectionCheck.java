@@ -19,22 +19,23 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 @Rule(key = "S2077")
-public class SQLInjectionCheck extends AbstractInjectionChecker {
+public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_SQL_STATEMENT = "java.sql.Statement";
   private static final String JAVA_SQL_CONNECTION = "java.sql.Connection";
@@ -90,7 +91,7 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
       Optional<ExpressionTree> sqlStringArg = arguments(tree)
         .filter(arg -> arg.symbolType().is("java.lang.String"))
         .findFirst();
-      sqlStringArg.filter(arg -> isDynamicString(tree, arg, null, true))
+      sqlStringArg.filter(SQLInjectionCheck::isDynamicString)
         .ifPresent(arg -> reportIssue(arg, "Ensure that string concatenation is required and safe for this SQL query."));
     }
   }
@@ -120,5 +121,9 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
 
   private static boolean hasArguments(Tree tree) {
     return arguments(tree).findAny().isPresent();
+  }
+
+  private static boolean isDynamicString(ExpressionTree arg) {
+    return arg.is(Tree.Kind.PLUS) && ConstantUtils.resolveAsConstant(arg) == null;
   }
 }
