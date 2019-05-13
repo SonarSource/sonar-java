@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.cors.CorsConfiguration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -38,4 +39,43 @@ class A {
       return ResponseEntity.ok().body("ok");
     }
   }
+
+  @Bean
+  public CorsFilter corsFilter() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowCredentials(true);
+    config.addAllowedOrigin("*"); // Noncompliant
+    config.addAllowedHeader("*");
+    config.addAllowedMethod("*");
+    source.registerCorsConfiguration("/**", config);
+    return new CorsFilter(source);
+  }
+
+  public CorsFilter corsFilter2() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.applyPermitDefaultValues(); // Noncompliant
+    return new CorsFilter(source);
+  }
+
+  public CorsFilter corsFilter3() {
+    // test that cut of the visit is necessary
+    class Local {
+      public CorsFilter corsFilter3() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=67,68]]
+        config.applyPermitDefaultValues();
+        config.applyPermitDefaultValues();
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=67,68]]
+        return new CorsFilter(source);
+      }
+    }
+    CorsConfiguration config = new CorsConfiguration();
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=75,76]]
+    config.applyPermitDefaultValues();
+    config.applyPermitDefaultValues();
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=75,76]]
+    return new CorsFilter(source);
+  }
+
 }
