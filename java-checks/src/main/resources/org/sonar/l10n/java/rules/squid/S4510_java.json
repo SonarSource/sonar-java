@@ -1,5 +1,5 @@
 {
-  "title": "Deserializing XML from an untrusted source is security-sensitive",
+  "title": "Deserializing with XMLDecoder is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
@@ -13,7 +13,7 @@
   ],
   "standards": [
     "CWE",
-    "OWASP Top Ten"
+    "OWASP Top 10"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4510",
