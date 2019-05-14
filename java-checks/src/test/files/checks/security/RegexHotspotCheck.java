@@ -1,19 +1,19 @@
 import java.util.regex.Pattern;
 
 class A {
-  String regex; // a regular expression
+
   String input; // a user input
 
   void fun() {
-    input.matches(regex);  // Noncompliant {{Make sure that using a regular expression is safe here.}}
-    Pattern pattern = Pattern.compile(regex);  // Noncompliant
-    pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);  // Noncompliant
+    input.matches("(a+)*");  // Noncompliant {{Make sure that using a regular expression is safe here.}}
+    Pattern pattern = Pattern.compile("(a+)*");  // Noncompliant
+    pattern = Pattern.compile("(a+)*", Pattern.CASE_INSENSITIVE);  // Noncompliant
 
     String replacement = "test";
-    input.replaceAll(regex, replacement);  // Noncompliant [[sc=22;ec=27]]
-    input.replaceFirst(regex, replacement);  // Noncompliant
-    input.split(regex);  // compliant
-    input.split(regex, 3);  // compliant
+    input.replaceAll("(a+)*", replacement);  // Noncompliant [[sc=22;ec=29]]
+    input.replaceFirst("(a+)*", replacement);  // Noncompliant
+    input.split("(a+)*");  // compliant
+    input.split("(a+)*", 3);  // compliant
 
     pattern.split("foo"); //compliant, excluded
     pattern.split("foo", 12); //compliant, excluded
@@ -21,12 +21,12 @@ class A {
     matcher.find(12); //compliant, excluded
 
     String htmlString = "some input";
-    boolean a = !Pattern.matches(".*<script>.*", htmlString); // Noncompliant, even if the pattern is hard-coded
+    boolean a = !Pattern.matches(".*<script>.*", htmlString); // Noncompliant
   }
 
   void methodRef() {
-    java.util.function.BiFunction<String, String, String> replaceAll = input::replaceAll; // Noncompliant [[sc=79;ec=89]] {{Make sure that using a regular expression is safe here.}}
-    java.util.function.BiFunction<String, String, String> replaceFirst = input::replaceFirst; // Noncompliant
+    java.util.function.BiFunction<String, String, String> replaceAll = input::replaceAll; // compliant
+    java.util.function.BiFunction<String, String, String> replaceFirst = input::replaceFirst; // compliant
   }
 }
 
@@ -44,7 +44,7 @@ public class Test implements Serializable {
   @javax.validation.constraints.Email(messge = "yabadabadoo") // compliant no regexp
   private String email3;
 
-  @org.hibernate.validator.constraints.URL(regexp = ".*") // Noncompliant
+  @org.hibernate.validator.constraints.URL(regexp = "(a+)*") // Noncompliant
   private String url;
 
   @org.hibernate.validator.constraints.URL(message = "hello") // compliant no regexp
@@ -62,6 +62,13 @@ private class SafeRegex {
     input.replaceAll("a", replacement);
     input.replaceAll(".", replacement);
     input.replaceAll("asdklj44_", replacement);
-    input.replaceAll(".*", replacement); // Noncompliant
+    input.replaceAll("a+", replacement);
+    input.replaceAll("a*", replacement);
+    input.replaceAll("a{1}", replacement);
+    input.replaceAll("(a{1})*", replacement); // Noncompliant
+    input.replaceAll("(a+)*", replacement); // Noncompliant
+    input.replaceAll("(a{1})+", replacement); // Noncompliant
+    input.replaceAll("(a+)+", replacement); // Noncompliant
+    input.replaceAll("(a{1}){2}", replacement); // Noncompliant
   }
 }

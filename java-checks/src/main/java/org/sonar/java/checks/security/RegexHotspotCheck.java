@@ -32,7 +32,6 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4784")
@@ -55,7 +54,7 @@ public class RegexHotspotCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD_REFERENCE, Tree.Kind.ANNOTATION);
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.ANNOTATION);
   }
 
   @Override
@@ -66,13 +65,9 @@ public class RegexHotspotCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       if (REGEX_HOTSPOTS.anyMatch((MethodInvocationTree) tree)) {
         Arguments args = ((MethodInvocationTree) tree).arguments();
-        if (!args.isEmpty() && !isSafeRegex(args.get(0))) {
+        if (!args.isEmpty() && isSuspiciousRegex(args.get(0))) {
           reportIssue(args.get(0), MESSAGE);
         }
-      }
-    } else if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
-      if (REGEX_HOTSPOTS.anyMatch((MethodReferenceTree) tree)) {
-        reportIssue(((MethodReferenceTree) tree).method(), MESSAGE);
       }
     } else {
       // annotations
@@ -88,13 +83,21 @@ public class RegexHotspotCheck extends IssuableSubscriptionVisitor {
     if(expr.is(Tree.Kind.ASSIGNMENT) && ((AssignmentExpressionTree) expr).variable().is(Tree.Kind.IDENTIFIER)) {
       AssignmentExpressionTree aet = (AssignmentExpressionTree) expr;
       IdentifierTree variable = (IdentifierTree) aet.variable();
-      return variable.name().equals("regexp") && !isSafeRegex(aet.expression());
+      return variable.name().equals("regexp") && isSuspiciousRegex(aet.expression());
     }
     return false;
   }
 
-  private static boolean isSafeRegex(ExpressionTree exp) {
+  /**
+   * This rule flags any execution of a hardcoded regular expression which has at least 3 characters and at least
+   * two instances of any of the following characters: "*+{" (Example: (a+)*)
+   * */
+  private static boolean isSuspiciousRegex(ExpressionTree exp) {
     String regexp = ConstantUtils.resolveAsStringConstant(exp);
-    return regexp != null && (regexp.length() <= 1 || regexp.matches("\\w*"));
+    if (regexp != null && regexp.length() > 2) {
+      int nOfSuspiciousChars = regexp.length() - regexp.replaceAll("[*+{]", "").length();
+      return nOfSuspiciousChars > 1;
+    }
+    return false;
   }
 }
