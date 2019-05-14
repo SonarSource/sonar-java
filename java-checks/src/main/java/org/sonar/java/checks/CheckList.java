@@ -54,6 +54,7 @@ import org.sonar.java.checks.security.DataEncryptionCheck;
 import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
+import org.sonar.java.checks.security.EnvVariablesHotspotCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
@@ -655,7 +656,8 @@ public final class CheckList {
       BasicAuthCheck.class,
       SynchronizedOverrideCheck.class,
       MissingBeanValidationCheck.class,
-      UseSwitchExpressionCheck.class);
+      UseSwitchExpressionCheck.class,
+      EnvVariablesHotspotCheck.class);
   }
 
   public static List<Class<? extends DebugCheck>> getDebugChecks() {

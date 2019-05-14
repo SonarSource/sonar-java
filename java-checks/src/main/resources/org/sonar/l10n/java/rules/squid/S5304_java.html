@@ -1,0 +1,49 @@
+<p>Using environment variables is security-sensitive. For example, their use has led in the past to the following vulnerabilities:</p>
+<ul>
+  <li> <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6278">CVE-2014-6278</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3464">CVE-2019-3464</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1000402">CVE-2018-1000402</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10530">CVE-2016-10530</a> </li>
+</ul>
+<p>Environment variables are sensitive to injection attacks, just like any other input.</p>
+<p>Note also that environment variables can be exposed in multiple ways, storing sensitive information in them should be done carefully:</p>
+<ul>
+  <li> on Unix systems environment variables of one process can be read by another process running with the same UID. </li>
+  <li> environment variables <a href="https://docs.oracle.com/javase/tutorial/essential/environment/env.html">might be forwarded to child
+  processes</a>. </li>
+  <li> application running in debug mode often exposes their environment variable. </li>
+</ul>
+<p>This rule raises an issue when environment variables are read.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> Environment variables are used without being sanitized. </li>
+  <li> You store sensitive information in environment variables and other processes might be able to access them. </li>
+</ul>
+<p>You are at risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Sanitize every environment variable before using its value.</p>
+<p>If you store sensitive information in an environment variable, make sure that no other process can access them, i.e. the process runs with a
+separate user account and child processes don't have access to their parent's environment.</p>
+<p>Don't run your application in debug mode if it has access to sensitive information, including environment variables.</p>
+<h2>Sensitive Code Example</h2>
+<pre>
+public class Main {
+    public static void main (String[] args) {
+        System.getenv();  // Sensitive
+        System.getenv("myvar");  // Sensitive
+
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        Map&lt;String, String&gt; environment = processBuilder.environment();  // Sensitive
+        environment.put("VAR", "value");
+
+        Runtime.getRuntime().exec("ping", new String[]{"env=val"});   // Sensitive
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://cwe.mitre.org/data/definitions/526.html">MITRE, CWE-526</a> - Information Exposure Through Environmental Variables </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/74.html">MITRE, CWE-74</a> - Improper Neutralization of Special Elements in Output Used by a
+  Downstream Component ('Injection') </li>
+</ul>
+
