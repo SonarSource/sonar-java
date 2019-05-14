@@ -19,15 +19,20 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -43,25 +48,67 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
     "Access-Control-Allow-Methods",
     "Access-Control-Allow-Headers"));
 
+  private static final MethodMatcher ADD_ALLOWED_ORIGIN = MethodMatcher.create().typeDefinition("org.springframework.web.cors.CorsConfiguration")
+    .name("addAllowedOrigin").withAnyParameters();
+  private static final MethodMatcher APPLY_PERMIT_DEFAULT_VALUES = MethodMatcher.create().typeDefinition("org.springframework.web.cors.CorsConfiguration")
+    .name("applyPermitDefaultValues").withAnyParameters();
+  public static final String MESSAGE = "Make sure that enabling CORS is safe here.";
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.ANNOTATION);
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.ANNOTATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD_INVOCATION) && SET_HEADER_MATCHER.matches(((MethodInvocationTree) tree))) {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      String constantCORS = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
-      if (HTTP_HEADERS.contains(constantCORS)) {
-        reportTree(mit.methodSelect());
-      }
+    if (tree.is(Tree.Kind.METHOD)) {
+      checkMethod(tree);
     } else if (tree.is(Tree.Kind.ANNOTATION) && ((AnnotationTree) tree).symbolType().is("org.springframework.web.bind.annotation.CrossOrigin")) {
       reportTree(((AnnotationTree) tree).annotationType());
     }
   }
 
+  private void checkMethod(Tree tree) {
+    MethodInvocationVisitor visitor = new MethodInvocationVisitor();
+    tree.accept(visitor);
+    if (!visitor.addAllowedOrigin.isEmpty() && !visitor.applyPermit.isEmpty()) {
+      visitor.addAllowedOrigin.forEach(mit -> {
+        List<Location> locations = visitor.applyPermit.stream()
+          .map(t -> new Location(MESSAGE, t))
+          .collect(Collectors.toList());
+        reportIssue(mit.methodSelect(), MESSAGE, locations, null);
+      });
+    } else {
+      visitor.addAllowedOrigin.forEach(this::reportTree);
+      visitor.applyPermit.forEach(this::reportTree);
+    }
+  }
+
   private void reportTree(Tree tree) {
-    reportIssue(tree, "Make sure that enabling CORS is safe here.");
+    reportIssue(tree, MESSAGE);
+  }
+
+  private class MethodInvocationVisitor extends BaseTreeVisitor {
+    List<MethodInvocationTree> addAllowedOrigin = new ArrayList<>();
+    List<MethodInvocationTree> applyPermit = new ArrayList<>();
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree mit) {
+      if (SET_HEADER_MATCHER.matches(mit)) {
+        String constantCORS = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
+        if (HTTP_HEADERS.contains(constantCORS)) {
+          reportTree(mit.methodSelect());
+        }
+      } else if (APPLY_PERMIT_DEFAULT_VALUES.matches(mit)) {
+        applyPermit.add(mit);
+      } else if (ADD_ALLOWED_ORIGIN.matches(mit)) {
+        addAllowedOrigin.add(mit);
+      }
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // cut the visit
+    }
   }
 }
