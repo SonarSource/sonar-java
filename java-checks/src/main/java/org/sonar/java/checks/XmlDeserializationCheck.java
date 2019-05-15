@@ -37,7 +37,7 @@ public class XmlDeserializationCheck extends AbstractMethodDetection {
 
   private static final MethodMatcher READ_OBJECT = MethodMatcher.create().typeDefinition("java.beans.XMLDecoder")
     .name("readObject").withAnyParameters();
-  private static final String MESSAGE = "Make sure deserializing XML is safe here.";
+  private static final String MESSAGE = "Make sure deserializing with XMLDecoder is safe here.";
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
