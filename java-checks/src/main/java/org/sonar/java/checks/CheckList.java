@@ -60,6 +60,7 @@ import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.security.LDAPDeserializationCheck;
 import org.sonar.java.checks.security.LogConfigurationCheck;
+import org.sonar.java.checks.security.PasswordEncoderCheck;
 import org.sonar.java.checks.security.RegexHotspotCheck;
 import org.sonar.java.checks.security.SMTPSSLServerIdentityCheck;
 import org.sonar.java.checks.security.SecureCookieCheck;
@@ -657,7 +658,9 @@ public final class CheckList {
       SynchronizedOverrideCheck.class,
       MissingBeanValidationCheck.class,
       UseSwitchExpressionCheck.class,
-      EnvVariablesHotspotCheck.class);
+      EnvVariablesHotspotCheck.class,
+      PasswordEncoderCheck.class
+      );
   }
 
   public static List<Class<? extends DebugCheck>> getDebugChecks() {
