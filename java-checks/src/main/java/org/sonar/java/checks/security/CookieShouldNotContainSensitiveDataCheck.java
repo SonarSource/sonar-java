@@ -26,7 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -59,7 +58,6 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
 
   private static final String CONSTRUCTOR = "<init>";
   private static final String SET_VALUE_METHOD = "setValue";
-  private static final String GET_VALUE_METHOD = "getValue";
   private static final String WITH_VALUE_METHOD = "withValue";
   private static final String BUILDER_METHOD = "builder";
   private static final String JAVA_LANG_STRING = "java.lang.String";
@@ -67,13 +65,6 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Arrays.asList(
-      // setters
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(GET_VALUE_METHOD).withoutParameter(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(GET_VALUE_METHOD).withoutParameter(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(GET_VALUE_METHOD).withoutParameter(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_COOKIE)).name(GET_VALUE_METHOD).withoutParameter(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SPRING_COOKIE)).name(GET_VALUE_METHOD).withoutParameter(),
-      MethodMatcher.create().typeDefinition(ClassName.PLAY_COOKIE).name("value").withoutParameter(),
       // setters
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(SET_VALUE_METHOD).parameters(JAVA_LANG_STRING),
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(SET_VALUE_METHOD).parameters(JAVA_LANG_STRING),
@@ -110,13 +101,10 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree methodTree) {
-    String methodName = methodTree.symbol().name();
-    if (methodName.equals(BUILDER_METHOD)) {
+    if (methodTree.symbol().name().equals(BUILDER_METHOD)) {
       if (secondArgumentIsValue(methodTree.arguments())) {
         reportIssue(methodTree.arguments().get(1), MESSAGE);
       }
-    } else if (methodName.equals(GET_VALUE_METHOD) || methodName.equals("value")) {
-      reportIssue(ExpressionUtils.methodName(methodTree), MESSAGE);
     } else if (isNotNullOrWhitespace(methodTree.arguments().get(0))) {
       reportIssue(methodTree.arguments().get(0), MESSAGE);
     }

@@ -2,10 +2,4 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/Cookies.java':[
 88,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/JwtHttpHandler.java':[
-121,
-],
-'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/OAuthCsrfVerifier.java':[
-54,
-],
 }
