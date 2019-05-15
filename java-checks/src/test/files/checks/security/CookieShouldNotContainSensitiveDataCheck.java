@@ -16,7 +16,7 @@ class S2255 {
     cookie.setValue(x); // Noncompliant
     cookie.setValue(VALUE); // Noncompliant
     c.setValue("x"); // Noncompliant
-    cookie.getValue(); // Noncompliant [[sc=12;ec=20]]
+    cookie.getValue(); // compliant
   }
 
   void jaxRsCookie() {
@@ -25,27 +25,27 @@ class S2255 {
     new NewCookie("name", "value", "path", "domain", "comment", 1, true); // Noncompliant
     new NewCookie(cookie, "comment", 2, true); // Noncompliant
     new NewCookie(cookie); // Noncompliant
-    cookie.getValue(); // Noncompliant [[sc=12;ec=20]]
+    cookie.getValue(); // compliant
   }
 
   void httpCookie(HttpCookie hc) {
     HttpCookie cookie = new HttpCookie("name", "value"); // Noncompliant
     cookie.setValue("value"); // Noncompliant
     hc.setValue("x"); // Noncompliant
-    cookie.getValue(); // Noncompliant [[sc=12;ec=20]]
+    cookie.getValue(); // compliant
   }
 
   void shiroCookie(SimpleCookie cookie) {
     SimpleCookie sc = new SimpleCookie(cookie); // Noncompliant
     cookie.setValue("value"); // Noncompliant
     sc.setValue("value"); // Noncompliant
-    cookie.getValue(); // Noncompliant [[sc=12;ec=20]]
+    cookie.getValue(); // compliant
   }
 
   void springCookie(Cookie c, SavedCookie cookie) {
     new SavedCookie(c); // Noncompliant
     new SavedCookie("n", "v", "c", "d", 1, "p", true, 1); // Noncompliant
-    cookie.getValue(); // Noncompliant [[sc=12;ec=20]]
+    cookie.getValue(); // compliant
   }
 
   public String myPage(@org.springframework.web.bind.annotation.CookieValue("cookieName") String myCookie) { // Noncompliant [[sc=24;ec=90]]
@@ -65,7 +65,7 @@ class S2255 {
       .withName("name")
       .withValue(null)
       .build();
-    cookie.value(); // Noncompliant [[sc=12;ec=17]]
+    cookie.value(); // compliant
   }
 
   void foo(HttpServletRequest request, HttpServletResponse response){
@@ -73,12 +73,12 @@ class S2255 {
   }
 
   void compliant(Cookie c1, HttpCookie c2, javax.ws.rs.core.Cookie c3, NewCookie c4, SimpleCookie c5, SavedCookie c6) {
-    c1.getValue(); // Noncompliant
-    c2.getValue(); // Noncompliant
-    c3.getValue(); // Noncompliant
-    c4.getValue(); // Noncompliant
-    c5.getValue(); // Noncompliant
-    c6.getValue(); // Noncompliant
+    c1.getValue(); // compliant
+    c2.getValue(); // compliant
+    c3.getValue(); // compliant
+    c4.getValue(); // compliant
+    c5.getValue(); // compliant
+    c6.getValue(); // compliant
     c1.setValue(null);
     c1.setValue("");
     c1.setValue("   ");
