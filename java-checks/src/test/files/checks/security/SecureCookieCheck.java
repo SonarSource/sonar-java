@@ -10,9 +10,12 @@ import play.mvc.Http.CookieBuilder;
 
 class A {
 
-  Cookie field1 = new Cookie("name", "value"); // FN
-  HttpCookie field2 = new HttpCookie("name", "value"); // FN
-  javax.ws.rs.core.Cookie field3 = new javax.ws.rs.core.Cookie("name", "value"); // FN
+  Cookie field1 = new Cookie("name", "value"); // Noncompliant
+  HttpCookie field2 = new HttpCookie("name", "value");
+  javax.ws.rs.core.Cookie field3 = new javax.ws.rs.core.Cookie("name", "value"); // Noncompliant
+  javax.ws.rs.core.Cookie cookie;
+  NewCookie secureCookie = new NewCookie(cookie, "2", 3, true);
+  NewCookie unsecureCookie = new NewCookie(cookie, "2", 3, false); // Noncompliant
   Cookie field4;
   Cookie field5;
   HttpCookie field6;
@@ -21,34 +24,35 @@ class A {
 
   void foo(Cookie cookie) {
     int age = cookie.getMaxAge();
+    field2.setSecure(true);
   }
 
   Cookie servletCookie(
-      Cookie firstParam, // Noncompliant [[sc=14;ec=24]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
+      Cookie firstParam,
       Cookie secondParam,
       Cookie thirdParam,
       boolean param) {
-    firstParam.setSecure(false);
+    firstParam.setSecure(false); // Noncompliant [[sc=25;ec=32]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
     secondParam.setSecure(true);
 
-    field4 = new Cookie("name, value"); // FN, ignore fields
-    field5.setSecure(false); // FN, ignore fields
-    this.field4 = new Cookie("name", "value"); // FN ignore fields
+    field4 = new Cookie("name, value"); // Noncompliant
+    field5.setSecure(false); // Noncompliant
+    this.field4 = new Cookie("name", "value"); // Noncompliant
 
     Cookie cookie = new Cookie("name", "value");
     cookie.setSecure(true);
 
-    Cookie cookie2 = new Cookie("name", "value"); // Noncompliant [[sc=12;ec=19]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
+    Cookie cookie2 = new Cookie("name", "value"); // Noncompliant [[sc=26;ec=32]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
 
-    Cookie cookie3 = new Cookie("name", "value"); // Noncompliant {{Make sure creating this cookie without the "secure" flag is safe here.}}
-    cookie3.setSecure(false);
+    Cookie cookie3 = new Cookie("name", "value");
+    cookie3.setSecure(false);  // Noncompliant {{Make sure creating this cookie without the "secure" flag is safe here.}}
 
     Cookie cookie5 = new Cookie("name", "value"); // FN
     cookie5.setSecure(FALSE_CONSTANT);
 
     Cookie c6 = new Cookie("name", "value");
     if (param) {
-      c6.setSecure(false); // FN
+      c6.setSecure(false); // Noncompliant
     }
     else {
       c6.setSecure(true);
@@ -67,8 +71,8 @@ class A {
     c10 = new Cookie("name", "value");
     c10.setSecure(true);
 
-    Object c12;  // Noncompliant [[sc=12;ec=15]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
-    c12 = new Cookie("name", "value");
+    Object c12;
+    c12 = new Cookie("name", "value"); // Noncompliant [[sc=15;ec=21]] {{Make sure creating this cookie without the "secure" flag is safe here.}}
 
     Cookie c13 = new Cookie("name", "value");
     boolean value = false;
@@ -83,17 +87,17 @@ class A {
 
     HttpCookie c2 = new HttpCookie("name", "value"); // Noncompliant
 
-    HttpCookie c3 = new HttpCookie("name", "value"); // Noncompliant
-    c3.setSecure(false);
+    HttpCookie c3 = new HttpCookie("name", "value");
+    c3.setSecure(false); // Noncompliant
 
     HttpCookie c4 = new HttpCookie("name", "value"); // FN
     c4.setSecure(FALSE_CONSTANT);
 
-    HttpCookie c5; // Noncompliant
+    HttpCookie c5;
     c5 = new HttpCookie("name", "value");
-    c3.setSecure(false);
+    c5.setSecure(false);  // Noncompliant
 
-    field6 = new HttpCookie("name, value"); // FN, ignore fields
+    field6 = new HttpCookie("name, value"); // Noncompliant
 
     return new HttpCookie("name", "value"); // Noncompliant
   }
@@ -122,8 +126,8 @@ class A {
 
   SimpleCookie apacheShiro(SimpleCookie unknownCookie) {
     SimpleCookie c1 = new SimpleCookie(unknownCookie); // Noncompliant
-    SimpleCookie c2 = new SimpleCookie(); // Noncompliant
-    c2.setSecure(false);
+    SimpleCookie c2 = new SimpleCookie();
+    c2.setSecure(false); // Noncompliant
     SimpleCookie c3 = new SimpleCookie(); // Noncompliant
     SimpleCookie c4 = new SimpleCookie("name");  // Noncompliant
     SimpleCookie c5 = new SimpleCookie("name");
@@ -145,8 +149,8 @@ class A {
     play.mvc.Http.Cookie c22 = new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, false, sameSite);
     play.mvc.Http.Cookie c4;
     c4 =  new play.mvc.Http.Cookie("1", "2", 3, "4", "5", true, true);
-    CookieBuilder cb1 = play.mvc.Http.Cookie.builder("1", "2"); // Noncompliant
-    cb1.withSecure(false);
+    CookieBuilder cb1 = play.mvc.Http.Cookie.builder("1", "2");
+    cb1.withSecure(false);  // Noncompliant
     CookieBuilder cb2 = play.mvc.Http.Cookie.builder("1", "2");
     cb2.withSecure(true);
     play.mvc.Http.Cookie.builder("1", "2")
@@ -200,5 +204,24 @@ class B extends Cookie {
     UnknownClass c = new UnknownClass();
     c.setSecure(true);
     return new Date();
+  }
+
+  class JavaNet {
+    Cookie httpCookie(HttpServletResponse response) {
+      Cookie cookie = new Cookie("name", "value"); // Noncompliant
+      response.addCookie(new Cookie("name", "value")); // Noncompliant
+      return new Cookie("name", "value"); // Noncompliant
+    }
+  }
+
+  class JavaNet2 {
+    public HttpCookie getCookie() { return null; }
+
+    void httpCookie() {
+      HttpCookie cookie = getCookie();
+      if (cookie == null) {
+        cookie = new HttpCookie("name", "value");  // Noncompliant
+      }
+    }
   }
 }

@@ -21,8 +21,10 @@ package org.sonar.java.checks.security;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
@@ -39,7 +41,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -88,9 +89,8 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     constructorMatcher(PLAY_COOKIE)
       .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN, "play.mvc.Http$Cookie$SameSite"));
 
-  private final Set<Symbol.VariableSymbol> unsecuredCookies = new HashSet<>();
-  private final Set<NewClassTree> unsecuredReturns = new HashSet<>();
-  private final Set<MethodInvocationTree> unsecuredSetters = new HashSet<>();
+  private final Map<Symbol.VariableSymbol, NewClassTree> unsecuredCookies = new HashMap<>();
+  private final Set<NewClassTree> cookieConstructors = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -98,22 +98,19 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
       Tree.Kind.VARIABLE,
       Tree.Kind.ASSIGNMENT,
       Tree.Kind.METHOD_INVOCATION,
-      Tree.Kind.RETURN_STATEMENT);
+      Tree.Kind.NEW_CLASS);
   }
 
   @Override
   public void setContext(JavaFileScannerContext context) {
     unsecuredCookies.clear();
-    unsecuredReturns.clear();
-    unsecuredSetters.clear();
+    cookieConstructors.clear();
     super.setContext(context);
   }
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    unsecuredCookies.forEach(v -> reportIssue(v.declaration().simpleName(), MESSAGE));
-    unsecuredReturns.forEach(r -> reportIssue(r, MESSAGE));
-    unsecuredSetters.forEach(m -> reportIssue(m.arguments(), MESSAGE));
+    cookieConstructors.forEach(r -> reportIssue(r.identifier(), MESSAGE));
   }
 
   @Override
@@ -128,19 +125,19 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       checkSecureCall((MethodInvocationTree) tree);
     } else {
-      addToUnsecuredReturns((ReturnStatementTree) tree);
+      checkConstructor((NewClassTree) tree);
     }
   }
 
   private void addToUnsecuredCookies(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
     Symbol variableTreeSymbol = variableTree.symbol();
-    // Ignore field variables
-    if (initializer != null && variableTreeSymbol.isVariableSymbol() && variableTreeSymbol.owner().isMethodSymbol()) {
+
+    if (initializer != null && variableTreeSymbol.isVariableSymbol()) {
       boolean isInitializedWithConstructor = initializer.is(Tree.Kind.NEW_CLASS);
       boolean isMatchedType = isCookieClass(variableTreeSymbol.type()) || isCookieClass(initializer.symbolType());
       if (isInitializedWithConstructor && isMatchedType && isSecureParamFalse((NewClassTree) initializer)) {
-        unsecuredCookies.add((Symbol.VariableSymbol) variableTreeSymbol);
+        unsecuredCookies.put((Symbol.VariableSymbol) variableTreeSymbol, (NewClassTree) initializer);
       }
     }
   }
@@ -149,42 +146,32 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     if (assignment.expression().is(Tree.Kind.NEW_CLASS) && assignment.variable().is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree assignmentVariable = (IdentifierTree) assignment.variable();
       Symbol assignmentVariableSymbol = assignmentVariable.symbol();
-      boolean isMethodVariable = assignmentVariableSymbol.isVariableSymbol() && assignmentVariableSymbol.owner().isMethodSymbol();
       boolean isMatchedType = isCookieClass(assignmentVariable.symbolType()) || isCookieClass(assignment.expression().symbolType());
-      if (isMethodVariable
-          && isMatchedType
-          && isSecureParamFalse((NewClassTree) assignment.expression())) {
-        unsecuredCookies.add((Symbol.VariableSymbol) assignmentVariableSymbol);
+      if (isMatchedType && isSecureParamFalse((NewClassTree) assignment.expression())) {
+        unsecuredCookies.put((Symbol.VariableSymbol) assignmentVariableSymbol, (NewClassTree) assignment.expression());
       }
     }
   }
 
   private void checkSecureCall(MethodInvocationTree mit) {
     if (isSetSecureCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree methodObject = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
       Boolean secureArgument = ConstantUtils.resolveAsBooleanConstant(mit.arguments().get(0));
       boolean isFalse = secureArgument != null && !secureArgument;
+      if (isFalse) {
+        reportIssue(mit.arguments(), MESSAGE);
+      }
+      ExpressionTree methodObject = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
       if (methodObject.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifierTree = (IdentifierTree) methodObject;
-        if (!isFalse) {
-          unsecuredCookies.remove(identifierTree.symbol());
-        } else if (identifierTree.symbol().owner().isMethodSymbol()) {
-          unsecuredCookies.add((Symbol.VariableSymbol) identifierTree.symbol());
-        }
-      } else if (isFalse) {
-        // builder method
-        unsecuredSetters.add(mit);
+        NewClassTree newClassTree = unsecuredCookies.remove(identifierTree.symbol());
+        cookieConstructors.remove(newClassTree);
       }
     }
   }
 
-  private void addToUnsecuredReturns(ReturnStatementTree tree) {
-    ExpressionTree returnedExpression = tree.expression();
-    if (returnedExpression != null
-        && returnedExpression.is(Tree.Kind.NEW_CLASS)
-        && isCookieClass(returnedExpression.symbolType())
-        && isSecureParamFalse((NewClassTree) returnedExpression)) {
-      unsecuredReturns.add((NewClassTree) returnedExpression);
+  private void checkConstructor(NewClassTree tree) {
+    if (isCookieClass(tree.symbolType()) && isSecureParamFalse(tree)) {
+      cookieConstructors.add(tree);
     }
   }
 
