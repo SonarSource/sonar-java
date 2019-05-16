@@ -29,10 +29,15 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.checks.helpers.ReassignmentFinder.getInitializerOrExpression;
+import static org.sonar.java.checks.helpers.ReassignmentFinder.getReassignments;
 
 @Rule(key = "S2077")
 public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
@@ -124,6 +129,12 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDynamicString(ExpressionTree arg) {
+    if (arg.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) arg).symbol();
+      ExpressionTree initializerOrExpression = getInitializerOrExpression(symbol.declaration());
+      return (initializerOrExpression != null && isDynamicString(initializerOrExpression)) || getReassignments(symbol.owner().declaration(), symbol.usages()).stream()
+        .anyMatch(SQLInjectionCheck::isDynamicString);
+    }
     return arg.is(Tree.Kind.PLUS) && ConstantUtils.resolveAsConstant(arg) == null;
   }
 }

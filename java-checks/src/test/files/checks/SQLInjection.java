@@ -21,6 +21,8 @@ class A {
       Statement stmt = conn.createStatement();
       ResultSet rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = 2001");
       rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant [[sc=30;ec=79]] {{Ensure that string concatenation is required and safe for this SQL query.}}
+      String query = "SELECT Lname FROM Customers WHERE Snum = "+param;
+      rs = stmt.executeQuery(query); // Noncompliant
 
       boolean bool = false;
       String query2 = "Select Lname ";
@@ -40,7 +42,7 @@ class A {
 
       //Callable Statement
       CallableStatement cs = conn.prepareCall("SELECT Lname FROM Customers WHERE Snum = 2001");
-      cs.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant
+      cs.executeQuery(query); // Noncompliant
       cs  = conn.prepareCall("SELECT Lname FROM Customers WHERE Snum = "+param2); // Noncompliant
       cs = conn.prepareCall(query2);
       cs = conn.prepareCall(CONSTANT);
@@ -59,20 +61,21 @@ class A {
       }
       cs = conn.prepareCall(s);
       String request = foo() + " FROM table";
-      cs = conn.prepareCall(request);
-      new A().prepareStatement("SELECT Lname FROM Customers WHERE Snum = "+param);
+      cs = conn.prepareCall(request); // Noncompliant
+      new A().prepareStatement(query);
       A a = new A();
-      a.prepareStatement("SELECT Lname FROM Customers WHERE Snum = "+param);
+      a.prepareStatement(query);
       ps.executeQuery();
 
 
       Session session;
       session.createQuery("From Customer where id > ?");
-      session.createQuery("From Customer where id > "+param); // Noncompliant
+      session.createQuery(query); // Noncompliant
       conn.prepareStatement(param);
       conn.prepareStatement(sqlQuery + "plop"); // Noncompliant
 
-      entityManager.createNativeQuery("SELECT lastname, firstname FROM employee where uid = '" + param + "'"); // Noncompliant
+      String sql = "SELECT lastname, firstname FROM employee where uid = '" + param + "'";
+      entityManager.createNativeQuery(sql); // Noncompliant
     } catch (Exception e) {
     }
   }
@@ -132,11 +135,12 @@ class Spring {
   private PreparedStatementCreatorFactory preparedStatementCreatorFactory;
 
   void test(String parameter) {
-    jdbcTemplate.queryForObject("select count(*) from t_actor where column =  " + parameter, Integer.class); // Noncompliant
-    jdbcOperations.queryForObject("select count(*) from t_actor where column =  " + parameter, Integer.class);  // Noncompliant
+    java.lang.String sqlInjection = "select count(*) from t_actor where column =  " + parameter;
+    jdbcTemplate.queryForObject(sqlInjection, Integer.class); // Noncompliant
+    jdbcOperations.queryForObject(sqlInjection, Integer.class);  // Noncompliant
 
-    new PreparedStatementCreatorFactory("select count(*) from t_actor where column =  " + parameter);  // Noncompliant
-    preparedStatementCreatorFactory.newPreparedStatementCreator("select count(*) from t_actor where column =  " + parameter, new int[] {});  // Noncompliant
+    new PreparedStatementCreatorFactory(sqlInjection);  // Noncompliant
+    preparedStatementCreatorFactory.newPreparedStatementCreator(sqlInjection, new int[] {});  // Noncompliant
   }
 }
 
@@ -152,7 +156,7 @@ class Test {
     if (page != null) {
       String countJql = "select count(*) " + from;
       Session session;
-      session.createQuery(countJql);
+      session.createQuery(countJql); // Noncompliant
 
     }
   }
