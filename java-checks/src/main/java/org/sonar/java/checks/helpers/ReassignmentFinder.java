@@ -67,7 +67,7 @@ public final class ReassignmentFinder {
   }
 
   @CheckForNull
-  private static ExpressionTree getInitializerOrExpression(@Nullable Tree tree) {
+  public static ExpressionTree getInitializerOrExpression(@Nullable Tree tree) {
     if (tree == null) {
       return null;
     }
@@ -79,7 +79,7 @@ public final class ReassignmentFinder {
     return ((AssignmentExpressionTree) tree).expression();
   }
 
-  private static List<AssignmentExpressionTree> getReassignments(@Nullable Tree ownerDeclaration, List<IdentifierTree> usages) {
+  public static List<AssignmentExpressionTree> getReassignments(@Nullable Tree ownerDeclaration, List<IdentifierTree> usages) {
     if (ownerDeclaration != null) {
       List<AssignmentExpressionTree> assignments = new ArrayList<>();
       for (IdentifierTree usage : usages) {
