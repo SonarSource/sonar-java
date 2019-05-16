@@ -1,0 +1,63 @@
+<p>Storing users' passwords in clear-text in a database is definitely not safe as hackers may have read access to all user accounts stored in the
+database. It's common then to hash passwords and only store these hashes in the database. When running the authentication process, the hash of the
+password provided by the user is compared to the hash stored in the database. If both matches, the access is granted. </p>
+<p>This looks like a perfect solution but some algorithms such as MD5 and its successor, SHA-1, are no longer considered secure, because it is too
+easy to create hash collisions with them.</p>
+<p>That is, it takes too little computational effort to come up with a different input that produces the same MD5 or SHA-1 hash, and using the new,
+same-hash value gives an attacker the same access as if he had the originally-hashed value. This applies as well to the other Message-Digest
+algorithms: MD2, MD4, MD6, HAVAL-128, HMAC-MD5, DSA (which uses SHA-1), RIPEMD, RIPEMD-128, RIPEMD-160, HMACRIPEMD160.</p>
+<p>For this reason, when <code>PasswordEncoder</code> is used to authenticate user in a Spring application, it should use a secure algorithm. The
+following algorithms are considered not safe and should not be used:</p>
+<ul>
+  <li> <code>org.springframework.security.authentication.encoding.ShaPasswordEncoder</code> (Spring Security 4.2.x) </li>
+  <li> <code>org.springframework.security.authentication.encoding.Md5PasswordEncoder</code> (Spring Security 4.2.x) </li>
+  <li> <code>org.springframework.security.crypto.password.LdapShaPasswordEncoder</code> (Spring Security 5.0.x) </li>
+  <li> <code>org.springframework.security.crypto.password.Md4PasswordEncoder</code> (Spring Security 5.0.x) </li>
+  <li> <code>org.springframework.security.crypto.password.MessageDigestPasswordEncoder</code> (Spring Security 5.0.x) </li>
+  <li> <code>org.springframework.security.crypto.password.NoOpPasswordEncoder</code> (Spring Security 5.0.x) </li>
+  <li> <code>org.springframework.security.crypto.password.StandardPasswordEncoder</code> (Spring Security 5.0.x) </li>
+  <li> <code>org.springframework.security.crypto.scrypt.SCryptPasswordEncoder</code> (Spring Security 5.0.x) </li>
+</ul>
+<p>Consider using safer alternatives, such as <code>org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder</code> (preferred) or
+<code>org.springframework.security.crypto.password.Pbkdf2PasswordEncoder</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth, DataSource dataSource) throws Exception {
+        auth.jdbcAuthentication()
+                .dataSource(dataSource)
+                .usersByUsernameQuery("SELECT * FROM users WHERE username = ?")
+                .passwordEncoder(new StandardPasswordEncoder()); // Noncompliant
+        // OR
+        auth.jdbcAuthentication()
+                .dataSource(dataSource)
+                .usersByUsernameQuery("SELECT * FROM users WHERE username = ?"); // Noncompliant; default uses plain-text
+        // OR
+        auth.userDetailsService(...); // Noncompliant; default uses plain-text
+        // OR
+        auth.userDetailsService(...).passwordEncoder(new StandardPasswordEncoder()); // Noncompliant
+    }
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth, DataSource dataSource) throws Exception {
+        auth.jdbcAuthentication()
+                .dataSource(dataSource)
+                .usersByUsernameQuery("Select * from users where username=?")
+                .passwordEncoder(new BCryptPasswordEncoder());
+        // or
+        auth.userDetailsService(null).passwordEncoder(new BCryptPasswordEncoder());
+    }
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A2-Broken_Authentication">OWASP Top 10 2017 Category A2</a> - Broken Authentication </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/328">MITRE, CWE-328</a> - Reversible One-Way Hash </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/327">MITRE, CWE-327</a> - Use of a Broken or Risky Cryptographic Algorithm </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+  <li> https://blog.ircmaxell.com/2014/03/why-i-dont-recommend-scrypt.html </li>
+</ul>
+
