@@ -20,7 +20,6 @@
 package org.sonar.java.checks.security;
 
 import org.junit.Test;
-import org.sonar.java.checks.security.PasswordEncoderCheck;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class PasswordEncoderCheckTest {
@@ -28,6 +27,7 @@ public class PasswordEncoderCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/security/PasswordEncoder.java", new PasswordEncoderCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/PasswordEncoder.java", new PasswordEncoderCheck());
   }
 
 }

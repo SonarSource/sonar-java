@@ -66,6 +66,9 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     if (tree.is(Tree.Kind.NEW_CLASS) && UNSAFE_PASSWORD_ENCODERS.anyMatch(((NewClassTree) tree))) {
       reportIssue(((NewClassTree) tree).identifier(), "Use secure password encoder.");
     } else if (tree.is(Tree.Kind.METHOD)) {
