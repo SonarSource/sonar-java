@@ -19,6 +19,7 @@
  */
 package android.content;
 
+import android.os.Handler;
 import java.io.File;
 
 public abstract class Context {
@@ -30,4 +31,22 @@ public abstract class Context {
   public abstract File[] getExternalCacheDirs();
   public abstract File getObbDir();
   public abstract File[] getObbDirs();
+
+  public abstract Intent registerReceiver (BroadcastReceiver receiver, IntentFilter filter);
+  public abstract Intent registerReceiver (BroadcastReceiver receiver, IntentFilter filter, int flags);
+  public abstract Intent registerReceiver (BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler, int flags);
+  public abstract Intent registerReceiver (BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler);
+}
+
+
+class Intent {
+
+}
+
+class IntentFilter {
+
+}
+
+class BroadcastReceiver {
+
 }

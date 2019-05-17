@@ -1,0 +1,56 @@
+<p>In Android applications, receiving intents is security-sensitive. For example, it has led in the past to the following vulnerability:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1677">CVE-2019-1677</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-1275">CVE-2015-1275</a> </li>
+</ul>
+<p>Once a receiver is registered, any app can broadcast potentially malicious intents to your application.</p>
+<p>This rule raises an issue when a receiver is registered without specifying any "broadcast permission".</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The data extracted from intents is not sanitized. </li>
+  <li> Intents broadcast is not restricted. </li>
+</ul>
+<p>You may be at risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Restrict the access to broadcasted intents. See <a
+href="https://developer.android.com/guide/components/broadcasts.html#restricting_broadcasts_with_permissions">Android documentation</a> for more
+information.</p>
+<h2>Sensitive Code Example</h2>
+<pre>
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import android.os.Build;
+import android.os.Handler;
+import android.support.annotation.RequiresApi;
+
+public class MyIntentReceiver {
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void register(Context context, BroadcastReceiver receiver,
+                         IntentFilter filter,
+                         String broadcastPermission,
+                         Handler scheduler,
+                         int flags) {
+        context.registerReceiver(receiver, filter); // Sensitive
+        context.registerReceiver(receiver, filter, flags); // Sensitive
+
+        // Broadcasting intent with "null" for broadcastPermission
+        context.registerReceiver(receiver, filter, null, scheduler); // Sensitive
+        context.registerReceiver(receiver, filter, null, scheduler, flags); // Sensitive
+
+
+        context.registerReceiver(receiver, filter,broadcastPermission, scheduler); // OK
+        context.registerReceiver(receiver, filter,broadcastPermission, scheduler, flags); // OK
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A1-Injection">OWASP Top 10 2017 Category A1</a> - Injection </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/925.html">MITRE, CWE-925</a> - Improper Verification of Intent by Broadcast Receiver </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat1">SANS Top 25</a> - Insecure Interaction Between Components </li>
+  <li> <a href="https://developer.android.com/guide/components/broadcasts.html#restricting_broadcasts_with_permissions">Android documentation</a> -
+  Broadcast Overview - Security considerations and best practices </li>
+</ul>
+
