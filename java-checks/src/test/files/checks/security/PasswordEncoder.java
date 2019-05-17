@@ -23,14 +23,14 @@ public class SecurityConfig {
     auth.jdbcAuthentication()
       .dataSource(dataSource)
       .usersByUsernameQuery("SELECT * FROM users WHERE username = ?")
-      .passwordEncoder(new StandardPasswordEncoder()); // Noncompliant {{Use secure password encoder.}}
+      .passwordEncoder(new StandardPasswordEncoder()); // Noncompliant {{Use secure "PasswordEncoder" implementation.}}
 
     auth.userDetailsService(userDetailsService).passwordEncoder(new StandardPasswordEncoder()); // Noncompliant
   }
 
   @Autowired
   public void jdbcAuthentication(AuthenticationManagerBuilder auth, DataSource dataSource, UserDetailsService userDetailsService) throws Exception {
-    auth.jdbcAuthentication()  // Noncompliant {{Configure explicit password encoder.}}
+    auth.jdbcAuthentication()  // Noncompliant {{Don't use the default "PasswordEncoder" relying on plain-text.}}
       .dataSource(dataSource)
       .usersByUsernameQuery("SELECT * FROM users WHERE username = ?");
   }
@@ -45,7 +45,7 @@ public class SecurityConfig {
 
   @Autowired
   public void userDetailsService(AuthenticationManagerBuilder auth, DataSource dataSource, UserDetailsService userDetailsService) throws Exception {
-    auth.userDetailsService(userDetailsService); // Noncompliant {{Configure explicit password encoder.}}
+    auth.userDetailsService(userDetailsService); // Noncompliant {Don't use the default "PasswordEncoder" relying on plain-text.}}
   }
 
   @Autowired
