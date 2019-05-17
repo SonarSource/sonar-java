@@ -1,0 +1,55 @@
+<p>In Android applications, accessing external storage is security-sensitive. For example, it has led in the past to the following vulnerability:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-15004">CVE-2018-15004</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-15002">CVE-2018-15002</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14995">CVE-2018-14995</a> </li>
+</ul>
+<p>Any application having the permissions <code>WRITE_EXTERNAL_STORAGE</code> or <code>READ_EXTERNAL_STORAGE</code> can access files stored on an
+external storage, be it a private or a public file.</p>
+<p>This rule raises an issue when the following functions are called:</p>
+<ul>
+  <li> <code>android.os.Environment.getExternalStorageDirectory</code> </li>
+  <li> <code>android.os.Environment.getExternalStoragePublicDirectory</code> </li>
+  <li> <code>android.content.Context.getExternalFilesDir</code> </li>
+  <li> <code>android.content.Context.getExternalFilesDirs</code> </li>
+  <li> <code>android.content.Context.getExternalMediaDirs</code> </li>
+  <li> <code>android.content.Context.getExternalCacheDir</code> </li>
+  <li> <code>android.content.Context.getExternalCacheDirs</code> </li>
+  <li> <code>android.content.Context.getObbDir</code> </li>
+  <li> <code>android.content.Context.getObbDirs</code> </li>
+</ul>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> Data written to the external storage is security-sensitive and is not encrypted. </li>
+  <li> Data read from files is not validated. </li>
+</ul>
+<p>You are at risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Validate any data read from files.</p>
+<p>Avoid writing sensitive information to an external storage. If this is required, make sure that the data is encrypted properly.</p>
+<h2>Sensitive Code Example</h2>
+<pre>
+import android.content.Context;
+import android.os.Environment;
+
+public class AccessExternalFiles {
+
+    public void accessFiles(Context context) {
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); // Sensitive
+        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES); // Sensitive
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://developer.android.com/training/articles/security-tips#ExternalStorage">Android Security tips on external file storage</a>
+  </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A1-Injection">OWASP Top 10 2017 Category A1</a> - Injection </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure
+  </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/312.html">MITRE, CWE-312</a> - Cleartext Storage of Sensitive Information </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/20.html">MITRE, CWE-20</a> - Improper Input Validation </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat2">SANS Top 25</a> - Risky Resource Management </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+</ul>
+
