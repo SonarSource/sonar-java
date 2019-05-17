@@ -44,6 +44,7 @@ import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
+import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.security.AndroidExternalStorageCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.CommandLineArgumentsCheck;
@@ -663,7 +664,8 @@ public final class CheckList {
       EnvVariablesHotspotCheck.class,
       PasswordEncoderCheck.class,
       AndroidExternalStorageCheck.class,
-      ReceivingIntentsCheck.class
+      ReceivingIntentsCheck.class,
+      AndroidBroadcastingCheck.class
     );
   }
 

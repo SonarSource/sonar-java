@@ -1,0 +1,60 @@
+<p>In Android applications, broadcasting intents is security-sensitive. For example, it has led in the past to the following vulnerability:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-9489">CVE-2018-9489</a> </li>
+</ul>
+<p>By default, broadcasted intents are visible to every application, exposing all sensitive information they contain.</p>
+<p>This rule raises an issue when an intent is broadcasted without specifying any "receiver permission".</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The intent contains sensitive information. </li>
+  <li> Intent reception is not restricted. </li>
+</ul>
+<p>You are at risk if you answered yes to all those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Restrict the access to broadcasted intents. See <a
+href="https://developer.android.com/guide/components/broadcasts.html#restricting_broadcasts_with_permissions">Android documentation</a> for more
+information.</p>
+<h2>Sensitive Code Example</h2>
+<pre>
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.UserHandle;
+import android.support.annotation.RequiresApi;
+
+public class MyIntentBroadcast {
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public void broadcast(Intent intent, Context context, UserHandle user,
+                          BroadcastReceiver resultReceiver, Handler scheduler, int initialCode,
+                          String initialData, Bundle initialExtras,
+                          String broadcastPermission) {
+        context.sendBroadcast(intent); // Sensitive
+        context.sendBroadcastAsUser(intent, user); // Sensitive
+
+        // Broadcasting intent with "null" for receiverPermission
+        context.sendBroadcast(intent, null); // Sensitive
+        context.sendBroadcastAsUser(intent, user, null); // Sensitive
+        context.sendOrderedBroadcast(intent, null); // Sensitive
+        context.sendOrderedBroadcastAsUser(intent, user, null, resultReceiver,
+                scheduler, initialCode, initialData, initialExtras); // Sensitive
+
+        context.sendBroadcast(intent, broadcastPermission); // Ok
+        context.sendBroadcastAsUser(intent, user, broadcastPermission); // Ok
+        context.sendOrderedBroadcast(intent, broadcastPermission); // Ok
+        context.sendOrderedBroadcastAsUser(intent, user,broadcastPermission, resultReceiver,
+                scheduler, initialCode, initialData, initialExtras); // Ok
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure
+  </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/927.html">MITRE, CWE-927</a> - Use of Implicit Intent for Sensitive Communication </li>
+  <li> <a href="https://developer.android.com/guide/components/broadcasts.html#restricting_broadcasts_with_permissions">Android documentation</a> -
+  Broadcast Overview - Security considerations and best practices </li>
+</ul>
+

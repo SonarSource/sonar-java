@@ -19,7 +19,9 @@
  */
 package android.content;
 
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.UserHandle;
 import java.io.File;
 
 public abstract class Context {
@@ -32,10 +34,23 @@ public abstract class Context {
   public abstract File getObbDir();
   public abstract File[] getObbDirs();
 
-  public abstract Intent registerReceiver (BroadcastReceiver receiver, IntentFilter filter);
-  public abstract Intent registerReceiver (BroadcastReceiver receiver, IntentFilter filter, int flags);
-  public abstract Intent registerReceiver (BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler, int flags);
-  public abstract Intent registerReceiver (BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler);
+  public abstract Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter);
+  public abstract Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, int flags);
+  public abstract Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler, int flags);
+  public abstract Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler);
+
+  public abstract void sendBroadcast(Intent intent);
+  public abstract void sendBroadcast(Intent intent, String receiverPermission);
+  public abstract void sendBroadcastAsUser(Intent intent, UserHandle user);
+  public abstract void sendBroadcastAsUser (Intent intent, UserHandle user, String receiverPermission);
+  public abstract void sendOrderedBroadcast(Intent intent, String receiverPermission);
+  public abstract void sendOrderedBroadcast(Intent intent, String receiverPermission, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras);
+  public abstract void sendOrderedBroadcastAsUser(Intent intent, UserHandle user, String receiverPermission, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras);
+
+  public abstract void sendStickyBroadcast(Intent intent);
+  public abstract void sendStickyBroadcastAsUser(Intent intent, UserHandle user);
+  public abstract void sendStickyOrderedBroadcast(Intent intent, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras);
+  public abstract void sendStickyOrderedBroadcastAsUser(Intent intent, UserHandle user, BroadcastReceiver resultReceiver, Handler scheduler, int initialCode, String initialData, Bundle initialExtras);
 }
 
 
