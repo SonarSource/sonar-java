@@ -62,6 +62,7 @@ import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.security.LDAPDeserializationCheck;
 import org.sonar.java.checks.security.LogConfigurationCheck;
 import org.sonar.java.checks.security.PasswordEncoderCheck;
+import org.sonar.java.checks.security.ReceivingIntentsCheck;
 import org.sonar.java.checks.security.RegexHotspotCheck;
 import org.sonar.java.checks.security.SMTPSSLServerIdentityCheck;
 import org.sonar.java.checks.security.SecureCookieCheck;
@@ -661,7 +662,8 @@ public final class CheckList {
       UseSwitchExpressionCheck.class,
       EnvVariablesHotspotCheck.class,
       PasswordEncoderCheck.class,
-      AndroidExternalStorageCheck.class
+      AndroidExternalStorageCheck.class,
+      ReceivingIntentsCheck.class
     );
   }
 
