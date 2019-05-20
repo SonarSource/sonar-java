@@ -70,12 +70,12 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
       return;
     }
     if (tree.is(Tree.Kind.NEW_CLASS) && UNSAFE_PASSWORD_ENCODERS.anyMatch(((NewClassTree) tree))) {
-      reportIssue(((NewClassTree) tree).identifier(), "Use secure password encoder.");
+      reportIssue(((NewClassTree) tree).identifier(), "Use secure \"PasswordEncoder\" implementation.");
     } else if (tree.is(Tree.Kind.METHOD)) {
       MethodInvocationVisitor visitor = new MethodInvocationVisitor();
       tree.accept(visitor);
       if (visitor.hasAuthentication && !visitor.setsPasswordEncoder) {
-        reportIssue(visitor.tree, "Configure explicit password encoder.");
+        reportIssue(visitor.tree, "Don't use the default \"PasswordEncoder\" relying on plain-text.");
       }
     }
   }
