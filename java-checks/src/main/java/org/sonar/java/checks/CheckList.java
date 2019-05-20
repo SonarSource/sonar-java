@@ -55,6 +55,7 @@ import org.sonar.java.checks.security.CryptographicKeySizeCheck;
 import org.sonar.java.checks.security.DataEncryptionCheck;
 import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
+import org.sonar.java.checks.security.EmailHotspotCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.EnvVariablesHotspotCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
@@ -665,7 +666,8 @@ public final class CheckList {
       PasswordEncoderCheck.class,
       AndroidExternalStorageCheck.class,
       ReceivingIntentsCheck.class,
-      AndroidBroadcastingCheck.class
+      AndroidBroadcastingCheck.class,
+      EmailHotspotCheck.class
     );
   }
 

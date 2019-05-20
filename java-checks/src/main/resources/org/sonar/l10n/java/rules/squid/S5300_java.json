@@ -1,0 +1,27 @@
+{
+  "title": "Sending emails is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "tags": [
+    "cwe",
+    "owasp-a1",
+    "sans-top25-insecure"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top 10"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5300",
+  "sqKey": "S5300",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      93,
+      80
+    ],
+    "OWASP": [
+      "A1"
+    ]
+  }
+}
