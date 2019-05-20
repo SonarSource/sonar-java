@@ -43,12 +43,12 @@ class S2255 {
   }
 
   void springCookie(Cookie c, SavedCookie cookie) {
-    new SavedCookie(c); // Noncompliant
-    new SavedCookie("n", "v", "c", "d", 1, "p", true, 1); // Noncompliant
+    new SavedCookie(c); // compliant
+    new SavedCookie("n", "v", "c", "d", 1, "p", true, 1); // compliant
     cookie.getValue(); // compliant
   }
 
-  public String myPage(@org.springframework.web.bind.annotation.CookieValue("cookieName") String myCookie) { // Noncompliant [[sc=24;ec=90]]
+  public String myPage(@org.springframework.web.bind.annotation.CookieValue("cookieName") String myCookie) { // compliant
     return "test";
   }
 

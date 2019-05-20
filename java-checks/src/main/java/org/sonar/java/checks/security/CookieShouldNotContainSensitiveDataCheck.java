@@ -31,7 +31,6 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -45,7 +44,6 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
     private static final String NET_HTTP_COOKIE = "java.net.HttpCookie";
     private static final String JAX_RS_COOKIE = "javax.ws.rs.core.Cookie";
     private static final String SHIRO_COOKIE = "org.apache.shiro.web.servlet.SimpleCookie";
-    private static final String SPRING_COOKIE = "org.springframework.security.web.savedrequest.SavedCookie";
     private static final String PLAY_COOKIE = "play.mvc.Http$Cookie";
     private static final String PLAY_COOKIE_BUILDER = "play.mvc.Http$CookieBuilder";
   }
@@ -73,7 +71,6 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SPRING_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
       // javax.ws.rs.core.NewCookie is a subtype of JAX_RS_COOKIE
       MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
       MethodMatcher.create().typeDefinition(ClassName.PLAY_COOKIE).name(BUILDER_METHOD).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING),
@@ -82,21 +79,7 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_REFERENCE, Tree.Kind.METHOD);
-  }
-
-  @Override
-  public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-    if (tree.is(Tree.Kind.METHOD)) {
-      ((MethodTree) tree).parameters().stream()
-        .filter(v -> v.symbol().metadata().isAnnotatedWith("org.springframework.web.bind.annotation.CookieValue"))
-        .forEach(v -> reportIssue(v.modifiers(), MESSAGE));
-    } else {
-      super.visitNode(tree);
-    }
+    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_REFERENCE);
   }
 
   @Override
