@@ -1,0 +1,63 @@
+<p>Validating SSL/TLS connections is security-sensitive. For example, it has led in the past to the following vulnerabilities:</p>
+<ul>
+  <li> <a href="https://nvd.nist.gov/vuln/detail/CVE-2014-5531">CVE-2014-5531</a> </li>
+  <li> <a href="https://nvd.nist.gov/vuln/detail/CVE-2014-5524">CVE-2014-5524</a> </li>
+  <li> <a href="https://nvd.nist.gov/vuln/detail/CVE-2014-5574">CVE-2014-5574</a> </li>
+</ul>
+<p>SSL/TLS protocols encrypt network connections. The server usually provides a digital certificate to prove its identity. Accepting all SSL/TLS
+certificates makes your application vulnerable to <a href="https://www.owasp.org/index.php/Man-in-the-middle_attack">Man-in-the-middle attacks
+(MITM)</a>.</p>
+<p>This rule will raise an issue when a method named <code>onReceivedSslError</code> with first argument of type <code>android.webkit.WebView</code>
+is defined.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> invalid SSL/TLS certificates are accepted automatically. </li>
+  <li> The user is asked to accept invalid SSL/TLS certificates. </li>
+</ul>
+<p>You are at risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> Accept only trusted SSL/TLS certificates. </li>
+  <li> Do not ask users to accept unsafe connections as they are unlikely to make an informed security decision. </li>
+</ul>
+<h2>Sensitive Code Example</h2>
+<p>Android (See also <a href="https://support.google.com/faqs/answer/7071387?hl=en">"How to address WebView SSL Error Handler alerts in your
+apps."</a>)</p>
+<pre>
+package com.example.myapplication.rspec_5326;
+
+import android.net.http.SslError;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import java.util.function.Function;
+
+public class SSLTLSValidation extends WebViewClient {
+    private final Function&lt;SslError, Boolean&gt; acceptSslError;
+
+    SSLTLSValidation(Function&lt;SslError, Boolean&gt; acceptSslError) {
+        this.acceptSslError = acceptSslError;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) { // Sensitive
+        if (acceptSslError.apply(error)) {
+            handler.proceed();
+        } else {
+            handler.cancel();
+        }
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/295.html">MITRE, CWE-295</a> - Improper Certificate Validation </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+</ul>
+
