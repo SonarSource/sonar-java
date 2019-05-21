@@ -71,6 +71,11 @@ public class A {
   public static final Map MAP = new HashMap(); // Noncompliant
   public static final Map otherMap = MAP; // Noncompliant
 
+  public static final Map<String, String> IMMUTABLE_MAP = Map.of("a", "A");
+  public static final List<String> IMMUTABLE_LIST = List.of("hello");
+  public static final Set<String> IMMUTABLE_SET = Set.of("hello");
+
+
   static {
     MAP.put("a", "b");
     MAP.put("c", "d");
