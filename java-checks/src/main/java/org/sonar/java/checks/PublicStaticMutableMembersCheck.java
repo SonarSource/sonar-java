@@ -71,6 +71,10 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
     .add(MethodMatcher.create().typeDefinition("java.util.Collections").name(NameCriteria.startsWith("singleton")).withAnyParameters())
     .add(MethodMatcher.create().typeDefinition("java.util.Collections").name(NameCriteria.startsWith("empty")).withAnyParameters())
     .add(MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name(NameCriteria.startsWith("unmodifiable")).withAnyParameters())
+       // Java 9
+    .add(MethodMatcher.create().typeDefinition("java.util.Set").name("of").withAnyParameters())
+    .add(MethodMatcher.create().typeDefinition("java.util.List").name("of").withAnyParameters())
+    .add(MethodMatcher.create().typeDefinition("java.util.Map").name("of").withAnyParameters())
       // apache commons 3.X
     .add(MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.apache.commons.collections.map.UnmodifiableMap")).name(DECORATE).withAnyParameters())
     .add(MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.apache.commons.collections.set.UnmodifiableSet")).name(DECORATE).withAnyParameters())
