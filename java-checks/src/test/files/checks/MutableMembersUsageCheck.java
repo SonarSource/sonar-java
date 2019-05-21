@@ -1,11 +1,5 @@
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import com.google.common.collect.ImmutableCollection;
-import java.util.Collections;
 
 class A {
   private String[] strings;
@@ -137,6 +131,10 @@ class Fields {
   private static final List<String> UNMODIFIABLE = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
   private static final List<String> UNMODIFIABLE2;
   private static final Object UNMODIFIABLE_OBJECT;
+
+  private static final List<String> IMMUTABLE_LIST = List.of(1, 2, 3);
+  private static final Set<String> IMMUTABLE_SET = Set.of("a");
+
   static {
     UNMODIFIABLE2 = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
     UNMODIFIABLE_OBJECT = UNMODIFIABLE2;
@@ -165,6 +163,14 @@ class Fields {
 
   public List<String> bar1() {
     return unmodifiable_not_final; // Noncompliant
+  }
+
+  public List<String> immutableList() {
+    return IMMUTABLE_LIST;
+  }
+
+  public Set<String> immutableSet() {
+    return IMMUTABLE_SET;
   }
 
   public List<String> bar2() {
