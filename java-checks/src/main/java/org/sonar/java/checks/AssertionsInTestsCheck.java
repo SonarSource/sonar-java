@@ -132,7 +132,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   private MethodMatcherCollection getCustomAssertionMethodsMatcher() {
     if (customAssertionMethodsMatcher == null) {
-      String[] fullyQualifiedMethodSymbols = customAssertionMethods.split(",");
+      String[] fullyQualifiedMethodSymbols = customAssertionMethods.isEmpty() ? new String[0] : customAssertionMethods.split(",");
       List<MethodMatcher> customMethodMatchers = new ArrayList<>(fullyQualifiedMethodSymbols.length);
       for (String fullyQualifiedMethodSymbol : fullyQualifiedMethodSymbols) {
         String[] methodMatcherParts = fullyQualifiedMethodSymbol.split("#");

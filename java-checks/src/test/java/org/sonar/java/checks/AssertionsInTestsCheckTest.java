@@ -20,56 +20,42 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(Parameterized.class)
 public class AssertionsInTestsCheckTest {
 
+  public static final List<String> FRAMEWORKS = Arrays.asList(
+    "Junit3",
+    "Junit4",
+    "Junit5",
+    "AssertJ",
+    "Hamcrest",
+    "Spring",
+    "EasyMock",
+    "Truth",
+    "ReactiveX1",
+    "ReactiveX2",
+    "RestAssured",
+    "Mockito",
+    "JMock",
+    "WireMock",
+    "VertX",
+    "Selenide",
+    "JMockit",
+    "Custom"
+  );
   private AssertionsInTestsCheck check = new AssertionsInTestsCheck();
-
-  @Parameters(name = "Test framework: {0}")
-  public static Collection<Object[]> frameworks() {
-    return Arrays.asList(new Object[][] {
-      {"Junit3"},
-      {"Junit4"},
-      {"Junit5"},
-      {"AssertJ"},
-      {"Hamcrest"},
-      {"Spring"},
-      {"EasyMock"},
-      {"Truth"},
-      {"ReactiveX1"},
-      {"ReactiveX2"},
-      {"RestAssured"},
-      {"Mockito"},
-      {"JMock"},
-      {"WireMock"},
-      {"VertX"},
-      {"Selenide"},
-      {"JMockit"},
-      {"Custom"}
-    });
-  }
 
   @Rule
   public LogTester logTester = new LogTester();
-
-  public String framework;
-
-  public AssertionsInTestsCheckTest(String framework) {
-    this.framework = framework;
-  }
 
   @Before
   public void setup() {
@@ -79,10 +65,19 @@ public class AssertionsInTestsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/" + framework + ".java", check);
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains(
-      "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'blabla'",
-      "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'bla# '",
-      "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ' #bla'");
+    FRAMEWORKS.forEach(framework -> {
+      JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/" + framework + ".java", check);
+      assertThat(logTester.logs(LoggerLevel.WARN)).contains(
+        "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'blabla'",
+        "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'bla# '",
+        "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ' #bla'");
+    });
+  }
+
+  @Test
+  public void testWithEmptyCustomAssertionMethods() {
+    check.customAssertionMethods = "";
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Junit3.java", check);
+    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ''");
   }
 }
