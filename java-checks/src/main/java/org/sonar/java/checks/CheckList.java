@@ -669,7 +669,8 @@ public final class CheckList {
       ReceivingIntentsCheck.class,
       AndroidBroadcastingCheck.class,
       EmailHotspotCheck.class,
-      AndroidSSLConnectionCheck.class
+      AndroidSSLConnectionCheck.class,
+      LoggerClassCheck.class
     );
   }
 

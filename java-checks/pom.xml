@@ -517,6 +517,11 @@
                   <version>1.0.0</version>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>commons-logging</groupId>
+                  <artifactId>commons-logging</artifactId>
+                  <version>1.2</version>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.apache.logging.log4j</groupId>
                   <artifactId>log4j-core</artifactId>
                   <version>2.11.1</version>
@@ -560,6 +565,11 @@
                   <groupId>javax.validation</groupId>
                   <artifactId>validation-api</artifactId>
                   <version>2.0.1.Final</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.sonarsource.sonarqube</groupId>
+                  <artifactId>sonar-plugin-api</artifactId>
+                  <version>7.7</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
