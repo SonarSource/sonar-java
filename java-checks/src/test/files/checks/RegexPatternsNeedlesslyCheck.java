@@ -60,20 +60,22 @@ class A {
     param.split("."); // Noncompliant
     param.split("a"); // Compliant not included in meta characters
 
-    param.split("\2"); // Noncompliant
-    param.split("\\"); // Compliant
+    param.split("\2"); // Compliant  -- this is 1 char string
+    param.split("\\"); // Noncompliant
     param.split("/a"); // Noncompliant
     param.split("\\a"); // Noncompliant
 
     param.split("\\a"); // Noncompliant
     param.split("\\2"); // Noncompliant
-    param.split("\\-"); // Noncompliant
+    param.split("\\-"); // Compliant  -- second character is not a letter or digit
     param.split("\\*"); // Compliant    * is a metacharacter
     param.split("\\."); // Compliant
     param.split("\\|"); // Compliant
     param.split("\\\\"); // Compliant
     param.split("//++"); // Noncompliant
     param.split("\\?q"); // Noncompliant
+    param.split("\t");
+    param.split("\n");
   }
 }
 

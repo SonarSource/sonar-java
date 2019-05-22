@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
@@ -43,14 +43,14 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
 
   private static final String STRING = "java.lang.String";
   private static final String PATTERN = "java.util.regex.Pattern";
-  private static final Pattern SPLIT_EXCLUSION = Pattern.compile("[\\$\\.\\|\\(\\)\\[\\{\\^\\?\\*\\+\\\\]|\\\\\\w");
+  private static final MethodMatcher SPLIT_MATCHER = MethodMatcher.create().typeDefinition(STRING).name("split").withAnyParameters();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Arrays.asList(
       MethodMatcher.create().typeDefinition(PATTERN).name("compile").addParameter(STRING),
       MethodMatcher.create().typeDefinition(STRING).name("matches").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(STRING).name("split").withAnyParameters(),
+      SPLIT_MATCHER,
       MethodMatcher.create().typeDefinition(STRING).name("replaceAll").withAnyParameters(),
       MethodMatcher.create().typeDefinition(STRING).name("replaceFirst").withAnyParameters());
   }
@@ -58,10 +58,9 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree firstArgument = ExpressionUtils.skipParentheses(mit.arguments().get(0));
-    if (isSplitMethod(mit) && firstArgument.is(Tree.Kind.STRING_LITERAL)) {
+    if (SPLIT_MATCHER.matches(mit) && firstArgument.is(Tree.Kind.STRING_LITERAL)) {
       String argValue = LiteralUtils.trimQuotes(((LiteralTree) firstArgument).value());
-      if ((exceptionSplitMethod(argValue) &&
-        !SPLIT_EXCLUSION.matcher(argValue).matches()) || metaCharactersInSplit(argValue)) {
+      if (exceptionSplitMethod(argValue)) {
         return;
       }
     }
@@ -98,19 +97,17 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
     return symbol != null && symbol.isFinal() && symbol.isStatic();
   }
 
-  private static boolean metaCharactersInSplit(String argValue) {
-    int strLength = argValue.length();
-    return ((strLength == 3 && argValue.charAt(1) == '\\' && argValue.charAt(0) == '\\'
-      && SPLIT_EXCLUSION.matcher(Character.toString(argValue.charAt(2))).matches()) ||
-      (strLength == 4 && argValue.charAt(0) == '\\' && argValue.charAt(3) == '\\'));
-  }
-
   private static boolean exceptionSplitMethod(String argValue) {
-    int strLength = argValue.length();
-    return strLength == 1 || (strLength == 2 && argValue.charAt(0) == '\\');
+    String regex = StringEscapeUtils.unescapeJava(argValue);
+    // following code is copy of actual String.split condition for fastpath
+    char ch = 0;
+    return ((regex.length() == 1 && ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
+      (regex.length() == 2 &&
+        regex.charAt(0) == '\\' &&
+        (((ch = regex.charAt(1)) - '0') | ('9' - ch)) < 0 &&
+        ((ch - 'a') | ('z' - ch)) < 0 &&
+        ((ch - 'A') | ('Z' - ch)) < 0)) &&
+      (ch < Character.MIN_HIGH_SURROGATE || ch > Character.MAX_LOW_SURROGATE);
   }
 
-  private static boolean isSplitMethod(MethodInvocationTree mit) {
-    return mit.symbol().name().equals("split");
-  }
 }
