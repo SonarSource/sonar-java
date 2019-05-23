@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -61,17 +61,19 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   }
 
   private void checkEmptyValue(MethodInvocationTree mit, ExpressionTree expression) {
-    String literal = ConstantUtils.resolveAsStringConstant(expression);
+    ExpressionsHelper.ValueResolution<String> valueResolution = ExpressionsHelper.getConstantValueAsString(expression);
+    String literal = valueResolution.value();
     if (literal != null && literal.trim().isEmpty()) {
-      reportIssue(mit, MESSAGE);
+      reportIssue(mit, MESSAGE, valueResolution.valuePath(), null);
     }
   }
 
   private void checkUrlContainsEmptyPassword(MethodInvocationTree mit) {
     ExpressionTree urlArgument = mit.arguments().get(URL_ARGUMENT);
-    String url = ConstantUtils.resolveAsStringConstant(urlArgument);
+    ExpressionsHelper.ValueResolution<String> valueResolution = ExpressionsHelper.getConstantValueAsString(urlArgument);
+    String url = valueResolution.value();
     if (url != null && urlContainsEmptyPassword(url)) {
-      reportIssue(mit, MESSAGE);
+      reportIssue(mit, MESSAGE, valueResolution.valuePath(), null);
     }
   }
 

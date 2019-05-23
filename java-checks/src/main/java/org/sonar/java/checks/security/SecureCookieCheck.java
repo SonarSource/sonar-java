@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -155,10 +155,11 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
   private void checkSecureCall(MethodInvocationTree mit) {
     if (isSetSecureCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      Boolean secureArgument = ConstantUtils.resolveAsBooleanConstant(mit.arguments().get(0));
+      ExpressionsHelper.ValueResolution<Boolean> valueResolution = ExpressionsHelper.getConstantValueAsBoolean(mit.arguments().get(0));
+      Boolean secureArgument = valueResolution.value();
       boolean isFalse = secureArgument != null && !secureArgument;
       if (isFalse) {
-        reportIssue(mit.arguments(), MESSAGE);
+        reportIssue(mit.arguments(), MESSAGE, valueResolution.valuePath(), null);
       }
       ExpressionTree methodObject = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
       if (methodObject.is(Tree.Kind.IDENTIFIER)) {

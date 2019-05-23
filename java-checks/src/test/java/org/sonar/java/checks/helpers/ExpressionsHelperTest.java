@@ -19,13 +19,16 @@
  */
 package org.sonar.java.checks.helpers;
 
+import javax.annotation.Nullable;
 import org.junit.Test;
 
 import java.lang.reflect.Constructor;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExpressionsHelperTest {
+public class ExpressionsHelperTest extends JavaParserHelper {
 
   @Test
   public void private_constructor() throws Exception {
@@ -35,4 +38,89 @@ public class ExpressionsHelperTest {
     constructor.newInstance();
   }
 
+  @Test
+  public void simpleAssignment() {
+    String code = newCode( "int foo() {",
+      "boolean a;",
+      "a = true;",
+      "return a;",
+      "}");
+    assertValueResolution(code, true);
+  }
+
+  @Test
+  public void initializerAndAssignment() {
+    String code = newCode( "int foo() {",
+      "boolean a = false;",
+      "a = true;",
+      "return a;",
+      "}");
+    assertValueResolution(code, null);
+  }
+
+  @Test
+  public void simpleInitializer() {
+    String code = newCode( "int foo() {",
+      "boolean a = true;",
+      "return a;",
+      "}");
+    assertValueResolution(code, true);
+  }
+
+  @Test
+  public void andAssignement() {
+    String code = newCode( "int foo() {",
+      "boolean a;",
+      "a &= false;",
+      "return a;",
+      "}");
+    assertValueResolution(code, null);
+  }
+
+  @Test
+  public void selfAssigned() {
+    String code = newCode( "int foo() {",
+      "boolean a = a;",
+      "return a;",
+      "}");
+    assertValueResolution(code, null);
+  }
+
+  @Test
+  public void unknownValue() {
+    String code = newCode( "int foo(boolean a) {",
+      "return a;",
+      "}");
+    assertValueResolution(code, null);
+  }
+
+  @Test
+  public void notAnIdentifier() {
+    String code = newCode( "int foo() {",
+      "boolean a = bar();",
+      "return a;",
+      "}",
+      "boolean bar() {",
+      "return true;",
+      "}");
+    assertValueResolution(code, null);
+  }
+
+  @Test
+  public void moreThanOneAssignment() {
+    String code = newCode( "int foo() {",
+      "boolean a;",
+      "a = true;",
+      "a = false;",
+      "return a;",
+      "}");
+    assertValueResolution(code, null);
+  }
+
+  private <T> void assertValueResolution(String code, @Nullable T target) {
+    MethodTree method = methodTree(code);
+    IdentifierTree a = variableFromLastReturnStatement(method.block().body());
+    Boolean value = ExpressionsHelper.getConstantValueAsBoolean(a).value();
+    assertThat(value).isEqualTo(target);
+  }
 }
