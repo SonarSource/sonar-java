@@ -70,6 +70,11 @@ class A {
     param.split("\\-"); // Compliant  -- second character is not a letter or digit
     param.split("\\*"); // Compliant    * is a metacharacter
     param.split("\\."); // Compliant
+    param.split("\\="); // Compliant
+    param.split("\\_"); // Compliant
+    param.split("\\{"); // Compliant
+    param.split("\\" + '\uD801'); // Compliant
+    param.split("\\" + '\uDFFE'); // Compliant
     param.split("\\|"); // Compliant
     param.split("\\\\"); // Compliant
     param.split("//++"); // Noncompliant

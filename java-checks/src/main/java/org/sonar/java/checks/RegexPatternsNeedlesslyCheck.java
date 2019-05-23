@@ -97,10 +97,17 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
     return symbol != null && symbol.isFinal() && symbol.isStatic();
   }
 
+  /**
+   * Following code is copy of actual {@link java.lang.String#split(String, int)} condition for fastpath
+   * Condition is checking for one of the following cases:
+   *
+   * (1) one-char String and this character is not one of the RegEx's meta characters ".$|()[{^?*+\\", or
+   * (2) two-char String and the first char is the backslash and the second is not the ascii digit or ascii letter.
+   *
+   */
   private static boolean exceptionSplitMethod(String argValue) {
     String regex = StringEscapeUtils.unescapeJava(argValue);
-    // following code is copy of actual String.split condition for fastpath
-    char ch = 0;
+    char ch;
     return ((regex.length() == 1 && ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
       (regex.length() == 2 &&
         regex.charAt(0) == '\\' &&
