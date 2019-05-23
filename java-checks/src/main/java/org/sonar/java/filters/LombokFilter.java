@@ -21,19 +21,24 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.java.checks.AtLeastOneConstructorCheck;
+import org.sonar.java.checks.CollectionInappropriateCallsCheck;
 import org.sonar.java.checks.ConstantsShouldBeStaticFinalCheck;
 import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
 import org.sonar.java.checks.PrivateFieldUsedLocallyCheck;
+import org.sonar.java.checks.SillyEqualsCheck;
 import org.sonar.java.checks.UtilityClassWithPublicConstructorCheck;
 import org.sonar.java.checks.naming.BadFieldNameCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -50,7 +55,11 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     UtilityClassWithPublicConstructorCheck.class,
     AtLeastOneConstructorCheck.class,
     BadFieldNameCheck.class,
-    ConstantsShouldBeStaticFinalCheck.class);
+    ConstantsShouldBeStaticFinalCheck.class,
+    SillyEqualsCheck.class,
+    CollectionInappropriateCallsCheck.class);
+
+  private static final String LOMBOK_VAL = "lombok.val";
 
   private static final List<String> GENERATE_UNUSED_FIELD_RELATED_METHODS = ImmutableList.<String>builder()
     .add("lombok.Getter")
@@ -164,4 +173,23 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     // can not be anything else than a Tree, because we start from the syntax tree
     return null;
   }
+
+  @Override
+  public void visitIdentifier(IdentifierTree tree) {
+    Symbol symbol = tree.symbol();
+    if (symbol.isVariableSymbol() && symbol.type().is(LOMBOK_VAL)) {
+      parentMethodInvocation(tree)
+        .ifPresent(mit -> excludeLines(mit, Arrays.asList(SillyEqualsCheck.class, CollectionInappropriateCallsCheck.class)));
+    }
+    super.visitIdentifier(tree);
+  }
+
+  private static Optional<Tree> parentMethodInvocation(IdentifierTree identifier) {
+    Tree parent = identifier.parent();
+    while (parent != null && !parent.is(Tree.Kind.METHOD_INVOCATION)) {
+      parent = parent.parent();
+    }
+    return Optional.ofNullable(parent);
+  }
+
 }

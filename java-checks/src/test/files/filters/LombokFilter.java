@@ -1,3 +1,4 @@
+import lombok.val;
 import static lombok.AccessLevel.PRIVATE;
 
 class Fields {
@@ -241,6 +242,35 @@ static class UtilityClassWithPublicConstructorCheck {
 
   public static lombok.AccessLevel getValue() {
     return lombok.AccessLevel.MODULE;
+  }
+}
+
+class LombokVal {
+  boolean s2159_val_with_fully_qualified_name(String x) {
+    lombok.val y = "Hello World";
+    return x
+      .equals( // NoIssue
+        y);
+  }
+
+  boolean s2159_val_with_import(String x) {
+    val y = "Hello World";
+    return x.equals(y); // NoIssue
+  }
+
+  boolean s2159_valid(String x) {
+    Object y = "Hello World";
+    return x.equals(y); // Withissue
+  }
+
+  boolean s2175(java.util.List<String> words) {
+    lombok.val y = "Hello World";
+    return words.contains(y); // NoIssue
+  }
+
+  boolean s2175_valid(java.util.List<String> words) {
+    Integer y = 42;
+    return words.contains(y); // WithIssue
   }
 }
 
