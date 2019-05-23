@@ -16,6 +16,7 @@ This document is an introduction to custom rule writing for the SonarQube Java A
   * [A test class to make it pass](#a-test-class-to-make-it-pass)
   * [First version: Using syntax trees and API basics](#first-version-using-syntax-trees-and-api-basics)
   * [Second version: Using semantic API](#second-version-using-semantic-api)
+  * [What you can use, and what you can't](#what-you-can-use-and-what-you-cant)
 * [Registering the rule in the custom plugin](#registering-the-rule-in-the-custom-plugin)
   * [Rule Metadata](#rule-metadata)
   * [Rule Activation](#rule-activation)
@@ -351,6 +352,14 @@ If it passed...
 >
 > [*You implemented your first custom rule for the SonarQube Java Analyzer!*](resources/success.jpg)
 > ***
+
+### What you can use, and what you can't
+
+When writing custom Java rules, you can only use classes from package [`org.sonar.plugins.java.api`](https://github.com/SonarSource/sonar-java/tree/5.12.1.17771/java-frontend/src/main/java/org/sonar/plugins/java/api).
+
+When browsing the existing 500+ rules from the SonarJava plugin, you will sometime notice use of some other utility classes, not part of the API. While these classes could be sometime extremely useful in your context, **these classes are not available at runtime** for custom rule plugins. It means that, while your unit tests are still going to pass when building the plugin, your rules will most likely make analysis **crash at analysis time**.
+
+Note that we are always open to discussion, so don't hesitate to reach us and participate to threads, through our [community forum](https://community.sonarsource.com/), to suggest features and API improvement!
 
 ## Registering the rule in the custom plugin
 
