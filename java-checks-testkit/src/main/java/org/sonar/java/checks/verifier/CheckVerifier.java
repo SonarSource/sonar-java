@@ -294,30 +294,30 @@ public abstract class CheckVerifier {
     int line = issue.getLine();
     if (expected.containsKey(line)) {
       Map<IssueAttribute, String> attrs = Iterables.getLast(expected.get(line));
-      assertEquals(issue.getMessage(), attrs, IssueAttribute.MESSAGE);
+      assertEquals(line, issue.getMessage(), attrs, IssueAttribute.MESSAGE);
       Double cost = issue.getCost();
       if (cost != null) {
         Preconditions.checkState(remediationFunction != RemediationFunction.CONST, "Rule with constant remediation function shall not provide cost");
-        assertEquals(Integer.toString(cost.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
+        assertEquals(line, Integer.toString(cost.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
       } else if(remediationFunction == RemediationFunction.LINEAR){
         Fail.fail("A cost should be provided for a rule with linear remediation function");
       }
-      validateAnalyzerMessage(attrs, issue);
+      validateAnalyzerMessage(line, attrs, issue);
       expected.remove(line, attrs);
     } else {
       unexpectedLines.add(line);
     }
   }
 
-  private static void validateAnalyzerMessage(Map<IssueAttribute, String> attrs, AnalyzerMessage analyzerMessage) {
+  private static void validateAnalyzerMessage(int line, Map<IssueAttribute, String> attrs, AnalyzerMessage analyzerMessage) {
     Double effortToFix = analyzerMessage.getCost();
     if (effortToFix != null) {
-      assertEquals(Integer.toString(effortToFix.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
+      assertEquals(line, Integer.toString(effortToFix.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
     }
     AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
-    assertEquals(normalizeColumn(textSpan.startCharacter), attrs, IssueAttribute.START_COLUMN);
-    assertEquals(Integer.toString(textSpan.endLine), attrs, IssueAttribute.END_LINE);
-    assertEquals(normalizeColumn(textSpan.endCharacter), attrs, IssueAttribute.END_COLUMN);
+    assertEquals(line, normalizeColumn(textSpan.startCharacter), attrs, IssueAttribute.START_COLUMN);
+    assertEquals(line, Integer.toString(textSpan.endLine), attrs, IssueAttribute.END_LINE);
+    assertEquals(line, normalizeColumn(textSpan.endCharacter), attrs, IssueAttribute.END_COLUMN);
     if (attrs.containsKey(IssueAttribute.SECONDARY_LOCATIONS)) {
       List<AnalyzerMessage> secondaryLocations = analyzerMessage.flows.stream().map(l -> l.get(0)).collect(Collectors.toList());
       Multiset<String> actualLines = HashMultiset.create();
@@ -349,9 +349,9 @@ public abstract class CheckVerifier {
     return Integer.toString(startCharacter + 1);
   }
 
-  private static void assertEquals(String value, Map<IssueAttribute, String> attributes, IssueAttribute attribute) {
+  private static void assertEquals(int line, String value, Map<IssueAttribute, String> attributes, IssueAttribute attribute) {
     if (attributes.containsKey(attribute)) {
-      assertThat(value).as("attribute mismatch for " + attribute + ": " + attributes).isEqualTo(attributes.get(attribute));
+      assertThat(value).as("Line: " + line + " attribute mismatch for " + attribute + ": " + attributes).isEqualTo(attributes.get(attribute));
     }
   }
 
