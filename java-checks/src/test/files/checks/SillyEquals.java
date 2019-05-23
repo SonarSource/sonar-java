@@ -104,4 +104,9 @@ public class MyClass {
     equals(o); // False negative, String and MyClass are unrelated
   }
 
+  boolean foo(String x) {
+    lombok.val y = "Hello World";
+    return x.equals(y); // Noncompliant - FP - removed by the lombok filter
+  }
+
 }
