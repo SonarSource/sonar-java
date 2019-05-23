@@ -534,3 +534,4 @@ public interface JavaFileScannerContext {
 * [SonarQube Platform](http://www.sonarqube.org/)
 * [SonarQube Java Plugin Github repository](https://github.com/SonarSource/sonar-java)
 * [SonarQube Java Custom Rules Example](https://github.com/SonarSource/sonar-custom-plugin-example)
+You can explore a sample plugin containing some custom rules. This project can be [browsed](https://github.com/SonarSource/sonar-custom-rules-examples/tree/master/java-custom-rules) or [downloaded](https://github.com/SonarSource/sonar-custom-rules-examples/archive/master.zip).
