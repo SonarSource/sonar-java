@@ -218,3 +218,14 @@ class UsingLambda {
 
   }
 }
+
+class sonarjava3044 {
+  void foo(org.slf4j.Logger log, org.slf4j.Marker marker) {
+    log.warn(marker, "message");
+    log.error(marker, "message");
+    log.info(marker, "message");
+    log.debug(marker, "message");
+    log.debug("message");
+  }
+}
+

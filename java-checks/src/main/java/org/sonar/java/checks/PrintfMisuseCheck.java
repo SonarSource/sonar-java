@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -136,7 +135,8 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       return;
     }
     checkLineFeed(formatString, mit);
-    if (checkEmptyParams(mit, params)) {
+    if (params.isEmpty()) {
+      reportIssue(mit, "String contains no format specifiers.");
       return;
     }
     cleanupLineSeparator(params);
@@ -175,6 +175,10 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   protected void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
     String newFormatString = cleanupDoubleQuote(formatString);
     Set<Integer> indexes = getMessageFormatIndexes(newFormatString, mit);
+    if (indexes.isEmpty() && formatArgumentsCount(mit) > 1) {
+      reportIssue(mit, "String contains no format specifiers.");
+      return;
+    }
     List<ExpressionTree> newArgs = args;
     if (newArgs.size() == 1) {
       ExpressionTree firstArg = newArgs.get(0);
@@ -187,19 +191,12 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
         }
       }
     }
-    if (checkEmptyParams(mit, indexes)) {
-      return;
-    }
     checkToStringInvocation(newArgs);
     verifyParameters(mit, newArgs, indexes);
   }
 
-  private boolean checkEmptyParams(MethodInvocationTree mit, Collection<?> params) {
-    if (params.isEmpty() && (!LEVELS.contains(mit.symbol().name()) || mit.arguments().size() > 1)) {
-      reportIssue(mit, "String contains no format specifiers.");
-      return true;
-    }
-    return false;
+  private static long formatArgumentsCount(MethodInvocationTree mit) {
+    return mit.arguments().stream().filter(arg -> !arg.symbolType().is("org.slf4j.Marker")).count();
   }
 
   private void checkToStringInvocation(List<ExpressionTree> args) {
