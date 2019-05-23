@@ -137,21 +137,21 @@ public class MyFirstCustomCheck extends IssuableSubscriptionVisitor {
 
 ```
 
-> ***
+>
 > :question: **More files...**
 > 
 > If the 3 files described above are always the base of rule writing, there are situations where extra files may be needed. For instance, when a rule uses parameters, or if its behavior relies on the detected version of java, multiple test files could be required. It is also possible to use external files to describe rule metadata, such as a description in html format. Such situations will be described in other topics of this documentation.
-> ***
+>
 
 ### A specification to make it right
 
 Of course, before going any further, we need a key element in rule writhing, a specification! For the sake of the exercise, lets consider the following quote from a famous Guru as being the specification of our custom rule, as it is of course absolutely correct and incontrovertible.
 
-> ***
+>
 > **Gandalf - Why Program When Magic Rulez (WPWMR, p.42)**
 >
 > *“For a method having a single parameter, the types of its return value and its parameter should never be the same.”*
-> ***
+>
 
 ### A test file to rule them all
 
@@ -281,13 +281,13 @@ java.lang.AssertionError: Unexpected at [5, 7, 11]
 
 Of course, our test failed again... The `JavaCheckVerifier` reported that lines 5, 7 and 11 are raising unexpected issues, as visible in the stack-trace above. By looking back at our test file, it's easy to figure out that raising an issue line 5 is wrong because the return type of the method is void, line 7 is wrong because `Object` is not the same as int, and line 11 is also wrong because of the variable arity of the method. Raising these issues is however correct accordingly to our implementation, as we didn't check for the types of the parameter and return type. To handle type, however, we will need to rely on more that what we can achieve using only knowledge of the syntax tree. This time, we will need to use the semantic API!
 
-> ***
+>
 > :question: **IssuableSubscriptionVisitor and BaseTreeVisitor**
 >
 > For the implementation of this rule, we chose to use an `IssuableSubscriptionVisitor` as the implementation basis of our rule. This visitor offers an easy approach to writing quick and simple rules, because it allows us to narrow the focus of our rule to a given set of Kinds to visit by subscribing to them. However, this approach is not always the most optimal one. In such a situation, it could be useful to take a look at another visitor provided with the API: `org.sonar.plugins.java.api.tree.BaseTreeVisitor`. The `BaseTreeVisitor` contains a `visit()` method dedicated for each and every kind of the syntax tree, and is particularly useful when the visit of a file has to be fine tuned.
 >
 > In [rules already implemented in the Java Plugin](https://github.com/SonarSource/sonar-java/tree/5.12.1.17771/java-checks/src/main/java/org/sonar/java/checks), you will be able to find multiple rule using both approaches: An `IssuableSubscriptionVisitor` as entry point, helped by simple `BaseTreeVisitor`(s) to identify pattern in other parts of code.
-> ***
+>
 
 ### Second version: Using semantic API
 
@@ -347,11 +347,11 @@ Test passed? If not, then check if you somehow missed a step.
 
 If it passed...
 
-> ***
+>
 > :tada: **Congratulations!** :confetti_ball:
 >
 > [*You implemented your first custom rule for the SonarQube Java Analyzer!*](resources/success.jpg)
-> ***
+>
 
 ### What you can use, and what you can't
 
@@ -436,11 +436,11 @@ public class MyJavaFileCheckRegistrar implements CheckRegistrar {
 
 ## Testing a custom plugin
 
-> ***
+>
 > :exclamation: **Prerequisite**
 > 
 > For this chapter, you will need a local instance of SonarQube. If you don't have a SonarQube platform installed on your machine, now is time to download its latest version from [HERE](https://www.sonarqube.org/downloads/)!
-> ***
+>
 
 At this point, we've completed the implementation of a first custom rule and registered it into the custom plugin. The last remaining step is to test it directly with the SonarQube platform and try to analyse a project! 
 
@@ -470,13 +470,13 @@ $ mvn clean install
 
 Then, grab the jar file `java-custom-rules-1.0-SNAPSHOT.jar` from the `target` folder of the project, and move it to the extensions folder of your SonarQube instance, which will be located at `$SONAR_HOME/extensions/plugins`.
 
-> ***
+>
 > :exclamation: **SonarQube Java Plugin compatible version**
 >
 > Before going further, be sure to have the adequate version of the SonarQube Java Plugin with your SonarQube instance. The dependency over the Java Plugin of our custom plugin is defined in its `pom`, as seen in the first chapter of this tutorial.
 >
 > If you have a fresh install or do not possess the same version, install the adequate version of the Java Plugin. The latest version of the plugin can be downloaded from [HERE](https://docs.sonarqube.org/display/PLUG/SonarJava).
-> ***
+>
 
 Now, (re-)start your SonarQube instance, log as admin and navigate to the ***Rules*** tab.
 
