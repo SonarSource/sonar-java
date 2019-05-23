@@ -110,6 +110,8 @@ public class ExplodedGraphWalker {
    */
   private static final int MAX_STEPS = 16_000;
   public static final int MAX_NESTED_BOOLEAN_STATES = 10_000;
+  // would correspond to 10 parameters annotated with @Nullable
+  private static final int MAX_STARTING_STATES = 1_024;
   private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
 
@@ -159,6 +161,7 @@ public class ExplodedGraphWalker {
       super(s);
     }
   }
+
   public static class MaximumStepsReachedException extends RuntimeException {
 
     public MaximumStepsReachedException(String s) {
@@ -168,11 +171,17 @@ public class ExplodedGraphWalker {
     public MaximumStepsReachedException(String s, RuntimeException e) {
       super(s, e);
     }
-
   }
+
   public static class TooManyNestedBooleanStatesException extends RuntimeException {
-
   }
+
+  public static class MaximumStartingStatesException extends RuntimeException {
+    public MaximumStartingStatesException(String s) {
+      super(s);
+    }
+  }
+
   @VisibleForTesting
   public ExplodedGraphWalker(BehaviorCache behaviorCache, SemanticModel semanticModel) {
     List<SECheck> checks = Lists.newArrayList(new NullDereferenceCheck(), new DivisionByZeroCheck(),
@@ -335,12 +344,13 @@ public class ExplodedGraphWalker {
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState currentState) {
     Stream<ProgramState> stateStream = Stream.of(currentState);
+    int numberStartingStates = 1;
     boolean isEqualsMethod = EQUALS.matches(tree);
     boolean nonNullParameters = isGloballyAnnotatedParameterNonNull(methodTree.symbol());
     boolean nullableParameters = isGloballyAnnotatedParameterNullable(methodTree.symbol());
     boolean hasMethodBehavior = methodBehavior != null;
+
     for (final VariableTree variableTree : tree.parameters()) {
-      // create
       final SymbolicValue sv = constraintManager.createSymbolicValue(variableTree);
       Symbol variableSymbol = variableTree.symbol();
       if (hasMethodBehavior) {
@@ -348,6 +358,11 @@ public class ExplodedGraphWalker {
       }
       stateStream = stateStream.map(ps -> ps.put(variableSymbol, sv));
       if (isEqualsMethod || parameterCanBeNull(variableSymbol, nullableParameters)) {
+        // each nullable parameter generate 2 starting states, combined with all the others
+        numberStartingStates *= 2;
+        if (numberStartingStates > MAX_STARTING_STATES) {
+          throwMaximumStartingStates(methodTree);
+        }
         stateStream = stateStream.flatMap((ProgramState ps) ->
           Stream.concat(
             sv.setConstraint(ps, ObjectConstraint.NULL).stream(),
@@ -358,6 +373,12 @@ public class ExplodedGraphWalker {
       }
     }
     return stateStream.collect(Collectors.toList());
+  }
+
+  private static void throwMaximumStartingStates(MethodTree tree) {
+    String message = String.format("reached maximum number of %d starting states for method %s in class %s",
+      MAX_STARTING_STATES, tree.simpleName().name(), tree.symbol().owner().name());
+    throw new MaximumStartingStatesException(message);
   }
 
   private static boolean parameterCanBeNull(Symbol variableSymbol, boolean nullableParameters) {
