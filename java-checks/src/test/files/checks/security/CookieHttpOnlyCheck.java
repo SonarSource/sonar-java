@@ -41,10 +41,10 @@ class S3330 {
     Cookie c3 = new Cookie("name", "value"); // Noncompliant
     c3.setHttpOnly(false);
 
-    Cookie c4 = new Cookie("name", "value"); // FN
+    Cookie c4 = new Cookie("name", "value"); // Noncompliant
     c4.setHttpOnly(FALSE_CONSTANT);
 
-    Cookie c5 = new Cookie("name", "value"); // FN
+    Cookie c5 = new Cookie("name", "value"); // Noncompliant
     boolean b = false;
     c5.setHttpOnly(b);
 
@@ -98,7 +98,7 @@ class S3330 {
     HttpCookie c3 = new HttpCookie("name", "value"); // Noncompliant
     c3.setHttpOnly(false);
 
-    HttpCookie c4 = new HttpCookie("name", "value"); // FN
+    HttpCookie c4 = new HttpCookie("name", "value"); // Noncompliant
     c4.setHttpOnly(FALSE_CONSTANT);
 
     HttpCookie c5; // Noncompliant
@@ -182,7 +182,7 @@ class S3330 {
 
     Cookie xsfrToken3 = new Cookie("XSRF-TOKEN", "value");
 
-    Cookie xsfrToken4 = new Cookie(XSRF_TOKEN, "value"); // Noncompliant FP
+    Cookie xsfrToken4 = new Cookie(XSRF_TOKEN, "value");
 
     HttpCookie xsfrToken5 = new HttpCookie("XSRF-TOKEN", "value");
 

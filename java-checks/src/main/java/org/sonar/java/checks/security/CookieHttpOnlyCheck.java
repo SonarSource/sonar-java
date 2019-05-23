@@ -20,7 +20,6 @@
 package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableList;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +27,7 @@ import java.util.Locale;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
@@ -272,7 +271,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     ExpressionTree nameArgument = arguments.get(COOKIE_NAME_ARGUMENT);
-    String name = ConstantUtils.resolveAsStringConstant(nameArgument);
+    String name = ExpressionsHelper.getConstantValueAsString(nameArgument).value();
     return name != null && IGNORED_COOKIE_NAMES.stream().anyMatch(cookieName -> name.toLowerCase(Locale.ENGLISH).contains(cookieName));
   }
 
@@ -345,7 +344,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   private static boolean setterArgumentHasCompliantValue(Arguments arguments) {
     ExpressionTree expressionTree = arguments.get(0);
-    Boolean booleanValue = ConstantUtils.resolveAsBooleanConstant(expressionTree);
+    Boolean booleanValue = ExpressionsHelper.getConstantValueAsBoolean(expressionTree).value();
     return booleanValue == null || booleanValue;
   }
 
