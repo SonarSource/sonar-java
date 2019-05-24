@@ -78,7 +78,8 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
         walker.visitMethod(methodTree);
       }
     } catch (ExplodedGraphWalker.MaximumStepsReachedException
-      | ExplodedGraphWalker.ExplodedGraphTooBigException exception) {
+      | ExplodedGraphWalker.ExplodedGraphTooBigException
+      | ExplodedGraphWalker.MaximumStartingStatesException exception) {
       LOG.debug("Could not complete symbolic execution: ", exception);
       if (walker.methodBehavior != null) {
         walker.methodBehavior.visited();

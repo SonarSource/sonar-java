@@ -241,6 +241,39 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void test_max_number_starting_states() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxStartingStates.java",
+      new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+        @Override
+        public void visitNode(Tree tree) {
+          try {
+            MethodTree methodTree = (MethodTree) tree;
+            new ExplodedGraphWalker(this.behaviorCache, (SemanticModel) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
+            fail("Too many starting states were generated!!");
+          } catch (ExplodedGraphWalker.MaximumStartingStatesException exception) {
+            assertThat(exception.getMessage()).startsWith("reached maximum number of 1024 starting states for method");
+          }
+        }
+      });
+  }
+
+  @Test
+  public void test_max_number_starting_states_boundaries() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/StartingStates1024.java",
+      new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+        @Override
+        public void visitNode(Tree tree) {
+          try {
+            MethodTree methodTree = (MethodTree) tree;
+            new ExplodedGraphWalker(this.behaviorCache, (SemanticModel) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
+          } catch (ExplodedGraphWalker.MaximumStartingStatesException exception) {
+            fail("Should have been able to generate 1024 states!");
+          }
+        }
+      });
+  }
+
+  @Test
   public void test_maximum_steps_reached() throws Exception {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxSteps.java", new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
       @Override
