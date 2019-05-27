@@ -928,8 +928,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       JavaType initializerType = (JavaType) initializer.symbolType();
       if (initializerType.isTagged(JavaType.DEFERRED)) {
         setInferedType(typeTree.symbolType(), (DeferredType) initializer.symbolType());
-      } else if (typeTree.is(Tree.Kind.VAR_TYPE)) {
-        setInferedType(upwardProjection(initializerType), (DeferredType) typeTree.symbolType());
+      }
+      if (typeTree.is(Tree.Kind.VAR_TYPE)) {
+        setInferedType(upwardProjection((JavaType) initializer.symbolType()), (DeferredType) typeTree.symbolType());
       }
     }
   }

@@ -87,6 +87,16 @@ public class Java10SemanticTest {
     assertThat(wildCardType.bound).is("java.lang.String");
   }
 
+  @Test
+  public void var_parametrized_type_with_diamond() {
+    VariableTree var = getLocalVariable("var c = new java.util.HashSet<>();");
+    Type type = var.symbol().type();
+    assertThat(type).isEqualTo(var.type().symbolType());
+    assertThat(type).is("java.util.HashSet");
+    ParametrizedTypeJavaType parametrizedType = (ParametrizedTypeJavaType) type;
+    assertThat(parametrizedType.substitution(parametrizedType.typeParameters().get(0))).is("java.lang.Object");
+  }
+
   /**
    * JLS10 §14.4.1-1.d
    */

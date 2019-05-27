@@ -35,5 +35,15 @@ class A {
     short s1 = new Short("42").shortValue(); // Noncompliant
     char c1 = new Character('c').charValue();
   }
-  
+
+}
+
+abstract class sonarjava3090 {
+
+  void foo() {
+    var hs = new java.util.HashSet<>();
+    bar(new java.util.ArrayList<>(hs)); // analysis was failing here due to incorrect semanting resolution of type of hs
+  }
+
+  abstract void bar(Object o);
 }
