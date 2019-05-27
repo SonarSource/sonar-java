@@ -283,3 +283,7 @@ abstract class NonThrownExceptionClass {
     }
   }
 }
+
+abstract class Test {
+  abstract void foo() throws Unknown, Unknown;
+}

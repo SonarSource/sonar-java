@@ -86,6 +86,9 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
         // method 'close()' from 'java.io.Closeable' interface throws 'java.io.IOException"
         continue;
       }
+      if (exceptionType.isUnknown()) {
+        continue;
+      }
       String fullyQualifiedName = exceptionType.fullyQualifiedName();
       if (!reported.contains(fullyQualifiedName)) {
         String superTypeName = isSubclassOfAny(exceptionType, thrownList);
