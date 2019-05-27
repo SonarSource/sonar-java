@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -164,7 +164,7 @@ public class SpringAntMatcherOrderCheck extends AbstractMethodDetection {
 
     @CheckForNull
     private static StringConstant of(ExpressionTree expression) {
-      String value = ConstantUtils.resolveAsStringConstant(expression);
+      String value = ExpressionsHelper.getConstantValueAsString(expression).value();
       if (value != null) {
         return new StringConstant(expression, value);
       }

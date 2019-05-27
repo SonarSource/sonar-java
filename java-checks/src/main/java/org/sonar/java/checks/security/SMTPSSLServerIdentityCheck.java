@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -77,8 +77,8 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
         if (!apacheVisitor.isSecured) {
           reportIssue(mit, "Enable server identity validation on this SMTP SSL connection.");
         }
-      } else if (HASHTABLE_PUT.matches(mit) && "mail.smtp.socketFactory.class".equals(ConstantUtils.resolveAsStringConstant(args.get(0)))
-        && "javax.net.ssl.SSLSocketFactory".equals(ConstantUtils.resolveAsStringConstant(args.get(1)))) {
+      } else if (HASHTABLE_PUT.matches(mit) && "mail.smtp.socketFactory.class".equals(ExpressionsHelper.getConstantValueAsString(args.get(0)).value())
+        && "javax.net.ssl.SSLSocketFactory".equals(ExpressionsHelper.getConstantValueAsString(args.get(1)).value())) {
         MethodBodyHashtableVisitor hashVisitor = new MethodBodyHashtableVisitor();
         method.accept(hashVisitor);
         if (!hashVisitor.isSecured) {
@@ -100,7 +100,7 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
     public void visitMethodInvocation(MethodInvocationTree mit) {
       Arguments args = mit.arguments();
       if (HASHTABLE_PUT.matches(mit)
-        && "mail.smtp.ssl.checkserveridentity".equals(ConstantUtils.resolveAsStringConstant(args.get(0)))
+        && "mail.smtp.ssl.checkserveridentity".equals(ExpressionsHelper.getConstantValueAsString(args.get(0)).value())
         && isNotFalse(args.get(1))) {
         this.isSecured = true;
       }

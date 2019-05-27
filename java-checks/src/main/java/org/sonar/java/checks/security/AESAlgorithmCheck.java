@@ -22,7 +22,7 @@ package org.sonar.java.checks.security;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
@@ -50,7 +50,7 @@ public class AESAlgorithmCheck extends AbstractMethodDetection {
     ExpressionTree firstArgument = mit.arguments().get(0);
     ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(firstArgument);
     ExpressionTree algorithmTree = defaultPropertyValue == null ? firstArgument : defaultPropertyValue;
-    String algorithmName = ConstantUtils.resolveAsStringConstant(algorithmTree);
+    String algorithmName = ExpressionsHelper.getConstantValueAsString(algorithmTree).value();
     if (algorithmName != null && isInsecureAESAlgorithm(algorithmName)) {
       reportIssue(firstArgument, "Use Galois/Counter Mode (GCM/NoPadding) instead.");
     }

@@ -24,6 +24,7 @@ import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.transform.TransformerFactory;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
@@ -33,7 +34,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.ConstantUtils.resolveAsStringConstant;
 import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
 
 @Rule(key = "S4435")
@@ -90,15 +90,15 @@ public class SecureXmlTransformerCheck extends AbstractMethodDetection {
       Arguments arguments = methodInvocation.arguments();
 
       if (SET_FEATURE.matches(methodInvocation)
-        && XMLConstants.FEATURE_SECURE_PROCESSING.equals(resolveAsStringConstant(arguments.get(0)))
+        && XMLConstants.FEATURE_SECURE_PROCESSING.equals(ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value())
         && LiteralUtils.isTrue(arguments.get(1))) {
 
         hasSecureProcessingFeature = true;
       }
 
       if (SET_ATTRIBUTE.matches(methodInvocation)) {
-        String attributeName = resolveAsStringConstant(arguments.get(0));
-        String attributeValue = resolveAsStringConstant(arguments.get(1));
+        String attributeName = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
+        String attributeValue = ExpressionsHelper.getConstantValueAsString(arguments.get(1)).value();
         if ("".equals(attributeValue)) {
           if (XMLConstants.ACCESS_EXTERNAL_DTD.equals(attributeName)) {
             hasSecuredExternalDtd = true;

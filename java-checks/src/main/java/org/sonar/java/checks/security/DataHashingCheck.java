@@ -25,7 +25,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
@@ -60,7 +60,7 @@ public class DataHashingCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (mit.symbol().owner().type().is(SECRET_KEY_FACTORY)) {
-      String algorithm = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
+      String algorithm = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
       if (algorithm == null || !algorithm.startsWith("PBKDF2")) {
         return;
       }

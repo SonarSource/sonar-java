@@ -20,12 +20,11 @@
 package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableMap;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
@@ -52,7 +51,7 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     MethodTree methodTree = ExpressionUtils.getEnclosingMethod(mit);
-    String getInstanceArg = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
+    String getInstanceArg = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
     if (methodTree != null && getInstanceArg != null) {
       MethodVisitor methodVisitor = new MethodVisitor(getInstanceArg);
       methodTree.accept(methodVisitor);

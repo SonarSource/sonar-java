@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
@@ -95,7 +95,7 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       if (SET_HEADER_MATCHER.matches(mit)) {
-        String constantCORS = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
+        String constantCORS = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
         if (HTTP_HEADERS.contains(constantCORS)) {
           reportTree(mit.methodSelect());
         }

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -50,7 +50,7 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
         .map(DebugFeatureEnabledCheck::getDebugArgument)
         .filter(Objects::nonNull)
         .findFirst()
-        .filter(assignment -> Boolean.TRUE.equals(ConstantUtils.resolveAsBooleanConstant(assignment.expression())))
+        .filter(assignment -> Boolean.TRUE.equals(ExpressionsHelper.getConstantValueAsBoolean(assignment.expression()).value()))
         .ifPresent(assignment -> reportIssue(assignment, MESSAGE));
     }
   }
