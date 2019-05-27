@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -42,7 +42,7 @@ public class CookieDomainCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree arg = mit.arguments().get(0);
-    String domain = ConstantUtils.resolveAsStringConstant(arg);
+    String domain = ExpressionsHelper.getConstantValueAsString(arg).value();
     if (domain != null && !domain.isEmpty() && !domain.substring(1).contains(".")) {
       reportIssue(arg, "Specify at least a second-level cookie domain.");
     }

@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -67,7 +67,7 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
     if (arguments.size() > 1) {
       arg = arguments.get(1);
     }
-    if (Boolean.TRUE.equals(ConstantUtils.resolveAsBooleanConstant(arg))) {
+    if (Boolean.TRUE.equals(ExpressionsHelper.getConstantValueAsBoolean(arg).value())) {
       reportIssue(mit, "Make sure that this accessibility update is safe here.");
     }
   }

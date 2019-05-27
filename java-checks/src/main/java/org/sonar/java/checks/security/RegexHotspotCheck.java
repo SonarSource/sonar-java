@@ -22,7 +22,7 @@ package org.sonar.java.checks.security;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -93,7 +93,7 @@ public class RegexHotspotCheck extends IssuableSubscriptionVisitor {
    * two instances of any of the following characters: "*+{" (Example: (a+)*)
    * */
   private static boolean isSuspiciousRegex(ExpressionTree exp) {
-    String regexp = ConstantUtils.resolveAsStringConstant(exp);
+    String regexp = ExpressionsHelper.getConstantValueAsString(exp).value();
     if (regexp != null && regexp.length() > 2) {
       int nOfSuspiciousChars = regexp.length() - regexp.replaceAll("[*+{]", "").length();
       return nOfSuspiciousChars > 1;

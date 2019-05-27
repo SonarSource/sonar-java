@@ -22,7 +22,7 @@ package org.sonar.java.checks.security;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -88,7 +88,7 @@ public class LogConfigurationCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (mit.symbol().name().equals("setProperty")) {
-      String stringConstant = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
+      String stringConstant = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
       if ("logback.configurationFile".equals(stringConstant)) {
         reportIssue(mit, MESSAGE);
       }

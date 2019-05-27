@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -42,7 +42,7 @@ public class DynamicClassLoadCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    String stringConstant = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
+    String stringConstant = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
     if (stringConstant == null) {
       reportIssue(ExpressionUtils.methodName(mit), "Remove this use of dynamic class loading.");
     }

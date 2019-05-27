@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
@@ -31,8 +32,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import static org.sonar.java.checks.helpers.ConstantUtils.resolveAsStringConstant;
 
 @Rule(key = "S2647")
 public class BasicAuthCheck extends AbstractMethodDetection {
@@ -61,9 +60,9 @@ public class BasicAuthCheck extends AbstractMethodDetection {
   }
 
   private void checkArguments(Arguments arguments) {
-    if ("Authorization".equals(resolveAsStringConstant(arguments.get(0)))) {
+    if ("Authorization".equals(ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value())) {
       ExpressionTree arg = mostLeft(arguments.get(1));
-      String authentication = resolveAsStringConstant(arg);
+      String authentication = ExpressionsHelper.getConstantValueAsString(arg).value();
       if (authentication != null && authentication.startsWith("Basic")) {
         reportIssue(arg, "Use a more secure method than basic authentication.");
       }

@@ -30,6 +30,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -43,8 +44,6 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import static org.sonar.java.checks.helpers.ConstantUtils.resolveAsBooleanConstant;
-import static org.sonar.java.checks.helpers.ConstantUtils.resolveAsStringConstant;
 import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
 
 @Rule(key = "S2755")
@@ -154,10 +153,10 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     public boolean test(MethodInvocationTree methodInvocation) {
       Arguments arguments = methodInvocation.arguments();
       if (SET_PROPERTY.matches(methodInvocation)) {
-        String propertyName = resolveAsStringConstant(arguments.get(0));
+        String propertyName = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
         if (XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES.equals(propertyName) || XMLInputFactory.SUPPORT_DTD.equals(propertyName)) {
           ExpressionTree propertyValue = arguments.get(1);
-          return Boolean.FALSE.equals(resolveAsBooleanConstant(propertyValue)) || "false".equalsIgnoreCase(resolveAsStringConstant(propertyValue));
+          return Boolean.FALSE.equals(ExpressionsHelper.getConstantValueAsBoolean(propertyValue).value()) || "false".equalsIgnoreCase(ExpressionsHelper.getConstantValueAsString(propertyValue).value());
         }
       }
       return false;
@@ -176,8 +175,8 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     public boolean test(MethodInvocationTree methodInvocation) {
       if (methodMatcher.matches(methodInvocation)) {
         Arguments arguments = methodInvocation.arguments();
-        String featureName = resolveAsStringConstant(arguments.get(0));
-        return Boolean.TRUE.equals(resolveAsBooleanConstant(arguments.get(1)))
+        String featureName = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
+        return Boolean.TRUE.equals(ExpressionsHelper.getConstantValueAsBoolean(arguments.get(1)).value())
           && (XMLConstants.FEATURE_SECURE_PROCESSING.equals(featureName)
           || "http://apache.org/xml/features/disallow-doctype-decl".equals(featureName));
       }
@@ -206,8 +205,8 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     public boolean test(MethodInvocationTree methodInvocation) {
       if (methodMatcher.matches(methodInvocation)) {
         Arguments arguments = methodInvocation.arguments();
-        String propertyName = resolveAsStringConstant(arguments.get(0));
-        String propertyValue = resolveAsStringConstant(arguments.get(1));
+        String propertyName = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
+        String propertyValue = ExpressionsHelper.getConstantValueAsString(arguments.get(1)).value();
         if ("".equals(propertyValue) && XMLConstants.ACCESS_EXTERNAL_DTD.equals(propertyName)) {
           externalDTDDisabled = true;
         }

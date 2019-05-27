@@ -31,7 +31,7 @@ class Blowfish {
   public void identifier_parameter2() throws NoSuchAlgorithmException {
     String algorithm = "Blowfish";
     KeyGenerator keyGen = KeyGenerator.getInstance(algorithm);
-    keyGen.init(64); // FN requires following variable's values with SE-based engine
+    keyGen.init(64); // Noncompliant
   }
 
   public void key_assignment() throws NoSuchAlgorithmException {
