@@ -10,7 +10,7 @@
     "owasp-a9"
   ],
   "standards": [
-    "OWASP Top Ten"
+    "OWASP Top 10"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2976",

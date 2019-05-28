@@ -11,7 +11,7 @@
     "struts"
   ],
   "standards": [
-    "OWASP Top Ten"
+    "OWASP Top 10"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-4531",

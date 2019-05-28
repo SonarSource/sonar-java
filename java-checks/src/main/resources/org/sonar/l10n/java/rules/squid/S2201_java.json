@@ -7,8 +7,8 @@
     "constantCost": "10min"
   },
   "tags": [
-    "misra",
-    "cert"
+    "cert",
+    "misra-c2012"
   ],
   "standards": [
     "CERT"

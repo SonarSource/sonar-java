@@ -11,7 +11,6 @@
     "overflow",
     "based-on-misra",
     "sans-top25-risky",
-    "misra",
     "cert"
   ],
   "standards": [

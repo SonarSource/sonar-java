@@ -41,7 +41,7 @@ if (!canonicalDestPath.startsWith(canonicalDirPath + File.separator)) { // Sanit
   <li> Count the number of file entries extracted from the archive and abort the extraction if their number is greater than a predefined threshold.
   </li>
 </ul>
-<h2>Questionable Code Example</h2>
+<h2>Sensitive Code Example</h2>
 <pre>
 java.util.zip.ZipFile zipFile = new ZipFile(zipFileName);
 
@@ -61,9 +61,9 @@ while (entries.hasMoreElements()) {
 </ul>
 <h2>See</h2>
 <ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A1-Injection">OWASP Top 10 2017 Category A1</a> - Injection </li>
   <li> <a href="http://cwe.mitre.org/data/definitions/409.html">MITRE, CWE-409</a> - Improper Handling of Highly Compressed Data (Data Amplification)
   </li>
-  <li> OWASP Top 10 2017 Category A1 - Injection </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/IDS04-J.+Safely+extract+files+from+ZipInputStream">CERT, IDS04-J.</a> - Safely
   extract files from ZipInputStream </li>
   <li> Snyk Research Team: <a href="https://snyk.io/research/zip-slip-vulnerability">Zip Slip Vulnerability</a> </li>

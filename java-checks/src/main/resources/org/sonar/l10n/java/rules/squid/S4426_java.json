@@ -12,7 +12,7 @@
   ],
   "standards": [
     "CWE",
-    "OWASP Top Ten"
+    "OWASP Top 10"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-4426",

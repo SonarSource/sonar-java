@@ -8,11 +8,13 @@
   },
   "tags": [
     "cwe",
+    "owasp-a1",
     "cert"
   ],
   "standards": [
     "CWE",
-    "CERT"
+    "CERT",
+    "OWASP Top 10"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5042",
@@ -21,6 +23,9 @@
   "securityStandards": {
     "CWE": [
       409
+    ],
+    "OWASP": [
+      "A1"
     ]
   }
 }

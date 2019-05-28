@@ -8,10 +8,12 @@
   },
   "tags": [
     "cwe",
-    "spring"
+    "spring",
+    "owasp-a5"
   ],
   "standards": [
-    "CWE"
+    "CWE",
+    "OWASP Top 10"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4684",
@@ -20,6 +22,9 @@
   "securityStandards": {
     "CWE": [
       915
+    ],
+    "OWASP": [
+      "A5"
     ]
   }
 }
