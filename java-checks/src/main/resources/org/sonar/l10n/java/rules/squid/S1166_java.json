@@ -15,7 +15,8 @@
   ],
   "standards": [
     "CWE",
-    "CERT"
+    "CERT",
+    "OWASP Top 10"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1166",
@@ -24,6 +25,9 @@
   "securityStandards": {
     "CWE": [
       778
+    ],
+    "OWASP": [
+      "A10"
     ]
   }
 }

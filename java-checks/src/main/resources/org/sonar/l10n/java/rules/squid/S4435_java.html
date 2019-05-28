@@ -14,7 +14,6 @@ TransformerFactory factory = TransformerFactory.newInstance();
 factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 
 Transformer transformer = factory.newTransformer();
-transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
 transformer.transform(input, result);
 </pre>
@@ -25,15 +24,17 @@ factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
 
 Transformer transformer = factory.newTransformer();
-transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
 transformer.transform(input, result);
 </pre>
 <h2>See</h2>
 <ul>
-  <li> <a href="http://cwe.mitre.org/data/definitions/611.html">MITRE, CWE-611</a> Improper Restriction of XML External Entity Reference ('XXE') </li>
-  <li> OWASP Top 10 2017 Category A4 - XML External Entities </li>
-  <li> [OWASP XXE cheat sheet| https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet#TransformerFactory] </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A4-XML_External_Entities_(XXE)">OWASP Top 10 2017 Category A4</a> - XML External Entities
+  (XXE) </li>
+  <li> <a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.md">OWASP XXE Cheat
+  Sheet</a> </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/611.html">MITRE, CWE-611</a> - Improper Restriction of XML External Entity Reference ('XXE')
+  </li>
   <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#XXE_DTD_TRANSFORM_FACTORY">XXE_DTD_TRANSFORM_FACTORY</a> </li>
   <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#XXE_XSLT_TRANSFORM_FACTORY">XXE_XSLT_TRANSFORM_FACTORY</a>
   </li>

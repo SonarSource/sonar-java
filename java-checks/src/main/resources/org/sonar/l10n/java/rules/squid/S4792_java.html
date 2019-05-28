@@ -51,16 +51,7 @@ logs:</p>
   failed logins, successful logins, server side input validation failures, access denials and any important transaction. </li>
   <li> Monitor the logs for any suspicious activity. </li>
 </ul>
-<p>See</p>
-<ul>
-  <li> <a href="https://cwe.mitre.org/data/definitions/532.html">MITRE, CWE-532</a> - Information Exposure Through Log Files </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/117.html">MITRE, CWE-117</a> - Improper Output Neutralization for Logs </li>
-  <li> <a href="https://cwe.mitre.org/data/definitions/778.html">MITRE, CWE-778</a> - Insufficient Logging </li>
-  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
-  <li> OWASP Top 10 2017 Category A10 - Insufficient Logging &amp; Monitoring </li>
-  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
-</ul>
-<h2>Questionable Code Example</h2>
+<h2>Sensitive Code Example</h2>
 <p>This rule supports the following libraries: Log4J, <code>java.util.logging</code> and Logback</p>
 <pre>
 // === Log4J 2 ===
@@ -143,4 +134,15 @@ class M {
 <h2>Exceptions</h2>
 <p>Log4J 1.x is not covered as it has reached <a href="https://blogs.apache.org/foundation/entry/apache_logging_services_project_announces">end of
 life</a>.</p>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure
+  </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A10-Insufficient_Logging%26Monitoring">OWASP Top 10 2017 Category A10</a> - Insufficient
+  Logging &amp; Monitoring </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/532.html">MITRE, CWE-532</a> - Information Exposure Through Log Files </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/117.html">MITRE, CWE-117</a> - Improper Output Neutralization for Logs </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/778.html">MITRE, CWE-778</a> - Insufficient Logging </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+</ul>
 

@@ -20,7 +20,7 @@ field value.</p>
 <p>If untrusted code can execute this method, make sure that it cannot decide which method or field's accessibility can be modified or bypassed.</p>
 <p>Untrusted code should never have direct access to the java Reflection API. If this method can do it, make sure that it is an exception. Use
 ClassLoaders and SecurityManagers in order to sandbox any untrusted code and forbid access to the Reflection API.</p>
-<h2>Questionable Code Example</h2>
+<h2>Sensitive Code Example</h2>
 <pre>
 public void makeItPublic(String methodName) throws NoSuchMethodException {
 
@@ -33,7 +33,8 @@ public void setItAnyway(String fieldName, int value) {
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP Top 10 2017 Category A3 - Sensitive Data Exposure </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure
+  </li>
   <li> <a href="https://www.securecoding.cert.org/confluence/x/3YEVAQ">CERT, SEC05-J.</a> - Do not use reflection to increase accessibility of
   classes, methods, or fields </li>
 </ul>

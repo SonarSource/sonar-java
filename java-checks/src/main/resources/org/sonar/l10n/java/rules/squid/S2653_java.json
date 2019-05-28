@@ -15,7 +15,7 @@
   "standards": [
     "CWE",
     "CERT",
-    "OWASP Top Ten"
+    "OWASP Top 10"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2653",

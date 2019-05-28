@@ -20,7 +20,7 @@ security code reviews.</p>
 <p>Any user or application can list running processes and see the command line arguments they were started with. There are safer ways of providing
 sensitive information to an application than exposing them in the command line. It is common to write them on the process' standard input, or give the
 path to a file containing the information.</p>
-<h2>Questionable Code Example</h2>
+<h2>Sensitive Code Example</h2>
 <p>This rule raises an issue as soon as there is a reference to argv, be it for direct use or via a CLI library like JCommander, GetOpt or Apache
 CLI.</p>
 <pre>
@@ -111,9 +111,9 @@ as the mainclass.</p>
 <p>No issue will be raised on <code>public static void main(String[] argv)</code> if <code>argv</code> is not referenced in the method.</p>
 <h2>See</h2>
 <ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A1-Injection">OWASP Top 10 2017 Category A1</a> - Injection </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/88.html">MITRE, CWE-88</a> - Argument Injection or Modification </li>
   <li> <a href="https://cwe.mitre.org/data/definitions/214.html">MITRE, CWE-214</a> - Information Exposure Through Process Environment </li>
-  <li> OWASP Top 10 2017 Category A1 - Injection </li>
   <li> <a href="https://www.sans.org/top25-software-errors/#cat1">SANS Top 25</a> - Insecure Interaction Between Components </li>
 </ul>
 

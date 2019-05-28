@@ -8,10 +8,12 @@
   },
   "tags": [
     "cwe",
-    "error-handling"
+    "error-handling",
+    "owasp-a3"
   ],
   "standards": [
-    "CWE"
+    "CWE",
+    "OWASP Top 10"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1148",
@@ -20,6 +22,9 @@
   "securityStandards": {
     "CWE": [
       489
+    ],
+    "OWASP": [
+      "A3"
     ]
   }
 }
