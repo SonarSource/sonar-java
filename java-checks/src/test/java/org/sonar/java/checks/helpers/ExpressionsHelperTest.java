@@ -117,6 +117,16 @@ public class ExpressionsHelperTest extends JavaParserHelper {
     assertValueResolution(code, null);
   }
 
+  @Test
+  public void variableSwapSOE() {
+    String code = newCode("String foo(String a, String b) {",
+      "String c = a;",
+      "a = b;",
+      "b = c;",
+      "return a;}");
+    assertValueResolution(code, null);
+  }
+
   private <T> void assertValueResolution(String code, @Nullable T target) {
     MethodTree method = methodTree(code);
     IdentifierTree a = variableFromLastReturnStatement(method.block().body());
