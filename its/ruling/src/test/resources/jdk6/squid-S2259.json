@@ -97,9 +97,6 @@
 'jdk6:java/lang/reflect/Proxy.java':[
 361,
 ],
-'jdk6:java/net/Inet6Address.java':[
-368,
-],
 'jdk6:java/net/SocksSocketImpl.java':[
 398,
 714,
@@ -172,16 +169,5 @@
 ],
 'jdk6:java/util/logging/Level.java':[
 346,
-],
-'jdk6:java/util/logging/LogManager.java':[
-164,
-358,
-741,
-885,
-983,
-1004,
-],
-'jdk6:java/util/logging/MemoryHandler.java':[
-96,
 ],
 }

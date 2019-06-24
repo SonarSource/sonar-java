@@ -12,8 +12,8 @@ pipeline {
   }
   environment {
     SONARSOURCE_QA = 'true'
-    MAVEN_TOOL = 'Maven 3.3.x'
-    JDK_VERSION = 'Java 8'
+    MAVEN_TOOL = 'Maven 3.6.x'
+    JDK_VERSION = 'Java 11'
   }
   stages {
     stage('Notify') {
