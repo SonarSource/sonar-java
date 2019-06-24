@@ -1,10 +1,10 @@
 {
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils/BeanUtils2TestCase.java':[
-48,
-66,
+'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtils2TestCase.java':[
+47,
+65,
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils/WrapDynaBeanTestCase.java':[
-66,
-87,
+'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/WrapDynaBeanTestCase.java':[
+65,
+86,
 ],
 }

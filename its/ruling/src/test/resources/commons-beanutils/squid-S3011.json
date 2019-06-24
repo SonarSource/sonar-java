@@ -1,9 +1,9 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/ConstructorUtils.java':[
-391,
-424,
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConstructorUtils.java':[
+390,
+423,
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/MethodUtils.java':[
-1058,
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java':[
+1057,
 ],
 }

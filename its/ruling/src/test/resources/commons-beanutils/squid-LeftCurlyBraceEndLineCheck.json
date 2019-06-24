@@ -1,10 +1,6 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanComparator.java':[
-200,
-206,
-],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/converters/StringArrayConverter.java':[
-142,
-146,
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanComparator.java':[
+201,
+207,
 ],
 }

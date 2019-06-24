@@ -1,8 +1,8 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/MappedPropertyDescriptor.java':[
-345,
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java':[
+344,
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/MethodUtils.java':[
-1121,
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java':[
+1120,
 ],
 }
