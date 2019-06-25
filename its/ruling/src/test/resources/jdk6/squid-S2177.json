@@ -19,14 +19,8 @@
 'jdk6:java/util/JapaneseImperialCalendar.java':[
 982,
 ],
-'jdk6:java/util/logging/ConsoleHandler.java':[
-45,
-],
-'jdk6:java/util/logging/FileHandler.java':[
-165,
-],
-'jdk6:java/util/logging/SocketHandler.java':[
-59,
+'jdk6:java/util/jar/JarFile.java':[
+175,
 ],
 'jdk6:java/util/zip/GZIPInputStream.java':[
 40,

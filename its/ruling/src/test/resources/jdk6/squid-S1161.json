@@ -385,7 +385,6 @@
 928,
 944,
 1051,
-1055,
 1166,
 1215,
 1228,
@@ -427,9 +426,6 @@
 119,
 180,
 236,
-],
-'jdk6:java/awt/datatransfer/DataFlavor.java':[
-692,
 ],
 'jdk6:java/awt/dnd/DnDEventMulticaster.java':[
 181,
@@ -1282,8 +1278,6 @@
 347,
 363,
 367,
-434,
-438,
 481,
 490,
 499,
@@ -2430,6 +2424,12 @@
 ],
 'jdk6:java/util/regex/PatternSyntaxException.java':[
 89,
+],
+'jdk6:java/util/zip/Adler32.java':[
+55,
+],
+'jdk6:java/util/zip/CRC32.java':[
+53,
 ],
 'jdk6:java/util/zip/CheckedInputStream.java':[
 41,

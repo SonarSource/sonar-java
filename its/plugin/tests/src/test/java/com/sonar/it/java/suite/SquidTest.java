@@ -40,13 +40,13 @@ public class SquidTest {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("squid"))
       .setCleanPackageSonarGoals()
       .setProperty("sonar.scm.disabled", "true");
-    TestUtils.provisionProject(orchestrator, "com.sonarsource.it.samples:squid", "squid", "java", "squid");
+    TestUtils.provisionProject(orchestrator, "org.sonarsource.it.projects:squid", "squid", "java", "squid");
     orchestrator.executeBuild(build);
   }
 
   @Test
   public void should_detect_missing_package_info() throws Exception {
-    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "com.sonarsource.it.samples:squid");
+    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:squid");
 
     assertThat(issues).hasSize(2);
     assertThat(issues.stream().map(Issue::getRule)).allMatch("squid:S1228"::equals);
@@ -55,7 +55,7 @@ public class SquidTest {
     Pattern packagePattern = Pattern.compile("'src" + sep + "main" + sep + "java" + sep + "package[12]'");
     assertThat(issues.stream().map(Issue::getMessage)).allMatch(msg -> packagePattern.matcher(msg).find());
 
-    List<Issue> issuesOnTestPackage = TestUtils.issuesForComponent(orchestrator, "com.sonarsource.it.samples:squid:src/test/java/package1");
+    List<Issue> issuesOnTestPackage = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:squid:src/test/java/package1");
     assertThat(issuesOnTestPackage).isEmpty();
   }
 

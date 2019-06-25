@@ -1,8 +1,8 @@
 {
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils/bugs/Jira347TestCase.java':[
-121,
+'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java':[
+120,
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils/memoryleaktests/MemoryLeakTestCase.java':[
-495,
+'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java':[
+498,
 ],
 }

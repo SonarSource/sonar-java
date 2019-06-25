@@ -43,11 +43,11 @@ public class ExternalReportTest {
       .setGoals("org.apache.maven.plugins:maven-checkstyle-plugin:3.0.0:checkstyle", "sonar:sonar");
     orchestrator.executeBuild(build);
 
-    List<Issue> issues = getExternalIssues("com.sonarsource.it.projects:checkstyle-external-report");
+    List<Issue> issues = getExternalIssues("org.sonarsource.it.projects:checkstyle-external-report");
     if (externalIssuesSupported()) {
       assertThat(issues).hasSize(1);
       Issue issue = issues.get(0);
-      assertThat(issue.getComponent()).isEqualTo("com.sonarsource.it.projects:checkstyle-external-report:src/main/java/Main.java");
+      assertThat(issue.getComponent()).isEqualTo("org.sonarsource.it.projects:checkstyle-external-report:src/main/java/Main.java");
       assertThat(issue.getRule()).isEqualTo("external_checkstyle:javadoc.JavadocPackageCheck");
       assertThat(issue.getLine()).isEqualTo(0);
       assertThat(issue.getMessage()).isEqualTo("Missing package-info.java file.");
@@ -65,7 +65,7 @@ public class ExternalReportTest {
       .setGoals("org.apache.maven.plugins:maven-pmd-plugin:3.10.0:pmd", "sonar:sonar");
     orchestrator.executeBuild(build);
 
-    String projectKey = "com.sonarsource.it.projects:pmd-external-report";
+    String projectKey = "org.sonarsource.it.projects:pmd-external-report";
     List<Issue> issues = getExternalIssues(projectKey);
     if (externalIssuesSupported()) {
       assertThat(issues).hasSize(1);
@@ -85,10 +85,10 @@ public class ExternalReportTest {
   public void spotbugs() {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("spotbugs-external-report"))
       .setProperty("sonar.java.spotbugs.reportPaths", "target" + File.separator + "spotbugsXml.xml")
-      .setGoals("clean package com.github.spotbugs:spotbugs-maven-plugin:3.1.5:spotbugs", "sonar:sonar");
+      .setGoals("clean package com.github.spotbugs:spotbugs-maven-plugin:3.1.12:spotbugs", "sonar:sonar");
     orchestrator.executeBuild(build);
 
-    String projectKey = "com.sonarsource.it.projects:spotbugs-external-report";
+    String projectKey = "org.sonarsource.it.projects:spotbugs-external-report";
     List<Issue> issues = getExternalIssues(projectKey);
     boolean externalIssuesSupported = orchestrator.getServer().version().isGreaterThanOrEquals(7, 2);
     if (externalIssuesSupported) {

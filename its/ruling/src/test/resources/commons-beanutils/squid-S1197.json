@@ -1,9 +1,9 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/ConstructorUtils.java':[
-111,
-223,
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConstructorUtils.java':[
+110,
+222,
 ],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/LazyDynaClass.java':[
-103,
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaClass.java':[
+104,
 ],
 }

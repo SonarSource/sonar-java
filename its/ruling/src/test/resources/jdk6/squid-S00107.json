@@ -107,6 +107,10 @@
 'jdk6:java/lang/reflect/Method.java':[
 105,
 ],
+'jdk6:java/lang/reflect/ReflectAccess.java':[
+35,
+60,
+],
 'jdk6:java/net/Authenticator.java':[
 269,
 ],

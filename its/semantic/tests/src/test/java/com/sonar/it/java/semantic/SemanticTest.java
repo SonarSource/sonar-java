@@ -126,7 +126,9 @@ public class SemanticTest {
   private static void test_project(String projectKey, @Nullable String path, String projectName) throws IOException {
     prepareProject(projectKey, projectName);
     String pomLocation = "../../sources/" + (path != null ? path + "/" : "") + projectName + "/pom.xml";
-    MavenBuild mavenBuild = MavenBuild.create().setPom(FileLocation.of(pomLocation).getFile()).setCleanPackageSonarGoals().addArgument("-DskipTests");
+    File pomme = FileLocation.of(pomLocation).getFile().getCanonicalFile();
+    MavenBuild mavenBuild = MavenBuild.create().setPom(pomme).setCleanPackageSonarGoals().addArgument("-DskipTests");
+    mavenBuild.setProperty("sonar.projectKey", projectKey);
     executeBuildWithCommonProperties(mavenBuild, projectName);
   }
 

@@ -1,0 +1,14 @@
+{
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java':[
+313,
+436,
+439,
+440,
+457,
+471,
+478,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java':[
+61,
+],
+}
