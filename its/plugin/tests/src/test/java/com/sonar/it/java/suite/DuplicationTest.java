@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DuplicationTest {
 
-  private static final String DUPLICATION_PROJECT_KEY = "com.sonarsource.it.samples:test-duplications";
+  private static final String DUPLICATION_PROJECT_KEY = "org.sonarsource.it.projects:test-duplications";
 
   @ClassRule
   public static Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;

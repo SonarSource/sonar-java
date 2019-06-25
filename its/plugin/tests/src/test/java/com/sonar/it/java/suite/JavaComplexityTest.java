@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaComplexityTest {
 
-  public static final String PROJECT = "org.sonar.it.core:java-complexity";
+  public static final String PROJECT = "org.sonarsource.it.projects:java-complexity";
 
   @ClassRule
   public static Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;

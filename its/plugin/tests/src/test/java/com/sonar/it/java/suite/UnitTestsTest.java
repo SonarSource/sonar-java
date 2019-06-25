@@ -43,7 +43,7 @@ public class UnitTestsTest {
       .setGoals("clean test-compile surefire:test", "sonar:sonar");
     orchestrator.executeBuild(build);
 
-    Map<String, Measure> measures = getMeasures("com.sonarsource.it.samples:tests-without-main-code",
+    Map<String, Measure> measures = getMeasures("org.sonarsource.it.projects:tests-without-main-code",
       "tests", "test_errors", "test_failures", "skipped_tests", "test_execution_time", "test_success_density");
 
     assertThat(parseInt(measures.get("tests").getValue())).isEqualTo(1);
@@ -61,7 +61,7 @@ public class UnitTestsTest {
       .setGoals("clean test-compile surefire:test -Dsurefire.reportNameSuffix=Run1", "test-compile surefire:test -Dsurefire.reportNameSuffix=Run2", "sonar:sonar");
     orchestrator.executeBuild(build);
 
-    Map<String, Measure> measures = getMeasures("com.sonarsource.it.samples:tests-surefire-suffix",
+    Map<String, Measure> measures = getMeasures("org.sonarsource.it.projects:tests-surefire-suffix",
       "tests", "test_errors", "test_failures", "skipped_tests", "test_execution_time", "test_success_density");
 
     assertThat(parseInt(measures.get("tests").getValue())).isEqualTo(2);

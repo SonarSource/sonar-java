@@ -39,7 +39,7 @@ public class SuppressWarningTest {
 
   @ClassRule
   public static final Orchestrator ORCHESTRATOR;
-  public static final String PROJECT_KEY = "org.example:example";
+  public static final String PROJECT_KEY = "org.sonarsource.it.projects:example";
 
   static {
     OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()

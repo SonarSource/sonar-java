@@ -58,7 +58,7 @@ public class JavaTest {
       .setProperty("sonar.dynamicAnalysis", "false");
     orchestrator.executeBuild(build);
 
-    WsComponents.Component file = getComponent(JavaTestSuite.keyFor("org.sonar.it.core:dollar-in-names", "dollars/", "FilenameWith$Dollar.java"));
+    WsComponents.Component file = getComponent(JavaTestSuite.keyFor("org.sonarsource.it.projects:dollar-in-names", "dollars/", "FilenameWith$Dollar.java"));
     assertThat(file).isNotNull();
     assertThat(file.getName()).contains("FilenameWith$Dollar");
   }
@@ -180,9 +180,9 @@ public class JavaTest {
       .setProperty("sonar.java.test.binaries", "target/test-classes")
       .setProperty("sonar.java.test.libraries", new File(tmp.getRoot(), junit_4_11.getFilename()).getAbsolutePath())
       .setCleanPackageSonarGoals();
-    TestUtils.provisionProject(orchestrator, "com.sonarsource.it.samples:java-inner-classes", "java-inner-classes", "java", "ignored-test-check");
+    TestUtils.provisionProject(orchestrator, "org.sonarsource.it.projects:java-inner-classes", "java-inner-classes", "java", "ignored-test-check");
     orchestrator.executeBuild(build);
-    assertThat(getMeasureAsInteger("com.sonarsource.it.samples:java-inner-classes", "violations")).isEqualTo(1);
+    assertThat(getMeasureAsInteger("org.sonarsource.it.projects:java-inner-classes", "violations")).isEqualTo(1);
   }
 
   @Test
