@@ -1,4 +1,4 @@
-@Library('SonarSource@2.1.2') _
+@Library('SonarSource@2.2') _
 pipeline {
   agent {
     label 'linux'
@@ -28,68 +28,62 @@ pipeline {
             label 'linux'
           }
           steps {
-            runITs("plugin","DOGFOOD",JDK_VERSION)
+            runITs("plugin", "DOGFOOD")
           }
-        }     
+        }
         stage('plugin/LATEST_RELEASE[6.7]/linux') {
           agent {
             label 'linux'
           }
           steps {
-            runITs("plugin","LATEST_RELEASE[6.7]",JDK_VERSION)
+            runITs("plugin", "LATEST_RELEASE[6.7]")
           }
-        } 
+        }
         stage('ruling/LATEST_RELEASE[6.7]/linux') {
-          when { expression { return params.GITHUB_BRANCH.equals('master') } } 
+          when { expression { return params.GITHUB_BRANCH.equals('master') } }
           agent {
             label 'linux'
           }
           steps {
-            //fetch submodule containing sources of ruling projects
-            sh "git submodule update --init --recursive"   
-            runITs("ruling","LATEST_RELEASE[6.7]",JDK_VERSION)            
+            runITs("ruling", "LATEST_RELEASE[6.7]")
           }
-        }   
+        }
         stage('ruling/LATEST_RELEASE[6.7]/windows') {
-          when { expression { return params.GITHUB_BRANCH.contains('PULLREQUEST-') } }           
+          when { expression { return params.GITHUB_BRANCH.contains('PULLREQUEST-') } }
           agent {
             label 'windows'
           }
           steps {
-            //fetch submodule containing sources of ruling projects
-            sh "git submodule update --init --recursive"   
-            runITs("ruling","LATEST_RELEASE[6.7]",JDK_VERSION)            
+            runITs("ruling", "LATEST_RELEASE[6.7]")
           }
-        }           
+        }
         stage('semantic/LATEST_RELEASE[6.7]/linux') {
           agent {
             label 'linux'
           }
           steps {
-            //fetch submodule containing sources of projects used for semantic ITs
-            sh "git submodule update --init --recursive"
-            runITs("semantic","LATEST_RELEASE[6.7]",JDK_VERSION)            
-          }          
-        } 
+            runITs("semantic", "LATEST_RELEASE[6.7]")
+          }
+        }
         stage('QA-OS/windows') {
-          when { expression { return params.GITHUB_BRANCH.equals('master') } } 
+          when { expression { return params.GITHUB_BRANCH.equals('master') } }
           agent {
             label 'windows'
           }
           steps {
-            runQAOS(JDK_VERSION)      
+            runQAOS()
           }
         }
         stage('QA-OS/macOS') {
-          when { expression { return params.GITHUB_BRANCH.equals('master') } } 
+          when { expression { return params.GITHUB_BRANCH.equals('master') } }
           agent {
             label 'macosx'
           }
           steps {
-            runQAOS(JDK_VERSION)      
+            runQAOS()
           }
-        } 
-      }         
+        }
+      }
       post {
         always {
           sendAllNotificationQaResult()
@@ -110,41 +104,20 @@ pipeline {
   }
 }
 
-def withQAEnv(def body) {
-    withCredentials([string(credentialsId: 'ARTIFACTORY_PRIVATE_API_KEY', variable: 'ARTIFACTORY_API_KEY')]) {
-        body.call()
-    }
-}
-
-def withJava(jdk, def body) {
-  def javaHome = tool name: jdk, type: 'hudson.model.JDK'
-  withEnv(["JAVA_HOME=${javaHome}"]) {
-    body.call()
-  }
-}
-
-def runITs(TEST,SQ_VERSION,JDK) {  
-  withQAEnv {
-    withJava(JDK) {
-      withMaven(maven: MAVEN_TOOL) {
-        mavenSetBuildVersion()
-        def mvnCommand = isUnix() ? 'mvn' : 'mvn.cmd'
-        dir("its/$TEST") {    
-          sh "${mvnCommand} package -Pit-$TEST -Dsonar.runtimeVersion=$SQ_VERSION -Dmaven.test.redirectTestOutputToFile=false -B -e -V"
-        }
-      }
+def runITs(TEST, SQ_VERSION) {
+  withMaven(maven: MAVEN_TOOL) {
+    mavenSetBuildVersion()
+    gitFetchSubmodules()
+    dir("its/$TEST") {
+      runMavenOrch(JDK_VERSION, "package -Dsonar.runtimeVersion=$SQ_VERSION")
     }
   }
 }
 
-def runQAOS(JDK) {
-  withQAEnv {
-    withJava(JDK) {
-      withMaven(maven: MAVEN_TOOL) {
-        mavenSetBuildVersion()
-        def mvnCommand = isUnix() ? 'mvn' : 'mvn.cmd'
-        sh "${mvnCommand} clean verify -B -e -V"        
-      }
-    }
+
+def runQAOS() {
+  withMaven(maven: MAVEN_TOOL) {
+    mavenSetBuildVersion()
+    runMaven(JDK_VERSION, "clean verify")
   }
 }
