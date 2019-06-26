@@ -445,7 +445,8 @@ public class SonarComponentsTest {
     sensorContext.setSettings(new MapSettings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true));
     Measure<String> feedback = analysisWithAnError(sensorContext);
     Collection<AnalysisError> analysisErrorsDeserialized = new Gson().fromJson(feedback.value(), new TypeToken<Collection<AnalysisError>>(){}.getType());
-    assertThat(analysisErrorsDeserialized.size()).isBetween(35, 45);
+    // because we are storing stracktrace of the exception, number of exceptions we manage to serialize into given size can vary
+    assertThat(analysisErrorsDeserialized.size()).isBetween(30, 45);
     assertThat(analysisErrorsDeserialized.iterator().next().getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
   }
 
