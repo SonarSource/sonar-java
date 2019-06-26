@@ -21,8 +21,10 @@ package org.sonar.java.checks.helpers;
 
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -97,11 +99,10 @@ public class ExpressionsHelper {
   private static <T> ValueResolution<T> valueResolution(ExpressionTree expression, Function<ExpressionTree,T> resolver, ValueResolution<T> valueResolution) {
     T value = resolver.apply(expression);
     if (value == null && expression.is(Tree.Kind.IDENTIFIER)) {
-      ExpressionTree singleWriteUsage = getSingleWriteUsage(((IdentifierTree) expression).symbol());
-      if (singleWriteUsage == null || !isStrictAssignmentOrDeclaration(singleWriteUsage) || singleWriteUsage == expression) {
-        value = null;
-      } else {
-        valueResolution.addLocation(singleWriteUsage);
+      Symbol symbol = ((IdentifierTree) expression).symbol();
+      ExpressionTree singleWriteUsage = getSingleWriteUsage(symbol);
+      if (singleWriteUsage != null && !valueResolution.evaluatedSymbols.contains(symbol)) {
+        valueResolution.addLocation(singleWriteUsage, symbol);
         return valueResolution(singleWriteUsage, resolver, valueResolution);
       }
     }
@@ -113,11 +114,15 @@ public class ExpressionsHelper {
   private static ExpressionTree getSingleWriteUsage(Symbol symbol) {
     ExpressionTree initializerOrExpression = getInitializerOrExpression(symbol.declaration());
     List<AssignmentExpressionTree> reassignments = getReassignments(symbol.owner().declaration(), symbol.usages());
+    ExpressionTree singleWriteUsage = null;
     if (initializerOrExpression == null && reassignments.size() == 1) {
-      return reassignments.get(0).expression();
+      singleWriteUsage = reassignments.get(0).expression();
     }
     if (initializerOrExpression != null && reassignments.isEmpty()) {
-      return initializerOrExpression;
+      singleWriteUsage = initializerOrExpression;
+    }
+    if (singleWriteUsage != null && isStrictAssignmentOrDeclaration(singleWriteUsage)) {
+      return singleWriteUsage;
     }
     return null;
   }
@@ -132,8 +137,10 @@ public class ExpressionsHelper {
   public static class ValueResolution<T> {
     private T value;
     private List<JavaFileScannerContext.Location> valuePath = new ArrayList<>();
+    private Set<Symbol> evaluatedSymbols = new HashSet<>();
 
-    private void addLocation(ExpressionTree expressionTree) {
+    private void addLocation(ExpressionTree expressionTree, Symbol evaluatedSymbol) {
+      evaluatedSymbols.add(evaluatedSymbol);
       valuePath.add(new JavaFileScannerContext.Location("", expressionTree));
     }
 
