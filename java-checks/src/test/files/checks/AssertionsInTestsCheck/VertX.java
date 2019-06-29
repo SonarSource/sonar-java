@@ -99,6 +99,28 @@ class A {
   }
 
   @Test
+  public void test_asyncAssertSuccess1(TestContext contextVertx) {
+    contextVertx.asyncAssertSuccess();
+  }
+
+  @Test
+  public void test_asyncAssertSuccess2(TestContext contextVertx) { // Noncompliant
+    contextVertx.asyncAssertSuccess(result -> {
+    });
+  }
+
+  @Test
+  public void test_asyncAssertFailure1(TestContext contextVertx) {
+    contextVertx.asyncAssertFailure();
+  }
+
+  @Test
+  public void test_asyncAssertFailure2(TestContext contextVertx) { // Noncompliant
+    contextVertx.asyncAssertFailure(throwable -> {
+    });
+  }
+
+  @Test
   public void test_saveUser() { // Compliant even if this test may not be run correctly - assertion is present
     TestSuite suite = TestSuite.create("suite_user_save");
     HttpClient client = vertx.createHttpClient();
