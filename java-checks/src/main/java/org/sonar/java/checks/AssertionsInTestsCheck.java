@@ -80,7 +80,9 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     // spring
     method("org.springframework.test.web.servlet.ResultActions", "andExpect").addParameter(ANY_TYPE),
     // JMockit
-    method("mockit.Verifications", "<init>").withAnyParameters());
+    method("mockit.Verifications", "<init>").withAnyParameters(),
+    // Eclipse Vert.x
+    method("io.vertx.ext.unit.TestContext", NameCriteria.startsWith("asyncAssert")).withoutParameter());
 
   private static final MethodMatcherCollection REACTIVE_X_TEST_METHODS = MethodMatcherCollection.create(
     method(TypeCriteria.subtypeOf("rx.Observable"), NameCriteria.is("test")).withAnyParameters(),
