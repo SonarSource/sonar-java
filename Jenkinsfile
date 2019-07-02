@@ -31,38 +31,38 @@ pipeline {
             runITs("plugin", "DOGFOOD")
           }
         }
-        stage('plugin/LATEST_RELEASE[6.7]/linux') {
+        stage('plugin/LATEST_RELEASE[7.9]/linux') {
           agent {
             label 'linux'
           }
           steps {
-            runITs("plugin", "LATEST_RELEASE[6.7]")
+            runITs("plugin", "LATEST_RELEASE[7.9]")
           }
         }
-        stage('ruling/LATEST_RELEASE[6.7]/linux') {
+        stage('ruling/LATEST_RELEASE[7.9]/linux') {
           when { expression { return params.GITHUB_BRANCH.equals('master') } }
           agent {
             label 'linux'
           }
           steps {
-            runITs("ruling", "LATEST_RELEASE[6.7]")
+            runITs("ruling", "LATEST_RELEASE[7.9]")
           }
         }
-        stage('ruling/LATEST_RELEASE[6.7]/windows') {
+        stage('ruling/LATEST_RELEASE[7.9]/windows') {
           when { expression { return params.GITHUB_BRANCH.contains('PULLREQUEST-') } }
           agent {
             label 'windows'
           }
           steps {
-            runITs("ruling", "LATEST_RELEASE[6.7]")
+            runITs("ruling", "LATEST_RELEASE[7.9]")
           }
         }
-        stage('semantic/LATEST_RELEASE[6.7]/linux') {
+        stage('semantic/LATEST_RELEASE[7.9]/linux') {
           agent {
             label 'linux'
           }
           steps {
-            runITs("semantic", "LATEST_RELEASE[6.7]")
+            runITs("semantic", "LATEST_RELEASE[7.9]")
           }
         }
         stage('QA-OS/windows') {
