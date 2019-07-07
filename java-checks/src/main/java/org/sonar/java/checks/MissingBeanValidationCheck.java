@@ -68,9 +68,15 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkMethod(MethodTree method) {
-    for (VariableTree parameter : method.parameters()) {
-      getIssueMessage(parameter).ifPresent(message -> reportIssue(parameter.type(), message));
+    if (!isExcluded(method)) {
+      for (VariableTree parameter : method.parameters()) {
+        getIssueMessage(parameter).ifPresent(message -> reportIssue(parameter.type(), message));
+      }
     }
+  }
+
+  private boolean isExcluded(MethodTree method) {
+    return method.symbol().isPrivate();
   }
 
   private static Optional<String> getIssueMessage(VariableTree variable) {

@@ -53,6 +53,11 @@ class NonCompliantService {
 
 class CompliantService {
   public void login(@Valid User user) { // Compliant
+    // ...
+    updateLastLoginDate(user);
+  }
+
+  private void updateLastLoginDate(User user) { // Compliant - Bean Validation does not intercept private methods
   }
 
   public List<User> list(@Valid Department department) { // Compliant
