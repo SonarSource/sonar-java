@@ -68,9 +68,20 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkMethod(MethodTree method) {
-    for (VariableTree parameter : method.parameters()) {
-      getIssueMessage(parameter).ifPresent(message -> reportIssue(parameter.type(), message));
+    if (!isExcluded(method)) {
+      for (VariableTree parameter : method.parameters()) {
+        getIssueMessage(parameter).ifPresent(message -> reportIssue(parameter.type(), message));
+      }
     }
+  }
+
+  private static boolean isExcluded(MethodTree methodTree) {
+    return methodTree.symbol().isPrivate() || isInConstraintValidator(methodTree);
+  }
+
+  private static boolean isInConstraintValidator(MethodTree methodTree) {
+    Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
+    return enclosingClass != null && enclosingClass.type().isSubtypeOf("javax.validation.ConstraintValidator");
   }
 
   private static Optional<String> getIssueMessage(VariableTree variable) {
