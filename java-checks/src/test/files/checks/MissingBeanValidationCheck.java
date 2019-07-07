@@ -1,7 +1,9 @@
 import java.util.List;
+import javax.validation.Constraint;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.Constraint;
 
 class User {
   @NotNull
@@ -15,6 +17,15 @@ class User {
 @MyConstraint
 class Department {
   private int hierarchyLevel;
+}
+
+public class CheckMyConstraint implements ConstraintValidator<MyConstraint, Department>
+{
+  public void initialize(MyConstraint constraintAnnotation) {
+  }
+
+  public boolean isValid(Department bean, ConstraintValidatorContext context) { // Compliant - @Valid inside constraint validators would be nonsense
+  }
 }
 
 class NonCompliantGroup {
