@@ -44,19 +44,19 @@ public class DanglingElseStatementsCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private boolean hasElseClause(IfStatementTree ifstmt) {
+  private static boolean hasElseClause(IfStatementTree ifstmt) {
     return ifstmt.elseStatement() != null;
   }
 
-  private boolean isNested(IfStatementTree ifstmt) {
+  private static boolean isNested(IfStatementTree ifstmt) {
     return ifstmt.parent().is(Kind.IF_STATEMENT);
   }
 
-  private boolean isElseIf(IfStatementTree ifstmt) {
+  private static boolean isElseIf(IfStatementTree ifstmt) {
     return ((IfStatementTree) ifstmt.parent()).elseStatement() == ifstmt;
   }
 
-  private boolean hasCurlyBraces(IfStatementTree ifstmt) {
+  private static boolean hasCurlyBraces(IfStatementTree ifstmt) {
     return ifstmt.thenStatement().is(Kind.BLOCK);
   }
 }
