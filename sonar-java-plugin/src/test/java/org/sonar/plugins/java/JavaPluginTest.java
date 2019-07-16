@@ -21,6 +21,7 @@ package org.sonar.plugins.java;
 
 import org.junit.Test;
 import org.sonar.api.Plugin;
+import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.internal.SonarRuntimeImpl;
@@ -54,7 +55,7 @@ public class JavaPluginTest {
 
   @Test
   public void sonarqube_6_7_extensions() {
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(VERSION_6_7, SonarQubeSide.SERVER);
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(VERSION_6_7, SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
     assertThat(context.getExtensions()).hasSize(26);
@@ -62,7 +63,7 @@ public class JavaPluginTest {
 
   @Test
   public void sonarqube_7_2_extensions() {
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(VERSION_7_2, SonarQubeSide.SERVER);
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(VERSION_7_2, SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
     assertThat(context.getExtensions()).hasSize(33);
@@ -70,7 +71,7 @@ public class JavaPluginTest {
 
   @Test
   public void sonarqube_7_4_extensions() {
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(VERSION_7_4, SonarQubeSide.SERVER);
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(VERSION_7_4, SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
     assertThat(context.getExtensions()).hasSize(34);
@@ -81,12 +82,12 @@ public class JavaPluginTest {
     Version unsupportedVersion = Version.create(7, 3);
     Version minSupportedVersion = Version.create(7, 4);
 
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(unsupportedVersion, SonarQubeSide.SCANNER);
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(unsupportedVersion, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
     assertThat(context.getExtensions()).doesNotContain(AnalysisWarningsWrapper.class);
 
-    runtime = SonarRuntimeImpl.forSonarQube(minSupportedVersion, SonarQubeSide.SCANNER);
+    runtime = SonarRuntimeImpl.forSonarQube(minSupportedVersion, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
     context = new Plugin.Context(runtime);
     javaPlugin.define(context);
     assertThat(context.getExtensions()).contains(AnalysisWarningsWrapper.class);

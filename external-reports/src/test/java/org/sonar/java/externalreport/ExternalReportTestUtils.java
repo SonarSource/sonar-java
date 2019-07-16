@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.Plugin;
+import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
@@ -47,7 +48,7 @@ public final class ExternalReportTestUtils {
   }
 
   public static Plugin.Context sensorContext(int major, int minor) {
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(major, minor), SonarQubeSide.SERVER);
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(major, minor), SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
     return new Plugin.Context(runtime);
   }
 
@@ -83,7 +84,7 @@ public final class ExternalReportTestUtils {
         .forEach(path -> addFileToContext(context, projectDir, path));
     }
 
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(majorVersion, minorVersion), SonarQubeSide.SERVER));
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(majorVersion, minorVersion), SonarQubeSide.SERVER, SonarEdition.COMMUNITY));
     return context;
   }
 

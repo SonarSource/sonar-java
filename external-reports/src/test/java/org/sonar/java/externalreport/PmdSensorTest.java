@@ -28,6 +28,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
+import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
@@ -55,8 +56,8 @@ public class PmdSensorTest {
   private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "pmd");
   private static final String PROJECT_ID = "pmd-test";
 
-  private static final SonarRuntime SQ71 = SonarRuntimeImpl.forSonarQube(Version.create(7, 1), SonarQubeSide.SERVER);
-  private static final SonarRuntime SQ72 = SonarRuntimeImpl.forSonarQube(Version.create(7, 2), SonarQubeSide.SERVER);
+  private static final SonarRuntime SQ71 = SonarRuntimeImpl.forSonarQube(Version.create(7, 1), SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
+  private static final SonarRuntime SQ72 = SonarRuntimeImpl.forSonarQube(Version.create(7, 2), SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
 
   private static PmdSensor sensor = new PmdSensor();
 

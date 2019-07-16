@@ -33,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
+import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
@@ -101,7 +102,7 @@ public class JaCoCoSensorTest {
     Files.copy(TestUtils.getResource("Hello.class.toCopy"), new File(jacocoExecutionData.getParentFile(), "Hello.class"));
 
     context = SensorContextTester.create(outputDir);
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_7, SonarQubeSide.SCANNER));
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_7, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
     context.fileSystem().setWorkDir(temp.newFolder().toPath());
     DefaultInputFile inputFile = TestInputFileBuilder.create(context.module().key(), "Hello.java").setLanguage("java").build();
     context.fileSystem().add(inputFile);
@@ -276,7 +277,7 @@ public class JaCoCoSensorTest {
 
   @Test
   public void log_removal_for_coverage_per_test() throws IOException {
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(7,7), SonarQubeSide.SCANNER));
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(7,7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
     testExecutionDataForLinesCoveredByTest("/org/sonar/plugins/jacoco/JaCoCov0_7_5_coverage_per_test/", newArrayList(3, 4, 5, 8, 12));
     String msg = "'Coverage per Test' feature was removed from SonarQube. Remove sonar-jacoco-listeners listener configuration.";
     assertThat(logTester.logs(LoggerLevel.WARN)).contains(msg);
@@ -315,7 +316,7 @@ public class JaCoCoSensorTest {
     when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(outputDir));
 
     SensorContextTester context = SensorContextTester.create(outputDir);
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_7, SonarQubeSide.SCANNER));
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(SQ_6_7, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
     context.fileSystem().setWorkDir(temp.newFolder().toPath());
     context.setSettings(new MapSettings().setProperty(REPORT_PATHS_PROPERTY, jacocoExecutionData.getAbsolutePath()));
 

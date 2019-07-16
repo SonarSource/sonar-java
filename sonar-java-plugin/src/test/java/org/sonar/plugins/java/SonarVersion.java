@@ -19,12 +19,13 @@
  */
 package org.sonar.plugins.java;
 
+import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
 
 public class SonarVersion {
-  static final SonarRuntime SQ_73_RUNTIME = SonarRuntimeImpl.forSonarQube(Version.create(7, 3), SonarQubeSide.SERVER);
-  static final SonarRuntime SQ_67_RUNTIME = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SERVER);
+  static final SonarRuntime SQ_73_RUNTIME = SonarRuntimeImpl.forSonarQube(Version.create(7, 3), SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
+  static final SonarRuntime SQ_67_RUNTIME = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
 }
