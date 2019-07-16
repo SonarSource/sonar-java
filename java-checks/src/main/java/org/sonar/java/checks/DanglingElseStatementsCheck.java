@@ -40,7 +40,7 @@ public class DanglingElseStatementsCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     IfStatementTree ifstmt = (IfStatementTree) tree;
     if (hasElseClause(ifstmt)) {
-      if (isNested(ifstmt) && missingCurlyBraces(ifstmt)) {
+      if (isNested(ifstmt) && !isElseIfConstruct(ifstmt) && missingCurlyBraces(ifstmt)) {
         reportIssue(ifstmt.elseKeyword(), "Add explicit curly braces to avoid dangling else.");
       }
     }
@@ -56,5 +56,10 @@ public class DanglingElseStatementsCheck extends IssuableSubscriptionVisitor {
 
   private boolean missingCurlyBraces(IfStatementTree ifstmt) {
     return !(ifstmt.thenStatement().is(Kind.BLOCK));
+  }
+
+  private boolean isElseIfConstruct(IfStatementTree ifstmt) {
+    IfStatementTree parent = (IfStatementTree) ifstmt.parent();
+    return parent.elseStatement() == ifstmt;
   }
 }

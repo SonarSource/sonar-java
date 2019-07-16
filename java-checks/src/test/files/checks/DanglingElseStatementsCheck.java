@@ -38,7 +38,7 @@ class A {
     if (a) {
       if (b) {
         d++;
-      } else {
+      } else { // Compliant
         e++;
       }
     }
@@ -49,5 +49,12 @@ class A {
       else
         e++;
     }
+
+    if (a)
+      d++;
+    else if (b)
+      e++;
+    else
+      d = e;
   }
 }
