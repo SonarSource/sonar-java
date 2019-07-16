@@ -32,7 +32,7 @@ import org.sonarqube.ws.Issues.Issue;
 import org.sonarqube.ws.client.HttpConnector;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.WsClientFactories;
-import org.sonarqube.ws.client.issue.SearchWsRequest;
+import org.sonarqube.ws.client.issues.SearchRequest;
 
 import static com.sonar.orchestrator.container.Server.ADMIN_LOGIN;
 import static com.sonar.orchestrator.container.Server.ADMIN_PASSWORD;
@@ -73,7 +73,7 @@ public class TestUtils {
   public static List<Issue> issuesForComponent(Orchestrator orchestrator, String componentKey) {
     return newWsClient(orchestrator)
       .issues()
-      .search(new SearchWsRequest().setComponentKeys(Collections.singletonList(componentKey)))
+      .search(new SearchRequest().setComponentKeys(Collections.singletonList(componentKey)))
       .getIssuesList();
   }
 

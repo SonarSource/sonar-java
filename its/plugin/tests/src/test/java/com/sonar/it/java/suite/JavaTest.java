@@ -31,9 +31,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.sonarqube.ws.Components;
 import org.sonarqube.ws.Issues.Issue;
-import org.sonarqube.ws.WsComponents;
-import org.sonarqube.ws.WsMeasures;
+import org.sonarqube.ws.Measures;
 
 import static com.sonar.it.java.suite.JavaTestSuite.getComponent;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasure;
@@ -58,7 +58,7 @@ public class JavaTest {
       .setProperty("sonar.dynamicAnalysis", "false");
     orchestrator.executeBuild(build);
 
-    WsComponents.Component file = getComponent(JavaTestSuite.keyFor("org.sonarsource.it.projects:dollar-in-names", "dollars/", "FilenameWith$Dollar.java"));
+    Components.Component file = getComponent(JavaTestSuite.keyFor("org.sonarsource.it.projects:dollar-in-names", "dollars/", "FilenameWith$Dollar.java"));
     assertThat(file).isNotNull();
     assertThat(file.getName()).contains("FilenameWith$Dollar");
   }
@@ -240,7 +240,7 @@ public class JavaTest {
       .setProperty("sonar.sources", "src");
     orchestrator.executeBuild(scan);
 
-    WsMeasures.Measure sonarjava_feedback = getMeasure("java-parse-error", "sonarjava_feedback");
+    Measures.Measure sonarjava_feedback = getMeasure("java-parse-error", "sonarjava_feedback");
     assertThat(sonarjava_feedback).isNotNull();
     assertThat(sonarjava_feedback.getValue()).startsWith("[{\"message\":\"Parse error at line 5 column 1");
   }

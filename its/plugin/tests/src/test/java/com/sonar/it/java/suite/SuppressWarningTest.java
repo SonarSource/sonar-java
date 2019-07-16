@@ -28,8 +28,8 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonarqube.ws.WsMeasures;
-import org.sonarqube.ws.client.measure.ComponentWsRequest;
+import org.sonarqube.ws.Measures;
+import org.sonarqube.ws.client.measures.ComponentRequest;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Collections.singletonList;
@@ -66,11 +66,11 @@ public class SuppressWarningTest {
   }
 
   @CheckForNull
-  static WsMeasures.Measure getMeasure(String componentKey, String metricKey) {
-    WsMeasures.ComponentWsResponse response = TestUtils.newWsClient(ORCHESTRATOR).measures().component(new ComponentWsRequest()
-      .setComponentKey(componentKey)
+  static Measures.Measure getMeasure(String componentKey, String metricKey) {
+    Measures.ComponentWsResponse response = TestUtils.newWsClient(ORCHESTRATOR).measures().component(new ComponentRequest()
+      .setComponent(componentKey)
       .setMetricKeys(singletonList(metricKey)));
-    List<WsMeasures.Measure> measures = response.getComponent().getMeasuresList();
+    List<Measures.Measure> measures = response.getComponent().getMeasuresList();
     return measures.size() == 1 ? measures.get(0) : null;
   }
 

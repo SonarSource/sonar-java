@@ -24,7 +24,7 @@ import com.sonar.orchestrator.build.MavenBuild;
 import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonarqube.ws.WsMeasures.Measure;
+import org.sonarqube.ws.Measures.Measure;
 
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasures;
 import static java.lang.Double.parseDouble;
