@@ -31,30 +31,30 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S5261")
 public class DanglingElseStatementsCheck extends IssuableSubscriptionVisitor {
 
-    @Override
-    public List<Kind> nodesToVisit() {
-        return Collections.singletonList(Kind.IF_STATEMENT);
-    }
+  @Override
+  public List<Kind> nodesToVisit() {
+    return Collections.singletonList(Kind.IF_STATEMENT);
+  }
 
-    @Override
-    public void visitNode(Tree tree) {
-        IfStatementTree ifstmt = (IfStatementTree) tree;
-        if (hasElseClause(ifstmt)) {
-            if (isNested(ifstmt) && missingCurlyBraces(ifstmt)) {
-                reportIssue(ifstmt.elseKeyword(), "Add explicit curly braces to avoid dangling else.");
-            }
-        }
+  @Override
+  public void visitNode(Tree tree) {
+    IfStatementTree ifstmt = (IfStatementTree) tree;
+    if (hasElseClause(ifstmt)) {
+      if (isNested(ifstmt) && missingCurlyBraces(ifstmt)) {
+        reportIssue(ifstmt.elseKeyword(), "Add explicit curly braces to avoid dangling else.");
+      }
     }
+  }
 
-    private boolean hasElseClause(IfStatementTree ifstmt) {
-        return ifstmt.elseStatement() != null;
-    }
+  private boolean hasElseClause(IfStatementTree ifstmt) {
+    return ifstmt.elseStatement() != null;
+  }
 
-    private boolean isNested(IfStatementTree ifstmt) {
-        return ifstmt.parent().is(Kind.IF_STATEMENT);
-    }
+  private boolean isNested(IfStatementTree ifstmt) {
+    return ifstmt.parent().is(Kind.IF_STATEMENT);
+  }
 
-    private boolean missingCurlyBraces(IfStatementTree ifstmt) {
-        return !(ifstmt.thenStatement().is(Kind.BLOCK)) ;
-    }
+  private boolean missingCurlyBraces(IfStatementTree ifstmt) {
+    return !(ifstmt.thenStatement().is(Kind.BLOCK));
+  }
 }

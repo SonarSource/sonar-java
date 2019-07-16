@@ -24,8 +24,8 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class DanglingElseStatementsCheckTest {
 
-    @Test
-    public void test() {
-        JavaCheckVerifier.verify("src/test/files/checks/DanglingElseStatementsCheck.java", new DanglingElseStatementsCheck());
-    }
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/DanglingElseStatementsCheck.java", new DanglingElseStatementsCheck());
+  }
 }
