@@ -39,24 +39,16 @@ public class DanglingElseStatementsCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     IfStatementTree ifstmt = (IfStatementTree) tree;
-    if (hasElseClause(ifstmt) && isNested(ifstmt) && !isElseIf(ifstmt) && !hasCurlyBraces(ifstmt)) {
+    if (hasElse(ifstmt) && isNested(ifstmt)) {
       reportIssue(ifstmt.elseKeyword(), "Add explicit curly braces to avoid dangling else.");
     }
   }
 
-  private static boolean hasElseClause(IfStatementTree ifstmt) {
+  private static boolean hasElse(IfStatementTree ifstmt) {
     return ifstmt.elseStatement() != null;
   }
 
   private static boolean isNested(IfStatementTree ifstmt) {
-    return ifstmt.parent().is(Kind.IF_STATEMENT);
-  }
-
-  private static boolean isElseIf(IfStatementTree ifstmt) {
-    return ((IfStatementTree) ifstmt.parent()).elseStatement() == ifstmt;
-  }
-
-  private static boolean hasCurlyBraces(IfStatementTree ifstmt) {
-    return ifstmt.thenStatement().is(Kind.BLOCK);
+    return ifstmt.parent().is(Kind.IF_STATEMENT) && ((IfStatementTree) ifstmt.parent()).thenStatement() == ifstmt;
   }
 }

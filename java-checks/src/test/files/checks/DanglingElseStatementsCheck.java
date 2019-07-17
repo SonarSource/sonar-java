@@ -4,31 +4,69 @@ class A {
     int d = 0, e = 0;
 
     if (a)
-      d++;
+      d++;        // Compliant, missing else clause
 
     if (a)
       d++;
-    else        // Compliant, not nested
+    else          // Compliant, not nested
       e++;
 
     if (a)
       d++;
-    else if (b) // Compliant, else if construct
+    else if (b)   // Compliant, else if construct
       e++;
     else
       d = e;
 
     if (a)
+      d++;
+    else if (b)   // Compliant, else if constructs
+      e++;
+    else if (d > e)
+      e = d;
+    else
+      d = e;
+
+    if (a) {
+      if (b)
+        d++;
+      else        // Compliant, expected fix
+        e++;
+    }
+
+    if (a) {
       if (b) {
         d++;
-      } else {  // Compliant, curly braces
+      } else {    // Compliant, perfect style
         e++;
       }
+    }
 
     if (a)
       if (b)
         d++;
-    else        // Noncompliant {{Add explicit curly braces to avoid dangling else.}}
+    else          // Noncompliant {{Add explicit curly braces to avoid dangling else.}}
       e++;
+
+    if (a || b)
+      if (a)
+        d++;
+      else if (b) // Noncompliant
+        e++;
+      else if (d > e)
+        e = d;
+      else
+        d = e;
+
+    if (a || b) {
+      if (a)
+        d++;
+      else if (b) // Compliant
+        e++;
+      else if (d > e)
+        e = d;
+      else
+        d = e;
+    }
   }
 }
