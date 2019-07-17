@@ -1,0 +1,16 @@
+{
+  "title": "\"else\" statements should be clearly matched with an \"if\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1min"
+  },
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5261",
+  "sqKey": "S5261",
+  "scope": "Main"
+}

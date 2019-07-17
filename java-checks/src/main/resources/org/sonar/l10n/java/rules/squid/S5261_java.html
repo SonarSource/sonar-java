@@ -1,0 +1,28 @@
+<p>The dangling <code>else</code> problem appears when nested <code>if</code>/<code>else</code>&nbsp;statements are written without curly braces. In
+this case, <code>else</code> is associated with the nearest&nbsp;<code>if</code> but that is not always obvious and sometimes the indentation can also
+be misleading.</p>
+<p>This rules reports <code>else</code> statements that are difficult to understand, because they are inside nested <code>if</code> statements without
+curly braces.</p>
+<p>Adding curly braces can generally make the code clearer (RSPEC-121), and in this situation of dangling <code>else</code>, it really clarifies the
+intention of the code.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+ if (a)
+   if (b)
+     d++;
+ else     // Noncompliant, is the "else" associated with "if(a)" or "if (b)"? (the answer is "if(b)")
+   e++;
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+ if (a) {
+   if (b) {
+     d++;
+   }
+ } else { // Compliant, there is no doubt the "else" is associated with "if(a)"
+   e++;
+ }
+</pre>
+<h2>See</h2>
+<p> * <a href="https://en.wikipedia.org/wiki/Dangling_else">https://en.wikipedia.org/wiki/Dangling_else</a></p>
+
