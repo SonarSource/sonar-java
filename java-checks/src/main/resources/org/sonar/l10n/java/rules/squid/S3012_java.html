@@ -1,0 +1,43 @@
+<p>Using a loop to copy an array or a subset of an array is simply wasted code when there are built-in functions to do it for you. Instead, use
+<code>Arrays.copyOf</code> to copy an entire array into another array, use <code>System.arraycopy</code> to copy only a subset of an array into
+another array, and use <code>Arrays.asList</code> to feed the constructor of a new list with an array.</p>
+<p>Note that <code>Arrays.asList</code> simply puts a <code>Collections</code> wrapper around the original array, so further steps are required if a
+non-fixed-size <code>List</code> is desired.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public void makeCopies(String[] source) {
+
+  this.array = new String[source.length];
+  this.list = new ArrayList(source.length);
+
+  for (int i = 0; i &lt; source.length; i++) {
+    this.array[i] = source[i]; // Noncompliant
+  }
+
+  for (String s : source) {
+    this.list.add(s); // Noncompliant
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public void makeCopies(String[] source) {
+  this.array = Arrays.copyOf(source, source.length);
+  Collections.addAll(this.list, source);
+}
+</pre>
+<h2>Exceptions</h2>
+<p>Rule detects only the most idiomatic patterns, it will not consider loops with non-trivial control flow. For example, array elements that are
+copied conditionally are ignored.</p>
+<pre>
+public int[] getCopy(int[] source) {
+  int[] dest = new int[source.length];
+  for (int i = 0; i &lt; source.length; i++) {
+    if (source[i] &gt; 10) {
+      dest[i] = source[i];  // Compliant
+    }
+  }
+  return dest;
+}
+</pre>
+

@@ -1,0 +1,16 @@
+{
+  "title": "Arrays should not be copied using loops",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-3012",
+  "sqKey": "S3012",
+  "scope": "Main"
+}
