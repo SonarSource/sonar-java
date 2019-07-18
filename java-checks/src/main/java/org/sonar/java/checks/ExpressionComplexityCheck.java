@@ -21,9 +21,11 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Arrays;
@@ -143,7 +145,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
       int currentLevel = level.peek();
       if (currentLevel == 1) {
         int opCount = count.pop();
-        if (opCount > max) {
+        if (opCount > max && !isInsideEquals(tree)) {
           reportIssue(tree, "Reduce the number of conditional operators (" + opCount + ") used in the expression (maximum allowed " + max + ").",
             Collections.<JavaFileScannerContext.Location>emptyList(), opCount - max);
         }
@@ -151,6 +153,17 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
       }
       level.push(level.pop() - 1);
     }
+  }
+
+  private static boolean isInsideEquals(Tree tree) {
+    Tree parent = tree.parent();
+    while (parent != null && !parent.is(Tree.Kind.CLASS)) {
+      if (parent.is(Tree.Kind.METHOD) && MethodTreeUtils.isEqualsMethod((MethodTree) parent)) {
+        return true;
+      }
+      parent = parent.parent();
+    }
+    return false;
   }
 
   private static boolean isLambdaWithBlock(Tree tree) {
