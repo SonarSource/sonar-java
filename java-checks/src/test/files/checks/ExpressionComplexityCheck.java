@@ -58,4 +58,37 @@ class A {
       }.someThing();
     };
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass() || true || false || false) { // Compliant, the expression is inside equals
+      return false;
+    }
+
+    return true && true && true && false && false; // Compliant, the expression is inside equals method
+  }
+
+  int afterEquals = true || false || true || false || false; // Noncompliant [[effortToFix=1]]
+
+  @Override
+  public boolean equals(Object o) {
+    class Local {
+      int insideLocal = true || false || true || false || false; // Noncompliant [[effortToFix=1]]
+      @Override
+      public boolean equals(Object o) {
+        return true && true && true && false && false; // Compliant, the expression is inside equals method
+      }
+    }
+    return true && true && true && false && false; // Compliant, the expression is inside equals method
+  }
+}
+
+enum AbbreviationOfDays{
+  VALUE;
+  public boolean foo()  {
+    return true || false || true || false || false; // Noncompliant [[effortToFix=1]]
+  }
 }

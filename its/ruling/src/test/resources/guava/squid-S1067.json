@@ -2,17 +2,10 @@
 'com.google.guava:guava:src/com/google/common/base/Utf8.java':[
 170,
 ],
-'com.google.guava:guava:src/com/google/common/cache/CacheBuilderSpec.java':[
-263,
-],
-'com.google.guava:guava:src/com/google/common/cache/CacheStats.java':[
-253,
-],
 'com.google.guava:guava:src/com/google/common/cache/LongAdder.java':[
 73,
 ],
 'com.google.guava:guava:src/com/google/common/collect/GeneralRange.java':[
-232,
 277,
 ],
 'com.google.guava:guava:src/com/google/common/collect/TreeBasedTable.java':[
