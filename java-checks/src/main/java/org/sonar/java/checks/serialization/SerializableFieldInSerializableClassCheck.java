@@ -73,7 +73,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
         if (!ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.PRIVATE)) {
           reportIssue(simpleName, "Make \"" + simpleName.name() + "\" private or transient.");
         } else if (isUnserializableCollection(variableTree.type().symbolType())
-          || initializerIsUnserializableCollection(variableTree.initializer())) {
+          || isUnserializableCollection(variableTree.initializer())) {
           reportIssue(simpleName);
         }
         checkCollectionAssignments(variableTree.symbol().usages());
@@ -83,8 +83,8 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     }
   }
 
-  private static boolean initializerIsUnserializableCollection(@Nullable ExpressionTree initializer) {
-    return initializer != null && isUnserializableCollection(initializer.symbolType());
+  private static boolean isUnserializableCollection(@Nullable ExpressionTree expression) {
+    return expression != null && !expression.is(Tree.Kind.NULL_LITERAL) && isUnserializableCollection(expression.symbolType());
   }
 
   private static boolean isUnserializableCollection(Type type) {
@@ -96,8 +96,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
       Tree parentTree = usage.parent();
       if (parentTree.is(Tree.Kind.ASSIGNMENT)) {
         AssignmentExpressionTree assignment = (AssignmentExpressionTree) parentTree;
-        ExpressionTree expression = assignment.expression();
-        if (usage.equals(assignment.variable()) && !expression.is(Tree.Kind.NULL_LITERAL) && isUnserializableCollection(expression.symbolType())) {
+        if (usage.equals(assignment.variable()) && isUnserializableCollection(assignment.expression())) {
           reportIssue(usage);
         }
       }
