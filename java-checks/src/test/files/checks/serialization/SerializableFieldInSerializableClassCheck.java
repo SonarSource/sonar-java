@@ -139,4 +139,5 @@ public class MyServlet extends javax.servlet.http.HttpServlet {
 class test implements Serializable {
   private HashMap<Object, Object> both2; // Noncompliant
   private ArrayList<Object> objects2; // Noncompliant
+  private ArrayList<String> lines = null; // Compliant: ArrayList, String, and null are serializable
 }
