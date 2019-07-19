@@ -78,6 +78,6 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
   }
 
   private static boolean hasNoPathVariableAnnotation(VariableTree variableTree) {
-    return variableTree.modifiers().annotations().stream().noneMatch(a -> a.symbolType().is(PATH_VARIABLE_ANNOTATION));
+    return !variableTree.symbol().metadata().isAnnotatedWith(PATH_VARIABLE_ANNOTATION);
   }
 }
