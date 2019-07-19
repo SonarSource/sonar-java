@@ -91,6 +91,8 @@ public class BehaviorCache {
     "com.google.common.base.Preconditions#checkArgument",
     "com.google.common.base.Preconditions#checkState",
 
+    "com.google.common.base.Verify#verify",
+
     "com.google.common.base.Strings#isNullOrEmpty",
     "com.google.common.base.Platform#stringIsNullOrEmpty",
 
