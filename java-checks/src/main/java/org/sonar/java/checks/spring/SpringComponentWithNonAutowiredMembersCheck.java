@@ -20,15 +20,19 @@
 package org.sonar.java.checks.spring;
 
 import com.google.common.base.Splitter;
-
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -51,24 +55,17 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
   public void visitNode(Tree tree) {
     ClassTree clazzTree = (ClassTree) tree;
     SymbolMetadata clazzMeta = clazzTree.symbol().metadata();
+    Set<Symbol> symbolsUsedInConstructors = symbolsUsedInConstructors(clazzTree);
 
-    if (isSpringComponent(clazzMeta) && !hasUniqueConstructor(clazzTree)) {
+    if (isSpringComponent(clazzMeta)) {
       clazzTree.members().stream().filter(v -> v.is(Kind.VARIABLE))
         .map(m -> (VariableTree) m)
         .filter(v -> !v.symbol().isStatic())
         .filter(v -> !isSpringInjectionAnnotated(v.symbol().metadata()))
         .filter(v -> !isCustomInjectionAnnotated(v.symbol().metadata()))
+        .filter(v -> !symbolsUsedInConstructors.contains(v.symbol()))
         .forEach(v -> reportIssue(v.simpleName(), "Annotate this member with \"@Autowired\", \"@Resource\", \"@Inject\", or \"@Value\", or remove it."));
     }
-  }
-
-  private static boolean hasUniqueConstructor(ClassTree clazzTree) {
-    return clazzTree.symbol().memberSymbols().stream()
-      .filter(Symbol::isMethodSymbol)
-      .map(s -> (Symbol.MethodSymbol) s)
-      .filter(m -> m.name().equals("<init>"))
-      .filter(m -> m.declaration() != null)
-      .count() == 1;
   }
 
   private static boolean isSpringInjectionAnnotated(SymbolMetadata metadata) {
@@ -89,5 +86,44 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
     return clazzMeta.isAnnotatedWith("org.springframework.stereotype.Controller")
       || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Service")
       || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Repository");
+  }
+
+  private Set<Symbol> symbolsUsedInConstructors(ClassTree clazzTree) {
+    List<Symbol.MethodSymbol> constructors = constructors(clazzTree);
+    return constructors.stream()
+      .filter(ctor -> isAutowired(constructors, ctor))
+      .map(Symbol.MethodSymbol::declaration)
+      .flatMap(ctorTree -> symbolsUsedInMethod(ctorTree.symbol()).stream())
+      .collect(Collectors.toSet());
+  }
+
+  private boolean isAutowired(List<Symbol.MethodSymbol> constructors, Symbol.MethodSymbol ctor) {
+    return isSpringInjectionAnnotated(ctor.metadata())
+      || isCustomInjectionAnnotated(ctor.metadata()) || constructors.size() == 1;
+  }
+
+  private Set<Symbol> symbolsUsedInMethod(Symbol.MethodSymbol methodSymbol) {
+    IdentifierCollector identifierCollector = new IdentifierCollector();
+    methodSymbol.declaration().accept(identifierCollector);
+    return identifierCollector.identifiers;
+  }
+
+  private static List<Symbol.MethodSymbol> constructors(ClassTree clazzTree) {
+    return clazzTree.symbol().memberSymbols().stream()
+      .filter(Symbol::isMethodSymbol)
+      .map(s -> (Symbol.MethodSymbol) s)
+      .filter(m -> m.name().equals("<init>"))
+      .filter(m -> m.declaration() != null)
+      .collect(Collectors.toList());
+  }
+
+  private static class IdentifierCollector extends BaseTreeVisitor {
+
+    Set<Symbol> identifiers = new HashSet<>();
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      identifiers.add(tree.symbol());
+    }
   }
 }
