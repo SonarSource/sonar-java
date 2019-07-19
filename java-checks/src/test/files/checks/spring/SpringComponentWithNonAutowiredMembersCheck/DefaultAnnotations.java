@@ -60,6 +60,17 @@ class UniqueConstructor {
 }
 
 @Service
+class UniqueConstructor2 {
+  private String name; // Noncompliant
+  private String address;
+
+  public UniqueConstructor2(String address) {
+    // not setting the name field
+    this.address = address;
+  }
+}
+
+@Service
 class DualConstructor {
   private final String name; // Noncompliant
   private final String address; // Noncompliant
@@ -72,3 +83,23 @@ class DualConstructor {
     this.address = address;
   }
 }
+
+@Controller
+class ConstructorInjection {
+  private String env;  // Compliant
+  private String yyyAdaptor; // Compliant
+  private String jaxbContext; // Noncompliant - not used in @Autowired constructor
+
+  public ConstructorInjection(String env, String yyyAdaptor, String jaxbContext) {
+    this.env = env;
+    this.yyyAdaptor = yyyAdaptor;
+    this.jaxbContext = jaxbContext;
+  }
+
+  @Autowired
+  public ConstructorInjection(String env, String yyyAdaptor) {
+    this.env = env;
+    this.yyyAdaptor = yyyAdaptor;
+  }
+}
+
