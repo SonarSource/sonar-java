@@ -148,4 +148,18 @@ class A {
     }
 
   }
+
+  class E {
+    static Config CONFIG = null;
+
+    synchronized Object foo() {
+      CONFIG = null; // Compliant
+    }
+
+    synchronized Object foo() {
+      return s -> {
+        CONFIG = null; // Noncompliant
+      };
+    }
+  }
 }

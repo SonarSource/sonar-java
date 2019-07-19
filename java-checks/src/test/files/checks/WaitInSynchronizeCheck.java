@@ -34,5 +34,13 @@ class A {
     wait();
   }
 
-
+  synchronized Object foo3() {
+    wait(); // Compliant
+    return s -> {
+      wait(); // Noncompliant
+      synchronized (obj) {
+        wait(); // Compliant
+      }
+    };
+  }
 }
