@@ -50,6 +50,8 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
     "org.springframework.data.mongodb.core.mapping.Document",
     "org.springframework.data.elasticsearch.annotations.Document");
 
+  private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
+
   @Override
   public void visitNode(Tree tree) {
     if (!hasSemantic()) {
@@ -61,6 +63,7 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
 
     if (isRequestMappingAnnotated(methodSymbol)) {
       methodTree.parameters().stream()
+        .filter(PersistentEntityUsedAsRequestParameterCheck::hasNoPathVariableAnnotation)
         .filter(PersistentEntityUsedAsRequestParameterCheck::isPersistentEntity)
         .forEach(p -> reportIssue(p.simpleName(), "Replace this persistent entity with a simple POJO or DTO object."));
     }
@@ -72,5 +75,9 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
 
   private static boolean isPersistentEntity(VariableTree variableTree) {
     return ENTITY_ANNOTATIONS.stream().anyMatch(variableTree.type().symbolType().symbol().metadata()::isAnnotatedWith);
+  }
+
+  private static boolean hasNoPathVariableAnnotation(VariableTree variableTree) {
+    return !variableTree.symbol().metadata().isAnnotatedWith(PATH_VARIABLE_ANNOTATION);
   }
 }
