@@ -14,6 +14,17 @@ public class MyClass {
   }
 }
 
+public class MyClassWithInitializer {
+  private static boolean flag;
+  {
+    synchronized (getClass()) { // Noncompliant [[sc=19;ec=29]] {{Synchronize on the static class name instead.}}
+      if (!flag) {
+        flag = true;
+      }
+    }
+  }
+}
+
 
 public final class FinalClassIsCompliant {
 
