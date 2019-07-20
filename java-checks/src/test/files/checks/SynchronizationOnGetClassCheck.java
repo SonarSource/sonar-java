@@ -1,4 +1,4 @@
-public class MyClass {
+class MyClass {
   MyClass() {
     synchronized (getClass()) { // Noncompliant [[sc=19;ec=29]] {{Synchronize on the static class name instead.}}
     }
@@ -14,8 +14,46 @@ public class MyClass {
   }
 }
 
+class MyClassWithInitializer {
+  {
+    synchronized (getClass()) { // Noncompliant [[sc=19;ec=29]] {{Synchronize on the static class name instead.}}
+    }
+  }
+}
 
-public final class FinalClassIsCompliant {
+enum MyEnumWithInitializer {
+  red, white;
+
+  {
+    synchronized (getClass()) { // Compliant - enums are implicitly final
+      System.out.println();
+    }
+  }
+
+}
+
+class MyClassWithStaticInitializer {
+  static {
+    synchronized (getClass()) { // Noncompliant [[sc=19;ec=29]] {{Synchronize on the static class name instead.}}
+    }
+  }
+}
+
+class MyClassWithLambda {
+  java.util.function.Consumer<String> c = s -> {
+    synchronized (getClass()) { // Noncompliant [[sc=19;ec=29]] {{Synchronize on the static class name instead.}}
+    }
+  };
+}
+
+final class MyFinalClassWithLambda {
+  java.util.function.Consumer<String> c = s -> {
+    synchronized (getClass()) { // Compliant
+    }
+  };
+}
+
+final class FinalClassIsCompliant {
 
   FinalClassIsCompliant() {
     synchronized (getClass()) { // Compliant
