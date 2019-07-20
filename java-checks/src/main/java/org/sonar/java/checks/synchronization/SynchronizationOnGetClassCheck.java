@@ -22,6 +22,7 @@ package org.sonar.java.checks.synchronization;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -34,6 +35,7 @@ import java.util.List;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.INITIALIZER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.SYNCHRONIZED_STATEMENT;
@@ -65,10 +67,15 @@ public class SynchronizationOnGetClassCheck extends IssuableSubscriptionVisitor 
   private static boolean isEnclosingClassFinal(ExpressionTree expressionTree) {
     if (expressionTree.is(IDENTIFIER)) {
       Tree parent = expressionTree.parent();
-      while (!parent.is(METHOD, CONSTRUCTOR)) {
+      while (!parent.is(METHOD, CONSTRUCTOR, INITIALIZER)) {
         parent = parent.parent();
       }
-      return ((MethodTree) parent).symbol().owner().isFinal();
+      if (parent instanceof MethodTree) {
+        return ((MethodTree) parent).symbol().owner().isFinal();
+      } else {
+        // hypothesis: the parent is type class for initializers
+        return ((ClassTree) parent.parent()).symbol().isFinal();
+      }
     }
     return ((MemberSelectExpressionTree) expressionTree).expression().symbolType().symbol().isFinal();
   }
