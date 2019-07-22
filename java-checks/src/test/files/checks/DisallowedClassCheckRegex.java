@@ -12,8 +12,9 @@ void method(String param) { // Noncompliant [[sc=13;ec=19]]
   String str = new String(); // Noncompliant [[sc=3;ec=9]]
   Object obj =         // Noncompliant [[sc=3;ec=9]]
     String.valueOf(3); // Noncompliant [[sc=5;ec=19]]
-  obj = valueOf(3);    // Noncompliant [[sc=9;ec=16]]
-  System.out.println(var);
+  obj = valueOf(3);    // Compliant, already reported in static import
+  //System is part of java.lang
+  System.out.println(var); // Noncompliant [[sc=3;ec=13]]
   var.doSomething(new Integer(1)); // Noncompliant  [[sc=19;ec=33]]
 }
 }
