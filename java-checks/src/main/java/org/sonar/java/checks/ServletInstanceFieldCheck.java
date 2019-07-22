@@ -108,7 +108,10 @@ public class ServletInstanceFieldCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isOwnedByAServlet(VariableTree variable) {
     Symbol owner = variable.symbol().owner();
-    return owner.isTypeSymbol() && (owner.type().isSubtypeOf("javax.servlet.http.HttpServlet") || owner.type().isSubtypeOf("org.apache.struts.action.Action"));
+    return owner.isTypeSymbol()
+      && variable.parent().is(Tree.Kind.CLASS)
+      && (owner.type().isSubtypeOf("javax.servlet.http.HttpServlet")
+      || owner.type().isSubtypeOf("org.apache.struts.action.Action"));
   }
 
   private static boolean isStaticOrFinal(VariableTree variable) {
