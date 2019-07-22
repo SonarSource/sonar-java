@@ -51,7 +51,7 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    ArrayList<Tree.Kind> nodesToVisit = new ArrayList<>(super.nodesToVisit());
+    List<Tree.Kind> nodesToVisit = new ArrayList<>(super.nodesToVisit());
     nodesToVisit.add(Tree.Kind.CLASS);
     nodesToVisit.add(Tree.Kind.ASSIGNMENT);
     nodesToVisit.add(Tree.Kind.STATIC_INITIALIZER);
