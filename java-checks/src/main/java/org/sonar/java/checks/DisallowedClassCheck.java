@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -68,16 +68,6 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
     }
     super.visitImport(tree);
   }
-
-  @Override
-  public void visitMethodInvocation(MethodInvocationTree tree) {
-    if(tree.symbol().isMethodSymbol()) {
-      String className = tree.symbol().owner().type().fullyQualifiedName();
-      checkIfDisallowed(className, tree.methodSelect());
-    }
-    super.visitMethodInvocation(tree);
-  }
-
 
   @Override
   public void visitVariable(VariableTree variableTree) {
@@ -120,6 +110,16 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
     String annotationTypeName = annotationTree.symbolType().fullyQualifiedName();
     checkIfDisallowed(annotationTypeName, annotationTree.annotationType());
     super.visitAnnotation(annotationTree);
+  }
+
+  @Override
+  public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+    // Disallowed new class are already reported in visitNewClass
+    if(!tree.expression().is(Tree.Kind.NEW_CLASS)) {
+      String memberSelectTypeName = tree.expression().symbolType().fullyQualifiedName();
+      checkIfDisallowed(memberSelectTypeName, tree);
+    }
+    super.visitMemberSelectExpression(tree);
   }
 
   private boolean checkIfDisallowed(String className, Tree tree) {
