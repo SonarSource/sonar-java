@@ -23,6 +23,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -49,13 +50,17 @@ public class ConditionalOnNewLineCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     IfStatementTree ifStatementTree = (IfStatementTree) tree;
-    SyntaxToken lastToken = ifStatementTree.thenStatement().lastToken();
-    if (ifStatementTree.elseKeyword() == null) {
-      if(previousToken != null && isOnSameLineAsPreviousIf(ifStatementTree)) {
-        reportIssue(ifStatementTree.ifKeyword(), "Move this \"if\" to a new line or add the missing \"else\".",
-          Collections.singletonList(new JavaFileScannerContext.Location("", previousToken)), null);
-      }
-      previousToken = lastToken;
+
+    if(previousToken != null && isOnSameLineAsPreviousIf(ifStatementTree)) {
+      reportIssue(ifStatementTree.ifKeyword(), "Move this \"if\" to a new line or add the missing \"else\".",
+        Collections.singletonList(new JavaFileScannerContext.Location("", previousToken)), null);
+    }
+
+    StatementTree elsePart = ifStatementTree.elseStatement();
+    if (elsePart != null) {
+      previousToken = elsePart.lastToken();
+    } else {
+      previousToken = ifStatementTree.thenStatement().lastToken();
     }
   }
 
