@@ -84,7 +84,7 @@ public class ConstantUtils {
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
       return LiteralUtils.trimQuotes(((LiteralTree) expression).value());
     }
-    if (tree.is(Tree.Kind.INT_LITERAL)) {
+    if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
       return LiteralUtils.intLiteralValue(tree);
     }
     if (tree.is(Tree.Kind.LONG_LITERAL)) {

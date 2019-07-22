@@ -96,6 +96,10 @@ public class ExpressionsHelper {
     return valueResolution(expression, ConstantUtils::resolveAsBooleanConstant, new ValueResolution<>());
   }
 
+  public static ValueResolution<Integer> getConstantValueAsInteger(ExpressionTree expression) {
+    return valueResolution(expression, ConstantUtils::resolveAsIntConstant, new ValueResolution<>());
+  }
+
   private static <T> ValueResolution<T> valueResolution(ExpressionTree expression, Function<ExpressionTree,T> resolver, ValueResolution<T> valueResolution) {
     T value = resolver.apply(expression);
     if (value == null && expression.is(Tree.Kind.IDENTIFIER)) {

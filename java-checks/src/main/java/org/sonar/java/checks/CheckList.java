@@ -672,7 +672,8 @@ public final class CheckList {
       AndroidSSLConnectionCheck.class,
       LoggerClassCheck.class,
       DanglingElseStatementsCheck.class,
-      ArrayCopyLoopCheck.class
+      ArrayCopyLoopCheck.class,
+      StringCallsBeyondBoundsCheck.class
     );
   }
 
