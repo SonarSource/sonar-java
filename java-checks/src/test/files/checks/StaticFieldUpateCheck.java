@@ -71,7 +71,7 @@ class B {
     };
   }
 
-  private synchronized Comparable<Object> foo() {
+  private synchronized Comparable<Object> foo1() {
     return new Comparable<Object>() {
       @Override
       public int compareTo(Object o) {
@@ -81,7 +81,7 @@ class B {
     };
   }
 
-  private static synchronized Object foo() {
+  private static synchronized Consumer<Object> foo2() {
     return s -> {
       value = 0; // FN: we are not guaranteed to be inside a static method; the rule check if any parent is synchronized.
     };

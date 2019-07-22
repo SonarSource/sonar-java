@@ -149,14 +149,14 @@ class A {
 
   }
 
-  class E {
-    static Config CONFIG = null;
+  static class E {
+    static Config CONFIG;
 
-    synchronized Object foo() {
+    synchronized void foo() {
       CONFIG = null; // Compliant
     }
 
-    synchronized Object foo() {
+    synchronized Consumer<String> bar() {
       return s -> {
         CONFIG = null; // Noncompliant
       };
