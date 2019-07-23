@@ -671,7 +671,8 @@ public final class CheckList {
       EmailHotspotCheck.class,
       AndroidSSLConnectionCheck.class,
       LoggerClassCheck.class,
-      DanglingElseStatementsCheck.class
+      DanglingElseStatementsCheck.class,
+      ArrayCopyLoopCheck.class
     );
   }
 
