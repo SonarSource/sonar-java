@@ -60,7 +60,7 @@ public class RedundantThrowsDeclarationCheck {
 }
 
 abstract class MySuperClass {
-  abstract foo() throws MyException;
+  abstract void foo() throws MyException;
 }
 
 abstract class ThrownCheckedExceptions extends MySuperClass {
@@ -286,4 +286,48 @@ abstract class NonThrownExceptionClass {
 
 abstract class Test {
   abstract void foo() throws Unknown, Unknown;
+}
+
+public class Parent {
+  public Parent() throws IllegalAccessException { // Compliant
+    throw new IllegalAccessException();
+  }
+
+  public Parent(String a) {
+
+  }
+
+  public Parent(String a, String b) throws IllegalAccessException { // Compliant
+    foo();
+  }
+
+  private void foo() throws IllegalAccessException {
+    throw new IllegalAccessException();
+  }
+}
+
+public class Child extends Parent {
+
+  public Child(Integer a) throws IllegalAccessException { // Compliant, implicit call can throw IllegalAccessException
+    // implicit call to parent constructor
+    System.out.println("a:" + a);
+  }
+
+  public Child(Long a) throws IllegalAccessException { // Compliant
+    super();
+    // no implicit call to parent constructor
+    System.out.println("a:" + a);
+  }
+
+  public Child(Double a) throws IllegalAccessException { // Noncompliant
+    super("a:" + a);
+    // no implicit call to parent constructor
+    System.out.println("a:" + a);
+  }
+
+  public Child(Integer a, Integer b) throws IllegalAccessException { // Compliant, call to Parent that calls foo, that thows IllegalAccessException
+    super("a:" + a, " b:" + a);
+    // no implicit call to parent constructor
+    System.out.println("a:" + a);
+  }
 }

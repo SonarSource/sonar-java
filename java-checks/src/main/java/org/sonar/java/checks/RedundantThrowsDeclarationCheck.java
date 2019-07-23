@@ -22,7 +22,9 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
@@ -39,6 +41,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -216,14 +219,47 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     if (block != null) {
       MethodInvocationVisitor visitor = new MethodInvocationVisitor();
       block.accept(visitor);
-      return visitor.thrownExceptions();
+      Set<Type> thrownExceptions = visitor.thrownExceptions();
+
+      if (thrownExceptions != null && methodTree.is(Tree.Kind.CONSTRUCTOR) && !visitor.visitedSuper) {
+        Optional<Symbol.MethodSymbol> constructor = getImplicitlyCalledConstructor(methodTree);
+        constructor.ifPresent(c -> thrownExceptions.addAll(c.thrownTypes()));
+      }
+
+      return thrownExceptions;
     }
     return null;
+  }
+
+  private static Optional<Symbol.MethodSymbol> getImplicitlyCalledConstructor(MethodTree methodTree) {
+    Tree parent = methodTree.parent();
+    if (parent != null && parent.is(Tree.Kind.CLASS)) {
+      Type superType = ((ClassTree) parent).symbol().superClass();
+      if (superType != null) {
+        List<Symbol.MethodSymbol> candidates = superType.symbol().memberSymbols().stream()
+          .filter(RedundantThrowsDeclarationCheck::isDefaultConstructor)
+          .map(Symbol.MethodSymbol.class::cast)
+          .collect(Collectors.toList());
+        if(candidates.size() == 1) {
+          return Optional.of(candidates.get(0));
+        }
+      }
+    }
+    return Optional.empty();
+  }
+
+  private static boolean isDefaultConstructor(Symbol symbol) {
+    if (symbol.isMethodSymbol()) {
+      MethodTree methodTree = ((Symbol.MethodSymbol)symbol).declaration();
+      return methodTree != null && methodTree.is(Tree.Kind.CONSTRUCTOR) && methodTree.parameters().isEmpty();
+    }
+    return false;
   }
 
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
     private Set<Type> thrownExceptions = new HashSet<>();
     private boolean visitedUnknown = false;
+    private boolean visitedSuper = false;
 
     @Nullable
     public Set<Type> thrownExceptions() {
@@ -236,8 +272,19 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (isSuperInvocation(tree)) {
+        visitedSuper = true;
+      }
       addThrownTypes(tree.symbol());
       super.visitMethodInvocation(tree);
+    }
+
+    private static boolean isSuperInvocation(MethodInvocationTree tree) {
+      if (tree.methodSelect().is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree methodId = ((IdentifierTree) tree.methodSelect());
+        return "super".equals(methodId.name());
+      }
+      return false;
     }
 
     @Override
