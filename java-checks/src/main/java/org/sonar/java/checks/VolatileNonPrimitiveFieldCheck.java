@@ -52,6 +52,8 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
     "java.lang.String",
     "java.math.BigDecimal",
     "java.math.BigInteger",
+    "java.net.Inet4Address",
+    "java.net.Inet6Address",
     "java.net.URL",
     "java.time.Clock",
     "java.time.DayOfWeek",
@@ -70,7 +72,6 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
     "java.time.ZonedDateTime",
     "java.time.Duration",
     "java.time.Period",
-    "java.util.Date",
     "java.util.Locale",
     "java.util.UUID");
 

@@ -3,17 +3,10 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.io.File;
-import java.lang.Boolean;
-import java.lang.Byte;
-import java.lang.Character;
-import java.lang.Double;
-import java.lang.Float;
-import java.lang.Integer;
-import java.lang.Long;
-import java.lang.Short;
-import java.lang.String;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.URL;
 import java.time.Clock;
 import java.time.DayOfWeek;
@@ -42,6 +35,7 @@ class A {
   private volatile long [] vLongs;  // Noncompliant [[sc=11;ec=27]] {{Use an "AtomicLongArray" instead.}}
   private volatile Object [] vObjects;  // Noncompliant [[sc=11;ec=29]] {{Use an "AtomicReferenceArray" instead.}}
   private volatile MyObj myObj;  // Noncompliant [[sc=11;ec=25]] {{Remove the "volatile" keyword from this field.}}
+  private volatile Date myDate;  // Noncompliant [[sc=11;ec=24]] {{Remove the "volatile" keyword from this field.}}
   private AtomicIntegerArray vInts2;
   private MyObj myObj2;
   // Following variable declarations are compliant: standard immutable types
@@ -61,6 +55,8 @@ class A {
   private volatile String myString;
   private volatile BigDecimal myBigDecimal;
   private volatile BigInteger myBigInteger;
+  private volatile Inet4Address myInet4Address;
+  private volatile Inet6Address myInet6Address;
   private volatile URL myURL;
   private volatile Clock myClock;
   private volatile DayOfWeek myDayOfWeek;
@@ -79,7 +75,6 @@ class A {
   private volatile ZonedDateTime myZonedDateTime;
   private volatile Duration myDuration;
   private volatile Period myPeriod;
-  private volatile Date myDate;
   private volatile Locale myLocale;
   private volatile UUID myUUID;
 
