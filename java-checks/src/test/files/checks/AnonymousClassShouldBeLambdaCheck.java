@@ -311,3 +311,21 @@ class ThisInstanceTest {
   }
 
 }
+
+abstract class GenericType<X> {
+
+  void foo(GenericType<String> something) {
+    bar(something, new MyComparable() { // Compliant - compare is a generic method
+      @Override
+      public <T extends Comparable<T>> int compare(T obj1, T obj2) {
+        return 0;
+      }
+    });
+  }
+
+  abstract <T extends Comparable<T>> void bar(GenericType<T> object, MyComparable comp);
+
+  interface MyComparable {
+    public <T extends Comparable<T>> int compare(T obj1, T obj2);
+  }
+}
