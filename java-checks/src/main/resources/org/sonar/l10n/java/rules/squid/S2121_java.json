@@ -1,0 +1,16 @@
+{
+  "title": "Silly String operations should not be made",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-2121",
+  "sqKey": "S2121",
+  "scope": "Main"
+}

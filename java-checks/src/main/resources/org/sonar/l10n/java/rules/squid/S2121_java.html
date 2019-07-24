@@ -1,0 +1,24 @@
+<p>Creating a substring from 0 to the end is silly. You'll end up with the same string you started with. Using the value of <code>String.length</code>
+as either the start or end of a substring has similarly predictable results.</p>
+<p>Calling <code>String.contains</code> with the argument being identical to the String on which contains is invoked doesn't make sense.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+String speech = "Now is the time for all good people to come to the aid of their country.";
+
+String s1 = speech.substring(0); // Noncompliant. Yields the whole string
+String s2 = speech.substring(speech.length()); // Noncompliant. Yields "";
+String s3 = speech.substring(5,speech.length()); // Noncompliant. Use the 1-arg version instead
+
+if (speech.contains(speech)) { // Noncompliant
+ // always true
+} {code}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+String speech = "Now is the time for all good people to come to the aid of their country.";
+
+String s1 = speech;
+String s2 = "";
+String s3 = speech.substring(5);
+</pre>
+
