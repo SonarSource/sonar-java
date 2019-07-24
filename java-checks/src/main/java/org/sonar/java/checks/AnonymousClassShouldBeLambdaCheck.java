@@ -103,6 +103,8 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
       .map(JavaSymbol.MethodJavaSymbol.class::cast)
       // remove objects methods redefined in interfaces
       .filter(symbol -> !isObjectMethod(symbol))
+      // remove generic methods, which can not be written as lambda (JLS-11 §15.27)
+      .filter(symbol -> !symbol.isParametrized())
       // always take same symbol if method is redeclared over and over in hierarchy
       .map(symbol -> symbol.overriddenSymbol() != null ? symbol.overriddenSymbol() : symbol)
       .collect(Collectors.toSet())
