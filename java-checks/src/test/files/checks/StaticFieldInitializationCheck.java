@@ -148,4 +148,18 @@ class A {
     }
 
   }
+
+  static class E {
+    static Config CONFIG;
+
+    synchronized void foo() {
+      CONFIG = null; // Compliant
+    }
+
+    synchronized Consumer<String> bar() {
+      return s -> {
+        CONFIG = null; // Noncompliant
+      };
+    }
+  }
 }

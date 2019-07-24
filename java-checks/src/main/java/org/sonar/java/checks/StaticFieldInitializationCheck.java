@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -51,7 +51,11 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION, Tree.Kind.SYNCHRONIZED_STATEMENT, Tree.Kind.STATIC_INITIALIZER);
+    List<Tree.Kind> nodesToVisit = new ArrayList<>(super.nodesToVisit());
+    nodesToVisit.add(Tree.Kind.CLASS);
+    nodesToVisit.add(Tree.Kind.ASSIGNMENT);
+    nodesToVisit.add(Tree.Kind.STATIC_INITIALIZER);
+    return nodesToVisit;
   }
 
   @Override

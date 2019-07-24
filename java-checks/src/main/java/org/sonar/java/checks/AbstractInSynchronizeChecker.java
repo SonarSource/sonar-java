@@ -47,7 +47,11 @@ public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetecti
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.SYNCHRONIZED_STATEMENT, Tree.Kind.METHOD);
+    return Arrays.asList(
+      Tree.Kind.METHOD_INVOCATION,
+      Tree.Kind.SYNCHRONIZED_STATEMENT,
+      Tree.Kind.METHOD,
+      Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
@@ -58,12 +62,14 @@ public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetecti
       withinSynchronizedBlock.push(ModifiersUtils.hasModifier(((MethodTree) tree).modifiers(), Modifier.SYNCHRONIZED));
     } else if (tree.is(Tree.Kind.SYNCHRONIZED_STATEMENT)) {
       withinSynchronizedBlock.push(true);
+    } else if (tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      withinSynchronizedBlock.push(false);
     }
   }
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD, Tree.Kind.SYNCHRONIZED_STATEMENT)) {
+    if (tree.is(Tree.Kind.METHOD, Tree.Kind.SYNCHRONIZED_STATEMENT, Tree.Kind.LAMBDA_EXPRESSION)) {
       withinSynchronizedBlock.pop();
     }
   }

@@ -71,6 +71,22 @@ class B {
     };
   }
 
+  private synchronized Comparable<Object> foo1() {
+    return new Comparable<Object>() {
+      @Override
+      public int compareTo(Object o) {
+        value = 0; // FN: "value" may not be assigned inside a static method
+        return 0;
+      }
+    };
+  }
+
+  private static synchronized Consumer<Object> foo2() {
+    return s -> {
+      value = 0; // FN: we are not guaranteed to be inside a static method; the rule check if any parent is synchronized.
+    };
+  }
+
   private void foo() {
     synchronized (new Object()) {
       Comparable<Object> cmp = new Comparable<Object>() {
