@@ -36,6 +36,45 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
   private static final String REF_MESSAGE = "Remove the \"volatile\" keyword from this field.";
   private static final String ARRAY_MESSAGE = "Use an \"Atomic%sArray\" instead.";
 
+  private static final List<String> STANDARD_IMMUTABLE_TYPES = Arrays.asList(
+    "java.awt.Color",
+    "java.awt.Cursor",
+    "java.awt.Font",
+    "java.io.File",
+    "java.lang.Boolean",
+    "java.lang.Byte",
+    "java.lang.Character",
+    "java.lang.Double",
+    "java.lang.Float",
+    "java.lang.Integer",
+    "java.lang.Long",
+    "java.lang.Short",
+    "java.lang.String",
+    "java.math.BigDecimal",
+    "java.math.BigInteger",
+    "java.net.Inet4Address",
+    "java.net.Inet6Address",
+    "java.net.URL",
+    "java.time.Clock",
+    "java.time.DayOfWeek",
+    "java.time.Instant",
+    "java.time.LocalDate",
+    "java.time.LocalDateTime",
+    "java.time.LocalTime",
+    "java.time.Month",
+    "java.time.MonthDay",
+    "java.time.OffsetDateTime",
+    "java.time.OffsetTime",
+    "java.time.Year",
+    "java.time.YearMonth",
+    "java.time.ZoneId",
+    "java.time.ZoneOffset",
+    "java.time.ZonedDateTime",
+    "java.time.Duration",
+    "java.time.Period",
+    "java.util.Locale",
+    "java.util.UUID");
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM);
@@ -49,7 +88,12 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
       .map(m -> ((VariableTree) m))
       .filter(v -> ModifiersUtils.hasModifier(v.modifiers(), Modifier.VOLATILE))
       .filter(v -> !v.type().symbolType().isPrimitive())
+      .filter(v -> !isImmutableType(v.type().symbolType()))
       .forEach(v -> reportIssue(ModifiersUtils.getModifier(v.modifiers(), Modifier.VOLATILE), v.type(), getMessage(v)));
+  }
+
+  private static boolean isImmutableType(Type type) {
+    return STANDARD_IMMUTABLE_TYPES.stream().anyMatch(type::is);
   }
 
   private static String getMessage(VariableTree variableTree) {
