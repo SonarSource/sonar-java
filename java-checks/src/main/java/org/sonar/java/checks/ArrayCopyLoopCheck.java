@@ -163,8 +163,10 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
   private static Symbol isIncrement(ExpressionStatementTree update) {
     if (update.expression().is(Kind.POSTFIX_INCREMENT, Kind.PREFIX_INCREMENT)) {
       UnaryExpressionTree increment = (UnaryExpressionTree) update.expression();
-      IdentifierTree identifier = (IdentifierTree) increment.expression();
-      return identifier.symbol();
+      if (increment.expression().is(Kind.IDENTIFIER)) {
+        IdentifierTree identifier = (IdentifierTree) increment.expression();
+        return identifier.symbol();
+      }
     }
     return null;
   }
@@ -223,7 +225,7 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
   private static boolean isArrayToListCopy(ExpressionTree expression, Symbol counter) {
     if (expression.is(Kind.METHOD_INVOCATION)) {
       MethodInvocationTree invocation = (MethodInvocationTree) expression;
-      if (COLLECTION_ADD.matches(invocation)) {
+      if (COLLECTION_ADD.matches(invocation) && invocation.methodSelect().is(Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree select = (MemberSelectExpressionTree) invocation.methodSelect();
         if (select.expression().is(Kind.IDENTIFIER)) {
           ExpressionTree argument = invocation.arguments().get(0);

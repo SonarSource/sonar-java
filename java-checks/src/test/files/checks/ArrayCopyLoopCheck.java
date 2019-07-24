@@ -1,6 +1,7 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-class A {
+class A extends Collection<Integer> {
 
   int x;
 
@@ -250,6 +251,14 @@ class A {
       dst[this.x] = src[this.x];
     }
 
+    for (this.x = 0; this.x < src.length; ++this.x) {
+      dst[this.x] = src[this.x];
+    }
+
+    for (int j = 0; j < src.length; ++j) {
+      add(src[j]);
+    }
+
     while (i < src.length) {
       list.add(src[i++]);
     }
@@ -355,7 +364,8 @@ class A {
     return 1;
   }
 
-  int add(int n) {
-    return n;
+  @Override
+  public boolean add(Integer n) {
+    return true;
   }
 }
