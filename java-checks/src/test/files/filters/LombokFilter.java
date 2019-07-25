@@ -1,4 +1,6 @@
 import lombok.val;
+import lombok.var; // NoIssue
+import java.util.List; // WithIssue
 import static lombok.AccessLevel.PRIVATE;
 
 class Fields {
@@ -330,4 +332,11 @@ class PrivateFieldOnlyUsedLocally {
     }
   }
 
+  class UsingVarAndVal {
+    public void test() {
+      var foo1 = "hello, ";
+      val foo2 = 5;
+      System.out.println(foo1 + foo2);
+    }
+  }
 }
