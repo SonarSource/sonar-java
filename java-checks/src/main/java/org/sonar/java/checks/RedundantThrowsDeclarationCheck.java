@@ -217,55 +217,32 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   private static Set<Type> thrownExceptionsFromBody(MethodTree methodTree) {
     BlockTree block = methodTree.block();
     if (block != null) {
-      MethodInvocationVisitor visitor = new MethodInvocationVisitor();
+      MethodInvocationVisitor visitor = new MethodInvocationVisitor(methodTree);
       block.accept(visitor);
-      Set<Type> thrownExceptions = visitor.thrownExceptions();
-
-      if (thrownExceptions != null && methodTree.is(Tree.Kind.CONSTRUCTOR) && !visitor.visitedSuper) {
-        Optional<Symbol.MethodSymbol> constructor = getImplicitlyCalledConstructor(methodTree);
-        constructor.ifPresent(c -> thrownExceptions.addAll(c.thrownTypes()));
-      }
-
-      return thrownExceptions;
+      return visitor.thrownExceptions();
     }
     return null;
-  }
-
-  private static Optional<Symbol.MethodSymbol> getImplicitlyCalledConstructor(MethodTree methodTree) {
-    Tree parent = methodTree.parent();
-    if (parent != null && parent.is(Tree.Kind.CLASS)) {
-      Type superType = ((ClassTree) parent).symbol().superClass();
-      if (superType != null) {
-        List<Symbol.MethodSymbol> candidates = superType.symbol().memberSymbols().stream()
-          .filter(RedundantThrowsDeclarationCheck::isDefaultConstructor)
-          .map(Symbol.MethodSymbol.class::cast)
-          .collect(Collectors.toList());
-        if(candidates.size() == 1) {
-          return Optional.of(candidates.get(0));
-        }
-      }
-    }
-    return Optional.empty();
-  }
-
-  private static boolean isDefaultConstructor(Symbol symbol) {
-    if (symbol.isMethodSymbol()) {
-      MethodTree methodTree = ((Symbol.MethodSymbol)symbol).declaration();
-      return methodTree != null && methodTree.is(Tree.Kind.CONSTRUCTOR) && methodTree.parameters().isEmpty();
-    }
-    return false;
   }
 
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
     private Set<Type> thrownExceptions = new HashSet<>();
     private boolean visitedUnknown = false;
     private boolean visitedSuper = false;
+    private final MethodTree methodTree;
+
+    MethodInvocationVisitor(MethodTree methodTree) {
+      this.methodTree = methodTree;
+    }
 
     @Nullable
     public Set<Type> thrownExceptions() {
       if (visitedUnknown || thrownExceptions.stream().anyMatch(Type::isUnknown)) {
         // as soon as there is an unknown type, we discard any attempt to find an issue
         return null;
+      }
+      if (methodTree.is(Tree.Kind.CONSTRUCTOR) && !visitedSuper) {
+        Optional<Symbol.MethodSymbol> constructor = getImplicitlyCalledConstructor(methodTree);
+        constructor.ifPresent(c -> thrownExceptions.addAll(c.thrownTypes()));
       }
       return thrownExceptions;
     }
@@ -318,6 +295,31 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     @Override
     public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
       // skip lambdas
+    }
+
+    private static Optional<Symbol.MethodSymbol> getImplicitlyCalledConstructor(MethodTree methodTree) {
+      Tree parent = methodTree.parent();
+      if (parent != null && parent.is(Tree.Kind.CLASS)) {
+        Type superType = ((ClassTree) parent).symbol().superClass();
+        if (superType != null) {
+          List<Symbol.MethodSymbol> candidates = superType.symbol().memberSymbols().stream()
+            .filter(MethodInvocationVisitor::isDefaultConstructor)
+            .map(Symbol.MethodSymbol.class::cast)
+            .collect(Collectors.toList());
+          if(candidates.size() == 1) {
+            return Optional.of(candidates.get(0));
+          }
+        }
+      }
+      return Optional.empty();
+    }
+
+    private static boolean isDefaultConstructor(Symbol symbol) {
+      if (symbol.isMethodSymbol()) {
+        MethodTree methodTree = ((Symbol.MethodSymbol)symbol).declaration();
+        return methodTree != null && methodTree.is(Tree.Kind.CONSTRUCTOR) && methodTree.parameters().isEmpty();
+      }
+      return false;
     }
   }
 
