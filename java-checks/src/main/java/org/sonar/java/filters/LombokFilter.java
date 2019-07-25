@@ -34,14 +34,18 @@ import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
 import org.sonar.java.checks.PrivateFieldUsedLocallyCheck;
 import org.sonar.java.checks.SillyEqualsCheck;
+import org.sonar.java.checks.UselessImportCheck;
 import org.sonar.java.checks.UtilityClassWithPublicConstructorCheck;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.naming.BadFieldNameCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -57,7 +61,8 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     BadFieldNameCheck.class,
     ConstantsShouldBeStaticFinalCheck.class,
     SillyEqualsCheck.class,
-    CollectionInappropriateCallsCheck.class);
+    CollectionInappropriateCallsCheck.class,
+    UselessImportCheck.class);
 
   private static final String LOMBOK_VAL = "lombok.val";
 
@@ -90,6 +95,18 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   @Override
   public Set<Class<? extends JavaCheck>> filteredRules() {
     return FILTERED_RULES;
+  }
+
+  @Override
+  public void visitImport(ImportTree tree) {
+    String fullyQualifiedName = ExpressionsHelper.concatenate((ExpressionTree) tree.qualifiedIdentifier());
+    if (fullyQualifiedName.startsWith("lombok.")) {
+      excludeLines(tree, UselessImportCheck.class);
+    } else {
+      acceptLines(tree, UselessImportCheck.class);
+    }
+
+    super.visitImport(tree);
   }
 
   @Override
