@@ -92,6 +92,25 @@ class A {
     org.junit.jupiter.api.Assertions.assertEquals(1.0, 2.0, 0.1); // Noncompliant
     org.junit.jupiter.api.Assertions.assertEquals(1.0, 2.0, () -> "messageSupplier");
     org.junit.jupiter.api.Assertions.assertEquals(1.0, 2.0, 1.0, () -> "messageSupplier");
+
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> new A()); // Noncompliant
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(A::new);  // Noncompliant
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> new A(), "message");
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(A::new, "message");
+    org.junit.jupiter.api.Assertions.assertDoesNotThrow(A::new, () -> "message");
+
+    java.util.List<String> list = new java.util.ArrayList<String>();
+    org.junit.jupiter.api.Assertions.assertIterableEquals(list, list); // Noncompliant
+    org.junit.jupiter.api.Assertions.assertIterableEquals(list, list, "message");
+    org.junit.jupiter.api.Assertions.assertIterableEquals(list, list, () -> "message");
+
+    org.junit.jupiter.api.Assertions.assertTimeout(java.time.Duration.ofSeconds(3), A::new); // Noncompliant
+    org.junit.jupiter.api.Assertions.assertTimeout(java.time.Duration.ofSeconds(3), A::new, "message");
+    org.junit.jupiter.api.Assertions.assertTimeout(java.time.Duration.ofSeconds(3), A::new, () -> "message");
+
+    org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(java.time.Duration.ofSeconds(3), A::new); // Noncompliant
+    org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(java.time.Duration.ofSeconds(3), A::new, "message");
+    org.junit.jupiter.api.Assertions.assertTimeoutPreemptively(java.time.Duration.ofSeconds(3), A::new, () -> "message");
   }
 
   class MyCustomGenericAssert extends GenericAssert<String, String> {
