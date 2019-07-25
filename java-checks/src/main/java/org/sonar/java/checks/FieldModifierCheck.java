@@ -68,7 +68,8 @@ public class FieldModifierCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isVisibleForTesting(VariableTree variableTree) {
-    return variableTree.symbol().metadata().annotations().stream()
-      .anyMatch(annotation -> "VisibleForTesting".equals(annotation.symbol().type().name()));
+    return variableTree.modifiers().annotations().stream()
+      .anyMatch(annotation -> "VisibleForTesting".equals(annotation.annotationType().lastToken().text()));
   }
+
 }

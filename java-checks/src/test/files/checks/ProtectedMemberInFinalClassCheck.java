@@ -30,8 +30,10 @@ final class D {
   protected void method5() {} // Compliant @VisibleForTesting is used
   @VisibleForTesting
   protected void method6() {} // Compliant @VisibleForTesting is used
+  @org.foo.bar.VisibleForTesting
+  protected void method7() {} // Compliant @VisibleForTesting is used
   @ClassNameEndingWithVisibleForTesting
-  protected void method7() {} // Noncompliant
+  protected void method8() {} // Noncompliant
 }
 
 public @interface ClassNameEndingWithVisibleForTesting {

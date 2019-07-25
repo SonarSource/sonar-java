@@ -19,6 +19,8 @@ class D {
   final int var2; // Compliant
   @VisibleForTesting
   static int var3; // Compliant
+  @org.foo.bar.VisibleForTesting(someArg = true)
+  static int var4; // Compliant
 }
 enum E {
   ;

@@ -24,7 +24,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -68,23 +67,23 @@ public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisito
   }
 
   private void checkMethodCompliance(MethodTree methodTree) {
-    checkComplianceOnModifiersAndSymbol(methodTree.modifiers(), methodTree.symbol());
+    checkComplianceOnModifiersAndSymbol(methodTree.modifiers());
   }
 
   private void checkVariableCompliance(VariableTree variableTree) {
-    checkComplianceOnModifiersAndSymbol(variableTree.modifiers(), variableTree.symbol());
+    checkComplianceOnModifiersAndSymbol(variableTree.modifiers());
   }
 
-  private void checkComplianceOnModifiersAndSymbol(ModifiersTree modifiers, Symbol symbol) {
+  private void checkComplianceOnModifiersAndSymbol(ModifiersTree modifiers) {
     ModifierKeywordTree modifier = ModifiersUtils.getModifier(modifiers, Modifier.PROTECTED);
-    if (modifier != null && !isVisibleForTesting(symbol)) {
+    if (modifier != null && !isVisibleForTesting(modifiers)) {
       reportIssue(modifier.keyword(), MESSAGE);
     }
   }
 
-  private static boolean isVisibleForTesting(Symbol symbol) {
-    return symbol.metadata().annotations().stream()
-      .anyMatch(annotation -> "VisibleForTesting".equals(annotation.symbol().type().name()));
+  private static boolean isVisibleForTesting(ModifiersTree modifiers) {
+    return modifiers.annotations().stream()
+      .anyMatch(annotation -> "VisibleForTesting".equals(annotation.annotationType().lastToken().text()));
   }
 
 }
