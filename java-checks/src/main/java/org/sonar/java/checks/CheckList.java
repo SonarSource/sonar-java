@@ -673,7 +673,8 @@ public final class CheckList {
       LoggerClassCheck.class,
       DanglingElseStatementsCheck.class,
       ArrayCopyLoopCheck.class,
-      StringCallsBeyondBoundsCheck.class
+      StringCallsBeyondBoundsCheck.class,
+      SuspiciousListRemoveCheck.class
     );
   }
 
