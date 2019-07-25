@@ -100,11 +100,8 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   @Override
   public void visitImport(ImportTree tree) {
     String fullyQualifiedName = ExpressionsHelper.concatenate((ExpressionTree) tree.qualifiedIdentifier());
-    if (fullyQualifiedName.startsWith("lombok.")) {
-      excludeLines(tree, UselessImportCheck.class);
-    } else {
-      acceptLines(tree, UselessImportCheck.class);
-    }
+
+    excludeLinesIfTrue(fullyQualifiedName.startsWith("lombok."), tree, UselessImportCheck.class);
 
     super.visitImport(tree);
   }
@@ -113,53 +110,33 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   public void visitClass(ClassTree tree) {
     boolean generatesEquals = usesAnnotation(tree, GENERATE_EQUALS);
 
-    if (generatesEquals || usesAnnotation(tree, GENERATE_UNUSED_FIELD_RELATED_METHODS)) {
-      excludeLines(tree, UnusedPrivateFieldCheck.class);
-      excludeLines(tree, PrivateFieldUsedLocallyCheck.class);
-    } else {
-      acceptLines(tree, UnusedPrivateFieldCheck.class);
-      acceptLines(tree, PrivateFieldUsedLocallyCheck.class);
-    }
-
-    if (usesAnnotation(tree, GENERATE_CONSTRUCTOR)) {
-      excludeLines(tree, AtLeastOneConstructorCheck.class);
-    } else {
-      acceptLines(tree, AtLeastOneConstructorCheck.class);
-    }
-
-    if (generatesEquals) {
-      excludeLines(tree, EqualsNotOverriddenInSubclassCheck.class);
-      excludeLines(tree, EqualsNotOverridenWithCompareToCheck.class);
-    } else {
-      acceptLines(tree, EqualsNotOverriddenInSubclassCheck.class);
-      acceptLines(tree, EqualsNotOverridenWithCompareToCheck.class);
-    }
-
-    if (generatesPrivateConstructor(tree)) {
-      excludeLines(tree, UtilityClassWithPublicConstructorCheck.class);
-    } else {
-      acceptLines(tree, UtilityClassWithPublicConstructorCheck.class);
-    }
-
-    if (usesAnnotation(tree, UTILITY_CLASS)) {
-      excludeLines(tree, BadFieldNameCheck.class);
-      excludeLines(tree, ConstantsShouldBeStaticFinalCheck.class);
-    } else {
-      acceptLines(tree, BadFieldNameCheck.class);
-      acceptLines(tree, ConstantsShouldBeStaticFinalCheck.class);
-    }
+    excludeLinesIfTrue(generatesEquals || usesAnnotation(tree, GENERATE_UNUSED_FIELD_RELATED_METHODS), tree, UnusedPrivateFieldCheck.class, PrivateFieldUsedLocallyCheck.class);
+    excludeLinesIfTrue(usesAnnotation(tree, GENERATE_CONSTRUCTOR), tree, AtLeastOneConstructorCheck.class);
+    excludeLinesIfTrue(generatesEquals, tree, EqualsNotOverriddenInSubclassCheck.class, EqualsNotOverridenWithCompareToCheck.class);
+    excludeLinesIfTrue(generatesPrivateConstructor(tree), tree, UtilityClassWithPublicConstructorCheck.class);
+    excludeLinesIfTrue(usesAnnotation(tree, UTILITY_CLASS), tree, BadFieldNameCheck.class, ConstantsShouldBeStaticFinalCheck.class);
 
     super.visitClass(tree);
   }
 
-  private static boolean usesAnnotation(ClassTree classTree, List<String> annotations) {
-    SymbolMetadata metadata = classTree.symbol().metadata();
-    for (String annotation : annotations) {
-      if (metadata.isAnnotatedWith(annotation)) {
-        return true;
-      }
+  @SafeVarargs
+  private final void excludeLinesIfTrue(boolean shouldExclude, Tree tree, Class<? extends JavaCheck>... rules) {
+    for (Class<? extends JavaCheck> rule : rules) {
+      excludeLinesIfTrue(shouldExclude, tree, rule);
     }
-    return false;
+  }
+
+  private void excludeLinesIfTrue(boolean shouldExclude, Tree tree, Class<? extends JavaCheck> rule) {
+    if (shouldExclude) {
+      excludeLines(tree, rule);
+    } else {
+      acceptLines(tree, rule);
+    }
+  }
+
+  private static boolean usesAnnotation(ClassTree classTree, List<String> annotations) {
+    SymbolMetadata classMetadata = classTree.symbol().metadata();
+    return annotations.stream().anyMatch(classMetadata::isAnnotatedWith);
   }
 
   private static boolean generatesPrivateConstructor(ClassTree classTree) {
