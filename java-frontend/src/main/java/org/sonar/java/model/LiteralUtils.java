@@ -47,7 +47,6 @@ public class LiteralUtils {
     return null;
   }
 
-  @CheckForNull
   private static Integer intLiteralValue(LiteralTree literal) {
     String literalValue = literal.value().replaceAll("_", "");
     if (literalValue.startsWith("0b") || literalValue.startsWith("0B")) {
