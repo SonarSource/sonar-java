@@ -20,13 +20,18 @@
 package org.sonar.java.model;
 
 import com.sonar.sslr.api.typed.ActionParser;
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -37,11 +42,6 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.io.File;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -125,6 +125,22 @@ public class LiteralUtilsTest {
         assertThat(LiteralUtils.longLiteralValue(variableTree.initializer())).isEqualTo(expectedLongValues[j++]);
       }
     }
+  }
+
+  /**
+   * Binary, hex and octal int literals are allowed when they fit into 32-bits (jls11 - §3.10.1)
+   */
+  @Test
+  public void testLargeBinary() {
+    assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0b1111_1111_1111_1111_0000_0000_0000_0000"))).isEqualTo(0b1111_1111_1111_1111_0000_0000_0000_0000);
+    assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0b0111_1111_1111_1111_0000_0000_0000_0000"))).isEqualTo(0b0111_1111_1111_1111_0000_0000_0000_0000);
+
+    assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0xFFFF0000"))).isEqualTo(0xFFFF0000);
+    assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0x7FFF0000"))).isEqualTo(0x7FFF0000);
+  }
+
+  private ExpressionTree getIntLiteral(String intLiteral) {
+    return ((BinaryExpressionTree) getReturnExpression("int foo() { return " + intLiteral + " & 42; }")).leftOperand();
   }
 
   @Test

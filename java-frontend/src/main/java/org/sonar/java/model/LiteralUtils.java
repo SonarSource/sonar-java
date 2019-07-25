@@ -51,7 +51,12 @@ public class LiteralUtils {
   private static Integer intLiteralValue(LiteralTree literal) {
     String literalValue = literal.value().replaceAll("_", "");
     if (literalValue.startsWith("0b") || literalValue.startsWith("0B")) {
-      return Integer.valueOf(literalValue.substring(2), 2);
+      String binaryWithoutPrefix = literalValue.substring(2);
+      if (binaryWithoutPrefix.length() >= 32 && binaryWithoutPrefix.charAt(0) == '1') {
+        // assume it is used as bit mask
+        return Integer.parseUnsignedInt(binaryWithoutPrefix, 2);
+      }
+      return Integer.valueOf(binaryWithoutPrefix, 2);
     }
     return Long.decode(literalValue).intValue();
   }
