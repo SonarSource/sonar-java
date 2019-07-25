@@ -37,7 +37,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2156")
 public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisitor {
 
-  private static final String GUAVA_FQCN = "com.google.common.annotations.VisibleForTesting";
   private static final String MESSAGE = "Remove this \"protected\" modifier.";
 
   @Override
@@ -84,7 +83,8 @@ public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisito
   }
 
   private static boolean isVisibleForTesting(Symbol symbol) {
-    return symbol.metadata().isAnnotatedWith(GUAVA_FQCN);
+    return symbol.metadata().annotations().stream()
+      .anyMatch(annotation -> "VisibleForTesting".equals(annotation.symbol().type().name()));
   }
 
 }

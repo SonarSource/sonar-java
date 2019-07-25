@@ -7,6 +7,7 @@ enum B{
   C,D;
   int varEnum; // Noncompliant {{Explicitly declare the visibility for "varEnum".}}
   final int varEnum2; // Noncompliant {{Explicitly declare the visibility for "varEnum2".}}
+  @MyCustomAnnotation
   static int varEnum3; // Noncompliant {{Explicitly declare the visibility for "varEnum3".}}
   private int varEnum4;
 }
@@ -14,9 +15,9 @@ enum B{
 class D {
   @com.google.common.annotations.VisibleForTesting
   int member; // Compliant
-  @com.google.common.annotations.VisibleForTesting
+  @org.assertj.core.util.VisibleForTesting
   final int var2; // Compliant
-  @com.google.common.annotations.VisibleForTesting
+  @VisibleForTesting
   static int var3; // Compliant
 }
 enum E {
@@ -27,4 +28,10 @@ enum E {
   final int varEnum2; // Compliant
   @com.google.common.annotations.VisibleForTesting
   static int varEnum3; // Compliant
+}
+
+public @interface MyCustomAnnotation {
+}
+
+public @interface VisibleForTesting {
 }

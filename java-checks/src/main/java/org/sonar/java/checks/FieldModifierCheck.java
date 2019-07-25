@@ -35,7 +35,6 @@ import java.util.List;
 @Rule(key = "S2039")
 public class FieldModifierCheck extends IssuableSubscriptionVisitor {
 
-  private static final String GUAVA_FQCN = "com.google.common.annotations.VisibleForTesting";
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM);
@@ -69,6 +68,7 @@ public class FieldModifierCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isVisibleForTesting(VariableTree variableTree) {
-    return variableTree.symbol().metadata().isAnnotatedWith(GUAVA_FQCN);
+    return variableTree.symbol().metadata().annotations().stream()
+      .anyMatch(annotation -> "VisibleForTesting".equals(annotation.symbol().type().name()));
   }
 }
