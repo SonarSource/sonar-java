@@ -26,5 +26,6 @@ public class ArrayCopyLoopCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ArrayCopyLoopCheck.java", new ArrayCopyLoopCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ArrayCopyLoopCheck.java", new ArrayCopyLoopCheck());
   }
 }

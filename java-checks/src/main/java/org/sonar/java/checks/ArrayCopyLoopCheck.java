@@ -63,6 +63,9 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     StatementTree statement;
     if (tree.is(Kind.FOR_STATEMENT)) {
       statement = checkFor((ForStatementTree) tree);
