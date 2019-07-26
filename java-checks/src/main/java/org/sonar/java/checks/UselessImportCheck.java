@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 @Rule(key = "UselessImportCheck")
 @RspecKey("S1128")
@@ -162,6 +163,12 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   public void visitArrayType(ArrayTypeTree tree) {
     scan(tree.annotations());
     super.visitArrayType(tree);
+  }
+
+  @Override
+  public void visitTypeCast(TypeCastTree tree) {
+    scan(tree.bounds());
+    super.visitTypeCast(tree);
   }
 
   @Override
