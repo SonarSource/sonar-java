@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 
+import javax.annotation.CheckForNull;
+
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -64,43 +66,23 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
     switch (method) {
       case "charAt":
       case "codePointAt":
-        issue = check(invocation, (str, args) ->
-          isInvalidStringIndex(str, args.get(0)) ||
-          isStringLength(str, args.get(0)));
+        issue = checkCodePointAt(invocation);
         break;
       case "codePointBefore":
-        issue = check(invocation, (str, args) ->
-          isInvalidInclusiveStringIndex(str, args.get(0), 1));
+        issue = checkCodePointBefore(invocation);
         break;
       case "getChars":
-        issue = check(invocation, (str, args) ->
-          isInvalidInclusiveStringIndex(str, args.get(0))   ||
-          isInvalidInclusiveStringIndex(str, args.get(1))   ||
-          isInvalidIndex(args.get(3), 0, Integer.MAX_VALUE) ||
-          isInverted(args.get(0), args.get(1)));
+        issue = checkGetChars(invocation);
         break;
       case "offsetByCodePoints":
-        issue = check(invocation, (str, args) ->
-          isInvalidInclusiveStringIndex(str, args.get(0)));
+        issue = checkOffsetByCodePoints(invocation);
         break;
       case "codePointCount":
       case "subSequence":
-        issue = check(invocation, (str, args) ->
-          isInvalidInclusiveStringIndex(str, args.get(0)) ||
-          isInvalidInclusiveStringIndex(str, args.get(1)) ||
-          isInverted(args.get(0), args.get(1)));
+        issue = checkSubsequence(invocation);
         break;
       case "substring":
-        int arity = invocation.arguments().size();
-        if (arity == 1) {
-          issue = check(invocation, (str, args) ->
-            isInvalidInclusiveStringIndex(str, args.get(0)));
-        } else {
-          issue = check(invocation, (str, args) ->
-            isInvalidInclusiveStringIndex(str, args.get(0)) ||
-            isInvalidInclusiveStringIndex(str, args.get(1)) ||
-            isInverted(args.get(0), args.get(1)));
-        }
+        issue = checkSubstring(invocation);
         break;
       default:
         issue = false;
@@ -119,24 +101,107 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
     return false;
   }
 
-  private static boolean isInvalidIndex(ExpressionTree indexParam, int lowerBound, int upperBound) {
-    return val(indexParam).map(idx -> idx < lowerBound || idx >= upperBound).orElse(false);
+  private static boolean checkCodePointAt(MethodInvocationTree tree) {
+    return check(tree, (str, args) -> {
+      Integer index = constant(args.get(0));
+      if (index != null && index < 0) {
+        return true;
+      }
+      Integer strlen = length(str);
+      if (index != null && strlen != null && !(index < strlen)) {
+        return true;
+      }
+      if (isStringLength(str, args.get(0))) {
+        return true;
+      }
+      return false;
+    });
   }
 
-  private static boolean isInvalidStringIndex(ExpressionTree str, ExpressionTree indexParam) {
-    return len(str).map(strlen -> isInvalidIndex(indexParam, 0, strlen)).orElse(false);
+  private static boolean checkCodePointBefore(MethodInvocationTree tree) {
+    return check(tree, (str, args) -> {
+      Integer index = constant(args.get(0));
+      if (index != null && index < 1) {
+        return true;
+      }
+      Integer strlen = length(str);
+      if (index != null && strlen != null && index > strlen) {
+        return true;
+      }
+      return false;
+    });
   }
 
-  private static boolean isInvalidInclusiveStringIndex(ExpressionTree str, ExpressionTree indexParam) {
-    return isInvalidInclusiveStringIndex(str, indexParam, 0);
+  private static boolean checkGetChars(MethodInvocationTree tree) {
+    return check(tree, (str, args) -> {
+      Integer srcBegin = constant(args.get(0));
+      if (srcBegin != null && srcBegin < 0) {
+        return true;
+      }
+      Integer srcEnd = constant(args.get(1));
+      if (srcBegin != null && srcEnd != null && srcBegin > srcEnd) {
+        return true;
+      }
+      Integer strlen = length(str);
+      if (srcEnd != null && strlen != null && srcEnd > strlen) {
+        return true;
+      }
+      Integer dstBegin = constant(args.get(3));
+      if (dstBegin != null && dstBegin < 0) {
+        return true;
+      }
+      return false;
+    });
   }
 
-  private static boolean isInvalidInclusiveStringIndex(ExpressionTree str, ExpressionTree indexParam, int lowerBound) {
-    return len(str).map(strlen -> isInvalidIndex(indexParam, lowerBound, strlen + 1)).orElse(false);
+  private static boolean checkOffsetByCodePoints(MethodInvocationTree tree) {
+    return check(tree, (str, args) -> {
+      Integer index = constant(args.get(0));
+      if (index != null && index < 0) {
+        return true;
+      }
+      Integer strlen = length(str);
+      if (index != null && strlen != null && index > strlen) {
+        return true;
+      }
+      return false;
+    });
   }
 
-  private static boolean isInverted(ExpressionTree beginIndex, ExpressionTree endIndex) {
-    return val(beginIndex).flatMap(x -> val(endIndex).map(y -> x > y)).orElse(false);
+  private static boolean checkSubstring(MethodInvocationTree tree) {
+    int arity = tree.arguments().size();
+    if (arity == 2) {
+      return checkSubsequence(tree);
+    }
+    return check(tree, (str, args) -> {
+      Integer index = constant(args.get(0));
+      if (index != null && index < 0) {
+        return true;
+      }
+      Integer strlen = length(str);
+      if (index != null && strlen != null && index > strlen) {
+        return true;
+      }
+      return false;
+    });
+  }
+
+  private static boolean checkSubsequence(MethodInvocationTree tree) {
+    return check(tree, (str, args) -> {
+      Integer beginIndex = constant(args.get(0));
+      if (beginIndex != null && beginIndex < 0) {
+        return true;
+      }
+      Integer endIndex = constant(args.get(1));
+      if (beginIndex != null && endIndex != null && beginIndex > endIndex) {
+        return true;
+      }
+      Integer strlen = length(str);
+      if (endIndex != null && strlen != null && endIndex > strlen) {
+        return true;
+      }
+      return false;
+    });
   }
 
   private static boolean isStringLength(ExpressionTree str, ExpressionTree tree) {
@@ -152,33 +217,18 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
     return false;
   }
 
-  private static Optional<Integer> val(ExpressionTree tree) {
-    Optional<Integer> constant = cst(tree);
-    if (constant.isPresent()) {
-      return constant;
-    } else {
-      return len(tree);
-    }
+  @CheckForNull
+  private static Integer constant(ExpressionTree tree) {
+    return ConstantUtils.resolveAsIntConstant(tree);
   }
 
-  private static Optional<Integer> cst(ExpressionTree tree) {
-    return Optional.ofNullable(ExpressionsHelper.getConstantValueAsInteger(tree).value());
+  @CheckForNull
+  private static String string(ExpressionTree tree) {
+    return ConstantUtils.resolveAsStringConstant(tree);
   }
 
-  private static Optional<String> str(ExpressionTree tree) {
-    return Optional.ofNullable(ExpressionsHelper.getConstantValueAsString(tree).value());
-  }
-
-  private static Optional<Integer> len(ExpressionTree tree) {
-    if (tree.is(Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree invocation = (MethodInvocationTree) tree;
-      if (STRING_LENGTH.matches(invocation)) {
-        if (!invocation.methodSelect().is(Kind.MEMBER_SELECT)) {
-          return Optional.empty();
-        }
-        tree = ((MemberSelectExpressionTree) invocation.methodSelect()).expression();
-      }
-    }
-    return str(tree).map(String::length);
+  @CheckForNull
+  private static Integer length(ExpressionTree tree) {
+    return Optional.ofNullable(string(tree)).map(String::length).orElse(null);
   }
 }
