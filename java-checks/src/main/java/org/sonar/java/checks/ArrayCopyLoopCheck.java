@@ -63,21 +63,21 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    boolean issue;
+    StatementTree statement;
     if (tree.is(Kind.FOR_STATEMENT)) {
-      issue = checkFor((ForStatementTree) tree);
+      statement = checkFor((ForStatementTree) tree);
     } else if (tree.is(Kind.WHILE_STATEMENT)) {
-      issue = checkWhile((WhileStatementTree) tree);
+      statement = checkWhile((WhileStatementTree) tree);
     } else {
-      issue = checkForEach((ForEachStatement) tree);
+      statement = checkForEach((ForEachStatement) tree);
     }
-    if (issue) {
-      StatementTree statement = getStatement(tree);
+    if (statement != null) {
       reportIssue(statement, "Use \"Arrays.copyOf\", \"Arrays.asList\", \"Collections.addAll\" or \"System.arraycopy\" instead.");
     }
   }
 
-  private static boolean checkFor(ForStatementTree tree) {
+  @CheckForNull
+  private static StatementTree checkFor(ForStatementTree tree) {
     ListTree<StatementTree> updates = tree.update();
     if (updates.size() == 1) {
       StatementTree update = updates.get(0);
@@ -86,14 +86,17 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
         ExpressionTree condition = tree.condition();
         if (condition != null && checkCondition(condition, counter)) {
           StatementTree statement = getStatement(tree);
-          return statement != null && checkStatement(statement, counter);
+          if (statement != null && checkStatement(statement, counter)) {
+            return statement;
+          }
         }
       }
     }
-    return false;
+    return null;
   }
 
-  private static boolean checkWhile(WhileStatementTree tree) {
+  @CheckForNull
+  private static StatementTree checkWhile(WhileStatementTree tree) {
     if (tree.statement().is(Kind.BLOCK)) {
       BlockTree block = (BlockTree) tree.statement();
       List<StatementTree> body = block.body();
@@ -104,24 +107,29 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
           ExpressionTree condition = tree.condition();
           if (checkCondition(condition, counter)) {
             StatementTree statement = body.get(0);
-            return checkStatement(statement, counter);
+            if (checkStatement(statement, counter)) {
+              return statement;
+            }
           }
         }
       }
     }
-    return false;
+    return null;
   }
 
-  private static boolean checkForEach(ForEachStatement tree) {
+  @CheckForNull
+  private static StatementTree checkForEach(ForEachStatement tree) {
     ExpressionTree expression = tree.expression();
     if (expression.symbolType().isArray()) {
       StatementTree statement = getStatement(tree);
       if (statement != null && statement.is(Kind.EXPRESSION_STATEMENT)) {
         expression = ((ExpressionStatementTree) statement).expression();
-        return isArrayToListCopy(expression, tree.variable());
+        if (isArrayToListCopy(expression, tree.variable())) {
+          return statement;
+        }
       }
     }
-    return false;
+    return null;
   }
 
   private static boolean checkCondition(ExpressionTree tree, Symbol counter) {
@@ -278,19 +286,18 @@ public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
     return Long.valueOf(1L).equals(LiteralUtils.longLiteralValue(tree));
   }
 
+  @CheckForNull
   private static StatementTree getStatement(Tree tree) {
     if (tree.is(Kind.FOR_STATEMENT)) {
       ForStatementTree loop = (ForStatementTree) tree;
       return getBody(loop.statement(), 1);
-    } else if (tree.is(Kind.FOR_EACH_STATEMENT)) {
+    } else {
       ForEachStatement loop = (ForEachStatement) tree;
       return getBody(loop.statement(), 1);
-    } else {
-      WhileStatementTree loop = (WhileStatementTree) tree;
-      return getBody(loop.statement(), 2);
     }
   }
 
+  @CheckForNull
   private static StatementTree getBody(StatementTree tree, int expectedSize) {
     if (tree.is(Kind.BLOCK)) {
       BlockTree block = (BlockTree) tree;
