@@ -6,7 +6,7 @@ public class SuspiciousListRemove {
 
   int x;
 
-  void removeEmptyValues(List<String> list) {
+  void removeFrom(List<String> list) {
     // expected: iterate over all the elements of the list
     for (int i = 0; i < list.size(); i++) {
       if (list.get(i).isEmpty()) {
@@ -16,7 +16,7 @@ public class SuspiciousListRemove {
     }
   }
 
-  void removeEmptyValues(List<String> list, int from) {
+  void removeFrom(List<String> list, int from) {
     for (int i = from; i < list.size(); i++)
       list.remove(i); // Noncompliant
   }
@@ -73,12 +73,12 @@ public class SuspiciousListRemove {
 
   void coverage2(List<String> list) {
     for (int i,j = 0; i < list.size(); i++)
-      list.remove(i); // Consider only local vars
+      list.remove(i); // Consider only simple initialization
   }
 
   void coverage2(List<String> list) {
     for (int i = 0; i < list.size(); i++, this.x++)
-      list.remove(i); // Consider only local vars
+      list.remove(i); // Invalid update
   }
 
   void noRemove(List<String> list, int from) {
