@@ -10,4 +10,10 @@ boolean result3 = foo.toLowerCase().equals(bar.LowerCase()); // Noncompliant
 <pre>
 boolean result = foo.equalsIgnoreCase(bar);                  // Compliant
 </pre>
+<h2>Exceptions</h2>
+<p>No issue will be raised when a locale is specified because the result could be different from "equalsIgnoreCase". (e.g.: using the Turkish
+locale)</p>
+<pre>
+boolean result1 = foo.toUpperCase(locale).equals(bar);             // Compliant
+</pre>
 
