@@ -48,10 +48,20 @@ class UserSessionOk {
 
 class AnonymousSubclass {
 
-  private static final ThreadLocal<char[]> DEST_TL = new ThreadLocal<char[]>() {  // Noncompliant
+  private static ThreadLocal<char[]> DEST_TL = new ThreadLocal<char[]>() {  // Noncompliant
     @Override
     protected char[] initialValue() {
       return new char[1024];
     }
+
+    void foo() {
+      set(1);
+    }
   };
+
+  void bar() {
+    DEST_TL = null;
+    this.DEST_TL = null;
+  }
 }
+

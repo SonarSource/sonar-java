@@ -35,10 +35,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S5164")
 public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
 
+  private static final String THREAD_LOCAL = "java.lang.ThreadLocal";
   private static final MethodMatcher THREADLOCAL_SET = MethodMatcher.create()
-    .typeDefinition("java.lang.ThreadLocal").name("set").addParameter(TypeCriteria.anyType());
+    .typeDefinition(THREAD_LOCAL).name("set").addParameter(TypeCriteria.anyType());
   private static final MethodMatcher THREADLOCAL_REMOVE = MethodMatcher.create()
-    .typeDefinition("java.lang.ThreadLocal").name("remove").withoutParameter();
+    .typeDefinition(THREAD_LOCAL).name("remove").withoutParameter();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -54,10 +55,10 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
       Symbol.TypeSymbol clazz = ((ClassTree) tree).symbol();
       clazz.memberSymbols().stream()
         .filter(Symbol::isVariableSymbol)
-        .filter(s -> s.type().is("java.lang.ThreadLocal"))
-        .filter(ThreadLocalCleanupCheck::isNotThisOrSuper)
+        .filter(s -> s.type().is(THREAD_LOCAL))
+        .filter(ThreadLocalCleanupCheck::isNotSuper)
         .forEach(this::checkThreadLocalField);
-    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+    } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       if (THREADLOCAL_SET.matches(mit) && mit.arguments().get(0).is(Tree.Kind.NULL_LITERAL)) {
         reportIssue(mit, "Use \"remove()\" instead of \"set(null)\".");
@@ -65,8 +66,8 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean isNotThisOrSuper(Symbol s) {
-    return !"this".equals(s.name()) && !"super".equals(s.name());
+  private static boolean isNotSuper(Symbol s) {
+    return !"super".equals(s.name());
   }
 
   private void checkThreadLocalField(Symbol field) {
@@ -77,7 +78,7 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
 
   private static boolean usageIsRemove(IdentifierTree usage) {
     Tree parent = usage.parent();
-    if (parent != null && parent.is(Tree.Kind.MEMBER_SELECT)) {
+    if (parent.is(Tree.Kind.MEMBER_SELECT)) {
       Tree mseParent = parent.parent();
       return mseParent != null && mseParent.is(Tree.Kind.METHOD_INVOCATION)
         && THREADLOCAL_REMOVE.matches((MethodInvocationTree) mseParent);
