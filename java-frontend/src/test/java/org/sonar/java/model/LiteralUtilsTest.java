@@ -132,9 +132,15 @@ public class LiteralUtilsTest {
    */
   @Test
   public void testLargeBinary() {
+    // 32 bit masks
     assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0b1111_1111_1111_1111_0000_0000_0000_0000"))).isEqualTo(0b1111_1111_1111_1111_0000_0000_0000_0000);
     assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0b0111_1111_1111_1111_0000_0000_0000_0000"))).isEqualTo(0b0111_1111_1111_1111_0000_0000_0000_0000);
 
+    // 32 bits numbers padded with zeros
+    assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0b0000_1111_1111_1111_1111_0000_0000_0000_0000"))).isEqualTo(0b0000_1111_1111_1111_1111_0000_0000_0000_0000);
+    assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0x00FFF0000"))).isEqualTo(0x00FFF0000);
+
+    // hexa
     assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0xFFFF0000"))).isEqualTo(0xFFFF0000);
     assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0x7FFF0000"))).isEqualTo(0x7FFF0000);
   }
