@@ -49,7 +49,9 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
@@ -60,6 +62,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 public class RulesSanityTest {
+
+  private static final Logger LOG = Loggers.get(RulesSanityTest.class);
 
   @Rule
   public final LogTester logTester = new LogTester();
@@ -106,7 +110,7 @@ public class RulesSanityTest {
 
     List<SanityCheckException> exceptions = scanFiles(inputFiles, checks, classpath);
     if (!exceptions.isEmpty()) {
-      System.out.println(processExceptions(exceptions));
+      LOG.error(processExceptions(exceptions));
       fail(String.format("Should have been able to execute all the rules on all the test files. %d file(s) made at least 1 rule fail.", exceptions.size()));
     }
   }
