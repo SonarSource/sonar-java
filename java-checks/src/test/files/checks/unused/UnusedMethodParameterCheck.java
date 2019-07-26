@@ -309,3 +309,17 @@ class UnknownUsage {
     }
   }
 }
+
+class UsingMethodReference {
+
+  void foo() {
+    java.util.function.Predicate<Object> bar = bar("hello", "world")::equals; // uses 'bar', but not as targeted method reference
+    java.util.function.BiFunction<String, String, String> foo = this::bar; // uses 'bar', contract of BiConsumer forces 2 parameters
+    bar("hello", "world"); // other irrelevant usage
+  }
+
+  private String bar(String a, String b) { // Compliant - used as method reference
+    System.out.println(a);
+    return a;
+  }
+}

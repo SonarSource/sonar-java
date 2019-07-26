@@ -122,7 +122,8 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
       || isAnnotated(tree)
       || isOverriding(tree)
       || isSerializableMethod(tree)
-      || isDesignedForExtension(tree);
+      || isDesignedForExtension(tree)
+      || isUsedAsMethodReference(tree);
   }
 
   private static boolean isAnnotated(MethodTree tree) {
@@ -172,6 +173,12 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   private static boolean isOverriding(MethodTree tree) {
     // if overriding cannot be determined, we consider it is overriding to avoid FP.
     return !Boolean.FALSE.equals(tree.isOverriding());
+  }
+
+  private static boolean isUsedAsMethodReference(MethodTree tree) {
+    return tree.symbol().usages().stream()
+      // no need to check which side of method reference, from an identifierTree, it's the only possibility as direct parent
+      .anyMatch(identifier -> identifier.parent().is(Tree.Kind.METHOD_REFERENCE));
   }
 
   private static Set<String> unresolvedIdentifierNames(Tree tree) {
