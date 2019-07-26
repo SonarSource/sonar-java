@@ -674,7 +674,8 @@ public final class CheckList {
       DanglingElseStatementsCheck.class,
       ArrayCopyLoopCheck.class,
       StringCallsBeyondBoundsCheck.class,
-      SuspiciousListRemoveCheck.class
+      SuspiciousListRemoveCheck.class,
+      StaticMemberAccessCheck.class
     );
   }
 
