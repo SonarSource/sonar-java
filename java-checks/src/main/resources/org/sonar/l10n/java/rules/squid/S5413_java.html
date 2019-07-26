@@ -1,0 +1,48 @@
+<p>When <code>List.remove()</code> is called it will shrink the list. If this is done inside the ascending loop iterating through all elements it will
+skip the element after the removed index.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+void removeFrom(List&lt;String&gt; list) {
+  // expected: iterate over all the elements of the list
+  for (int i = 0; i &lt; list.size(); i++) {
+    if (list.get(i).isEmpty()) {
+      // actual: remaining elements are shifted, so the one immediately following will be skipped
+      list.remove(i); // Noncompliant
+    }
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<p>You can either adjust the loop index to account for the change in the size of the list</p>
+<pre>
+static void removeFrom(List&lt;String&gt; list) {
+    // expected: iterate over all the elements of the list
+    for (int i = 0; i &lt; list.size(); i++) {
+      if (list.get(i).isEmpty()) {
+        // actual: remaining elements are shifted, so the one immediately following will be skipped
+        list.remove(i);
+        i--;
+      }
+    }
+  }
+</pre>
+<p>Or preferably it's probably better to rely on Java 8's <code>removeIf</code> method</p>
+<pre>
+ static void removeFrom(List&lt;String&gt; list) {
+    list.removeIf(String::isEmpty);
+  }
+</pre>
+<p>&nbsp;</p>
+<h2>Exceptions</h2>
+<p>The descending loop doesn't have this issue, because the index will be correct when we loop in descending order</p>
+<pre>
+void removeFrom(List&lt;String&gt; list) {
+  for (int i = list.size() - 1; i &gt;= 0; i--) {
+    if (list.get(i).isEmpty()) {
+      list.remove(i);
+    }
+  }
+}
+</pre>
+<p>&nbsp;</p>
+

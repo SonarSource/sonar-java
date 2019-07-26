@@ -1,0 +1,16 @@
+{
+  "title": "'List.remove()' should not be used in ascending 'for' loops",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5413",
+  "sqKey": "S5413",
+  "scope": "All"
+}
