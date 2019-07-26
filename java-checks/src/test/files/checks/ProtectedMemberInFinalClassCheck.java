@@ -26,6 +26,18 @@ final class C extends B {
 final class D {
   @com.google.common.annotations.VisibleForTesting
   protected int xx; //Compliant @VisibleForTesting is used
-  @com.google.common.annotations.VisibleForTesting
-  protected void method5() {} //Compliant @VisibleForTesting is used
+  @org.assertj.core.util.VisibleForTesting
+  protected void method5() {} // Compliant @VisibleForTesting is used
+  @VisibleForTesting
+  protected void method6() {} // Compliant @VisibleForTesting is used
+  @org.foo.bar.VisibleForTesting
+  protected void method7() {} // Compliant @VisibleForTesting is used
+  @ClassNameEndingWithVisibleForTesting
+  protected void method8() {} // Noncompliant
+}
+
+public @interface ClassNameEndingWithVisibleForTesting {
+}
+
+public @interface VisibleForTesting {
 }
