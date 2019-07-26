@@ -44,4 +44,8 @@ public class UselessImportCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithModule.java", new UselessImportCheck());
   }
 
+  @Test
+  public void intersection_type() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UselessImportCheck/IntersectionCase.java", new UselessImportCheck());
+  }
 }
