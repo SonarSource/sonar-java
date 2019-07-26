@@ -371,6 +371,12 @@ class B {
   }
 }
 
+class C extends UnknownParent {
+  public C() throws IllegalAccessException {
+
+  }
+}
+
 enum MyEnum {
   AAA(7), BBB(2);
 

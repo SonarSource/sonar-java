@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -227,6 +228,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     private boolean visitedUnknown = false;
     private boolean visitedOtherConstructor = false;
     private final MethodTree methodTree;
+    private static final String CONSTRUCTOR_NAME = "<init>";
 
     MethodInvocationVisitor(MethodTree methodTree) {
       this.methodTree = methodTree;
@@ -239,15 +241,16 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
         return null;
       }
       if (methodTree.is(Tree.Kind.CONSTRUCTOR) && !visitedOtherConstructor) {
-        Optional<Symbol.MethodSymbol> constructor = getImplicitlyCalledConstructor(methodTree);
-        constructor.ifPresent(c -> thrownExceptions.addAll(c.thrownTypes()));
+        getImplicitlyCalledConstructor(methodTree)
+          .map(Symbol.MethodSymbol::thrownTypes)
+          .ifPresent(thrownExceptions::addAll);
       }
       return thrownExceptions;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if ("<init>".equals(tree.symbol().name())) {
+      if (CONSTRUCTOR_NAME.equals(tree.symbol().name())) {
         visitedOtherConstructor = true;
       }
       addThrownTypes(tree.symbol());
@@ -289,7 +292,8 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
     private static Optional<Symbol.MethodSymbol> getImplicitlyCalledConstructor(MethodTree methodTree) {
       Type superType = ((Symbol.TypeSymbol)methodTree.symbol().owner()).superClass();
-      return superType.symbol().memberSymbols().stream()
+      // superClass() returns null only for java.lang.Object; it is not possible.
+      return Objects.requireNonNull(superType).symbol().memberSymbols().stream()
         .filter(MethodInvocationVisitor::isDefaultConstructor)
         .map(Symbol.MethodSymbol.class::cast)
         .findFirst();
@@ -297,8 +301,8 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
     private static boolean isDefaultConstructor(Symbol symbol) {
       if (symbol.isMethodSymbol()) {
-        Symbol.MethodSymbol methodSymbol = ((Symbol.MethodSymbol)symbol);
-        if ("<init>".equals(methodSymbol.name())) {
+        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+        if (CONSTRUCTOR_NAME.equals(methodSymbol.name())) {
           if (methodSymbol.declaration() != null) {
             // Constructor is inside this file, in case of nested class, parameterTypes() will include an extra implicit
             // parameter type. We hopefully have access to the declaration that does not include implicit parameter.
