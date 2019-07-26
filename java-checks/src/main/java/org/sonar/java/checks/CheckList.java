@@ -675,7 +675,8 @@ public final class CheckList {
       ArrayCopyLoopCheck.class,
       StringCallsBeyondBoundsCheck.class,
       SuspiciousListRemoveCheck.class,
-      StaticMemberAccessCheck.class
+      StaticMemberAccessCheck.class,
+      ThreadLocalCleanupCheck.class
     );
   }
 

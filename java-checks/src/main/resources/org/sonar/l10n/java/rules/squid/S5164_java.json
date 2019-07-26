@@ -1,0 +1,17 @@
+{
+  "title": "\"ThreadLocal\" variables should be cleaned up when no longer used ",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "leak",
+    "performance"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5164",
+  "sqKey": "S5164",
+  "scope": "All"
+}
