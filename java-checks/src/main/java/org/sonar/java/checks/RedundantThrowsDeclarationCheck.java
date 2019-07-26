@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -214,7 +216,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   private static Set<Type> thrownExceptionsFromBody(MethodTree methodTree) {
     BlockTree block = methodTree.block();
     if (block != null) {
-      MethodInvocationVisitor visitor = new MethodInvocationVisitor();
+      MethodInvocationVisitor visitor = new MethodInvocationVisitor(methodTree);
       block.accept(visitor);
       return visitor.thrownExceptions();
     }
@@ -224,6 +226,13 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
     private Set<Type> thrownExceptions = new HashSet<>();
     private boolean visitedUnknown = false;
+    private boolean visitedOtherConstructor = false;
+    private final MethodTree methodTree;
+    private static final String CONSTRUCTOR_NAME = "<init>";
+
+    MethodInvocationVisitor(MethodTree methodTree) {
+      this.methodTree = methodTree;
+    }
 
     @Nullable
     public Set<Type> thrownExceptions() {
@@ -231,11 +240,19 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
         // as soon as there is an unknown type, we discard any attempt to find an issue
         return null;
       }
+      if (methodTree.is(Tree.Kind.CONSTRUCTOR) && !visitedOtherConstructor) {
+        getImplicitlyCalledConstructor(methodTree)
+          .map(Symbol.MethodSymbol::thrownTypes)
+          .ifPresent(thrownExceptions::addAll);
+      }
       return thrownExceptions;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (CONSTRUCTOR_NAME.equals(tree.symbol().name())) {
+        visitedOtherConstructor = true;
+      }
       addThrownTypes(tree.symbol());
       super.visitMethodInvocation(tree);
     }
@@ -271,6 +288,32 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     @Override
     public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
       // skip lambdas
+    }
+
+    private static Optional<Symbol.MethodSymbol> getImplicitlyCalledConstructor(MethodTree methodTree) {
+      Type superType = ((Symbol.TypeSymbol)methodTree.symbol().owner()).superClass();
+      // superClass() returns null only for java.lang.Object; it is not possible.
+      return Objects.requireNonNull(superType).symbol().memberSymbols().stream()
+        .filter(MethodInvocationVisitor::isDefaultConstructor)
+        .map(Symbol.MethodSymbol.class::cast)
+        .findFirst();
+    }
+
+    private static boolean isDefaultConstructor(Symbol symbol) {
+      if (symbol.isMethodSymbol()) {
+        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+        if (CONSTRUCTOR_NAME.equals(methodSymbol.name())) {
+          if (methodSymbol.declaration() != null) {
+            // Constructor is inside this file, in case of nested class, parameterTypes() will include an extra implicit
+            // parameter type. We hopefully have access to the declaration that does not include implicit parameter.
+            return methodSymbol.declaration().parameters().isEmpty();
+          } else {
+            // The declaration is in another class, we can use parameterTypes() safely since it can not be nested.
+            return  methodSymbol.parameterTypes().isEmpty();
+          }
+        }
+      }
+      return false;
     }
   }
 

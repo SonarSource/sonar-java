@@ -60,7 +60,7 @@ public class RedundantThrowsDeclarationCheck {
 }
 
 abstract class MySuperClass {
-  abstract foo() throws MyException;
+  abstract void foo() throws MyException;
 }
 
 abstract class ThrownCheckedExceptions extends MySuperClass {
@@ -287,3 +287,100 @@ abstract class NonThrownExceptionClass {
 abstract class Test {
   abstract void foo() throws Unknown, Unknown;
 }
+
+class Parent {
+  public Parent() throws IllegalAccessException { // Compliant
+    throw new IllegalAccessException();
+  }
+
+  public Parent(String a) {
+
+  }
+
+  public Parent(String a, String b) throws IllegalAccessException { // Compliant
+    foo();
+  }
+
+  private void foo() throws IllegalAccessException {
+    throw new IllegalAccessException();
+  }
+}
+
+class Child extends Parent {
+
+  public Child(Integer a) throws IllegalAccessException { // Compliant, implicit call can throw IllegalAccessException
+    // implicit call to parent constructor
+    System.out.println("a:" + a);
+  }
+
+  public Child(Long a) throws IllegalAccessException { // Compliant, equivalent to "Child(Integer a)"
+    super();
+    System.out.println("a:" + a);
+  }
+
+  public Child(Float a) throws IllegalAccessException { // Noncompliant
+    this(4.2, 4.2);
+    System.out.println("a:" + a);
+  }
+
+  public Child(Double a) throws IllegalAccessException { // Noncompliant
+    super("a:" + a);
+    System.out.println("a:" + a);
+  }
+
+  public Child(Integer a, Integer b) throws IllegalAccessException { // Compliant, call to Parent that calls foo, that thows IllegalAccessException
+    super("a:" + a, " b:" + a);
+    System.out.println("a:" + a);
+  }
+
+  public Child(Double d1, Double d2) {
+    super("a");
+  }
+}
+
+class A {
+  class Parent1 {
+    public Parent1() throws IllegalAccessException { // Compliant
+      throw new IllegalAccessException();
+    }
+    public Parent1(String a) { // Compliant
+    }
+  }
+
+  class Child1 extends Parent1 {
+    public Child1(Long a) throws IllegalAccessException { // FN, the symbol of the call to super is not properly resolved
+      A.this.super("a:" + a);
+    }
+  }
+}
+
+class B {
+  class Parent2{
+    public Parent2() throws IllegalAccessException { // Compliant
+      throw new IllegalAccessException();
+    }
+    public Parent2(String a) { // Compliant
+    }
+  }
+
+  class Child2 extends Parent2 {
+    public Child2(Long a) throws IllegalAccessException { // Compliant
+      //implicit call to Parent2. Parent2() will have an implicit parameter A
+      System.out.println("a:" + a);
+    }
+  }
+}
+
+class C extends UnknownParent {
+  public C() throws IllegalAccessException {
+
+  }
+}
+
+enum MyEnum {
+  AAA(7), BBB(2);
+
+  MyEnum(int i) throws IllegalAccessException {
+  }
+}
+
