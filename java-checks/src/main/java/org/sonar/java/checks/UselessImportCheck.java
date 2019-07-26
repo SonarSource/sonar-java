@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
@@ -44,6 +45,7 @@ import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 @Rule(key = "UselessImportCheck")
 @RspecKey("S1128")
@@ -162,6 +164,12 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   public void visitArrayType(ArrayTypeTree tree) {
     scan(tree.annotations());
     super.visitArrayType(tree);
+  }
+
+  @Override
+  public void visitTypeCast(TypeCastTree tree) {
+    tree.bounds().stream().map(x -> Objects.requireNonNull(x.firstToken()).text()).forEach(pendingReferences::add);
+    super.visitTypeCast(tree);
   }
 
   @Override
