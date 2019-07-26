@@ -56,7 +56,7 @@ public class CaseInsensitiveComparisonCheck extends BaseTreeVisitor implements J
   private static boolean isToUpperCaseOrToLowerCase(ExpressionTree expression) {
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) expression;
-      if (methodInvocation.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      if (methodInvocation.methodSelect().is(Tree.Kind.MEMBER_SELECT) && methodInvocation.arguments().isEmpty()) {
         MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodInvocation.methodSelect();
         String name = memberSelect.identifier().name();
         return "toUpperCase".equals(name) || "toLowerCase".equals(name);

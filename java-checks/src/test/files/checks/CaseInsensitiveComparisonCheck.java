@@ -1,3 +1,5 @@
+import java.util.Locale;
+
 abstract class A {
   String foo;
   String bar;
@@ -9,6 +11,10 @@ abstract class A {
     result = foo.equals(bar.toLowerCase());             // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
     result = foo.equals(bar.toUpperCase());             // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
     result = "foo".equals(bar.toUpperCase());           // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+
+    Locale trLocale = new Locale("tr", "TR");
+    result = foo.toUpperCase(trLocale).equals(bar);             // Compliant when locale is specified besause it does not behave like equalsIgnoreCase
+    result = foo.equals(bar.toLowerCase(trLocale));             // Compliant
 
     foo.toLowerCase().equals(bar.toLowerCase());                // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
     foo.equals(toLowerCase());                                  // Compliant
