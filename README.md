@@ -44,7 +44,7 @@ To submit a contribution, create a pull request for this repository. Please make
 
 ### Custom Rules
 
-If you have an idea for a rule but you are not sure that everyone needs it you can implement a [custom rule](docs/CUSTOM_RULES.md) available only for you. Note that in order to help you, we highly recommend to first follow the [Custom Rules 101 tutorial](docs/CUSTOM_RULES_101.md) before diving directly into implementing rules from scratch.
+If you have an idea for a rule or some rules but you are not sure that everyone needs it, you can explore a sample plugin containing some custom rules. This project can be [browsed](https://github.com/SonarSource/sonar-custom-rules-examples/tree/master/java-custom-rules) or [downloaded](https://github.com/SonarSource/sonar-custom-rules-examples/archive/master.zip). Note that in order to help you, we highly recommend to first follow the [Custom Rules 101 tutorial](docs/CUSTOM_RULES_101.md) before diving directly into implementing rules from scratch.
 
 <a name="testing"></a>
 Testing
