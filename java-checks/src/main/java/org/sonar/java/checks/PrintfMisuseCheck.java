@@ -163,6 +163,10 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       }else {
         index++;
       }
+      if (argIndex >= args.size()) {
+        // indexes are obviously wrong - will be caught by S2275 (PrintfFailCheck)
+        return;
+      }
       ExpressionTree argExpressionTree = args.get(argIndex);
       unusedArgs.remove(argExpressionTree);
       Type argType = argExpressionTree.symbolType();

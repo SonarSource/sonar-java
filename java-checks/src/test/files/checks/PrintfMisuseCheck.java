@@ -23,6 +23,8 @@ class A {
     String.format("Display %2$d and then %2$d", 1, 2);   // Noncompliant {{first argument is not used.}}
     String.format("Too many arguments %d and %d", 1, 2, 3);  // Noncompliant {{3rd argument is not used.}}
     String.format("Not enough arguments %d and %d", 1);
+    String.format("%1$d %2$d %9$-3.3s", 1, 2, "hello");  // Compliant - not eough arguments but this will be caught by other rule
+    String.format("%12$s", 1, 2, "hello");  // Compliant - not eough arguments but this will be caught by other rule
     String.format("First Line\n %d", 1); // Noncompliant {{%n should be used in place of \n to produce the platform-specific line separator.}}
     String.format("First Line");   // Noncompliant {{String contains no format specifiers.}}
     String.format("First Line%%"); // Noncompliant {{String contains no format specifiers.}}
