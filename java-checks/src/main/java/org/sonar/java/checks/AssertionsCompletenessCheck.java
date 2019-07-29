@@ -64,6 +64,8 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     .typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractSoftAssertions"))
     .name(NameCriteria.startsWith("assertThat"))
     .withAnyParameters();
+  private static final MethodMatcher ASSERTJ_ASSERT_SOFTLY = MethodMatcher.create()
+    .typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.SoftAssertions")).name("assertSoftly").withAnyParameters();
 
   private static final MethodMatcherCollection FEST_LIKE_ASSERT_THAT = MethodMatcherCollection.create(
     // Fest 1.X
@@ -177,7 +179,11 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
+      boolean assertThatStateBeforeInvocation = assertThatCalled;
       super.visitMethodInvocation(mit);
+      if (ASSERTJ_ASSERT_SOFTLY.matches(mit)) {
+        assertThatCalled = assertThatStateBeforeInvocation;
+      }
 
       if (ASSERTJ_ASSERT_ALL.matches(mit)) {
         if (assertThatCalled) {

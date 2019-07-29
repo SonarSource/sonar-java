@@ -99,7 +99,7 @@ public class AssertionsCompletenessCheck {
     org.assertj.core.api.Assertions.assertThat(a).asList().hasSize(0);
     org.assertj.core.api.Assertions.assertThat(a).asList(); // Noncompliant
     org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
-    softly.assertThat(1); // Noncompliant
+    softly.assertThat(null); // Noncompliant
     softly.assertAll();
   }
 
@@ -219,6 +219,35 @@ public class AssertionsCompletenessCheck {
       doBoth(softly, !doItAgain);
     }
     doSomethingElse(softly);
+  }
+
+  @Test
+  public void assertj_soft_assertions_with_assert_softly() {
+    org.assertj.core.api.SoftAssertions.assertSoftly(softly -> {
+      softly.assertThat(5).isLessThan(3);
+      softly.assertThat(1).isGreaterThan(2);
+      // Compliant the "assertAll" method will be called automatically
+    });
+  }
+
+  @Test
+  public void assertj_soft_assertions_mixing_assert_softly_and_assert_all_1() {
+    org.assertj.core.api.SoftAssertions mainSoftly = new org.assertj.core.api.SoftAssertions();
+    mainSoftly.assertThat(5).isLessThan(3);
+    org.assertj.core.api.SoftAssertions.assertSoftly(softly -> {
+      softly.assertThat(5).isLessThan(3);
+    });
+    mainSoftly.assertAll();
+  }
+
+  @Test
+  public void assertj_soft_assertions_mixing_assert_softly_and_assert_all_2() {
+    org.assertj.core.api.SoftAssertions mainSoftly = new org.assertj.core.api.SoftAssertions();
+    org.assertj.core.api.SoftAssertions.assertSoftly(softly -> {
+      softly.assertThat(5).isLessThan(3);
+    });
+    // missing "assertThat"
+    mainSoftly.assertAll(); // Noncompliant
   }
 
 }
