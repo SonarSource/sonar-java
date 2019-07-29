@@ -113,6 +113,10 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
+    if (context.getSemanticModel() == null) {
+      // requires semantic
+      return;
+    }
     this.context = context;
     scan(context.getTree());
   }

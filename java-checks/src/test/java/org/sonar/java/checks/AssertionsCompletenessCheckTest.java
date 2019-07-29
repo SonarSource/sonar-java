@@ -26,6 +26,7 @@ public class AssertionsCompletenessCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/AssertionsCompletenessCheck.java", new AssertionsCompletenessCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/AssertionsCompletenessCheck.java", new AssertionsCompletenessCheck());
   }
 
 }
