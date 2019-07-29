@@ -27,5 +27,6 @@ public class CallSuperInTestCaseCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/CallSuperInTestCaseCheck.java", new CallSuperInTestCaseCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/CallSuperInTestCaseCheck.java", new CallSuperInTestCaseCheck());
   }
 }
