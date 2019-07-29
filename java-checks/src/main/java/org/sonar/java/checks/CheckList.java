@@ -679,7 +679,8 @@ public final class CheckList {
       ThreadLocalCleanupCheck.class,
       SillyStringOperationsCheck.class,
       StringReplaceCheck.class,
-      BoxedBooleanExpressionsCheck.class
+      BoxedBooleanExpressionsCheck.class,
+      DoubleCheckedLockingAssignmentCheck.class
     );
   }
 
