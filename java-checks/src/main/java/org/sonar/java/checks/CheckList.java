@@ -676,7 +676,8 @@ public final class CheckList {
       StringCallsBeyondBoundsCheck.class,
       SuspiciousListRemoveCheck.class,
       StaticMemberAccessCheck.class,
-      ThreadLocalCleanupCheck.class
+      ThreadLocalCleanupCheck.class,
+      SillyStringOperationsCheck.class
     );
   }
 
