@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -50,6 +49,9 @@ public class AssertionInThreadRunCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
     BlockTree block = methodTree.block();
     if (block != null && isRunMethod(methodTree)) {
