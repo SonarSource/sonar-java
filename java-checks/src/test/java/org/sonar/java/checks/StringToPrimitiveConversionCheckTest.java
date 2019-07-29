@@ -27,6 +27,7 @@ public class StringToPrimitiveConversionCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/StringToPrimitiveConversionCheck.java", new StringToPrimitiveConversionCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/StringToPrimitiveConversionCheck.java", new StringToPrimitiveConversionCheck());
   }
 
 }

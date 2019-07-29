@@ -1,6 +1,6 @@
 class A {
   private void f() {
-    int a = new Comparable();
+    Object a = new Comparable();
 
     new Comparable<T>() { // 1
       private void f() { // 2
