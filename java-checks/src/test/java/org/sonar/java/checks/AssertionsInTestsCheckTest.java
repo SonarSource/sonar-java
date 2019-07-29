@@ -75,6 +75,11 @@ public class AssertionsInTestsCheckTest {
   }
 
   @Test
+  public void testNoIssuesWithout() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/AssertionsInTestsCheck/Junit3.java", check);
+  }
+
+  @Test
   public void testWithEmptyCustomAssertionMethods() {
     check.customAssertionMethods = "";
     JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Junit3.java", check);

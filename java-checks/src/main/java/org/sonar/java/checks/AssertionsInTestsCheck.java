@@ -101,6 +101,10 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
+    if (context.getSemanticModel() == null) {
+      // requires semantic
+      return;
+    }
     this.context = context;
     assertionInMethod.clear();
     scan(context.getTree());
