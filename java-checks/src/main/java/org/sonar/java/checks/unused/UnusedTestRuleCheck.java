@@ -20,6 +20,9 @@
 package org.sonar.java.checks.unused;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -27,10 +30,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S2924")
 public class UnusedTestRuleCheck extends IssuableSubscriptionVisitor {
@@ -47,6 +46,9 @@ public class UnusedTestRuleCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
