@@ -29,4 +29,9 @@ public class ReturnEmptyArrayNotNullCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/ReturnEmptyArrayNotNullCheck.java", new ReturnEmptyArrayNotNullCheck());
   }
 
+  @Test
+  public void noIssueWithoutSemantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ReturnEmptyArrayNotNullCheck.java", new ReturnEmptyArrayNotNullCheck());
+  }
+
 }
