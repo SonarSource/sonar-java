@@ -29,9 +29,9 @@ class Foo {
     invoke(((Cast)plop)); // Compliant
     invoke((((Cast)plop))); // Noncompliant
     int[] tab;
-    tab[(1+2)]; // Compliant
-    tab[((1+2))]; // Noncompliant
-    tab[(1+2)/2];
+    tab[(1+2)] = 0; // Compliant
+    tab[((1+2))] = 0; // Noncompliant
+    tab[(1+2)/2] = 0;
     A a = new A((1/3)); // Compliant
     A a2 = new A(((1/3))); // Noncompliant
     return (( // Compliant
