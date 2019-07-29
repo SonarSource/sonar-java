@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -227,6 +228,7 @@ public final class Javadoc {
     return part.trim().isEmpty() || PLACEHOLDERS.contains(part.trim());
   }
 
+  @CheckForNull
   private static String exceptionName(TypeTree typeTree) {
     switch (typeTree.kind()) {
       case IDENTIFIER:
@@ -234,7 +236,9 @@ public final class Javadoc {
       case MEMBER_SELECT:
         return ExpressionsHelper.concatenate((MemberSelectExpressionTree) typeTree);
       default:
-        throw new IllegalStateException("Exceptions can not be specified other than with an identifier or a fully qualified name.");
+        // Exceptions can not be specified other than with an identifier or a fully qualified name.
+        // in SonarLint context, however, you may end up with something which does not compile
+        return null;
     }
   }
 
