@@ -1,3 +1,5 @@
+import java.text.ParseException;
+
 public class RedundantThrowsDeclarationCheck {
 
   public void foo1() {
@@ -155,13 +157,13 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
   }
 
   void foo15(java.io.File file) throws Exception { // Compliant - AutoCloseable.close() throws Exception
-    try (AutoCloseable ac = getMeAnAutoCloseableWithoutExceptionPlease(file)) {
+    try (AutoCloseable ac = getAutoCloseableWithoutExceptionPlease(file)) {
       // do something
     }
   }
 
   void foo15_java9(java.io.File file) throws Exception { // Compliant - AutoCloseable.close() throws Exception
-    final AutoCloseable ac = getMeAnAutoCloseableWithoutExceptionPlease(file);
+    final AutoCloseable ac = getAutoCloseableWithoutExceptionPlease(file);
     try (ac) {
       // do something
     }
@@ -169,7 +171,37 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
   }
 
   void foo16(java.io.File file) throws MyException { // Noncompliant {{Remove the declaration of thrown exception 'MyException', as it cannot be thrown from method's body.}}
-    try (MyAutoCloseable mac = getMeAnAutoCloseableWithoutExceptionPlease(file)) {
+    try (MyAutoCloseable mac = getAutoCloseableWithoutExceptionPlease(file)) {
+      // do something
+    }
+  }
+
+  void foo17(java.io.File file) throws java.io.IOException { // Compliant MyCloseable inherits from Closeable
+    try (MyCloseable mac = getMyCloseable(file)) {
+      // do something
+    }
+  }
+
+  void foo18(java.io.File file) throws ParseException { // Noncompliant {{Remove the declaration of thrown exception 'java.text.ParseException', as it cannot be thrown from method's body.}}
+    try (MyCloseable mac = getMyCloseable(file)) {
+      // do something
+    }
+  }
+
+  void foo19(java.io.File file) throws ParseException { // Compliant if we can't resolve types
+    try (UnknownClass mac = getUnknownClass(file)) {
+      // do something
+    }
+  }
+
+  void foo20(java.io.File file) throws ParseException { // Compliant - AutoCloseableParserInterface.close() throws ParseException
+    try (AutoCloseableParserInterface mac = getAutoCloseableInterfaceWithParseException(file)) {
+      // do something
+    }
+  }
+
+  void foo21(java.io.File file) throws ParseException { // Compliant - AutoCloseableParserClass.close() throws ParseException
+    try (AutoCloseableParserClass mac = getAutoCloseableClassWithParseException(file)) {
       // do something
     }
   }
@@ -186,10 +218,28 @@ abstract class ThrownCheckedExceptions extends MySuperClass {
     public MyOtherClass(int i) throws MyException { }
   }
 
-  abstract MyAutoCloseable getMeAnAutoCloseableWithoutExceptionPlease(java.io.File file);
+  abstract MyAutoCloseable getAutoCloseableWithoutExceptionPlease(java.io.File file);
+  abstract MyCloseable getMyCloseable(java.io.File file);
+  abstract AutoCloseableParserInterface getAutoCloseableInterfaceWithParseException(java.io.File file);
+  abstract AutoCloseableParserClass getAutoCloseableClassWithParseException(java.io.File file);
   interface MyAutoCloseable extends AutoCloseable {
     @Override
     void close(); // override which does not throw 'java.lang.Exception'
+  }
+  interface MyCloseable extends java.io.Closeable {
+  }
+  interface AutoCloseableParserInterface extends AutoCloseable {
+    @Override
+    void close() throws ParseException;
+  }
+  static class AutoCloseableParserClass implements AutoCloseable {
+    int close = 2;
+    public void close(int i) {
+    }
+    @Override
+    public void close() throws ParseException {
+      throw new ParseException("", 0);
+    }
   }
 
   interface MyOtherInterface {
