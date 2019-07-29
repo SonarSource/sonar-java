@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -90,6 +91,9 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
   private static final List<String> REQUIRES_RETURN_NULL = Collections.singletonList(
     "org.springframework.batch.item.ItemProcessor");
+
+  private static final MethodMatcher ITEM_PROCESSOR_PROCESS_METHOD = MethodMatcher.create()
+    .name("process").withAnyParameters();
 
   private final Deque<Returns> returnType = new LinkedList<>();
 
@@ -184,7 +188,9 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean requiresReturnNull(MethodTree methodTree) {
-    return isOverriding(methodTree) && REQUIRES_RETURN_NULL.stream().anyMatch(methodTree.symbol().owner().type()::isSubtypeOf);
+    return isOverriding(methodTree)
+      && REQUIRES_RETURN_NULL.stream().anyMatch(methodTree.symbol().owner().type()::isSubtypeOf)
+      && ITEM_PROCESSOR_PROCESS_METHOD.matches(methodTree);
   }
 
   private static boolean isOverriding(MethodTree tree) {

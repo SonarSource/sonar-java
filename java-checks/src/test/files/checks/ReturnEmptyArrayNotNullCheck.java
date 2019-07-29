@@ -159,3 +159,16 @@ class F implements E {
   }
 }
 
+class G implements ItemProcessor<Integer, List<String>>, E {
+  @Override
+  public int[] process(Integer a) {
+    return null; // Compliant
+  }
+  public int[] process(String a) {
+    return null; // Noncompliant
+  }
+  @Override
+  public List<String> bar() {
+    return null; // Noncompliant
+  }
+}
