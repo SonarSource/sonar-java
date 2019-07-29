@@ -15,6 +15,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 
+import com.googlecode.zohhak.api.TestWith;
+import com.googlecode.zohhak.api.runners.ZohhakRunner;
+
+
 class A extends junit.framework.TestCase {
   void testFoo() {
   }
@@ -229,4 +233,33 @@ class SomeTest implements SomeInterface { }// Noncompliant {{Add some tests to t
 
 interface SomeInterface {
   class Foo implements SomeInterface { }
+}
+
+
+@RunWith(ZohhakRunner.class)
+public class MyZohhakTest { // Noncompliant
+}
+
+@RunWith(ZohhakRunner.class)
+public class MyZohhak2Test { // Compliant, Zohhak uses @TestWith
+  @TestWith({
+    "1, 2",
+    "3, 4"
+  })
+  public void testFoo1(int p1, int p2) {
+  }
+}
+
+@RunWith(ZohhakRunner.class)
+public class MyZohhak3Test { // Compliant, Zohhak uses @TestWith
+  @TestWith(value=" 7 = 7 > 5 => true", separator="=>")
+  public void testFoo3(String string, boolean bool) {
+  }
+}
+
+@RunWith(ZohhakRunner.class)
+public class MyZohhak4Test { // Compliant
+  @Test
+  public void testFoo4() {
+  }
 }

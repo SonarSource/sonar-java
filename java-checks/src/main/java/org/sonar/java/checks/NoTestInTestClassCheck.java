@@ -81,6 +81,9 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
         if (isJunit3TestClass) {
           checkJunit3TestClass(simpleName, members);
         } else {
+          if (runWitZohhak(classSymbol)) {
+            testAnnotations.add("com.googlecode.zohhak.api.TestWith");
+          }
           checkJunit4AndAboveTestClass(simpleName, classSymbol, members);
         }
       }
@@ -109,6 +112,10 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
   private static boolean runWithCucumberOrSuiteOrTheoriesRunner(Symbol.TypeSymbol symbol) {
     return checkRunWith(symbol, "Cucumber.class","Suite.class", "Theories.class");
+  }
+
+  private static boolean runWitZohhak(Symbol.TypeSymbol symbol) {
+    return checkRunWith(symbol, "ZohhakRunner.class");
   }
 
   private static boolean checkRunWith(Symbol.TypeSymbol symbol, String... runnerClasses) {
