@@ -2,6 +2,8 @@
 holding threads are re-used which is the case on application servers using pool of threads.</p>
 <p>To avoid such problems, it is recommended to always clean up <code>ThreadLocal</code> variables using the <code>remove()</code> method to remove
 the current thread’s value for the <code>ThreadLocal</code> variable.</p>
+<p>In addition, calling <code>set(null)</code> to remove the value might keep the reference to <code>this</code> pointer in the map, which can cause
+memory leak in some scenarios. Using <code>remove</code> is safer to avoid this issue.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class ThreadLocalUserSession implements UserSession {
@@ -52,6 +54,8 @@ public class ThreadLocalUserSession implements UserSession {
   // ...
 }
 </pre>
+<h2>Exceptions</h2>
+<p>Rule will not detect non-private <code>ThreadLocal</code> variables, because <code>remove()</code> can be called from another class.</p>
 <h2>See</h2>
 <ul>
   <li> <a href="https://www.baeldung.com/java-memory-leaks">Understanding Memory Leaks in Java</a> </li>

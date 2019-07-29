@@ -2,7 +2,8 @@ package test;
 
 public class UserSession {
 
-  private static final ThreadLocal<UserSession> DELEGATE = new ThreadLocal<>(); // Noncompliant {{Call the "remove()" on "DELEGATE" in a "finally" block.}}
+  private static final ThreadLocal<UserSession> DELEGATE = new ThreadLocal<>(); // Noncompliant {{Call "remove()" on "DELEGATE".}}
+  static final ThreadLocal<UserSession> NOT_PRIVATE = new ThreadLocal<>(); // Compliant, because not private
 
   public ThreadLocalCleanup get() {
     UserSession session = DELEGATE.get();

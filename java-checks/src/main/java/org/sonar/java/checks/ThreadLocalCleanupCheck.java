@@ -53,10 +53,12 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
     }
     if (tree.is(Tree.Kind.CLASS)) {
       Symbol.TypeSymbol clazz = ((ClassTree) tree).symbol();
+      if (clazz.type().isSubtypeOf(THREAD_LOCAL)) {
+        return;
+      }
       clazz.memberSymbols().stream()
         .filter(Symbol::isVariableSymbol)
-        .filter(s -> s.type().is(THREAD_LOCAL))
-        .filter(ThreadLocalCleanupCheck::isNotSuper)
+        .filter(s -> s.isPrivate() && s.type().is(THREAD_LOCAL))
         .forEach(this::checkThreadLocalField);
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
@@ -66,13 +68,9 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean isNotSuper(Symbol s) {
-    return !"super".equals(s.name());
-  }
-
   private void checkThreadLocalField(Symbol field) {
     if (field.usages().stream().noneMatch(ThreadLocalCleanupCheck::usageIsRemove)) {
-      reportIssue(((VariableTree) field.declaration()).simpleName(), "Call the \"remove()\" on \"" + field.name() + "\" in a \"finally\" block.");
+      reportIssue(((VariableTree) field.declaration()).simpleName(), "Call \"remove()\" on \"" + field.name() + "\".");
     }
   }
 
