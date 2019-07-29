@@ -23,7 +23,7 @@ abstract class B {
     org.junit.Assert.assertTrue(true);
     org.junit.jupiter.api.Assertions.assertTrue(true);
   }
-  abstract foo();
+  abstract void foo();
 }
 
 class C extends junit.framework.TestCase {
