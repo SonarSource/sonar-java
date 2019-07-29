@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Component
 class A1 { // Compliant
-  A1();
+  A1() { }
+
   @Service
   public class A2Inner { // Compliant
   }
