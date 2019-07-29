@@ -55,7 +55,6 @@ class G1 extends G0 {
   protected Object clone() throws CloneNotSupportedException { // Noncompliant {{Use super.clone() to create and seed the cloned instance to be returned.}}
     super();
     int c = super.clone;
-    new Foo().super.clone();
     return super.clone("foo");
   }
 
