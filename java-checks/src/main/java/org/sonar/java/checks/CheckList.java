@@ -678,7 +678,8 @@ public final class CheckList {
       StaticMemberAccessCheck.class,
       ThreadLocalCleanupCheck.class,
       SillyStringOperationsCheck.class,
-      StringReplaceCheck.class
+      StringReplaceCheck.class,
+      BoxedBooleanExpressionsCheck.class
     );
   }
 
