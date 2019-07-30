@@ -37,6 +37,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S1258")
 public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
+  private static final List<String> EXCLUDED_ANNOTATIONS = Arrays.asList(
+    "javax.ejb.EJB",
+    "org.apache.maven.plugins.annotations.Mojo",
+    "org.codehaus.plexus.component.annotations.Component");
+
   @Override
   public List<Kind> nodesToVisit() {
     return Arrays.asList(Kind.CLASS, Kind.ENUM);
@@ -52,7 +57,9 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
   private void checkClassTree(ClassTree tree) {
     IdentifierTree simpleName = tree.simpleName();
-    if (simpleName != null && !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT) && isNotEJBAnnotated(tree.symbol())) {
+    if (simpleName != null && !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT)
+      && !isAnnotationExcluded(tree.symbol())
+      && !isBuilderPatternName(simpleName.name())) {
       List<JavaFileScannerContext.Location> uninitializedVariables = new ArrayList<>();
       for (Tree member : tree.members()) {
         if (member.is(Kind.CONSTRUCTOR)) {
@@ -78,8 +85,16 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
       symbol.metadata().isAnnotatedWith("javax.inject.Inject");
   }
 
+  private static boolean isAnnotationExcluded(Symbol symbol) {
+    return EXCLUDED_ANNOTATIONS.stream().anyMatch(symbol.metadata()::isAnnotatedWith);
+  }
+
   private static boolean isNotEJBAnnotated(Symbol symbol) {
     return symbol.metadata().annotations().stream().noneMatch(a -> a.symbol().owner().name().equals("javax.ejb"));
+  }
+
+  private static boolean isBuilderPatternName(String name) {
+    return name.endsWith("Builder");
   }
 
 }
