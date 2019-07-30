@@ -151,8 +151,9 @@ public class SpotBugsSensorTest {
   public void no_issues_with_invalid_report_path() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "invalid-path.txt");
     assertThat(externalIssues).isEmpty();
-    assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
-      .startsWith("Failed to import external issues report:")
+    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+    assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.WARN)))
+      .startsWith("SpotBugs report not found: ")
       .endsWith("invalid-path.txt");
   }
 

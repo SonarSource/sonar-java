@@ -49,6 +49,7 @@ import org.sonar.api.utils.log.LoggerLevel;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.externalreport.ExternalReportTestUtils.onlyOneLogElement;
 
 public class PmdSensorTest {
 
@@ -107,7 +108,10 @@ public class PmdSensorTest {
   public void invalid_report_path() throws IOException {
     List<ExternalIssue> externalIssues = execute(SQ72, "invalid-path.txt");
     assertThat(externalIssues).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Failed to import external issues report:");
+    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+    assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.WARN)))
+      .startsWith("PMD report not found: ")
+      .endsWith("invalid-path.txt");
   }
 
   @Test

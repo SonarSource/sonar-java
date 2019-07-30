@@ -19,16 +19,30 @@
  */
 package org.sonar.java.externalreport;
 
+import java.io.File;
+import java.util.function.BiConsumer;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.issue.NewExternalIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
 public final class ExternalIssueUtils {
 
+  private static final Logger LOG = Loggers.get(ExternalIssueUtils.class);
+
   private ExternalIssueUtils() {
     // utility class
+  }
+
+  public static void importIfExist(String linterName, SensorContext sensorContext,  File reportFile, BiConsumer<File, SensorContext> importFunction) {
+    if (!reportFile.exists()) {
+      LOG.warn("{} report not found: {}", linterName, reportFile);
+      return;
+    }
+    importFunction.accept(reportFile, sensorContext);
   }
 
   public static void saveIssue(SensorContext context, ExternalRuleLoader ruleLoader, InputFile inputFile, String engineId, String ruleId, String line, String message) {
