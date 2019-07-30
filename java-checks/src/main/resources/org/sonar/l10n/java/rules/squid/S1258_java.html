@@ -1,5 +1,5 @@
-<p>Non-abstract <code>class</code>es and <code>enum</code>s with non-<code>static</code>, <code>private</code> members should explicitly initialize
-those members, either in a constructor or with a default value.</p>
+<p>Non-abstract classes and enums with non-<code>static</code>, <code>private</code> members should explicitly initialize those members, either in a
+constructor or with a default value.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 class A { // Noncompliant
@@ -16,4 +16,11 @@ class A {
   }
 }
 </pre>
+<h2>Exceptions</h2>
+<p> * Class implementing a Builder Pattern (name ending with "Builder").</p>
+<p> * Class annotated with:</p>
+<p> <strong></strong> <a href="https://docs.oracle.com/javaee/7/api/javax/ejb/EJB.html">Javax EJB</a></p>
+<p> <strong></strong> <a href="https://codehaus-plexus.github.io/plexus-containers/plexus-component-annotations/index.html">Plexus Component
+Annotations</a></p>
+<p> <strong></strong> <a href="https://maven.apache.org/developers/mojo-api-specification.html">Maven Mojo</a></p>
 
