@@ -677,7 +677,8 @@ public final class CheckList {
       SuspiciousListRemoveCheck.class,
       StaticMemberAccessCheck.class,
       ThreadLocalCleanupCheck.class,
-      SillyStringOperationsCheck.class
+      SillyStringOperationsCheck.class,
+      StringReplaceCheck.class
     );
   }
 

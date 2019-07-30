@@ -1,0 +1,26 @@
+<p>The underlying implementation of <code>String::replaceAll</code> calls the <code>java.util.regex.Pattern.compile()</code> method each time it is
+called even if the first argument is not a regular expression. This has a significant performance cost and therefore should be used with care.</p>
+<p>When <code>String::replaceAll</code> is used, the first argument should be a real regular expression. If it’s not the case,
+<code>String::replace</code> does exactly the same thing as <code>String::replaceAll</code> without the performance drawback of the regex.</p>
+<p>This rule raises an issue for each <code>String::replaceAll</code> used with a <code>String</code> as first parameter which doesn’t contains
+special regex character or pattern.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+String init = "Bob is a Bird... Bob is a Plane... Bob is Superman!";
+String changed = init.replaceAll("Bob is", "It's"); // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+String init = "Bob is a Bird... Bob is a Plane... Bob is Superman!";
+String changed = init.replace("Bob is", "It's");
+</pre>
+<p>Or, with a regex:</p>
+<pre>
+String init = "Bob is a Bird... Bob is a Plane... Bob is Superman!";
+String changed = init.replaceAll("\\w*\\sis", "It's");
+</pre>
+<h2>See</h2>
+<ul>
+  <li> {rule:squid:S4248} - Regex patterns should not be created needlessly </li>
+</ul>
+
