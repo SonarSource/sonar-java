@@ -12,7 +12,6 @@ public class StringReplace {
     changed = init.replaceAll("$", "It's"); // Compliant
     changed = init.replaceAll("|", "It's"); // Compliant
     changed = init.replaceAll("(", "It's"); // Compliant
-    changed = init.replaceAll(")", "It's"); // Compliant
     changed = init.replaceAll("[", "It's"); // Compliant
     changed = init.replaceAll("{", "It's"); // Compliant
     changed = init.replaceAll("^", "It's"); // Compliant

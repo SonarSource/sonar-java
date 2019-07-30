@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 public class StringReplaceCheck extends AbstractMethodDetection {
 
   private static final String LANG_STRING = "java.lang.String";
-  private static final char[] REGEX_META = ".$|()[{^?*+\\".toCharArray();
+  private static final char[] REGEX_META = ".$|([{^?*+\\".toCharArray();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
