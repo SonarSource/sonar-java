@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
@@ -54,6 +56,7 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "RedundantThrowsDeclarationCheck")
 @RspecKey("S1130")
@@ -70,24 +73,17 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     if (!hasSemantic() || thrownList.isEmpty()) {
       return;
     }
-
     checkMethodThrownList((MethodTree) tree, thrownList);
   }
 
   private void checkMethodThrownList(MethodTree methodTree, ListTree<TypeTree> thrownList) {
     Set<Type> thrownExceptions = thrownExceptionsFromBody(methodTree);
-    boolean hasTryWithResourceInBody = hasTryWithResourceInBody(methodTree);
     boolean isOverridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();
     List<String> undocumentedExceptionNames = new Javadoc(methodTree).undocumentedThrownExceptions();
     Set<String> reported = new HashSet<>();
 
     for (TypeTree typeTree : thrownList) {
       Type exceptionType = typeTree.symbolType();
-      if (hasTryWithResourceInBody && (exceptionType.is("java.io.IOException") || exceptionType.is("java.lang.Exception"))) {
-        // method 'close()' from 'java.lang.AutoCloseable' interface throws 'java.lang.Exception'
-        // method 'close()' from 'java.io.Closeable' interface throws 'java.io.IOException"
-        continue;
-      }
       if (exceptionType.isUnknown()) {
         continue;
       }
@@ -111,38 +107,6 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
   private static String methodTreeType(MethodTree tree) {
     return tree.is(Tree.Kind.CONSTRUCTOR) ? "constructor" : "method";
-  }
-
-  private static boolean hasTryWithResourceInBody(MethodTree methodTree) {
-    BlockTree block = methodTree.block();
-    if (block == null) {
-      return false;
-    }
-    TryWithResourcesVisitor visitor = new TryWithResourcesVisitor();
-    block.accept(visitor);
-    return visitor.hasTryWithResource;
-  }
-
-  private static class TryWithResourcesVisitor extends BaseTreeVisitor {
-    private boolean hasTryWithResource = false;
-
-    @Override
-    public void visitTryStatement(TryStatementTree tree) {
-      if (!tree.resourceList().isEmpty()) {
-        hasTryWithResource = true;
-      }
-      super.visitTryStatement(tree);
-    }
-
-    @Override
-    public void visitClass(ClassTree tree) {
-      // skip anonymous classes
-    }
-
-    @Override
-    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-      // skip lambdas
-    }
   }
 
   private static boolean canNotBeThrown(MethodTree methodTree, Type exceptionType, @Nullable Set<Type> thrownExceptions) {
@@ -216,21 +180,21 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   private static Set<Type> thrownExceptionsFromBody(MethodTree methodTree) {
     BlockTree block = methodTree.block();
     if (block != null) {
-      MethodInvocationVisitor visitor = new MethodInvocationVisitor(methodTree);
+      ThrownExceptionVisitor visitor = new ThrownExceptionVisitor(methodTree);
       block.accept(visitor);
       return visitor.thrownExceptions();
     }
     return null;
   }
 
-  private static class MethodInvocationVisitor extends BaseTreeVisitor {
+  private static class ThrownExceptionVisitor extends BaseTreeVisitor {
     private Set<Type> thrownExceptions = new HashSet<>();
     private boolean visitedUnknown = false;
     private boolean visitedOtherConstructor = false;
     private final MethodTree methodTree;
     private static final String CONSTRUCTOR_NAME = "<init>";
 
-    MethodInvocationVisitor(MethodTree methodTree) {
+    ThrownExceptionVisitor(MethodTree methodTree) {
       this.methodTree = methodTree;
     }
 
@@ -281,6 +245,27 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     }
 
     @Override
+    public void visitTryStatement(TryStatementTree tree) {
+      for (Tree resource : tree.resourceList()) {
+        Type resourceType = resourceType(resource);
+        List<Type> thrownTypes = closeMethodThrownTypes(resourceType);
+        if (thrownTypes == null) {
+          visitedUnknown = true;
+        } else {
+          thrownExceptions.addAll(thrownTypes);
+        }
+      }
+      super.visitTryStatement(tree);
+    }
+
+    private static Type resourceType(Tree resource) {
+      if (resource.is(Tree.Kind.VARIABLE)) {
+        return ((VariableTree) resource).type().symbolType();
+      }
+      return ((TypeTree) resource).symbolType();
+    }
+
+    @Override
     public void visitClass(ClassTree tree) {
       // skip anonymous classes
     }
@@ -290,11 +275,32 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       // skip lambdas
     }
 
+    @CheckForNull
+    private static List<Type> closeMethodThrownTypes(Type classType) {
+      return classType.symbol().lookupSymbols("close").stream()
+        .filter(Symbol::isMethodSymbol)
+        .map(Symbol.MethodSymbol.class::cast)
+        .filter(method -> method.parameterTypes().isEmpty())
+        .map(Symbol.MethodSymbol::thrownTypes)
+        .findFirst()
+        .orElseGet(() -> directSuperTypeStream(classType).map(ThrownExceptionVisitor::closeMethodThrownTypes)
+          .filter(Objects::nonNull)
+          .findFirst()
+          .orElse(null));
+    }
+
+    private static Stream<Type> directSuperTypeStream(Type classType) {
+      Symbol.TypeSymbol symbol = classType.symbol();
+      Stream<Type> interfaceStream = symbol.interfaces().stream();
+      Type superClass = symbol.superClass();
+      return superClass != null ? Stream.concat(Stream.of(superClass), interfaceStream) : interfaceStream;
+    }
+
     private static Optional<Symbol.MethodSymbol> getImplicitlyCalledConstructor(MethodTree methodTree) {
       Type superType = ((Symbol.TypeSymbol)methodTree.symbol().owner()).superClass();
       // superClass() returns null only for java.lang.Object; it is not possible.
       return Objects.requireNonNull(superType).symbol().memberSymbols().stream()
-        .filter(MethodInvocationVisitor::isDefaultConstructor)
+        .filter(ThrownExceptionVisitor::isDefaultConstructor)
         .map(Symbol.MethodSymbol.class::cast)
         .findFirst();
     }
