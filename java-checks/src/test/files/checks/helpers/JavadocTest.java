@@ -111,6 +111,10 @@ class A<B, C, E> {
   private int genericExceptionThrownUndocumented() throws Exception {
     return 0;
   }
+
+  private int invalidThrownExceptionUndocumented() throws Exception<String> {
+    return 0;
+  }
 }
 
 /**

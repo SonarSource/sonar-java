@@ -45,6 +45,7 @@ pipeline {
             label 'linux'
           }
           steps {
+            runBuildWithProfile("sanity")
             runITs("ruling", "LATEST_RELEASE[7.9]")
           }
         }
@@ -54,6 +55,7 @@ pipeline {
             label 'windows'
           }
           steps {
+            runBuildWithProfile("sanity")
             runITs("ruling", "LATEST_RELEASE[7.9]")
           }
         }
@@ -101,6 +103,13 @@ pipeline {
         }
       }
     }
+  }
+}
+
+def runBuildWithProfile(PROFILE) {
+  withMaven(maven: MAVEN_TOOL) {
+    mavenSetBuildVersion()
+    runMaven(JDK_VERSION, "clean verify -P$PROFILE")
   }
 }
 

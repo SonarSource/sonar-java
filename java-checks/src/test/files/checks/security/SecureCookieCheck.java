@@ -99,6 +99,8 @@ class A {
 
     field6 = new HttpCookie("name, value"); // Noncompliant
 
+    unknown = new HttpCookie("name, value"); // Noncompliant
+
     return new HttpCookie("name", "value"); // Noncompliant
   }
 

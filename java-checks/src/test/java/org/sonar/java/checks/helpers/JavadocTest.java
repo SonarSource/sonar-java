@@ -46,6 +46,7 @@ public class JavadocTest {
   private static Javadoc fullParamsDescriptionJavadoc;
   private static Javadoc genericExceptionThrownJavadoc;
   private static Javadoc genericExceptionThrownUndocumented;
+  private static Javadoc invalidThrownExceptionUndocumented;
 
   @BeforeClass
   public static void setup() {
@@ -64,6 +65,7 @@ public class JavadocTest {
     fullParamsDescriptionJavadoc = new Javadoc(methods.get("fullParamsDescription"));
     genericExceptionThrownJavadoc = new Javadoc(methods.get("genericExceptionThrown"));
     genericExceptionThrownUndocumented = new Javadoc(methods.get("genericExceptionThrownUndocumented"));
+    invalidThrownExceptionUndocumented = new Javadoc(methods.get("invalidThrownExceptionUndocumented"));
 
     emptyJavadocs = methods.keySet().stream()
       .filter(name -> name.startsWith("emptyJavadoc"))
@@ -113,6 +115,7 @@ public class JavadocTest {
     assertThat(fullParamsDescriptionJavadoc.undocumentedThrownExceptions()).isEmpty();
     assertThat(genericExceptionThrownJavadoc.undocumentedThrownExceptions()).containsExactlyInAnyOrder("ObjectStreamException", "InvalidObjectException");
     assertThat(genericExceptionThrownUndocumented.undocumentedThrownExceptions()).containsExactlyInAnyOrder("Exception");
+    assertThat(invalidThrownExceptionUndocumented.undocumentedThrownExceptions()).isEmpty();
     assertThat(emptyJavadocs.stream().map(Javadoc::undocumentedThrownExceptions)).hasSize(6).allMatch(List::isEmpty);
   }
 

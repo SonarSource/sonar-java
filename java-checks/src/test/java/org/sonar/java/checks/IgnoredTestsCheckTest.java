@@ -27,5 +27,6 @@ public class IgnoredTestsCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/IgnoredTestsCheck.java", new IgnoredTestsCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/IgnoredTestsCheck.java", new IgnoredTestsCheck());
   }
 }

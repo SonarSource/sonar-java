@@ -52,6 +52,9 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
     SymbolMetadata symbolMetadata = methodTree.symbol().metadata();
     if (isSilentlyIgnored(symbolMetadata, "org.junit.Ignore") || isSilentlyIgnored(symbolMetadata, "org.junit.jupiter.api.Disabled")) {

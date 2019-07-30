@@ -3,7 +3,7 @@ class A {
   private final static int f2 = 0;                      // Compliant
   private static final int f3 = 0;                      // Compliant
   public final int f4 = MyEnumOrInterface.MY_CONSTANT;  // Noncompliant
-  private final int f5 = new Date();                    // Compliant
+  private final int f5 = new Integer(42);               // Compliant
   private final int f6 = foo();                         // Compliant
   private int f7 = 0;                                   // Compliant
   private int f8;                                       // Compliant

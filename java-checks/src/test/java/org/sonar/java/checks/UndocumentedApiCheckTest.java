@@ -20,11 +20,9 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class UndocumentedApiCheckTest {
 
@@ -77,8 +75,7 @@ public class UndocumentedApiCheckTest {
   public void testInvalidDeclaredException() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
-    assertThatExceptionOfType(AnalysisException.class).isThrownBy(() -> {
-      JavaCheckVerifier.verify("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiInvalidException.java", check);
-    }).withCause(new IllegalStateException("Exceptions can not be specified other than with an identifier or a fully qualified name."));
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiInvalidException.java", check);
   }
 }
+

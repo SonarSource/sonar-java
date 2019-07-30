@@ -27,5 +27,6 @@ public class AssertionInThreadRunCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/AssertionInThreadRunCheck.java", new AssertionInThreadRunCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/AssertionInThreadRunCheck.java", new AssertionInThreadRunCheck());
   }
 }

@@ -34,4 +34,9 @@ public class UnusedTestRuleCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedTestRuleCheck_JUnit5.java", new UnusedTestRuleCheck());
   }
 
+  @Test
+  public void test_no_issues_without_semantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/unused/UnusedTestRuleCheck_JUnit5.java", new UnusedTestRuleCheck());
+  }
+
 }
