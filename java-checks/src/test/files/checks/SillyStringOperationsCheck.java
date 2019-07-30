@@ -56,15 +56,6 @@ class A {
     str.startsWith(str);   // Noncompliant
     str.startsWith(other);
 
-    "".replaceAll("str", "");
-    "".replaceAll("", "str");     // Noncompliant {{Remove this "replaceAll" call; it has predictable results.}}
-    "".replaceAll("str", "str");  // Noncompliant
-    "".replaceAll(other, other);  // Noncompliant
-    "".replaceAll("str", "");
-    str.replaceAll(str, "str");   // Noncompliant
-    str.replaceAll("str", "str"); // Noncompliant
-    str.replaceAll(other, other); // Noncompliant
-
     "".replaceFirst("str", "");
     "".replaceFirst("", "str");     // Noncompliant {{Remove this "replaceFirst" call; it has predictable results.}}
     "".replaceFirst("str", "str");  // Noncompliant

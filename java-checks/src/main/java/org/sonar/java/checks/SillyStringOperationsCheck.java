@@ -27,7 +27,6 @@ import javax.annotation.CheckForNull;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ConstantUtils;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -69,9 +68,6 @@ public class SillyStringOperationsCheck extends AbstractMethodDetection {
           .addParameter("int"),
         MethodMatcher.create().typeDefinition(STRING).name("matches")
           .addParameter(TypeCriteria.is(STRING)),
-        MethodMatcher.create().typeDefinition(STRING).name("replaceAll")
-          .addParameter(TypeCriteria.is(STRING))
-          .addParameter(TypeCriteria.is(STRING)),
         MethodMatcher.create().typeDefinition(STRING).name("replaceFirst")
           .addParameter(TypeCriteria.is(STRING))
           .addParameter(TypeCriteria.is(STRING)),
@@ -111,7 +107,6 @@ public class SillyStringOperationsCheck extends AbstractMethodDetection {
         case "startsWith":
           issue = checkStartsWith(str, args);
           break;
-        case "replaceAll":
         case "replaceFirst":
           issue = checkReplaceFirst(str, args);
           break;
@@ -182,6 +177,6 @@ public class SillyStringOperationsCheck extends AbstractMethodDetection {
 
   @CheckForNull
   private static String string(ExpressionTree tree) {
-    return ExpressionsHelper.getConstantValueAsString(tree).value();
+    return ConstantUtils.resolveAsStringConstant(tree);
   }
 }
