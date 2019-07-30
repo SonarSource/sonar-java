@@ -32,6 +32,8 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
+import static org.sonar.java.externalreport.ExternalIssueUtils.importIfExist;
+
 public class SpotBugsSensor implements Sensor {
 
   private static final Logger LOG = Loggers.get(SpotBugsSensor.class);
@@ -66,7 +68,7 @@ public class SpotBugsSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     List<File> reportFiles = ExternalReportProvider.getReportFiles(context, REPORT_PROPERTY_KEY);
-    reportFiles.forEach(report -> importReport(report, context));
+    reportFiles.forEach(report -> importIfExist(SPOTBUGS_NAME, context, report, SpotBugsSensor::importReport));
   }
 
   private static void importReport(File reportPath, SensorContext context) {

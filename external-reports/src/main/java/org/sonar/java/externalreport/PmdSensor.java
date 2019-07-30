@@ -29,6 +29,8 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
+import static org.sonar.java.externalreport.ExternalIssueUtils.importIfExist;
+
 public class PmdSensor implements Sensor {
 
   private static final Logger LOG = Loggers.get(PmdSensor.class);
@@ -55,7 +57,7 @@ public class PmdSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     List<File> reportFiles = ExternalReportProvider.getReportFiles(context, REPORT_PROPERTY_KEY);
-    reportFiles.forEach(report -> importReport(report, context));
+    reportFiles.forEach(report -> importIfExist(LINTER_NAME, context, report, PmdSensor::importReport));
   }
 
   private static void importReport(File reportFile, SensorContext context) {

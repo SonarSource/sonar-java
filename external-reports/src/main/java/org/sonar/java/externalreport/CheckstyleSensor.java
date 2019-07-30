@@ -32,6 +32,8 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.ExternalReportProvider;
 import org.sonarsource.analyzer.commons.ExternalRuleLoader;
 
+import static org.sonar.java.externalreport.ExternalIssueUtils.importIfExist;
+
 public class CheckstyleSensor implements Sensor {
 
   private static final Logger LOG = Loggers.get(CheckstyleSensor.class);
@@ -58,7 +60,7 @@ public class CheckstyleSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     List<File> reportFiles = ExternalReportProvider.getReportFiles(context, REPORT_PROPERTY_KEY);
-    reportFiles.forEach(report -> importReport(report, context));
+    reportFiles.forEach(report -> importIfExist(LINTER_NAME, context, report, CheckstyleSensor::importReport));
   }
 
   private static void importReport(File reportPath, SensorContext context) {
