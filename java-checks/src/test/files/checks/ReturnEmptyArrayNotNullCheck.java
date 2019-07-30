@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.springframework.batch.item.ItemProcessor;
+
 
 @interface CheckForNull {}
 
@@ -133,7 +135,40 @@ class C {
   }
 
   static final Object CONSTANT = plop(a->{return null;});
+}
 
+class D implements ItemProcessor<Integer, List<String>> {
+  @Override
+  public List<String> process(Integer i) {
+    return null; // Compliant: ItemProcessor requires to return null value to stop the processing
+  }
 
+  public List<String> process2(Integer i) {
+    return null; // Noncompliant
+  }
+}
 
+interface E {
+  List<String> bar();
+}
+
+class F implements E {
+  @Override
+  public List<String> bar() {
+    return null; // Noncompliant
+  }
+}
+
+class G implements ItemProcessor<Integer, List<String>>, E {
+  @Override
+  public int[] process(Integer a) {
+    return null; // Compliant
+  }
+  public int[] process(String a) {
+    return null; // Noncompliant
+  }
+  @Override
+  public List<String> bar() {
+    return null; // Noncompliant
+  }
 }

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -35,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,6 +89,12 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
     "TreeSet",
     "Vector");
 
+  private static final List<String> REQUIRES_RETURN_NULL = Collections.singletonList(
+    "org.springframework.batch.item.ItemProcessor");
+
+  private static final MethodMatcher ITEM_PROCESSOR_PROCESS_METHOD = MethodMatcher.create()
+    .name("process").withAnyParameters();
+
   private final Deque<Returns> returnType = new LinkedList<>();
 
   private enum Returns {
@@ -130,6 +138,9 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       if (isAllowingNull(methodTree)) {
@@ -153,6 +164,9 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     if (!tree.is(Tree.Kind.RETURN_STATEMENT)) {
       returnType.pop();
     }
@@ -170,6 +184,16 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
         return true;
       }
     }
-    return false;
+    return requiresReturnNull(methodTree);
+  }
+
+  private static boolean requiresReturnNull(MethodTree methodTree) {
+    return isOverriding(methodTree)
+      && REQUIRES_RETURN_NULL.stream().anyMatch(methodTree.symbol().owner().type()::isSubtypeOf)
+      && ITEM_PROCESSOR_PROCESS_METHOD.matches(methodTree);
+  }
+
+  private static boolean isOverriding(MethodTree tree) {
+    return Boolean.TRUE.equals(tree.isOverriding());
   }
 }
