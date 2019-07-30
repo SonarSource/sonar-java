@@ -71,9 +71,11 @@ import static org.sonar.plugins.jacoco.JaCoCoExtensions.REPORT_PATH_PROPERTY;
 public class JaCoCoSensorTest {
 
   private static final Version SQ_6_7 = Version.create(6, 7);
-  private static final String REPORT_PATH_IS_DEPRECATED = "Property 'sonar.jacoco.reportPath' is deprecated (JaCoCo binary format). 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).";
-  private static final String REPORT_PATHS_IS_DEPRECATED = "Property 'sonar.jacoco.reportPaths' is deprecated (JaCoCo binary format). 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).";
-  private static final String IT_REPORT_PATH_IS_DEPRECATED = "Property 'sonar.jacoco.itReportPath' is deprecated (JaCoCo binary format). 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format).";
+  private static final String BINARY_FORMAT_IS_DEPRECATED = " is deprecated (JaCoCo binary format). 'sonar.coverage.jacoco.xmlReportPaths' should be used instead (JaCoCo XML format)." +
+    " Please check that the JaCoCo plugin is installed on your SonarQube Instance.";
+  private static final String REPORT_PATH_IS_DEPRECATED = "Property 'sonar.jacoco.reportPath'" + BINARY_FORMAT_IS_DEPRECATED;
+  private static final String REPORT_PATHS_IS_DEPRECATED = "Property 'sonar.jacoco.reportPaths'" + BINARY_FORMAT_IS_DEPRECATED;
+  private static final String IT_REPORT_PATH_IS_DEPRECATED = "Property 'sonar.jacoco.itReportPath'" + BINARY_FORMAT_IS_DEPRECATED;
   private static final String XML_REPORT_FOUND = "JaCoCo XML report found, skipping processing of binary JaCoCo exec report.";
   private File jacocoExecutionData;
   private File outputDir;
@@ -354,7 +356,9 @@ public class JaCoCoSensorTest {
     List<Integer> coverage = IntStream.range(1, resource.lines()).mapToObj(line -> context.lineHits(resource.key(), line)).collect(Collectors.toList());
     assertThat(coverage).allMatch(Objects::isNull);
 
-    String msg = "Both 'sonar.jacoco.reportPaths' and 'sonar.coverage.jacoco.xmlReportPaths' were set. 'sonar.jacoco.reportPaths' is deprecated therefore, only 'sonar.coverage.jacoco.xmlReportPaths' will be taken into account.";
+    String msg = "Both 'sonar.jacoco.reportPaths' and 'sonar.coverage.jacoco.xmlReportPaths' were set. 'sonar.jacoco.reportPaths' is deprecated" +
+      " therefore, only 'sonar.coverage.jacoco.xmlReportPaths' will be taken into account." +
+      " Please check that the JaCoCo plugin is installed on your SonarQube Instance.";
     assertThat(logTester.logs(LoggerLevel.INFO)).contains(msg);
     assertThat(analysisWarnings.warnings).isEmpty();
   }

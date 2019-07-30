@@ -112,10 +112,12 @@ public class JaCoCoSensor implements Sensor {
     Set<String> usedProperties = reports.stream().map(report -> report.propertyKey).collect(Collectors.toSet());
     usedProperties.forEach(deprecatedProperty -> {
       if (!hasXmlReport) {
-        addAnalysisWarning("Property '%s' is deprecated (JaCoCo binary format). '%s' should be used instead (JaCoCo XML format).", deprecatedProperty, JACOCO_XML_PROPERTY);
+        addAnalysisWarning("Property '%s' is deprecated (JaCoCo binary format). '%s' should be used instead (JaCoCo XML format)." +
+          " Please check that the JaCoCo plugin is installed on your SonarQube Instance.", deprecatedProperty, JACOCO_XML_PROPERTY);
       } else if (config.hasKey(deprecatedProperty)) {
         // only log for those properties which were set explicitly
-        LOG.info("Both '{}' and '{}' were set. '{}' is deprecated therefore, only '{}' will be taken into account.",
+        LOG.info("Both '{}' and '{}' were set. '{}' is deprecated therefore, only '{}' will be taken into account." +
+            " Please check that the JaCoCo plugin is installed on your SonarQube Instance.",
           deprecatedProperty, JACOCO_XML_PROPERTY, deprecatedProperty, JACOCO_XML_PROPERTY);
       }
     });
