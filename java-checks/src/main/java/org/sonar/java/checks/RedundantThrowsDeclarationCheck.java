@@ -259,7 +259,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     }
 
     private static Type resourceType(Tree resource) {
-      if (resource instanceof VariableTree) {
+      if (resource.is(Tree.Kind.VARIABLE)) {
         return ((VariableTree) resource).type().symbolType();
       }
       return ((TypeTree) resource).symbolType();
@@ -277,21 +277,16 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
     @CheckForNull
     private static List<Type> closeMethodThrownTypes(Type classType) {
-      List<Type> thrownTypes = classType.symbol().lookupSymbols("close").stream()
+      return classType.symbol().lookupSymbols("close").stream()
         .filter(Symbol::isMethodSymbol)
         .map(Symbol.MethodSymbol.class::cast)
         .filter(method -> method.parameterTypes().isEmpty())
         .map(Symbol.MethodSymbol::thrownTypes)
         .findFirst()
-        .orElse(null);
-
-      if (thrownTypes == null) {
-        thrownTypes = directSuperTypeStream(classType).map(ThrownExceptionVisitor::closeMethodThrownTypes)
+        .orElseGet(() -> directSuperTypeStream(classType).map(ThrownExceptionVisitor::closeMethodThrownTypes)
           .filter(Objects::nonNull)
           .findFirst()
-          .orElse(null);
-      }
-      return thrownTypes;
+          .orElse(null));
     }
 
     private static Stream<Type> directSuperTypeStream(Type classType) {
