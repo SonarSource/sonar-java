@@ -10,9 +10,6 @@
     "spring",
     "owasp-a6"
   ],
-  "standards": [
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4601",
   "sqKey": "S4601",

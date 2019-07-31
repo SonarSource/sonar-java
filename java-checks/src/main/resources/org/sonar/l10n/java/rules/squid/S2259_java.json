@@ -10,10 +10,6 @@
     "cwe",
     "cert"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2259",
   "sqKey": "S2259",

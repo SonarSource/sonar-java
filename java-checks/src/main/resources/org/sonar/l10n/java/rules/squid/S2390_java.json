@@ -9,9 +9,6 @@
   "tags": [
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2390",
   "sqKey": "S2390",

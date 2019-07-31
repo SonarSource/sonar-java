@@ -11,9 +11,6 @@
     "cert",
     "pitfall"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2693",
   "sqKey": "S2693",

@@ -8,12 +8,8 @@
   },
   "tags": [
     "cwe",
-    "based-on-misra",
     "cert",
     "suspicious"
-  ],
-  "standards": [
-    "CWE"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-888",

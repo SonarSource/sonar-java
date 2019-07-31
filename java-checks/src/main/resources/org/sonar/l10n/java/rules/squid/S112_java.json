@@ -11,10 +11,6 @@
     "error-handling",
     "cert"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-112",
   "sqKey": "S112",

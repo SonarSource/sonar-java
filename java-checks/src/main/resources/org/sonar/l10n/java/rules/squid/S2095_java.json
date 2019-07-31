@@ -12,10 +12,6 @@
     "denial-of-service",
     "cert"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2095",
   "sqKey": "S2095",

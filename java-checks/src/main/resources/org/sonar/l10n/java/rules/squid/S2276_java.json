@@ -11,9 +11,6 @@
     "performance",
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2276",
   "sqKey": "S2276",

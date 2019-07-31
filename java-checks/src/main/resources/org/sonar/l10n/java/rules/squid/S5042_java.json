@@ -11,11 +11,6 @@
     "owasp-a1",
     "cert"
   ],
-  "standards": [
-    "CWE",
-    "CERT",
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5042",
   "sqKey": "S5042",

@@ -10,9 +10,6 @@
     "cwe",
     "multi-threading"
   ],
-  "standards": [
-    "CWE"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2222",
   "sqKey": "S2222",

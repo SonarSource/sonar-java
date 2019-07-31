@@ -11,10 +11,6 @@
     "unpredictable",
     "cert"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2384",
   "sqKey": "S2384",

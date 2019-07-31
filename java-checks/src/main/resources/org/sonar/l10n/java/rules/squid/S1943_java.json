@@ -11,9 +11,6 @@
     "cert",
     "i18n"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1943",
   "sqKey": "S1943",

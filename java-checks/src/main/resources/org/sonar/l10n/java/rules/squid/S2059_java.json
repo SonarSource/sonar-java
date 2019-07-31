@@ -11,9 +11,6 @@
     "cert",
     "pitfall"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2059",
   "sqKey": "S2059",

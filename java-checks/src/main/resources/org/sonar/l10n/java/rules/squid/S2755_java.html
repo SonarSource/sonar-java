@@ -1,11 +1,11 @@
-<p>Allowing external entities in untrusted documents to be processed could lay your systems bare to attackers. Imagine if these entities were
+<p>Allowing external DTD entities in untrusted documents to be processed could lay your systems bare to attackers. Imagine if these entities were
 parsed:</p>
 <pre>
 &lt;!ENTITY xxe SYSTEM "file:///etc/passwd" &gt;]&gt;&lt;foo&gt;&amp;xxe;&lt;/foo&gt;
 &lt;!ENTITY xxe SYSTEM "http://www.attacker.com/text.txt" &gt;]&gt;&lt;foo&gt;&amp;xxe;&lt;/foo&gt;
 </pre>
-<p>If you must parse untrusted XML, the best way to protect yourself is to use a local, static DTD during parsing and ignore any DTD's included in
-included in the document.</p>
+<p>If you must parse untrusted XML, the best way to protect yourself is to only accept an embedded DTD or, even better, completely ignore any DTD
+declared in the document.</p>
 <p>This rule raises an issue when any of the following are used without first disabling external entity processing:
 <code>javax.xml.validation.Validator</code>, JAXP's <code>DocumentBuilderFactory</code>, <code>SAXParserFactory</code>, Xerces 1 and Xerces 2 StAX's
 <code>XMLInputFactory</code> and <code>XMLReaderFactory</code>.</p>
@@ -25,8 +25,6 @@ XMLInputFactory factory = XMLInputFactory.newInstance();
 try (FileInputStream fis = new FileInputStream(malicousSample)) {
   // Load XML stream
   XMLStreamReader xmlStreamReader = factory.createXMLStreamReader(fis);  // Noncompliant; reader is vulnerable
-
-  //...
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
@@ -34,8 +32,10 @@ try (FileInputStream fis = new FileInputStream(malicousSample)) {
 String maliciousSample = "xxe.xml";
 XMLInputFactory factory = XMLInputFactory.newInstance();
 
-// disable external entities
+// disable resolving of external DTD entities
 factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+
+// or disallow DTDs entirely
 factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
 
 try (FileInputStream fis = new FileInputStream(malicousSample)) {

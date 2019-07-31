@@ -10,9 +10,6 @@
     "multi-threading",
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2446",
   "sqKey": "S2446",

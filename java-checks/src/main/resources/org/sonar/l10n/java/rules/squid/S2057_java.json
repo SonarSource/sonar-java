@@ -11,9 +11,6 @@
     "cert",
     "pitfall"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2057",
   "sqKey": "S2057",

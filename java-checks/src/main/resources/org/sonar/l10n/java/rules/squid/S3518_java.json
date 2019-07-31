@@ -11,10 +11,6 @@
     "denial-of-service",
     "cert"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-3518",
   "sqKey": "S3518",

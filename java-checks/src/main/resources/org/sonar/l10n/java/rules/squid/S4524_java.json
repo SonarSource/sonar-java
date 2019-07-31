@@ -7,7 +7,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    "based-on-misra"
+    
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4524",

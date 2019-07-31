@@ -7,13 +7,9 @@
     "constantCost": "5min"
   },
   "tags": [
-    "based-on-misra",
     "cert",
     "suspicious",
     "pitfall"
-  ],
-  "standards": [
-    "CERT"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1117",

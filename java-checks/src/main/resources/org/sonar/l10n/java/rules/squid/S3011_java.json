@@ -10,10 +10,6 @@
     "cert",
     "owasp-a3"
   ],
-  "standards": [
-    "CERT",
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-3011",
   "sqKey": "S3011",

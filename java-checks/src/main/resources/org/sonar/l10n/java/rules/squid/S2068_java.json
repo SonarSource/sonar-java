@@ -12,12 +12,6 @@
     "sans-top25-porous",
     "owasp-a2"
   ],
-  "standards": [
-    "CWE",
-    "CERT",
-    "OWASP Top 10",
-    "SANS Top 25"
-  ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2068",
   "sqKey": "S2068",

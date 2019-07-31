@@ -10,10 +10,6 @@
     "cwe",
     "cert"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-1114",
   "sqKey": "ObjectFinalizeOverridenCallsSuperFinalizeCheck",

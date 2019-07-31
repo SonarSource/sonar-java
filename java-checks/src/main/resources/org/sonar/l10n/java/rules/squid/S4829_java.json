@@ -5,9 +5,6 @@
   "tags": [
     "cwe"
   ],
-  "standards": [
-    "CWE"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4829",
   "sqKey": "S4829",

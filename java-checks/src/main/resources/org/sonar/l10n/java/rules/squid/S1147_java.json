@@ -11,10 +11,6 @@
     "cert",
     "suspicious"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-1147",
   "sqKey": "S1147",

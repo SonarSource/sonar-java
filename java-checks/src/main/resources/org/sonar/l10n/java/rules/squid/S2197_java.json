@@ -10,9 +10,6 @@
     "cert",
     "suspicious"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2197",
   "sqKey": "S2197",

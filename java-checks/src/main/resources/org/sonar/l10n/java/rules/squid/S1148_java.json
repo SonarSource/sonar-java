@@ -11,10 +11,6 @@
     "error-handling",
     "owasp-a3"
   ],
-  "standards": [
-    "CWE",
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1148",
   "sqKey": "S1148",

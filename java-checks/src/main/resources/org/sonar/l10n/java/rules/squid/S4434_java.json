@@ -10,10 +10,6 @@
     "cwe",
     "owasp-a8"
   ],
-  "standards": [
-    "CWE",
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-4434",
   "sqKey": "S4434",

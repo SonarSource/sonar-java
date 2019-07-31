@@ -10,9 +10,6 @@
     "serialization",
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2066",
   "sqKey": "S2066",
