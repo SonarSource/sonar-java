@@ -1,5 +1,8 @@
 package test;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class DoubleCheckedLockingAssignment {
 
   private volatile List<String> strings;
@@ -8,7 +11,7 @@ public class DoubleCheckedLockingAssignment {
     if (strings == null) {
       synchronized (this) {
         if (strings == null) {
-          strings = new ArrayList<>();  // Noncompliant [[sc=11;ec=38;secondary=12,13]] {{Fully initialize "strings" before assigning it.}}
+          strings = new ArrayList<>();  // Noncompliant [[sc=11;ec=38;secondary=15,16]] {{Fully initialize "strings" before assigning it.}}
           strings.add("Hello");
           strings.add("World");
         }
@@ -17,14 +20,31 @@ public class DoubleCheckedLockingAssignment {
     return strings;
   }
 
-  public List<String> getStrings() {
+  public List<String> getStringsBis() {
     if (null == strings) {
       synchronized (this) {
         if (null == this.strings) {
-          strings = new ArrayList<>();  // Noncompliant [[sc=11;ec=38;secondary=25,27]] {{Fully initialize "strings" before assigning it.}}
+          strings = new ArrayList<>();  // Noncompliant [[sc=11;ec=38;secondary=28,30]] {{Fully initialize "strings" before assigning it.}}
           strings.add("Hello");
           System.out.println();
           strings.add("World");
+        }
+      }
+    }
+    return strings;
+  }
+
+  public List<String> lambda() {
+    if (strings == null) {
+      synchronized (this) {
+        if (strings == null) {
+          strings = new ArrayList<>();  // Compliant
+          Runnable run = () -> System.out.println(strings);
+          run = new Runnable() {
+            public void run() {
+              System.out.println(strings);
+            }
+          };
         }
       }
     }

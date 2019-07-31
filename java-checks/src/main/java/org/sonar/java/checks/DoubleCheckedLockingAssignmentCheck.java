@@ -36,7 +36,10 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -72,15 +75,15 @@ public class DoubleCheckedLockingAssignmentCheck extends IssuableSubscriptionVis
         IfStatementTree secondIf = (IfStatementTree) statementTree;
         Symbol secondIfSymbol = nullCheck(secondIf.condition());
         if (symbol.equals(secondIfSymbol)) {
-          checkUsageAfterAssignment(symbol, secondIf);
+          checkUsageAfterAssignment(symbol, secondIf.thenStatement());
         }
       }
     }
   }
 
-  private void checkUsageAfterAssignment(Symbol symbol, IfStatementTree secondIf) {
-    if (secondIf.thenStatement().is(Tree.Kind.BLOCK)) {
-      List<StatementTree> body = ((BlockTree) secondIf.thenStatement()).body();
+  private void checkUsageAfterAssignment(Symbol symbol, StatementTree thenStatement) {
+    if (thenStatement.is(Tree.Kind.BLOCK)) {
+      List<StatementTree> body = ((BlockTree) thenStatement).body();
       AssignmentExpressionTree foundAssignment = null;
       UsageVisitor usageVisitor = new UsageVisitor(symbol);
       for (StatementTree statementTree : body) {
@@ -127,6 +130,21 @@ public class DoubleCheckedLockingAssignmentCheck extends IssuableSubscriptionVis
       if (symbol.equals(tree.symbol())) {
         usages.add(tree);
       }
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // cut the visit
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      // cut the visit
+    }
+
+    @Override
+    public void visitMethod(MethodTree tree) {
+      // cut the visit
     }
 
     List<JavaFileScannerContext.Location> locations() {
