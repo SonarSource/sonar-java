@@ -43,8 +43,8 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   private static final MethodMatcher TO_STRING = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("toString").withoutParameter();
   private static final MethodMatcherCollection GET_LOGGER = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.util.logging.Logger").name("getLogger").parameters(JAVA_LANG_STRING, JAVA_LANG_STRING),
-    MethodMatcher.create().typeDefinition("java.util.logging.Logger").name("getAnonymousLogger").parameters(JAVA_LANG_STRING)
+    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("getLogger").parameters(JAVA_LANG_STRING, JAVA_LANG_STRING),
+    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("getAnonymousLogger").parameters(JAVA_LANG_STRING)
     );
 
   @Override
@@ -62,7 +62,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       }
     }
     if(!isMessageFormat) {
-      isMessageFormat = LEVELS.contains(mit.symbol().name());
+      isMessageFormat = isLoggingMethod(mit);
       if (isMessageFormat && mit.arguments().get(mit.arguments().size() - 1).symbolType().isSubtypeOf("java.lang.Throwable")) {
         // ignore formatting issues when last argument is a throwable
         return;
@@ -103,7 +103,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       return;
     }
     checkLineFeed(formatString, mit);
-    if (params.isEmpty()) {
+    if (params.isEmpty() && (!args.isEmpty() || !isLoggingMethod(mit))) {
       reportIssue(mit, "String contains no format specifiers.");
       return;
     }
@@ -111,6 +111,11 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     if (!params.isEmpty() && argIndexes(params).size() <= args.size()) {
       verifyParameters(mit, args, params);
     }
+  }
+
+  private static boolean isLoggingMethod(MethodInvocationTree mit) {
+    String methodName = mit.symbol().name();
+    return "log".equals(methodName) || LEVELS.contains(methodName);
   }
 
   private void verifyParameters(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {

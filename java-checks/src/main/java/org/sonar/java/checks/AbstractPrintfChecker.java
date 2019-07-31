@@ -47,28 +47,34 @@ import org.sonar.plugins.java.api.tree.Tree;
 public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
   protected static final String JAVA_LANG_STRING = "java.lang.String";
+  protected static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
+  protected static final String ORG_APACHE_LOGGING_LOG4J_LOGGER = "org.apache.logging.log4j.Logger";
 
   private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
+
+  private static final String PRINTF_METHOD_NAME = "printf";
   private static final String FORMAT_METHOD_NAME = "format";
-  protected static final List<String> LEVELS = Arrays.asList("debug", "error", "info", "trace", "warn");
+  protected static final List<String> LEVELS = Arrays.asList("debug", "error", "info", "trace", "warn", "fatal");
 
   protected static final MethodMatcher MESSAGE_FORMAT = MethodMatcher.create().typeDefinition("java.text.MessageFormat").name(FORMAT_METHOD_NAME).withAnyParameters();
-  protected static final MethodMatcher JAVA_UTIL_LOGGER = MethodMatcher.create().typeDefinition("java.util.logging.Logger").name("log")
+  protected static final MethodMatcher JAVA_UTIL_LOGGER = MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("log")
     .addParameter("java.util.logging.Level")
     .addParameter(JAVA_LANG_STRING)
     .addParameter(TypeCriteria.anyType());
   protected static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,[^}]*)?\\}");
 
+
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     ArrayList<MethodMatcher> matchers = new ArrayList<>(slf4jMethods());
+    matchers.addAll(log4jMethods());
     matchers.addAll(Arrays.asList(
       MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.io.PrintStream").name("printf").withAnyParameters(),
+      MethodMatcher.create().typeDefinition("java.io.PrintStream").name(PRINTF_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withAnyParameters(),
+      MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(PRINTF_METHOD_NAME).withAnyParameters(),
       MESSAGE_FORMAT,
       JAVA_UTIL_LOGGER
       ));
@@ -79,6 +85,16 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     return LEVELS.stream()
       .map(l -> MethodMatcher.create().typeDefinition("org.slf4j.Logger").name(l).withAnyParameters())
       .collect(Collectors.toList());
+  }
+
+  private static Collection<MethodMatcher> log4jMethods() {
+    List<MethodMatcher> matchers = new ArrayList<>();
+    matchers.add(MethodMatcher.create().typeDefinition(ORG_APACHE_LOGGING_LOG4J_LOGGER).name(PRINTF_METHOD_NAME).withAnyParameters());
+    matchers.add(MethodMatcher.create().typeDefinition(ORG_APACHE_LOGGING_LOG4J_LOGGER).name("log").withAnyParameters());
+    matchers.addAll(LEVELS.stream()
+      .map(l -> MethodMatcher.create().typeDefinition(ORG_APACHE_LOGGING_LOG4J_LOGGER).name(l).withAnyParameters())
+      .collect(Collectors.toList()));
+    return matchers;
   }
 
   protected final void checkFormatting(MethodInvocationTree mit, boolean isMessageFormat) {
@@ -94,12 +110,20 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
       formatTree = arguments.get(0);
       args = arguments.subList(1, arguments.size());
     } else {
-      // format method with "Locale" first argument, skip that one.
+      if (arguments.size() < 2) {
+        // probably use a lambda or any other supplier form to get a message
+        return;
+      }
+      // format method with "Locale" or "Level" as first argument, skip that one.
       formatTree = arguments.get(1);
       args = arguments.subList(2, arguments.size());
     }
     if (formatTree.is(Tree.Kind.STRING_LITERAL)) {
       String formatString = LiteralUtils.trimQuotes(((LiteralTree) formatTree).value());
+      if (mit.symbol().owner().type().is(ORG_APACHE_LOGGING_LOG4J_LOGGER)) {
+        // Log4J supports both approaches
+        isMessageFormat = formatString.contains("{}");
+      }
       if (isMessageFormat) {
         handleMessageFormat(mit, formatString, args);
       } else {
@@ -124,9 +148,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     return formatString.replaceAll("\'\'", "");
   }
 
-
   protected static Set<Integer> getMessageFormatIndexes(String formatString, MethodInvocationTree mit) {
-    if(LEVELS.contains(mit.symbol().name())) {
+    if (LEVELS.contains(mit.symbol().name()) || formatString.contains("{}")) {
       return IntStream.range(0, StringUtils.countMatches(formatString, "{}")).boxed().collect(Collectors.toSet());
     }
     Matcher matcher = MESSAGE_FORMAT_PATTERN.matcher(formatString);

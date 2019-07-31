@@ -201,6 +201,35 @@ class A {
     java.util.logging.Logger logger4 = getLog();
     logger4.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
     this.loggerField.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
+
+    org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message");  // Compliant
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message", 1);  // Noncompliant {{String contains no format specifiers.}}
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", 1);  // Compliant
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", 1, "hello");  // Noncompliant
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1);  // Compliant
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1, "hello");  // Noncompliant
+
+    log4j.debug("message"); // Compliant
+    log4j.debug("message", 1); // Noncompliant
+    log4j.error("message", 1); // Noncompliant
+    log4j.fatal("message", 1); // Noncompliant
+    log4j.info("message", 1); // Noncompliant
+    log4j.trace("message", 1); // Noncompliant
+    log4j.warn("message", 1); // Noncompliant
+    log4j.warn("message {}", 1, 2); // Noncompliant {{2nd argument is not used.}}
+
+    log4j.debug("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+
+    log4j.debug(() -> "hello"); // Compliant
+    log4j.debug("message {}", 1); // Compliant
+    log4j.debug("message {}", () -> 1); // Compliant
+    log4j.debug("message %s message %d", "hello", 42); // Compliant
+    log4j.debug("message %s message", "hello", 42); // Noncompliant {{2nd argument is not used.}}
+
+    log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message"); // Noncompliant {{String contains no format specifiers.}} 
+    log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s %d", "hello", 42); // Compliant - Java formatters
+    log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s", "hello", 42); // Noncompliant {{2nd argument is not used.}}
   }
 
   private java.util.logging.Logger getLog() {
@@ -230,4 +259,3 @@ class sonarjava3044 {
     log.debug("message");
   }
 }
-
