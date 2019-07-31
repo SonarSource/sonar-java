@@ -35,12 +35,18 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
+
+  protected static final String JAVA_LANG_STRING = "java.lang.String";
 
   private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
   private static final String FORMAT_METHOD_NAME = "format";
@@ -49,7 +55,7 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   protected static final MethodMatcher MESSAGE_FORMAT = MethodMatcher.create().typeDefinition("java.text.MessageFormat").name(FORMAT_METHOD_NAME).withAnyParameters();
   protected static final MethodMatcher JAVA_UTIL_LOGGER = MethodMatcher.create().typeDefinition("java.util.logging.Logger").name("log")
     .addParameter("java.util.logging.Level")
-    .addParameter("java.lang.String")
+    .addParameter(JAVA_LANG_STRING)
     .addParameter(TypeCriteria.anyType());
   protected static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,[^}]*)?\\}");
 
@@ -57,7 +63,7 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     ArrayList<MethodMatcher> matchers = new ArrayList<>(slf4jMethods());
     matchers.addAll(Arrays.asList(
-      MethodMatcher.create().typeDefinition("java.lang.String").name(FORMAT_METHOD_NAME).withAnyParameters(),
+      MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.io.PrintStream").name("printf").withAnyParameters(),
@@ -75,11 +81,40 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
       .collect(Collectors.toList());
   }
 
-
+  protected final void checkFormatting(MethodInvocationTree mit, boolean isMessageFormat) {
+    Arguments arguments = mit.arguments();
+    if (arguments.stream().map(ExpressionTree::symbolType).anyMatch(Type::isUnknown)) {
+      // method resolved but not all the parameters are
+      return;
+    }
+    ExpressionTree formatTree;
+    List<ExpressionTree> args;
+    // Check type of first argument:
+    if (arguments.get(0).symbolType().is(JAVA_LANG_STRING)) {
+      formatTree = arguments.get(0);
+      args = arguments.subList(1, arguments.size());
+    } else {
+      // format method with "Locale" first argument, skip that one.
+      formatTree = arguments.get(1);
+      args = arguments.subList(2, arguments.size());
+    }
+    if (formatTree.is(Tree.Kind.STRING_LITERAL)) {
+      String formatString = LiteralUtils.trimQuotes(((LiteralTree) formatTree).value());
+      if (isMessageFormat) {
+        handleMessageFormat(mit, formatString, args);
+      } else {
+        handlePrintfFormat(mit, formatString, args);
+      }
+    } else {
+      handleOtherFormatTree(mit, formatTree);
+    }
+  }
 
   protected abstract void handlePrintfFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args);
 
   protected abstract void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args);
+
+  protected abstract void handleOtherFormatTree(MethodInvocationTree mit, ExpressionTree formatTree);
 
   protected static boolean isNewArrayWithInitializers(ExpressionTree expression) {
     return expression.is(Tree.Kind.NEW_ARRAY) && ((NewArrayTree) expression).openBraceToken() != null;
