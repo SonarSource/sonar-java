@@ -184,6 +184,31 @@ class A {
     String fileKey;
     slf4jLog.warn("The resource for '{}' is not found, drilling down to the details of this test won't be possible", fileKey);
     slf4jLog.warn("The resource for is not found, drilling down to the details of this test won't be possible");
+
+    org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message");  // Compliant
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}");  // Noncompliant {{Not enough arguments.}}
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", 1);  // Compliant
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {} {}", 1);  // Noncompliant
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1);  // Compliant
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message %d %s", 1, "hello");  // Compliant
+
+    log4j.debug("message"); // Compliant
+    log4j.debug("message {} {}", 1); // Noncompliant
+    log4j.error("message {} {}", 1); // Noncompliant
+    log4j.fatal("message {} {}", 1); // Noncompliant
+    log4j.info("message {} {}", 1); // Noncompliant
+    log4j.trace("message {} {}", 1); // Noncompliant
+    log4j.warn("message {} {}", 1); // Noncompliant
+    log4j.warn("message {} {} {}", 1, 2); // Noncompliant {{Not enough arguments.}}
+
+    log4j.debug(() -> "hello"); // Compliant
+    log4j.debug("message {}", 1); // Compliant
+    log4j.debug("message {}", () -> 1); // Compliant
+    log4j.debug("message %s message %d", "hello", "world"); // Noncompliant {{An 'int' is expected rather than a String.}}
+    log4j.debug("message %s message %d %s", "hello", 42); // Noncompliant {{Not enough arguments.}}
+
+    log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s %d", "hello", 42); // Compliant - Java formatters
   }
 }
 
