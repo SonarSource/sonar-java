@@ -24,13 +24,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2275")
 public class PrintfFailCheck extends AbstractPrintfChecker {
@@ -62,33 +59,7 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
         return;
       }
     }
-    checkFormatting(mit, isMessageFormat);
-  }
-
-  private void checkFormatting(MethodInvocationTree mit, boolean isMessageFormat) {
-    if (mit.arguments().stream().map(ExpressionTree::symbolType).anyMatch(Type::isUnknown)) {
-      // method resolved but not all the parameters are
-      return;
-    }
-    ExpressionTree formatStringTree;
-    List<ExpressionTree> args;
-    // Check type of first argument:
-    if (mit.arguments().get(0).symbolType().is("java.lang.String")) {
-      formatStringTree = mit.arguments().get(0);
-      args = mit.arguments().subList(1, mit.arguments().size());
-    } else {
-      // format method with "Locale" first argument, skip that one.
-      formatStringTree = mit.arguments().get(1);
-      args = mit.arguments().subList(2, mit.arguments().size());
-    }
-    if (formatStringTree.is(Tree.Kind.STRING_LITERAL)) {
-      String formatString = LiteralUtils.trimQuotes(((LiteralTree) formatStringTree).value());
-      if (isMessageFormat) {
-        handleMessageFormat(mit, formatString, args);
-      } else {
-        handlePrintfFormat(mit, formatString, args);
-      }
-    }
+    super.checkFormatting(mit, isMessageFormat);
   }
 
   @Override
@@ -125,6 +96,11 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
       return;
     }
     verifyParameters(mit, newArgs, indexes);
+  }
+
+  @Override
+  protected void handleOtherFormatTree(MethodInvocationTree mit, ExpressionTree formatTree) {
+    // do nothing
   }
 
   private boolean checkArgumentNumber(MethodInvocationTree mit, int nbReadParams, int nbArgs) {
