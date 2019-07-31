@@ -1,0 +1,54 @@
+<p>Double-checked locking can be used for lazy initialization of <code>volatile</code> fields, but only if field assignment is the last step in the
+<code>synchronized</code> block. Otherwise you run the risk of threads accessing a half-initialized object.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class MyClass {
+
+  private volatile List&lt;String&gt; strings;
+
+  public List&lt;String&gt; getStrings() {
+    if (strings == null) {  // check#1
+      synchronized(MyClass.class) {
+        if (strings == null) {
+          strings = new ArrayList&lt;&gt;();  // Noncompliant
+          strings.add("Hello");  //When threadA gets here, threadB can skip the synchronized block because check#1 is false
+          strings.add("World");
+        }
+      }
+    }
+    return strings;
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public class MyClass {
+
+  private volatile List&lt;String&gt; strings;
+
+  public List&lt;String&gt; getStrings() {
+    if (strings == null) {  // check#1
+      synchronized(MyClass.class) {
+        if (strings == null) {
+          List&lt;String&gt; tmpList = new ArrayList&lt;&gt;();
+          tmpList.add("Hello");
+          tmpList.add("World");
+          strings = tmpList;
+        }
+      }
+    }
+    return strings;
+  }
+}
+
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/IgAZAg">CERT, LCK10-J.</a> - Use a correct form of the double-checked locking idiom
+  </li>
+</ul>
+<h3>See Also</h3>
+<ul>
+  <li> {rule:squid:S2168} Double-checked locking should not be used </li>
+</ul>
+
