@@ -8,6 +8,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.jws.WebService;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebServlet;
 
@@ -16,7 +17,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.component.annotations.Configuration;
 import org.codehaus.plexus.component.annotations.Requirement;
 
-class A { // Noncompliant [[sc=7;ec=8;secondary=20]] {{Add a constructor to the class, or provide default values.}}
+class A { // Noncompliant [[sc=7;ec=8;secondary=21]] {{Add a constructor to the class, or provide default values.}}
   private int field;
 }
 
@@ -38,7 +39,7 @@ class C {
   }
 }
 
-enum Enum { // Noncompliant [[secondary=43]] {{Add a constructor to the enum, or provide default values.}}
+enum Enum { // Noncompliant [[secondary=44]] {{Add a constructor to the enum, or provide default values.}}
   A;
   private int field;
 }
@@ -63,7 +64,7 @@ class Spring1 {
   @Autowired
   private MyService myService;
 }
-class Spring2 { // Noncompliant [[secondary=69]]
+class Spring2 { // Noncompliant [[secondary=70]]
   @Autowired
   private MyService myService;
   private MyService myService2;
@@ -73,7 +74,7 @@ class Inject1 {
   @Inject
   private MyService myService;
 }
-class Inject2 { // Noncompliant [[secondary=79]]
+class Inject2 { // Noncompliant [[secondary=80]]
   @Inject
   private MyService myService;
   private MyService myService2;
@@ -138,6 +139,11 @@ public class MyStateful { // Compliant, Java EE Bean managed by application serv
 
 @Stateless
 public class MyStateless { // Compliant, Java EE Bean managed by application server
+  private Object field;
+}
+
+@WebService
+public class MyWebService { // Compliant, Java EE Bean managed by application server
   private Object field;
 }
 
