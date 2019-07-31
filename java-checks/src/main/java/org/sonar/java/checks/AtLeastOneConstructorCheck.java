@@ -38,9 +38,27 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
   private static final List<String> EXCLUDED_ANNOTATIONS = Arrays.asList(
-    "javax.ejb.EJB",
+    "javax.annotation.ManagedBean",
+    "javax.ejb.MessageDriven",
+    "javax.ejb.Singleton",
+    "javax.ejb.Stateful",
+    "javax.ejb.Stateless",
+    "javax.jws.WebService",
+    "javax.servlet.annotation.WebFilter",
+    "javax.servlet.annotation.WebServlet",
     "org.apache.maven.plugins.annotations.Mojo",
     "org.codehaus.plexus.component.annotations.Component");
+
+  private static final List<String> AUTOWIRED_ANNOTATIONS = Arrays.asList(
+    "javax.annotation.Resource",
+    "javax.ejb.EJB",
+    "javax.inject.Inject",
+    "org.apache.maven.plugins.annotations.Component",
+    "org.apache.maven.plugins.annotations.Parameter",
+    "org.codehaus.plexus.component.annotations.Requirement",
+    "org.codehaus.plexus.component.annotations.Configuration",
+    "org.springframework.beans.factory.annotation.Autowired"
+    );
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -77,20 +95,15 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
 
   private static boolean requiresInitialization(VariableTree variable) {
     Symbol symbol = variable.symbol();
-    return variable.initializer() == null && symbol.isPrivate() && !symbol.isStatic() && isNotEJBAnnotated(symbol) &&!isAutowired(symbol);
+    return variable.initializer() == null && symbol.isPrivate() && !symbol.isStatic() && !isAutowired(symbol);
   }
 
   private static boolean isAutowired(Symbol symbol) {
-    return symbol.metadata().isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired") ||
-      symbol.metadata().isAnnotatedWith("javax.inject.Inject");
+    return AUTOWIRED_ANNOTATIONS.stream().anyMatch(symbol.metadata()::isAnnotatedWith);
   }
 
   private static boolean isAnnotationExcluded(Symbol symbol) {
     return EXCLUDED_ANNOTATIONS.stream().anyMatch(symbol.metadata()::isAnnotatedWith);
-  }
-
-  private static boolean isNotEJBAnnotated(Symbol symbol) {
-    return symbol.metadata().annotations().stream().noneMatch(a -> a.symbol().owner().name().equals("javax.ejb"));
   }
 
   private static boolean isBuilderPatternName(String name) {
