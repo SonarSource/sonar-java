@@ -30,6 +30,7 @@ import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -129,6 +130,9 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDynamicString(ExpressionTree arg) {
+    if (arg.is(Tree.Kind.PLUS_ASSIGNMENT)) {
+      return ConstantUtils.resolveAsConstant(((AssignmentExpressionTree)arg).expression()) == null;
+    }
     if (arg.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) arg).symbol();
       ExpressionTree initializerOrExpression = getInitializerOrExpression(symbol.declaration());

@@ -76,6 +76,25 @@ class A {
 
       String sql = "SELECT lastname, firstname FROM employee where uid = '" + param + "'";
       entityManager.createNativeQuery(sql); // Noncompliant
+
+      String concatenatedQuery0 = "SELECT * ";
+      concatenatedQuery0 += "FROM " + param;
+      rs = stmt.executeQuery(concatenatedQuery0); // Noncompliant
+
+      String concatenatedQuery = "SELECT * FROM ";
+      concatenatedQuery += param;
+      rs = stmt.executeQuery(concatenatedQuery); // Noncompliant
+
+      String concatenatedQuery2 = "SELECT * FROM ";
+      concatenatedQuery2 += param;
+      concatenatedQuery2 += "WHERE Snum =2";
+      rs = stmt.executeQuery(concatenatedQuery2); // Noncompliant
+
+      String concatenatedQuery3 = "SELECT * FROM ";
+      concatenatedQuery3 += "MYTABLE ";
+      concatenatedQuery3 += "WHERE Snum = 2";
+      rs = stmt.executeQuery(concatenatedQuery3); // Compliant
+
     } catch (Exception e) {
     }
   }
