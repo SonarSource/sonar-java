@@ -108,13 +108,10 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
         return true;
       }
       Integer strlen = length(str);
-      if (index != null && strlen != null && !(index < strlen)) {
+      if (index != null && strlen != null && index >= strlen) {
         return true;
       }
-      if (isStringLength(str, args.get(0))) {
-        return true;
-      }
-      return false;
+      return isStringLength(str, args.get(0));
     });
   }
 
@@ -125,10 +122,7 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
         return true;
       }
       Integer strlen = length(str);
-      if (index != null && strlen != null && index > strlen) {
-        return true;
-      }
-      return false;
+      return index != null && strlen != null && index > strlen;
     });
   }
 
@@ -147,10 +141,7 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
         return true;
       }
       Integer dstBegin = constant(args.get(3));
-      if (dstBegin != null && dstBegin < 0) {
-        return true;
-      }
-      return false;
+      return dstBegin != null && dstBegin < 0;
     });
   }
 
@@ -161,10 +152,7 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
         return true;
       }
       Integer strlen = length(str);
-      if (index != null && strlen != null && index > strlen) {
-        return true;
-      }
-      return false;
+      return index != null && strlen != null && index > strlen;
     });
   }
 
@@ -179,10 +167,7 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
         return true;
       }
       Integer strlen = length(str);
-      if (index != null && strlen != null && index > strlen) {
-        return true;
-      }
-      return false;
+      return index != null && strlen != null && index > strlen;
     });
   }
 
@@ -197,10 +182,7 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
         return true;
       }
       Integer strlen = length(str);
-      if (endIndex != null && strlen != null && endIndex > strlen) {
-        return true;
-      }
-      return false;
+      return endIndex != null && strlen != null && endIndex > strlen;
     });
   }
 
@@ -209,9 +191,7 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
       MethodInvocationTree invocation = (MethodInvocationTree) tree;
       if (STRING_LENGTH.matches(invocation) && invocation.methodSelect().is(Kind.MEMBER_SELECT)) {
         ExpressionTree expr = ((MemberSelectExpressionTree) invocation.methodSelect()).expression();
-        if (expr.is(Kind.IDENTIFIER)) {
-          return ((IdentifierTree) str).symbol().equals(((IdentifierTree) expr).symbol());
-        }
+        return expr.is(Kind.IDENTIFIER) && ((IdentifierTree) str).symbol().equals(((IdentifierTree) expr).symbol());
       }
     }
     return false;
