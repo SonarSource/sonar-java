@@ -10,10 +10,6 @@
     "cwe",
     "cert"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-1174",
   "sqKey": "S1174",

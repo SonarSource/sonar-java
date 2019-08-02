@@ -13,11 +13,6 @@
     "owasp-a2",
     "owasp-a3"
   ],
-  "standards": [
-    "CWE",
-    "OWASP Top 10",
-    "SANS Top 25"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2092",
   "sqKey": "S2092",

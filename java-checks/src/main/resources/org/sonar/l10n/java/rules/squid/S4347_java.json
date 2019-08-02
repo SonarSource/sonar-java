@@ -12,10 +12,6 @@
     "owasp-a6",
     "pitfall"
   ],
-  "standards": [
-    "CWE",
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4347",
   "sqKey": "S4347",

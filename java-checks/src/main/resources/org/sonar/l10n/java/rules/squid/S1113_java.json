@@ -10,9 +10,6 @@
     "unpredictable",
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-1113",
   "sqKey": "ObjectFinalizeOverridenCheck",

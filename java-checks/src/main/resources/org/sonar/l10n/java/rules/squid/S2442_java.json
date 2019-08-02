@@ -11,9 +11,6 @@
     "cert",
     "clumsy"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2442",
   "sqKey": "S2442",

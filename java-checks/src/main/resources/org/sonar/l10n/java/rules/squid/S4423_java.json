@@ -12,11 +12,6 @@
     "sans-top25-porous",
     "owasp-a3"
   ],
-  "standards": [
-    "CWE",
-    "OWASP Top 10",
-    "SANS Top 25"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-4423",
   "sqKey": "S4423",

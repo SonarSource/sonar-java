@@ -9,14 +9,8 @@
   "tags": [
     "cwe",
     "overflow",
-    "based-on-misra",
     "sans-top25-risky",
     "cert"
-  ],
-  "standards": [
-    "CWE",
-    "CERT",
-    "SANS Top 25"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2184",

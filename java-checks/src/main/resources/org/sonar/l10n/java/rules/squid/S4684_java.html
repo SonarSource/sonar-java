@@ -75,6 +75,9 @@ public class PurchaseOrderController {
   }
 }
 </pre>
+<h2>Exceptions</h2>
+<p>No issue is reported when the parameter is annotated with <code>@PathVariable</code> from Spring Framework, since the lookup will be done via id,
+the object cannot be forged on client side.</p>
 <h2>See</h2>
 <ul>
   <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control">OWASP Top 10 2017 Category A5</a> - Broken Access Control </li>

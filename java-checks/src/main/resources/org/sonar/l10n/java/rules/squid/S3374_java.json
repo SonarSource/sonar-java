@@ -10,9 +10,6 @@
     "cwe",
     "struts"
   ],
-  "standards": [
-    "CWE"
-  ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-3374",
   "sqKey": "S3374",

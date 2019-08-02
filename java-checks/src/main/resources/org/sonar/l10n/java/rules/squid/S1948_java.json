@@ -10,9 +10,6 @@
     "cwe",
     "serialization"
   ],
-  "standards": [
-    "CWE"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-1948",
   "sqKey": "S1948",

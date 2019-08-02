@@ -11,10 +11,6 @@
     "error-handling",
     "cert"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-1143",
   "sqKey": "S1143",

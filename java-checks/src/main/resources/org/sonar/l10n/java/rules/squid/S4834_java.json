@@ -6,9 +6,6 @@
     "sans-top25-porous",
     "owasp-a5"
   ],
-  "standards": [
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4834",
   "sqKey": "S4834",

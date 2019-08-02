@@ -12,10 +12,6 @@
     "jee",
     "owasp-a5"
   ],
-  "standards": [
-    "CWE",
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-3369",
   "sqKey": "S3369",

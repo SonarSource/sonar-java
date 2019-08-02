@@ -10,9 +10,6 @@
     "cwe",
     "error-handling"
   ],
-  "standards": [
-    "CWE"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2221",
   "sqKey": "S2221",

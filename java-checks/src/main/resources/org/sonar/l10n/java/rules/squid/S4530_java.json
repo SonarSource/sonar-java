@@ -11,9 +11,6 @@
     "owasp-a1",
     "struts"
   ],
-  "standards": [
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-4530",
   "sqKey": "S4530",

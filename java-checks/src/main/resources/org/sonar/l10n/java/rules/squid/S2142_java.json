@@ -11,9 +11,6 @@
     "error-handling",
     "multi-threading"
   ],
-  "standards": [
-    "CWE"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2142",
   "sqKey": "S2142",

@@ -10,9 +10,6 @@
     "bad-practice",
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-106",
   "sqKey": "S106",

@@ -11,10 +11,6 @@
     "cwe",
     "cert"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1182",
   "sqKey": "S1182",

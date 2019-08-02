@@ -11,10 +11,6 @@
     "cert",
     "suspicious"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1698",
   "sqKey": "S1698",

@@ -11,9 +11,6 @@
     "struts",
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2226",
   "sqKey": "S2226",

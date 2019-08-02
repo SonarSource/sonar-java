@@ -69,6 +69,9 @@ class BeansRegex implements Serializable {
 <h2>Exceptions</h2>
 <p>Calls to <code>String.split(regex)</code> and <code>String.split(regex, limit)</code> will not raise an exception despite their use of a regular
 expression. These methods are used most of the time to split on simple regular expressions which don't create any vulnerabilities.</p>
+<p>Some corner-case regular expressions will not raise an issue even though they might be vulnerable. For example: <code>(a|aa)+</code>,
+<code>(a|a?)+</code>.</p>
+<p>It is a good idea to test your regular expression if it has the same pattern on both side of a "<code>|</code>".</p>
 <h2>See</h2>
 <ul>
   <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A1-Injection">OWASP Top 10 2017 Category A1</a> - Injection </li>

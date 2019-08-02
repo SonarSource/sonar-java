@@ -13,11 +13,6 @@
     "cert",
     "suspicious"
   ],
-  "standards": [
-    "CWE",
-    "CERT",
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1166",
   "sqKey": "S1166",

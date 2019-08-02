@@ -12,11 +12,6 @@
     "cert",
     "owasp-a3"
   ],
-  "standards": [
-    "CWE",
-    "CERT",
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1989",
   "sqKey": "S1989",

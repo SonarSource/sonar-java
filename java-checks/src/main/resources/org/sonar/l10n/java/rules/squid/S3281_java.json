@@ -9,9 +9,6 @@
   "tags": [
     "owasp-a6"
   ],
-  "standards": [
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-3281",
   "sqKey": "S3281",

@@ -10,9 +10,6 @@
     "unpredictable",
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1449",
   "sqKey": "S1449",

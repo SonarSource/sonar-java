@@ -11,11 +11,6 @@
     "cert",
     "owasp-a6"
   ],
-  "standards": [
-    "CWE",
-    "CERT",
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-4424",
   "sqKey": "S4424",

@@ -9,9 +9,6 @@
   "tags": [
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1168",
   "sqKey": "S1168",

@@ -10,9 +10,6 @@
     "android",
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1075",
   "sqKey": "S1075",

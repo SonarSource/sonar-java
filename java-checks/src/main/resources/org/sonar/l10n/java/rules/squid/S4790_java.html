@@ -34,7 +34,7 @@ original data with another one having the same hash.</p>
   <li> the strength of hashing algorithms often decreases over time as hardware capabilities increase. Check regularly that the algorithms you are
   using are still considered secure. If needed, rehash your data using a stronger algorithm. </li>
 </ul>
-<h2>Questionable Code Example</h2>
+<h2>Sensitive Code Example</h2>
 <pre>
 // === MessageDigest ===
 import java.security.MessageDigest;
@@ -42,9 +42,9 @@ import java.security.Provider;
 
 class A {
     void foo(String algorithm, String providerStr, Provider provider) throws Exception {
-        MessageDigest.getInstance(algorithm); // Questionable
-        MessageDigest.getInstance(algorithm, providerStr); // Questionable
-        MessageDigest.getInstance(algorithm, provider); // Questionable
+        MessageDigest.getInstance(algorithm); // Sensitive
+        MessageDigest.getInstance(algorithm, providerStr); // Sensitive
+        MessageDigest.getInstance(algorithm, provider); // Sensitive
     }
 }
 </pre>
@@ -59,7 +59,7 @@ import javax.crypto.SecretKeyFactory;
 
 class A {
     void foo(char[] password, byte[] salt, int iterationCount, int keyLength) throws Exception {
-        // Questionable. Review this, even if it is the way recommended by OWASP
+        // Sensitive. Review this, even if it is the way recommended by OWASP
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterationCount, keyLength);
         factory.generateSecret(spec).getEncoded();
@@ -74,11 +74,11 @@ import com.google.common.hash.Hashing;
 
 class A {
     void foo() {
-        Hashing.md5(); // Questionable
-        Hashing.sha1(); // Questionable
-        Hashing.sha256(); // Questionable
-        Hashing.sha384(); // Questionable
-        Hashing.sha512(); // Questionable
+        Hashing.md5(); // Sensitive
+        Hashing.sha1(); // Sensitive
+        Hashing.sha256(); // Sensitive
+        Hashing.sha384(); // Sensitive
+        Hashing.sha512(); // Sensitive
     }
 }
 </pre>
@@ -88,66 +88,79 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 class A {
     void foo(String strName, byte[] data, String str, java.io.InputStream stream) throws Exception {
-        new DigestUtils(strName); // Questionable
-        new DigestUtils(); // Questionable
+        new DigestUtils(strName); // Sensitive
+        new DigestUtils(); // Sensitive
 
-        DigestUtils.getMd2Digest(); // Questionable
-        DigestUtils.getMd5Digest(); // Questionable
-        DigestUtils.getShaDigest(); // Questionable
-        DigestUtils.getSha1Digest(); // Questionable
-        DigestUtils.getSha256Digest(); // Questionable
-        DigestUtils.getSha384Digest(); // Questionable
-        DigestUtils.getSha512Digest(); // Questionable
+        DigestUtils.getMd2Digest(); // Sensitive
+        DigestUtils.getMd5Digest(); // Sensitive
+        DigestUtils.getShaDigest(); // Sensitive
+        DigestUtils.getSha1Digest(); // Sensitive
+        DigestUtils.getSha256Digest(); // Sensitive
+        DigestUtils.getSha384Digest(); // Sensitive
+        DigestUtils.getSha512Digest(); // Sensitive
 
 
-        DigestUtils.md2(data); // Questionable
-        DigestUtils.md2(stream); // Questionable
-        DigestUtils.md2(str); // Questionable
-        DigestUtils.md2Hex(data); // Questionable
-        DigestUtils.md2Hex(stream); // Questionable
-        DigestUtils.md2Hex(str); // Questionable
+        DigestUtils.md2(data); // Sensitive
+        DigestUtils.md2(stream); // Sensitive
+        DigestUtils.md2(str); // Sensitive
+        DigestUtils.md2Hex(data); // Sensitive
+        DigestUtils.md2Hex(stream); // Sensitive
+        DigestUtils.md2Hex(str); // Sensitive
 
-        DigestUtils.md5(data); // Questionable
-        DigestUtils.md5(stream); // Questionable
-        DigestUtils.md5(str); // Questionable
-        DigestUtils.md5Hex(data); // Questionable
-        DigestUtils.md5Hex(stream); // Questionable
-        DigestUtils.md5Hex(str); // Questionable
+        DigestUtils.md5(data); // Sensitive
+        DigestUtils.md5(stream); // Sensitive
+        DigestUtils.md5(str); // Sensitive
+        DigestUtils.md5Hex(data); // Sensitive
+        DigestUtils.md5Hex(stream); // Sensitive
+        DigestUtils.md5Hex(str); // Sensitive
 
-        DigestUtils.sha(data); // Questionable
-        DigestUtils.sha(stream); // Questionable
-        DigestUtils.sha(str); // Questionable
-        DigestUtils.shaHex(data); // Questionable
-        DigestUtils.shaHex(stream); // Questionable
-        DigestUtils.shaHex(str); // Questionable
+        DigestUtils.sha(data); // Sensitive
+        DigestUtils.sha(stream); // Sensitive
+        DigestUtils.sha(str); // Sensitive
+        DigestUtils.shaHex(data); // Sensitive
+        DigestUtils.shaHex(stream); // Sensitive
+        DigestUtils.shaHex(str); // Sensitive
 
-        DigestUtils.sha1(data); // Questionable
-        DigestUtils.sha1(stream); // Questionable
-        DigestUtils.sha1(str); // Questionable
-        DigestUtils.sha1Hex(data); // Questionable
-        DigestUtils.sha1Hex(stream); // Questionable
-        DigestUtils.sha1Hex(str); // Questionable
+        DigestUtils.sha1(data); // Sensitive
+        DigestUtils.sha1(stream); // Sensitive
+        DigestUtils.sha1(str); // Sensitive
+        DigestUtils.sha1Hex(data); // Sensitive
+        DigestUtils.sha1Hex(stream); // Sensitive
+        DigestUtils.sha1Hex(str); // Sensitive
 
-        DigestUtils.sha256(data); // Questionable
-        DigestUtils.sha256(stream); // Questionable
-        DigestUtils.sha256(str); // Questionable
-        DigestUtils.sha256Hex(data); // Questionable
-        DigestUtils.sha256Hex(stream); // Questionable
-        DigestUtils.sha256Hex(str); // Questionable
+        DigestUtils.sha256(data); // Sensitive
+        DigestUtils.sha256(stream); // Sensitive
+        DigestUtils.sha256(str); // Sensitive
+        DigestUtils.sha256Hex(data); // Sensitive
+        DigestUtils.sha256Hex(stream); // Sensitive
+        DigestUtils.sha256Hex(str); // Sensitive
 
-        DigestUtils.sha384(data); // Questionable
-        DigestUtils.sha384(stream); // Questionable
-        DigestUtils.sha384(str); // Questionable
-        DigestUtils.sha384Hex(data); // Questionable
-        DigestUtils.sha384Hex(stream); // Questionable
-        DigestUtils.sha384Hex(str); // Questionable
+        DigestUtils.sha384(data); // Sensitive
+        DigestUtils.sha384(stream); // Sensitive
+        DigestUtils.sha384(str); // Sensitive
+        DigestUtils.sha384Hex(data); // Sensitive
+        DigestUtils.sha384Hex(stream); // Sensitive
+        DigestUtils.sha384Hex(str); // Sensitive
 
-        DigestUtils.sha512(data); // Questionable
-        DigestUtils.sha512(stream); // Questionable
-        DigestUtils.sha512(str); // Questionable
-        DigestUtils.sha512Hex(data); // Questionable
-        DigestUtils.sha512Hex(stream); // Questionable
-        DigestUtils.sha512Hex(str); // Questionable
+        DigestUtils.sha512(data); // Sensitive
+        DigestUtils.sha512(stream); // Sensitive
+        DigestUtils.sha512(str); // Sensitive
+        DigestUtils.sha512Hex(data); // Sensitive
+        DigestUtils.sha512Hex(stream); // Sensitive
+        DigestUtils.sha512Hex(str); // Sensitive
     }
 }
 </pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure
+  </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/916.html">MITRE, CWE-916</a> - Use of Password Hash With Insufficient Computational Effort
+  </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/759.html">MITRE, CWE-759</a> - Use of a One-Way Hash without a Salt </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/760.html">MITRE, CWE-760</a> - Use of a One-Way Hash with a Predictable Salt </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+</ul>
+

@@ -9,9 +9,6 @@
   "tags": [
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2162",
   "sqKey": "S2162",

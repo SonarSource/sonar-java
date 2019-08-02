@@ -11,10 +11,6 @@
     "cert",
     "unused"
   ],
-  "standards": [
-    "CWE",
-    "CERT"
-  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1854",
   "sqKey": "S1854",

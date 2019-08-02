@@ -11,10 +11,6 @@
     "spring",
     "owasp-a5"
   ],
-  "standards": [
-    "CWE",
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4684",
   "sqKey": "S4684",

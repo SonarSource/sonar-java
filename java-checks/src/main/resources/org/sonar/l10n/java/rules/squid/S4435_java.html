@@ -1,7 +1,7 @@
 <p>An XML External Entity or XSLT External Entity (XXE) vulnerability can occur when a <code>javax.xml.transform.Transformer</code> is created without
-enabling "Secure Processing" or when one is created without disabling external DTDs. If that external entity is hijacked by an attacker it may lead to
-the disclosure of confidential data, denial of service, server side request forgery, port scanning from the perspective of the machine where the
-parser is located, and other system impacts.</p>
+enabling "Secure Processing" or when one is created without disabling resolving of both external DTDs and DTD entities. If that external data is being
+controlled by an attacker it may lead to the disclosure of confidential data, denial of service, server side request forgery, port scanning from the
+perspective of the machine where the parser is located, and other system impacts.</p>
 <p>This rule raises an issue when a <code>Transformer</code> is created without either of these settings.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

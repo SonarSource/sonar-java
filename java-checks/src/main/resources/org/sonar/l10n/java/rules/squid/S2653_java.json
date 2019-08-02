@@ -12,11 +12,6 @@
     "jee",
     "owasp-a3"
   ],
-  "standards": [
-    "CWE",
-    "CERT",
-    "OWASP Top 10"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2653",
   "sqKey": "S2653",

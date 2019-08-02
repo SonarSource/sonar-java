@@ -11,11 +11,23 @@ per <code>@RequestMapping</code>.</p>
 <pre>
 @RequestMapping("/greet")  // Noncompliant
 public String greet(String greetee) {
+}
+
+@RequestMapping(path = "/delete", method = {RequestMethod.GET, RequestMethod.POST}) // Noncompliant
+String delete(@RequestParam("id") String id) {
+  return "Hello from delete";
+}
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
   @RequestMapping("/greet", method = GET)
   public String greet(String greetee) {
+  }
+
+  @RequestMapping(path = "/delete", method = RequestMethod.GET)
+  String delete(@RequestParam("id") String id) {
+   return "Hello from delete";
+  }{code}
 </pre>
 <h2>See</h2>
 <ul>

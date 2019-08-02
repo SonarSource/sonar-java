@@ -8,12 +8,8 @@
   },
   "tags": [
     "convention",
-    "based-on-misra",
     "cert",
     "pitfall"
-  ],
-  "standards": [
-    "CERT"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-818",

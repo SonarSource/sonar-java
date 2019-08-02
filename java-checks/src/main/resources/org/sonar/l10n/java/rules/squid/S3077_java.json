@@ -10,9 +10,6 @@
     "multi-threading",
     "cert"
   ],
-  "standards": [
-    "CERT"
-  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-3077",
   "sqKey": "S3077",
