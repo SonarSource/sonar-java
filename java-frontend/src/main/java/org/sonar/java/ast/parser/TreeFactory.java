@@ -380,10 +380,14 @@ public class TreeFactory {
     return type;
   }
 
-  public WildcardTreeImpl completeWildcardTypeArgument(InternalSyntaxToken queryToken, Optional<WildcardTreeImpl> partial) {
-    return partial.isPresent() ?
+  public WildcardTreeImpl completeWildcardTypeArgument(Optional<List<AnnotationTree>> annotations, InternalSyntaxToken queryToken, Optional<WildcardTreeImpl> partial) {
+    WildcardTreeImpl result = partial.isPresent() ?
       partial.get().complete(queryToken) :
       new WildcardTreeImpl(queryToken);
+    if (annotations.isPresent()) {
+      result.complete(annotations.get());
+    }
+    return result;
   }
 
   public WildcardTreeImpl newWildcardTypeArguments(InternalSyntaxToken extendsOrSuperToken, Optional<List<AnnotationTreeImpl>> annotations, TypeTree type) {
