@@ -23,6 +23,14 @@ pipeline {
     }
     stage('QA') {
       parallel {
+        stage('sanity/linux') {
+          agent {
+            label 'linux'
+          }
+          steps {
+            runBuildWithProfile("sanity")
+          }
+        }
         stage('plugin/DOGFOOD/linux') {
           agent {
             label 'linux'
@@ -45,7 +53,6 @@ pipeline {
             label 'linux'
           }
           steps {
-            runBuildWithProfile("sanity")
             runITs("ruling", "LATEST_RELEASE[7.9]")
           }
         }
@@ -55,7 +62,6 @@ pipeline {
             label 'windows'
           }
           steps {
-            runBuildWithProfile("sanity")
             runITs("ruling", "LATEST_RELEASE[7.9]")
           }
         }
@@ -122,7 +128,6 @@ def runITs(TEST, SQ_VERSION) {
     }
   }
 }
-
 
 def runQAOS() {
   withMaven(maven: MAVEN_TOOL) {
