@@ -48,7 +48,6 @@ pipeline {
           }
         }
         stage('ruling/LATEST_RELEASE[7.9]/linux') {
-          when { expression { return params.GITHUB_BRANCH.equals('master') } }
           agent {
             label 'linux'
           }
@@ -57,7 +56,6 @@ pipeline {
           }
         }
         stage('ruling/LATEST_RELEASE[7.9]/windows') {
-          when { expression { return params.GITHUB_BRANCH.contains('PULLREQUEST-') } }
           agent {
             label 'windows'
           }
@@ -74,7 +72,6 @@ pipeline {
           }
         }
         stage('QA-OS/windows') {
-          when { expression { return params.GITHUB_BRANCH.equals('master') } }
           agent {
             label 'windows'
           }
@@ -83,7 +80,6 @@ pipeline {
           }
         }
         stage('QA-OS/macOS') {
-          when { expression { return params.GITHUB_BRANCH.equals('master') } }
           agent {
             label 'macosx'
           }
