@@ -337,19 +337,18 @@ public class JavaGrammar {
   public Tree TYPE_ARGUMENT() {
     return b.<Tree>nonterminal(JavaLexer.TYPE_ARGUMENT)
       .is(
-        f.completeTypeArgument(
-          b.zeroOrMore(ANNOTATION()),
-          b.firstOf(
-            f.newBasicTypeArgument(TYPE()),
-            f.completeWildcardTypeArgument(
-              b.token(JavaPunctuator.QUERY),
-              b.optional(
-                f.newWildcardTypeArguments(
-                  b.firstOf(
-                    b.token(JavaKeyword.EXTENDS),
-                    b.token(JavaKeyword.SUPER)),
-                  b.zeroOrMore(ANNOTATION()),
-                  TYPE()))))));
+        b.firstOf(
+          f.newBasicTypeArgument(TYPE()),
+          f.completeWildcardTypeArgument(
+            b.zeroOrMore(ANNOTATION()),
+            b.token(JavaPunctuator.QUERY),
+            b.optional(
+              f.newWildcardTypeArguments(
+                b.firstOf(
+                  b.token(JavaKeyword.EXTENDS),
+                  b.token(JavaKeyword.SUPER)),
+                b.zeroOrMore(ANNOTATION()),
+                TYPE())))));
   }
 
   public TypeParameterListTreeImpl TYPE_PARAMETERS() {
