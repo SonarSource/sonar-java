@@ -51,7 +51,7 @@ public class TypeArgumentTest {
   }
 
   @Test
-  public void syntax_tree() {
+  public void annotations() {
     {
       WildcardTree t = (WildcardTree) parseTypeArgument("@A ?");
       assertEquals(1, t.annotations().size());
@@ -59,9 +59,11 @@ public class TypeArgumentTest {
     {
       ArrayTypeTree t = (ArrayTypeTree) parseTypeArgument("Object @A []");
       assertEquals(1, t.annotations().size());
+      assertEquals(0, t.type().annotations().size());
     }
     {
       ArrayTypeTree t = (ArrayTypeTree) parseTypeArgument("@A Object []");
+      assertEquals(0, t.annotations().size());
       assertEquals(1, t.type().annotations().size());
     }
   }
