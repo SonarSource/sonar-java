@@ -7,7 +7,7 @@ class A implements Comparable<A> {
     return ""; // Noncompliant [[sc=12;ec=14]] {{Remove this method and declare a constant for this value.}}
   }
   char qix() {
-    return ''; // Noncompliant [[sc=12;ec=14]] {{Remove this method and declare a constant for this value.}}
+    return 'c'; // Noncompliant [[sc=12;ec=15]] {{Remove this method and declare a constant for this value.}}
   }
   Object lum() {
     return new Object(); // Compliant
