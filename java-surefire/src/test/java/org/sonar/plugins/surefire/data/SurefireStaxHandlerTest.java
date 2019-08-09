@@ -59,12 +59,6 @@ public class SurefireStaxHandlerTest {
   }
 
   @Test
-  public void shouldSuiteAsInnerClass() throws XMLStreamException {
-    parse("suiteInnerClass.xml");
-    assertThat(index.size(), is(0));
-  }
-
-  @Test
   public void shouldHaveSkippedTests() throws XMLStreamException {
     parse("skippedTests.xml");
     UnitTestClassReport report = index.get("org.sonar.Foo");
