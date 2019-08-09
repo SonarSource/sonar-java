@@ -176,6 +176,13 @@ public class SurefireJavaParserTest {
   }
 
   @Test
+  public void shouldMergeInnerClassReportInExtraFile() throws URISyntaxException {
+    SensorContextTester context = mockContext();
+    parser.collect(context, getDirs("innerClassExtraFile"), true);
+    assertThat(context.measure(":com.example.project.CalculatorTests", CoreMetrics.TESTS).value()).isEqualTo(6);
+  }
+
+  @Test
   public void should_not_count_negative_tests() throws URISyntaxException {
     SensorContextTester context = mockContext();
 

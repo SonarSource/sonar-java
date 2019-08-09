@@ -43,10 +43,6 @@ public class SurefireStaxHandler {
     for (testSuiteEvent = testSuite.getNext(); testSuiteEvent != null; testSuiteEvent = testSuite.getNext()) {
       if (testSuiteEvent.compareTo(SMEvent.START_ELEMENT) == 0) {
         String testSuiteClassName = testSuite.getAttrValue("name");
-        if (StringUtils.contains(testSuiteClassName, "$")) {
-          // test suites for inner classes are ignored
-          return;
-        }
         parseTestCase(testSuiteClassName, testSuite.childCursor(new ElementFilter("testcase")));
       }
     }

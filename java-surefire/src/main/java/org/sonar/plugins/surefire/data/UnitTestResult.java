@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.surefire.data;
 
+import java.util.UUID;
+
 public final class UnitTestResult {
   public static final String STATUS_OK = "ok";
   public static final String STATUS_ERROR = "error";
@@ -31,6 +33,10 @@ public final class UnitTestResult {
   private String stackTrace;
   private String message;
   private long durationMilliseconds = 0L;
+
+  public UnitTestResult() {
+    name = UUID.randomUUID().toString();
+  }
 
   public String getName() {
     return name;
