@@ -1,11 +1,13 @@
-public class Class {
+abstract class Class {
+
+  int a, i;
+  boolean t;
 
   @Annotation1(1 + 2 + 3) // Compliant
   @Annotation2(1 & 2 | 3) // Noncompliant [[sc=16;ec=21]] {{Add parentheses to make the operator precedence explicit.}}
   @Annotation3(key = 1 + 2 + 3) // Compliant
   @Annotation4(key = 1 & 2 | 3) // Noncompliant [[sc=22;ec=27]] {{Add parentheses to make the operator precedence explicit.}}
-  public void method(int[] array, int value) {
-    int a;
+  public int method(int[] array, int value) {
     ;
     // should raise an issue in initializer
     int b = 1 & 2 | 3 & 4; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
@@ -25,46 +27,46 @@ public class Class {
     int[][] c = {{1 & 2 | 3, 2 | 3, 3}, { 1 << 2, 1 + 2 }}; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
 
     b = 1 | new Object() {
-      @Override
       public int method() {
         return 1 & 2; // Compliant
       }
     }.hashCode();
 
-    b = 1 == 2 ? 1 + 1 : 1 - 1; // Noncompliant
-    b = 1 == 2 ? (1 + 1) : (1 - 1); // compliant
-    a ? a ? b : c : c; // Noncompliant
-    a ? foo(): bar(); // Compliant
-    a ? foo(): new bar(); // Compliant
-    a ? foo(): (Type) casted; // Compliant
-    a ? foo[1]: b; // Compliant
-    a ? -1: b; // Compliant
-    a ? +1: b; // Compliant
-    a ? ++i: b; // Compliant
-    a ? i: i++; // Compliant
+    Object o;
+    o = 1 == 2 ? 1 + 1 : 1 - 1; // Noncompliant
+    o = 1 == 2 ? (1 + 1) : (1 - 1); // compliant
+    o = t ? t ? b : c : c; // Noncompliant
+    o = t ? foo() : bar(); // Compliant
+    o = t ? foo() : new Object(); // Compliant
+    o = t ? foo() : (A) o; // Compliant
+    o = t ? array[1] : b; // Compliant
+    o = t ? -1 : b; // Compliant
+    o = t ? +1 : b; // Compliant
+    o = t ? ++i : b; // Compliant
+    o = t ? i : i++; // Compliant
 
     b = b = 1; // Compliant
 
     int d = b = a; // Compliant
 
     do {
-      1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
-    } while (1 & 2 | 3); // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+      b = 1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    } while ((1 & 2 | 3) > 42); // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
 
-    for (1 & 2 | 3;;) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    for (int j = 1 & 2 | 3;;) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
-    for (; 1 & 2 | 3;) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    for (; (1 & 2 | 3) > 42;) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
-    for (;; 1 & 2 | 3) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    for (int j = 0;; j = 1 & 2 | 3) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
     for (;;) {
-      1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+      o = 1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
 
-    if (1 & 2 | 3) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
-      1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    if ((1 & 2 | 3) > 42) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+      o = 1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     } else {
-      1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+      o = 1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
 
     return 1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
@@ -72,37 +74,57 @@ public class Class {
 
     switch (1 & 2 | 3) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
       case 0:
-        1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+        o = 1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
 
-    throw 1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     throw new RuntimeException(); // Compliant
 
-    while (1 & 2 | 3) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
-      1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    while ((1 & 2 | 3) > 42) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+      o = 1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
 
-    1 + 2 << 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
-    1 + 2 & 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
-    1 + 2 ^ 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
-    1 + 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    o = 1 + 2 << 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    o = 1 + 2 & 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    o = 1 + 2 ^ 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    o = 1 + 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
 
-    1 << 2 & 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
-    1 << 2 ^ 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
-    1 << 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    o = 1 << 2 & 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    o = 1 << 2 ^ 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    o = 1 << 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
 
-    1 & 2 ^ 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
-    1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    o = 1 & 2 ^ 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    o = 1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
 
-    1 ^ 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    o = 1 ^ 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
 
-    1 && 2 || 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    o = t && t || t; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
 
-    if ( a = b = c) { // Compliant
+    if (t = t = true) { // Compliant
     }
-    if ( a = b == c) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    if (t = a == i) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
-    String[] array = (value > 0) ? getValue() : new String[0]; // Compliant
-    java.util.concurrent.Executor executor = (exParm == null) ? Runnable::run : exParm; // compliant
+    String[] strings = (value > 0) ? getValue() : new String[0]; // Compliant
+    java.util.concurrent.Executor executor = (ex() == null) ? Runnable::run : ex(); // compliant
   }
+
+  @interface Annotation1 {
+    int value();
+  }
+  @interface Annotation2 {
+    int value();
+  }
+  @interface Annotation3 {
+    int key();
+  }
+  @interface Annotation4 {
+    int key();
+  }
+
+  abstract int foo();
+
+  abstract int bar();
+
+  abstract String[] getValue();
+
+  protected abstract java.util.concurrent.Executor ex();
 }
