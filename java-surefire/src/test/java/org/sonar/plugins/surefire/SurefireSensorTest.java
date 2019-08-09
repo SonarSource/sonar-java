@@ -188,19 +188,6 @@ public class SurefireSensorTest {
   }
 
   @Test
-  public void ignoreSuiteAsInnerClass() throws URISyntaxException {
-    SensorContextTester context = SensorContextTester.create(new File(""));
-    context.fileSystem()
-      .add(resource("org.apache.shindig.protocol.TestHandler"));
-
-    collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/ignoreSuiteAsInnerClass/");
-
-    // ignore TestHandler$Input.xml
-    assertThat(context.measure(":org.apache.shindig.protocol.TestHandler", CoreMetrics.TESTS).value()).isEqualTo(0);
-    assertThat(context.measure(":org.apache.shindig.protocol.TestHandler", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(1);
-  }
-
-  @Test
   public void should_support_reportNameSuffix() throws URISyntaxException {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
