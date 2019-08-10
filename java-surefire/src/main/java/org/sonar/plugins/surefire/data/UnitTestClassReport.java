@@ -19,9 +19,10 @@
  */
 package org.sonar.plugins.surefire.data;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
-
-import java.util.*;
 
 public final class UnitTestClassReport {
   private int errors = 0;
