@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.project.CalculatorTests$DeeplyNestedClass1$DeeplyNestedClass2" tests="1" skipped="0" failures="0" errors="0" timestamp="2019-08-10T08:43:25" hostname="ligx-solus" time="0.001">
+  <properties/>
+  <testcase name="addsThreeNumbers()" classname="com.example.project.CalculatorTests$DeeplyNestedClass1$DeeplyNestedClass2" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

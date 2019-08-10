@@ -19,9 +19,9 @@
  */
 package org.sonar.plugins.surefire.data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.*;
 
 public final class UnitTestClassReport {
   private int errors = 0;
@@ -43,6 +43,10 @@ public final class UnitTestClassReport {
 
   public UnitTestClassReport add(UnitTestResult result) {
     initResults();
+    boolean hasName = results.stream().map(UnitTestResult::getName).anyMatch(result.getName()::equals);
+    if (hasName && StringUtils.contains(result.getName(), "$")) {
+       return this;
+    }
     results.add(result);
     if (result.getStatus().equals(UnitTestResult.STATUS_SKIPPED)) {
       skipped += 1;
