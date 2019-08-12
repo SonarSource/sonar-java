@@ -11,7 +11,6 @@ class A {
     Runtime.getRuntime().exit(); // Noncompliant [[sc=5;ec=30]] {{Remove this call to "exit" or ensure it is really required.}}
     Object o = Runtime.getRuntime().foo;    // Compliant
     Runtime.getRuntime().foo();  // Compliant
-    Runtime.getRuntime()++;      // Compliant
     Runtime.getRuntime().halt(12); // Noncompliant {{Remove this call to "halt" or ensure it is really required.}}
   }
 
