@@ -27,7 +27,6 @@ class A {
     for (int i = x; i > y; i=i*2) {}
     for (int i = x; i > y; i=i-z) {}
     for (int i = x; i > y; object.x = i + 1) {}
-    for (int i = x; i < y; (-i)++) {}
     for (int i = x; i+1 < y; i++) {}
     for (int i = x; i < y; ) {}
     for (int i = x; i > y; update()) {}

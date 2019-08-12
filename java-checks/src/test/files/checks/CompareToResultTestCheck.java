@@ -5,7 +5,9 @@ class MyComparable implements Comparable<MyComparable> {
   public int compareTo(MyComparable other) {
     return 0;
   }
-  
+
+  int field;
+
   public void aMethod(MyComparable other, NotComparable notComparable) {
     if (compareTo(other) == -1) {} // Noncompliant [[sc=26;ec=28]] {{Only the sign of the result should be examined.}}
     if (compareTo(other) == -5) {} // Noncompliant
@@ -32,7 +34,7 @@ class MyComparable implements Comparable<MyComparable> {
     if (c2 == 1) {}
 
     int c3 = compareTo(other);
-    (c3++)++;
+    c3++;
     if (c3 == 1) {}
     
     int c4;
@@ -47,6 +49,10 @@ class MyComparable implements Comparable<MyComparable> {
     if (compareTo(other) + 1 == 1) {}
     if (compareToField == 1) {}    
     if (unknownVar == 1) {}
+
+    this.field = compareTo(other);
+    this.field++;
+    if (this.field == 1) {}
   }
   
   public int compareTo(NotComparable o2) {
