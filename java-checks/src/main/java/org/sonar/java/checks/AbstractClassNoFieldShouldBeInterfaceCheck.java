@@ -102,6 +102,6 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
     return tree.modifiers().annotations().stream()
       .map(AnnotationTree::annotationType)
       .map(TypeTree::symbolType)
-      .noneMatch(type -> type.is("com.google.auto.value.AutoValue") || type.is("org.immutables.value.Value$Immutable"));
+      .noneMatch(type -> type.is("com.google.auto.value.AutoValue") || type.is("com.google.auto.value.AutoValue$Builder") || type.is("org.immutables.value.Value$Immutable"));
   }
 }

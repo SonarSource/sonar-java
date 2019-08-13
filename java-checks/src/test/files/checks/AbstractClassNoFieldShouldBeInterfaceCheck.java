@@ -62,6 +62,10 @@ abstract class Foo { // Compliant
     return new AutoValue_Foo(name);
   }
   abstract String name();
+  @AutoValue.Builder
+  abstract static class Builder {
+    abstract Builder namer(String name);
+  }
 }
 
 @Value.Immutable
