@@ -19,9 +19,9 @@ System.out.println();             // Noncompliant
 System.out.println();             // Compliant - already reported
 System.out.println();             // Compliant - already reported
 
-if (0) {                          // Compliant - already reported
+if (true) {                       // Compliant - already reported
   System.out.println();           // Noncompliant
-  if (0) {                        // Compliant - already reported
+  if (true) {                     // Compliant - already reported
         System.out.println();     // Compliant
     System.out.println();         // Noncompliant {{Make this line start after 8 spaces to indent the code consistently.}}
   }
@@ -157,7 +157,7 @@ interface Qix {
 
 }
 
-static class Baz {
+class Baz {
 
   void foo() {
     new MyInterface() {
@@ -177,7 +177,7 @@ static class Baz {
 
 }
 
- static class Qiz {                      // Noncompliant
+ class Qiz {                      // Noncompliant
   public void foo() {
     switch (0) {
       case 0:
@@ -186,7 +186,7 @@ static class Baz {
     }
 
     System.out.println( // Compliant
-        ); Sysout.out.println(); // Compliant
+        ); System.out.println(); // Compliant
 
     switch (foo) { // Compliant
     }
@@ -238,7 +238,7 @@ static class Baz {
     } catch (NoSuchElementException e) { }
   }
 }
-public @interface Example {
+@interface Example {
   public static class Inner {
     public static final String FOO = "foo";
   }
@@ -276,7 +276,7 @@ class IndentFoo {
 
 }
 
-public interface plop {
+interface plop {
    @Foo
    public static class Inner { // Noncompliant
     public static final String FOO = "foo";
@@ -290,7 +290,7 @@ public interface plop {
     this.inclusionPredicates = new Predicate[] {s -> true};
   }
 
-  void plop() {
+  default void bar() {
     map(p -> {
       String s;
     }).foo().bar();

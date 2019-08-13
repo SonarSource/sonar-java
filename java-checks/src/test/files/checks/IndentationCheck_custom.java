@@ -19,9 +19,9 @@ System.out.println();             // Noncompliant
 System.out.println();             // Compliant - already reported
 System.out.println();             // Compliant
 
-if (0) {                          // Compliant
+if (true) {                       // Compliant
   System.out.println();           // Noncompliant {{Make this line start after 12 spaces to indent the code consistently.}}
-  if (0) {                        // Compliant
+  if (true) {                     // Compliant
         System.out.println();     // Noncompliant {{Make this line start after 16 spaces to indent the code consistently.}}
     System.out.println();         // Compliant
   }
@@ -59,7 +59,7 @@ interface Qix {
 
 }
 
-static class Baz {
+class Baz {
 
   void foo() {                    // Noncompliant {{Make this line start after 4 spaces to indent the code consistently.}}
     new MyInterface() {           // Noncompliant {{Make this line start after 8 spaces to indent the code consistently.}}
@@ -77,7 +77,7 @@ static class Baz {
 
 }
 
- static class Qiz {                      // Noncompliant
+ class Qiz {                             // Noncompliant
   public void foo() {                    // Noncompliant
     switch (0) {                         // Noncompliant
       case 0:
@@ -86,7 +86,7 @@ static class Baz {
     }
 
     System.out.println( // Compliant
-        ); Sysout.out.println(); // Compliant
+        ); System.out.println(); // Compliant
 
     switch (foo) { // Compliant
     }
@@ -116,13 +116,13 @@ static class Baz {
     } catch (NoSuchElementException e) { }
   }
 }
-public @interface Example {
+@interface Example {
   public static class Inner {                    // Noncompliant {{Make this line start after 4 spaces to indent the code consistently.}}
     public static final String FOO = "foo";      // Noncompliant {{Make this line start after 8 spaces to indent the code consistently.}}
   }
 }
 
-class Lambsa {
+class Lambda {
     void foo() {
         IntStream
             .range(1, 5)
