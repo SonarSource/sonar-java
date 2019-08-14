@@ -153,6 +153,10 @@
         <artifactId>sslr-testing-harness</artifactId>
         <version>${sslr.version}</version>
         <exclusions>
+          <exclusion>
+            <groupId>org.easytesting</groupId>
+            <artifactId>fest-assert</artifactId>
+          </exclusion>
           <!-- junit 4.12 depends on more recent hamcrest -->
           <exclusion>
             <artifactId>hamcrest-all</artifactId>

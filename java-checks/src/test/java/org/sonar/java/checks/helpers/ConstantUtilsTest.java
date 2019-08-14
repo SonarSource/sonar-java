@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.helpers.ConstantUtils.resolveAsIntConstant;
 
 public class ConstantUtilsTest {

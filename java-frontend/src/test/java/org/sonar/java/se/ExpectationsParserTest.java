@@ -21,7 +21,7 @@ package org.sonar.java.se;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.fest.assertions.Fail;
+import org.assertj.core.api.Fail;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.Expectations.IssueAttribute.END_COLUMN;
 import static org.sonar.java.se.Expectations.IssueAttribute.END_LINE;
 import static org.sonar.java.se.Expectations.IssueAttribute.FLOWS;
@@ -74,7 +74,7 @@ public class ExpectationsParserTest {
   public void invalid_attribute_name() {
     try {
       Expectations.Parser.parseIssue("// Noncompliant [[invalid]]", LINE);
-      Fail.fail();
+      Fail.fail("exception expected");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("// Noncompliant attributes not valid: invalid");
     }
@@ -100,7 +100,7 @@ public class ExpectationsParserTest {
   public void end_line_attribute() {
     try {
       Expectations.Parser.parseIssue("// Noncompliant [[endLine=-1]] {{message}}", 0);
-      Fail.fail();
+      Fail.fail("exception expected");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
     }
@@ -153,7 +153,7 @@ public class ExpectationsParserTest {
   public void issue_and_flow_on_the_same_line() {
     Expectations.Parser.ParsedComment iaf = Expectations.Parser.parseIssue("// Noncompliant [[flows=id]] flow@id", LINE);
     assertThat(iaf.issue.get(Expectations.IssueAttribute.LINE)).isEqualTo(LINE);
-    assertThat((List<?>) iaf.issue.get(FLOWS)).contains("id");
+    assertThat((List) iaf.issue.get(FLOWS)).contains("id");
     assertThat(iaf.flows).hasSize(1);
     Expectations.FlowComment flow = iaf.flows.iterator().next();
     assertThat(flow.id).isEqualTo("id");
