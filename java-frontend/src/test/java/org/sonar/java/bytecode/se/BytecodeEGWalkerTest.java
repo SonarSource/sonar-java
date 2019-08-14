@@ -54,7 +54,7 @@ import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class BytecodeEGWalkerTest {
 
