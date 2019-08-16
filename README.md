@@ -13,7 +13,7 @@ Features
 * 430+ rules (including 140+ bug detection)
 * Metrics (complexity, number of lines etc.)
 * Import of [test coverage reports](https://docs.sonarqube.org/display/PLUG/Code+Coverage+by+Unit+Tests+for+Java+Project)
-* [Custom rules](https://docs.sonarqube.org/display/PLUG/Custom+Rules+for+Java)
+* [Custom rules](https://docs.sonarqube.org/latest/analysis/languages/java/)
 
 Useful links
 ------------
@@ -44,7 +44,7 @@ To submit a contribution, create a pull request for this repository. Please make
 
 ### Custom Rules
 
-If you have an idea for a rule but you are not sure that everyone needs it you can implement a [custom rule](docs/CUSTOM_RULES.md) available only for you. Note that in order to help you, we highly recommend to first follow the [Custom Rules 101 tutorial](docs/CUSTOM_RULES_101.md) before diving directly into implementing rules from scratch.
+If you have an idea for a rule but you are not sure that everyone needs it you can implement a [custom rule](https://docs.sonarqube.org/latest/analysis/languages/java/) available only for you. Note that in order to help you, we highly recommend to first follow the [Custom Rules 101 tutorial](https://redirect.sonarsource.com/doc/java-custom-rules-guide.html) before diving directly into implementing rules from scratch.
 
 <a name="testing"></a>
 Testing
