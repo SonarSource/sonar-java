@@ -56,6 +56,7 @@ import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
+import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
 import org.sonar.java.SonarComponents;
@@ -194,6 +195,11 @@ public abstract class CheckVerifier {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         return false;
+      }
+
+      @Override
+      public void addAnalysisError(AnalysisError analysisError) {
+        throw new IllegalStateException(String.format("Should not fail analysis (%s)", analysisError.getKind().name()));
       }
     };
     sonarComponents.setSensorContext(context);

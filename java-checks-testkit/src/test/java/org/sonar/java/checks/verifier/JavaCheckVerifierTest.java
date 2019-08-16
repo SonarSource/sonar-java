@@ -36,6 +36,7 @@ import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.check.Rule;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -54,6 +55,7 @@ public class JavaCheckVerifierTest {
 
   private static final String FILENAME_ISSUES = "src/test/files/JavaCheckVerifier.java";
   private static final String FILENAME_NO_ISSUE = "src/test/files/JavaCheckVerifierNoIssue.java";
+  private static final String FILENAME_PARSING_ISSUE = "src/test/files/JavaCheckVerifierParsingIssue.java";
   private static final IssuableSubscriptionVisitor NO_EFFECT_VISITOR = new IssuableSubscriptionVisitor() {
     @Override
     public List<Tree.Kind> nodesToVisit() {
@@ -388,6 +390,38 @@ public class JavaCheckVerifierTest {
     assertThat(throwable)
       .isInstanceOf(AssertionError.class)
       .hasMessage("Rules should be annotated with '@Rule(key = \"...\")' annotation (org.sonar.check.Rule).");
+  }
+
+  @Test
+  public void verify_should_fail_if_files_does_not_parse() {
+    try {
+      JavaCheckVerifier.verify(FILENAME_PARSING_ISSUE, NO_EFFECT_VISITOR);
+      Fail.fail("Should have never reached this step");
+    } catch (Exception e) {
+      assertThat(e).isInstanceOf(AnalysisException.class);
+      assertThat(e.getMessage())
+        .contains("SonarQube is unable to analyze file")
+        .contains(FILENAME_PARSING_ISSUE);
+      Throwable cause = e.getCause();
+      assertThat(cause).isInstanceOf(IllegalStateException.class);
+      assertThat(cause.getMessage()).isEqualTo("Should not fail analysis (PARSE_ERROR)");
+    }
+  }
+
+  @Test
+  public void verifyNoIssue_should_fail_if_files_does_not_parse() {
+    try {
+      JavaCheckVerifier.verifyNoIssue(FILENAME_PARSING_ISSUE, NO_EFFECT_VISITOR);
+      Fail.fail("Should have never reached this step");
+    } catch (Exception e) {
+      assertThat(e).isInstanceOf(AnalysisException.class);
+      assertThat(e.getMessage())
+        .contains("SonarQube is unable to analyze file")
+        .contains(FILENAME_PARSING_ISSUE);
+      Throwable cause = e.getCause();
+      assertThat(cause).isInstanceOf(IllegalStateException.class);
+      assertThat(cause.getMessage()).isEqualTo("Should not fail analysis (PARSE_ERROR)");
+    }
   }
 
   private static DefaultInputFile emptyInputFile() {
