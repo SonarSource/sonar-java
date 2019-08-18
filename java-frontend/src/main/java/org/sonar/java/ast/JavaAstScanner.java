@@ -34,6 +34,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JParser;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -86,7 +87,18 @@ public class JavaAstScanner {
     visitor.setCurrentFile(inputFile);
     try {
       String fileContent = inputFile.contents();
-      Tree ast = parser.parse(fileContent);
+      final String version;
+      if (visitor.getJavaVersion() == null || visitor.getJavaVersion().asInt() < 0) {
+        version = /* default */ "12";
+      } else {
+        version = Integer.toString(visitor.getJavaVersion().asInt());
+      }
+      Tree ast = JParser.parse(
+        version,
+        inputFile.filename(),
+        fileContent,
+        Collections.emptyList()
+      );
       visitor.visitFile(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);

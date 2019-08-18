@@ -156,8 +156,8 @@ public class JavaSquidSensorTest {
     Collection<AnalysisError> analysisErrors = new Gson().fromJson(feedback, new TypeToken<Collection<AnalysisError>>(){}.getType());
     assertThat(analysisErrors).hasSize(1);
     AnalysisError analysisError = analysisErrors.iterator().next();
-    assertThat(analysisError.getMessage()).startsWith("Parse error at line 6 column 1:");
-    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 6 column 1:");
+    assertThat(analysisError.getMessage()).startsWith("Parse error at line 5 column 2:");
+    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 5 column 2:");
     assertThat(analysisError.getFilename()).endsWith("ParseError.java");
     assertThat(analysisError.getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
   }

@@ -18,7 +18,7 @@ import a.b.c.MyAnnotation3;
 import java.lang.String;            // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
 import java.lang.*;                 // Noncompliant {{Remove this unnecessary import: java.lang classes are always implicitly imported.}}
 import a.b.c.Foo;                   // Noncompliant {{Remove this duplicated import.}}
-;
+
 import checks.UselessImportCheck.*;              // Noncompliant {{Remove this unnecessary import: same package classes are always implicitly imported.}}
 import checks.UselessImportCheckClose.*;
 import static checks.UselessImportCheck.Foo.*;
