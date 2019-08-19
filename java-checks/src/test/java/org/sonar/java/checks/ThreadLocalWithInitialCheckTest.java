@@ -30,6 +30,6 @@ public class ThreadLocalWithInitialCheckTest {
 
   @Test
   public void no_issue_prior_to_java_8() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ThreadLocalWithInitialCheck.java", new ThreadLocalWithInitialCheck(), 7);
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ThreadLocalWithInitialCheck_java7.java", new ThreadLocalWithInitialCheck(), 7);
   }
 }

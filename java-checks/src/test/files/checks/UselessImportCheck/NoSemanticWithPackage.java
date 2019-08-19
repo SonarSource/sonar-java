@@ -13,7 +13,7 @@ import a.b.c.MyException2;
 import a.b.c.MyAnnotation1;
 import a.b.c.MyAnnotation2;
 import a.b.c.MyAnnotation3;
-;
+
 import checks.UselessImportCheckClose.*;
 import static checks.UselessImportCheck.Foo.*;
 import checks.UselessImportCheck.foo.*;

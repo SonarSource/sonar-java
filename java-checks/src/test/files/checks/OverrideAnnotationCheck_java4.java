@@ -1,23 +1,6 @@
-class A {
-  void foo(){} // Compliant
-}
 interface I {
-  public void finalize();
-  void bar(); // Compliant
+  void foo();
 }
-interface J extends I {
-  public void finalize(); // Noncompliant
-  void bar();
+class A implements I {
+  void foo(){} // Compliant - the annotation does not exists in java 4
 }
-interface K extends J {
-  public boolean equals(Object obj); // Noncompliant
-}
-class B extends A implements I {
-  void foo() {}
-  void bar() {}
-  @Override
-  protected void finalize() { // Compliant
-    super.finalize();
-  }
-}
-

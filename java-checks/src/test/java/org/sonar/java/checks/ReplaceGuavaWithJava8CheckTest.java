@@ -28,9 +28,10 @@ public class ReplaceGuavaWithJava8CheckTest {
 
   @Test
   public void java8() {
-    JavaCheckVerifier.verifyNoIssue(FILENAME, new ReplaceGuavaWithJava8Check(), 7);
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ReplaceGuavaWithJava8Check_java7.java", new ReplaceGuavaWithJava8Check(), 7);
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME, new ReplaceGuavaWithJava8Check(), 8);
     JavaCheckVerifier.verify(FILENAME, new ReplaceGuavaWithJava8Check(), 8);
     JavaCheckVerifier.verify("src/test/files/checks/ReplaceGuavaWithJava8Check_no_version.java", new ReplaceGuavaWithJava8Check());
   }
+
 }
