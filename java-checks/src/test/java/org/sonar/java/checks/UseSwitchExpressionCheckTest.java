@@ -31,7 +31,7 @@ public class UseSwitchExpressionCheckTest {
 
   @Test
   public void test_no_issue_on_java11() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UseSwitchExpressionCheck.java", new UseSwitchExpressionCheck(), 11);
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UseSwitchExpressionCheck_java11.java", new UseSwitchExpressionCheck(), 11);
   }
 
   @Test

@@ -31,6 +31,6 @@ public class UnderscoreMisplacedOnNumberCheckTest {
 
   @Test
   public void test_java_6() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UnderscoreMisplacedOnNumberCheck.java", new UnderscoreMisplacedOnNumberCheck(), 6);
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UnderscoreMisplacedOnNumberCheck_java6.java", new UnderscoreMisplacedOnNumberCheck(), 6);
   }
 }

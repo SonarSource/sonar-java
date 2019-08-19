@@ -31,6 +31,6 @@ public class UnderscoreOnNumberCheckTest {
 
   @Test
   public void test_java_6() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UnderscoreOnNumberCheck.java", new UnderscoreOnNumberCheck(), 6);
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UnderscoreOnNumberCheck_java6.java", new UnderscoreOnNumberCheck(), 6);
   }
 }
