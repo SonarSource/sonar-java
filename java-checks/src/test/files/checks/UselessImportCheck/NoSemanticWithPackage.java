@@ -1,4 +1,3 @@
-@ParametersAreNonnullByDefault
 package checks.UselessImportCheck;
 import a.b.c.Foo;
 import a.b.c.Bar;
@@ -24,7 +23,6 @@ import pkg.CompliantClass3;
 import pkg.CompliantClass4;
 import java.lang.reflect.Array;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.annotation.*;
 import java.util.ArrayList;
 import java.util.Map;

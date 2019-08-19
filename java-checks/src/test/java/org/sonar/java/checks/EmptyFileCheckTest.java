@@ -41,7 +41,7 @@ public class EmptyFileCheckTest {
 
   @Test
   public void with_module() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithModule.java", new EmptyFileCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/module/module-info.java", new EmptyFileCheck());
   }
 
 }
