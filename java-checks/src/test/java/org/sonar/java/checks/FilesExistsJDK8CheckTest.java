@@ -24,16 +24,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class FilesExistsJDK8CheckTest {
 
-  private static final String FILENAME = "src/test/files/checks/FilesExistsJDK8Check.java";
-
   @Test
   public void java8() {
-    JavaCheckVerifier.verify(FILENAME, new FilesExistsJDK8Check(), 8);
+    JavaCheckVerifier.verify("src/test/files/checks/FilesExistsJDK8Check.java", new FilesExistsJDK8Check(), 8);
   }
 
   @Test
   public void java7() {
-    JavaCheckVerifier.verifyNoIssue(FILENAME, new FilesExistsJDK8Check(), 7);
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/FilesExistsJDK8Check_java7.java", new FilesExistsJDK8Check(), 7);
   }
 
   @Test
