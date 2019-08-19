@@ -94,7 +94,7 @@ public class JavaAstScanner {
         version,
         inputFile.filename(),
         fileContent,
-        Collections.emptyList()
+        visitor.getClasspath()
       );
       visitor.visitFile(ast);
     } catch (RecognitionException e) {
