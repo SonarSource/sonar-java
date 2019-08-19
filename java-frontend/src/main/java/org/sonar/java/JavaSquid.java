@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +33,6 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.filters.SonarJavaIssueFilter;
@@ -43,7 +41,6 @@ import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.tree.Tree;
 
 public class JavaSquid {
 
@@ -87,12 +84,11 @@ public class JavaSquid {
     }
 
     //AstScanner for main files
-    ActionParser<Tree> parser = JavaParser.createParser();
-    astScanner = new JavaAstScanner(parser, sonarComponents);
+    astScanner = new JavaAstScanner(sonarComponents);
     astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents, SymbolicExecutionMode.getMode(visitors, xFileEnabled)));
 
     //AstScanner for test files
-    astScannerForTests = new JavaAstScanner(parser, sonarComponents);
+    astScannerForTests = new JavaAstScanner(sonarComponents);
     astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents, SymbolicExecutionMode.DISABLED));
 
   }

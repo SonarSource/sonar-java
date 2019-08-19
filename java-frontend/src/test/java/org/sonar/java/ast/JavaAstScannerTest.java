@@ -108,7 +108,7 @@ public class JavaAstScannerTest {
   @Test
   public void should_not_fail_whole_analysis_upon_parse_error_and_notify_audit_listeners() {
     FakeAuditListener listener = spy(new FakeAuditListener());
-    JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), null);
+    JavaAstScanner scanner = new JavaAstScanner(null);
     scanner.setVisitorBridge(new VisitorsBridge(listener));
 
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
@@ -125,7 +125,7 @@ public class JavaAstScannerTest {
     });
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.analysisCancelled()).thenReturn(true);
-    JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), sonarComponents);
+    JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
     scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), new ArrayList<>(), sonarComponents));
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java")));
     verifyZeroInteractions(visitor);
@@ -153,7 +153,7 @@ public class JavaAstScannerTest {
 
   @Test
   public void should_swallow_log_and_report_checks_exceptions() {
-    JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), null);
+    JavaAstScanner scanner = new JavaAstScanner(null);
     SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponent.setSensorContext(context);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singleton(new CheckThrowingException(new NullPointerException("foo"))), new ArrayList<>(), sonarComponent));
@@ -176,7 +176,7 @@ public class JavaAstScannerTest {
 
   @Test
   public void should_swallow_log_and_report_checks_exceptions_for_symbolic_execution() {
-    JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), null);
+    JavaAstScanner scanner = new JavaAstScanner(null);
     logTester.clear();
     SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
     context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
@@ -196,7 +196,7 @@ public class JavaAstScannerTest {
 
   @Test
   public void should_propagate_SOError() {
-    JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), null);
+    JavaAstScanner scanner = new JavaAstScanner(null);
     scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingSOError()));
     try {
       scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt")));
@@ -212,7 +212,7 @@ public class JavaAstScannerTest {
 
   @Test
   public void should_report_analysis_error_in_sonarLint_context_withSQ_6_0() {
-    JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), null);
+    JavaAstScanner scanner = new JavaAstScanner(null);
     FakeAuditListener listener = spy(new FakeAuditListener());
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.reportAnalysisError(any(RecognitionException.class), any(InputFile.class))).thenReturn(true);
