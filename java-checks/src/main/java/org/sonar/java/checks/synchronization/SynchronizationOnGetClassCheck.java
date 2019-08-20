@@ -33,7 +33,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.Collections;
 import java.util.List;
 
-import static org.sonar.plugins.java.api.tree.Tree.Kind.*;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CLASS;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.SYNCHRONIZED_STATEMENT;
 
 @Rule(key = "S3067")
 public class SynchronizationOnGetClassCheck extends IssuableSubscriptionVisitor {
