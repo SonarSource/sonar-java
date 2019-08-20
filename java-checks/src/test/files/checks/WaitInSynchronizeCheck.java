@@ -34,7 +34,8 @@ class A {
     wait();
   }
 
-  synchronized Consumer<String> foo3() {
+//// Consumer cannot be resolved to a type
+  synchronized java.util.function.Consumer<String> foo3() {
     wait(); // Compliant
     return s -> {
       wait(); // Noncompliant

@@ -88,7 +88,10 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   @Nullable
   public Object getSemanticModel() {
-    return semanticModel;
+    if (JParser.SEMA) {
+      return new Object(); // TODO
+    }
+    return null;
   }
 
   @Override

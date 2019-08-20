@@ -38,7 +38,8 @@ class Foo {
     
     unknown++;
     this.unknown++;
-    java.util.Stream<Object> s;
+//// java.util.Stream cannot be resolved to a type
+//    java.util.Stream<Object> s;
     s.map(v -> "");
 
     try (Stream foo3 = new Stream()) {

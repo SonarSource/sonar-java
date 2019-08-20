@@ -117,13 +117,14 @@ class SameName {
     return new Object();
   }
 
-  Object f1() { // Noncompliant
-    return;  // just for coverage, doesn't compile
-  }
-
-  Object f1() { // Noncompliant
-    return new Object();
-  }
+//// Duplicate method f1() in type SameName
+//  Object f1() { // Noncompliant
+//    return;  // just for coverage, doesn't compile
+//  }
+//
+//  Object f1() { // Noncompliant
+//    return new Object();
+//  }
 
   Object flambda() { // Compliant
     call(f -> {
@@ -150,10 +151,11 @@ class SameName {
     };
   }
 
-  Object f1() { // Noncompliant
-    if (cond) {
-      return new Object();
-    }
-    return f1;
-  }
+//// Duplicate method f1() in type SameName
+//  Object f1() { // Noncompliant
+//    if (cond) {
+//      return new Object();
+//    }
+//    return f1;
+//  }
 }

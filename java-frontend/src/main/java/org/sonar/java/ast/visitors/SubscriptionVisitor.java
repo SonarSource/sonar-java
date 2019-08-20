@@ -19,6 +19,7 @@
  */
 package org.sonar.java.ast.visitors;
 
+import org.sonar.java.model.JParser;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -59,7 +60,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
 
   public void setContext(JavaFileScannerContext context) {
     this.context = context;
-    semanticModel = (SemanticModel) context.getSemanticModel();
+//    semanticModel = (SemanticModel) context.getSemanticModel(); // TODO
   }
 
   public void leaveFile(JavaFileScannerContext context) {
@@ -132,6 +133,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
   }
 
   public boolean hasSemantic(){
-    return semanticModel != null;
+//    return semanticModel != null;
+    return JParser.SEMA; // TODO
   }
 }

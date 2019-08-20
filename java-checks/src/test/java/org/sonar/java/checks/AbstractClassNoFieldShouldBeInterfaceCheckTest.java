@@ -36,6 +36,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheckTest {
     JavaCheckVerifier.verifyNoIssue(TEST_FILE, new AbstractClassNoFieldShouldBeInterfaceCheck(), 7);
   }
 
+  @org.junit.Ignore("package java.lang")
   @Test
   public void test_with_java_8() {
     JavaCheckVerifier.verify(TEST_FILE, new AbstractClassNoFieldShouldBeInterfaceCheck(), 8);

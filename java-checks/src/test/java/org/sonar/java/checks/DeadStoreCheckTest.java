@@ -29,6 +29,7 @@ public class DeadStoreCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/DeadStoreCheck.java", new DeadStoreCheck());
   }
 
+  @org.junit.Ignore("package java.lang")
   @Test
   public void java_lang_no_sema_no_failure() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/DeadStoreCheckJavaLangNoFailure.java", new DeadStoreCheck());

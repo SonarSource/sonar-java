@@ -17,17 +17,26 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.model;
 
-import org.junit.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-@org.junit.Ignore("ClassCastException: class org.sonar.java.model.JType cannot be cast to class org.sonar.java.resolve.JavaType")
-public class ConstantMathCheckTest {
+import javax.annotation.Nullable;
 
-  @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ConstantMath.java", new ConstantMathCheck());
+@MethodsAreNonnullByDefault
+final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
+
+  JVariableSymbol(Sema sema, IVariableBinding variableBinding) {
+    super(sema, variableBinding);
+  }
+
+  @Nullable
+  @Override
+  public VariableTree declaration() {
+    return (VariableTree) super.declaration();
   }
 
 }

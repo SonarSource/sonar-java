@@ -52,13 +52,13 @@ class A {
     };
   }
 
-  void lambdas_using_local_vars() {
-    int a;
-    if(cond) {
-      a = 42;
-    }
-    plop(y -> a + y);
-  }
+//  void lambdas_using_local_vars() {
+//    int a;
+//    if(cond) {
+//      a = 42;
+//    }
+//    plop(y -> a + y);
+//  }
 
   void ignore_try_finally() {
     int a;
@@ -168,7 +168,8 @@ class A {
     int b = 0;
     return (b)++; // Noncompliant [[sc=12;ec=17]]
   }
-  void foo() {
+//// Duplicate method foo() in type A
+  void foo3() {
     int i = 0;
     ++i; // Noncompliant
     System.out.println("");

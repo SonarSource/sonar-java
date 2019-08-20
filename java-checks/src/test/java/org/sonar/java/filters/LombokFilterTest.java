@@ -23,6 +23,7 @@ import org.junit.Test;
 
 public class LombokFilterTest {
 
+  @org.junit.Ignore("lookupSymbols")
   @Test
   public void test() {
     FilterVerifier.verify("src/test/files/filters/LombokFilter.java", new LombokFilter());

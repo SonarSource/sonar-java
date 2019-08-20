@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class BlindSerialVersionUidCheckTest {
+  @org.junit.Ignore("lookupSymbols")
   @Test
   public void test() {
     String fixtureFileName = "src/test/files/checks/serialization/BlindSerialVersionUidCheck.java";

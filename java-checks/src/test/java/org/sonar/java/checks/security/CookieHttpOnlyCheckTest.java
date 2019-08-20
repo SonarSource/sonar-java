@@ -24,6 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CookieHttpOnlyCheckTest {
 
+  // line 221 column 4: The left-hand side of an assignment must be a variable
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/security/CookieHttpOnlyCheck.java", new CookieHttpOnlyCheck());

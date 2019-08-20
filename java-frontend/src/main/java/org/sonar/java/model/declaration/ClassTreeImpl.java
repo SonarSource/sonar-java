@@ -62,7 +62,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private SyntaxToken implementsKeyword;
   private ListTree<TypeTree> superInterfaces;
-  private JavaSymbol.TypeJavaSymbol symbol = Symbols.unknownSymbol;
+  private Symbol.TypeSymbol symbol = Symbols.unknownSymbol;
 
   public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
     super(kind);
@@ -203,7 +203,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     visitor.visitClass(this);
   }
 
-  public void setSymbol(JavaSymbol.TypeJavaSymbol symbol) {
+  public void setSymbol(Symbol.TypeSymbol symbol) {
     Preconditions.checkState(this.symbol.equals(Symbols.unknownSymbol));
     this.symbol = symbol;
   }

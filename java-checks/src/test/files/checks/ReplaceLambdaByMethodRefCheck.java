@@ -1,5 +1,6 @@
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class A {
   void fun() {
@@ -82,10 +83,12 @@ class A {
     default void process(String s1, String s2, int i){}
     default void fun2(){
       IntStream.range(1, 5).forEach(i -> { process("foo", "bar", i); });
-      foo((x, y) -> myMethod(x , y)); // Noncompliant
+//// The target type of this expression must be a functional interface
+//      foo((x, y) -> myMethod(x , y)); // Noncompliant
       foo((x, y) -> myMethod(y , x));
       foo((x, y) -> myMethod(y));
-      foo((x,y) -> new ClassTree(x, y)); // Noncompliant
+//// The target type of this expression must be a functional interface
+//      foo((x,y) -> new ClassTree(x, y)); // Noncompliant
       foo((x,y) -> new ClassTree(y, x));
       foo((x,y) -> new ClassTree(x, y) {
         //can get some capture

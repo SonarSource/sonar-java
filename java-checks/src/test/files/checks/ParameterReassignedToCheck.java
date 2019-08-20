@@ -69,7 +69,8 @@ class A {
       s = ""; // Noncompliant
     }
     for (String s3 : list) {
-      Object o = () -> s3.length();
+//// The target type of this expression must be a functional interface
+      Runnable o = () -> s3.length();
       s3 = ""; // compliant
     }
   }

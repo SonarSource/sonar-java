@@ -73,7 +73,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   //FIXME nullable if semantic analysis is not set. Should have a default value.
   @Nullable
-  private JavaSymbol.MethodJavaSymbol symbol;
+  private Symbol.MethodSymbol symbol;
 
   public MethodTreeImpl(FormalParametersListTreeImpl parameters, @Nullable SyntaxToken defaultToken, @Nullable ExpressionTree defaultValue) {
     super(Kind.METHOD);
@@ -219,7 +219,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     visitor.visitMethod(this);
   }
 
-  public void setSymbol(JavaSymbol.MethodJavaSymbol symbol) {
+  public void setSymbol(Symbol.MethodSymbol symbol) {
     Preconditions.checkState(this.symbol == null);
     this.symbol = symbol;
   }

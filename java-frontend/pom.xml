@@ -23,10 +23,12 @@
             <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.core.filesystem</artifactId>
           </exclusion>
+          <!--
           <exclusion>
             <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.text</artifactId>
           </exclusion>
+          -->
           <exclusion>
             <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.core.expressions</artifactId>

@@ -53,7 +53,8 @@ class G0 {
 class G1 extends G0 {
   @Override
   protected Object clone() throws CloneNotSupportedException { // Noncompliant {{Use super.clone() to create and seed the cloned instance to be returned.}}
-    super();
+//// Constructor call must be the first statement in a constructor
+//    super();
     int c = super.clone;
     return super.clone("foo");
   }

@@ -42,6 +42,7 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.model.JParser;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -273,6 +274,7 @@ public class JavaCheckVerifier extends CheckVerifier {
     VisitorsBridgeForTests visitorsBridge;
     DefaultInputFile inputFile = new TestInputFileBuilder("", new File(filename).getPath()).setCharset(StandardCharsets.UTF_8).build();
     SonarComponents sonarComponents = CheckVerifier.sonarComponents(inputFile);
+    JParser.setSema(withSemantic); // TODO
     if (withSemantic) {
       visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), Lists.newArrayList(classpath), sonarComponents);
     } else {
