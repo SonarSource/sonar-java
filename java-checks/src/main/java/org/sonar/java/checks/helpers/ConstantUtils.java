@@ -102,19 +102,15 @@ public class ConstantUtils {
     if (!symbol.isVariableSymbol()) {
       return null;
     }
-    JavaSymbol.VariableJavaSymbol javaSymbol = (JavaSymbol.VariableJavaSymbol) symbol;
-    JavaSymbol owner = javaSymbol.owner();
-    if (owner.isTypeSymbol()) {
-      JavaSymbol.TypeJavaSymbol ownerType = (JavaSymbol.TypeJavaSymbol) owner;
-      if ("java.lang.Boolean".equals(ownerType.getFullyQualifiedName())) {
-        if ("TRUE".equals(javaSymbol.getName())) {
-          return Boolean.TRUE;
-        } else if ("FALSE".equals(javaSymbol.getName())) {
-          return Boolean.FALSE;
-        }
+    Symbol owner = symbol.owner();
+    if (owner.isTypeSymbol() && owner.type().is("java.lang.Boolean")) {
+      if ("TRUE".equals(symbol.name())) {
+        return Boolean.TRUE;
+      } else if ("FALSE".equals(symbol.name())) {
+        return Boolean.FALSE;
       }
     }
-    return javaSymbol.constantValue().orElse(null);
+    return ((JavaSymbol.VariableJavaSymbol) symbol).constantValue().orElse(null);
   }
 
   @CheckForNull
