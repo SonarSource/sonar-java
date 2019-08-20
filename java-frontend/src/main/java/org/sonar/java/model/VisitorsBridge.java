@@ -104,6 +104,10 @@ public class VisitorsBridge {
     this.behaviorCache = new BehaviorCache(classLoader, symbolicExecutionMode.isCrossFileEnabled());
   }
 
+  public JavaVersion getJavaVersion() {
+    return javaVersion;
+  }
+
   public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
     List<JavaFileScanner> scannersForJavaVersion = executableScanners(allScanners, javaVersion);

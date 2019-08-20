@@ -58,6 +58,27 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   @Nullable
   private final BlockTreeImpl finallyBlock;
 
+  public TryStatementTreeImpl(
+    InternalSyntaxToken tryToken,
+    @Nullable InternalSyntaxToken openParenToken,
+    ResourceListTreeImpl resources,
+    @Nullable InternalSyntaxToken closeParenToken,
+    BlockTreeImpl block,
+    List<CatchTree> catches,
+    @Nullable InternalSyntaxToken finallyKeyword,
+    @Nullable BlockTreeImpl finallyBlock
+  ) {
+    super(Kind.TRY_STATEMENT);
+    this.tryToken = tryToken;
+    this.openParenToken = openParenToken;
+    this.resources = resources;
+    this.closeParenToken = closeParenToken;
+    this.block = block;
+    this.catches = catches;
+    this.finallyKeyword = finallyKeyword;
+    this.finallyBlock = finallyBlock;
+  }
+
   public TryStatementTreeImpl(List<CatchTreeImpl> catches, @Nullable InternalSyntaxToken finallyKeyword, @Nullable BlockTreeImpl finallyBlock) {
     super(Kind.TRY_STATEMENT);
 

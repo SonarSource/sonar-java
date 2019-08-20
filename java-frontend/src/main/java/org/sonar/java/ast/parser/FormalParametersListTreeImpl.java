@@ -24,6 +24,7 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class FormalParametersListTreeImpl extends ListTreeImpl<VariableTreeImpl>
   private InternalSyntaxToken closeParenToken;
 
   public FormalParametersListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.FORMAL_PARAMETERS, Collections.emptyList());
+    super(JavaLexer.FORMAL_PARAMETERS, new ArrayList<>());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;

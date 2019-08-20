@@ -33,8 +33,14 @@ public class SAMAnnotatedCheckTest {
   }
 
   @Test
-  public void all_issues_with_java_8() {
+  public void test_java_8() {
     JavaCheckVerifier.verify(FILE, new SAMAnnotatedCheck(), 8);
+  }
+
+  @Test
+  public void test_java_9() {
+    JavaCheckVerifier.verify(FILE, new SAMAnnotatedCheck(), 9);
+    JavaCheckVerifier.verify("src/test/files/checks/SAMAnnotatedCheck_java9.java", new SAMAnnotatedCheck(), 9);
   }
 
   @Test

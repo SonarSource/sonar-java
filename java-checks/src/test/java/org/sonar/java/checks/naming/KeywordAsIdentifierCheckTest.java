@@ -26,7 +26,7 @@ public class KeywordAsIdentifierCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/KeywordAsIdentifierCheck.java", new KeywordAsIdentifierCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/naming/KeywordAsIdentifierCheck.java", new KeywordAsIdentifierCheck(), 4);
   }
 
 }

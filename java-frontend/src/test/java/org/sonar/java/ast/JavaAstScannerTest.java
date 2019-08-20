@@ -21,11 +21,9 @@ package org.sonar.java.ast;
 
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
-import com.sonar.sslr.api.typed.ActionParser;
-import com.sonar.sslr.api.typed.GrammarBuilder;
+
 import java.io.File;
 import java.io.InterruptedIOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,22 +46,14 @@ import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
-import org.sonar.java.ast.parser.JavaNodeBuilder;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TreeVisitor;
-import org.sonar.sslr.grammar.GrammarRuleKey;
-import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -118,7 +108,7 @@ public class JavaAstScannerTest {
   @Test
   public void should_not_fail_whole_analysis_upon_parse_error_and_notify_audit_listeners() {
     FakeAuditListener listener = spy(new FakeAuditListener());
-    JavaAstScanner scanner = defaultJavaAstScanner();
+    JavaAstScanner scanner = new JavaAstScanner(null);
     scanner.setVisitorBridge(new VisitorsBridge(listener));
 
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
@@ -135,7 +125,7 @@ public class JavaAstScannerTest {
     });
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.analysisCancelled()).thenReturn(true);
-    JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), sonarComponents);
+    JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
     scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), new ArrayList<>(), sonarComponents));
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java")));
     verifyZeroInteractions(visitor);
@@ -163,7 +153,7 @@ public class JavaAstScannerTest {
 
   @Test
   public void should_swallow_log_and_report_checks_exceptions() {
-    JavaAstScanner scanner = defaultJavaAstScanner();
+    JavaAstScanner scanner = new JavaAstScanner(null);
     SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponent.setSensorContext(context);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singleton(new CheckThrowingException(new NullPointerException("foo"))), new ArrayList<>(), sonarComponent));
@@ -186,7 +176,7 @@ public class JavaAstScannerTest {
 
   @Test
   public void should_swallow_log_and_report_checks_exceptions_for_symbolic_execution() {
-    JavaAstScanner scanner = new JavaAstScanner(JavaParser.createParser(), null);
+    JavaAstScanner scanner = new JavaAstScanner(null);
     logTester.clear();
     SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
     context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
@@ -206,7 +196,7 @@ public class JavaAstScannerTest {
 
   @Test
   public void should_propagate_SOError() {
-    JavaAstScanner scanner = defaultJavaAstScanner();
+    JavaAstScanner scanner = new JavaAstScanner(null);
     scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingSOError()));
     try {
       scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt")));
@@ -222,7 +212,7 @@ public class JavaAstScannerTest {
 
   @Test
   public void should_report_analysis_error_in_sonarLint_context_withSQ_6_0() {
-    JavaAstScanner scanner = defaultJavaAstScanner();
+    JavaAstScanner scanner = new JavaAstScanner(null);
     FakeAuditListener listener = spy(new FakeAuditListener());
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.reportAnalysisError(any(RecognitionException.class), any(InputFile.class))).thenReturn(true);
@@ -230,10 +220,6 @@ public class JavaAstScannerTest {
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
     verify(sonarComponents).reportAnalysisError(any(RecognitionException.class), any(InputFile.class));
     verifyZeroInteractions(listener);
-  }
-
-  private static JavaAstScanner defaultJavaAstScanner() {
-    return new JavaAstScanner(new ActionParser<>(StandardCharsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT), null);
   }
 
   private static class CheckThrowingSOError implements JavaFileScanner {
@@ -301,71 +287,6 @@ public class JavaAstScannerTest {
     public void scanFile(JavaFileScannerContext context) {
 
     }
-  }
-
-  public static class FakeTreeFactory {
-    public FakeTreeFactory(){}
-    public Tree root(JavaTree javaTree) {
-      return new Tree() {
-        @Override
-        public boolean is(Kind... kind) {
-          return false;
-        }
-
-        @Override
-        public void accept(TreeVisitor visitor) {
-
-        }
-
-        @Override
-        public Kind kind() {
-          return null;
-        }
-
-        @Override
-        public Tree parent() {
-          return null;
-        }
-
-        @Override
-        public SyntaxToken firstToken() {
-          return null;
-        }
-
-        @Override
-        public SyntaxToken lastToken() {
-          return null;
-        }
-      };
-    }
-  }
-
-  public static class FakeGrammar {
-    final GrammarBuilder<InternalSyntaxToken> b;
-    final FakeTreeFactory f;
-
-    public FakeGrammar(GrammarBuilder<InternalSyntaxToken> b, FakeTreeFactory f) {
-      this.b = b;
-      this.f = f;
-    }
-
-    public Tree ROOT() {
-      return b.<Tree>nonterminal(FakeLexer.ROOT).is(f.root(b.token(FakeLexer.TOKEN)));
-    }
-  }
-
-  public enum FakeLexer implements GrammarRuleKey {
-    ROOT, TOKEN;
-
-    public static LexerlessGrammarBuilder builder() {
-      LexerlessGrammarBuilder b = LexerlessGrammarBuilder.create();
-
-      b.rule(TOKEN).is("foo");
-      b.setRootRule(ROOT);
-
-      return b;
-    }
-
   }
 
 }

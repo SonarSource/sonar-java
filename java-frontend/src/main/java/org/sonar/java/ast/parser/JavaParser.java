@@ -29,6 +29,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Deque;
 import java.util.LinkedList;
 
+/**
+ * @deprecated should be used only for tests
+ */
+@Deprecated
 public class JavaParser extends ActionParser<Tree> {
   private Deque<JavaTree> parentList = new LinkedList<>();
 

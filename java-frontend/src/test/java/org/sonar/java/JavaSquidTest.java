@@ -94,8 +94,8 @@ public class JavaSquidTest {
     SonarComponents sonarComponents = collectAnalysisErrors(code);
     assertThat(sonarComponents.analysisErrors).hasSize(1);
     AnalysisError analysisError = sonarComponents.analysisErrors.get(0);
-    assertThat(analysisError.getMessage()).startsWith("Parse error at line 6 column 1:");
-    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 6 column 1:");
+    assertThat(analysisError.getMessage()).startsWith("Parse error at line 5 column 1:");
+    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 5 column 1:");
     assertThat(analysisError.getFilename()).endsWith("test.java");
     assertThat(analysisError.getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
   }
@@ -139,7 +139,7 @@ public class JavaSquidTest {
     SensorContextTester context = setupAnalysisError("class A {");
 
     assertThat(context.allAnalysisErrors()).hasSize(1);
-    assertThat(context.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 10");
+    assertThat(context.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 8");
   }
 
   @Test

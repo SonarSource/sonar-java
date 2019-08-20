@@ -96,12 +96,3 @@ enum E {
     this.pattern = pattern;
   }
 }
-
-// this code does not compile
-// but as we are able to parse it, we should not fail during analysis
-// (consider SonarLint)
-interface I {
-  static {
-    Pattern.compile(".*"); // Noncompliant
-  }
-}

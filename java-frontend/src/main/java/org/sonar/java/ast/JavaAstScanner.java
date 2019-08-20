@@ -23,17 +23,17 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.sonar.sslr.api.RecognitionException;
-import com.sonar.sslr.api.typed.ActionParser;
 import java.io.InterruptedIOException;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
+
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JParser;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -43,12 +43,10 @@ import org.sonarsource.analyzer.commons.ProgressReport;
 public class JavaAstScanner {
   private static final Logger LOG = Loggers.get(JavaAstScanner.class);
 
-  private final ActionParser<Tree> parser;
   private final SonarComponents sonarComponents;
   private VisitorsBridge visitor;
 
-  public JavaAstScanner(ActionParser<Tree> parser, @Nullable SonarComponents sonarComponents) {
-    this.parser = parser;
+  public JavaAstScanner(@Nullable SonarComponents sonarComponents) {
     this.sonarComponents = sonarComponents;
   }
 
@@ -86,7 +84,18 @@ public class JavaAstScanner {
     visitor.setCurrentFile(inputFile);
     try {
       String fileContent = inputFile.contents();
-      Tree ast = parser.parse(fileContent);
+      final String version;
+      if (visitor.getJavaVersion() == null || visitor.getJavaVersion().asInt() < 0) {
+        version = /* default */ "12";
+      } else {
+        version = Integer.toString(visitor.getJavaVersion().asInt());
+      }
+      Tree ast = JParser.parse(
+        version,
+        inputFile.filename(),
+        fileContent,
+        Collections.emptyList()
+      );
       visitor.visitFile(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);
@@ -133,7 +142,7 @@ public class JavaAstScanner {
 
   @VisibleForTesting
   public static void scanSingleFileForTests(InputFile inputFile, VisitorsBridge visitorsBridge, JavaVersion javaVersion) {
-    JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(), null);
+    JavaAstScanner astScanner = new JavaAstScanner(null);
     visitorsBridge.setJavaVersion(javaVersion);
     astScanner.setVisitorBridge(visitorsBridge);
     astScanner.scan(Collections.singleton(inputFile));
