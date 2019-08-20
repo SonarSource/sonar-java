@@ -15,16 +15,32 @@ public class MyClass {
 }
 
 public class MyClassWithInitializer {
-  private static boolean flag;
   {
     synchronized (getClass()) { // Noncompliant [[sc=19;ec=29]] {{Synchronize on the static class name instead.}}
-      if (!flag) {
-        flag = true;
-      }
     }
   }
 }
 
+public class MyClassWithStaticInitializer {
+  static {
+    synchronized (getClass()) { // Noncompliant [[sc=19;ec=29]] {{Synchronize on the static class name instead.}}
+    }
+  }
+}
+
+public class MyClassWithLambda {
+  Consumer<String> c = s -> {
+    synchronized (getClass()) { // Noncompliant [[sc=19;ec=29]] {{Synchronize on the static class name instead.}}
+    }
+  };
+}
+
+public final class MyFinalClassWithLambda {
+  Consumer<String> c = s -> {
+    synchronized (getClass()) { // Compliant
+    }
+  };
+}
 
 public final class FinalClassIsCompliant {
 
