@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import com.sonar.sslr.api.RecognitionException;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.core.dom.AST;
@@ -228,6 +229,14 @@ import java.util.Map;
 @ParametersAreNonnullByDefault
 public class JParser {
 
+  private static boolean SEMA = false;
+
+  @Deprecated
+  public static void setSema(boolean flag) {
+    SEMA = flag;
+    System.err.println("ECJ semantic " + (SEMA ? "enabled" : "disabled"));
+  }
+
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
    * @throws RecognitionException in case of syntax errors
@@ -247,7 +256,7 @@ public class JParser {
     );
     astParser.setUnitName(unitName);
 
-    astParser.setResolveBindings(false);
+    astParser.setResolveBindings(SEMA);
     astParser.setBindingsRecovery(true);
 
     char[] sourceChars = source.toCharArray();
@@ -258,6 +267,13 @@ public class JParser {
       if (!problem.isError()) {
         continue;
       }
+
+      System.err.println(problem.getSourceLineNumber() + ": " + problem.getMessage());
+
+      if (((CategorizedProblem) problem).getCategoryID() != CategorizedProblem.CAT_SYNTAX) {
+        continue;
+      }
+
       final int line = problem.getSourceLineNumber();
       final int column = astNode.getColumnNumber(problem.getSourceStart());
       throw new RecognitionException(line, "Parse error at line " + line + " column " + column + ": " + problem.getMessage());

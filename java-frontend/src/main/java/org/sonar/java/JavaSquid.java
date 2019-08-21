@@ -107,12 +107,14 @@ public class JavaSquid {
   }
 
   private void scanSources(Iterable<InputFile> sourceFiles) {
+    org.sonar.java.model.JParser.setSema(Boolean.getBoolean("sonar.java.internal.ecj.sema"));
     Profiler profiler = Profiler.create(LOG).startInfo("Java Main Files AST scan");
     astScanner.scan(sourceFiles);
     profiler.stopInfo();
   }
 
   private void scanTests(Iterable<InputFile> testFiles) {
+    org.sonar.java.model.JParser.setSema(false);
     Profiler profiler = Profiler.create(LOG).startInfo("Java Test Files AST scan");
     astScannerForTests.scan(testFiles);
     profiler.stopInfo();
