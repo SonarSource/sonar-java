@@ -218,8 +218,9 @@ class S3330 {
     this.xsfrTokenProp = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2");
     this.xsfrTokenProp.withHttpOnly(false);
 
-    this.getXsfrTokenProp2() = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2");
-    this.getXsfrTokenProp2().withHttpOnly(false);
+//// line 221 column 4: The left-hand side of an assignment must be a variable
+//    this.getXsfrTokenProp2() = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2");
+//    this.getXsfrTokenProp2().withHttpOnly(false);
 
     this.unknown = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2"); // Coverage
     unknown = play.mvc.Http.Cookie.builder("XSRF-TOKEN", "2"); // Coverage

@@ -828,19 +828,7 @@ public class JParser {
         break;
     }
 
-    IdentifierTree identifier = convertSimpleName(e.getName());
-    EnumConstantTreeImpl t = new EnumConstantTreeImpl(
-      convertModifiers(e.modifiers()),
-      identifier,
-      new NewClassTreeImpl( // FIXME setType ?
-        arguments,
-        classBody
-      ).completeWithIdentifier(
-        identifier
-      ),
-      separatorToken
-    );
-
+    IdentifierTree identifier = convertSimpleName(e.getName()); // !!!
     ((IdentifierTreeImpl) identifier).setSymbol(
       methodSymbol(e.resolveConstructorBinding())
     );
@@ -848,7 +836,20 @@ public class JParser {
       usage(e.resolveConstructorBinding(), identifier);
     }
 
-    return t;
+    NewClassTreeImpl initializer = new NewClassTreeImpl(
+      arguments,
+      classBody
+    ).completeWithIdentifier(
+      identifier
+    );
+    initializer.setType(identifier.symbolType()); // TODO same as in old implementation, but doesn't look right
+
+    return new EnumConstantTreeImpl(
+      convertModifiers(e.modifiers()),
+      identifier,
+      initializer,
+      separatorToken
+    );
   }
 
   private void processBodyDeclaration(ASTNode node, List<Tree> members) {
@@ -1894,7 +1895,7 @@ public class JParser {
           }
         }
 
-        NewClassTreeImpl t = new NewClassTreeImpl(
+        NewClassTreeImpl t = new NewClassTreeImpl( // FIXME setType of body or name?
           arguments,
           classBody
         ).completeWithNewKeyword(

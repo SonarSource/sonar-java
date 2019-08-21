@@ -202,7 +202,9 @@ class B extends Cookie {
     d2 = new Date();
     d = d1;
     d = new Date();
-    new Date() = new Date();
+
+//// line 205 column 4: The left-hand side of an assignment must be a variable
+//    new Date() = new Date();
     UnknownClass c = new UnknownClass();
     c.setSecure(true);
     return new Date();

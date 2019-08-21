@@ -29,7 +29,9 @@ import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -94,9 +96,22 @@ public abstract class JSymbol implements Symbol {
         ITypeBinding declaringClass = b.getDeclaringClass();
         IMethodBinding declaringMethod = b.getDeclaringMethod();
         if (declaringClass == null && declaringMethod == null) {
-          // variable in a static or instance initializer
-          // FIXME see HiddenFieldCheck
-          return Symbols.unknownSymbol;
+          // variable in a static or instance initializer or local variable in recovered method
+          // See HiddenFieldCheck
+          Tree t = declaration();
+          assert t != null; // TODO what about access to field in another file?
+          while (true) {
+            t = t.parent();
+            switch (t.kind()) {
+              case INITIALIZER:
+              case STATIC_INITIALIZER:
+                return ((ClassTree) t.parent()).symbol();
+              case METHOD:
+              case CONSTRUCTOR:
+                // local variable
+                return ((MethodTree) t).symbol();
+            }
+          }
         }
         if (declaringMethod != null) {
           // local variable
