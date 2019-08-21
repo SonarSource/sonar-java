@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -83,6 +84,12 @@ final class Sema {
 
   JType type(ITypeBinding typeBinding) {
     return typesCache.computeIfAbsent(typeBinding, k -> new JType(this, k));
+  }
+
+  private final Map<IAnnotationBinding, JSymbol.JAnnotationInstance> annotationsCache = new HashMap<>();
+
+  JSymbol.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
+    return annotationsCache.computeIfAbsent(annotationBinding, k -> new JSymbol.JAnnotationInstance(this, k));
   }
 
   @Nullable

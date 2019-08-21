@@ -21,11 +21,12 @@ package org.sonar.java.model;
 
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.sonar.java.resolve.Symbols;
+import org.sonar.java.resolve.AnnotationValueResolve;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -304,14 +306,19 @@ public abstract class JSymbol implements Symbol {
       @Nullable
       @Override
       public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
-        // FIXME note that AnnotationValue.value can be Tree
-        return Collections.emptyList();
+        for (IAnnotationBinding a : binding.getAnnotations()) {
+          if (fullyQualifiedNameOfAnnotation.equals(a.getAnnotationType().getQualifiedName())) {
+            // FIXME what about repeating annotations?
+            return ast.annotation(a).values();
+          }
+        }
+        return null;
       }
 
       @Override
       public List<AnnotationInstance> annotations() {
         return Arrays.stream(binding.getAnnotations())
-          .map(x -> new JAnnotationInstance(ast, x))
+          .map(ast::annotation)
           .collect(Collectors.toList());
       }
     };
@@ -333,8 +340,12 @@ public abstract class JSymbol implements Symbol {
 
     @Override
     public List<SymbolMetadata.AnnotationValue> values() {
-      // FIXME
-      return Collections.emptyList();
+      // FIXME note that AnnotationValue.value can be Tree
+      List<SymbolMetadata.AnnotationValue> r = new ArrayList<>();
+      for (IMemberValuePairBinding pair : binding.getDeclaredMemberValuePairs()) {
+        r.add(new AnnotationValueResolve(pair.getName(), pair.getValue()));
+      }
+      return r;
     }
   }
 
