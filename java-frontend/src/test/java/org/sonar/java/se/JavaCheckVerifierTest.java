@@ -105,7 +105,7 @@ public class JavaCheckVerifierTest {
     JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, expectedMessage, visitor);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = AssertionError.class)
   public void verify_issue_on_file_incorrect() {
     JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", new FakeVisitor().withDefaultIssues());
   }
