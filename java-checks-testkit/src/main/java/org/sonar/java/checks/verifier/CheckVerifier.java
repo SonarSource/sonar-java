@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.verifier;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultiset;
@@ -202,7 +201,9 @@ public abstract class CheckVerifier {
   }
 
   private void assertMultipleIssue(Set<AnalyzerMessage> issues) throws AssertionError {
-    Preconditions.checkState(!issues.isEmpty(), "At least one issue expected");
+    if (issues.isEmpty()) {
+      Fail.fail("No issues has been raised, at least one issue expected.");
+    }
     List<Integer> unexpectedLines = new LinkedList<>();
     RemediationFunction remediationFunction = remediationFunction(issues.iterator().next());
     for (AnalyzerMessage issue : issues) {
@@ -297,7 +298,7 @@ public abstract class CheckVerifier {
       assertEquals(line, issue.getMessage(), attrs, IssueAttribute.MESSAGE);
       Double cost = issue.getCost();
       if (cost != null) {
-        Preconditions.checkState(remediationFunction != RemediationFunction.CONST, "Rule with constant remediation function shall not provide cost");
+        assertThat(remediationFunction).as("\"Rule with constant remediation function shall not provide cost\"").isNotEqualTo(RemediationFunction.CONST);
         assertEquals(line, Integer.toString(cost.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
       } else if(remediationFunction == RemediationFunction.LINEAR){
         Fail.fail("A cost should be provided for a rule with linear remediation function");
@@ -356,7 +357,9 @@ public abstract class CheckVerifier {
   }
 
   private static void assertSingleIssue(Set<AnalyzerMessage> issues, boolean issueOnFile, String expectedMessage) {
-    Preconditions.checkState(issues.size() == 1, "A single issue is expected on the file");
+    if (issues.size() != 1) {
+      Fail.fail("A single issue is expected on the file");
+    }
     AnalyzerMessage issue = Iterables.getFirst(issues, null);
     assertThat(issue.getInputComponent().isFile()).isEqualTo(issueOnFile);
     assertThat(issue.getLine()).isNull();

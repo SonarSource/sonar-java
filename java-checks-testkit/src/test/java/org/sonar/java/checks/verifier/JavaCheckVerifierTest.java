@@ -138,9 +138,14 @@ public class JavaCheckVerifierTest {
     JavaCheckVerifier.verifyIssueOnProject(FILENAME_ISSUES, expectedMessage, visitor);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void verify_issue_on_file_incorrect() {
-    JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", new FakeVisitor().withDefaultIssues());
+    try {
+      JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", new FakeVisitor().withDefaultIssues());
+      Fail.fail("");
+    } catch (AssertionError e) {
+      assertThat(e).hasMessage("A single issue is expected on the file");
+    }
   }
 
   @Test
@@ -329,9 +334,8 @@ public class JavaCheckVerifierTest {
     FakeVisitor fakeVisitor = new FakeVisitor();
     fakeVisitor.withPreciseIssue(new AnalyzerMessage(fakeVisitor, emptyInputFile(), new AnalyzerMessage.TextSpan(1), "message", 1));
     Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", fakeVisitor));
-    assertThat(throwable)
-      .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Rule with constant remediation function shall not provide cost");
+    assertThat(throwable).isInstanceOf(AssertionError.class);
+    assertThat(throwable.getMessage()).contains("Rule with constant remediation function shall not provide cost");
   }
 
   @Test
