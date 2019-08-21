@@ -84,6 +84,7 @@ public class JavaVersionImplTest {
   public void compatibilityMesssages() throws Exception {
     JavaVersion version;
     version = new JavaVersionImpl();
+    // FIXME in absence of "sonar.java.source" frontend now assumes version 12
     assertThat(version.java6CompatibilityMessage()).isEqualTo(" (sonar.java.source not set. Assuming 6 or greater.)");
     assertThat(version.java7CompatibilityMessage()).isEqualTo(" (sonar.java.source not set. Assuming 7 or greater.)");
     assertThat(version.java8CompatibilityMessage()).isEqualTo(" (sonar.java.source not set. Assuming 8 or greater.)");
