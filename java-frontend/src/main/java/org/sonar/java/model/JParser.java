@@ -244,6 +244,7 @@ public class JParser {
   public static CompilationUnitTree parse(String version, String unitName, String source, List<File> classpath) {
     ASTParser astParser = ASTParser.newParser(AST.JLS12);
     Map<String, String> options = new HashMap<>();
+    options.put(JavaCore.COMPILER_COMPLIANCE, version);
     options.put(JavaCore.COMPILER_SOURCE, version);
     options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     astParser.setCompilerOptions(options);
