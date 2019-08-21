@@ -1255,6 +1255,8 @@ public class JParser {
         );
         statements.add(t);
       }
+    } else if (node.getNodeType() == ASTNode.BREAK_STATEMENT && node.getLength() == 0) {
+      // skip implicit break-statement
     } else {
       statements.add(convertStatement(node));
     }
@@ -1651,8 +1653,10 @@ public class JParser {
       return null;
     }
     ExpressionTree t = createExpression(node);
-    // FIXME in UseSwitchExpressionCheck ClassCastException: class org.sonar.java.model.statement.SwitchExpressionTreeImpl cannot be cast to class org.sonar.java.model.AbstractTypedTree
-    ((AbstractTypedTree) t).setType(type(node.resolveTypeBinding()));
+    if (!t.is(Tree.Kind.SWITCH_EXPRESSION)) {
+      // FIXME in UseSwitchExpressionCheck ClassCastException: class org.sonar.java.model.statement.SwitchExpressionTreeImpl cannot be cast to class org.sonar.java.model.AbstractTypedTree
+      ((AbstractTypedTree) t).setType(type(node.resolveTypeBinding()));
+    }
     return t;
   }
 
