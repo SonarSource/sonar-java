@@ -25,6 +25,7 @@ public class EclipseI18NFilterTest {
 
   @Test
   public void test() {
+    org.sonar.java.model.JParser.setSema(true);
     FilterVerifier.verify("src/test/files/filters/EclipseI18NFilter.java", new EclipseI18NFilter());
   }
 

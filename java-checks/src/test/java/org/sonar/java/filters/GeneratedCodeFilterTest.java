@@ -29,6 +29,7 @@ public class GeneratedCodeFilterTest {
 
   @Test
   public void test() {
+    org.sonar.java.model.JParser.setSema(true);
     CommentRegularExpressionCheck commentRegularExpressionCheck = new CommentRegularExpressionCheck();
     commentRegularExpressionCheck.regularExpression = ".*alpha.*";
     FilterVerifier.verify("src/test/files/filters/GeneratedCodeFilter.java", new GeneratedCodeFilter(),

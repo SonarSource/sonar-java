@@ -69,7 +69,7 @@ public class SymmetricEqualsCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitInstanceOf(InstanceOfTree tree) {
-      if (tree.type().symbolType().equals(owner.type().erasure())) {
+      if (tree.type().symbolType().erasure().equals(owner.type().erasure())) { // TODO
         if (!isOwnerFinal() && !methodSymbol.isFinal()) {
           reportIssue(tree, "Compare to \"this.getClass()\" instead.");
         }

@@ -32,6 +32,7 @@ public class SuppressWarningFilterTest {
   public static final String CONSTANT_RULE_KEY = "repo:S00115";
   @Test
   public void verify() {
+    org.sonar.java.model.JParser.setSema(true);
     FilterVerifier.verify("src/test/files/filters/SuppressWarningFilter.java", new SuppressWarningFilter(),
       // activated rules
       new UnusedPrivateFieldCheck(),
