@@ -23,9 +23,9 @@ import org.junit.Test;
 
 public class LombokFilterTest {
 
-  @org.junit.Ignore("lookupSymbols")
   @Test
   public void test() {
+    org.sonar.java.model.JParser.setSema(true);
     FilterVerifier.verify("src/test/files/filters/LombokFilter.java", new LombokFilter());
   }
 }

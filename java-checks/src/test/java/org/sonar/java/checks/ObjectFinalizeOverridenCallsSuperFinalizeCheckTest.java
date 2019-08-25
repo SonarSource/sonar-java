@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ObjectFinalizeOverridenCallsSuperFinalizeCheckTest {
-  @org.junit.Ignore("lookupSymbols")
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java", new ObjectFinalizeOverridenCallsSuperFinalizeCheck());

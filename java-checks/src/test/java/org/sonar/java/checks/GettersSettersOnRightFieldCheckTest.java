@@ -24,7 +24,6 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class GettersSettersOnRightFieldCheckTest {
 
-  @org.junit.Ignore("lookupSymbols")
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/GettersSettersOnRightField.java", new GettersSettersOnRightFieldCheck());

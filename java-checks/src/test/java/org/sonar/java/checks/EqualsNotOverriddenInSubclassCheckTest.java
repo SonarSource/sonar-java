@@ -24,13 +24,11 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class EqualsNotOverriddenInSubclassCheckTest {
 
-  @org.junit.Ignore("lookupSymbols")
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/EqualsNotOverriddenInSubclassCheck.java", new EqualsNotOverriddenInSubclassCheck());
   }
 
-  @org.junit.Ignore("lookupSymbols")
   @Test
   public void noSemantic() {
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/EqualsNotOverriddenInSubclassCheck.java", new EqualsNotOverriddenInSubclassCheck());

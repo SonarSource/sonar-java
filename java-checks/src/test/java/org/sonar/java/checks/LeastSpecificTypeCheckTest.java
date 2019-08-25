@@ -24,13 +24,12 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class LeastSpecificTypeCheckTest {
 
-  @org.junit.Ignore("lookupSymbols")
+  @org.junit.Ignore("ClassCastException: class org.sonar.java.model.JTypeSymbol cannot be cast to class org.sonar.java.resolve.JavaSymbol$TypeJavaSymbol")
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/LeastSpecificTypeCheck.java", new LeastSpecificTypeCheck());
   }
 
-  @org.junit.Ignore("lookupSymbols")
   @Test
   public void no_semantic() {
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/LeastSpecificTypeCheck.java", new LeastSpecificTypeCheck());

@@ -87,8 +87,10 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
   @Override
   public Collection<Symbol> lookupSymbols(String name) {
-    // FIXME
-    throw new NotImplementedException();
+    // FIXME AFAIU
+    return memberSymbols().stream()
+      .filter(member -> name.equals(member.name()))
+      .collect(Collectors.toList());
   }
 
 }

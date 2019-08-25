@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SerialVersionUidCheckTest {
-  @org.junit.Ignore("lookupSymbols")
+  @org.junit.Ignore("ClassCastException: class org.sonar.java.model.JTypeSymbol cannot be cast to class org.sonar.java.resolve.JavaSymbol$TypeJavaSymbol")
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/serialization/SerialVersionUidCheck.java", new SerialVersionUidCheck());

@@ -24,7 +24,6 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CallSuperMethodFromInnerClassCheckTest {
 
-  @org.junit.Ignore("lookupSymbols")
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/CallSuperMethodFromInnerClassCheck.java", new CallSuperMethodFromInnerClassCheck());
