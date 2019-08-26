@@ -25,7 +25,6 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.ArrayJavaType;
 import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
@@ -77,14 +76,14 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
   }
 
   @CheckForNull
-  private static JavaType getCollectionItemType(ExpressionTree expression) {
+  private static Type getCollectionItemType(ExpressionTree expression) {
     JavaType expressionType = (JavaType) expression.symbolType();
     if (expressionType.isSubtypeOf("java.util.Collection") && !expressionType.isParameterized()) {
       // Ignoring raw collections (too many FP)
       return null;
     }
     if (expressionType.isArray()) {
-      return ((ArrayJavaType) expressionType).elementType();
+      return ((Type.ArrayType) expressionType).elementType();
     } else if(expressionType.isClass()) {
       ClassJavaType clazz = (ClassJavaType) expressionType;
       return clazz.superTypes()
