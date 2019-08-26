@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -42,7 +43,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @MethodsAreNonnullByDefault
-final class Sema {
+final class Sema implements ISemanticModel {
 
   final AST ast;
 
@@ -141,6 +142,16 @@ final class Sema {
     } catch (ReflectiveOperationException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Nullable
+  @Override
+  public Type getClassType(String type) {
+    ITypeBinding typeBinding = resolveType(type);
+    if (typeBinding == null) {
+      return null;
+    }
+    return type(typeBinding);
   }
 
 }

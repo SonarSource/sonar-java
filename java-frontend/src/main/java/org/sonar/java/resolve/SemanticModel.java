@@ -25,6 +25,7 @@ import com.google.common.collect.HashBiMap;
 import javax.annotation.CheckForNull;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.ISemanticModel;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -40,7 +41,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class SemanticModel {
+public class SemanticModel implements ISemanticModel {
 
   private final Map<Tree, Symbol> symbolsTree = new HashMap<>();
 

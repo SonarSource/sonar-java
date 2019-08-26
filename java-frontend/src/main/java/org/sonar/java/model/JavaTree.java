@@ -158,6 +158,7 @@ public abstract class JavaTree implements Tree {
     @Nullable
     private final ModuleDeclarationTree moduleDeclaration;
     private final SyntaxToken eofToken;
+    public Sema ast;
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {

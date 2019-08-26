@@ -28,8 +28,8 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.BytecodeEGWalker;
+import org.sonar.java.model.ISemanticModel;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -39,7 +39,7 @@ public class BehaviorCache {
   private final SquidClassLoader classLoader;
   private final boolean crossFileEnabled;
   private  SymbolicExecutionVisitor sev;
-  private  SemanticModel semanticModel;
+  private  ISemanticModel semanticModel;
   @VisibleForTesting
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
   private final Map<String, MethodBehavior> bytecodeBehaviors = new LinkedHashMap<>();
@@ -107,7 +107,7 @@ public class BehaviorCache {
     this.crossFileEnabled = crossFileEnabled;
   }
 
-  public void setFileContext(@Nullable SymbolicExecutionVisitor sev,@Nullable SemanticModel semanticModel) {
+  public void setFileContext(@Nullable SymbolicExecutionVisitor sev,@Nullable ISemanticModel semanticModel) {
     this.sev = sev;
     this.semanticModel = semanticModel;
   }

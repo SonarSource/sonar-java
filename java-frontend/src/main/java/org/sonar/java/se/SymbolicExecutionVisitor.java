@@ -25,9 +25,9 @@ import java.util.List;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.model.ISemanticModel;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -50,7 +50,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    behaviorCache.setFileContext(this, (SemanticModel) context.getSemanticModel());
+    behaviorCache.setFileContext(this, (ISemanticModel) context.getSemanticModel());
     super.scanFile(context);
   }
 
@@ -89,7 +89,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
   @VisibleForTesting
   protected ExplodedGraphWalker getWalker() {
-    return egwFactory.createWalker(behaviorCache, (SemanticModel) context.getSemanticModel());
+    return egwFactory.createWalker(behaviorCache, (ISemanticModel) context.getSemanticModel());
   }
 
   public static boolean methodCanNotBeOverriden(Symbol.MethodSymbol methodSymbol) {

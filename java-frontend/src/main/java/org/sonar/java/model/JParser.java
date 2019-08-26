@@ -297,6 +297,9 @@ public class JParser {
 
     CompilationUnitTree tree = converter.convertCompilationUnit(astNode);
     setParents(tree);
+
+    ((JavaTree.CompilationUnitTreeImpl) tree).ast = converter.ast;
+
     return tree;
   }
 
