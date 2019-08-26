@@ -91,7 +91,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     if (JParser.SEMA) {
       return new Object(); // TODO
     }
-    return null;
+    return semanticModel;
   }
 
   @Override

@@ -23,11 +23,13 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.MultipleFilesJavaCheckVerifier;
+import org.sonar.java.model.JParser;
 
 public class SpringBeansShouldBeAccessibleCheckTest {
 
   @Test
   public void testComponentScan() {
+    JParser.setSema(true);
     List<String> files = Arrays.asList(
       "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/A.java",
       "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/B.java",
@@ -44,6 +46,7 @@ public class SpringBeansShouldBeAccessibleCheckTest {
 
   @Test
   public void testSpringBootApplication() {
+    JParser.setSema(true);
     List<String> files = Arrays.asList(
       "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/SpringBootApplication/Ko.java",
       "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/SpringBootApplication/SpringBoot.java",

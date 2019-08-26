@@ -708,6 +708,7 @@ public class JParser {
     ).completeModifiers(
       convertModifiers(e.modifiers())
     );
+    if (SEMA)
     if (e.resolveBinding() != null) {
       t.setSymbol(ast.typeSymbol(e.resolveBinding()));
       ast.declaration(e.resolveBinding(), t);
@@ -829,6 +830,7 @@ public class JParser {
     }
 
     IdentifierTree identifier = convertSimpleName(e.getName()); // !!!
+    if (SEMA)
     ((IdentifierTreeImpl) identifier).setSymbol(
       methodSymbol(e.resolveConstructorBinding())
     );
@@ -842,6 +844,7 @@ public class JParser {
     ).completeWithIdentifier(
       identifier
     );
+    if (SEMA)
     initializer.setType(identifier.symbolType()); // TODO same as in old implementation, but doesn't look right
 
     return new EnumConstantTreeImpl(
@@ -881,6 +884,7 @@ public class JParser {
         ).completeWithModifiers(
           convertModifiers(e.modifiers())
         );
+        if (SEMA)
         if (e.resolveBinding() != null) {
           t.setSymbol(ast.methodSymbol(e.resolveBinding()));
           ast.declaration(e.resolveBinding(), t);
@@ -952,6 +956,7 @@ public class JParser {
         ).completeWithTypeParameters(
           convertTypeParameters(e.typeParameters())
         );
+        if (SEMA)
         if (e.resolveBinding() != null) {
           t.setSymbol(ast.methodSymbol(e.resolveBinding()));
           ast.declaration(e.resolveBinding(), t);
@@ -975,6 +980,7 @@ public class JParser {
             modifiers,
             applyExtraDimensions(type, fragment.extraDimensions())
           );
+          if (SEMA)
           if (fragment.resolveBinding() != null) {
             t.setSymbol(ast.variableSymbol(fragment.resolveBinding()));
             ast.declaration(fragment.resolveBinding(), t);
@@ -1139,6 +1145,7 @@ public class JParser {
         convertExpression(e.getInitializer())
       );
     }
+    if (SEMA)
     if (e.resolveBinding() != null) {
       ast.declaration(e.resolveBinding(), t);
       t.setSymbol(ast.variableSymbol(e.resolveBinding()));
@@ -1169,6 +1176,7 @@ public class JParser {
         t.setEndToken(firstTokenAfter(fragment, TerminalTokens.TokenNameCOMMA));
       }
 
+      if (SEMA)
       if (fragment.resolveBinding() == null) {
         t.setSymbol(Symbols.unknownSymbol);
       } else {
@@ -1188,7 +1196,9 @@ public class JParser {
     IdentifierTreeImpl t = new IdentifierTreeImpl(
       firstTokenIn(e, TerminalTokens.TokenNameIdentifier)
     );
+    if (SEMA)
     t.setType(type(e.resolveTypeBinding()));
+    if (SEMA)
     if (e.resolveBinding() != null) {
       switch (e.resolveBinding().getKind()) {
         case IBinding.TYPE:
@@ -1237,6 +1247,7 @@ public class JParser {
         ).completeModifiers(
           modifiers
         );
+        if (SEMA)
         if (fragment.resolveBinding() != null) {
           t.setSymbol(ast.variableSymbol(fragment.resolveBinding()));
           ast.declaration(fragment.resolveBinding(), t);
@@ -1562,6 +1573,7 @@ public class JParser {
           convertTypeArguments(e.typeArguments()),
           arguments
         );
+        if (SEMA)
         t.setSymbol(methodSymbol(e.resolveConstructorBinding()));
         return new ExpressionStatementTreeImpl(
           t,
@@ -1572,6 +1584,7 @@ public class JParser {
         SuperConstructorInvocation e = (SuperConstructorInvocation) node;
 
         ExpressionTree methodSelect = new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper));
+        if (SEMA)
         ((IdentifierTreeImpl) methodSelect).setSymbol(methodSymbol(e.resolveConstructorBinding()));
 
         if (e.getExpression() != null) {
@@ -1593,6 +1606,7 @@ public class JParser {
           convertTypeArguments(e.typeArguments()),
           arguments
         );
+        if (SEMA)
         t.setSymbol(methodSymbol(e.resolveConstructorBinding()));
         return new ExpressionStatementTreeImpl(
           t,
@@ -1655,6 +1669,7 @@ public class JParser {
     ExpressionTree t = createExpression(node);
     if (!t.is(Tree.Kind.SWITCH_EXPRESSION)) {
       // FIXME in UseSwitchExpressionCheck ClassCastException: class org.sonar.java.model.statement.SwitchExpressionTreeImpl cannot be cast to class org.sonar.java.model.AbstractTypedTree
+      if (SEMA)
       ((AbstractTypedTree) t).setType(type(node.resolveTypeBinding()));
     }
     return t;
@@ -1889,6 +1904,7 @@ public class JParser {
             lastTokenIn(e.getAnonymousClassDeclaration(), TerminalTokens.TokenNameRBRACE)
           );
 
+          if (SEMA)
           classBody.setSymbol(
             typeSymbol(e.getAnonymousClassDeclaration().resolveBinding())
           );
@@ -1911,6 +1927,7 @@ public class JParser {
         );
 
         // identifier should be bound to constructor and not to type - see CallToDeprecatedMethodCheck
+        if (SEMA)
         ((IdentifierTreeImpl) getIdentifier(t.identifier())).setSymbol(
           methodSymbol(e.resolveConstructorBinding())
         );
@@ -1980,6 +1997,7 @@ public class JParser {
           arguments
         );
 
+        if (SEMA)
         t.setSymbol(methodSymbol(e.resolveMethodBinding()));
 
         return t;
@@ -2065,6 +2083,7 @@ public class JParser {
           VariableTreeImpl t;
           if (o.getNodeType() == ASTNode.VARIABLE_DECLARATION_FRAGMENT) {
             t = new VariableTreeImpl(convertSimpleName(o.getName()));
+            if (SEMA)
             if (o.resolveBinding() != null) {
               ((InferedTypeTree) t.type()).setType(
                 type(o.resolveBinding().getType())
@@ -2335,6 +2354,7 @@ public class JParser {
           convertAnnotations(e.annotations())
         );
 
+        if (SEMA)
         t.setType(type(e.resolveBinding()));
 
         return t;
@@ -2351,6 +2371,7 @@ public class JParser {
         if (t instanceof IdentifierTree && ((IdentifierTree) t).name().equals("var")) {
           // TODO can't be annotated?
           VarTypeTreeImpl t2 = new VarTypeTreeImpl((InternalSyntaxToken) ((IdentifierTree) t).identifierToken());
+          if (SEMA)
           t2.setType(type(e.resolveBinding()));
           return t2;
         }
@@ -2370,6 +2391,7 @@ public class JParser {
           }
         }
         JavaTree.UnionTypeTreeImpl t = new JavaTree.UnionTypeTreeImpl(alternatives);
+        if (SEMA)
         t.setType(type(e.resolveBinding()));
         return t;
       }
@@ -2388,6 +2410,7 @@ public class JParser {
             createSyntaxToken(tokenIndex),
             createSyntaxToken(nextTokenIndex(tokenIndex, TerminalTokens.TokenNameRBRACKET))
           );
+          if (SEMA)
           ((AbstractTypedTree) t).setType(
             binding != null ? type(binding.createArrayType(i + 1)) : Symbols.unknownType
           );
@@ -2411,6 +2434,7 @@ public class JParser {
             )
           )
         );
+        if (SEMA)
         t.setType(type(e.resolveBinding()));
         return t;
       }
@@ -2424,6 +2448,7 @@ public class JParser {
         ((IdentifierTreeImpl) t.identifier()).complete(
           convertAnnotations(e.annotations())
         );
+        if (SEMA)
         t.setType(type(e.resolveBinding()));
         return t;
       }
@@ -2437,6 +2462,7 @@ public class JParser {
         ((IdentifierTreeImpl) t.identifier()).complete(
           convertAnnotations(e.annotations())
         );
+        if (SEMA)
         t.setType(type(e.resolveBinding()));
         return t;
       }
@@ -2462,6 +2488,7 @@ public class JParser {
         t.complete(
           convertAnnotations(e.annotations())
         );
+        if (SEMA)
         t.setType(type(e.resolveBinding()));
         return t;
       }

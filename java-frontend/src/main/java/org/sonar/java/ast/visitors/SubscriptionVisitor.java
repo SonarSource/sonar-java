@@ -38,7 +38,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
   private EnumSet<Tree.Kind> nodesToVisit;
   private boolean visitToken;
   private boolean visitTrivia;
-  private SemanticModel semanticModel;
+  private Object semanticModel;
 
   public abstract List<Tree.Kind> nodesToVisit();
 
@@ -60,7 +60,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
 
   public void setContext(JavaFileScannerContext context) {
     this.context = context;
-//    semanticModel = (SemanticModel) context.getSemanticModel(); // TODO
+    semanticModel = context.getSemanticModel(); // TODO
   }
 
   public void leaveFile(JavaFileScannerContext context) {
@@ -133,7 +133,6 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
   }
 
   public boolean hasSemantic(){
-//    return semanticModel != null;
-    return JParser.SEMA; // TODO
+    return semanticModel != null;
   }
 }
