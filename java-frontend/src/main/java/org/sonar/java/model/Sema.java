@@ -87,10 +87,10 @@ final class Sema implements ISemanticModel {
     return typesCache.computeIfAbsent(typeBinding, k -> new JType(this, k));
   }
 
-  private final Map<IAnnotationBinding, JSymbol.JAnnotationInstance> annotationsCache = new HashMap<>();
+  private final Map<IAnnotationBinding, JSymbolMetadata.JAnnotationInstance> annotationsCache = new HashMap<>();
 
-  JSymbol.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
-    return annotationsCache.computeIfAbsent(annotationBinding, k -> new JSymbol.JAnnotationInstance(this, k));
+  JSymbolMetadata.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
+    return annotationsCache.computeIfAbsent(annotationBinding, k -> new JSymbolMetadata.JAnnotationInstance(this, k));
   }
 
   @Nullable

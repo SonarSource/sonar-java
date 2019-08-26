@@ -19,14 +19,11 @@
  */
 package org.sonar.java.model;
 
-import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.sonar.java.resolve.AnnotationValueResolve;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -37,7 +34,6 @@ import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -292,29 +288,7 @@ public abstract class JSymbol implements Symbol {
 
   @Override
   public final SymbolMetadata metadata() {
-    return new SymbolMetadata() {
-      @Override
-      public boolean isAnnotatedWith(String fullyQualifiedName) {
-        for (IAnnotationBinding a : binding.getAnnotations()) {
-          if (fullyQualifiedName.equals(a.getAnnotationType().getBinaryName())) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-      @Nullable
-      @Override
-      public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
-        for (IAnnotationBinding a : binding.getAnnotations()) {
-          if (fullyQualifiedNameOfAnnotation.equals(a.getAnnotationType().getQualifiedName())) {
-            // FIXME what about repeating annotations?
-            return ast.annotation(a).values();
-          }
-        }
-        return null;
-      }
-
+    return new JSymbolMetadata() {
       @Override
       public List<AnnotationInstance> annotations() {
         return Arrays.stream(binding.getAnnotations())
@@ -322,31 +296,6 @@ public abstract class JSymbol implements Symbol {
           .collect(Collectors.toList());
       }
     };
-  }
-
-  static class JAnnotationInstance implements SymbolMetadata.AnnotationInstance {
-    private final Sema ast;
-    private final IAnnotationBinding binding;
-
-    JAnnotationInstance(Sema ast, IAnnotationBinding binding) {
-      this.ast = ast;
-      this.binding = binding;
-    }
-
-    @Override
-    public Symbol symbol() {
-      return ast.typeSymbol(binding.getAnnotationType());
-    }
-
-    @Override
-    public List<SymbolMetadata.AnnotationValue> values() {
-      // FIXME note that AnnotationValue.value can be Tree
-      List<SymbolMetadata.AnnotationValue> r = new ArrayList<>();
-      for (IMemberValuePairBinding pair : binding.getDeclaredMemberValuePairs()) {
-        r.add(new AnnotationValueResolve(pair.getName(), pair.getValue()));
-      }
-      return r;
-    }
   }
 
   @Override
@@ -359,10 +308,6 @@ public abstract class JSymbol implements Symbol {
   @Override
   public Tree declaration() {
     return ast.declarations.get(binding);
-  }
-
-  public final Object constantValue() {
-    return ((IVariableBinding) binding).getConstantValue();
   }
 
 }

@@ -21,9 +21,8 @@ package org.sonar.java.checks.helpers;
 
 import javax.annotation.CheckForNull;
 
-import org.sonar.java.model.JSymbol;
+import org.sonar.java.model.JInternals;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -112,10 +111,7 @@ public class ConstantUtils {
         return Boolean.FALSE;
       }
     }
-    if (symbol instanceof JSymbol) { // TODO
-      return ((JSymbol) symbol).constantValue();
-    }
-    return ((JavaSymbol.VariableJavaSymbol) symbol).constantValue().orElse(null);
+    return JInternals.constantValue((Symbol.VariableSymbol) symbol);
   }
 
   @CheckForNull
