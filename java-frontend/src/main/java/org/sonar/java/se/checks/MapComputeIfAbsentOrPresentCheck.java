@@ -28,7 +28,6 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ExplodedGraph.Node;
@@ -39,6 +38,7 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
@@ -120,7 +120,7 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   private static boolean isMethodInvocationThrowingCheckedException(ExpressionTree expr) {
     return expr.is(Tree.Kind.METHOD_INVOCATION)
       && ((MethodInvocationTree) expr).symbol().isMethodSymbol()
-      && ((JavaSymbol.MethodJavaSymbol) ((MethodInvocationTree) expr).symbol()).thrownTypes().stream().anyMatch(t-> !t.isSubtypeOf("java.lang.RuntimeException"));
+      && ((Symbol.MethodSymbol) ((MethodInvocationTree) expr).symbol()).thrownTypes().stream().anyMatch(t-> !t.isSubtypeOf("java.lang.RuntimeException"));
   }
 
   private static boolean isInsideIfStatementWithNullCheckWithoutElse(MethodInvocationTree mit) {
