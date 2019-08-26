@@ -1576,8 +1576,12 @@ public class JParser {
           convertTypeArguments(e.typeArguments()),
           arguments
         );
-        if (SEMA)
-        t.setSymbol(methodSymbol(e.resolveConstructorBinding()));
+
+        if (SEMA) {
+          t.setSymbol(methodSymbol(e.resolveConstructorBinding()));
+          t.setType(t.symbol().owner().type());
+        }
+
         return new ExpressionStatementTreeImpl(
           t,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
@@ -1609,8 +1613,12 @@ public class JParser {
           convertTypeArguments(e.typeArguments()),
           arguments
         );
-        if (SEMA)
-        t.setSymbol(methodSymbol(e.resolveConstructorBinding()));
+
+        if (SEMA) {
+          t.setSymbol(methodSymbol(e.resolveConstructorBinding()));
+          t.setType(t.symbol().owner().type());
+        }
+
         return new ExpressionStatementTreeImpl(
           t,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
