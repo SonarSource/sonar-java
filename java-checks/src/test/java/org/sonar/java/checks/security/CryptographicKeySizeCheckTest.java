@@ -29,7 +29,6 @@ public class CryptographicKeySizeCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/security/CryptographicKeySizeCheck/RSA.java", new CryptographicKeySizeCheck());
   }
 
-  @org.junit.Ignore("ClassCastException: class org.sonar.java.model.JVariableSymbol cannot be cast to class org.sonar.java.resolve.JavaSymbol$VariableJavaSymbo")
   @Test
   public void test_Blowfish() {
     JavaCheckVerifier.verify("src/test/files/checks/security/CryptographicKeySizeCheck/Blowfish.java", new CryptographicKeySizeCheck());

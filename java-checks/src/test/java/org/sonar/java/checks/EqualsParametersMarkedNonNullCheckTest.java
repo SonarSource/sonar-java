@@ -24,7 +24,6 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class EqualsParametersMarkedNonNullCheckTest {
 
-  @org.junit.Ignore("ClassCastException: class org.sonar.java.model.JSymbol$2 cannot be cast to class org.sonar.java.resolve.SymbolMetadataResolve")
   @Test
   public void detected() {
     JavaCheckVerifier.verify("src/test/files/checks/EqualsParametersMarkedNonNullCheck.java", new EqualsParametersMarkedNonNullCheck());
