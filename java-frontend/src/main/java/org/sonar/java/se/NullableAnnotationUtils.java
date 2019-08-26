@@ -28,7 +28,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.CheckForNull;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -147,7 +146,7 @@ public final class NullableAnnotationUtils {
   @CheckForNull
   private static String nonNullFieldAnnotation(Symbol symbol) {
     if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !isUsingNullable(symbol)
-      && valuesForGlobalAnnotation((JavaSymbol) symbol, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS) != null) {
+      && valuesForGlobalAnnotation(symbol, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS) != null) {
       return ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS;
     }
     return null;
@@ -205,16 +204,23 @@ public final class NullableAnnotationUtils {
 
   @CheckForNull
   private static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(Symbol.MethodSymbol method, String annotation) {
-    return valuesForGlobalAnnotation((JavaSymbol) method, annotation);
+    return valuesForGlobalAnnotation((Symbol) method, annotation);
   }
 
   @CheckForNull
-  private static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(JavaSymbol method, String annotation) {
-    return Arrays.asList(method, method.enclosingClass(), method.packge()).stream()
+  private static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(Symbol method, String annotation) {
+    return Arrays.asList(method, method.enclosingClass(), pkg(method)).stream()
       .map(symbol -> symbol.metadata().valuesForAnnotation(annotation))
       .filter(Objects::nonNull)
       .findFirst()
       .orElse(null);
+  }
+
+  private static Symbol pkg(Symbol symbol) {
+    while (!symbol.isPackageSymbol()) {
+      symbol = symbol.owner();
+    }
+    return symbol;
   }
 
   private static boolean isGloballyAnnotatedWithEclipseNonNullByDefault(Symbol.MethodSymbol symbol, String parameter) {

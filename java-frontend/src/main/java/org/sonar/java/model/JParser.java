@@ -239,11 +239,12 @@ import java.util.Map;
 public class JParser {
 
   @Deprecated
-  public static boolean SEMA = false;
+  public static boolean SEMA = true;
 
   @Deprecated
   public static void setSema(boolean flag) {
-    SEMA = flag;
+//    SEMA = flag;
+    SEMA = true;
     System.err.println("ECJ semantic " + (SEMA ? "enabled" : "disabled"));
   }
 
@@ -2027,8 +2028,11 @@ public class JParser {
 
         ExpressionTree outermostSelect;
         if (e.getQualifier() == null) {
+          IdentifierTreeImpl lhs = new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper));
+          lhs.setType(Symbols.unknownType);
+
           outermostSelect = new MemberSelectExpressionTreeImpl(
-            new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
+            lhs,
             firstTokenIn(e, TerminalTokens.TokenNameDOT),
             rhs
           );

@@ -26,10 +26,11 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.BytecodeEGWalker;
+import org.sonar.java.model.Hacks;
 import org.sonar.java.model.ISemanticModel;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -118,7 +119,7 @@ public class BehaviorCache {
 
   public MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
     String signature = symbol.signature();
-    boolean varArgs = ((JavaSymbol.MethodJavaSymbol) symbol).isVarArgs();
+    boolean varArgs = Hacks.isVarArgs(symbol);
     return behaviors.computeIfAbsent(signature, k -> new MethodBehavior(signature, varArgs));
   }
 

@@ -24,8 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.model.Hacks;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.ProgramState;
@@ -64,15 +64,15 @@ public class ParameterNullnessCheck extends SECheck {
     if (!symbol.isMethodSymbol() || arguments.isEmpty()) {
       return;
     }
-    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
     if (nonNullAnnotationOnParameters(methodSymbol) == null) {
       // method is not annotated (locally or globally)
       return;
     }
     int nbArguments = arguments.size();
     List<SymbolicValue> argumentSVs = getArgumentSVs(state, syntaxNode, nbArguments);
-    List<JavaSymbol> argumentSymbols = methodSymbol.getParameters().scopeSymbols();
-    int nbArgumentToCheck = Math.min(nbArguments, argumentSymbols.size() - (methodSymbol.isVarArgs() ? 1 : 0));
+    List<Symbol> argumentSymbols = Hacks.getParameters(methodSymbol);
+    int nbArgumentToCheck = Math.min(nbArguments, argumentSymbols.size() - (Hacks.isVarArgs(methodSymbol) ? 1 : 0));
     for (int i = 0; i < nbArgumentToCheck; i++) {
       ObjectConstraint constraint = state.getConstraint(argumentSVs.get(i), ObjectConstraint.class);
       if (constraint != null && constraint.isNull() && !parameterIsNullable(methodSymbol, argumentSymbols.get(i))) {
@@ -81,10 +81,10 @@ public class ParameterNullnessCheck extends SECheck {
     }
   }
 
-  private void reportIssue(Tree syntaxNode, ExpressionTree argument, JavaSymbol.MethodJavaSymbol methodSymbol) {
+  private void reportIssue(Tree syntaxNode, ExpressionTree argument, Symbol.MethodSymbol methodSymbol) {
     String declarationMessage = "constructor declaration";
-    if (!methodSymbol.isConstructor()) {
-      declarationMessage = "method '" + methodSymbol.getName() + "' declaration";
+    if (!Hacks.isConstructor(methodSymbol)) {
+      declarationMessage = "method '" + methodSymbol.name() + "' declaration";
     }
     String message = String.format("Annotate the parameter with @javax.annotation.Nullable in %s, or make sure that null can not be passed as argument.", declarationMessage);
 

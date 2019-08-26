@@ -36,6 +36,9 @@ import org.sonar.java.bytecode.cfg.BytecodeCFGMethodVisitor;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.MethodLookup;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.ISemanticModel;
+import org.sonar.java.model.JParser;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.SECheck;
@@ -61,19 +64,24 @@ public class SETestUtils {
     return createSymbolicExecutionVisitorAndSemantic(fileName, checks).a;
   }
 
-  public static Pair<SymbolicExecutionVisitor, SemanticModel> createSymbolicExecutionVisitorAndSemantic(String fileName, SECheck... checks) {
+  public static Pair<SymbolicExecutionVisitor, ISemanticModel> createSymbolicExecutionVisitorAndSemantic(String fileName, SECheck... checks) {
     return createSymbolicExecutionVisitorAndSemantic(fileName, true, checks);
   }
 
-  public static Pair<SymbolicExecutionVisitor, SemanticModel> createSymbolicExecutionVisitorAndSemantic(String fileName, boolean crossFileEnabled, SECheck... checks) {
+  public static Pair<SymbolicExecutionVisitor, ISemanticModel> createSymbolicExecutionVisitorAndSemantic(String fileName, boolean crossFileEnabled, SECheck... checks) {
     InputFile inputFile = TestUtils.inputFile(fileName);
     CompilationUnitTree cut;
     try {
-      cut = (CompilationUnitTree) PARSER.parse(inputFile.contents());
+//      cut = (CompilationUnitTree) PARSER.parse(inputFile.contents());
+      cut = JParser.parse(
+        "12", "Example.java", inputFile.contents(), CLASS_PATH
+      );
     } catch (IOException e) {
       throw new IllegalStateException(String.format("Unable to load file for test: '%s'", inputFile));
     }
-    SemanticModel semanticModel = SemanticModel.createFor(cut, CLASSLOADER);
+//    SemanticModel semanticModel = SemanticModel.createFor(cut, CLASSLOADER);
+    ISemanticModel semanticModel = ((JavaTree.CompilationUnitTreeImpl) cut).ast;
+
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks), new BehaviorCache(CLASSLOADER, crossFileEnabled));
     sev.scanFile(new DefaultJavaFileScannerContext(cut, inputFile, semanticModel, null, new JavaVersionImpl(8), true));
     return new Pair<>(sev, semanticModel);

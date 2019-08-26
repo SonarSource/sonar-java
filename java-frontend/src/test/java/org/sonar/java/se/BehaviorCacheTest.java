@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.model.ISemanticModel;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
@@ -111,9 +112,9 @@ public class BehaviorCacheTest {
 
   @Test
   public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
-    Pair<SymbolicExecutionVisitor, SemanticModel> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/CleanStackWhenRaisingException.java");
+    Pair<SymbolicExecutionVisitor, ISemanticModel> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/CleanStackWhenRaisingException.java");
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
-    SemanticModel semanticModel = sevAndSemantic.b;
+    ISemanticModel semanticModel = sevAndSemantic.b;
     MethodBehavior behavior = getMethodBehavior(sev, "foo");
     assertThat(behavior.yields()).hasSize(4);
 

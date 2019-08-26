@@ -42,14 +42,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final CompilationUnitTree tree;
   @VisibleForTesting
-  private final SemanticModel semanticModel;
+  private final ISemanticModel semanticModel;
   private final SonarComponents sonarComponents;
   private final ComplexityVisitor complexityVisitor;
   private final InputFile inputFile;
   private final JavaVersion javaVersion;
   private final boolean fileParsed;
 
-  public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, SemanticModel semanticModel,
+  public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, ISemanticModel semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean fileParsed) {
     this.tree = tree;
     this.inputFile = inputFile;

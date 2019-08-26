@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.resolve.ArrayJavaType;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.MethodJavaType;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
@@ -68,6 +69,10 @@ final class JType implements Type, Type.ArrayType {
 
   @Override
   public boolean isSubtypeOf(Type superType) {
+    if (superType == Symbols.unknownType) {
+      return false;
+    }
+
     return typeBinding.isSubTypeCompatible(
       ((JType) superType).typeBinding
     );

@@ -31,13 +31,14 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @MethodsAreNonnullByDefault
-final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
+public final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
   JMethodSymbol(Sema sema, IMethodBinding methodBinding) {
     super(sema, methodBinding);
@@ -124,6 +125,18 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     } catch (NoSuchMethodException | NoSuchFieldException | ClassNotFoundException | IllegalAccessException | InvocationTargetException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  private List<Symbol> parameters;
+  public List<Symbol> getParameters() {
+    if (parameters == null) {
+      parameters = new ArrayList<>();
+      IMethodBinding methodBinding = (IMethodBinding) this.binding;
+      for (int i = 0; i < methodBinding.getParameterTypes().length; i++) {
+        parameters.add(new JMethodParameter(this, i));
+      }
+    }
+    return parameters;
   }
 
 }

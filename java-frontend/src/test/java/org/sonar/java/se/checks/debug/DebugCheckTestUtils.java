@@ -22,6 +22,7 @@ package org.sonar.java.se.checks.debug;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.model.ISemanticModel;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.JavaCheckVerifier;
@@ -37,7 +38,7 @@ public final class DebugCheckTestUtils {
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.singletonList(check), behaviorCache) {
       @Override
       protected ExplodedGraphWalker getWalker() {
-        return new ExplodedGraphWalker(Collections.singletonList(check), behaviorCache, (SemanticModel) context.getSemanticModel()) {
+        return new ExplodedGraphWalker(Collections.singletonList(check), behaviorCache, (ISemanticModel) context.getSemanticModel()) {
           @Override
           protected int maxSteps() {
             return maxSteps;
