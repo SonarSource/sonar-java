@@ -21,12 +21,16 @@ package org.sonar.java.model;
 
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
@@ -106,7 +110,20 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   @Override
   public String signature() {
     // FIXME
-    throw new NotImplementedException();
+    try {
+      IMethodBinding methodBinding = (IMethodBinding) binding;
+      Field f = Class.forName("org.eclipse.jdt.core.dom.MethodBinding")
+        .getDeclaredField("binding");
+      f.setAccessible(true);
+      Method m = MethodBinding.class.getMethod("signature");
+      m.setAccessible(true);
+      char[] signature = (char[]) m.invoke(
+        f.get(binding)
+      );
+      return methodBinding.getDeclaringClass().getBinaryName() + "#" + methodBinding.getName() + new String(signature);
+    } catch (NoSuchMethodException | NoSuchFieldException | ClassNotFoundException | IllegalAccessException | InvocationTargetException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
 }
