@@ -22,13 +22,10 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -43,14 +40,6 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S1699")
 public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisitor {
 
-  private SemanticModel semanticModel;
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    semanticModel = (SemanticModel) context.getSemanticModel();
-    super.setContext(context);
-  }
-
   @Override
   public List<Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CONSTRUCTOR);
@@ -59,7 +48,8 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      TypeJavaSymbol constructorType = (TypeJavaSymbol) semanticModel.getEnclosingClass(tree);
+      MethodTree m = (MethodTree) tree;
+      Symbol.TypeSymbol constructorType = m.symbol().enclosingClass();
       if (!constructorType.isFinal()) {
         ((MethodTree) tree).block().accept(new ConstructorBodyVisitor(constructorType));
       }
@@ -68,8 +58,9 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
 
   private class ConstructorBodyVisitor extends BaseTreeVisitor {
 
-    private TypeJavaSymbol constructorType;
-    public ConstructorBodyVisitor(TypeJavaSymbol constructorType) {
+    private Symbol.TypeSymbol constructorType;
+
+    public ConstructorBodyVisitor(Symbol.TypeSymbol constructorType) {
       this.constructorType = constructorType;
     }
 
@@ -122,9 +113,9 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
     }
 
     private boolean isMethodDefinedOnConstructedType(Symbol symbol) {
-      TypeJavaSymbol methodEnclosingClass = (TypeJavaSymbol) symbol.enclosingClass();
-      for (ClassJavaType superType : constructorType.superTypes()) {
-        if (superType.getSymbol().equals(methodEnclosingClass)) {
+      Symbol.TypeSymbol methodEnclosingClass = symbol.enclosingClass();
+      for (Type superType : ((JavaSymbol.TypeJavaSymbol) constructorType).superTypes()) {
+        if (superType.symbol().equals(methodEnclosingClass)) {
           return true;
         }
       }
