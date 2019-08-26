@@ -20,16 +20,18 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.SymbolMetadataResolve;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -70,7 +72,7 @@ public final class NullableAnnotationUtils {
     "org.checkerframework.checker.nullness.compatqual.NonNullDecl");
 
   public static boolean isAnnotatedNullable(Symbol symbol) {
-    return isUsingNullable(symbol) || ((SymbolMetadataResolve) symbol.metadata()).metaAnnotations().stream().anyMatch(NullableAnnotationUtils::isUsingNullable);
+    return isUsingNullable(symbol) || collectMetaAnnotations(symbol).stream().anyMatch(NullableAnnotationUtils::isUsingNullable);
   }
 
   private static boolean isUsingNullable(Symbol symbol) {
@@ -129,7 +131,7 @@ public final class NullableAnnotationUtils {
     if (isAnnotatedNullable(symbol)) {
       return false;
     }
-    return isUsingNonNull(symbol) || ((SymbolMetadataResolve) symbol.metadata()).metaAnnotations().stream().anyMatch(NullableAnnotationUtils::isUsingNonNull);
+    return isUsingNonNull(symbol) || collectMetaAnnotations(symbol).stream().anyMatch(NullableAnnotationUtils::isUsingNonNull);
   }
 
   private static boolean isUsingNonNull(Symbol symbol) {
@@ -222,4 +224,25 @@ public final class NullableAnnotationUtils {
     }
     return valuesForGlobalAnnotation.isEmpty() || checkAnnotationParameter(valuesForGlobalAnnotation, "value", parameter);
   }
+
+  private static ArrayList<Symbol> collectMetaAnnotations(Symbol symbol) {
+    return collectMetaAnnotations(symbol, new HashSet<>());
+  }
+
+  private static ArrayList<Symbol> collectMetaAnnotations(Symbol symbol, Set<Type> knownTypes) {
+    List<Symbol> result = new ArrayList<>();
+    for (SymbolMetadata.AnnotationInstance annotationInstance : symbol.metadata().annotations()) {
+      Symbol annotationSymbol = annotationInstance.symbol();
+      Type annotationType = annotationSymbol.type();
+      if (!knownTypes.contains(annotationType)) {
+        knownTypes.add(annotationType);
+        result.add(annotationSymbol);
+        result.addAll(
+          collectMetaAnnotations(annotationSymbol, knownTypes)
+        );
+      }
+    }
+    return new ArrayList<>(result);
+  }
+
 }
