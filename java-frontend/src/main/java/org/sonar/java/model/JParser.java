@@ -2036,12 +2036,16 @@ public class JParser {
             rhs
           );
         }
-
-        return new MethodInvocationTreeImpl(
+        MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
           outermostSelect,
           null,
           arguments
         );
+
+        if (SEMA)
+        t.setSymbol(methodSymbol(e.resolveMethodBinding()));
+
+        return t;
       }
       case ASTNode.PARENTHESIZED_EXPRESSION: {
         ParenthesizedExpression e = (ParenthesizedExpression) node;
