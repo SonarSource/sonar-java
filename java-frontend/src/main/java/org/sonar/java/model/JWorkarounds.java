@@ -21,10 +21,17 @@ package org.sonar.java.model;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.internal.compiler.env.IBinaryAnnotation;
+import org.eclipse.jdt.internal.compiler.env.IBinaryType;
+import org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
+import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
+import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
@@ -59,6 +66,49 @@ final class JWorkarounds {
         .getDeclaredMethod("getTypeBinding", TypeBinding.class);
       methodGetTypeBinding.setAccessible(true);
       return (ITypeBinding) methodGetTypeBinding.invoke(bindingResolver, referenceBinding);
+
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  static IAnnotationBinding[] resolvePackageAnnotations(AST ast, String packageName) {
+    // See org.eclipse.jdt.core.dom.PackageBinding#getAnnotations()
+    try {
+      Method methodGetBindingResolver = ast.getClass()
+        .getDeclaredMethod("getBindingResolver");
+      methodGetBindingResolver.setAccessible(true);
+      Object bindingResolver = methodGetBindingResolver.invoke(ast);
+
+      Method methodLookupEnvironment = bindingResolver.getClass()
+        .getDeclaredMethod("lookupEnvironment");
+      methodLookupEnvironment.setAccessible(true);
+      LookupEnvironment lookupEnvironment = (LookupEnvironment) methodLookupEnvironment.invoke(bindingResolver);
+
+      NameEnvironmentAnswer answer = lookupEnvironment.nameEnvironment.findType(
+        TypeConstants.PACKAGE_INFO_NAME,
+        CharOperation.splitOn('.', packageName.toCharArray())
+      );
+      if (answer == null) {
+        return new IAnnotationBinding[0];
+      }
+
+      IBinaryType type = answer.getBinaryType();
+      IBinaryAnnotation[] binaryAnnotations = type.getAnnotations();
+      AnnotationBinding[] binaryInstances =
+        BinaryTypeBinding.createAnnotations(binaryAnnotations, lookupEnvironment, type.getMissingTypeNames());
+      AnnotationBinding[] allInstances =
+        AnnotationBinding.addStandardAnnotations(binaryInstances, type.getTagBits(), lookupEnvironment);
+
+      Method methodGetAnnotationInstance = bindingResolver.getClass()
+        .getDeclaredMethod("getAnnotationInstance", AnnotationBinding.class);
+      methodGetAnnotationInstance.setAccessible(true);
+
+      IAnnotationBinding[] domInstances = new IAnnotationBinding[allInstances.length];
+      for (int i = 0; i < allInstances.length; i++) {
+        domInstances[i] = (IAnnotationBinding) methodGetAnnotationInstance.invoke(bindingResolver, allInstances[i]);
+      }
+      return domInstances;
 
     } catch (ReflectiveOperationException e) {
       throw new RuntimeException(e);

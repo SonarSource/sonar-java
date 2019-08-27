@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +54,20 @@ public class JWorkaroundsTest {
     ITypeBinding typeBinding = JWorkarounds.resolveType(ast, "java.lang.Object");
     assertNotNull(typeBinding);
     assertEquals("java.lang.Object", typeBinding.getQualifiedName());
+  }
+
+  @Test
+  public void resolvePackageAnnotations_should_return_annotations_from_package_info() {
+    IAnnotationBinding[] annotationBindings = JWorkarounds.resolvePackageAnnotations(ast, "org.sonar.java.model");
+    assertEquals(2, annotationBindings.length);
+    assertEquals("ParametersAreNonnullByDefault", annotationBindings[0].getName());
+    assertEquals("MethodsAreNonnullByDefault", annotationBindings[1].getName());
+  }
+
+  @Test
+  public void resolvePackageAnnotations_should_return_empty_array_when_no_package_info() {
+    IAnnotationBinding[] annotationBindings = JWorkarounds.resolvePackageAnnotations(ast, "without.package.info");
+    assertEquals(0, annotationBindings.length);
   }
 
 }
