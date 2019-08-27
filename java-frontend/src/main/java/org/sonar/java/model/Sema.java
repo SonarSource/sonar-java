@@ -107,7 +107,7 @@ final class Sema implements ISemanticModel {
     ITypeBinding result = ast.resolveWellKnownType(nameWithoutDimensions);
 
     if (result == null) {
-      result = findNonPrimitiveType(ast, nameWithoutDimensions);
+      result = JWorkarounds.resolveType(ast, nameWithoutDimensions);
     }
 
     if (result == null) {
@@ -115,33 +115,6 @@ final class Sema implements ISemanticModel {
     }
 
     return dimensions > 0 ? result.createArrayType(dimensions) : result;
-  }
-
-  @Nullable
-  private static ITypeBinding findNonPrimitiveType(AST ast, String name) {
-    // BindingResolver bindingResolver = ast.getBindingResolver();
-    // ReferenceBinding referenceBinding = bindingResolver
-    //   .lookupEnvironment()
-    //   .getType(CharOperation.splitOn('.', fqn.toCharArray()));
-    // return bindingResolver.getTypeBinding(referenceBinding);
-    try {
-      Method methodGetBindingResolver = ast.getClass().getDeclaredMethod("getBindingResolver");
-      methodGetBindingResolver.setAccessible(true);
-      Object bindingResolver = methodGetBindingResolver.invoke(ast);
-
-      Method methodLookupEnvironment = bindingResolver.getClass().getDeclaredMethod("lookupEnvironment");
-      methodLookupEnvironment.setAccessible(true);
-      LookupEnvironment lookupEnvironment = (LookupEnvironment) methodLookupEnvironment.invoke(bindingResolver);
-
-      ReferenceBinding referenceBinding = lookupEnvironment.getType(CharOperation.splitOn('.', name.toCharArray()));
-
-      Method methodGetTypeBinding = bindingResolver.getClass().getDeclaredMethod("getTypeBinding", TypeBinding.class);
-      methodGetTypeBinding.setAccessible(true);
-      return (ITypeBinding) methodGetTypeBinding.invoke(bindingResolver, referenceBinding);
-
-    } catch (ReflectiveOperationException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   @Nullable
