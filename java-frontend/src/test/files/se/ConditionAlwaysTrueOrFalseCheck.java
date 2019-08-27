@@ -855,34 +855,6 @@ public class Class extends SuperClass {
       }
     }
   }
-  public void test_instance_fields6(boolean local, boolean local1, boolean local2) {
-    if (field && field1 == field2 && local && local1 == local2) {
-      otherMethod();
-      if (field) {
-      }
-      if (field1 == field2) {
-      }
-      if (local) { // Noncompliant
-      }
-      if (local1 == local2) { // Noncompliant
-      }
-    }
-  }
-  public void test_instance_fields7(boolean local, boolean local1, boolean local2) {
-
-    if (field && field1 == field2 && local && local1 == local2) {
-      if (otherMethod()) {
-        if (field) {
-        }
-        if (field1 == field2) {
-        }
-        if (local) { // Noncompliant
-        }
-        if (local1 == local2) { // Noncompliant
-        }
-      }
-    }
-  }
 
   public void test_instance_fields6(boolean local, boolean local1, boolean local2) {
     if (field && field1 == field2 && local && local1 == local2) {
