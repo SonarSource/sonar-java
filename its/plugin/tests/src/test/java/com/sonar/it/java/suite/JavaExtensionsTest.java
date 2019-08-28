@@ -21,13 +21,10 @@ package com.sonar.it.java.suite;
 
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
+import java.util.List;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonar.wsclient.issue.Issue;
-import org.sonar.wsclient.issue.IssueClient;
-import org.sonar.wsclient.issue.IssueQuery;
-
-import java.util.List;
+import org.sonarqube.ws.Issues.Issue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,15 +40,12 @@ public class JavaExtensionsTest {
     TestUtils.provisionProject(orchestrator, "org.sonarsource.it.projects:java-extension","java-extension","java","java-extension");
     orchestrator.executeBuild(build);
 
-    IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
+    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:java-extension");
 
-    List<Issue> issues = issueClient.find(IssueQuery.create().rules("java-extension:example").componentRoots("org.sonarsource.it.projects:java-extension")).list();
-    //We found issues so the extension rule was properly set.
-    assertThat(issues).hasSize(4);
-    issues = issueClient.find(IssueQuery.create().rules("java-extension:subscriptionexamplecheck").componentRoots("org.sonarsource.it.projects:java-extension")).list();
-    assertThat(issues).hasSize(3);
-    issues = issueClient.find(IssueQuery.create().rules("java-extension:subscriptionexampletestcheck").componentRoots("org.sonarsource.it.projects:java-extension")).list();
-    assertThat(issues).hasSize(1);
+    // We found issues so the extension rule was properly set.
+    assertThat(issues.stream().map(Issue::getRule).filter("java-extension:example"::equals)).hasSize(4);
+    assertThat(issues.stream().map(Issue::getRule).filter("java-extension:subscriptionexamplecheck"::equals)).hasSize(3);
+    assertThat(issues.stream().map(Issue::getRule).filter("java-extension:subscriptionexampletestcheck"::equals)).hasSize(1);
   }
 
 }
