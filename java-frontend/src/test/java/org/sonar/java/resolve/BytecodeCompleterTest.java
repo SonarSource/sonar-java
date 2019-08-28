@@ -67,7 +67,12 @@ public class BytecodeCompleterTest {
 
   @Before
   public void setUp() throws Exception {
-    bytecodeCompleter = new BytecodeCompleter(new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))), new ParametrizedTypeCache());
+    bytecodeCompleter = new BytecodeCompleter(new SquidClassLoader(Lists.newArrayList(
+      new File("src/test/files/bytecode/obfuscated"),
+      new File("src/test/files/bytecode/bridges"),
+      new File("target/test-classes"),
+      new File("target/classes")
+    )), new ParametrizedTypeCache());
     new Symbols(bytecodeCompleter);
 
   }
