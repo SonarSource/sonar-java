@@ -21,7 +21,6 @@ package org.sonar.sslr.tests;
 
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.RecognitionException;
-import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.assertj.core.api.AbstractAssert;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
@@ -38,10 +37,6 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import java.nio.charset.StandardCharsets;
 
 public class Assertions {
-
-  public static RuleAssert assertThat(Rule actual) {
-    return new RuleAssert(actual);
-  }
 
   public static ParserAssert assertThat(GrammarRuleKey rule) {
     return assertThat(JavaLexer.createGrammarBuilder(), rule);
