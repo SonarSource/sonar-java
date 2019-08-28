@@ -22,7 +22,10 @@ package org.sonar.java.it;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
+import com.google.gson.Gson;
 import com.sonar.orchestrator.Orchestrator;
+import com.sonar.orchestrator.http.HttpMethod;
+import com.sonar.orchestrator.http.HttpResponse;
 import com.sonar.orchestrator.locator.FileLocation;
 import java.io.File;
 import java.io.IOException;
@@ -33,9 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.wsclient.internal.HttpRequestFactory;
-import org.sonar.wsclient.jsonsimple.JSONValue;
-
 
 public class ProfileGenerator {
   private static final String LANGUAGE = "java";
@@ -44,6 +44,7 @@ public class ProfileGenerator {
   private static final int NUMBER_RULES_BY_PAGE = 500;
 
   private static final Logger LOG = LoggerFactory.getLogger(ProfileGenerator.class);
+  private static final Gson GSON = new Gson();
 
   static void generate(Orchestrator orchestrator, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
     Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
@@ -95,14 +96,19 @@ public class ProfileGenerator {
     // pages are 1-based
     int currentPage = 1;
 
-    Long totalNumberRules;
+    Double totalNumberRules;
     int collectedRulesNumber;
     do {
-      String json = new HttpRequestFactory(orchestrator.getServer().getUrl())
-        .get("/api/rules/search", ImmutableMap.<String, Object>of("languages", LANGUAGE, "repositories", REPOSITORY_KEY, "p", currentPage, "ps", NUMBER_RULES_BY_PAGE));
+      HttpResponse response = orchestrator.getServer()
+        .newHttpCall("/api/rules/search")
+        .setMethod(HttpMethod.GET)
+        .setParam("languages", LANGUAGE)
+        .setParam("repositories", REPOSITORY_KEY)
+        .setParam("p", Integer.toString(currentPage))
+        .setParam("ps", Integer.toString(NUMBER_RULES_BY_PAGE)).execute();
 
       @SuppressWarnings("unchecked")
-      Map<Object, Object> jsonObject = (Map<Object, Object>) JSONValue.parse(json);
+      Map<Object, Object> jsonObject = GSON.fromJson(response.getBodyAsString(), Map.class);
 
       @SuppressWarnings("unchecked")
       List<Map<Object, Object>> jsonRules = (List<Map<Object, Object>>) jsonObject.get("rules");
@@ -114,7 +120,7 @@ public class ProfileGenerator {
 
       // update number of rules
       collectedRulesNumber = ruleKeys.size();
-      totalNumberRules = (Long) jsonObject.get("total");
+      totalNumberRules = (Double) jsonObject.get("total");
       LOG.info("Collected rule keys: {} / {}", collectedRulesNumber, totalNumberRules);
       // prepare for next page
       currentPage++;

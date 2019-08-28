@@ -30,6 +30,8 @@ import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.container.Server;
+import com.sonar.orchestrator.http.HttpMethod;
+import com.sonar.orchestrator.http.HttpResponse;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.io.File;
@@ -55,7 +57,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.wsclient.SonarClient;
 
 public class JavaRulingTest {
 
@@ -290,20 +291,28 @@ public class JavaRulingTest {
       return;
     }
     activatedRuleKeys.add(instantiationKey);
-    SonarClient sonarClient = orchestrator.getServer().adminWsClient();
-    sonarClient.post("/api/rules/create", ImmutableMap.<String, Object>builder()
-      .put("name", instantiationKey)
-      .put("markdown_description", instantiationKey)
-      .put("severity", "INFO")
-      .put("status", "READY")
-      .put("template_key", "squid:" + ruleTemplateKey)
-      .put("custom_key", instantiationKey)
-      .put("prevent_reactivation", "true")
-      .put("params", "name=\"" + instantiationKey + "\";key=\"" + instantiationKey + "\";markdown_description=\"" + instantiationKey + "\";" + params)
-      .build());
-    String post = sonarClient.get("api/qualityprofiles/search");
+    orchestrator.getServer()
+      .newHttpCall("/api/rules/create")
+      .setAdminCredentials()
+      .setMethod(HttpMethod.POST)
+      .setParam("name", instantiationKey)
+      .setParam("markdown_description", instantiationKey)
+      .setParam("severity", "INFO")
+      .setParam("status", "READY")
+      .setParam("template_key", "squid:" + ruleTemplateKey)
+      .setParam("custom_key", instantiationKey)
+      .setParam("prevent_reactivation", "true")
+      .setParam("params", "name=\"" + instantiationKey + "\";key=\"" + instantiationKey + "\";markdown_description=\"" + instantiationKey + "\";" + params)
+      .execute();
+
+    String profilesResponse = orchestrator.getServer()
+      .newHttpCall("api/qualityprofiles/search")
+      .setAdminCredentials()
+      .setMethod(HttpMethod.GET)
+      .execute()
+      .getBodyAsString();
     String profileKey = null;
-    Map map = GSON.fromJson(post, Map.class);
+    Map map = GSON.fromJson(profilesResponse, Map.class);
     for (Map qp : ((List<Map>) map.get("profiles"))) {
       if ("rules".equals(qp.get("name"))) {
         profileKey = (String) qp.get("key");
@@ -313,12 +322,18 @@ public class JavaRulingTest {
     if (StringUtils.isEmpty(profileKey)) {
       LOG.error("Could not retrieve profile key : Template rule " + ruleTemplateKey + " has not been activated");
     } else {
-      String activateRuleResponse = sonarClient.post("api/qualityprofiles/activate_rule", ImmutableMap.of(
-        "profile_key", profileKey,
-        "rule_key", "squid:" + instantiationKey,
-        "severity", "INFO",
-        "params", ""));
-      LOG.warn(activateRuleResponse);
+      String ruleKey = "squid:" + instantiationKey;
+      HttpResponse activateRuleResponse = orchestrator.getServer()
+        .newHttpCall("api/qualityprofiles/activate_rule")
+        .setAdminCredentials()
+        .setMethod(HttpMethod.POST)
+        .setParam("profile_key", profileKey)
+        .setParam("rule_key", ruleKey)
+        .setParam("severity", "INFO")
+        .setParam("params", "")
+        .execute();
+      String message = activateRuleResponse.isSuccessful() ? "Successfully activated template rule '%s'" : "Failed to activate template rule '%s'";
+      LOG.warn(String.format(message, ruleKey));
     }
   }
 
