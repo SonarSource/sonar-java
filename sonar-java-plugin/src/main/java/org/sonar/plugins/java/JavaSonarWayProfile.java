@@ -63,9 +63,9 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
     Profile jsonProfile = readProfile();
     Map<String, String> keys = legacyKeys();
     for (String key : jsonProfile.ruleKeys) {
-      if (shouldActivateRule(key)) {
-        sonarWay.activateRule(CheckList.REPOSITORY_KEY, keys.get(key));
-      }
+      // if (shouldActivateRule(key)) {
+      // sonarWay.activateRule(CheckList.REPOSITORY_KEY, keys.get(key));
+      // }
     }
 
     getSecurityRuleKeys(isSonarSecurityBefore78()).forEach(key -> sonarWay.activateRule(key.repository(), key.rule()));

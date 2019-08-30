@@ -25,12 +25,10 @@ import java.util.List;
 import org.sonar.java.DebugCheck;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
-import org.sonar.java.checks.naming.BadConstantNameCheck;
 import org.sonar.java.checks.naming.BadFieldNameCheck;
 import org.sonar.java.checks.naming.BadFieldNameStaticNonFinalCheck;
 import org.sonar.java.checks.naming.BadInterfaceNameCheck;
 import org.sonar.java.checks.naming.BadLocalConstantNameCheck;
-import org.sonar.java.checks.naming.BadLocalVariableNameCheck;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.java.checks.naming.BadPackageNameCheck;
 import org.sonar.java.checks.naming.BadTestClassNameCheck;
@@ -49,7 +47,6 @@ import org.sonar.java.checks.security.AndroidExternalStorageCheck;
 import org.sonar.java.checks.security.AndroidSSLConnectionCheck;
 import org.sonar.java.checks.security.CipherBlockChainingCheck;
 import org.sonar.java.checks.security.CommandLineArgumentsCheck;
-import org.sonar.java.checks.security.ControllingPermissionsCheck;
 import org.sonar.java.checks.security.CookieHttpOnlyCheck;
 import org.sonar.java.checks.security.CookieShouldNotContainSensitiveDataCheck;
 import org.sonar.java.checks.security.CryptographicKeySizeCheck;
@@ -79,10 +76,7 @@ import org.sonar.java.checks.serialization.BlindSerialVersionUidCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
 import org.sonar.java.checks.serialization.PrivateReadResolveCheck;
-import org.sonar.java.checks.serialization.SerialVersionUidCheck;
 import org.sonar.java.checks.serialization.SerializableComparatorCheck;
-import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassCheck;
-import org.sonar.java.checks.serialization.SerializableObjectInSessionCheck;
 import org.sonar.java.checks.serialization.SerializableSuperConstructorCheck;
 import org.sonar.java.checks.spring.ControllerWithSessionAttributesCheck;
 import org.sonar.java.checks.spring.PersistentEntityUsedAsRequestParameterCheck;
@@ -106,14 +100,12 @@ import org.sonar.java.checks.synchronization.ValueBasedObjectUsedForLockCheck;
 import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
-import org.sonar.java.checks.unused.UnusedMethodParameterCheck;
 import org.sonar.java.checks.unused.UnusedPrivateClassCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.java.checks.unused.UnusedPrivateMethodCheck;
 import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
 import org.sonar.java.checks.unused.UnusedTestRuleCheck;
 import org.sonar.java.checks.unused.UnusedThrowableCheck;
-import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
 import org.sonar.java.checks.xml.ejb.DefaultInterceptorsLocationCheck;
 import org.sonar.java.checks.xml.ejb.InterceptorExclusionsCheck;
 import org.sonar.java.checks.xml.hibernate.DatabaseSchemaUpdateCheck;
@@ -190,11 +182,11 @@ public final class CheckList {
       BadMethodNameCheck.class,
       BadClassNameCheck.class,
       BadInterfaceNameCheck.class,
-      BadConstantNameCheck.class,
+      // BadConstantNameCheck.class,
       BadLocalConstantNameCheck.class,
       BadFieldNameCheck.class,
       BadFieldNameStaticNonFinalCheck.class,
-      BadLocalVariableNameCheck.class,
+      // BadLocalVariableNameCheck.class,
       BadAbstractClassNameCheck.class,
       BadTypeParameterNameCheck.class,
       BadPackageNameCheck.class,
@@ -218,7 +210,7 @@ public final class CheckList {
       ModifiersOrderCheck.class,
       AssignmentInSubExpressionCheck.class,
       TrailingCommentCheck.class,
-      UselessImportCheck.class,
+      // UselessImportCheck.class,
       MissingDeprecatedCheck.class,
       IndentationCheck.class,
       HiddenFieldCheck.class,
@@ -304,14 +296,14 @@ public final class CheckList {
       FileHeaderCheck.class,
       IncrementDecrementInSubExpressionCheck.class,
       CollectionsEmptyConstantsCheck.class,
-      UselessExtendsCheck.class,
+      // UselessExtendsCheck.class,
       DITCheck.class,
       CallToDeprecatedMethodCheck.class,
       CallToFileDeleteOnExitMethodCheck.class,
       NioFileDeleteCheck.class,
       UnusedPrivateMethodCheck.class,
       UnusedPrivateClassCheck.class,
-      RedundantThrowsDeclarationCheck.class,
+      // RedundantThrowsDeclarationCheck.class,
       RedundantCloseCheck.class,
       RedundantAssignmentsCheck.class,
       ThrowsSeveralCheckedExceptionCheck.class,
@@ -322,17 +314,17 @@ public final class CheckList {
       LambdaSingleExpressionCheck.class,
       LambdaOptionalParenthesisCheck.class,
       LambdaTypeParameterCheck.class,
-      AnonymousClassShouldBeLambdaCheck.class,
-      AbstractClassNoFieldShouldBeInterfaceCheck.class,
+      // AnonymousClassShouldBeLambdaCheck.class,
+      // AbstractClassNoFieldShouldBeInterfaceCheck.class,
       SAMAnnotatedCheck.class,
       CatchNPECheck.class,
       FieldNameMatchingTypeNameCheck.class,
       AbstractClassWithoutAbstractMethodCheck.class,
-      UnusedMethodParameterCheck.class,
+      // UnusedMethodParameterCheck.class,
       MagicNumberCheck.class,
-      StringConcatenationInLoopCheck.class,
-      CompareObjectWithEqualsCheck.class,
-      CompareStringsBoxedTypesWithEqualsCheck.class,
+      // StringConcatenationInLoopCheck.class,
+      // CompareObjectWithEqualsCheck.class,
+      // CompareStringsBoxedTypesWithEqualsCheck.class,
       RepeatAnnotationCheck.class,
       NPEThrowCheck.class,
       NullDereferenceInConditionalCheck.class,
@@ -341,7 +333,7 @@ public final class CheckList {
       ReplaceLambdaByMethodRefCheck.class,
       FieldModifierCheck.class,
       CookieDomainCheck.class,
-      SerializableFieldInSerializableClassCheck.class,
+      // SerializableFieldInSerializableClassCheck.class,
       PackageInfoCheck.class,
       SwitchWithTooManyCasesCheck.class,
       IdenticalCasesInSwitchCheck.class,
@@ -353,12 +345,12 @@ public final class CheckList {
       ForLoopIncrementAndUpdateCheck.class,
       EmptyClassCheck.class,
       InstanceOfAlwaysTrueCheck.class,
-      RedundantTypeCastCheck.class,
+      // RedundantTypeCastCheck.class,
       CollectionCallingItselfCheck.class,
       UnusedLabelCheck.class,
       ThrowCheckedExceptionCheck.class,
       CastArithmeticOperandCheck.class,
-      IgnoredReturnValueCheck.class,
+      // IgnoredReturnValueCheck.class,
       ToStringReturningNullCheck.class,
       TransactionalMethodVisibilityCheck.class,
       CompareToResultTestCheck.class,
@@ -380,7 +372,7 @@ public final class CheckList {
       ForLoopIncrementSignCheck.class,
       ForLoopFalseConditionCheck.class,
       DeprecatedHashAlgorithmCheck.class,
-      ControllingPermissionsCheck.class,
+      // ControllingPermissionsCheck.class,
       NullCipherCheck.class,
       GetRequestedSessionIdCheck.class,
       CollectionMethodsWithLinearComplexityCheck.class,
@@ -390,11 +382,11 @@ public final class CheckList {
       WaitInSynchronizeCheck.class,
       ThreadSleepCheck.class,
       WaitInWhileLoopCheck.class,
-      IteratorNextExceptionCheck.class,
+      // IteratorNextExceptionCheck.class,
       AvoidDESCheck.class,
       RSAUsesOAEPCheck.class,
       AESAlgorithmCheck.class,
-      ConstructorCallingOverridableCheck.class,
+      // ConstructorCallingOverridableCheck.class,
       EqualsOnAtomicClassCheck.class,
       XmlExternalEntityProcessingCheck.class,
       LDAPAuthenticatedConnectionCheck.class,
@@ -412,11 +404,11 @@ public final class CheckList {
       SynchronizationOnStringOrBoxedCheck.class,
       SerializableSuperConstructorCheck.class,
       NonSerializableWriteCheck.class,
-      InnerClassOfSerializableCheck.class,
-      InnerClassOfNonSerializableCheck.class,
-      SerialVersionUidCheck.class,
+      // InnerClassOfSerializableCheck.class,
+      // InnerClassOfNonSerializableCheck.class,
+      // SerialVersionUidCheck.class,
       SerializableComparatorCheck.class,
-      TransientFieldInNonSerializableCheck.class,
+      // TransientFieldInNonSerializableCheck.class,
       CustomSerializationMethodCheck.class,
       InterfaceOrSuperclassShadowingCheck.class,
       RedundantModifierCheck.class,
@@ -427,7 +419,7 @@ public final class CheckList {
       SuppressWarningsCheck.class,
       ImmediateReverseBoxingCheck.class,
       CustomCryptographicAlgorithmCheck.class,
-      UnusedTypeParameterCheck.class,
+      // UnusedTypeParameterCheck.class,
       ShiftOnIntOrLongCheck.class,
       CompareToReturnValueCheck.class,
       FinalizeFieldsSetCheck.class,
@@ -435,27 +427,27 @@ public final class CheckList {
       NotifyCheck.class,
       ScheduledThreadPoolExecutorZeroCheck.class,
       ThreadOverridesRunCheck.class,
-      CollectionInappropriateCallsCheck.class,
+      // CollectionInappropriateCallsCheck.class,
       BooleanMethodReturnCheck.class,
-      PrimitiveTypeBoxingWithToStringCheck.class,
+      // PrimitiveTypeBoxingWithToStringCheck.class,
       SillyBitOperationCheck.class,
       InvalidDateValuesCheck.class,
       EqualsNotOverriddenInSubclassCheck.class,
       ClassComparedByNameCheck.class,
-      ClassWithOnlyStaticMethodsInstantiationCheck.class,
-      SerializableObjectInSessionCheck.class,
+      // ClassWithOnlyStaticMethodsInstantiationCheck.class,
+      // SerializableObjectInSessionCheck.class,
       StaticFieldInitializationCheck.class,
       UselessIncrementCheck.class,
       ObjectCreatedOnlyToCallGetClassCheck.class,
-      PrimitiveWrappersInTernaryOperatorCheck.class,
+      // PrimitiveWrappersInTernaryOperatorCheck.class,
       SynchronizedLockCheck.class,
       SymmetricEqualsCheck.class,
       LoopExecutingAtMostOnceCheck.class,
       RedundantJumpCheck.class,
       CallSuperMethodFromInnerClassCheck.class,
       SelectorMethodArgumentCheck.class,
-      ThreadAsRunnableArgumentCheck.class,
-      SynchronizedFieldAssignmentCheck.class,
+      // ThreadAsRunnableArgumentCheck.class,
+      // SynchronizedFieldAssignmentCheck.class,
       NullDereferenceCheck.class,
       InvariantReturnCheck.class,
       MinMaxRangeCheck.class,
@@ -467,7 +459,7 @@ public final class CheckList {
       DateUtilsTruncateCheck.class,
       DateAndTimesCheck.class,
       PreparedStatementAndResultSetCheck.class,
-      URLHashCodeAndEqualsCheck.class,
+      // URLHashCodeAndEqualsCheck.class,
       ChildClassShadowFieldCheck.class,
       OperatorPrecedenceCheck.class,
       NestedEnumStaticCheck.class,
@@ -482,8 +474,8 @@ public final class CheckList {
       StaticMultithreadedUnsafeFieldsCheck.class,
       LocksNotUnlockedCheck.class,
       EqualsArgumentTypeCheck.class,
-      ConstantMathCheck.class,
-      SillyEqualsCheck.class,
+      // ConstantMathCheck.class,
+      // SillyEqualsCheck.class,
       IndexOfStartPositionCheck.class,
       StaticMembersAccessCheck.class,
       MutableMembersUsageCheck.class,
@@ -516,15 +508,15 @@ public final class CheckList {
       CatchExceptionCheck.class,
       VariableDeclarationScopeCheck.class,
       AnnotationArgumentOrderCheck.class,
-      AnnotationDefaultArgumentCheck.class,
-      DeadStoreCheck.class,
+      // AnnotationDefaultArgumentCheck.class,
+      // DeadStoreCheck.class,
       DiamondOperatorCheck.class,
       CommentRegularExpressionCheck.class,
       AssertOnBooleanVariableCheck.class,
       CombineCatchCheck.class,
       TryWithResourcesCheck.class,
       ConstantMethodCheck.class,
-      ChangeMethodContractCheck.class,
+      // ChangeMethodContractCheck.class,
       CatchRethrowingCheck.class,
       InappropriateRegexpCheck.class,
       WeakSSLContextCheck.class,
@@ -532,13 +524,13 @@ public final class CheckList {
       SubClassStaticReferenceCheck.class,
       InterruptedExceptionCheck.class,
       RawByteBitwiseOperationsCheck.class,
-      EnumSetCheck.class,
+      // EnumSetCheck.class,
       StringPrimitiveConstructorCheck.class,
       EnumMutableFieldCheck.class,
       StringMethodsWithLocaleCheck.class,
       StringMethodsOnSingleCharCheck.class,
-      ConfusingOverloadCheck.class,
-      RedundantAbstractMethodCheck.class,
+      // ConfusingOverloadCheck.class,
+      // RedundantAbstractMethodCheck.class,
       NonNullSetToNullCheck.class,
       ConstructorInjectionCheck.class,
       NoWayOutLoopCheck.class,
@@ -547,22 +539,22 @@ public final class CheckList {
       RandomFloatToIntCheck.class,
       CognitiveComplexityMethodCheck.class,
       SyncGetterAndSetterCheck.class,
-      ToArrayCheck.class,
-      ClassWithoutHashCodeInHashStructureCheck.class,
+      // ToArrayCheck.class,
+      // ClassWithoutHashCodeInHashStructureCheck.class,
       CollectInsteadOfForeachCheck.class,
       IgnoredOperationStatusCheck.class,
       UnderscoreOnNumberCheck.class,
       UnderscoreMisplacedOnNumberCheck.class,
-      OptionalAsParameterCheck.class,
+      // OptionalAsParameterCheck.class,
       DoubleBraceInitializationCheck.class,
       ArraysAsListOfPrimitiveToStreamCheck.class,
       DivisionByZeroCheck.class,
-      SimpleClassNameCheck.class,
-      NullShouldNotBeUsedWithOptionalCheck.class,
+      // SimpleClassNameCheck.class,
+      // NullShouldNotBeUsedWithOptionalCheck.class,
       IntegerToHexStringCheck.class,
       PrivateFieldUsedLocallyCheck.class,
       OptionalGetBeforeIsPresentCheck.class,
-      ValueBasedObjectsShouldNotBeSerializedCheck.class,
+//      ValueBasedObjectsShouldNotBeSerializedCheck.class,
       ValueBasedObjectUsedForLockCheck.class,
       FilesExistsJDK8Check.class,
       StaticImportCountCheck.class,
@@ -573,7 +565,7 @@ public final class CheckList {
       TwoLocksWaitCheck.class,
       SynchronizationOnGetClassCheck.class,
       DisallowedClassCheck.class,
-      LazyArgEvaluationCheck.class,
+      // LazyArgEvaluationCheck.class,
       BooleanMethodNameCheck.class,
       StaticFieldUpdateInConstructorCheck.class,
       NestedTernaryOperatorsCheck.class,
@@ -595,7 +587,7 @@ public final class CheckList {
       RequestMappingMethodPublicCheck.class,
       BooleanGratuitousExpressionsCheck.class,
       AllBranchesAreIdenticalCheck.class,
-      ArrayForVarArgCheck.class,
+      // ArrayForVarArgCheck.class,
       WrongAssignmentOperatorCheck.class,
       DateFormatWeekYearCheck.class,
       SpringConstructorInjectionCheck.class,
@@ -606,7 +598,7 @@ public final class CheckList {
       StreamNotConsumedCheck.class,
       PreferStreamAnyMatchCheck.class,
       OverwrittenKeyCheck.class,
-      LeastSpecificTypeCheck.class,
+      // LeastSpecificTypeCheck.class,
       SwitchInsteadOfIfSequenceCheck.class,
       IterableIteratorCheck.class,
       OutputStreamOverrideWriteCheck.class,
@@ -616,7 +608,7 @@ public final class CheckList {
       GettersSettersOnRightFieldCheck.class,
       ParameterNullnessCheck.class,
       DoublePrefixOperatorCheck.class,
-      CompareToNotOverloadedCheck.class,
+      // CompareToNotOverloadedCheck.class,
       EqualsParametersMarkedNonNullCheck.class,
       NestedSwitchStatementCheck.class,
       ThisExposedFromConstructorCheck.class,
@@ -627,7 +619,7 @@ public final class CheckList {
       HostnameVerifierImplementationCheck.class,
       SwitchDefaultLastCaseCheck.class,
       RegexPatternsNeedlesslyCheck.class,
-      SpecializedFunctionalInterfacesCheck.class,
+      // SpecializedFunctionalInterfacesCheck.class,
       ZipEntryCheck.class,
       IndentationAfterConditionalCheck.class,
       CipherBlockChainingCheck.class,
@@ -653,14 +645,14 @@ public final class CheckList {
       SocketUsageCheck.class,
       BlindSerialVersionUidCheck.class,
       JdbcDriverExplicitLoadingCheck.class,
-      StandardCharsetsConstantsCheck.class,
+      // StandardCharsetsConstantsCheck.class,
       PrimitivesMarkedNullableCheck.class,
-      ForLoopVariableTypeCheck.class,
+      // ForLoopVariableTypeCheck.class,
       ReplaceGuavaWithJava8Check.class,
       LoggedRethrownExceptionsCheck.class,
       CORSCheck.class,
       BasicAuthCheck.class,
-      SynchronizedOverrideCheck.class,
+      // SynchronizedOverrideCheck.class,
       MissingBeanValidationCheck.class,
       UseSwitchExpressionCheck.class,
       EnvVariablesHotspotCheck.class,
@@ -680,8 +672,7 @@ public final class CheckList {
       SillyStringOperationsCheck.class,
       StringReplaceCheck.class,
       BoxedBooleanExpressionsCheck.class,
-      DoubleCheckedLockingAssignmentCheck.class
-    );
+      DoubleCheckedLockingAssignmentCheck.class);
   }
 
   public static List<Class<? extends DebugCheck>> getDebugChecks() {
@@ -698,9 +689,9 @@ public final class CheckList {
       AssertionsWithoutMessageCheck.class,
       CallSuperInTestCaseCheck.class,
       AssertionInThreadRunCheck.class,
-      NoTestInTestClassCheck.class,
+      // NoTestInTestClassCheck.class,
       AssertionsInTestsCheck.class,
-      JunitMethodDeclarationCheck.class,
+      // JunitMethodDeclarationCheck.class,
       AssertionsCompletenessCheck.class,
       ThreadSleepInTestsCheck.class,
       UnusedTestRuleCheck.class,
