@@ -228,11 +228,21 @@ import java.util.Map;
 @ParametersAreNonnullByDefault
 public class JParser {
 
+  public static CompilationUnitTree parse(String version, String unitName, String source, List<File> classpath) {
+    return parse(version, unitName, source, false, classpath);
+  }
+
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
    * @throws RecognitionException in case of syntax errors
    */
-  public static CompilationUnitTree parse(String version, String unitName, String source, List<File> classpath) {
+  public static CompilationUnitTree parse(
+    String version,
+    String unitName,
+    String source,
+    boolean resolveBindings,
+    List<File> classpath
+  ) {
     ASTParser astParser = ASTParser.newParser(AST.JLS12);
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_SOURCE, version);
@@ -247,7 +257,7 @@ public class JParser {
     );
     astParser.setUnitName(unitName);
 
-    astParser.setResolveBindings(false);
+    astParser.setResolveBindings(resolveBindings);
     astParser.setBindingsRecovery(true);
 
     char[] sourceChars = source.toCharArray();
@@ -1152,6 +1162,8 @@ public class JParser {
         );
         statements.add(t);
       }
+    } else if (node.getNodeType() == ASTNode.BREAK_STATEMENT && node.getLength() == 0) {
+      // skip implicit break-statement
     } else {
       statements.add(convertStatement(node));
     }
@@ -1541,6 +1553,14 @@ public class JParser {
       // e.g. condition expression in for-statement
       return null;
     }
+    ExpressionTree t = createExpression(node);
+    if (!t.is(Tree.Kind.SWITCH_EXPRESSION)) {
+      ((AbstractTypedTree) t).typeBinding = node.resolveTypeBinding();
+    }
+    return t;
+  }
+
+  private ExpressionTree createExpression(Expression node) {
     switch (node.getNodeType()) {
       default:
         throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());

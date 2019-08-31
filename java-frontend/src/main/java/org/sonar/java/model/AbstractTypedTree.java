@@ -19,10 +19,13 @@
  */
 package org.sonar.java.model;
 
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.sslr.grammar.GrammarRuleKey;
+
+import javax.annotation.Nullable;
 
 /**
  * This class is intended for internal use during semantic analysis and should not be used in checks.
@@ -34,6 +37,9 @@ public abstract class AbstractTypedTree extends JavaTree {
    */
   // TODO(Godin): never should be null, i.e. better to assign default value
   private Type type;
+
+  @Nullable
+  ITypeBinding typeBinding;
 
   public AbstractTypedTree(GrammarRuleKey grammarRuleKey) {
     super(grammarRuleKey);
