@@ -899,7 +899,7 @@ public class JParser {
           thrownExceptionTypes.add(convertType(o));
         }
 
-        members.add(new MethodTreeImpl(
+        MethodTreeImpl t = new MethodTreeImpl(
           applyExtraDimensions(convertType(e.getReturnType2()), e.extraDimensions()),
           convertSimpleName(e.getName()),
           parameters,
@@ -911,7 +911,10 @@ public class JParser {
           convertModifiers(e.modifiers())
         ).completeWithTypeParameters(
           convertTypeParameters(e.typeParameters())
-        ));
+        );
+        t.methodBinding = e.resolveBinding();
+
+        members.add(t);
         lastTokenIndex = tokenManager.lastIndexIn(node, e.getBody() == null ? TerminalTokens.TokenNameSEMICOLON : TerminalTokens.TokenNameRBRACE);
         break;
       }

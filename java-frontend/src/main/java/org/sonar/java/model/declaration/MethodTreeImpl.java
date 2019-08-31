@@ -24,6 +24,8 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
+
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
@@ -74,6 +76,9 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   //FIXME nullable if semantic analysis is not set. Should have a default value.
   @Nullable
   private JavaSymbol.MethodJavaSymbol symbol;
+
+  @Nullable
+  public IMethodBinding methodBinding;
 
   public MethodTreeImpl(FormalParametersListTreeImpl parameters, @Nullable SyntaxToken defaultToken, @Nullable ExpressionTree defaultValue) {
     super(Kind.METHOD);
