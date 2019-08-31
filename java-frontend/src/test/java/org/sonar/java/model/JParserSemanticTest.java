@@ -32,6 +32,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -60,6 +61,13 @@ class JParserSemanticTest {
   void expression_switch() {
     assertThat(expression("switch (0) { default -> 0; case 0 -> 0; }"))
       .isNotInstanceOf(AbstractTypedTree.class);
+  }
+
+  @Test
+  void declaration_type() {
+    CompilationUnitTree cu = test("class C { }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    assertThat(c.typeBinding).isNotNull();
   }
 
   private ExpressionTree expression(String expression) {

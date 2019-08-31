@@ -756,6 +756,9 @@ public class JParser {
         break;
       }
     }
+
+    t.typeBinding = e.resolveBinding();
+
     return t;
   }
 
