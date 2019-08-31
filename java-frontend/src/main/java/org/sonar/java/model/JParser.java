@@ -942,6 +942,7 @@ public class JParser {
           t.setEndToken(
             firstTokenAfter(fragment, i + 1 < fieldDeclaration.fragments().size() ? TerminalTokens.TokenNameCOMMA : TerminalTokens.TokenNameSEMICOLON)
           );
+          t.variableBinding = fragment.resolveBinding();
 
           members.add(t);
         }

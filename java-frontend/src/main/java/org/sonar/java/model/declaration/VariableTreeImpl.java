@@ -22,6 +22,7 @@ package org.sonar.java.model.declaration;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -54,6 +55,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   // FIXME(Godin): never should be null, i.e. should have default value
   private JavaSymbol.VariableJavaSymbol symbol;
+
+  public IVariableBinding variableBinding;
 
   // Syntax tree holders
   @Nullable

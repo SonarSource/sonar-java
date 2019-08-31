@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -77,6 +78,14 @@ class JParserSemanticTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     assertThat(m.methodBinding).isNotNull();
+  }
+
+  @Test
+  void declaration_field() {
+    CompilationUnitTree cu = test("class C { int f; }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl f = (VariableTreeImpl) c.members().get(0);
+    assertThat(f.variableBinding).isNotNull();
   }
 
   private ExpressionTree expression(String expression) {
