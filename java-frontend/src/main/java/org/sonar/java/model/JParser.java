@@ -1469,14 +1469,16 @@ public class JParser {
           lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
         );
 
+        MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
+          new IdentifierTreeImpl(e.arguments().isEmpty()
+            ? lastTokenIn(e, TerminalTokens.TokenNamethis)
+            : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNamethis)),
+          convertTypeArguments(e.typeArguments()),
+          arguments
+        );
+        t.methodBinding = e.resolveConstructorBinding();
         return new ExpressionStatementTreeImpl(
-          new MethodInvocationTreeImpl(
-            new IdentifierTreeImpl(e.arguments().isEmpty()
-              ? lastTokenIn(e, TerminalTokens.TokenNamethis)
-              : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNamethis)),
-            convertTypeArguments(e.typeArguments()),
-            arguments
-          ),
+          t,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
       }
@@ -1498,12 +1500,14 @@ public class JParser {
           lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
         );
 
+        MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
+          methodSelect,
+          convertTypeArguments(e.typeArguments()),
+          arguments
+        );
+        t.methodBinding = e.resolveConstructorBinding();
         return new ExpressionStatementTreeImpl(
-          new MethodInvocationTreeImpl(
-            methodSelect,
-            convertTypeArguments(e.typeArguments()),
-            arguments
-          ),
+          t,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
       }

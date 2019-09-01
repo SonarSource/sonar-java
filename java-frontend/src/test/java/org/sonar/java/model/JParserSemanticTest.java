@@ -39,9 +39,11 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 
 import java.io.File;
 import java.util.Collections;
@@ -75,6 +77,26 @@ class JParserSemanticTest {
   @Test
   void expression_super_method_invocation() {
     MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) expression("super.toString()");
+    assertThat(e.methodBinding).isNotNull();
+  }
+
+  @Test
+  void statement_constructor_invocation() {
+    CompilationUnitTree cu = test("class C { C() { this(null); } C(Object p) { } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ExpressionStatementTree s = (ExpressionStatementTree) m.block().body().get(0);
+    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) s.expression();
+    assertThat(e.methodBinding).isNotNull();
+  }
+
+  @Test
+  void statement_super_constructor_invocation() {
+    CompilationUnitTree cu = test("class C { C() { super(); } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ExpressionStatementTree s = (ExpressionStatementTree) m.block().body().get(0);
+    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) s.expression();
     assertThat(e.methodBinding).isNotNull();
   }
 
