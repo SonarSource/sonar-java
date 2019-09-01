@@ -22,6 +22,7 @@ package org.sonar.java.model.expression;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbols;
@@ -46,6 +47,9 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   @Nullable
   private TypeArguments typeArguments;
   private Symbol symbol = Symbols.unknownSymbol;
+
+  @Nullable
+  public IMethodBinding methodBinding;
 
   public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, ArgumentListTreeImpl arguments) {
     super(Kind.METHOD_INVOCATION);

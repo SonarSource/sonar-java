@@ -35,6 +35,7 @@ import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -63,6 +64,18 @@ class JParserSemanticTest {
   void expression_switch() {
     assertThat(expression("switch (0) { default -> 0; case 0 -> 0; }"))
       .isNotInstanceOf(AbstractTypedTree.class);
+  }
+
+  @Test
+  void expression_method_invocation() {
+    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) expression("m()");
+    assertThat(e.methodBinding).isNotNull();
+  }
+
+  @Test
+  void expression_super_method_invocation() {
+    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) expression("super.toString()");
+    assertThat(e.methodBinding).isNotNull();
   }
 
   @Test

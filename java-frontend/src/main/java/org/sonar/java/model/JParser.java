@@ -1854,11 +1854,13 @@ public class JParser {
             convertSimpleName(e.getName())
           );
         }
-        return new MethodInvocationTreeImpl(
+        MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
           memberSelect,
           convertTypeArguments(e.typeArguments()),
           arguments
         );
+        t.methodBinding = e.resolveMethodBinding();
+        return t;
       }
       case ASTNode.SUPER_METHOD_INVOCATION: {
         SuperMethodInvocation e = (SuperMethodInvocation) node;
@@ -1889,11 +1891,13 @@ public class JParser {
           );
         }
 
-        return new MethodInvocationTreeImpl(
+        MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
           outermostSelect,
           null,
           arguments
         );
+        t.methodBinding = e.resolveMethodBinding();
+        return t;
       }
       case ASTNode.PARENTHESIZED_EXPRESSION: {
         ParenthesizedExpression e = (ParenthesizedExpression) node;
