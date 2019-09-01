@@ -25,17 +25,16 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -43,7 +42,6 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 
 import java.io.File;
 import java.util.Collections;
@@ -101,6 +99,25 @@ class JParserSemanticTest {
   }
 
   @Test
+  void statement_variable_declaration() {
+    CompilationUnitTree cu = test("class C { void m() { int v; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl s = (VariableTreeImpl) m.block().body().get(0);
+    assertThat(s.variableBinding).isNotNull();
+  }
+
+  @Test
+  void statement_for() {
+    CompilationUnitTree cu = test("class C { void m() { for (int v;;) ; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ForStatementTreeImpl s = (ForStatementTreeImpl) m.block().body().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) s.initializer().get(0);
+    assertThat(v.variableBinding).isNotNull();
+  }
+
+  @Test
   void declaration_type() {
     CompilationUnitTree cu = test("class C { }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
@@ -113,6 +130,15 @@ class JParserSemanticTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     assertThat(m.methodBinding).isNotNull();
+  }
+
+  @Test
+  void declaration_parameter() {
+    CompilationUnitTree cu = test("class C { void m(int p) {} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl p = (VariableTreeImpl) m.parameters().get(0);
+    assertThat(p.variableBinding).isNotNull();
   }
 
   @Test

@@ -1090,6 +1090,7 @@ public class JParser {
         convertExpression(e.getInitializer())
       );
     }
+    t.variableBinding = e.resolveBinding();
     return t;
   }
 
@@ -1113,6 +1114,7 @@ public class JParser {
       if (i < e2.fragments().size() - 1) {
         t.setEndToken(firstTokenAfter(fragment, TerminalTokens.TokenNameCOMMA));
       }
+      t.variableBinding = fragment.resolveBinding();
       list.add(t);
     }
   }
@@ -1167,6 +1169,7 @@ public class JParser {
         t.setEndToken(
           firstTokenAfter(fragment, i < e.fragments().size() - 1 ? TerminalTokens.TokenNameCOMMA : TerminalTokens.TokenNameSEMICOLON)
         );
+        t.variableBinding = fragment.resolveBinding();
         statements.add(t);
       }
     } else if (node.getNodeType() == ASTNode.BREAK_STATEMENT && node.getLength() == 0) {
