@@ -56,6 +56,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JParserSemanticTest {
 
   @Test
+  void should_not_throw_RecognitionException_in_case_of_non_syntax_errors() {
+    test("import nonexisting;");
+  }
+
+  @Test
   void expression_null_literal() {
     AbstractTypedTree e = (AbstractTypedTree) expression("null");
     assertThat(e.typeBinding).isNotNull();

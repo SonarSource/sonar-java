@@ -268,6 +268,9 @@ public class JParser {
       if (!problem.isError()) {
         continue;
       }
+      if ((problem.getID() & IProblem.Syntax) == 0) {
+        continue;
+      }
       final int line = problem.getSourceLineNumber();
       final int column = astNode.getColumnNumber(problem.getSourceStart());
       throw new RecognitionException(line, "Parse error at line " + line + " column " + column + ": " + problem.getMessage());
