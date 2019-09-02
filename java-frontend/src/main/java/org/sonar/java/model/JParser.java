@@ -62,6 +62,7 @@ import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -1056,14 +1057,22 @@ public class JParser {
    * @param extraDimensions list of {@link org.eclipse.jdt.core.dom.Dimension}
    */
   private TypeTree applyExtraDimensions(TypeTree type, List extraDimensions) {
-    for (Object o : extraDimensions) {
-      Dimension e = (Dimension) o;
+    if (type == null) {
+      // e.g. return type of constructor
+      return null;
+    }
+    ITypeBinding typeBinding = ((AbstractTypedTree) type).typeBinding;
+    for (int i = 0; i < extraDimensions.size(); i++) {
+      Dimension e = (Dimension) extraDimensions.get(i);
       type = new JavaTree.ArrayTypeTreeImpl(
         type,
         (List) convertAnnotations(e.annotations()),
         firstTokenIn(e, TerminalTokens.TokenNameLBRACKET),
         firstTokenIn(e, TerminalTokens.TokenNameRBRACKET)
       );
+      if (typeBinding != null) {
+        ((JavaTree.ArrayTypeTreeImpl) type).typeBinding = typeBinding.createArrayType(i + 1);
+      }
     }
     return type;
   }
@@ -1073,11 +1082,15 @@ public class JParser {
     TypeTree type = convertType(e.getType());
     type = applyExtraDimensions(type, e.extraDimensions());
     if (e.isVarargs()) {
+      ITypeBinding typeBinding = ((AbstractTypedTree) type).typeBinding;
       type = new JavaTree.ArrayTypeTreeImpl(
         type,
         (List) convertAnnotations(e.varargsAnnotations()),
         firstTokenAfter(e.getType(), TerminalTokens.TokenNameELLIPSIS)
       );
+      if (typeBinding != null) {
+        ((JavaTree.ArrayTypeTreeImpl) type).typeBinding = typeBinding.createArrayType(1);
+      }
     }
 
     VariableTreeImpl t = new VariableTreeImpl(
@@ -2188,6 +2201,7 @@ public class JParser {
         t.complete(
           convertAnnotations(e.annotations())
         );
+        t.typeBinding = e.resolveBinding();
         return t;
       }
       case ASTNode.SIMPLE_TYPE: {
@@ -2201,9 +2215,12 @@ public class JParser {
         JavaTree.AnnotatedTypeTree t = (JavaTree.AnnotatedTypeTree) convertExpression(e.getName());
         if (t instanceof IdentifierTree && ((IdentifierTree) t).name().equals("var")) {
           // TODO can't be annotated?
-          return new VarTypeTreeImpl((InternalSyntaxToken) ((IdentifierTree) t).identifierToken());
+          VarTypeTreeImpl t2 = new VarTypeTreeImpl((InternalSyntaxToken) ((IdentifierTree) t).identifierToken());
+          t2.typeBinding = e.resolveBinding();
+          return t2;
         }
         t.complete(annotations);
+        // typeBinding is assigned by convertExpression
         return t;
       }
       case ASTNode.UNION_TYPE: {
@@ -2218,10 +2235,13 @@ public class JParser {
             alternatives.separators().add(firstTokenAfter(o, TerminalTokens.TokenNameOR));
           }
         }
-        return new JavaTree.UnionTypeTreeImpl(alternatives);
+        JavaTree.UnionTypeTreeImpl t = new JavaTree.UnionTypeTreeImpl(alternatives);
+        t.typeBinding = e.resolveBinding();
+        return t;
       }
       case ASTNode.ARRAY_TYPE: {
         ArrayType e = (ArrayType) node;
+        @Nullable ITypeBinding elementTypeBinding = e.getElementType().resolveBinding();
         TypeTree t = convertType(e.getElementType());
         int tokenIndex = tokenManager.firstIndexAfter(e.getElementType(), TerminalTokens.TokenNameLBRACKET);
         for (int i = 0; i < e.dimensions().size(); i++) {
@@ -2234,13 +2254,16 @@ public class JParser {
             createSyntaxToken(tokenIndex),
             createSyntaxToken(nextTokenIndex(tokenIndex, TerminalTokens.TokenNameRBRACKET))
           );
+          if (elementTypeBinding != null) {
+            ((JavaTree.ArrayTypeTreeImpl) t).typeBinding = elementTypeBinding.createArrayType(i + 1);
+          }
         }
         return t;
       }
       case ASTNode.PARAMETERIZED_TYPE: {
         ParameterizedType e = (ParameterizedType) node;
         int pos = e.getStartPosition() + e.getLength() - 1;
-        return new JavaTree.ParameterizedTypeTreeImpl(
+        JavaTree.ParameterizedTypeTreeImpl t = new JavaTree.ParameterizedTypeTreeImpl(
           convertType(e.getType()),
           convertTypeArguments(
             firstTokenAfter(e.getType(), TerminalTokens.TokenNameLESS),
@@ -2254,6 +2277,8 @@ public class JParser {
             )
           )
         );
+        t.typeBinding = e.resolveBinding();
+        return t;
       }
       case ASTNode.QUALIFIED_TYPE: {
         QualifiedType e = (QualifiedType) node;
@@ -2265,6 +2290,7 @@ public class JParser {
         ((IdentifierTreeImpl) t.identifier()).complete(
           convertAnnotations(e.annotations())
         );
+        t.typeBinding = e.resolveBinding();
         return t;
       }
       case ASTNode.NAME_QUALIFIED_TYPE: {
@@ -2277,6 +2303,7 @@ public class JParser {
         ((IdentifierTreeImpl) t.identifier()).complete(
           convertAnnotations(e.annotations())
         );
+        t.typeBinding = e.resolveBinding();
         return t;
       }
       case ASTNode.WILDCARD_TYPE: {
@@ -2301,6 +2328,7 @@ public class JParser {
         t.complete(
           convertAnnotations(e.annotations())
         );
+        t.typeBinding = e.resolveBinding();
         return t;
       }
     }

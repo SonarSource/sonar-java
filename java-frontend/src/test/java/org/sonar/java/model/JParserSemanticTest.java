@@ -42,7 +42,10 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import java.io.File;
 import java.util.Collections;
@@ -164,6 +167,122 @@ class JParserSemanticTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     VariableTreeImpl f = (VariableTreeImpl) c.members().get(0);
     assertThat(f.variableBinding).isNotNull();
+  }
+
+  @Test
+  void type_primitive() {
+    CompilationUnitTree cu = test("interface I { int v; }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    assertThat(t.typeBinding).isNotNull();
+  }
+
+  @Test
+  void type_array() {
+    CompilationUnitTree cu = test("interface I { int[][] v; }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
+    JavaTree.ArrayTypeTreeImpl t = (JavaTree.ArrayTypeTreeImpl) v.type();
+    assertThat(t.typeBinding).isNotNull();
+    assertThat(t.typeBinding.getDimensions()).isEqualTo(2);
+    t = (JavaTree.ArrayTypeTreeImpl) t.type();
+    assertThat(t.typeBinding).isNotNull();
+    assertThat(t.typeBinding.getDimensions()).isEqualTo(1);
+  }
+
+  @Test
+  void type_parameterized() {
+    CompilationUnitTree cu = test("interface I<T> { I<String> v; }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    assertThat(t.typeBinding).isNotNull();
+  }
+
+  @Test
+  void type_simple() {
+    CompilationUnitTree cu = test("interface I { I1.I2 v; interface I2 {} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    assertThat(t.typeBinding).isNotNull();
+  }
+
+  @Test
+  void type_qualified() {
+    CompilationUnitTree cu = test("interface I1<T> { I1<String>. @Annotation I2 v; interface I2 {} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    assertThat(t.typeBinding).isNotNull();
+  }
+
+  @Test
+  void type_name_qualified() {
+    CompilationUnitTree cu = test("interface I1 { I1. @Annotation I2 v; interface I2 {} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    assertThat(t.typeBinding).isNotNull();
+  }
+
+  @Test
+  void type_wildcard() {
+    CompilationUnitTree cu = test("interface I<T> { I<? extends Object> v; }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
+    ParameterizedTypeTree p = (ParameterizedTypeTree) v.type();
+    AbstractTypedTree t = ((AbstractTypedTree) p.typeArguments().get(0));
+    assertThat(t.typeBinding).isNotNull();
+  }
+
+  @Test
+  void type_union() {
+    CompilationUnitTree cu = test("class C { void m() { try { } catch (E1 | E2 v) { } } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    TryStatementTree s = (TryStatementTree) m.block().body().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) s.catches().get(0).parameter();
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    assertThat(t.typeBinding).isNotNull();
+  }
+
+  /**
+   * @see Tree.Kind#VAR_TYPE
+   */
+  @Test
+  void type_var() {
+    CompilationUnitTree cu = test("class C { void m() { var v = 42; } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) m.block().body().get(0);
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    assertThat(t.typeBinding).isNotNull();
+  }
+
+  @Test
+  void type_extra_dimensions() {
+    CompilationUnitTree cu = test("interface I { I v[][]; }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) c.members().get(0);
+    JavaTree.ArrayTypeTreeImpl t = (JavaTree.ArrayTypeTreeImpl) v.type();
+    assertThat(t.typeBinding).isNotNull();
+    assertThat(t.typeBinding.getDimensions()).isEqualTo(2);
+    t = (JavaTree.ArrayTypeTreeImpl) t.type();
+    assertThat(t.typeBinding).isNotNull();
+    assertThat(t.typeBinding.getDimensions()).isEqualTo(1);
+  }
+
+  @Test
+  void type_vararg() {
+    CompilationUnitTree cu = test("interface I { void m(int[]... v); }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) m.parameters().get(0);
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    assertThat(t.typeBinding).isNotNull();
+    assertThat(t.typeBinding.getDimensions()).isEqualTo(2);
   }
 
   private ExpressionTree expression(String expression) {
