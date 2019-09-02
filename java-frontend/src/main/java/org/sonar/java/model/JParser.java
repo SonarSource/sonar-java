@@ -1833,6 +1833,7 @@ public class JParser {
         );
         for (Object o : e.extendedOperands()) {
           Expression e2 = (Expression) o;
+          t.typeBinding = e.resolveTypeBinding();
           t = new BinaryExpressionTreeImpl(
             op.kind,
             t,

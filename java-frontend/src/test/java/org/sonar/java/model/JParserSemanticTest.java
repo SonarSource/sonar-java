@@ -33,6 +33,7 @@ import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
@@ -58,6 +59,17 @@ class JParserSemanticTest {
   void expression_null_literal() {
     AbstractTypedTree e = (AbstractTypedTree) expression("null");
     assertThat(e.typeBinding).isNotNull();
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.InfixExpression#extendedOperands()
+   */
+  @Test
+  void extended_operands() {
+    BinaryExpressionTreeImpl e = (BinaryExpressionTreeImpl) expression("1 - 2 - 3");
+    BinaryExpressionTreeImpl leftOperand = (BinaryExpressionTreeImpl) e.leftOperand();
+    assertThat(e.typeBinding).isNotNull();
+    assertThat(leftOperand.typeBinding).isSameAs(e.typeBinding);
   }
 
   @Test

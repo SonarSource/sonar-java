@@ -39,7 +39,7 @@ public abstract class AbstractTypedTree extends JavaTree {
   private Type type;
 
   @Nullable
-  ITypeBinding typeBinding;
+  public ITypeBinding typeBinding;
 
   public AbstractTypedTree(GrammarRuleKey grammarRuleKey) {
     super(grammarRuleKey);
