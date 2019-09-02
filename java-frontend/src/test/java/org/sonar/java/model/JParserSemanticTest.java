@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -175,6 +176,20 @@ class JParserSemanticTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     VariableTreeImpl f = (VariableTreeImpl) c.members().get(0);
     assertThat(f.variableBinding).isNotNull();
+  }
+
+  @Test
+  void declaration_lambda_parameter() {
+    CompilationUnitTree cu = test("class C { void m() { lambda(v -> {}); } void lambda(java.util.function.Consumer x) { } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ExpressionStatementTree s = (ExpressionStatementTree) m.block().body().get(0);
+    MethodInvocationTreeImpl i = (MethodInvocationTreeImpl) s.expression();
+    LambdaExpressionTree e = (LambdaExpressionTree) i.arguments().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) e.parameters().get(0);
+    assertThat(v.variableBinding).isNotNull();
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    assertThat(t.typeBinding).isNotNull();
   }
 
   @Test

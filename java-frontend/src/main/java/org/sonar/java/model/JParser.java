@@ -63,6 +63,7 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -204,6 +205,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
+import org.sonar.plugins.java.api.tree.InferedTypeTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
@@ -1964,9 +1966,17 @@ public class JParser {
         List<VariableTree> parameters = new ArrayList<>();
         for (int i = 0; i < e.parameters().size(); i++) {
           VariableDeclaration o = (VariableDeclaration) e.parameters().get(i);
-          VariableTreeImpl t = o.getNodeType() == ASTNode.VARIABLE_DECLARATION_FRAGMENT
-            ? new VariableTreeImpl(convertSimpleName(o.getName()))
-            : createVariable((SingleVariableDeclaration) o);
+          VariableTreeImpl t;
+          if (o.getNodeType() == ASTNode.VARIABLE_DECLARATION_FRAGMENT) {
+            t = new VariableTreeImpl(convertSimpleName(o.getName()));
+            IVariableBinding variableBinding = o.resolveBinding();
+            if (variableBinding != null) {
+              t.variableBinding = o.resolveBinding();
+              ((InferedTypeTree) t.type()).typeBinding = variableBinding.getType();
+            }
+          } else {
+            t = createVariable((SingleVariableDeclaration) o);
+          }
           parameters.add(t);
           if (i < e.parameters().size() - 1) {
             t.setEndToken(
