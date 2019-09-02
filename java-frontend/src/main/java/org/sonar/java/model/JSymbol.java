@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -91,6 +92,10 @@ public abstract class JSymbol implements Symbol {
   public final Symbol owner() {
     switch (binding.getKind()) {
       case IBinding.VARIABLE: {
+        if ("length".equals(name()) && isPublic() && isFinal()) {
+          // FIXME array length - supposed to be the array itself
+          return Symbols.unknownSymbol;
+        }
         IVariableBinding b = (IVariableBinding) binding;
         ITypeBinding declaringClass = b.getDeclaringClass();
         IMethodBinding declaringMethod = b.getDeclaringMethod();
@@ -278,7 +283,11 @@ public abstract class JSymbol implements Symbol {
         ITypeBinding declaringClass = b.getDeclaringClass();
         if (declaringClass == null) {
           // local variable
-          return ast.typeSymbol(b.getDeclaringMethod().getDeclaringClass());
+          IMethodBinding declaringMethod = b.getDeclaringMethod();
+          if (declaringMethod == null) {
+            return Symbols.unknownSymbol;
+          }
+          return ast.typeSymbol(declaringMethod.getDeclaringClass());
         }
         return ast.typeSymbol(declaringClass);
       }

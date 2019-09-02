@@ -20,6 +20,15 @@
 package org.sonar.java.model;
 
 import com.sonar.sslr.api.RecognitionException;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
@@ -224,16 +233,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 @ParametersAreNonnullByDefault
 public class JParser {
@@ -948,7 +947,10 @@ public class JParser {
         }
 
         MethodTreeImpl t = new MethodTreeImpl(
-          applyExtraDimensions(convertType(e.getReturnType2()), e.extraDimensions()),
+          applyExtraDimensions(
+            convertType(e.getReturnType2()),
+            e.getReturnType2() == null ? null : e.getReturnType2().resolveBinding(),
+            e.extraDimensions()),
           convertSimpleName(e.getName()),
           parameters,
           e.thrownExceptionTypes().isEmpty() ? null : firstTokenBefore((Type) e.thrownExceptionTypes().get(0), TerminalTokens.TokenNamethrows),
@@ -982,7 +984,7 @@ public class JParser {
             convertSimpleName(fragment.getName())
           ).completeModifiersAndType(
             modifiers,
-            applyExtraDimensions(type, fragment.extraDimensions())
+            applyExtraDimensions(type, fieldDeclaration.getType().resolveBinding(), fragment.extraDimensions())
           );
           if (SEMA)
           if (fragment.resolveBinding() != null) {
@@ -1111,15 +1113,16 @@ public class JParser {
   /**
    * @param extraDimensions list of {@link org.eclipse.jdt.core.dom.Dimension}
    */
-  private TypeTree applyExtraDimensions(TypeTree type, List extraDimensions) {
-    for (Object o : extraDimensions) {
-      Dimension e = (Dimension) o;
+  private TypeTree applyExtraDimensions(TypeTree type, ITypeBinding typeBinding, List extraDimensions) {
+    for (int i = 0; i < extraDimensions.size(); i++) {
+      Dimension e = (Dimension) extraDimensions.get(i);
       type = new JavaTree.ArrayTypeTreeImpl(
         type,
         (List) convertAnnotations(e.annotations()),
         firstTokenIn(e, TerminalTokens.TokenNameLBRACKET),
         firstTokenIn(e, TerminalTokens.TokenNameRBRACKET)
       );
+      ((AbstractTypedTree) type).setType(type(typeBinding.createArrayType(i + 1)));
     }
     return type;
   }
@@ -1127,13 +1130,14 @@ public class JParser {
   private VariableTreeImpl createVariable(SingleVariableDeclaration e) {
     // TODO are extraDimensions and varargs mutually exclusive?
     TypeTree type = convertType(e.getType());
-    type = applyExtraDimensions(type, e.extraDimensions());
+    type = applyExtraDimensions(type, e.getType().resolveBinding(), e.extraDimensions());
     if (e.isVarargs()) {
       type = new JavaTree.ArrayTypeTreeImpl(
         type,
         (List) convertAnnotations(e.varargsAnnotations()),
         firstTokenAfter(e.getType(), TerminalTokens.TokenNameELLIPSIS)
       );
+      ((AbstractTypedTree) type).setType(type(e.getType().resolveBinding().createArrayType(e.extraDimensions().size() + 1)));
     }
 
     VariableTreeImpl t = new VariableTreeImpl(
@@ -1142,6 +1146,7 @@ public class JParser {
       type,
       convertSimpleName(e.getName())
     );
+
     if (e.getInitializer() != null) {
       t.completeTypeAndInitializer(
         t.type(),
@@ -1247,7 +1252,7 @@ public class JParser {
         VariableTreeImpl t = new VariableTreeImpl(
           convertSimpleName(fragment.getName())
         ).completeType(
-          applyExtraDimensions(tType, fragment.extraDimensions())
+          applyExtraDimensions(tType, e.getType().resolveBinding(), fragment.extraDimensions())
         ).completeModifiers(
           modifiers
         );
@@ -1972,6 +1977,7 @@ public class JParser {
         );
         for (Object o : e.extendedOperands()) {
           Expression e2 = (Expression) o;
+          t.setType(type(e.resolveTypeBinding()));
           t = new BinaryExpressionTreeImpl(
             op.kind,
             t,
