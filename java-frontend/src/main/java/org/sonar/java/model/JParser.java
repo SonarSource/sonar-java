@@ -1809,6 +1809,7 @@ public class JParser {
             members,
             lastTokenIn(e.getAnonymousClassDeclaration(), TerminalTokens.TokenNameRBRACE)
           );
+          classBody.typeBinding = e.getAnonymousClassDeclaration().resolveBinding();
         }
 
         NewClassTreeImpl t = new NewClassTreeImpl(

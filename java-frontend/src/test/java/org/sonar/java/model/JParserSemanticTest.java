@@ -35,6 +35,7 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -78,6 +79,13 @@ class JParserSemanticTest {
     BinaryExpressionTreeImpl leftOperand = (BinaryExpressionTreeImpl) e.leftOperand();
     assertThat(e.typeBinding).isNotNull();
     assertThat(leftOperand.typeBinding).isSameAs(e.typeBinding);
+  }
+
+  @Test
+  void expression_class_instance_creation() {
+    NewClassTreeImpl e = (NewClassTreeImpl) expression("new Object() { }");
+    ClassTreeImpl c = (ClassTreeImpl) e.classBody();
+    assertThat(c.typeBinding).isNotNull();
   }
 
   @Test
