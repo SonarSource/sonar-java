@@ -840,7 +840,7 @@ public class JParser {
       }
       case ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION: {
         AnnotationTypeMemberDeclaration e = (AnnotationTypeMemberDeclaration) node;
-        members.add(new MethodTreeImpl(
+        MethodTreeImpl t = new MethodTreeImpl(
           new FormalParametersListTreeImpl(
             firstTokenAfter(e.getName(), TerminalTokens.TokenNameLPAREN),
             firstTokenAfter(e.getName(), TerminalTokens.TokenNameRPAREN)
@@ -853,7 +853,9 @@ public class JParser {
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         ).completeWithModifiers(
           convertModifiers(e.modifiers())
-        ));
+        );
+        t.methodBinding = e.resolveBinding();
+        members.add(t);
         lastTokenIndex = tokenManager.lastIndexIn(node, TerminalTokens.TokenNameSEMICOLON);
         break;
       }

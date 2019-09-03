@@ -193,6 +193,14 @@ class JParserSemanticTest {
   }
 
   @Test
+  void declaration_annotation_member() {
+    CompilationUnitTree cu = test("@interface A { String m(); }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    assertThat(m.methodBinding).isNotNull();
+  }
+
+  @Test
   void type_primitive() {
     CompilationUnitTree cu = test("interface I { int v; }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
