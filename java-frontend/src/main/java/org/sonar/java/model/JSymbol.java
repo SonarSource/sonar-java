@@ -265,7 +265,8 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final List<IdentifierTree> usages() {
-    return Collections.emptyList(); // FIXME stub for future implementation
+    List<IdentifierTree> usages = sema.usages.get(binding);
+    return usages != null ? usages : Collections.emptyList();
   }
 
   @Nullable

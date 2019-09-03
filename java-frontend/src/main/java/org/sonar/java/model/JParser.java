@@ -349,6 +349,14 @@ public class JParser {
     sema.declarations.put(binding, node);
   }
 
+  private void usage(@Nullable IBinding binding, IdentifierTree node) {
+    if (binding == null) {
+      return;
+    }
+    sema.usages.computeIfAbsent(binding, k -> new ArrayList<>())
+      .add(node);
+  }
+
   private int firstTokenIndexAfter(ASTNode e) {
     int index = tokenManager.firstIndexAfter(e, ANY_TOKEN);
     while (tokenManager.get(index).isComment()) {
@@ -1625,32 +1633,41 @@ public class JParser {
       default:
         throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.SIMPLE_NAME: {
-        return convertSimpleName((SimpleName) node);
+        SimpleName e = (SimpleName) node;
+        IdentifierTreeImpl t = convertSimpleName(e);
+        usage(t.binding, t);
+        return t;
       }
       case ASTNode.QUALIFIED_NAME: {
         QualifiedName e = (QualifiedName) node;
+        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
+        usage(rhs.binding, rhs);
         return new MemberSelectExpressionTreeImpl(
           convertExpression(e.getQualifier()),
           firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-          convertSimpleName(e.getName())
+          rhs
         );
       }
       case ASTNode.FIELD_ACCESS: {
         FieldAccess e = (FieldAccess) node;
+        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
+        usage(rhs.binding, rhs);
         return new MemberSelectExpressionTreeImpl(
           convertExpression(e.getExpression()),
           firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT),
-          convertSimpleName(e.getName())
+          rhs
         );
       }
       case ASTNode.SUPER_FIELD_ACCESS: {
         SuperFieldAccess e = (SuperFieldAccess) node;
+        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
+        usage(rhs.binding, rhs);
         if (e.getQualifier() == null) {
           // super.name
           return new MemberSelectExpressionTreeImpl(
             new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
             firstTokenIn(e, TerminalTokens.TokenNameDOT),
-            convertSimpleName(e.getName())
+            rhs
           );
         } else {
           // qualifier.super.name
@@ -1661,7 +1678,7 @@ public class JParser {
               new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper))
             ),
             firstTokenBefore(e.getName(), TerminalTokens.TokenNameDOT),
-            convertSimpleName(e.getName())
+            rhs
           );
         }
       }
@@ -1899,14 +1916,17 @@ public class JParser {
           lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
         );
 
+        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
+        usage(rhs.binding, rhs);
+
         ExpressionTree memberSelect;
         if (e.getExpression() == null) {
-          memberSelect = convertSimpleName(e.getName());
+          memberSelect = rhs;
         } else {
           memberSelect = new MemberSelectExpressionTreeImpl(
             convertExpression(e.getExpression()),
             firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT),
-            convertSimpleName(e.getName())
+            rhs
           );
         }
         MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
@@ -1926,12 +1946,15 @@ public class JParser {
           lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
         );
 
+        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
+        usage(rhs.binding, rhs);
+
         ExpressionTree outermostSelect;
         if (e.getQualifier() == null) {
           outermostSelect = new MemberSelectExpressionTreeImpl(
             new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
             firstTokenIn(e, TerminalTokens.TokenNameDOT),
-            convertSimpleName(e.getName())
+            rhs
           );
         } else {
           final int firstDotTokenIndex = tokenManager.firstIndexAfter(e.getQualifier(), TerminalTokens.TokenNameDOT);
@@ -1942,7 +1965,7 @@ public class JParser {
               new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper))
             ),
             createSyntaxToken(nextTokenIndex(firstDotTokenIndex, TerminalTokens.TokenNameDOT)),
-            convertSimpleName(e.getName())
+            rhs
           );
         }
 
@@ -1999,7 +2022,7 @@ public class JParser {
             t = new VariableTreeImpl(convertSimpleName(o.getName()));
             IVariableBinding variableBinding = o.resolveBinding();
             if (variableBinding != null) {
-              t.variableBinding = o.resolveBinding();
+              t.variableBinding = variableBinding;
               ((InferedTypeTree) t.type()).typeBinding = variableBinding.getType();
               declaration(t.variableBinding, t);
             }

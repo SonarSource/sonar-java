@@ -95,8 +95,19 @@ class JParserSemanticTest {
   }
 
   @Test
+  void expression_simple_name() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { int f; Object m() { return f; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(1);
+    ReturnStatementTree s = (ReturnStatementTree) m.block().body().get(0);
+    IdentifierTreeImpl i = (IdentifierTreeImpl) s.expression();
+    assertThat(i.binding).isNotNull();
+    assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
+  }
+
+  @Test
   void expression_field_access() {
-    CompilationUnitTree cu = test("class C { int f; Object m() { return this.f; } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { int f; Object m() { return this.f; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(1);
     ReturnStatementTree s = (ReturnStatementTree) m.block().body().get(0);
@@ -105,6 +116,7 @@ class JParserSemanticTest {
     IdentifierTreeImpl i = (IdentifierTreeImpl) e.identifier();
     assertThat(i.typeBinding).isSameAs(e.typeBinding);
     assertThat(i.binding).isNotNull();
+    assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
   }
 
   @Test
@@ -122,17 +134,29 @@ class JParserSemanticTest {
 
   @Test
   void expression_method_invocation() {
-    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) expression("m()");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return m(); } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) s.expression();
     assertThat(e.methodBinding).isNotNull();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) e.methodSelect();
+    assertThat(i.binding).isSameAs(e.methodBinding);
+    assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
   }
 
   @Test
   void expression_super_method_invocation() {
-    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) expression("super.toString()");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return " + "super.toString()" + " ; } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m1 = (MethodTree) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m1.block()).body().get(0);
+    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) Objects.requireNonNull(s.expression());
     assertThat(e.methodBinding).isNotNull();
     MemberSelectExpressionTreeImpl m = (MemberSelectExpressionTreeImpl) e.methodSelect();
     IdentifierTreeImpl i = (IdentifierTreeImpl) m.identifier();
     assertThat(i.binding).isSameAs(e.methodBinding);
+    assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
   }
 
   @Test

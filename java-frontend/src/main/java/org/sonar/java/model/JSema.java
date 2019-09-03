@@ -29,17 +29,20 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class JSema {
 
   private final AST ast;
   final Map<IBinding, Tree> declarations = new HashMap<>();
+  final Map<IBinding, List<IdentifierTree>> usages = new HashMap<>();
   private final Map<ITypeBinding, JType> types = new HashMap<>();
   private final Map<IBinding, JSymbol> symbols = new HashMap<>();
   private final Map<IAnnotationBinding, JSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
