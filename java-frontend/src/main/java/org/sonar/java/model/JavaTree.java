@@ -57,6 +57,8 @@ import org.sonar.sslr.grammar.GrammarRuleKey;
 
 public abstract class JavaTree implements Tree {
 
+  protected CompilationUnitTreeImpl root;
+
   @Nullable
   private Tree parent;
 
@@ -118,6 +120,7 @@ public abstract class JavaTree implements Tree {
   }
 
   public void setParent(Tree parent) {
+    this.root = ((JavaTree) parent).root;
     this.parent = parent;
   }
 
@@ -158,11 +161,13 @@ public abstract class JavaTree implements Tree {
     @Nullable
     private final ModuleDeclarationTree moduleDeclaration;
     private final SyntaxToken eofToken;
-    JSema sema;
+    public JSema sema;
+    public boolean useNewSema;
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
       super(Kind.COMPILATION_UNIT);
+      this.root = this;
       this.packageDeclaration = packageDeclaration;
       this.imports = imports;
       this.types = types;

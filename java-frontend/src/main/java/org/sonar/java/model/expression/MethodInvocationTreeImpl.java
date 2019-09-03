@@ -93,6 +93,11 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
 
   @Override
   public Symbol symbol() {
+    if (root.useNewSema) {
+      return methodBinding != null
+        ? root.sema.methodSymbol(methodBinding)
+        : Symbols.unknownMethodSymbol;
+    }
     return symbol;
   }
 

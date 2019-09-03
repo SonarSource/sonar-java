@@ -184,6 +184,11 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public Symbol.TypeSymbol symbol() {
+    if (root.useNewSema) {
+      return typeBinding != null
+        ? root.sema.typeSymbol(typeBinding)
+        : Symbols.unknownSymbol;
+    }
     return symbol;
   }
 

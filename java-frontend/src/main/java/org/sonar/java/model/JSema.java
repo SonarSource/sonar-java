@@ -36,7 +36,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-final class JSema {
+public final class JSema {
 
   private final AST ast;
   final Map<IBinding, Tree> declarations = new HashMap<>();

@@ -27,6 +27,7 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InferedTypeTree;
@@ -194,6 +195,11 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   @Override
   public org.sonar.plugins.java.api.semantic.Symbol symbol() {
+    if (root.useNewSema) {
+      return variableBinding != null
+        ? root.sema.variableSymbol(variableBinding)
+        : Symbols.unknownSymbol;
+    }
     return symbol;
   }
 

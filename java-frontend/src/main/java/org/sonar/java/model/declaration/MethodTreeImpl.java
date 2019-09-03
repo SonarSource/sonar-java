@@ -33,6 +33,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -216,6 +217,11 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public Symbol.MethodSymbol symbol() {
+    if (root.useNewSema) {
+      return methodBinding != null
+        ? root.sema.methodSymbol(methodBinding)
+        : Symbols.unknownMethodSymbol;
+    }
     return symbol;
   }
 
@@ -280,10 +286,10 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     if (isAnnotatedOverride()) {
       return true;
     }
-    if (symbol == null) {
+    if (symbol() == null) {
       return null;
     }
-    Symbol.MethodSymbol methodSymbol = symbol.overriddenSymbol();
+    Symbol.MethodSymbol methodSymbol = symbol().overriddenSymbol();
     if (methodSymbol != null) {
       return methodSymbol.isUnknown() ? null : true;
     }

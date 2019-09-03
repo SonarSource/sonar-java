@@ -53,6 +53,11 @@ public abstract class AbstractTypedTree extends JavaTree {
   }
 
   public Type symbolType() {
+    if (root.useNewSema) {
+      return typeBinding != null
+        ? root.sema.type(typeBinding)
+        : Symbols.unknownType;
+    }
     return type;
   }
 

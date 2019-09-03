@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -76,6 +79,19 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
 
   @Override
   public Symbol symbol() {
+    if (/* TODO null-check only because some test constructs node without parser  */ root != null && root.useNewSema) {
+      if (binding != null) {
+        switch (binding.getKind()) {
+          case IBinding.TYPE:
+            return root.sema.typeSymbol((ITypeBinding) binding);
+          case IBinding.METHOD:
+            return root.sema.methodSymbol((IMethodBinding) binding);
+          case IBinding.VARIABLE:
+            return root.sema.variableSymbol((IVariableBinding) binding);
+        }
+      }
+      return Symbols.unknownSymbol;
+    }
     return symbol;
   }
 
