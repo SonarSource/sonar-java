@@ -1162,9 +1162,12 @@ public class JParser {
       // e.g. break-statement without label
       return null;
     }
-    return new IdentifierTreeImpl(
+    IdentifierTreeImpl t = new IdentifierTreeImpl(
       firstTokenIn(e, TerminalTokens.TokenNameIdentifier)
     );
+    t.typeBinding = e.resolveTypeBinding();
+    t.binding = e.resolveBinding();
+    return t;
   }
 
   private BlockTreeImpl convertBlock(@Nullable Block e) {
@@ -1511,10 +1514,12 @@ public class JParser {
           lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
         );
 
+        IdentifierTreeImpl i = new IdentifierTreeImpl(e.arguments().isEmpty()
+          ? lastTokenIn(e, TerminalTokens.TokenNamethis)
+          : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNamethis));
+        i.binding = e.resolveConstructorBinding();
         MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
-          new IdentifierTreeImpl(e.arguments().isEmpty()
-            ? lastTokenIn(e, TerminalTokens.TokenNamethis)
-            : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNamethis)),
+          i,
           convertTypeArguments(e.typeArguments()),
           arguments
         );
@@ -1528,6 +1533,8 @@ public class JParser {
         SuperConstructorInvocation e = (SuperConstructorInvocation) node;
 
         ExpressionTree methodSelect = new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper));
+        ((IdentifierTreeImpl) methodSelect).binding = e.resolveConstructorBinding();
+
         if (e.getExpression() != null) {
           methodSelect = new MemberSelectExpressionTreeImpl(
             convertExpression(e.getExpression()),

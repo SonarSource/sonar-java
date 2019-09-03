@@ -34,7 +34,9 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
+import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
@@ -93,6 +95,19 @@ class JParserSemanticTest {
   }
 
   @Test
+  void expression_field_access() {
+    CompilationUnitTree cu = test("class C { int f; Object m() { return this.f; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(1);
+    ReturnStatementTree s = (ReturnStatementTree) m.block().body().get(0);
+    MemberSelectExpressionTreeImpl e = (MemberSelectExpressionTreeImpl) s.expression();
+    assertThat(e.typeBinding).isNotNull();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) e.identifier();
+    assertThat(i.typeBinding).isSameAs(e.typeBinding);
+    assertThat(i.binding).isNotNull();
+  }
+
+  @Test
   void expression_class_instance_creation() {
     NewClassTreeImpl e = (NewClassTreeImpl) expression("new Object() { }");
     ClassTreeImpl c = (ClassTreeImpl) e.classBody();
@@ -115,6 +130,9 @@ class JParserSemanticTest {
   void expression_super_method_invocation() {
     MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) expression("super.toString()");
     assertThat(e.methodBinding).isNotNull();
+    MemberSelectExpressionTreeImpl m = (MemberSelectExpressionTreeImpl) e.methodSelect();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) m.identifier();
+    assertThat(i.binding).isSameAs(e.methodBinding);
   }
 
   @Test
@@ -125,6 +143,8 @@ class JParserSemanticTest {
     ExpressionStatementTree s = (ExpressionStatementTree) m.block().body().get(0);
     MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) s.expression();
     assertThat(e.methodBinding).isNotNull();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) e.methodSelect();
+    assertThat(i.binding).isSameAs(e.methodBinding);
   }
 
   @Test
@@ -135,6 +155,8 @@ class JParserSemanticTest {
     ExpressionStatementTree s = (ExpressionStatementTree) m.block().body().get(0);
     MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) s.expression();
     assertThat(e.methodBinding).isNotNull();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) e.methodSelect();
+    assertThat(i.binding).isSameAs(e.methodBinding);
   }
 
   @Test

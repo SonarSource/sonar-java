@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.jdt.core.dom.IBinding;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -40,6 +41,8 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   private final InternalSyntaxToken nameToken;
   private Symbol symbol = Symbols.unknownSymbol;
   private List<AnnotationTree> annotations;
+
+  public IBinding binding;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
     super(Kind.IDENTIFIER);
