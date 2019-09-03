@@ -714,7 +714,7 @@ public class JParser {
     if (SEMA)
     if (e.resolveBinding() != null) {
       t.setSymbol(ast.typeSymbol(e.resolveBinding()));
-      ast.declaration(e.resolveBinding(), t);
+        ast.declaration(e.resolveBinding().getTypeDeclaration(), t);
     } else {
       t.setSymbol(Symbols.unknownSymbol);
     }
@@ -890,7 +890,7 @@ public class JParser {
         if (SEMA)
         if (e.resolveBinding() != null) {
           t.setSymbol(ast.methodSymbol(e.resolveBinding()));
-          ast.declaration(e.resolveBinding(), t);
+            ast.declaration(e.resolveBinding().getMethodDeclaration(), t);
         } else {
           t.setSymbol(Symbols.unknownMethodSymbol);
         }
@@ -965,7 +965,7 @@ public class JParser {
         if (SEMA)
         if (e.resolveBinding() != null) {
           t.setSymbol(ast.methodSymbol(e.resolveBinding()));
-          ast.declaration(e.resolveBinding(), t);
+            ast.declaration(e.resolveBinding().getMethodDeclaration(), t);
         } else {
           t.setSymbol(Symbols.unknownMethodSymbol);
         }
@@ -989,7 +989,7 @@ public class JParser {
           if (SEMA)
           if (fragment.resolveBinding() != null) {
             t.setSymbol(ast.variableSymbol(fragment.resolveBinding()));
-            ast.declaration(fragment.resolveBinding(), t);
+              ast.declaration(fragment.resolveBinding().getVariableDeclaration(), t);
           } else {
             t.setSymbol(Symbols.unknownSymbol); // TODO wtf?
           }
@@ -1156,7 +1156,7 @@ public class JParser {
     }
     if (SEMA)
     if (e.resolveBinding() != null) {
-      ast.declaration(e.resolveBinding(), t);
+        ast.declaration(e.resolveBinding().getVariableDeclaration(), t);
       t.setSymbol(ast.variableSymbol(e.resolveBinding()));
     } else {
       t.setSymbol(Symbols.unknownSymbol); // TODO wtf?
@@ -1190,7 +1190,7 @@ public class JParser {
         t.setSymbol(Symbols.unknownSymbol);
       } else {
         t.setSymbol(ast.variableSymbol(fragment.resolveBinding()));
-        ast.declaration(fragment.resolveBinding(), t);
+          ast.declaration(fragment.resolveBinding().getVariableDeclaration(), t);
       }
 
       list.add(t);
@@ -1259,7 +1259,7 @@ public class JParser {
         if (SEMA)
         if (fragment.resolveBinding() != null) {
           t.setSymbol(ast.variableSymbol(fragment.resolveBinding()));
-          ast.declaration(fragment.resolveBinding(), t);
+            ast.declaration(fragment.resolveBinding().getVariableDeclaration(), t);
         } else {
           t.setSymbol(Symbols.unknownSymbol); // TODO wtf?
         }
@@ -2603,7 +2603,22 @@ public class JParser {
 
   private void usage(@Nullable IBinding binding, IdentifierTree t) {
     if (binding != null) {
-      ast.usage(binding, t);
+      IBinding declarationBinding;
+      switch (binding.getKind()) {
+        case IBinding.VARIABLE:
+          declarationBinding = ((IVariableBinding) binding).getVariableDeclaration();
+          break;
+        case IBinding.METHOD:
+          declarationBinding = ((IMethodBinding) binding).getMethodDeclaration();
+          break;
+        case IBinding.TYPE:
+          declarationBinding = ((ITypeBinding) binding).getTypeDeclaration();
+          break;
+        default:
+          declarationBinding = binding;
+          break;
+      }
+      ast.usage(declarationBinding, t);
     }
   }
 
