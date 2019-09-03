@@ -78,6 +78,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     assertThatOnType("org.assertj.core.api.Assertions"),
     assertThatOnType("org.assertj.core.api.AbstractStandardSoftAssertions"),
     assertThatOnType("org.assertj.core.api.Java6Assertions"),
+    assertThatOnType("org.assertj.core.api.Java6AbstractStandardSoftAssertions"),
     // AssertJ 3.X
     assertThatOnType("org.assertj.core.api.StrictAssertions"),
     // Truth 0.29
