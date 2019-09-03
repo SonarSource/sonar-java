@@ -281,7 +281,7 @@ public class JParser {
     }
 
     JParser converter = new JParser();
-    converter.sema = new JSema();
+    converter.sema = new JSema(astNode.getAST());
     converter.compilationUnit = astNode;
     converter.tokenManager = new TokenManager(lex(version, unitName, sourceChars), source, new DefaultCodeFormatterOptions(new HashMap<>()));
 
