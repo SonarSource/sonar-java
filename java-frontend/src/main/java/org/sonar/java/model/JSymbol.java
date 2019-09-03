@@ -32,9 +32,11 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 abstract class JSymbol implements Symbol {
 
@@ -208,7 +210,14 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final SymbolMetadata metadata() {
-    return null; // FIXME stub for future implementation
+    return new JSymbolMetadata() {
+      @Override
+      public List<AnnotationInstance> annotations() {
+        return Arrays.stream(binding.getAnnotations())
+          .map(sema::annotation)
+          .collect(Collectors.toList());
+      }
+    };
   }
 
   /**

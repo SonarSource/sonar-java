@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -41,6 +42,7 @@ final class JSema {
   final Map<IBinding, Tree> declarations = new HashMap<>();
   private final Map<ITypeBinding, JType> types = new HashMap<>();
   private final Map<IBinding, JSymbol> symbols = new HashMap<>();
+  private final Map<IAnnotationBinding, JSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
 
   JSema(AST ast) {
     this.ast = ast;
@@ -60,6 +62,10 @@ final class JSema {
 
   public JVariableSymbol variableSymbol(IVariableBinding variableBinding) {
     return (JVariableSymbol) symbols.computeIfAbsent(variableBinding, k -> new JVariableSymbol(this, (IVariableBinding) k));
+  }
+
+  JSymbolMetadata.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
+    return annotations.computeIfAbsent(annotationBinding, k -> new JSymbolMetadata.JAnnotationInstance(this, k));
   }
 
   @Nullable
