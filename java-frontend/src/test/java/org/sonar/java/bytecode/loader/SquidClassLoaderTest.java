@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Rule;
@@ -124,7 +125,7 @@ public class SquidClassLoaderTest {
 
     assertThat(classLoader.getResource("dummy.class")).isNull();
 
-    assertThat(logTester.logs()).isEmpty();
+    assertThat(excludeProgressReport(logTester.logs())).isEmpty();
 
     classLoader.close();
   }
@@ -136,7 +137,7 @@ public class SquidClassLoaderTest {
 
     assertThat(classLoader.getResource("dummy.class")).isNull();
 
-    assertThat(logTester.logs()).hasSize(2);
+    assertThat(excludeProgressReport(logTester.logs())).hasSize(2);
     List<String> warnings = logTester.logs(LoggerLevel.WARN);
     assertThat(warnings).hasSize(1);
     assertThat(warnings.get(0))
@@ -254,4 +255,14 @@ public class SquidClassLoaderTest {
     assertThat(classNode.version).isEqualTo(Opcodes.V11);
     classLoader.close();
   }
+
+  /**
+   * Some other tests do not wait termination of {@link org.sonarsource.analyzer.commons.ProgressReport} thread.
+   */
+  private static List<String> excludeProgressReport(List<String> logs) {
+    return logs.stream()
+      .filter(log -> !log.endsWith("source files have been analyzed"))
+      .collect(Collectors.toList());
+  }
+
 }
