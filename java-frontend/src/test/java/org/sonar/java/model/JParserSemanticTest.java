@@ -129,58 +129,64 @@ class JParserSemanticTest {
 
   @Test
   void statement_variable_declaration() {
-    CompilationUnitTree cu = test("class C { void m() { int v; } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() { int v; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     VariableTreeImpl s = (VariableTreeImpl) m.block().body().get(0);
     assertThat(s.variableBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(s.variableBinding)).isSameAs(s);
   }
 
   @Test
   void statement_for() {
-    CompilationUnitTree cu = test("class C { void m() { for (int v;;) ; } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() { for (int v;;) ; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     ForStatementTreeImpl s = (ForStatementTreeImpl) m.block().body().get(0);
     VariableTreeImpl v = (VariableTreeImpl) s.initializer().get(0);
     assertThat(v.variableBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(v.variableBinding)).isSameAs(v);
   }
 
   @Test
   void declaration_type() {
-    CompilationUnitTree cu = test("class C { }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     assertThat(c.typeBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(c.typeBinding)).isSameAs(c);
   }
 
   @Test
   void declaration_method() {
-    CompilationUnitTree cu = test("class C { void m() {} }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() {} }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     assertThat(m.methodBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(m.methodBinding)).isSameAs(m);
   }
 
   @Test
   void declaration_parameter() {
-    CompilationUnitTree cu = test("class C { void m(int p) {} }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m(int p) {} }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     VariableTreeImpl p = (VariableTreeImpl) m.parameters().get(0);
     assertThat(p.variableBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(p.variableBinding)).isSameAs(p);
   }
 
   @Test
   void declaration_field() {
-    CompilationUnitTree cu = test("class C { int f; }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { int f; }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     VariableTreeImpl f = (VariableTreeImpl) c.members().get(0);
     assertThat(f.variableBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(f.variableBinding)).isSameAs(f);
   }
 
   @Test
   void declaration_lambda_parameter() {
-    CompilationUnitTree cu = test("class C { void m() { lambda(v -> {}); } void lambda(java.util.function.Consumer x) { } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() { lambda(v -> {}); } void lambda(java.util.function.Consumer x) { } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     ExpressionStatementTree s = (ExpressionStatementTree) m.block().body().get(0);
@@ -190,14 +196,16 @@ class JParserSemanticTest {
     assertThat(v.variableBinding).isNotNull();
     AbstractTypedTree t = (AbstractTypedTree) v.type();
     assertThat(t.typeBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(v.variableBinding)).isSameAs(v);
   }
 
   @Test
   void declaration_annotation_member() {
-    CompilationUnitTree cu = test("@interface A { String m(); }");
+    JavaTree.CompilationUnitTreeImpl cu = test("@interface A { String m(); }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     assertThat(m.methodBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(m.methodBinding)).isSameAs(m);
   }
 
   @Test
@@ -324,9 +332,9 @@ class JParserSemanticTest {
     return Objects.requireNonNull(s.expression());
   }
 
-  private CompilationUnitTree test(String source) {
+  private JavaTree.CompilationUnitTreeImpl test(String source) {
     List<File> classpath = Collections.emptyList();
-    CompilationUnitTree t = JParser.parse("12", "File.java", source, true, classpath);
+    JavaTree.CompilationUnitTreeImpl t = (JavaTree.CompilationUnitTreeImpl) JParser.parse("12", "File.java", source, true, classpath);
     SemanticModel.createFor(t, new SquidClassLoader(classpath));
     return t;
   }

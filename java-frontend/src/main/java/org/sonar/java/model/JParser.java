@@ -61,6 +61,7 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
@@ -280,10 +281,12 @@ public class JParser {
     }
 
     JParser converter = new JParser();
+    converter.sema = new JSema();
     converter.compilationUnit = astNode;
     converter.tokenManager = new TokenManager(lex(version, unitName, sourceChars), source, new DefaultCodeFormatterOptions(new HashMap<>()));
 
-    CompilationUnitTree tree = converter.convertCompilationUnit(astNode);
+    JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
+    tree.sema = converter.sema;
     setParents(tree);
     return tree;
   }
@@ -336,6 +339,15 @@ public class JParser {
   private CompilationUnit compilationUnit;
 
   private TokenManager tokenManager;
+
+  private JSema sema;
+
+  private void declaration(@Nullable IBinding binding, Tree node) {
+    if (binding == null) {
+      return;
+    }
+    sema.declarations.put(binding, node);
+  }
 
   private int firstTokenIndexAfter(ASTNode e) {
     int index = tokenManager.firstIndexAfter(e, ANY_TOKEN);
@@ -459,7 +471,7 @@ public class JParser {
     }
   }
 
-  private CompilationUnitTree convertCompilationUnit(CompilationUnit e) {
+  private JavaTree.CompilationUnitTreeImpl convertCompilationUnit(CompilationUnit e) {
     PackageDeclarationTree packageDeclaration = null;
     if (e.getPackage() != null) {
       packageDeclaration = new JavaTree.PackageDeclarationTreeImpl(
@@ -764,6 +776,7 @@ public class JParser {
     }
 
     t.typeBinding = e.resolveBinding();
+    declaration(t.typeBinding, t);
 
     return t;
   }
@@ -855,6 +868,7 @@ public class JParser {
           convertModifiers(e.modifiers())
         );
         t.methodBinding = e.resolveBinding();
+        declaration(t.methodBinding, t);
         members.add(t);
         lastTokenIndex = tokenManager.lastIndexIn(node, TerminalTokens.TokenNameSEMICOLON);
         break;
@@ -921,6 +935,7 @@ public class JParser {
           convertTypeParameters(e.typeParameters())
         );
         t.methodBinding = e.resolveBinding();
+        declaration(t.methodBinding, t);
 
         members.add(t);
         lastTokenIndex = tokenManager.lastIndexIn(node, e.getBody() == null ? TerminalTokens.TokenNameSEMICOLON : TerminalTokens.TokenNameRBRACE);
@@ -951,6 +966,7 @@ public class JParser {
             firstTokenAfter(fragment, i + 1 < fieldDeclaration.fragments().size() ? TerminalTokens.TokenNameCOMMA : TerminalTokens.TokenNameSEMICOLON)
           );
           t.variableBinding = fragment.resolveBinding();
+          declaration(t.variableBinding, t);
 
           members.add(t);
         }
@@ -1111,6 +1127,7 @@ public class JParser {
       );
     }
     t.variableBinding = e.resolveBinding();
+    declaration(t.variableBinding, t);
     return t;
   }
 
@@ -1135,6 +1152,7 @@ public class JParser {
         t.setEndToken(firstTokenAfter(fragment, TerminalTokens.TokenNameCOMMA));
       }
       t.variableBinding = fragment.resolveBinding();
+      declaration(t.variableBinding, t);
       list.add(t);
     }
   }
@@ -1190,6 +1208,7 @@ public class JParser {
           firstTokenAfter(fragment, i < e.fragments().size() - 1 ? TerminalTokens.TokenNameCOMMA : TerminalTokens.TokenNameSEMICOLON)
         );
         t.variableBinding = fragment.resolveBinding();
+        declaration(t.variableBinding, t);
         statements.add(t);
       }
     } else if (node.getNodeType() == ASTNode.BREAK_STATEMENT && node.getLength() == 0) {
@@ -1975,6 +1994,7 @@ public class JParser {
             if (variableBinding != null) {
               t.variableBinding = o.resolveBinding();
               ((InferedTypeTree) t.type()).typeBinding = variableBinding.getType();
+              declaration(t.variableBinding, t);
             }
           } else {
             t = createVariable((SingleVariableDeclaration) o);
