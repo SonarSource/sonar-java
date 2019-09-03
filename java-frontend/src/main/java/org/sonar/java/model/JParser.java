@@ -2119,6 +2119,7 @@ public class JParser {
             result = new LiteralTreeImpl(Tree.Kind.DOUBLE_LITERAL, createSyntaxToken(tokenIndex));
             break;
         }
+        ((LiteralTreeImpl) result).typeBinding = e.resolveTypeBinding();
         if (unaryMinus) {
           result = new InternalPrefixUnaryExpression(Tree.Kind.UNARY_MINUS, createSyntaxToken(tokenIndex - 1), result);
         }

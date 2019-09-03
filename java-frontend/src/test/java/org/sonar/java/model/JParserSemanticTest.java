@@ -34,6 +34,7 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
@@ -69,6 +70,15 @@ class JParserSemanticTest {
   void expression_null_literal() {
     AbstractTypedTree e = (AbstractTypedTree) expression("null");
     assertThat(e.typeBinding).isNotNull();
+  }
+
+  @Test
+  void expression_literal() {
+    InternalPrefixUnaryExpression e = (InternalPrefixUnaryExpression) expression("-2147483648"); // Integer.MIN_VALUE
+    assertThat(e.typeBinding).isNotNull();
+    AbstractTypedTree t = (AbstractTypedTree) e.expression();
+    assertThat(t.typeBinding).isNotNull();
+    assertThat(t.typeBinding).isSameAs(e.typeBinding);
   }
 
   /**
