@@ -74,6 +74,7 @@ public class VisitorsBridge {
   private SemanticModel semanticModel;
   protected InputFile currentFile;
   protected JavaVersion javaVersion;
+  private final List<File> classpath;
   private Set<String> classesNotFound = new TreeSet<>();
   private final SquidClassLoader classLoader;
   private ScannerRunner scannerRunner;
@@ -96,6 +97,7 @@ public class VisitorsBridge {
         allScanners.add((JavaFileScanner) visitor);
       }
     }
+    this.classpath = projectClasspath;
     this.executableScanners = allScanners.stream().filter(isIssuableSubscriptionVisitor.negate()).collect(Collectors.toList());
     this.scannerRunner = new ScannerRunner(allScanners);
     this.sonarComponents = sonarComponents;
@@ -106,6 +108,10 @@ public class VisitorsBridge {
 
   public JavaVersion getJavaVersion() {
     return javaVersion;
+  }
+
+  public List<File> getClasspath() {
+    return classpath;
   }
 
   public void setJavaVersion(JavaVersion javaVersion) {
