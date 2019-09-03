@@ -22,11 +22,12 @@ package org.sonar.java.model;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
@@ -39,6 +40,7 @@ final class JSema {
   private final AST ast;
   final Map<IBinding, Tree> declarations = new HashMap<>();
   private final Map<ITypeBinding, JType> types = new HashMap<>();
+  private final Map<IBinding, JSymbol> symbols = new HashMap<>();
 
   JSema(AST ast) {
     this.ast = ast;
@@ -48,9 +50,16 @@ final class JSema {
     return types.computeIfAbsent(typeBinding, k -> new JType(this, k));
   }
 
-  public Symbol.TypeSymbol typeSymbol(ITypeBinding typeBinding) {
-    // FIXME stub for future implementation
-    return null;
+  public JTypeSymbol typeSymbol(ITypeBinding typeBinding) {
+    return (JTypeSymbol) symbols.computeIfAbsent(typeBinding, k -> new JTypeSymbol(this, (ITypeBinding) k));
+  }
+
+  public JMethodSymbol methodSymbol(IMethodBinding methodBinding) {
+    return (JMethodSymbol) symbols.computeIfAbsent(methodBinding, k -> new JMethodSymbol(this, (IMethodBinding) k));
+  }
+
+  public JVariableSymbol variableSymbol(IVariableBinding variableBinding) {
+    return (JVariableSymbol) symbols.computeIfAbsent(variableBinding, k -> new JVariableSymbol(this, (IVariableBinding) k));
   }
 
   @Nullable
