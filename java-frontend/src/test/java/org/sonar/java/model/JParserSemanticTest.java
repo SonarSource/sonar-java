@@ -219,13 +219,25 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(c.typeBinding)).isSameAs(c);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.EnumConstantDeclaration
+   */
   @Test
   void declaration_enum_constant() {
-    JavaTree.CompilationUnitTreeImpl cu = test("enum E { C }");
+    JavaTree.CompilationUnitTreeImpl cu = test("enum E { C { } }");
     ClassTree e = (ClassTree) cu.types().get(0);
     VariableTreeImpl c = (VariableTreeImpl) e.members().get(0);
     assertThat(c.variableBinding).isNotNull();
-    assertThat(cu.sema.declarations.get(c.variableBinding)).isSameAs(c);
+    assertThat(cu.sema.declarations.get(c.variableBinding))
+      .isSameAs(c.symbol().declaration())
+      .isSameAs(c);
+
+    NewClassTreeImpl initializer = (NewClassTreeImpl) c.initializer();
+    ClassTreeImpl enumConstantBody = (ClassTreeImpl) initializer.classBody();
+    assertThat(enumConstantBody.typeBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(enumConstantBody.typeBinding))
+      .isSameAs(enumConstantBody.symbol().declaration())
+      .isSameAs(enumConstantBody);
   }
 
   @Test
