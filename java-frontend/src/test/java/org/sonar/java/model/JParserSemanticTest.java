@@ -121,9 +121,16 @@ class JParserSemanticTest {
 
   @Test
   void expression_class_instance_creation() {
-    NewClassTreeImpl e = (NewClassTreeImpl) expression("new Object() { }");
-    ClassTreeImpl c = (ClassTreeImpl) e.classBody();
-    assertThat(c.typeBinding).isNotNull();
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return new Object() { }; } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+    NewClassTreeImpl e = (NewClassTreeImpl) s.expression();
+    ClassTreeImpl b = (ClassTreeImpl) e.classBody();
+    assertThat(b.typeBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(b.typeBinding))
+      .isSameAs(b.symbol().declaration())
+      .isSameAs(b);
   }
 
   @Test
