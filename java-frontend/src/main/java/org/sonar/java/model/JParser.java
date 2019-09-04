@@ -833,7 +833,7 @@ public class JParser {
     }
 
     IdentifierTree identifier = convertSimpleName(e.getName());
-    return new EnumConstantTreeImpl(
+    EnumConstantTreeImpl t = new EnumConstantTreeImpl(
       convertModifiers(e.modifiers()),
       identifier,
       new NewClassTreeImpl(
@@ -844,6 +844,9 @@ public class JParser {
       ),
       separatorToken
     );
+    t.variableBinding = e.resolveVariable();
+    declaration(t.variableBinding, t);
+    return t;
   }
 
   private void processBodyDeclaration(ASTNode node, List<Tree> members) {

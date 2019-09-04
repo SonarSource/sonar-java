@@ -213,6 +213,15 @@ class JParserSemanticTest {
   }
 
   @Test
+  void declaration_enum_constant() {
+    JavaTree.CompilationUnitTreeImpl cu = test("enum E { C }");
+    ClassTree e = (ClassTree) cu.types().get(0);
+    VariableTreeImpl c = (VariableTreeImpl) e.members().get(0);
+    assertThat(c.variableBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(c.variableBinding)).isSameAs(c);
+  }
+
+  @Test
   void declaration_method() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() {} }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
