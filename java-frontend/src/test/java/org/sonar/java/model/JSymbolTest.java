@@ -19,9 +19,12 @@
  */
 package org.sonar.java.model;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
@@ -156,6 +159,207 @@ class JSymbolTest {
 
     assertThat(cu.sema.methodSymbol(method.methodBinding).type())
       .isSameAs(Symbols.unknownType);
+  }
+
+  @Nested
+  class kinds {
+
+    private JavaTree.CompilationUnitTreeImpl cu;
+    private ClassTreeImpl c1;
+    private VariableTreeImpl f;
+    private MethodTreeImpl foo;
+
+    @BeforeEach
+    void parse() {
+      cu = test("class C1 { int f; void foo() { } }");
+      c1 = (ClassTreeImpl) cu.types().get(0);
+      f = (VariableTreeImpl) c1.members().get(0);
+      foo = (MethodTreeImpl) c1.members().get(1);
+    }
+
+    @Test
+    void isPackageSymbol() {
+      JTypeSymbol c1Symbol = cu.sema.typeSymbol(c1.typeBinding);
+      assertThat(c1Symbol.isPackageSymbol()).isFalse();
+      assertThat(c1Symbol.owner().isPackageSymbol()).isTrue();
+    }
+
+    @Test
+    void isTypeSymbol() {
+      assertThat(cu.sema.typeSymbol(c1.typeBinding).isTypeSymbol()).isTrue();
+      assertThat(cu.sema.methodSymbol(foo.methodBinding).isTypeSymbol()).isFalse();
+      assertThat(cu.sema.variableSymbol(f.variableBinding).isTypeSymbol()).isFalse();
+    }
+
+    @Test
+    void isMethodSymbol() {
+      assertThat(cu.sema.typeSymbol(c1.typeBinding).isMethodSymbol()).isFalse();
+      assertThat(cu.sema.methodSymbol(foo.methodBinding).isMethodSymbol()).isTrue();
+      assertThat(cu.sema.variableSymbol(f.variableBinding).isMethodSymbol()).isFalse();
+    }
+
+    @Test
+    void isVariableSymbol() {
+      assertThat(cu.sema.typeSymbol(c1.typeBinding).isVariableSymbol()).isFalse();
+      assertThat(cu.sema.methodSymbol(foo.methodBinding).isVariableSymbol()).isFalse();
+      assertThat(cu.sema.variableSymbol(f.variableBinding).isVariableSymbol()).isTrue();
+    }
+  }
+
+  @Nested
+  class modifiers {
+    @Test
+    void isStatic() {
+      JavaTree.CompilationUnitTreeImpl cu = test("class C1 {"
+        + "  static void foo() { }"
+        + "  void bar() { }"
+        + "}");
+
+      assertThat(foo(cu).isStatic()).isTrue();
+      assertThat(bar(cu).isStatic()).isFalse();
+    }
+
+    @Test
+    void isFinal() {
+      JavaTree.CompilationUnitTreeImpl cu = test("class C1 {"
+        + "  final void foo() { }"
+        + "  void bar() { }"
+        + "}");
+
+      assertThat(foo(cu).isFinal()).isTrue();
+      assertThat(bar(cu).isFinal()).isFalse();
+    }
+
+    @Test
+    void isAbstract() {
+      JavaTree.CompilationUnitTreeImpl cu = test("abstract class C1 {"
+        + "  abstract void foo();"
+        + "  void bar() { }"
+        + "}");
+
+      assertThat(foo(cu).isAbstract()).isTrue();
+      assertThat(bar(cu).isAbstract()).isFalse();
+    }
+
+    @Test
+    void isPublic() {
+      JavaTree.CompilationUnitTreeImpl cu = test("class C1 {"
+        + "  public void foo() { }"
+        + "  void bar() { }"
+        + "}");
+
+      assertThat(foo(cu).isPublic()).isTrue();
+      assertThat(bar(cu).isPublic()).isFalse();
+    }
+
+    @Test
+    void isPrivate() {
+      JavaTree.CompilationUnitTreeImpl cu = test("class C1 {"
+        + "  private void foo() { }"
+        + "  void bar() { }"
+        + "}");
+
+      assertThat(foo(cu).isPrivate()).isTrue();
+      assertThat(bar(cu).isPrivate()).isFalse();
+    }
+
+    @Test
+    void isProtected() {
+      JavaTree.CompilationUnitTreeImpl cu = test("class C1 {"
+        + "  protected void foo() { }"
+        + "  void bar() { }"
+        + "}");
+
+      assertThat(foo(cu).isProtected()).isTrue();
+      assertThat(bar(cu).isProtected()).isFalse();
+    }
+
+    @Test
+    void isPackageVisibility() {
+      JavaTree.CompilationUnitTreeImpl cu = test("class C1 {"
+        + "  void foo() { }"
+        + "  private void bar() { }"
+        + "}");
+
+      assertThat(foo(cu).isPackageVisibility()).isTrue();
+      assertThat(bar(cu).isPackageVisibility()).isFalse();
+    }
+
+    @Test
+    void isDeprecated() {
+      JavaTree.CompilationUnitTreeImpl cu = test("class C1 {"
+        + "  @Deprecated"
+        + "  void foo() { }"
+        + "  void bar() { }"
+        + "}");
+
+      assertThat(foo(cu).isDeprecated()).isTrue();
+      assertThat(bar(cu).isDeprecated()).isFalse();
+    }
+
+    @Test
+    void isVolatile() {
+      JavaTree.CompilationUnitTreeImpl cu = test("class C1 {"
+        + "  volatile int a;"
+        + "  int b;"
+        + "}");
+
+      JVariableSymbol a = variable(cu, 0);
+      assertThat(a.isVolatile()).isTrue();
+
+      JVariableSymbol b = variable(cu, 1);
+      assertThat(b.isVolatile()).isFalse();
+    }
+
+    @Test
+    void isInterface() {
+      JavaTree.CompilationUnitTreeImpl cu = test(
+        "interface I1 { } "
+          + "class C1 { }");
+
+      assertThat(cu.sema.typeSymbol(((ClassTreeImpl) cu.types().get(0)).typeBinding).isInterface()).isTrue();
+      assertThat(cu.sema.typeSymbol(((ClassTreeImpl) cu.types().get(1)).typeBinding).isInterface()).isFalse();
+    }
+
+    @Test
+    void isEnum() {
+      JavaTree.CompilationUnitTreeImpl cu = test("class C1 { int a; void foo() { }} enum E1 { ACONST; }");
+
+      ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
+      JTypeSymbol c1Symbol = cu.sema.typeSymbol(c1.typeBinding);
+      assertThat(c1Symbol.isEnum()).isFalse();
+
+      JVariableSymbol a = cu.sema.variableSymbol(((VariableTreeImpl) c1.members().get(0)).variableBinding);
+      assertThat(a.isEnum()).isFalse();
+
+      JMethodSymbol foo = cu.sema.methodSymbol(((MethodTreeImpl) c1.members().get(1)).methodBinding);
+      assertThat(foo.isEnum()).isFalse();
+
+      ClassTreeImpl e1 = (ClassTreeImpl) cu.types().get(1);
+      JTypeSymbol e1Symbol = cu.sema.typeSymbol(e1.typeBinding);
+      assertThat(e1Symbol.isEnum()).isTrue();
+
+      JVariableSymbol aconst = cu.sema.variableSymbol(((EnumConstantTreeImpl) e1.members().get(0)).variableBinding);
+      assertThat(aconst.isEnum()).isTrue();
+    }
+
+    private JMethodSymbol foo(JavaTree.CompilationUnitTreeImpl cu) {
+      return method(cu, 0);
+    }
+
+    private JMethodSymbol bar(JavaTree.CompilationUnitTreeImpl cu) {
+      return method(cu, 1);
+    }
+
+    private JMethodSymbol method(JavaTree.CompilationUnitTreeImpl cu, int memberIndex) {
+      ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
+      return cu.sema.methodSymbol(((MethodTreeImpl) c1.members().get(memberIndex)).methodBinding);
+    }
+
+    private JVariableSymbol variable(JavaTree.CompilationUnitTreeImpl cu, int memberIndex) {
+      ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
+      return cu.sema.variableSymbol(((VariableTreeImpl) c1.members().get(memberIndex)).variableBinding);
+    }
   }
 
   JavaTree.CompilationUnitTreeImpl test(String source) {
