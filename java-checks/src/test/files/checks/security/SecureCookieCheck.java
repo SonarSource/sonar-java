@@ -202,7 +202,6 @@ class B extends Cookie {
     d2 = new Date();
     d = d1;
     d = new Date();
-    new Date() = new Date();
     UnknownClass c = new UnknownClass();
     c.setSecure(true);
     return new Date();
