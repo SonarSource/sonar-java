@@ -2059,10 +2059,10 @@ public class JParser {
           convertType(e.getType()),
           lastTokenIn(e, TerminalTokens.TokenNameCOLON_COLON)
         );
-        t.complete(
-          convertTypeArguments(e.typeArguments()),
-          new IdentifierTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamenew))
-        );
+        IdentifierTreeImpl i = new IdentifierTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamenew));
+        i.binding = e.resolveMethodBinding();
+        usage(i.binding, i);
+        t.complete(convertTypeArguments(e.typeArguments()), i);
         return t;
       }
       case ASTNode.EXPRESSION_METHOD_REFERENCE: {

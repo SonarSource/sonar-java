@@ -38,8 +38,10 @@ import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.expression.MethodReferenceTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
+import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -131,6 +133,26 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(b.typeBinding))
       .isSameAs(b.symbol().declaration())
       .isSameAs(b);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.CreationReference
+   */
+  @Test
+  void expression_creation_reference() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { C() { } java.util.function.Supplier m() { return C::new; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl constructor = (MethodTreeImpl) c.members().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(1);
+    ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) m.block().body().get(0);
+    MethodReferenceTreeImpl creationReference = (MethodReferenceTreeImpl) s.expression();
+    IdentifierTreeImpl keywordNew = (IdentifierTreeImpl) creationReference.method();
+    assertThat(keywordNew.binding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) creationReference.method().symbol().declaration()).methodBinding)
+      .isSameAs(constructor.methodBinding);
+    assertThat(cu.sema.usages.get(constructor.methodBinding))
+      .containsOnly(keywordNew);
   }
 
   @Test
