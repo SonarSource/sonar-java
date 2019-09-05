@@ -102,11 +102,4 @@ public class ExpressionTest {
       .matches("outerClass.new innerClass<>(42)");
   }
 
-  @Test
-  public void test_SONARJAVA_793() {
-    String bigInput = Strings.repeat("(", 60) + "1" + Strings.repeat(")", 60);
-    assertThat(JavaLexer.EXPRESSION)
-      .matches(bigInput);
-  }
-
 }
