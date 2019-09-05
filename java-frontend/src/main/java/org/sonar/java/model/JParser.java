@@ -2071,10 +2071,9 @@ public class JParser {
           convertExpression(e.getExpression()),
           firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameCOLON_COLON)
         );
-        t.complete(
-          convertTypeArguments(e.typeArguments()),
-          convertSimpleName(e.getName())
-        );
+        IdentifierTreeImpl i = convertSimpleName(e.getName());
+        usage(i.binding, i);
+        t.complete(convertTypeArguments(e.typeArguments()), i);
         return t;
       }
       case ASTNode.TYPE_METHOD_REFERENCE: {
@@ -2083,10 +2082,9 @@ public class JParser {
           convertType(e.getType()),
           firstTokenAfter(e.getType(), TerminalTokens.TokenNameCOLON_COLON)
         );
-        t.complete(
-          convertTypeArguments(e.typeArguments()),
-          convertSimpleName(e.getName())
-        );
+        IdentifierTreeImpl i = convertSimpleName(e.getName());
+        usage(i.binding, i);
+        t.complete(convertTypeArguments(e.typeArguments()), i);
         return t;
       }
       case ASTNode.SUPER_METHOD_REFERENCE: {
@@ -2107,10 +2105,9 @@ public class JParser {
             firstTokenIn(e, TerminalTokens.TokenNameCOLON_COLON)
           );
         }
-        t.complete(
-          convertTypeArguments(e.typeArguments()),
-          convertSimpleName(e.getName())
-        );
+        IdentifierTreeImpl i = convertSimpleName(e.getName());
+        usage(i.binding, i);
+        t.complete(convertTypeArguments(e.typeArguments()), i);
         return t;
       }
       case ASTNode.SWITCH_EXPRESSION: {
