@@ -202,6 +202,10 @@ class JParserSemanticTest {
       .isNotNull()
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) constructorInvocation.symbol().declaration()).methodBinding)
       .isSameAs(constructor2.methodBinding);
+    assertThat(constructorInvocation.typeBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull(((ClassTreeImpl) constructorInvocation.symbolType().symbol().declaration())).typeBinding)
+      .isSameAs(c.typeBinding);
     IdentifierTreeImpl i = (IdentifierTreeImpl) constructorInvocation.methodSelect();
     assertThat(i.binding)
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
