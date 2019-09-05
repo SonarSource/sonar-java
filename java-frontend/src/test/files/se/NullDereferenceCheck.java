@@ -1,4 +1,3 @@
-@SomeAnnotation(name = value)
 package javax.annotation;
 
 import java.text.ParseException;

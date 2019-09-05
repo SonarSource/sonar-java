@@ -26,7 +26,7 @@ public class UselessImportCheckTest {
 
   @Test
   public void detected_with_package() {
-    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/WithPackage.java", new UselessImportCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/package-info.java", new UselessImportCheck());
   }
 
   @Test
