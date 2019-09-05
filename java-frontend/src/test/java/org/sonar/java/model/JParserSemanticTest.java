@@ -139,55 +139,96 @@ class JParserSemanticTest {
       .isNotInstanceOf(AbstractTypedTree.class);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.MethodInvocation
+   */
   @Test
   void expression_method_invocation() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return m(); } }");
-    ClassTree c = (ClassTree) cu.types().get(0);
-    MethodTree m = (MethodTree) c.members().get(0);
-    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
-    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) s.expression();
-    assertThat(e.methodBinding).isNotNull();
-    IdentifierTreeImpl i = (IdentifierTreeImpl) e.methodSelect();
-    assertThat(i.binding).isSameAs(e.methodBinding);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl method = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(method.block()).body().get(0);
+
+    MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) s.expression();
+    assertThat(methodInvocation.methodBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) methodInvocation.symbol().declaration()).methodBinding)
+      .isSameAs(method.methodBinding);
+    IdentifierTreeImpl i = (IdentifierTreeImpl) methodInvocation.methodSelect();
+    assertThat(i.binding)
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
+      .isSameAs(methodInvocation.methodBinding);
     assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.SuperMethodInvocation
+   */
   @Test
   void expression_super_method_invocation() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return " + "super.toString()" + " ; } }");
-    ClassTree c = (ClassTree) cu.types().get(0);
-    MethodTree m1 = (MethodTree) c.members().get(0);
-    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m1.block()).body().get(0);
-    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) Objects.requireNonNull(s.expression());
-    assertThat(e.methodBinding).isNotNull();
-    MemberSelectExpressionTreeImpl m = (MemberSelectExpressionTreeImpl) e.methodSelect();
-    IdentifierTreeImpl i = (IdentifierTreeImpl) m.identifier();
-    assertThat(i.binding).isSameAs(e.methodBinding);
+    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { Object m() { return super.m(); } } class S { Object m() { return null; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
+    MethodTreeImpl superClassMethod = (MethodTreeImpl) superClass.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+
+    MethodInvocationTreeImpl superMethodInvocation = (MethodInvocationTreeImpl) Objects.requireNonNull(s.expression());
+    assertThat(superMethodInvocation.methodBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) superMethodInvocation.symbol().declaration()).methodBinding)
+      .isSameAs(superClassMethod.methodBinding);
+    MemberSelectExpressionTreeImpl e2 = (MemberSelectExpressionTreeImpl) superMethodInvocation.methodSelect();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) e2.identifier();
+    assertThat(i.binding)
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
+      .isSameAs(superMethodInvocation.methodBinding);
     assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.ConstructorInvocation
+   */
   @Test
   void statement_constructor_invocation() {
     CompilationUnitTree cu = test("class C { C() { this(null); } C(Object p) { } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    MethodTreeImpl constructor2 = (MethodTreeImpl) c.members().get(1);
     ExpressionStatementTree s = (ExpressionStatementTree) m.block().body().get(0);
-    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) s.expression();
-    assertThat(e.methodBinding).isNotNull();
-    IdentifierTreeImpl i = (IdentifierTreeImpl) e.methodSelect();
-    assertThat(i.binding).isSameAs(e.methodBinding);
+
+    MethodInvocationTreeImpl constructorInvocation = (MethodInvocationTreeImpl) s.expression();
+    assertThat(constructorInvocation.methodBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) constructorInvocation.symbol().declaration()).methodBinding)
+      .isSameAs(constructor2.methodBinding);
+    IdentifierTreeImpl i = (IdentifierTreeImpl) constructorInvocation.methodSelect();
+    assertThat(i.binding)
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
+      .isSameAs(constructorInvocation.methodBinding);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.SuperConstructorInvocation
+   */
   @Test
   void statement_super_constructor_invocation() {
-    CompilationUnitTree cu = test("class C { C() { super(); } }");
+    CompilationUnitTree cu = test("class C extends S { C() { super(); } } class S { S() { } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
+    MethodTreeImpl superClassConstructor = (MethodTreeImpl) superClass.members().get(0);
     ExpressionStatementTree s = (ExpressionStatementTree) m.block().body().get(0);
-    MethodInvocationTreeImpl e = (MethodInvocationTreeImpl) s.expression();
-    assertThat(e.methodBinding).isNotNull();
-    IdentifierTreeImpl i = (IdentifierTreeImpl) e.methodSelect();
-    assertThat(i.binding).isSameAs(e.methodBinding);
+
+    MethodInvocationTreeImpl superConstructorInvocation = (MethodInvocationTreeImpl) s.expression();
+    assertThat(superConstructorInvocation.methodBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) superConstructorInvocation.symbol().declaration()).methodBinding)
+      .isSameAs(superClassConstructor.methodBinding);
+    IdentifierTreeImpl i = (IdentifierTreeImpl) superConstructorInvocation.methodSelect();
+    assertThat(i.binding)
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
+      .isSameAs(superConstructorInvocation.methodBinding);
   }
 
   @Test
