@@ -122,6 +122,29 @@ class JParserSemanticTest {
   }
 
   /**
+   * @see org.eclipse.jdt.core.dom.TypeLiteral
+   */
+  @Test
+  void expression_type_literal() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return C.class; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+    MemberSelectExpressionTreeImpl e = Objects.requireNonNull((MemberSelectExpressionTreeImpl) s.expression());
+    assertThat(e.typeBinding)
+      .isNotNull();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) e.identifier();
+    assertThat(i.typeBinding)
+      .isNull();
+    assertThat(i.symbolType().isUnknown())
+      .isTrue();
+    assertThat(i.binding)
+      .isNull();
+    assertThat(i.symbol().isUnknown())
+      .isTrue();
+  }
+
+  /**
    * @see org.eclipse.jdt.core.dom.ClassInstanceCreation
    */
   @Test
