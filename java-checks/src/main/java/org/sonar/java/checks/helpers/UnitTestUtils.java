@@ -22,6 +22,7 @@ package org.sonar.java.checks.helpers;
 import java.util.HashSet;
 import java.util.Set;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static java.util.Arrays.asList;
@@ -35,8 +36,14 @@ public final class UnitTestUtils {
     "org.junit.jupiter.api.TestFactory",
     "org.junit.jupiter.api.TestTemplate",
     "org.junit.jupiter.params.ParameterizedTest"));
+  private static final String NESTED_ANNOTATION = "org.junit.jupiter.api.Nested";
 
   private UnitTestUtils() {
+  }
+
+  public static boolean hasNestedAnnotation(ClassTree tree) {
+    SymbolMetadata metadata = tree.symbol().metadata();
+    return metadata.isAnnotatedWith(NESTED_ANNOTATION);
   }
 
   public static boolean hasTestAnnotation(MethodTree tree) {
