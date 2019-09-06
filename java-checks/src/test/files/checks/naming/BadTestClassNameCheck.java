@@ -50,3 +50,19 @@ class JUnit5Noncompliant2 { // Noncompliant
   @org.junit.jupiter.api.RepeatedTest(2)
   void foo() {}
 }
+
+class JunitNestedTest {
+  @org.junit.jupiter.api.Nested
+  class Positive {
+    @org.junit.jupiter.api.Test
+    void foo() {}
+  }
+}
+
+class JunitNested { // Noncompliant
+  @org.junit.jupiter.api.Nested
+  class Negative {
+    @org.junit.jupiter.api.Test
+    void foo() {}
+  }
+}

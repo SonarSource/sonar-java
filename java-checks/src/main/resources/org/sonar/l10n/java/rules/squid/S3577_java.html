@@ -4,11 +4,35 @@ regular expression.</p>
 <p>With the default value: <code>^((Test|IT)[a-zA-Z0-9]+|[A-Z][a-zA-Z0-9]*(Test|IT|TestCase|ITCase))$</code></p>
 <pre>
 class Foo {  // Noncompliant
+  @Test
+  void check() {
+  }
+}
+
+class Bar {  // Noncompliant
+  @Nested
+  class PositiveCase {
+    @Test
+    void check() {
+    }
+  }
 }
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
 class FooTest {
+  @Test
+  void check() {
+  }
+}
+
+class BarIT {
+  @Nested
+  class PositiveCase {
+    @Test
+    void check() {
+    }
+  }
 }
 </pre>
 
