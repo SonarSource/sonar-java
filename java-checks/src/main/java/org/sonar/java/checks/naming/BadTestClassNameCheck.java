@@ -68,8 +68,9 @@ public class BadTestClassNameCheck extends IssuableSubscriptionVisitor {
     }
     ClassTree classTree = (ClassTree) tree;
     IdentifierTree simpleName = classTree.simpleName();
-    if (hasInvalidName(simpleName) && hasTestMethod(classTree.members())) {
-      reportIssue(simpleName, "Rename class \"" + simpleName + "\" to match the regular expression: '" + format + "'");
+    if (hasInvalidName(simpleName) && isTestClass(classTree)) {
+      reportIssue(simpleName, "Rename class \"" + simpleName
+        + "\" to match the regular expression: '" + format + "'");
     }
   }
 
@@ -77,11 +78,28 @@ public class BadTestClassNameCheck extends IssuableSubscriptionVisitor {
     return className != null && !pattern.matcher(className.name()).matches();
   }
 
+  private boolean isTestClass(ClassTree classTree) {
+    return isTopLevelClass(classTree)
+      && (hasTestMethod(classTree.members()) || hasNestedClass(classTree));
+  }
+
+  private boolean isTopLevelClass(ClassTree classTree) {
+    return classTree.symbol().owner().isPackageSymbol();
+  }
+
   private static boolean hasTestMethod(List<Tree> members) {
     return members.stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
       .anyMatch(UnitTestUtils::hasTestAnnotation);
+  }
+
+  private boolean hasNestedClass(ClassTree classTree) {
+    return classTree.members()
+      .stream()
+      .filter(member -> member.is(Tree.Kind.CLASS))
+      .map(ClassTree.class::cast)
+      .anyMatch(UnitTestUtils::hasNestedAnnotation);
   }
 
 }
