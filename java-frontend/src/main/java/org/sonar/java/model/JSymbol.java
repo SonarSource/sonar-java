@@ -111,10 +111,14 @@ abstract class JSymbol implements Symbol {
   @Override
   public final Type type() {
     switch (binding.getKind()) {
+      case IBinding.PACKAGE:
+        return null;
       case IBinding.TYPE:
         return sema.type((ITypeBinding) binding);
       case IBinding.VARIABLE:
         return sema.type(((IVariableBinding) binding).getType());
+      case IBinding.METHOD:
+        return Symbols.unknownType;
       default:
         throw new IllegalStateException("Kind: " + binding.getKind());
     }

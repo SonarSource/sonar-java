@@ -25,6 +25,7 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.resolve.Symbols;
 
 import java.io.File;
 import java.util.Collections;
@@ -102,6 +103,27 @@ class JSymbolTest {
     assertThat(cu.sema.variableSymbol(p.variableBinding).enclosingClass())
       .as("of method parameter")
       .isSameAs(cu.sema.typeSymbol(c1.typeBinding));
+  }
+
+  @Test
+  void type() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { int f; void m() {} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl field = (VariableTreeImpl) c.members().get(0);
+    MethodTreeImpl method = (MethodTreeImpl) c.members().get(1);
+
+    assertThat(cu.sema.typeSymbol(c.typeBinding).owner().type())
+      .isSameAs(c.symbol().owner().type())
+      .isNull();
+
+    assertThat(cu.sema.typeSymbol(c.typeBinding).type())
+      .isSameAs(cu.sema.type(c.typeBinding));
+
+    assertThat(cu.sema.variableSymbol(field.variableBinding).type())
+      .isSameAs(cu.sema.type(field.variableBinding.getType()));
+
+    assertThat(cu.sema.methodSymbol(method.methodBinding).type())
+      .isSameAs(Symbols.unknownType);
   }
 
   JavaTree.CompilationUnitTreeImpl test(String source) {
