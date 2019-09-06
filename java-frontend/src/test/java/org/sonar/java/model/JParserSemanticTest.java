@@ -414,6 +414,17 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(c.typeBinding)).isSameAs(c);
   }
 
+  @Test
+  void declaration_type_parameterized() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C<T> { C<String> field; }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    AbstractTypedTree fieldType = (AbstractTypedTree) ((VariableTreeImpl) c.members().get(0)).type();
+
+    assertThat(c.typeBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(c.typeBinding)).isSameAs(c);
+    assertThat(cu.sema.usages.get(c.typeBinding)).containsOnly((IdentifierTreeImpl) ((ParameterizedTypeTree) fieldType).type());
+  }
+
   /**
    * @see org.eclipse.jdt.core.dom.EnumConstantDeclaration
    */
@@ -465,6 +476,18 @@ class JParserSemanticTest {
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     assertThat(m.methodBinding).isNotNull();
     assertThat(cu.sema.declarations.get(m.methodBinding)).isSameAs(m);
+  }
+
+  @Test
+  void declaration_method_parameterized() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { <T> void m(T t) { m(\"hello\"); } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    MethodInvocationTreeImpl m1Invoc = (MethodInvocationTreeImpl) ((ExpressionStatementTree) m.block().body().get(0)).expression();
+
+    assertThat(m.methodBinding).isNotNull();
+    assertThat(cu.sema.declarations.get(m.methodBinding)).isEqualTo(m);
+    assertThat(cu.sema.usages.get(m.methodBinding)).containsOnly((IdentifierTreeImpl) m1Invoc.methodSelect());
   }
 
   @Test
