@@ -1882,6 +1882,11 @@ public class JParser {
           t.completeWithEnclosingExpression(convertExpression(e.getExpression()));
           t.completeWithDotToken(firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT));
         }
+
+        IdentifierTreeImpl i = (IdentifierTreeImpl) t.getConstructorIdentifier();
+        // TODO should be constructor of i.typeBinding instead of constructor of anonymous class ?
+        i.binding = e.resolveConstructorBinding();
+
         return t;
       }
       case ASTNode.CONDITIONAL_EXPRESSION: {

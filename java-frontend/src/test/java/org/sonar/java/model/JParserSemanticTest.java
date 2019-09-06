@@ -121,8 +121,33 @@ class JParserSemanticTest {
     assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.ClassInstanceCreation
+   */
   @Test
   void expression_class_instance_creation() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return new C(); } C(){} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    MethodTreeImpl constructor = (MethodTreeImpl) c.members().get(1);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+    NewClassTreeImpl e = Objects.requireNonNull((NewClassTreeImpl) s.expression());
+    assertThat(e.typeBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((ClassTreeImpl) e.symbolType().symbol().declaration()).typeBinding)
+      .isSameAs(c.typeBinding);
+    IdentifierTreeImpl i = (IdentifierTreeImpl) e.getConstructorIdentifier();
+    assertThat(i.binding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
+      .isSameAs(constructor.methodBinding);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.ClassInstanceCreation
+   */
+  @Test
+  void expression_anonymous_class_instance_creation() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return new Object() { }; } }");
     ClassTree c = (ClassTree) cu.types().get(0);
     MethodTree m = (MethodTree) c.members().get(0);
