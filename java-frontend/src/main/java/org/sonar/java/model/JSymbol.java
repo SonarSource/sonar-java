@@ -24,6 +24,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -97,11 +98,24 @@ abstract class JSymbol implements Symbol {
         if (declaringClass != null) { // field
           return sema.typeSymbol(declaringClass);
         }
-        // FIXME
-        // variable declaration in a static or instance initializer
-        // or local variable declaration in recovered method
-        // or array.length
-        return Symbols.unknownSymbol;
+        Tree node = sema.declarations.get(variableBinding);
+        if (node == null) {
+          // array.length
+          return Symbols.unknownSymbol;
+        }
+        do {
+          node = node.parent();
+          switch (node.kind()) {
+            case CLASS:
+              // variable declaration in a static or instance initializer
+              return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
+            case METHOD:
+            case CONSTRUCTOR:
+              // local variable declaration in recovered method
+              // and recovered methods do not have bindings
+              return Symbols.unknownMethodSymbol;
+          }
+        } while (true);
       }
       default:
         throw new IllegalStateException("Kind: " + binding.getKind());
@@ -256,11 +270,17 @@ abstract class JSymbol implements Symbol {
         if (declaringMethod != null) { // local variable
           return sema.typeSymbol(declaringMethod.getDeclaringClass());
         }
-        // FIXME
+        Tree node = sema.declarations.get(variableBinding);
+        if (node == null) {
+          // array.length
+          return Symbols.unknownSymbol;
+        }
+        do {
+          node = node.parent();
+        } while (node.kind() != Tree.Kind.CLASS);
         // variable declaration in a static or instance initializer
         // or local variable declaration in recovered method
-        // or array.length
-        return Symbols.unknownSymbol;
+        return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
       }
       default:
         throw new IllegalStateException("Kind: " + binding.getKind());

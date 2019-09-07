@@ -24,6 +24,7 @@ import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbols;
 
@@ -103,6 +104,20 @@ class JSymbolTest {
     assertThat(cu.sema.variableSymbol(p.variableBinding).enclosingClass())
       .as("of method parameter")
       .isSameAs(cu.sema.typeSymbol(c1.typeBinding));
+  }
+
+  @Test
+  void variable_in_class_initializer() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { { int i; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    BlockTreeImpl b = (BlockTreeImpl) c.members().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) b.body().get(0);
+    assertThat(cu.sema.variableSymbol(v.variableBinding).owner())
+      .isSameAs(cu.sema.typeSymbol(((ClassTreeImpl) v.symbol().owner().declaration()).typeBinding))
+      .isSameAs(cu.sema.typeSymbol(c.typeBinding));
+    assertThat(cu.sema.variableSymbol(v.variableBinding).enclosingClass())
+      .isSameAs(cu.sema.typeSymbol(((ClassTreeImpl) v.symbol().owner().declaration()).typeBinding))
+      .isSameAs(cu.sema.typeSymbol(c.typeBinding));
   }
 
   @Test
