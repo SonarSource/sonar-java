@@ -84,8 +84,7 @@ abstract class JSymbol implements Symbol {
           return sema.typeSymbol(declaringClass);
         }
         // top-level type
-        return new JSymbol(sema, typeBinding.getPackage()) {
-        };
+        return sema.packageSymbol(typeBinding.getPackage());
       }
       case IBinding.METHOD: {
         IMethodBinding methodBinding = (IMethodBinding) binding;

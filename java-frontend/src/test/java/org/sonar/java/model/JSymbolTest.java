@@ -63,9 +63,9 @@ class JSymbolTest {
     VariableTreeImpl p = (VariableTreeImpl) m.parameters().get(0);
     ClassTreeImpl c3 = (ClassTreeImpl) m.block().body().get(0);
 
-    assertThat(cu.sema.typeSymbol(c1.typeBinding).owner().isPackageSymbol())
+    assertThat(cu.sema.typeSymbol(c1.typeBinding).owner())
       .as("of top-level class")
-      .isTrue();
+      .isSameAs(cu.sema.packageSymbol(c1.typeBinding.getPackage()));
 
     assertThat(cu.sema.typeSymbol(c2.typeBinding).owner())
       .as("of nested class")

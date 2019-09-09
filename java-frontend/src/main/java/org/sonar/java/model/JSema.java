@@ -24,6 +24,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
@@ -53,6 +54,10 @@ public final class JSema {
 
   public JType type(ITypeBinding typeBinding) {
     return types.computeIfAbsent(typeBinding, k -> new JType(this, k));
+  }
+
+  JPackageSymbol packageSymbol(IPackageBinding packageBinding) {
+    return (JPackageSymbol) symbols.computeIfAbsent(packageBinding, k -> new JPackageSymbol(this, (IPackageBinding) k));
   }
 
   public JTypeSymbol typeSymbol(ITypeBinding typeBinding) {
