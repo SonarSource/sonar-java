@@ -1531,6 +1531,7 @@ public class JParser {
           ? lastTokenIn(e, TerminalTokens.TokenNamethis)
           : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNamethis));
         i.binding = e.resolveConstructorBinding();
+        usage(i.binding, i);
         MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
           i,
           convertTypeArguments(e.typeArguments()),

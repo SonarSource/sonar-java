@@ -327,7 +327,7 @@ class JParserSemanticTest {
    */
   @Test
   void statement_constructor_invocation() {
-    CompilationUnitTree cu = test("class C { C() { this(null); } C(Object p) { } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { C() { this(null); } C(Object p) { } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     MethodTreeImpl constructor2 = (MethodTreeImpl) c.members().get(1);
@@ -346,6 +346,9 @@ class JParserSemanticTest {
     assertThat(i.binding)
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
       .isSameAs(constructorInvocation.methodBinding);
+    assertThat(cu.sema.usages.get(i.binding))
+      .containsOnlyElementsOf(constructorInvocation.symbol().usages())
+      .containsOnly(i);
   }
 
   /**
