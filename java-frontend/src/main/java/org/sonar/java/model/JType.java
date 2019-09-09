@@ -128,6 +128,11 @@ final class JType implements Type, Type.ArrayType {
   }
 
   @Override
+  public String toString() {
+    return name();
+  }
+
+  @Override
   public Symbol.TypeSymbol symbol() {
     return sema.typeSymbol(typeBinding);
   }

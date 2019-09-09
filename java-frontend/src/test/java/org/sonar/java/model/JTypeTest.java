@@ -117,6 +117,8 @@ class JTypeTest {
       .isEqualTo(expectedFullyQualifiedName);
     assertThat(type.name())
       .isEqualTo(expectedName);
+    assertThat(type.toString())
+      .isEqualTo(expectedName);
   }
 
   private static Stream<Arguments> names() {
