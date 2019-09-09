@@ -125,9 +125,9 @@ class JSymbolTest {
 
   @Test
   void variable_in_class_initializer() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C { { int i; } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("enum E { C; { int i; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    BlockTreeImpl b = (BlockTreeImpl) c.members().get(0);
+    BlockTreeImpl b = (BlockTreeImpl) c.members().get(1);
     VariableTreeImpl v = (VariableTreeImpl) b.body().get(0);
     assertThat(cu.sema.variableSymbol(v.variableBinding).owner())
       .isSameAs(cu.sema.typeSymbol(((ClassTreeImpl) v.symbol().owner().declaration()).typeBinding))

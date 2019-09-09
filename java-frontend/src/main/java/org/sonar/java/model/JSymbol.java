@@ -110,6 +110,7 @@ abstract class JSymbol implements Symbol {
           node = node.parent();
           switch (node.kind()) {
             case CLASS:
+            case ENUM:
               // variable declaration in a static or instance initializer
               return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
             case METHOD:
@@ -286,10 +287,14 @@ abstract class JSymbol implements Symbol {
         }
         do {
           node = node.parent();
-        } while (node.kind() != Tree.Kind.CLASS);
-        // variable declaration in a static or instance initializer
-        // or local variable declaration in recovered method
-        return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
+          switch (node.kind()) {
+            case CLASS:
+            case ENUM:
+              // variable declaration in a static or instance initializer
+              // or local variable declaration in recovered method
+              return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
+          }
+        } while (true);
       }
       default:
         throw new IllegalStateException("Kind: " + binding.getKind());
