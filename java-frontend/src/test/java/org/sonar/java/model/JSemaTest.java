@@ -58,13 +58,19 @@ class JSemaTest {
     );
   }
 
+  @Test
+  void resolvePackageAnnotations() {
+    assertThat(sema.resolvePackageAnnotations("org.sonar.java.resolve.targets.annotations"))
+      .hasSize(1);
+  }
+
   private JSema sema;
 
   @BeforeEach
   void setup() {
     ASTParser astParser = ASTParser.newParser(AST.JLS12);
     astParser.setEnvironment(
-      new String[]{},
+      new String[]{"target/test-classes"},
       new String[]{},
       new String[]{},
       true
