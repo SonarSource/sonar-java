@@ -130,6 +130,30 @@ class JTypeTest {
   }
 
   @Test
+  void name() {
+    assertAll(
+      () ->
+        assertThat(type("int").name())
+          .isEqualTo("int"),
+      () ->
+        assertThat(type("int[][]").name())
+          .isEqualTo("int[][]"),
+      () ->
+        assertThat(type("java.util.Map").name())
+          .isEqualTo("Map"),
+      () ->
+        assertThat(type("java.util.Map[][]").name())
+          .isEqualTo("Map[][]"),
+      () ->
+        assertThat(type("java.util.Map$Entry").name())
+          .isEqualTo("Entry"),
+      () ->
+        assertThat(type("java.util.Map$Entry[][]").name())
+          .isEqualTo("Entry[][]")
+    );
+  }
+
+  @Test
   void symbol() {
     ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType("java.lang.Object"));
     assertThat(sema.type(typeBinding).symbol())
