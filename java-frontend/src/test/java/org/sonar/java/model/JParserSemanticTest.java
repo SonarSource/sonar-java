@@ -165,7 +165,7 @@ class JParserSemanticTest {
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
       .isSameAs(constructor.methodBinding);
     assertThat(cu.sema.usages.get(constructor.methodBinding))
-      .containsOnlyElementsOf(i.symbol().usages())
+      .containsOnlyElementsOf(constructor.symbol().usages())
       .containsOnly(i);
   }
 
@@ -294,7 +294,9 @@ class JParserSemanticTest {
     assertThat(i.binding)
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
       .isSameAs(methodInvocation.methodBinding);
-    assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
+    assertThat(cu.sema.usages.get(i.binding))
+      .containsOnlyElementsOf(methodInvocation.symbol().usages())
+      .containsOnly(i);
   }
 
   /**
@@ -319,7 +321,9 @@ class JParserSemanticTest {
     assertThat(i.binding)
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
       .isSameAs(superMethodInvocation.methodBinding);
-    assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
+    assertThat(cu.sema.usages.get(i.binding))
+      .containsOnlyElementsOf(superMethodInvocation.symbol().usages())
+      .containsOnly(i);
   }
 
   /**
