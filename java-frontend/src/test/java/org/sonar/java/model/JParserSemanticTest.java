@@ -164,6 +164,9 @@ class JParserSemanticTest {
       .isNotNull()
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
       .isSameAs(constructor.methodBinding);
+    assertThat(cu.sema.usages.get(constructor.methodBinding))
+      .containsOnlyElementsOf(i.symbol().usages())
+      .containsOnly(i);
   }
 
   /**

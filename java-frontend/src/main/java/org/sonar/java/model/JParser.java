@@ -1886,6 +1886,7 @@ public class JParser {
         IdentifierTreeImpl i = (IdentifierTreeImpl) t.getConstructorIdentifier();
         // TODO should be constructor of i.typeBinding instead of constructor of anonymous class ?
         i.binding = e.resolveConstructorBinding();
+        usage(i.binding, i);
 
         return t;
       }
