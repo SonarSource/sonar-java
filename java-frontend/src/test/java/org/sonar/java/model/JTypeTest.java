@@ -24,9 +24,13 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -105,51 +109,24 @@ class JTypeTest {
     );
   }
 
-  @Test
-  void fullyQualifiedName() {
-    assertAll(
-      () ->
-        assertThat(type("int").fullyQualifiedName())
-          .isEqualTo("int"),
-      () ->
-        assertThat(type("int[][]").fullyQualifiedName())
-          .isEqualTo("int[][]"),
-      () ->
-        assertThat(type("java.util.Map").fullyQualifiedName())
-          .isEqualTo("java.util.Map"),
-      () ->
-        assertThat(type("java.util.Map[][]").fullyQualifiedName())
-          .isEqualTo("java.util.Map[][]"),
-      () ->
-        assertThat(type("java.util.Map$Entry").fullyQualifiedName())
-          .isEqualTo("java.util.Map$Entry"),
-      () ->
-        assertThat(type("java.util.Map$Entry[][]").fullyQualifiedName())
-          .isEqualTo("java.util.Map$Entry[][]")
-    );
+  @ParameterizedTest
+  @MethodSource("names")
+  void names(String expectedFullyQualifiedName, String expectedName) {
+    JType type = type(expectedFullyQualifiedName);
+    assertThat(type.fullyQualifiedName())
+      .isEqualTo(expectedFullyQualifiedName);
+    assertThat(type.name())
+      .isEqualTo(expectedName);
   }
 
-  @Test
-  void name() {
-    assertAll(
-      () ->
-        assertThat(type("int").name())
-          .isEqualTo("int"),
-      () ->
-        assertThat(type("int[][]").name())
-          .isEqualTo("int[][]"),
-      () ->
-        assertThat(type("java.util.Map").name())
-          .isEqualTo("Map"),
-      () ->
-        assertThat(type("java.util.Map[][]").name())
-          .isEqualTo("Map[][]"),
-      () ->
-        assertThat(type("java.util.Map$Entry").name())
-          .isEqualTo("Entry"),
-      () ->
-        assertThat(type("java.util.Map$Entry[][]").name())
-          .isEqualTo("Entry[][]")
+  private static Stream<Arguments> names() {
+    return Stream.of(
+      Arguments.of("int", "int"),
+      Arguments.of("int[][]", "int[][]"),
+      Arguments.of("java.util.Map", "Map"),
+      Arguments.of("java.util.Map[][]", "Map[][]"),
+      Arguments.of("java.util.Map$Entry", "Entry"),
+      Arguments.of("java.util.Map$Entry[][]", "Entry[][]")
     );
   }
 
