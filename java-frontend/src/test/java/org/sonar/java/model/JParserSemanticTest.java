@@ -356,7 +356,7 @@ class JParserSemanticTest {
    */
   @Test
   void statement_super_constructor_invocation() {
-    CompilationUnitTree cu = test("class C extends S { C() { super(); } } class S { S() { } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { C() { super(); } } class S { S() { } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
@@ -372,6 +372,9 @@ class JParserSemanticTest {
     assertThat(i.binding)
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
       .isSameAs(superConstructorInvocation.methodBinding);
+    assertThat(cu.sema.usages.get(i.binding))
+      .containsOnlyElementsOf(superClassConstructor.symbol().usages())
+      .containsOnly(i);
   }
 
   @Test

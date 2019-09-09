@@ -1549,14 +1549,16 @@ public class JParser {
       case ASTNode.SUPER_CONSTRUCTOR_INVOCATION: {
         SuperConstructorInvocation e = (SuperConstructorInvocation) node;
 
-        ExpressionTree methodSelect = new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper));
-        ((IdentifierTreeImpl) methodSelect).binding = e.resolveConstructorBinding();
+        IdentifierTreeImpl i = new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper));
+        i.binding = e.resolveConstructorBinding();
+        usage(i.binding, i);
 
+        ExpressionTree methodSelect = i;
         if (e.getExpression() != null) {
           methodSelect = new MemberSelectExpressionTreeImpl(
             convertExpression(e.getExpression()),
             firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameDOT),
-            (IdentifierTreeImpl) methodSelect
+            i
           );
         }
 
