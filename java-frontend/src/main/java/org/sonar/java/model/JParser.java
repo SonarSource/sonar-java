@@ -834,7 +834,11 @@ public class JParser {
         break;
     }
 
-    IdentifierTree identifier = convertSimpleName(e.getName());
+    IdentifierTreeImpl identifier = convertSimpleName(e.getName());
+    // TODO should be constructor of identifier.typeBinding instead of constructor of anonymous class ?
+    identifier.binding = e.resolveConstructorBinding();
+    usage(identifier.binding, identifier);
+
     EnumConstantTreeImpl t = new EnumConstantTreeImpl(
       convertModifiers(e.modifiers()),
       identifier,
