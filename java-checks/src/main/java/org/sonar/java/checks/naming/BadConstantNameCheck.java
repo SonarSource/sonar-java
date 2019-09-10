@@ -23,7 +23,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
 import org.sonar.java.checks.serialization.SerializableContract;
-import org.sonar.java.resolve.JavaType;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -80,7 +80,7 @@ public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isConstantType(Type symbolType) {
-    return symbolType.isPrimitive() || symbolType.is("java.lang.String") || ((JavaType) symbolType).isPrimitiveWrapper();
+    return symbolType.isPrimitive() || symbolType.is("java.lang.String") || JUtils.isPrimitiveWrapper(symbolType);
   }
 
   private void checkName(VariableTree variableTree) {

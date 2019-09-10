@@ -27,7 +27,7 @@ import java.util.Objects;
 
 final class JType implements Type, Type.ArrayType {
 
-  private final JSema sema;
+  final JSema sema;
   private final ITypeBinding typeBinding;
 
   JType(JSema sema, ITypeBinding typeBinding) {

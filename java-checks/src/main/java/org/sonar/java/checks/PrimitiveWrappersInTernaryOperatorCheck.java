@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.JavaType;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -49,11 +49,7 @@ public class PrimitiveWrappersInTernaryOperatorCheck extends IssuableSubscriptio
   }
 
   private static boolean dissimilarPrimitiveTypeWrappers(Type trueExprType, Type falseExprType) {
-    return isPrimitiveWrapper(trueExprType) && isPrimitiveWrapper(falseExprType) && !trueExprType.equals(falseExprType);
-  }
-
-  private static boolean isPrimitiveWrapper(Type type) {
-    return ((JavaType) type).isPrimitiveWrapper();
+    return JUtils.isPrimitiveWrapper(trueExprType) && JUtils.isPrimitiveWrapper(falseExprType) && !trueExprType.equals(falseExprType);
   }
 
 }

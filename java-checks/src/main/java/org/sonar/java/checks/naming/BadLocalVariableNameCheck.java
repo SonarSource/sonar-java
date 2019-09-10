@@ -22,7 +22,7 @@ package org.sonar.java.checks.naming;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
-import org.sonar.java.resolve.JavaType;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -104,7 +104,7 @@ public class BadLocalVariableNameCheck  extends BaseTreeVisitor implements JavaF
   }
 
   private static boolean isConstantType(Type symbolType) {
-    return symbolType.isPrimitive() || symbolType.is("java.lang.String") || ((JavaType) symbolType).isPrimitiveWrapper();
+    return symbolType.isPrimitive() || symbolType.is("java.lang.String") || JUtils.isPrimitiveWrapper(symbolType);
   }
 
 }

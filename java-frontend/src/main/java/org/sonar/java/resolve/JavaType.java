@@ -131,6 +131,10 @@ public class JavaType implements Type {
     return false;
   }
 
+  /**
+   * @deprecated use {@link org.sonar.java.model.JUtils#isPrimitiveWrapper(Type)} instead
+   */
+  @Deprecated
   public boolean isPrimitiveWrapper() {
     if (!isTagged(CLASS)) {
       return false;
