@@ -139,7 +139,7 @@ final class JType implements Type, Type.ArrayType {
 
   @Override
   public Type erasure() {
-    return this;
+    return sema.type(typeBinding.getErasure());
   }
 
   @Override
