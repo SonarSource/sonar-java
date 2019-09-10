@@ -1574,6 +1574,9 @@ public class JParser {
           arguments
         );
         t.methodBinding = e.resolveConstructorBinding();
+        if (t.methodBinding != null) {
+          t.typeBinding = t.methodBinding.getDeclaringClass();
+        }
         return new ExpressionStatementTreeImpl(
           t,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
