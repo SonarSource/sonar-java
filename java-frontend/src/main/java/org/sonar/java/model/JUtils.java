@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import com.google.common.collect.ImmutableBiMap;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.sonar.java.resolve.Flags;
@@ -30,9 +31,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public final class JUtils {
@@ -40,17 +39,19 @@ public final class JUtils {
   private JUtils() {
   }
 
-  private static Map<String, String> WRAPPER_TO_PRIMITIVE = new HashMap<>();
+  private static final ImmutableBiMap<String, String> WRAPPER_TO_PRIMITIVE;
 
   static {
-    WRAPPER_TO_PRIMITIVE.put("java.lang.Byte", "byte");
-    WRAPPER_TO_PRIMITIVE.put("java.lang.Character", "char");
-    WRAPPER_TO_PRIMITIVE.put("java.lang.Short", "short");
-    WRAPPER_TO_PRIMITIVE.put("java.lang.Integer", "int");
-    WRAPPER_TO_PRIMITIVE.put("java.lang.Long", "long");
-    WRAPPER_TO_PRIMITIVE.put("java.lang.Float", "float");
-    WRAPPER_TO_PRIMITIVE.put("java.lang.Double", "double");
-    WRAPPER_TO_PRIMITIVE.put("java.lang.Boolean", "boolean");
+    WRAPPER_TO_PRIMITIVE = ImmutableBiMap.<String, String>builder()
+      .put("java.lang.Byte", "byte")
+      .put("java.lang.Character", "char")
+      .put("java.lang.Short", "short")
+      .put("java.lang.Integer", "int")
+      .put("java.lang.Long", "long")
+      .put("java.lang.Float", "float")
+      .put("java.lang.Double", "double")
+      .put("java.lang.Boolean", "boolean")
+      .build();
   }
 
   /**
@@ -58,6 +59,22 @@ public final class JUtils {
    */
   public static boolean isPrimitiveWrapper(Type type) {
     return type.isClass() && WRAPPER_TO_PRIMITIVE.containsKey(type.fullyQualifiedName());
+  }
+
+  /**
+   * Replacement for {@link JavaType#primitiveWrapperType()}
+   */
+  @Nullable
+  public static Type primitiveWrapperType(Type type) {
+    if (!(type instanceof JType)) {
+      return ((JavaType) type).primitiveWrapperType();
+    }
+    String name = WRAPPER_TO_PRIMITIVE.inverse().get(type.fullyQualifiedName());
+    if (name == null) {
+      return null;
+    }
+    JSema sema = ((JType) type).sema;
+    return sema.type(sema.resolveType(name));
   }
 
   /**
