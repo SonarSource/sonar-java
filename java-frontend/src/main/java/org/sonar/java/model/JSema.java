@@ -82,6 +82,19 @@ public final class JSema {
     return annotations.computeIfAbsent(annotationBinding, k -> new JSymbolMetadata.JAnnotationInstance(this, k));
   }
 
+  IBinding declarationBinding(IBinding binding) {
+    switch (binding.getKind()) {
+      case IBinding.TYPE:
+        return ((ITypeBinding) binding).getTypeDeclaration();
+      case IBinding.METHOD:
+        return ((IMethodBinding) binding).getMethodDeclaration();
+      case IBinding.VARIABLE:
+        return ((IVariableBinding) binding).getVariableDeclaration();
+      default:
+        return binding;
+    }
+  }
+
   @Nullable
   ITypeBinding resolveType(String name) {
     int dimensions = 0;
