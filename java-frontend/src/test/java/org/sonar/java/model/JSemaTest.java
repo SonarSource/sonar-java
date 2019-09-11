@@ -44,6 +44,9 @@ class JSemaTest {
   void resolveType() {
     assertAll(
       () ->
+        assertThat(sema.resolveType("Nonexistent"))
+          .isNull(),
+      () ->
         assertThat(sema.resolveType("void"))
           .isNotNull(),
       () ->
