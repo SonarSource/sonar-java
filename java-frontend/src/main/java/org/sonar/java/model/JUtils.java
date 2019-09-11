@@ -19,6 +19,8 @@
  */
 package org.sonar.java.model;
 
+import org.eclipse.jdt.core.dom.Modifier;
+import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -84,6 +86,13 @@ public final class JUtils {
       return ((MethodJavaSymbol) method).isVarArgs();
     }
     return ((JMethodSymbol) method).methodBinding().isVarargs();
+  }
+
+  public static boolean isSynchronizedMethod(Symbol.MethodSymbol method) {
+    if (!(method instanceof JMethodSymbol)) {
+      return Flags.isFlagged(((MethodJavaSymbol) method).flags(), Flags.SYNCHRONIZED);
+    }
+    return Modifier.isSynchronized(((JMethodSymbol) method).binding.getModifiers());
   }
 
 }

@@ -21,8 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Flags;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -53,7 +52,7 @@ public class SynchronizedOverrideCheck extends IssuableSubscriptionVisitor {
     if (overriddenSymbol == null || overriddenSymbol.isUnknown()) {
       return;
     }
-    if (isSynchronized(overriddenSymbol) && !isSynchronized(methodSymbol)) {
+    if (JUtils.isSynchronizedMethod(overriddenSymbol) && !JUtils.isSynchronizedMethod(methodSymbol)) {
       List<JavaFileScannerContext.Location> secondaries = Collections.emptyList();
       MethodTree overridenMethodTree = overriddenSymbol.declaration();
       if (overridenMethodTree != null) {
@@ -61,12 +60,6 @@ public class SynchronizedOverrideCheck extends IssuableSubscriptionVisitor {
       }
       reportIssue(methodTree.simpleName(), MESSAGE, secondaries, null);
     }
-  }
-
-  private static boolean isSynchronized(Symbol methodSymbol) {
-    return Flags.isFlagged(
-      ((JavaSymbol) methodSymbol).flags(),
-      Flags.SYNCHRONIZED);
   }
 
 }
