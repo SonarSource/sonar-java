@@ -19,7 +19,9 @@
  */
 package org.sonar.java.model;
 
+import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.JavaType;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
@@ -65,6 +67,16 @@ public final class JUtils {
     }
     JSema sema = ((JType) type).sema;
     return sema.type(sema.resolveType(name));
+  }
+
+  /**
+   * Replacement for {@link MethodJavaSymbol#isVarArgs()}
+   */
+  public static boolean isVarArgsMethod(Symbol.MethodSymbol method) {
+    if (!(method instanceof JMethodSymbol)) {
+      return ((MethodJavaSymbol) method).isVarArgs();
+    }
+    return ((JMethodSymbol) method).methodBinding().isVarargs();
   }
 
 }

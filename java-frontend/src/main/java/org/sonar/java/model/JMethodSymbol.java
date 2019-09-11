@@ -38,7 +38,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     super(sema, methodBinding);
   }
 
-  private IMethodBinding methodBinding() {
+  IMethodBinding methodBinding() {
     return (IMethodBinding) binding;
   }
 

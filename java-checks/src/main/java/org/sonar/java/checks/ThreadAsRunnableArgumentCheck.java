@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -60,11 +60,11 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
       arguments = mit.arguments();
     }
     if (!arguments.isEmpty() && methodSymbol.isMethodSymbol()) {
-      checkArgumentsTypes(arguments, (MethodJavaSymbol) methodSymbol);
+      checkArgumentsTypes(arguments, (Symbol.MethodSymbol) methodSymbol);
     }
   }
 
-  private void checkArgumentsTypes(List<ExpressionTree> arguments, MethodJavaSymbol methodSymbol) {
+  private void checkArgumentsTypes(List<ExpressionTree> arguments, Symbol.MethodSymbol methodSymbol) {
     List<Type> parametersTypes = methodSymbol.parameterTypes();
     // FIXME static imports.
     // FIXME As arguments are not handled for method resolution using static imports, the provided methodSymbol may not match.
@@ -72,7 +72,7 @@ public class ThreadAsRunnableArgumentCheck extends IssuableSubscriptionVisitor {
       for (int index = 0; index < arguments.size(); index++) {
         ExpressionTree argument = arguments.get(index);
         Type providedType = argument.symbolType();
-        if (!argument.is(Kind.NULL_LITERAL) && isThreadAsRunnable(providedType, parametersTypes, index, methodSymbol.isVarArgs())) {
+        if (!argument.is(Kind.NULL_LITERAL) && isThreadAsRunnable(providedType, parametersTypes, index, JUtils.isVarArgsMethod(methodSymbol))) {
           reportIssue(argument, getMessage(argument, providedType, index));
         }
       }

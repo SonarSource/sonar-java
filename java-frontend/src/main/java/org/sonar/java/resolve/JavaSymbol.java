@@ -738,6 +738,10 @@ public class JavaSymbol implements Symbol {
       return true;
     }
 
+    /**
+     * @deprecated use {@link org.sonar.java.model.JUtils#isVarArgsMethod(MethodSymbol)} instead
+     */
+    @Deprecated
     public boolean isVarArgs() {
       return isFlag(Flags.VARARGS);
     }
