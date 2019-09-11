@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -136,17 +137,7 @@ public class JavaType implements Type {
    */
   @Deprecated
   public boolean isPrimitiveWrapper() {
-    if (!isTagged(CLASS)) {
-      return false;
-    }
-    return is("java.lang.Byte") ||
-      is("java.lang.Character") ||
-      is("java.lang.Short") ||
-      is("java.lang.Integer") ||
-      is("java.lang.Long") ||
-      is("java.lang.Float") ||
-      is("java.lang.Double") ||
-      is("java.lang.Boolean");
+    return JUtils.isPrimitiveWrapper(this);
   }
 
   @Override

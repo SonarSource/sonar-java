@@ -37,6 +37,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -788,7 +790,7 @@ public class JavaSymbol implements Symbol {
      */
     @Deprecated
     public boolean isOverridable() {
-      return !(isPrivate() || isStatic() || isFinal() || owner().isFinal());
+      return JUtils.isOverridable(this);
     }
 
     /**
