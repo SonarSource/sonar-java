@@ -80,6 +80,16 @@ public final class JUtils {
   }
 
   /**
+   * Replacement for {@link JavaType#isTagged(int)} {@link JavaType#TYPEVAR}
+   */
+  public static boolean isTypeVar(Type type) {
+    if (!(type instanceof JType)) {
+      return ((JavaType) type).isTagged(JavaType.TYPEVAR);
+    }
+    return ((JType) type).typeBinding.isTypeVariable();
+  }
+
+  /**
    * Replacement for {@link TypeJavaSymbol#isAnnotation()}
    */
   public static boolean isAnnotation(Symbol.TypeSymbol typeSymbol) {

@@ -20,8 +20,8 @@
 package org.sonar.java.checks.serialization;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -158,7 +158,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     if (type.isArray()) {
       return implementsSerializable(((Type.ArrayType) type).elementType());
     }
-    if (type.isClass() || ((JavaType) type).isTagged(JavaType.TYPEVAR)) {
+    if (type.isClass() || JUtils.isTypeVar(type)) {
       return type.erasure().isSubtypeOf("java.io.Serializable");
     }
     return false;

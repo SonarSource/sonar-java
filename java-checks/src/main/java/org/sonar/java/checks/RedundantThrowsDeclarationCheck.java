@@ -33,9 +33,8 @@ import org.sonar.java.RspecKey;
 import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -78,7 +77,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
   private void checkMethodThrownList(MethodTree methodTree, ListTree<TypeTree> thrownList) {
     Set<Type> thrownExceptions = thrownExceptionsFromBody(methodTree);
-    boolean isOverridableMethod = ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).isOverridable();
+    boolean isOverridableMethod = JUtils.isOverridable(methodTree.symbol());
     List<String> undocumentedExceptionNames = new Javadoc(methodTree).undocumentedThrownExceptions();
     Set<String> reported = new HashSet<>();
 
@@ -117,7 +116,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       return false;
     }
 
-    if (thrownExceptions.stream().anyMatch(t -> ((JavaType) t).isTagged(JavaType.TYPEVAR))) {
+    if (thrownExceptions.stream().anyMatch(JUtils::isTypeVar)) {
       // should be handled by SONARJAVA-1778 - type substitution not applied on thrown type when parameterized on parametric methods
       return false;
     }
