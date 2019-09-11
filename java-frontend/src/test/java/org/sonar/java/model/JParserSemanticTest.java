@@ -414,15 +414,27 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(c.typeBinding)).isSameAs(c);
   }
 
+  /**
+   * {@link org.eclipse.jdt.core.dom.ITypeBinding#getTypeDeclaration()} should be used
+   * for {@link JSymbol#usages()} and {@link JSymbol#declaration()}
+   */
   @Test
   void declaration_type_parameterized() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C<T> { C<String> field; }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     AbstractTypedTree fieldType = (AbstractTypedTree) ((VariableTreeImpl) c.members().get(0)).type();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) ((ParameterizedTypeTree) fieldType).type();
 
-    assertThat(c.typeBinding).isNotNull();
-    assertThat(cu.sema.declarations.get(c.typeBinding)).isSameAs(c);
-    assertThat(cu.sema.usages.get(c.typeBinding)).containsOnly((IdentifierTreeImpl) ((ParameterizedTypeTree) fieldType).type());
+    assertThat(cu.sema.usages.get(c.typeBinding))
+      .containsOnly(i);
+    assertThat(fieldType.typeBinding)
+      .isNotNull();
+    assertThat(cu.sema.typeSymbol(fieldType.typeBinding).declaration())
+      .isSameAs(fieldType.symbolType().symbol().declaration())
+      .isSameAs(c);
+    assertThat(cu.sema.typeSymbol(fieldType.typeBinding).usages())
+      .containsExactlyElementsOf(fieldType.symbolType().symbol().usages())
+      .containsOnly(i);
   }
 
   /**
@@ -478,16 +490,29 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(m.methodBinding)).isSameAs(m);
   }
 
+  /**
+   * {@link org.eclipse.jdt.core.dom.IMethodBinding#getMethodDeclaration()} should be used
+   * for {@link JSymbol#usages()} and {@link JSymbol#declaration()}
+   */
   @Test
   void declaration_method_parameterized() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C { <T> void m(T t) { m(\"hello\"); } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { <T> void m(T t) { m(42); } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    MethodInvocationTreeImpl m1Invoc = (MethodInvocationTreeImpl) ((ExpressionStatementTree) m.block().body().get(0)).expression();
+    ExpressionStatementTree s = (ExpressionStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+    MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) s.expression();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) methodInvocation.methodSelect();
 
-    assertThat(m.methodBinding).isNotNull();
-    assertThat(cu.sema.declarations.get(m.methodBinding)).isEqualTo(m);
-    assertThat(cu.sema.usages.get(m.methodBinding)).containsOnly((IdentifierTreeImpl) m1Invoc.methodSelect());
+    assertThat(cu.sema.usages.get(m.methodBinding))
+      .containsOnly(i);
+    assertThat(methodInvocation.methodBinding)
+      .isNotNull();
+    assertThat(cu.sema.methodSymbol(methodInvocation.methodBinding).declaration())
+      .isSameAs(methodInvocation.symbol().declaration())
+      .isSameAs(m);
+    assertThat(cu.sema.methodSymbol(methodInvocation.methodBinding).usages())
+      .containsExactlyElementsOf(methodInvocation.symbol().usages())
+      .containsOnly(i);
   }
 
   @Test
