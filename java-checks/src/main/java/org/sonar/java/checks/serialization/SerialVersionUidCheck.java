@@ -21,9 +21,8 @@ package org.sonar.java.checks.serialization;
 
 import com.google.common.base.Joiner;
 import org.sonar.check.Rule;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
-import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -102,26 +101,26 @@ public class SerialVersionUidCheck extends IssuableSubscriptionVisitor {
   private static boolean isExclusion(Symbol.TypeSymbol symbol) {
     return symbol.isAbstract()
       || symbol.type().isSubtypeOf("java.lang.Throwable")
-      || isGuiClass((TypeJavaSymbol) symbol)
-      || hasSuppressWarningAnnotation((TypeJavaSymbol) symbol);
+      || isGuiClass(symbol)
+      || hasSuppressWarningAnnotation(symbol);
   }
 
-  private static boolean isGuiClass(TypeJavaSymbol symbol) {
-    for (ClassJavaType superType : symbol.superTypes()) {
-      TypeJavaSymbol superTypeSymbol = superType.getSymbol();
+  private static boolean isGuiClass(Symbol.TypeSymbol symbol) {
+    for (Type superType : JUtils.superTypes(symbol)) {
+      Symbol.TypeSymbol superTypeSymbol = superType.symbol();
       if (hasGuiPackage(superTypeSymbol)) {
         return true;
       }
     }
-    return hasGuiPackage(symbol) || (!symbol.equals(symbol.outermostClass()) && isGuiClass(symbol.outermostClass()));
+    return hasGuiPackage(symbol) || (!symbol.equals(JUtils.outermostClass(symbol)) && isGuiClass(JUtils.outermostClass(symbol)));
   }
 
-  private static boolean hasGuiPackage(TypeJavaSymbol superTypeSymbol) {
-    String fullyQualifiedName = superTypeSymbol.getFullyQualifiedName();
+  private static boolean hasGuiPackage(Symbol.TypeSymbol superTypeSymbol) {
+    String fullyQualifiedName = superTypeSymbol.type().fullyQualifiedName();
     return fullyQualifiedName.startsWith("javax.swing.") || fullyQualifiedName.startsWith("java.awt.");
   }
 
-  private static boolean hasSuppressWarningAnnotation(TypeJavaSymbol symbol) {
+  private static boolean hasSuppressWarningAnnotation(Symbol.TypeSymbol symbol) {
     List<SymbolMetadata.AnnotationValue> annotations = symbol.metadata().valuesForAnnotation("java.lang.SuppressWarnings");
     if (annotations != null) {
       for (SymbolMetadata.AnnotationValue annotationValue : annotations) {

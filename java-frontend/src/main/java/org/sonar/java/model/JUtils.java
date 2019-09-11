@@ -128,6 +128,19 @@ public final class JUtils {
   }
 
   /**
+   * Replacement for {@link TypeJavaSymbol#outermostClass()}
+   */
+  public static Symbol.TypeSymbol outermostClass(Symbol.TypeSymbol typeSymbol) {
+    Symbol symbol = typeSymbol;
+    Symbol result = null;
+    while (!symbol.isPackageSymbol()) {
+      result = symbol;
+      symbol = symbol.owner();
+    }
+    return (JavaSymbol.TypeSymbol) result;
+  }
+
+  /**
    * Replacement for {@link MethodJavaSymbol#isVarArgs()}
    */
   public static boolean isVarArgsMethod(Symbol.MethodSymbol method) {

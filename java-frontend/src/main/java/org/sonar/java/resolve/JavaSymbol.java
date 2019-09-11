@@ -119,7 +119,10 @@ public class JavaSymbol implements Symbol {
 
   /**
    * The outermost class which indirectly owns this symbol.
+   *
+   * @deprecated use {@link org.sonar.java.model.JUtils#outermostClass(TypeSymbol)} instead
    */
+  @Deprecated
   public TypeJavaSymbol outermostClass() {
     JavaSymbol symbol = this;
     JavaSymbol result = null;
