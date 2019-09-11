@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.java.checks.helpers.MethodTreeUtils;
-import org.sonar.java.resolve.JavaType;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -65,11 +65,7 @@ public abstract class CompareWithEqualsVisitor extends BaseTreeVisitor implement
   }
 
   protected static boolean isNullComparison(Type leftOpType, Type rightOpType) {
-    return isBot(leftOpType) || isBot(rightOpType);
-  }
-
-  private static boolean isBot(Type type) {
-    return ((JavaType) type).isTagged(JavaType.BOT);
+    return JUtils.isNullType(leftOpType) || JUtils.isNullType(rightOpType);
   }
 
   protected static boolean isStringType(Type leftOpType, Type rightOpType) {
@@ -77,7 +73,7 @@ public abstract class CompareWithEqualsVisitor extends BaseTreeVisitor implement
   }
 
   protected static boolean isBoxedType(Type leftOpType, Type rightOpType) {
-    return ((JavaType)leftOpType).isPrimitiveWrapper() && ((JavaType)rightOpType).isPrimitiveWrapper();
+    return JUtils.isPrimitiveWrapper(leftOpType) && JUtils.isPrimitiveWrapper(rightOpType);
   }
 
   protected void reportIssue(SyntaxToken opToken) {

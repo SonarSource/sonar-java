@@ -28,7 +28,7 @@ import java.util.Objects;
 final class JType implements Type, Type.ArrayType {
 
   final JSema sema;
-  private final ITypeBinding typeBinding;
+  final ITypeBinding typeBinding;
 
   JType(JSema sema, ITypeBinding typeBinding) {
     this.sema = Objects.requireNonNull(sema);

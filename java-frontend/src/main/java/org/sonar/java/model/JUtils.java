@@ -69,6 +69,13 @@ public final class JUtils {
     return sema.type(sema.resolveType(name));
   }
 
+  public static boolean isNullType(Type type) {
+    if (!(type instanceof JType)) {
+      return ((JavaType) type).isTagged(JavaType.BOT);
+    }
+    return ((JType) type).typeBinding.isNullType();
+  }
+
   /**
    * Replacement for {@link MethodJavaSymbol#isVarArgs()}
    */
