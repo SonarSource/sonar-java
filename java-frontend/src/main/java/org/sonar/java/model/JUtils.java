@@ -106,4 +106,11 @@ public final class JUtils {
     return Modifier.isSynchronized(((JMethodSymbol) method).binding.getModifiers());
   }
 
+  /**
+   * Replacement for {@link MethodJavaSymbol#isOverridable()}
+   */
+  public static boolean isOverridable(Symbol.MethodSymbol method) {
+    return !(method.isPrivate() || method.isStatic() || method.isFinal() || method.owner().isFinal());
+  }
+
 }

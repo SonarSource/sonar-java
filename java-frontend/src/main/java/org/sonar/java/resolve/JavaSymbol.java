@@ -778,6 +778,10 @@ public class JavaSymbol implements Symbol {
       return declaration;
     }
 
+    /**
+     * @deprecated use {@link org.sonar.java.model.JUtils#isOverridable(MethodSymbol)} instead
+     */
+    @Deprecated
     public boolean isOverridable() {
       return !(isPrivate() || isStatic() || isFinal() || owner().isFinal());
     }
