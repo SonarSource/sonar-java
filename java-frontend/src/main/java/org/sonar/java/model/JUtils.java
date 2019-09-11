@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.sonar.java.resolve.Flags;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.JavaType;
@@ -148,6 +149,17 @@ public final class JUtils {
    */
   public static boolean isOverridable(Symbol.MethodSymbol method) {
     return !(method.isPrivate() || method.isStatic() || method.isFinal() || method.owner().isFinal());
+  }
+
+  /**
+   * Replacement for {@link MethodJavaSymbol#isParametrized()}
+   */
+  public static boolean isParametrizedMethod(Symbol.MethodSymbol method) {
+    if (!(method instanceof JMethodSymbol)) {
+      return ((JavaSymbol.MethodJavaSymbol) method).isParametrized();
+    }
+    return ((JMethodSymbol) method).methodBinding().isParameterizedMethod()
+      || ((JMethodSymbol) method).methodBinding().isGenericMethod();
   }
 
 }

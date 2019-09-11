@@ -788,6 +788,10 @@ public class JavaSymbol implements Symbol {
       return !(isPrivate() || isStatic() || isFinal() || owner().isFinal());
     }
 
+    /**
+     * @deprecated use {@link org.sonar.java.model.JUtils#isParametrizedMethod(MethodSymbol)} instead
+     */
+    @Deprecated
     public boolean isParametrized() {
       return !typeVariableTypes.isEmpty();
     }
