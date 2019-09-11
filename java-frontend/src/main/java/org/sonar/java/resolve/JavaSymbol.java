@@ -206,6 +206,10 @@ public class JavaSymbol implements Symbol {
     return isFlag(Flags.INTERFACE);
   }
 
+  /**
+   * @deprecated use {@link org.sonar.java.model.JUtils#isAnnotation(TypeSymbol)} instead
+   */
+  @Deprecated
   public boolean isAnnotation() {
     return isFlag(Flags.ANNOTATION);
   }

@@ -41,7 +41,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     super(sema, typeBinding);
   }
 
-  private ITypeBinding typeBinding() {
+  ITypeBinding typeBinding() {
     return (ITypeBinding) binding;
   }
 

@@ -34,7 +34,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -317,7 +317,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
     private static boolean isAnnotationMethod(MethodInvocationTree tree) {
       Symbol owner = tree.symbol().owner();
-      return owner.isTypeSymbol() && ((JavaSymbol.TypeJavaSymbol) owner).isAnnotation();
+      return owner.isTypeSymbol() && JUtils.isAnnotation((Symbol.TypeSymbol) owner);
     }
 
     @Override

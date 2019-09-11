@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
+import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -76,6 +77,16 @@ public final class JUtils {
       return ((JavaType) type).isTagged(JavaType.BOT);
     }
     return ((JType) type).typeBinding.isNullType();
+  }
+
+  /**
+   * Replacement for {@link TypeJavaSymbol#isAnnotation()}
+   */
+  public static boolean isAnnotation(Symbol.TypeSymbol typeSymbol) {
+    if (!(typeSymbol instanceof JSymbol)) {
+      return ((TypeJavaSymbol) typeSymbol).isAnnotation();
+    }
+    return ((JTypeSymbol) typeSymbol).typeBinding().isAnnotation();
   }
 
   /**
