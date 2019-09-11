@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -79,7 +79,7 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
       }
       if (isInvocationOnSelf) {
         Symbol symbol = methodIdentifier.symbol();
-        if (symbol.isMethodSymbol() && ((JavaSymbol.MethodJavaSymbol) symbol).isOverridable() && isMethodDefinedOnConstructedType(symbol)) {
+        if (symbol.isMethodSymbol() && JUtils.isOverridable((Symbol.MethodSymbol) symbol) && isMethodDefinedOnConstructedType(symbol)) {
           reportIssue(methodIdentifier, "Remove this call from a constructor to the overridable \"" + methodIdentifier.name() + "\" method.");
         }
       }
@@ -114,7 +114,7 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
 
     private boolean isMethodDefinedOnConstructedType(Symbol symbol) {
       Symbol.TypeSymbol methodEnclosingClass = symbol.enclosingClass();
-      for (Type superType : ((JavaSymbol.TypeJavaSymbol) constructorType).superTypes()) {
+      for (Type superType : JUtils.superTypes(constructorType)) {
         if (superType.symbol().equals(methodEnclosingClass)) {
           return true;
         }

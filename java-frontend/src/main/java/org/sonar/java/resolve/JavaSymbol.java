@@ -427,7 +427,9 @@ public class JavaSymbol implements Symbol {
     /**
      * Includes superclass and super interface hierarchy.
      * @return list of classTypes.
+     * @deprecated use {@link org.sonar.java.model.JUtils#superTypes(TypeSymbol)} instead
      */
+    @Deprecated
     public Set<ClassJavaType> superTypes() {
       if (superTypes == null) {
         ImmutableSet.Builder<ClassJavaType> types = ImmutableSet.builder();

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
@@ -29,7 +30,9 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public final class JUtils {
 
@@ -97,6 +100,30 @@ public final class JUtils {
       return ((TypeJavaSymbol) typeSymbol).isAnnotation();
     }
     return ((JTypeSymbol) typeSymbol).typeBinding().isAnnotation();
+  }
+
+  /**
+   * Replacement for {@link TypeJavaSymbol#superTypes()}
+   */
+  public static Set<Type> superTypes(Symbol.TypeSymbol typeSymbol) {
+    if (!(typeSymbol instanceof JSymbol)) {
+      return (Set<Type>) (Set) ((TypeJavaSymbol) typeSymbol).superTypes();
+    }
+    Set<Type> result = new HashSet<>();
+    collectSuperTypes(result, ((JTypeSymbol) typeSymbol).sema, ((JTypeSymbol) typeSymbol).typeBinding());
+    return result;
+  }
+
+  private static void collectSuperTypes(Set<Type> result, JSema sema, ITypeBinding typeBinding) {
+    ITypeBinding s = typeBinding.getSuperclass();
+    if (s != null) {
+      result.add(sema.type(s));
+      collectSuperTypes(result, sema, s);
+    }
+    for (ITypeBinding i : typeBinding.getInterfaces()) {
+      result.add(sema.type(i));
+      collectSuperTypes(result, sema, i);
+    }
   }
 
   /**
