@@ -29,7 +29,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -128,6 +127,6 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isConstructor(Symbol methodSymbol) {
-    return ((JavaSymbol.MethodJavaSymbol) methodSymbol).isConstructor();
+    return "<init>".equals(methodSymbol.name());
   }
 }
