@@ -26,8 +26,8 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -133,10 +133,22 @@ public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleNewClassTree(NewClassTree tree) {
-    ((JavaType) tree.symbolType()).directSuperTypes().stream()
-      .filter(directSuperType -> isGrantedAuthority(directSuperType) || isForbiddenForAnonymousClass(tree, directSuperType))
-      .findFirst()
-      .ifPresent(ct -> reportIssue(tree.identifier()));
+    Symbol.TypeSymbol symbol = tree.symbolType().symbol();
+    Type superClass = symbol.superClass();
+    if (superClass != null && check(tree, superClass)) {
+      reportIssue(tree.identifier());
+      return;
+    }
+    for (Type i : symbol.interfaces()) {
+      if (check(tree, i)) {
+        reportIssue(tree.identifier());
+        return;
+      }
+    }
+  }
+
+  private boolean check(NewClassTree tree, Type directSuperType) {
+    return isGrantedAuthority(directSuperType) || isForbiddenForAnonymousClass(tree, directSuperType);
   }
 
   private static boolean isGrantedAuthority(Type dst) {
