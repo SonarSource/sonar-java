@@ -30,6 +30,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JLabelSymbol;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -46,6 +47,7 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   private List<AnnotationTree> annotations;
 
   public IBinding binding;
+  public JLabelSymbol labelSymbol;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
     super(Kind.IDENTIFIER);
@@ -89,6 +91,9 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
           case IBinding.VARIABLE:
             return root.sema.variableSymbol((IVariableBinding) binding);
         }
+      }
+      if (labelSymbol != null) {
+        return labelSymbol;
       }
       return Symbols.unknownSymbol;
     }
