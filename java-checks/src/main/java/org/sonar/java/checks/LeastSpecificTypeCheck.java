@@ -26,7 +26,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.ClassJavaType;
@@ -140,14 +139,14 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     }
 
     private List<List<Type>> computeChains(Symbol m, Type type) {
-      Symbol.TypeSymbol typeSymbol = type.symbol();
-      Set<ClassJavaType> superTypes = ((JavaSymbol.TypeJavaSymbol) typeSymbol).directSuperTypes();
       List<List<Type>> result = new ArrayList<>();
-      for (ClassJavaType superType : superTypes) {
-        for (List<Type> chain : computeChains(m, superType)) {
-          chain.add(type);
-          result.add(chain);
-        }
+      Symbol.TypeSymbol typeSymbol = type.symbol();
+      Type superClass = typeSymbol.superClass();
+      if (superClass != null) {
+        computeChainsForSuperType(result, m, type, superClass);
+      }
+      for (Type i : typeSymbol.interfaces()) {
+        computeChainsForSuperType(result, m, type, i);
       }
 
       boolean definesSymbol = definesSymbol(m, typeSymbol);
@@ -156,6 +155,13 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
         result.add(Lists.newArrayList(type));
       }
       return result;
+    }
+
+    private void computeChainsForSuperType(List<List<Type>> result, Symbol m, Type type, Type superType) {
+      for (List<Type> chain : computeChains(m, superType)) {
+        chain.add(type);
+        result.add(chain);
+      }
     }
 
     private static boolean definesOrInheritsSymbol(Symbol symbol, JavaSymbol.TypeJavaSymbol typeSymbol) {
