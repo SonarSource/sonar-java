@@ -22,9 +22,8 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ValueBasedUtils;
 import org.sonar.java.checks.serialization.SerializableContract;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -79,14 +78,11 @@ public class ValueBasedObjectsShouldNotBeSerializedCheck extends IssuableSubscri
   private static boolean isSerializableAndValueBased(Type type) {
     // we check first the ParametrizedTypeJavaType, in order to filter out the non-serializable
     // generic value-based class Optional<T>
-    JavaType javaType = (JavaType) type;
-    if (javaType.isParameterized()) {
-      ParametrizedTypeJavaType parameterizedType = (ParametrizedTypeJavaType) javaType;
-      return isSubtypeOfCollectionApi(parameterizedType) &&
-        parameterizedType.typeParameters().stream()
-          .anyMatch(t -> isSerializableAndValueBased(parameterizedType.substitution(t)));
+    if (JUtils.isParametrized(type)) {
+      return isSubtypeOfCollectionApi(type) &&
+        JUtils.typeArguments(type).stream().anyMatch(ValueBasedObjectsShouldNotBeSerializedCheck::isSerializableAndValueBased);
     }
-    return ValueBasedUtils.isValueBased(javaType);
+    return ValueBasedUtils.isValueBased(type);
   }
 
   private static boolean isVariable(Tree member) {

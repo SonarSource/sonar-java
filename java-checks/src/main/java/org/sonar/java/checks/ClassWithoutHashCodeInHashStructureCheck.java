@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -48,9 +48,8 @@ public class ClassWithoutHashCodeInHashStructureCheck extends IssuableSubscripti
       return;
     }
     Type type = ((NewClassTree) tree).symbolType();
-    if (type instanceof ParametrizedTypeJavaType && useHashDataStructure(type)) {
-      ParametrizedTypeJavaType ptt = (ParametrizedTypeJavaType) type;
-      Symbol.TypeSymbol symbol = ptt.substitution(ptt.typeParameters().get(0)).symbol();
+    if (JUtils.isParametrized(type) && useHashDataStructure(type)) {
+      Symbol.TypeSymbol symbol = JUtils.typeArguments(type).get(0).symbol();
       if (implementsEquals(symbol) && !implementsHashCode(symbol)) {
         reportIssue(tree, "Add a \"hashCode()\" method to \"" + symbol.name() + "\" or remove it from this hash.");
       }

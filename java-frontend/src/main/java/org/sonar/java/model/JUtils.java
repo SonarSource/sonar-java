@@ -27,12 +27,17 @@ import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.JavaType;
+import org.sonar.java.resolve.ParametrizedTypeJavaType;
+import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class JUtils {
 
@@ -190,6 +195,36 @@ public final class JUtils {
     }
     return ((JMethodSymbol) method).methodBinding().isParameterizedMethod()
       || ((JMethodSymbol) method).methodBinding().isGenericMethod();
+  }
+
+  /**
+   * Replacement for {@link JavaType#isParameterized()}
+   */
+  public static boolean isParametrized(Type type) {
+    if (!(type instanceof JType)) {
+      return type instanceof ParametrizedTypeJavaType;
+    }
+    JType t = (JType) type;
+    return t.typeBinding.isParameterizedType();
+  }
+
+  /**
+   * Replacement for {@link ParametrizedTypeJavaType#substitution(TypeVariableJavaType)}
+   */
+  public static List<Type> typeArguments(Type type) {
+    if (!(type instanceof JType)) {
+      ParametrizedTypeJavaType t = (ParametrizedTypeJavaType) type;
+      return t.typeParameters().stream()
+        .map(t::substitution)
+        .collect(Collectors.toList());
+    }
+    JType t = (JType) type;
+    ITypeBinding[] typeArguments = t.typeBinding.getTypeArguments();
+    Type[] result = new Type[typeArguments.length];
+    for (int i = 0; i < typeArguments.length; i++) {
+      result[i] = t.sema.type(typeArguments[i]);
+    }
+    return Arrays.asList(result);
   }
 
 }

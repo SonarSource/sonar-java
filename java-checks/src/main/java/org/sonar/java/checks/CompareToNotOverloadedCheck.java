@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.ClassJavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -40,13 +40,12 @@ public class CompareToNotOverloadedCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (hasSemantic() && isCompareToMethod(methodTree) && Boolean.FALSE.equals(methodTree.isOverriding())) {
-      ClassJavaType ownerType = (ClassJavaType) methodTree.symbol().owner().type();
-      ownerType.superTypes().stream().filter(supertype -> supertype.is("java.lang.Comparable")).findFirst().ifPresent(
+      Symbol.TypeSymbol ownerType = (Symbol.TypeSymbol) methodTree.symbol().owner();
+      JUtils.superTypes(ownerType).stream().filter(supertype -> supertype.is("java.lang.Comparable")).findFirst().ifPresent(
         comparableType -> {
           String name = "Object";
-          if (comparableType.isParameterized()) {
-            ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) comparableType;
-            name = ptjt.substitution(ptjt.typeParameters().get(0)).symbol().name();
+          if (JUtils.isParametrized(comparableType)) {
+            name = JUtils.typeArguments(comparableType).get(0).symbol().name();
           }
           reportIssue(methodTree.parameters().get(0), "Refactor this method so that its argument is of type '" + name + "'.");
         });
