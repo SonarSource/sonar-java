@@ -28,8 +28,7 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -60,7 +59,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     }
   }
 
-  public void checkClassInterfaces(ClassTree tree) {
+  private void checkClassInterfaces(ClassTree tree) {
     List<InterfaceTreeAndStringPairReport> reportTreeAndStringInterfaces = tree.superInterfaces().stream()
       .map(typeTree -> matchFunctionalInterface(typeTree.symbolType()).map(rs -> new InterfaceTreeAndStringPairReport(rs, typeTree)).orElse(null))
       .filter(Objects::nonNull)
@@ -74,7 +73,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     reportIssue(tree.simpleName(), reportMessage(reportTreeAndStringInterfaces), secondaryLocations, null);
   }
 
-  public void checkVariableTypeAndInitializer(VariableTree variableTree) {
+  private void checkVariableTypeAndInitializer(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
     if ((variableTree.symbol().owner().isMethodSymbol() && !variableTree.parent().is(Tree.Kind.LAMBDA_EXPRESSION))
       || (initializer != null && (initializer.is(Tree.Kind.LAMBDA_EXPRESSION) || isAnonymousClass(initializer)))) {
@@ -100,46 +99,45 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
   }
 
   private static Optional<String> matchFunctionalInterface(Type type) {
-    JavaType javaType = (JavaType) type;
-    if (!javaType.isParameterized()) {
-      return Optional.empty();
-    }
-    ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) javaType;
-
-    if (hasAnyUnknownParameterType(ptjt)) {
+    if (!JUtils.isParametrized(type)) {
       return Optional.empty();
     }
 
-    switch (ptjt.getSymbol().getFullyQualifiedName()) {
+    if (hasAnyUnknownTypeArgument(type)) {
+      return Optional.empty();
+    }
+
+    switch (type.fullyQualifiedName()) {
       case "java.util.function.Function":
-        return handleFunctionInterface(ptjt);
+        return handleFunctionInterface(type);
       case "java.util.function.BiFunction":
-        return handleBiFunctionInterface(ptjt);
+        return handleBiFunctionInterface(type);
       case "java.util.function.BiConsumer":
-        return handleBiConsumerInterface(ptjt);
+        return handleBiConsumerInterface(type);
       case "java.util.function.Supplier":
-        return handleSupplier(ptjt);
+        return handleSupplier(type);
       case "java.util.function.Consumer":
       case "java.util.function.Predicate":
       case "java.util.function.UnaryOperator":
       case "java.util.function.BinaryOperator":
-        return handleSingleParameterFunctions(ptjt);
+        return handleSingleParameterFunctions(type);
       default:
         return Optional.empty();
     }
   }
 
-  private static boolean hasAnyUnknownParameterType(ParametrizedTypeJavaType ptjt) {
-    return ptjt.typeParameters().stream().map(ptjt::substitution).anyMatch(Type::isUnknown);
+  private static boolean hasAnyUnknownTypeArgument(Type parametrizedType) {
+    return JUtils.typeArguments(parametrizedType).stream().anyMatch(Type::isUnknown);
   }
 
-  private static Optional<String> handleSingleParameterFunctions(ParametrizedTypeJavaType ptjt) {
-    return Optional.ofNullable(new ParameterTypeNameAndTreeType(ptjt, 0).paramTypeName).map(s -> s + ptjt.name());
+  private static Optional<String> handleSingleParameterFunctions(Type parametrizedType) {
+    return Optional.ofNullable(new ParameterTypeNameAndTreeType(parametrizedType, 0).paramTypeName)
+      .map(s -> s + parametrizedType.name());
   }
 
-  private static Optional<String> handleFunctionInterface(ParametrizedTypeJavaType ptjt) {
-    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(ptjt, 0);
-    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(ptjt, 1);
+  private static Optional<String> handleFunctionInterface(Type parametrizedType) {
+    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(parametrizedType, 0);
+    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(parametrizedType, 1);
     if (firstArgument.paramType.equals(secondArgument.paramType)) {
       if (firstArgument.paramTypeName != null) {
         return functionalInterfaceName("%sUnaryOperator", firstArgument.paramTypeName);
@@ -164,10 +162,10 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     return Optional.empty();
   }
 
-  private static Optional<String> handleBiFunctionInterface(ParametrizedTypeJavaType ptjt) {
-    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(ptjt, 0);
-    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(ptjt, 1);
-    ParameterTypeNameAndTreeType thirdArgument = new ParameterTypeNameAndTreeType(ptjt, 2);
+  private static Optional<String> handleBiFunctionInterface(Type parametrizedType) {
+    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(parametrizedType, 0);
+    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(parametrizedType, 1);
+    ParameterTypeNameAndTreeType thirdArgument = new ParameterTypeNameAndTreeType(parametrizedType, 2);
     if (firstArgument.paramType.equals(secondArgument.paramType) && firstArgument.paramType.equals(thirdArgument.paramType)) {
       return functionalInterfaceName("BinaryOperator<%s>", firstArgument.paramType);
     }
@@ -181,17 +179,17 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     return Optional.of(String.format(pattern, args));
   }
 
-  private static Optional<String> handleBiConsumerInterface(ParametrizedTypeJavaType ptjt) {
-    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(ptjt, 0);
-    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(ptjt, 1);
+  private static Optional<String> handleBiConsumerInterface(Type parametrizedType) {
+    ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(parametrizedType, 0);
+    ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(parametrizedType, 1);
     if (secondArgument.paramTypeName != null) {
       return Optional.of(String.format("Obj%sConsumer<%s>", secondArgument.paramTypeName, firstArgument.paramType));
     }
     return Optional.empty();
   }
 
-  private static Optional<String> handleSupplier(ParametrizedTypeJavaType ptjt) {
-    ParameterTypeNameAndTreeType supplierParamType = new ParameterTypeNameAndTreeType(ptjt, 0);
+  private static Optional<String> handleSupplier(Type parametrizedType) {
+    ParameterTypeNameAndTreeType supplierParamType = new ParameterTypeNameAndTreeType(parametrizedType, 0);
     if (isBoolean(supplierParamType)) {
       return Optional.of("BooleanSupplier");
     }
@@ -202,7 +200,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     final String reportString;
     final TypeTree classInterface;
 
-    public InterfaceTreeAndStringPairReport(String report, TypeTree interf) {
+    InterfaceTreeAndStringPairReport(String report, TypeTree interf) {
       reportString = report;
       classInterface = interf;
     }
@@ -214,13 +212,13 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
 
   private static class ParameterTypeNameAndTreeType {
 
-    final JavaType paramType;
+    final Type paramType;
 
     @Nullable
     final String paramTypeName;
 
-    public ParameterTypeNameAndTreeType(ParametrizedTypeJavaType ptjt, int typeVarIndex) {
-      paramType = ptjt.substitution(ptjt.typeParameters().get(typeVarIndex));
+    ParameterTypeNameAndTreeType(Type parametrizedType, int typeArgumentIndex) {
+      paramType = JUtils.typeArguments(parametrizedType).get(typeArgumentIndex);
       paramTypeName = returnStringFromJavaObject(paramType);
     }
 
