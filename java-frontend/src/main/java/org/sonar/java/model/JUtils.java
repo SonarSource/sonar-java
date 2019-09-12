@@ -180,6 +180,16 @@ public final class JUtils {
   }
 
   /**
+   * Replacement for {@link MethodJavaSymbol#isDefault()}
+   */
+  public static boolean isDefaultMethod(Symbol.MethodSymbol method) {
+    if (!(method instanceof JMethodSymbol)) {
+      return ((MethodJavaSymbol) method).isDefault();
+    }
+    return Modifier.isDefault(((JMethodSymbol) method).binding.getModifiers());
+  }
+
+  /**
    * Replacement for {@link MethodJavaSymbol#isOverridable()}
    */
   public static boolean isOverridable(Symbol.MethodSymbol method) {

@@ -249,6 +249,10 @@ public class JavaSymbol implements Symbol {
     return isFlag(Flags.VOLATILE);
   }
 
+  /**
+   * @deprecated use {@link JUtils#isDefaultMethod(MethodSymbol)} instead
+   */
+  @Deprecated
   public boolean isDefault() {
     return isFlag(Flags.DEFAULT);
   }
