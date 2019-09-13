@@ -28,7 +28,7 @@ public class SymbolMetadataResolve implements SymbolMetadata {
 
   private List<AnnotationInstance> annotations;
 
-  SymbolMetadataResolve() {
+  public SymbolMetadataResolve() {
     annotations = new ArrayList<>();
   }
 

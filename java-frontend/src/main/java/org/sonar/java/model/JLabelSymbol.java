@@ -22,11 +22,15 @@ package org.sonar.java.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.sonar.java.resolve.SymbolMetadataResolve;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
+
+import javax.annotation.Nullable;
 
 public class JLabelSymbol implements Symbol.LabelSymbol, Symbol {
 
@@ -55,17 +59,17 @@ public class JLabelSymbol implements Symbol.LabelSymbol, Symbol {
 
   @Override
   public Symbol owner() {
-    throw new UnsupportedOperationException();
+    return null;
   }
 
   @Override
   public Type type() {
-    throw new UnsupportedOperationException();
+    return Symbols.unknownType;
   }
 
   @Override
   public boolean isVariableSymbol() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
@@ -140,17 +144,20 @@ public class JLabelSymbol implements Symbol.LabelSymbol, Symbol {
 
   @Override
   public boolean isUnknown() {
-    throw new UnsupportedOperationException();
+    return false;
   }
+
+  private static final SymbolMetadata METADATA = new SymbolMetadataResolve();
 
   @Override
   public SymbolMetadata metadata() {
-    throw new UnsupportedOperationException();
+    return METADATA;
   }
 
+  @Nullable
   @Override
   public TypeSymbol enclosingClass() {
-    throw new UnsupportedOperationException();
+    return null;
   }
 
 }

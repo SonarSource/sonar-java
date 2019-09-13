@@ -20,7 +20,9 @@
 package org.sonar.java.model;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.resolve.Symbols;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JLabelSymbolTest {
@@ -29,9 +31,9 @@ class JLabelSymbolTest {
   void test() {
     JLabelSymbol symbol = new JLabelSymbol("");
     assertAll(
-      () -> assertThrows(UnsupportedOperationException.class, symbol::owner),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::type),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isVariableSymbol),
+      () -> assertThat(symbol.owner()).isNull(), // see e.g. InnerStaticClassesCheck
+      () -> assertThat(symbol.type()).isSameAs(Symbols.unknownType), // see e.g. MethodIdenticalImplementationsCheck
+      () -> assertThat(symbol.isVariableSymbol()).isFalse(), // see e.g. LombokFilter
       () -> assertThrows(UnsupportedOperationException.class, symbol::isTypeSymbol),
       () -> assertThrows(UnsupportedOperationException.class, symbol::isMethodSymbol),
       () -> assertThrows(UnsupportedOperationException.class, symbol::isPackageSymbol),
@@ -46,9 +48,9 @@ class JLabelSymbolTest {
       () -> assertThrows(UnsupportedOperationException.class, symbol::isPackageVisibility),
       () -> assertThrows(UnsupportedOperationException.class, symbol::isDeprecated),
       () -> assertThrows(UnsupportedOperationException.class, symbol::isVolatile),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isUnknown),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::metadata),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::enclosingClass)
+      () -> assertThat(symbol.isUnknown()).isFalse(), // see e.g. StaticMethodCheck
+      () -> assertThat(symbol.metadata()).isNotNull(),
+      () -> assertThat(symbol.enclosingClass()).isNull() // see e.g. StandardInputReadCheck
     );
   }
 
