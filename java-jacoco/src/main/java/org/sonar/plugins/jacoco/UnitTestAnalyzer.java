@@ -142,7 +142,7 @@ public class UnitTestAnalyzer {
       }
     }
     if (analyzedResources == 0) {
-      JaCoCoExtensions.LOG.warn("Coverage information was not collected. Perhaps you forget to include debug information into compiled classes?");
+      JaCoCoExtensions.LOG.warn("Coverage information was not collected. Perhaps you forgot to include debug information into compiled classes?");
     } else if (collectedCoveragePerTest) {
       logDeprecationForCoveragePerTest();
     }
