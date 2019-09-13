@@ -29,9 +29,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -62,13 +60,13 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
     ExpressionTree firstArgument = tree.arguments().get(0);
     Type argumentType = firstArgument.symbolType();
-    if(argumentType.isUnknown()) {
+    if (argumentType.isUnknown()) {
       // could happen with type inference.
       return;
     }
     Type collectionType = getMethodOwner(tree);
     // can be null when using raw types
-    Type collectionParameterType = getTypeParameter(collectionType);
+    Type collectionParameterType = getTypeArgument(collectionType);
 
     boolean isCallToParametrizedOrUnknownMethod = isCallToParametrizedOrUnknownMethod(firstArgument);
     if (!isCallToParametrizedOrUnknownMethod && tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
@@ -85,8 +83,8 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
 
   private static boolean isCallToParametrizedOrUnknownMethod(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-      Symbol symbol = ((MethodInvocationTree) expressionTree).symbol();
-      return symbol.isUnknown() || ((JavaSymbol.MethodJavaSymbol) symbol).isParametrized();
+      Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) ((MethodInvocationTree) expressionTree).symbol();
+      return symbol.isUnknown() || JUtils.isParametrizedMethod(symbol);
     }
     return false;
   }
@@ -99,12 +97,16 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   }
 
   @Nullable
-  private static Type getTypeParameter(Type collectionType) {
-    if (collectionType.is("java.util.Collection") && collectionType instanceof ParametrizedTypeJavaType) {
-      ParametrizedTypeJavaType parametrizedType = (ParametrizedTypeJavaType) collectionType;
-      return parametrizedType.substitution(parametrizedType.typeParameters().get(0));
-    } else if (collectionType instanceof ParametrizedTypeJavaType) {
-      return ((JavaType) collectionType).directSuperTypes().stream().map(CollectionInappropriateCallsCheck::getTypeParameter).filter(Objects::nonNull).findFirst().orElse(null);
+  private static Type getTypeArgument(Type collectionType) {
+    if (collectionType.is("java.util.Collection") && JUtils.isParametrized(collectionType)) {
+      return JUtils.typeArguments(collectionType).get(0);
+    } else if (JUtils.isParametrized(collectionType)) {
+      return JUtils.directSuperTypes(collectionType)
+        .stream()
+        .map(CollectionInappropriateCallsCheck::getTypeArgument)
+        .filter(Objects::nonNull)
+        .findFirst()
+        .orElse(null);
     }
     return null;
   }
@@ -121,7 +123,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
 
   private static boolean autoboxing(Type argumentType, Type collectionParameterType) {
     return argumentType.isPrimitive()
-      && ((JavaType) collectionParameterType).isPrimitiveWrapper()
-      && isSubtypeOf(((JavaType) argumentType).primitiveWrapperType(), collectionParameterType);
+      && JUtils.isPrimitiveWrapper(collectionParameterType)
+      && isSubtypeOf(JUtils.primitiveWrapperType(argumentType), collectionParameterType);
   }
 }

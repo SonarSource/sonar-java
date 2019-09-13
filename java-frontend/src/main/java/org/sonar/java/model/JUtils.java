@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import com.google.common.collect.ImmutableBiMap;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
@@ -235,6 +236,25 @@ public final class JUtils {
       result[i] = t.sema.type(typeArguments[i]);
     }
     return Arrays.asList(result);
+  }
+
+  /**
+   * Replacement {@link ClassJavaType#directSuperTypes()}
+   */
+  public static Set<Type> directSuperTypes(Type type) {
+    if (!(type instanceof JType)) {
+      return (Set) ((JavaType) type).directSuperTypes();
+    }
+    Set<Type> result = new HashSet<>();
+    JType t = (JType) type;
+    ITypeBinding superclass = t.typeBinding.getSuperclass();
+    if (superclass != null) {
+      result.add(t.sema.type(superclass));
+    }
+    for (ITypeBinding i : t.typeBinding.getInterfaces()) {
+      result.add(t.sema.type(i));
+    }
+    return result;
   }
 
 }
