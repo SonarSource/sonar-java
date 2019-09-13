@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -40,9 +41,15 @@ import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.MethodReferenceTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
+import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.java.model.statement.BreakStatementTreeImpl;
+import org.sonar.java.model.statement.ContinueStatementTreeImpl;
+import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
+import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -688,6 +695,113 @@ class JParserSemanticTest {
     AbstractTypedTree t = (AbstractTypedTree) v.type();
     assertThat(t.typeBinding).isNotNull();
     assertThat(t.typeBinding.getDimensions()).isEqualTo(2);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.LabeledStatement
+   */
+  @Nested
+  class Labels {
+    /**
+     * @see org.eclipse.jdt.core.dom.BreakStatement
+     */
+    @Test
+    void statement_break() {
+      CompilationUnitTree cu = test("class C { void m() { i: break i; } }");
+      ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+      MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+      LabeledStatementTreeImpl l = (LabeledStatementTreeImpl) m.block().body().get(0);
+      BreakStatementTreeImpl b = (BreakStatementTreeImpl) l.statement();
+      IdentifierTreeImpl i = (IdentifierTreeImpl) b.label();
+
+      assertThat(l.labelSymbol)
+        .isInstanceOf(Symbol.LabelSymbol.class);
+      assertThat(i.labelSymbol)
+        .isNotNull()
+        .isInstanceOf(Symbol.LabelSymbol.class)
+        .isInstanceOf(Symbol.class)
+        .isSameAs(l.labelSymbol);
+      assertThat(i.binding)
+        .isNull();
+
+      assertThat(i.symbol())
+        .isInstanceOf(Symbol.LabelSymbol.class)
+        .isInstanceOf(Symbol.class)
+        .isSameAs(l.symbol());
+
+      assertThat(i.labelSymbol.declaration())
+        .isSameAs(i.symbol().declaration());
+      assertThat(i.labelSymbol.usages())
+        .containsExactlyElementsOf(l.symbol().usages())
+        .containsOnly(i);
+    }
+
+    /**
+     * @see org.eclipse.jdt.core.dom.ContinueStatement
+     */
+    @Test
+    void statement_continue() {
+      CompilationUnitTree cu = test("class C { void m() { i: for(;;) continue i; } }");
+      ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+      MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+      LabeledStatementTreeImpl l = (LabeledStatementTreeImpl) m.block().body().get(0);
+      ForStatementTreeImpl f = (ForStatementTreeImpl) l.statement();
+      ContinueStatementTreeImpl co = (ContinueStatementTreeImpl) f.statement();
+      IdentifierTreeImpl i = (IdentifierTreeImpl) co.label();
+
+      assertThat(l.labelSymbol)
+        .isNotNull()
+        .isSameAs(i.labelSymbol);
+      assertThat(i.binding)
+        .isNull();
+      assertThat(l.labelSymbol.declaration)
+        .isSameAs(i.labelSymbol.declaration)
+        .isSameAs(l);
+      assertThat(l.labelSymbol.usages())
+        .containsExactlyElementsOf(l.symbol().usages())
+        .containsOnly(i);
+    }
+
+    @Test
+    void nested() {
+      CompilationUnitTree cu = test("class C { void m1() { i: { new C() { void m2() { i: break i; } }; break i; } } }");
+      MethodTreeImpl m1 = (MethodTreeImpl) ((ClassTreeImpl) cu.types().get(0)).members().get(0);
+      LabeledStatementTreeImpl l1 = (LabeledStatementTreeImpl) m1.block().body().get(0);
+      BlockTreeImpl block = (BlockTreeImpl) l1.statement();
+      BreakStatementTreeImpl b1 = (BreakStatementTreeImpl) block.body().get(1);
+      IdentifierTreeImpl i1 = (IdentifierTreeImpl) b1.label();
+
+      assertThat(l1.labelSymbol)
+        .isNotNull()
+        .isSameAs(i1.labelSymbol);
+      assertThat(i1.binding)
+        .isNull();
+      assertThat(l1.labelSymbol.declaration)
+        .isSameAs(i1.labelSymbol.declaration)
+        .isSameAs(l1);
+      assertThat(l1.labelSymbol.usages())
+        // .containsExactlyElementsOf(l1.symbol().usages()) // TODO Broken old implementation...
+        .containsOnly(i1);
+
+      ExpressionStatementTreeImpl e = (ExpressionStatementTreeImpl) block.body().get(0);
+      NewClassTreeImpl n = (NewClassTreeImpl) e.expression();
+      MethodTreeImpl m2 = (MethodTreeImpl) n.classBody().members().get(0);
+      LabeledStatementTreeImpl l2 = (LabeledStatementTreeImpl) m2.block().body().get(0);
+      BreakStatementTreeImpl b2 = (BreakStatementTreeImpl) l2.statement();
+      IdentifierTreeImpl i2 = (IdentifierTreeImpl) b2.label();
+
+      assertThat(l2.labelSymbol)
+        .isNotNull()
+        .isSameAs(i2.labelSymbol);
+      assertThat(i2.binding)
+        .isNull();
+      assertThat(l2.labelSymbol.declaration)
+        .isSameAs(i2.labelSymbol.declaration)
+        .isSameAs(l2);
+      assertThat(l2.labelSymbol.usages())
+        // .containsExactlyElementsOf(l2.symbol().usages()) // TODO Broken old implementation...
+        .containsOnly(i2);
+    }
   }
 
   private ExpressionTree expression(String expression) {

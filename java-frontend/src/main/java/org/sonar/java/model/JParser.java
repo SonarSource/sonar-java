@@ -224,8 +224,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -342,6 +344,8 @@ public class JParser {
 
   private JSema sema;
 
+  private final Deque<JLabelSymbol> labels = new LinkedList<>();
+
   private void declaration(@Nullable IBinding binding, Tree node) {
     if (binding == null) {
       return;
@@ -356,6 +360,19 @@ public class JParser {
     binding = sema.declarationBinding(binding);
     sema.usages.computeIfAbsent(binding, k -> new ArrayList<>())
       .add(node);
+  }
+
+  private void usageLabel(@Nullable IdentifierTreeImpl node) {
+    if (node == null) {
+      return;
+    }
+    labels.stream()
+      .filter(symbol -> symbol.name().equals(node.name()))
+      .findFirst()
+      .ifPresent(labelSymbol -> {
+        labelSymbol.usages.add(node);
+        node.labelSymbol = labelSymbol;
+      });
   }
 
   private int firstTokenIndexAfter(ASTNode e) {
@@ -1362,9 +1379,17 @@ public class JParser {
             lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
           );
         }
+        ExpressionTree expression;
+        if (e.getExpression() == null) {
+          IdentifierTreeImpl i = convertSimpleName(e.getLabel());
+          usageLabel(i);
+          expression = i;
+        } else {
+          expression = convertExpression(e.getExpression());
+        }
         return new BreakStatementTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNamebreak),
-          e.getExpression() == null ? convertSimpleName(e.getLabel()) : convertExpression(e.getExpression()),
+          expression,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
       }
@@ -1430,19 +1455,31 @@ public class JParser {
       }
       case ASTNode.CONTINUE_STATEMENT: {
         ContinueStatement e = (ContinueStatement) node;
+        IdentifierTreeImpl i = convertSimpleName(e.getLabel());
+        usageLabel(i);
         return new ContinueStatementTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNamecontinue),
-          convertSimpleName(e.getLabel()),
+          i,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
       }
       case ASTNode.LABELED_STATEMENT: {
         LabeledStatement e = (LabeledStatement) node;
-        return new LabeledStatementTreeImpl(
-          convertSimpleName(e.getLabel()),
+        IdentifierTreeImpl i = convertSimpleName(e.getLabel());
+
+        JLabelSymbol symbol = new JLabelSymbol(i.name());
+        labels.push(symbol);
+
+        LabeledStatementTreeImpl t = new LabeledStatementTreeImpl(
+          i,
           firstTokenAfter(e.getLabel(), TerminalTokens.TokenNameCOLON),
           convertStatement(e.getBody())
         );
+
+        labels.pop();
+        symbol.declaration = t;
+        t.labelSymbol = symbol;
+        return t;
       }
       case ASTNode.ENHANCED_FOR_STATEMENT: {
         EnhancedForStatement e = (EnhancedForStatement) node;
