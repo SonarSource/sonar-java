@@ -32,6 +32,8 @@ import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -266,6 +268,21 @@ public final class JUtils {
       result.add(t.sema.type(i));
     }
     return result;
+  }
+
+  /**
+   * Replacement for {@link org.sonar.java.resolve.SemanticModel#getEnclosingClass(Tree)}
+   */
+  @Nullable
+  public static Symbol enclosingClass(Tree t) {
+    do {
+      if (t == null) {
+        return null;
+      } else if (t.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
+        return ((ClassTree) t).symbol();
+      }
+      t = t.parent();
+    } while (true);
   }
 
 }

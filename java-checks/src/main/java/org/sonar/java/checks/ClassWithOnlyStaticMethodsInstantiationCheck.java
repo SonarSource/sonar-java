@@ -20,9 +20,8 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -43,13 +42,6 @@ import java.util.List;
 
 @Rule(key = "S2440")
 public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscriptionVisitor {
-  private SemanticModel semanticModel;
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    semanticModel = (SemanticModel) context.getSemanticModel();
-    super.setContext(context);
-  }
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -71,7 +63,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscr
   }
 
   private boolean instantiateOwnClass(Tree identifier, Symbol.TypeSymbol newClassTypeSymbol) {
-    Type enclosingClassType = semanticModel.getEnclosingClass(identifier).type();
+    Type enclosingClassType = JUtils.enclosingClass(identifier).type();
     return enclosingClassType.equals(newClassTypeSymbol.type());
   }
 
