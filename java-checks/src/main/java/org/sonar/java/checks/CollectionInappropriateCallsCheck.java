@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Iterables;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +32,6 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
-import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -104,10 +102,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   private static Type getTypeParameter(Type collectionType) {
     if (collectionType.is("java.util.Collection") && collectionType instanceof ParametrizedTypeJavaType) {
       ParametrizedTypeJavaType parametrizedType = (ParametrizedTypeJavaType) collectionType;
-      TypeVariableJavaType first = Iterables.getFirst(parametrizedType.typeParameters(), null);
-      if (first != null) {
-        return parametrizedType.substitution(first);
-      }
+      return parametrizedType.substitution(parametrizedType.typeParameters().get(0));
     } else if (collectionType instanceof ParametrizedTypeJavaType) {
       return ((JavaType) collectionType).directSuperTypes().stream().map(CollectionInappropriateCallsCheck::getTypeParameter).filter(Objects::nonNull).findFirst().orElse(null);
     }

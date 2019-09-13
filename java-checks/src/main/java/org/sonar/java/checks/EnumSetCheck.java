@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1641")
@@ -73,24 +72,16 @@ public class EnumSetCheck extends IssuableSubscriptionVisitor {
         return;
       }
     }
-    checkIssue(initializer.symbolType(), initializer, variableTree.type());
+    checkIssue(initializer.symbolType(), initializer);
   }
 
-  private void checkIssue(Type type, Tree reportTree, TypeTree typeTree) {
+  private void checkIssue(Type type, Tree reportTree) {
     if (type.isSubtypeOf("java.util.Set") && !type.isSubtypeOf("java.util.EnumSet") && type instanceof ParametrizedTypeJavaType) {
       ParametrizedTypeJavaType parametrizedType = (ParametrizedTypeJavaType) type;
       List<TypeVariableJavaType> typeParameters = parametrizedType.typeParameters();
-      Type variableType = typeTree.symbolType();
-      if(typeParameters.isEmpty() && variableType instanceof ParametrizedTypeJavaType) {
-        // for java 7 diamond operator lookup declaration.
-        parametrizedType = (ParametrizedTypeJavaType) variableType;
-        typeParameters = parametrizedType.typeParameters();
-      }
-      if(!typeParameters.isEmpty()) {
-        Type typeParameter = parametrizedType.substitution(typeParameters.get(0));
-        if (typeParameter != null && typeParameter.symbol().isEnum()) {
-          reportIssue(reportTree, "Convert this Set to an EnumSet.");
-        }
+      Type typeParameter = parametrizedType.substitution(typeParameters.get(0));
+      if (typeParameter != null && typeParameter.symbol().isEnum()) {
+        reportIssue(reportTree, "Convert this Set to an EnumSet.");
       }
     }
   }
