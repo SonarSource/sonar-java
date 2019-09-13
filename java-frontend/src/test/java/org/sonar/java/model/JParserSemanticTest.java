@@ -407,6 +407,16 @@ class JParserSemanticTest {
   }
 
   @Test
+  void declaration_import() {
+    JavaTree.CompilationUnitTreeImpl cu = test("import java.util.List;");
+    JavaTree.ImportTreeImpl i = (JavaTree.ImportTreeImpl) cu.imports().get(0);
+    assertThat(i.binding)
+      .isNotNull();
+    assertThat(cu.oldSema.getSymbol(i))
+      .isNotNull();
+  }
+
+  @Test
   void declaration_type() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C<T> { }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);

@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
@@ -313,6 +314,8 @@ public abstract class JavaTree implements Tree {
     private final SyntaxToken semicolonToken;
     private final SyntaxToken importToken;
     private final SyntaxToken staticToken;
+
+    public IBinding binding;
 
     public ImportTreeImpl(InternalSyntaxToken importToken, @Nullable InternalSyntaxToken staticToken,
                           Tree qualifiedIdentifier, InternalSyntaxToken semiColonToken) {

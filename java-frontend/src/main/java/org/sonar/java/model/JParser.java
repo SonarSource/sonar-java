@@ -502,12 +502,14 @@ public class JParser {
           new IdentifierTreeImpl(lastTokenIn(e2, TerminalTokens.TokenNameMULTIPLY))
         );
       }
-      imports.add(new JavaTree.ImportTreeImpl(
+      JavaTree.ImportTreeImpl t = new JavaTree.ImportTreeImpl(
         firstTokenIn(e2, TerminalTokens.TokenNameimport),
         e2.isStatic() ? firstTokenIn(e2, TerminalTokens.TokenNamestatic) : null,
         name,
         lastTokenIn(e2, TerminalTokens.TokenNameSEMICOLON)
-      ));
+      );
+      t.binding = e2.resolveBinding();
+      imports.add(t);
 
       addEmptyDeclarationsToList(
         tokenManager.lastIndexIn(e2, TerminalTokens.TokenNameSEMICOLON),
