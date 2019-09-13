@@ -408,10 +408,16 @@ class JParserSemanticTest {
 
   @Test
   void declaration_type() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C { }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C<T> { }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     assertThat(c.typeBinding).isNotNull();
     assertThat(cu.sema.declarations.get(c.typeBinding)).isSameAs(c);
+
+    TypeParameterTreeImpl typeParameter = (TypeParameterTreeImpl) c.typeParameters().get(0);
+    assertThat(typeParameter.typeBinding)
+      .isNotNull();
+    assertThat(cu.oldSema.getSymbol(typeParameter))
+      .isNotNull();
   }
 
   /**
@@ -685,7 +691,7 @@ class JParserSemanticTest {
   private JavaTree.CompilationUnitTreeImpl test(String source) {
     List<File> classpath = Collections.emptyList();
     JavaTree.CompilationUnitTreeImpl t = (JavaTree.CompilationUnitTreeImpl) JParser.parse("12", "File.java", source, true, classpath);
-    SemanticModel.createFor(t, new SquidClassLoader(classpath));
+    t.oldSema = SemanticModel.createFor(t, new SquidClassLoader(classpath));
     return t;
   }
 

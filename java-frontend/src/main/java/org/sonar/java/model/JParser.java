@@ -1072,23 +1072,26 @@ public class JParser {
   }
 
   private TypeParameterTree convertTypeParameter(TypeParameter e) {
-    IdentifierTreeImpl t = convertSimpleName(e.getName());
+    IdentifierTreeImpl i = convertSimpleName(e.getName());
     // TODO why ECJ uses IExtendedModifier here instead of Annotation ?
-    t.complete(convertAnnotations(e.modifiers()));
+    i.complete(convertAnnotations(e.modifiers()));
+    TypeParameterTreeImpl t;
     if (e.typeBounds().isEmpty()) {
-      return new TypeParameterTreeImpl(t);
+      t = new TypeParameterTreeImpl(i);
     } else {
       BoundListTreeImpl bounds = new BoundListTreeImpl(new ArrayList<>(), new ArrayList<>());
       for (Object o : e.typeBounds()) {
         bounds.add(convertType((Type) o));
       }
-      return new TypeParameterTreeImpl(
+      t = new TypeParameterTreeImpl(
         firstTokenAfter(e.getName(), TerminalTokens.TokenNameextends),
         bounds
       ).complete(
-        t
+        i
       );
     }
+    t.typeBinding = e.resolveBinding();
+    return t;
   }
 
   /**

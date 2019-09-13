@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -38,6 +39,8 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   @Nullable
   private final SyntaxToken extendsToken;
   private final BoundListTreeImpl bounds;
+
+  ITypeBinding typeBinding;
 
   public TypeParameterTreeImpl(IdentifierTreeImpl identifier) {
     super(Kind.TYPE_PARAMETER);
