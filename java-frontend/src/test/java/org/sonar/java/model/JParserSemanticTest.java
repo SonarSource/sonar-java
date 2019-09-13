@@ -565,176 +565,6 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(m.methodBinding)).isSameAs(m);
   }
 
-  /**
-   * No binding for labels in ECJ.
-   */
-  @Nested
-  class Labels {
-    @Test
-    void break_to_label() {
-      CompilationUnitTree cu = test("class C { void m() { i: break i; } }");
-      ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-      MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-      LabeledStatementTreeImpl l = (LabeledStatementTreeImpl) m.block().body().get(0);
-      BreakStatementTreeImpl b = (BreakStatementTreeImpl) l.statement();
-      IdentifierTreeImpl i = (IdentifierTreeImpl) b.label();
-
-      assertThat(l.labelSymbol)
-        .isInstanceOf(Symbol.LabelSymbol.class);
-      assertThat(i.labelSymbol)
-        .isNotNull()
-        .isInstanceOf(Symbol.LabelSymbol.class)
-        .isInstanceOf(Symbol.class)
-        .isSameAs(l.labelSymbol);
-      assertThat(i.binding)
-        .isNull();
-
-      assertThat(i.symbol())
-        .isInstanceOf(Symbol.LabelSymbol.class)
-        .isInstanceOf(Symbol.class)
-        .isSameAs(l.symbol());
-
-      assertThat(i.labelSymbol.declaration())
-        .isSameAs(i.symbol().declaration());
-      assertThat(i.labelSymbol.usages())
-        .hasSize(1)
-        .containsExactlyElementsOf(l.symbol().usages())
-        .containsOnly(i);
-
-      // FIXME can be removed once fully migrated to ECJ semantic. Checking for same behavior
-      assertThat(i.labelSymbol.name())
-        .isSameAs(i.symbol().name())
-        .isEqualTo("i");
-      assertThat(i.labelSymbol.enclosingClass())
-        .isSameAs(i.symbol().enclosingClass())
-        .isNull();
-      assertThat(i.labelSymbol.isAbstract())
-        .isSameAs(i.symbol().isAbstract())
-        .isFalse();
-      assertThat(i.labelSymbol.isDeprecated())
-        .isSameAs(i.symbol().isDeprecated())
-        .isFalse();
-      assertThat(i.labelSymbol.isEnum())
-        .isSameAs(i.symbol().isEnum())
-        .isFalse();
-      assertThat(i.labelSymbol.isFinal())
-        .isSameAs(i.symbol().isFinal())
-        .isFalse();
-      assertThat(i.labelSymbol.isInterface())
-        .isSameAs(i.symbol().isInterface())
-        .isFalse();
-      assertThat(i.labelSymbol.isMethodSymbol())
-        .isSameAs(i.symbol().isMethodSymbol())
-        .isFalse();
-      assertThat(i.labelSymbol.isPackageSymbol())
-        .isSameAs(i.symbol().isPackageSymbol())
-        .isFalse();
-      assertThat(i.labelSymbol.isPackageVisibility())
-        // .isSameAs(i.symbol().isPackageVisibility()) // FIXME MG: this makes no sense - there is no notion of visibility for a label
-        .isFalse();
-      assertThat(i.labelSymbol.isPrivate())
-        .isSameAs(i.symbol().isPrivate())
-        .isFalse();
-      assertThat(i.labelSymbol.isProtected())
-        .isSameAs(i.symbol().isProtected())
-        .isFalse();
-      assertThat(i.labelSymbol.isPublic())
-        .isSameAs(i.symbol().isPublic())
-        .isFalse();
-      assertThat(i.labelSymbol.isStatic())
-        .isSameAs(i.symbol().isStatic())
-        .isFalse();
-      assertThat(i.labelSymbol.isTypeSymbol())
-        .isSameAs(i.symbol().isTypeSymbol())
-        .isFalse();
-      assertThat(i.labelSymbol.isUnknown())
-        .isSameAs(i.symbol().isUnknown())
-        .isFalse();
-      assertThat(i.labelSymbol.isVariableSymbol())
-        .isSameAs(i.symbol().isVariableSymbol())
-        .isFalse();
-      assertThat(i.labelSymbol.isVolatile())
-        .isSameAs(i.symbol().isVolatile())
-        .isFalse();
-      assertThat(i.labelSymbol.owner())
-        .isSameAs(i.symbol().owner())
-        .isNull();
-      assertThat(i.labelSymbol.type())
-        .isSameAs(i.symbol().type())
-        .isNull();
-      assertThat(i.labelSymbol.metadata().annotations())
-        .isEqualTo(i.symbol().metadata().annotations());
-      assertThat(i.labelSymbol.metadata().isAnnotatedWith("java.lang.Deprecated"))
-        .isEqualTo(i.symbol().metadata().isAnnotatedWith("java.lang.Deprecated"));
-      assertThat(i.labelSymbol.metadata().valuesForAnnotation("java.lang.Deprecated"))
-        .isEqualTo(i.symbol().metadata().valuesForAnnotation("java.lang.Deprecated"));
-    }
-
-    @Test
-    void continue_to_label() {
-      CompilationUnitTree cu = test("class C { void m() { i: for(;;) continue i; } }");
-      ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-      MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-      LabeledStatementTreeImpl l = (LabeledStatementTreeImpl) m.block().body().get(0);
-      ForStatementTreeImpl f = (ForStatementTreeImpl) l.statement();
-      ContinueStatementTreeImpl co = (ContinueStatementTreeImpl) f.statement();
-      IdentifierTreeImpl i = (IdentifierTreeImpl) co.label();
-
-      assertThat(l.labelSymbol)
-        .isNotNull()
-        .isSameAs(i.labelSymbol);
-      assertThat(i.binding)
-        .isNull();
-      assertThat(l.labelSymbol.declaration)
-        .isSameAs(i.labelSymbol.declaration)
-        .isSameAs(l);
-      assertThat(l.labelSymbol.usages())
-        .containsExactlyElementsOf(l.symbol().usages())
-        .containsOnly(i);
-    }
-
-    @Test
-    void nested_labels() {
-      CompilationUnitTree cu = test("class C { void m1() { i: { new C() { void m2() { i: break i; } }; break i; } } }");
-      MethodTreeImpl m1 = (MethodTreeImpl) ((ClassTreeImpl) cu.types().get(0)).members().get(0);
-      LabeledStatementTreeImpl l1 = (LabeledStatementTreeImpl) m1.block().body().get(0);
-      BlockTreeImpl block = (BlockTreeImpl) l1.statement();
-      BreakStatementTreeImpl b1 = (BreakStatementTreeImpl) block.body().get(1);
-      IdentifierTreeImpl i1 = (IdentifierTreeImpl) b1.label();
-
-      assertThat(l1.labelSymbol)
-        .isNotNull()
-        .isSameAs(i1.labelSymbol);
-      assertThat(i1.binding)
-        .isNull();
-      assertThat(l1.labelSymbol.declaration)
-        .isSameAs(i1.labelSymbol.declaration)
-        .isSameAs(l1);
-      assertThat(l1.labelSymbol.usages())
-        // .containsExactlyElementsOf(l1.symbol().usages()) // FIXME Broken old implementation ...
-        .containsOnly(i1);
-
-      ExpressionStatementTreeImpl e = (ExpressionStatementTreeImpl) block.body().get(0);
-      NewClassTreeImpl n = (NewClassTreeImpl) e.expression();
-      MethodTreeImpl m2 = (MethodTreeImpl) n.classBody().members().get(0);
-      LabeledStatementTreeImpl l2 = (LabeledStatementTreeImpl) m2.block().body().get(0);
-      BreakStatementTreeImpl b2 = (BreakStatementTreeImpl) l2.statement();
-      IdentifierTreeImpl i2 = (IdentifierTreeImpl) b2.label();
-
-      assertThat(l2.labelSymbol)
-        .isNotNull()
-        .isSameAs(i2.labelSymbol);
-      assertThat(i2.binding)
-        .isNull();
-      assertThat(l2.labelSymbol.declaration)
-        .isSameAs(i2.labelSymbol.declaration)
-        .isSameAs(l2);
-      assertThat(l2.labelSymbol.usages())
-        // .containsExactlyElementsOf(l2.symbol().usages()) // FIXME Broken old implementation...
-        .containsOnly(i2);
-    }
-  }
-
   @Test
   void type_primitive() {
     CompilationUnitTree cu = test("interface I { int v; }");
@@ -849,6 +679,113 @@ class JParserSemanticTest {
     AbstractTypedTree t = (AbstractTypedTree) v.type();
     assertThat(t.typeBinding).isNotNull();
     assertThat(t.typeBinding.getDimensions()).isEqualTo(2);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.LabeledStatement
+   */
+  @Nested
+  class Labels {
+    /**
+     * @see org.eclipse.jdt.core.dom.BreakStatement
+     */
+    @Test
+    void statement_break() {
+      CompilationUnitTree cu = test("class C { void m() { i: break i; } }");
+      ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+      MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+      LabeledStatementTreeImpl l = (LabeledStatementTreeImpl) m.block().body().get(0);
+      BreakStatementTreeImpl b = (BreakStatementTreeImpl) l.statement();
+      IdentifierTreeImpl i = (IdentifierTreeImpl) b.label();
+
+      assertThat(l.labelSymbol)
+        .isInstanceOf(Symbol.LabelSymbol.class);
+      assertThat(i.labelSymbol)
+        .isNotNull()
+        .isInstanceOf(Symbol.LabelSymbol.class)
+        .isInstanceOf(Symbol.class)
+        .isSameAs(l.labelSymbol);
+      assertThat(i.binding)
+        .isNull();
+
+      assertThat(i.symbol())
+        .isInstanceOf(Symbol.LabelSymbol.class)
+        .isInstanceOf(Symbol.class)
+        .isSameAs(l.symbol());
+
+      assertThat(i.labelSymbol.declaration())
+        .isSameAs(i.symbol().declaration());
+      assertThat(i.labelSymbol.usages())
+        .containsExactlyElementsOf(l.symbol().usages())
+        .containsOnly(i);
+    }
+
+    /**
+     * @see org.eclipse.jdt.core.dom.ContinueStatement
+     */
+    @Test
+    void statement_continue() {
+      CompilationUnitTree cu = test("class C { void m() { i: for(;;) continue i; } }");
+      ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+      MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+      LabeledStatementTreeImpl l = (LabeledStatementTreeImpl) m.block().body().get(0);
+      ForStatementTreeImpl f = (ForStatementTreeImpl) l.statement();
+      ContinueStatementTreeImpl co = (ContinueStatementTreeImpl) f.statement();
+      IdentifierTreeImpl i = (IdentifierTreeImpl) co.label();
+
+      assertThat(l.labelSymbol)
+        .isNotNull()
+        .isSameAs(i.labelSymbol);
+      assertThat(i.binding)
+        .isNull();
+      assertThat(l.labelSymbol.declaration)
+        .isSameAs(i.labelSymbol.declaration)
+        .isSameAs(l);
+      assertThat(l.labelSymbol.usages())
+        .containsExactlyElementsOf(l.symbol().usages())
+        .containsOnly(i);
+    }
+
+    @Test
+    void nested() {
+      CompilationUnitTree cu = test("class C { void m1() { i: { new C() { void m2() { i: break i; } }; break i; } } }");
+      MethodTreeImpl m1 = (MethodTreeImpl) ((ClassTreeImpl) cu.types().get(0)).members().get(0);
+      LabeledStatementTreeImpl l1 = (LabeledStatementTreeImpl) m1.block().body().get(0);
+      BlockTreeImpl block = (BlockTreeImpl) l1.statement();
+      BreakStatementTreeImpl b1 = (BreakStatementTreeImpl) block.body().get(1);
+      IdentifierTreeImpl i1 = (IdentifierTreeImpl) b1.label();
+
+      assertThat(l1.labelSymbol)
+        .isNotNull()
+        .isSameAs(i1.labelSymbol);
+      assertThat(i1.binding)
+        .isNull();
+      assertThat(l1.labelSymbol.declaration)
+        .isSameAs(i1.labelSymbol.declaration)
+        .isSameAs(l1);
+      assertThat(l1.labelSymbol.usages())
+        // .containsExactlyElementsOf(l1.symbol().usages()) // TODO Broken old implementation...
+        .containsOnly(i1);
+
+      ExpressionStatementTreeImpl e = (ExpressionStatementTreeImpl) block.body().get(0);
+      NewClassTreeImpl n = (NewClassTreeImpl) e.expression();
+      MethodTreeImpl m2 = (MethodTreeImpl) n.classBody().members().get(0);
+      LabeledStatementTreeImpl l2 = (LabeledStatementTreeImpl) m2.block().body().get(0);
+      BreakStatementTreeImpl b2 = (BreakStatementTreeImpl) l2.statement();
+      IdentifierTreeImpl i2 = (IdentifierTreeImpl) b2.label();
+
+      assertThat(l2.labelSymbol)
+        .isNotNull()
+        .isSameAs(i2.labelSymbol);
+      assertThat(i2.binding)
+        .isNull();
+      assertThat(l2.labelSymbol.declaration)
+        .isSameAs(i2.labelSymbol.declaration)
+        .isSameAs(l2);
+      assertThat(l2.labelSymbol.usages())
+        // .containsExactlyElementsOf(l2.symbol().usages()) // TODO Broken old implementation...
+        .containsOnly(i2);
+    }
   }
 
   private ExpressionTree expression(String expression) {

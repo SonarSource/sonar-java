@@ -286,7 +286,6 @@ public class JParser {
     converter.sema = new JSema(astNode.getAST());
     converter.compilationUnit = astNode;
     converter.tokenManager = new TokenManager(lex(version, unitName, sourceChars), source, new DefaultCodeFormatterOptions(new HashMap<>()));
-    converter.labels = new LinkedList<>();
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;
@@ -345,7 +344,7 @@ public class JParser {
 
   private JSema sema;
 
-  private Deque<LabelSymbolCouple> labels;
+  private final Deque<JLabelSymbol> labels = new LinkedList<>();
 
   private void declaration(@Nullable IBinding binding, Tree node) {
     if (binding == null) {
@@ -363,26 +362,25 @@ public class JParser {
       .add(node);
   }
 
+  private void usageLabel(@Nullable IdentifierTreeImpl node) {
+    if (node == null) {
+      return;
+    }
+    labels.stream()
+      .filter(symbol -> symbol.name().equals(node.name()))
+      .findFirst()
+      .ifPresent(labelSymbol -> {
+        labelSymbol.usages.add(node);
+        node.labelSymbol = labelSymbol;
+      });
+  }
+
   private int firstTokenIndexAfter(ASTNode e) {
     int index = tokenManager.firstIndexAfter(e, ANY_TOKEN);
     while (tokenManager.get(index).isComment()) {
       index++;
     }
     return index;
-  }
-
-  private void usageLabel(@Nullable IdentifierTreeImpl node) {
-    if (node == null) {
-      return;
-    }
-    labels.stream()
-      .filter(couple -> couple.label.equals(node.name()))
-      .map(couple -> couple.symbol)
-      .findFirst()
-      .ifPresent(labelSymbol -> {
-        labelSymbol.usages.add(node);
-        node.labelSymbol = labelSymbol;
-      });
   }
 
   /**
@@ -1376,17 +1374,17 @@ public class JParser {
             lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
           );
         }
-        ExpressionTree t;
+        ExpressionTree expression;
         if (e.getExpression() == null) {
-          IdentifierTreeImpl t2 = convertSimpleName(e.getLabel());
-          usageLabel(t2);
-          t = t2;
+          IdentifierTreeImpl i = convertSimpleName(e.getLabel());
+          usageLabel(i);
+          expression = i;
         } else {
-          t = convertExpression(e.getExpression());
+          expression = convertExpression(e.getExpression());
         }
         return new BreakStatementTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNamebreak),
-          t,
+          expression,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
       }
@@ -1452,23 +1450,23 @@ public class JParser {
       }
       case ASTNode.CONTINUE_STATEMENT: {
         ContinueStatement e = (ContinueStatement) node;
-        IdentifierTreeImpl t = convertSimpleName(e.getLabel());
-        usageLabel(t);
+        IdentifierTreeImpl i = convertSimpleName(e.getLabel());
+        usageLabel(i);
         return new ContinueStatementTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNamecontinue),
-          t,
+          i,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
       }
       case ASTNode.LABELED_STATEMENT: {
         LabeledStatement e = (LabeledStatement) node;
-        IdentifierTreeImpl label = convertSimpleName(e.getLabel());
+        IdentifierTreeImpl i = convertSimpleName(e.getLabel());
 
-        JLabelSymbol symbol = new JLabelSymbol(label.name());
-        labels.push(new LabelSymbolCouple(label.name(), symbol));
+        JLabelSymbol symbol = new JLabelSymbol(i.name());
+        labels.push(symbol);
 
         LabeledStatementTreeImpl t = new LabeledStatementTreeImpl(
-          label,
+          i,
           firstTokenAfter(e.getLabel(), TerminalTokens.TokenNameCOLON),
           convertStatement(e.getBody())
         );
@@ -2517,16 +2515,6 @@ public class JParser {
             return new ModifierKeywordTreeImpl(Modifier.DEFAULT, firstTokenIn(e, TerminalTokens.TokenNamedefault));
         }
       }
-    }
-  }
-
-  private static final class LabelSymbolCouple {
-    final String label;
-    final JLabelSymbol symbol;
-
-    public LabelSymbolCouple(String label, JLabelSymbol symbol) {
-      this.label = label;
-      this.symbol = symbol;
     }
   }
 

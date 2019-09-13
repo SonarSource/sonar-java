@@ -55,118 +55,102 @@ public class JLabelSymbol implements Symbol.LabelSymbol, Symbol {
 
   @Override
   public Symbol owner() {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public Type type() {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isVariableSymbol() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isTypeSymbol() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isMethodSymbol() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isPackageSymbol() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isStatic() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isFinal() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isEnum() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isInterface() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isAbstract() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isPublic() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isPrivate() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isProtected() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isPackageVisibility() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isDeprecated() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isVolatile() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean isUnknown() {
-    return false;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public SymbolMetadata metadata() {
-    return new SymbolMetadata() {
-
-      @Override
-      public List<SymbolMetadata.AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
-        return null;
-      }
-
-      @Override
-      public boolean isAnnotatedWith(String fullyQualifiedName) {
-        return false;
-      }
-
-      @Override
-      public List<SymbolMetadata.AnnotationInstance> annotations() {
-        return Collections.emptyList();
-      }
-    };
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public TypeSymbol enclosingClass() {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
 }
