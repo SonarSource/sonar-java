@@ -815,6 +815,10 @@ public class JavaSymbol implements Symbol {
       return String.format("%s#%s()", owner.name, name);
     }
 
+    /**
+     * @deprecated use {@link JUtils#defaultValue(MethodSymbol)} instead
+     */
+    @Deprecated
     @CheckForNull
     public Object defaultValue() {
       return defaultValue;

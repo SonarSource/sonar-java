@@ -191,6 +191,17 @@ public final class JUtils {
   }
 
   /**
+   * Replacement for {@link MethodJavaSymbol#defaultValue()}
+   */
+  @Nullable
+  public static Object defaultValue(Symbol.MethodSymbol method) {
+    if (!(method instanceof JMethodSymbol)) {
+      return ((MethodJavaSymbol) method).defaultValue();
+    }
+    return ((JMethodSymbol) method).methodBinding().getDefaultValue();
+  }
+
+  /**
    * Replacement for {@link MethodJavaSymbol#isOverridable()}
    */
   public static boolean isOverridable(Symbol.MethodSymbol method) {

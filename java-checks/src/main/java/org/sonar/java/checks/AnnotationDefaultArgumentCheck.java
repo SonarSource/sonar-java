@@ -20,8 +20,8 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
@@ -56,9 +56,9 @@ public class AnnotationDefaultArgumentCheck extends IssuableSubscriptionVisitor 
 
     Map<String, Object> defaultValueByName = annotationSymbol.memberSymbols().stream()
       .filter(Symbol::isMethodSymbol)
-      .map(s -> (JavaSymbol.MethodJavaSymbol) s)
-      .filter(s -> s.defaultValue() != null)
-      .collect(Collectors.toMap(Symbol::name, JavaSymbol.MethodJavaSymbol::defaultValue));
+      .map(Symbol.MethodSymbol.class::cast)
+      .filter(s -> JUtils.defaultValue((Symbol.MethodSymbol) s) != null)
+      .collect(Collectors.toMap(Symbol::name, JUtils::defaultValue));
 
     for (ExpressionTree argument : annotationTree.arguments()) {
       Tree valueSet = argument;
