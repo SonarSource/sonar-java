@@ -130,6 +130,7 @@ public class VisitorsBridge {
       if (isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
         try {
           semanticModel = SemanticModel.createFor(tree, classLoader);
+          ((JavaTree.CompilationUnitTreeImpl) tree).oldSema = semanticModel;
         } catch (Exception e) {
           LOG.error(String.format("Unable to create symbol table for : '%s'", currentFile), e);
           addAnalysisError(e, currentFile, AnalysisError.Kind.SEMANTIC_ERROR);

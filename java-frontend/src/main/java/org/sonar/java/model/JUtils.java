@@ -33,6 +33,7 @@ import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
@@ -283,6 +284,14 @@ public final class JUtils {
       }
       t = t.parent();
     } while (true);
+  }
+
+  /**
+   * Replacement for {@link org.sonar.java.resolve.SemanticModel#getSymbol(Tree)}
+   */
+  @Nullable
+  public static Symbol importTreeSymbol(ImportTree tree) {
+    return ((JavaTree.ImportTreeImpl) tree).symbol();
   }
 
 }

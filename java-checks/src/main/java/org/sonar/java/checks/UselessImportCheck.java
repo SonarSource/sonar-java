@@ -30,7 +30,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -123,13 +123,12 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
       id = ((MemberSelectExpressionTree) importTree.qualifiedIdentifier()).identifier();
     }
     if (id != null) {
-      SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
-      if (semanticModel != null) {
-        Symbol symbol = semanticModel.getSymbol(importTree);
+      if (context.getSemanticModel() != null) {
+        Symbol symbol = JUtils.importTreeSymbol(importTree);
         if (symbol != null) {
           Symbol owner = symbol.owner();
           // Exclude method symbols : they could be ambiguous or unresolved and lead to FP.
-          if (symbol.isVariableSymbol() && symbol.usages().stream().allMatch(identifierTree -> semanticModel.getEnclosingClass(identifierTree) == owner)) {
+          if (symbol.isVariableSymbol() && symbol.usages().stream().allMatch(identifierTree -> JUtils.enclosingClass(identifierTree) == owner)) {
             context.reportIssue(this, importTree, "Remove this unused import '" + importName + "'.");
           }
         }

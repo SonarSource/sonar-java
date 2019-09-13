@@ -31,10 +31,15 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -165,6 +170,7 @@ public abstract class JavaTree implements Tree {
     private final SyntaxToken eofToken;
     public JSema sema;
     public boolean useNewSema;
+    @Nullable
     public SemanticModel oldSema;
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
@@ -325,6 +331,27 @@ public abstract class JavaTree implements Tree {
       this.qualifiedIdentifier = qualifiedIdentifier;
       this.semicolonToken = semiColonToken;
       isStatic = staticToken != null;
+    }
+
+    @Nullable
+    public Symbol symbol() {
+      if (root.useNewSema) {
+        if (binding != null) {
+          switch (binding.getKind()) {
+            case IBinding.TYPE:
+              return root.sema.typeSymbol((ITypeBinding) binding);
+            case IBinding.METHOD:
+              return root.sema.methodSymbol((IMethodBinding) binding);
+            case IBinding.VARIABLE:
+              return root.sema.variableSymbol((IVariableBinding) binding);
+          }
+        }
+        return null;
+      }
+      if (root.oldSema == null) {
+        return null;
+      }
+      return root.oldSema.getSymbol(this);
     }
 
     @Override
