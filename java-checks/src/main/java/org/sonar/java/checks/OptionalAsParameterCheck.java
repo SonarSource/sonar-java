@@ -23,8 +23,6 @@ import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
