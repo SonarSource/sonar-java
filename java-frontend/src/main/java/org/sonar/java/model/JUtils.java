@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -292,6 +293,13 @@ public final class JUtils {
   @Nullable
   public static Symbol importTreeSymbol(ImportTree tree) {
     return ((JavaTree.ImportTreeImpl) tree).symbol();
+  }
+
+  /**
+   * Replacement for {@link org.sonar.java.resolve.SemanticModel#getSymbol(Tree)}
+   */
+  public static Symbol typeParameterTreeSymbol(TypeParameterTree tree) {
+    return ((TypeParameterTreeImpl) tree).symbol();
   }
 
 }

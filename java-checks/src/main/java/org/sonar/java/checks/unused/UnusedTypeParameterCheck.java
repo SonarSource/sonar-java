@@ -20,9 +20,8 @@
 package org.sonar.java.checks.unused;
 
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -35,14 +34,6 @@ import java.util.List;
 
 @Rule(key = "S2326")
 public class UnusedTypeParameterCheck extends IssuableSubscriptionVisitor {
-
-  private SemanticModel semanticModel;
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    semanticModel = (SemanticModel) context.getSemanticModel();
-    super.setContext(context);
-  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -65,7 +56,7 @@ public class UnusedTypeParameterCheck extends IssuableSubscriptionVisitor {
         }
       }
       for (TypeParameterTree typeParameter : typeParameters) {
-        Symbol symbol = semanticModel.getSymbol(typeParameter);
+        Symbol symbol = JUtils.typeParameterTreeSymbol(typeParameter);
         if (symbol.usages().isEmpty()) {
           String message = new StringBuilder(typeParameter.identifier().name())
             .append(" is not used in the ")
