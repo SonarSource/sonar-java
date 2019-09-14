@@ -1216,11 +1216,13 @@ public class JParser {
         throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.SIMPLE_NAME: {
         SimpleName e = (SimpleName) node;
-        return convertSimpleName(e);
+        return new IdentifierTreeImpl(
+          firstTokenIn(e, TerminalTokens.TokenNameIdentifier)
+        );
       }
       case ASTNode.QUALIFIED_NAME: {
         QualifiedName e = (QualifiedName) node;
-        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
+        IdentifierTreeImpl rhs = (IdentifierTreeImpl) convertName(e.getName());
         return new MemberSelectExpressionTreeImpl(
           convertName(e.getQualifier()),
           firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),

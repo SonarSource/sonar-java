@@ -421,6 +421,10 @@ class JParserSemanticTest {
   void declaration_import() {
     JavaTree.CompilationUnitTreeImpl cu = test("import java.util.List;");
     JavaTree.ImportTreeImpl i = (JavaTree.ImportTreeImpl) cu.imports().get(0);
+    MemberSelectExpressionTreeImpl qualifiedName = (MemberSelectExpressionTreeImpl) i.qualifiedIdentifier();
+    IdentifierTreeImpl identifier = (IdentifierTreeImpl) qualifiedName.identifier();
+    assertThat(identifier.binding)
+      .isNull();
     assertThat(i.binding)
       .isNotNull();
     assertThat(cu.sema.typeSymbol((ITypeBinding) i.binding).usages())
