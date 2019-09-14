@@ -511,7 +511,7 @@ public class JParser {
     List<ImportClauseTree> imports = new ArrayList<>();
     for (int i = 0; i < e.imports().size(); i++) {
       ImportDeclaration e2 = (ImportDeclaration) e.imports().get(i);
-      ExpressionTree name = convertExpression(e2.getName());
+      ExpressionTree name = convertName(e2.getName());
       if (e2.isOnDemand()) {
         name = new MemberSelectExpressionTreeImpl(
           name,
@@ -1208,6 +1208,26 @@ public class JParser {
     t.typeBinding = e.resolveTypeBinding();
     t.binding = e.resolveBinding();
     return t;
+  }
+
+  private ExpressionTree convertName(Name node) {
+    switch (node.getNodeType()) {
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
+      case ASTNode.SIMPLE_NAME: {
+        SimpleName e = (SimpleName) node;
+        return convertSimpleName(e);
+      }
+      case ASTNode.QUALIFIED_NAME: {
+        QualifiedName e = (QualifiedName) node;
+        IdentifierTreeImpl rhs = convertSimpleName(e.getName());
+        return new MemberSelectExpressionTreeImpl(
+          convertName(e.getQualifier()),
+          firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+          rhs
+        );
+      }
+    }
   }
 
   private BlockTreeImpl convertBlock(@Nullable Block e) {

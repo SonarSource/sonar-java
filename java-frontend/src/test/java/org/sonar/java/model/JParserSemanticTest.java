@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -413,14 +414,18 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(v.variableBinding)).isSameAs(v);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.ImportDeclaration
+   */
   @Test
   void declaration_import() {
     JavaTree.CompilationUnitTreeImpl cu = test("import java.util.List;");
     JavaTree.ImportTreeImpl i = (JavaTree.ImportTreeImpl) cu.imports().get(0);
     assertThat(i.binding)
       .isNotNull();
-    assertThat(cu.oldSema.getSymbol(i))
-      .isNotNull();
+    assertThat(cu.sema.typeSymbol((ITypeBinding) i.binding).usages())
+      .containsExactlyElementsOf(cu.oldSema.getSymbol(i).usages())
+      .isEmpty();
   }
 
   @Test
