@@ -99,7 +99,9 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
   @Override
   public String signature() {
-    return null; // FIXME stub for future implementation
+    return methodBinding().getDeclaringClass().getBinaryName()
+      + "#" + name()
+      + JSema.signature(methodBinding());
   }
 
   @Nullable

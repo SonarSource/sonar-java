@@ -33,6 +33,7 @@ import org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
 import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
@@ -40,6 +41,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -188,6 +190,21 @@ public final class JSema {
 
     } catch (ReflectiveOperationException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  static String signature(IMethodBinding methodBinding) {
+    try {
+      Field fieldBinding = Class.forName("org.eclipse.jdt.core.dom.MethodBinding")
+        .getDeclaredField("binding");
+      fieldBinding.setAccessible(true);
+      Method methodSignature = MethodBinding.class
+        .getMethod("signature");
+      methodSignature.setAccessible(true);
+      char[] signature = (char[]) methodSignature.invoke(fieldBinding.get(methodBinding));
+      return new String(signature);
+    } catch (ReflectiveOperationException e) {
+      throw new IllegalStateException(e);
     }
   }
 

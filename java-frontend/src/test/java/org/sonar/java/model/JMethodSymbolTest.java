@@ -48,6 +48,20 @@ class JMethodSymbolTest {
       .containsOnly(cu.sema.type(Objects.requireNonNull(cu.sema.resolveType("java.lang.Exception"))));
   }
 
+  @Test
+  void signature() {
+    JavaTree.CompilationUnitTreeImpl cu = test("package org.example; class C { C() {} Object m(Object p1, Object[] p2) { return null; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl constructor = (MethodTreeImpl) c.members().get(0);
+    MethodTreeImpl method = (MethodTreeImpl) c.members().get(1);
+    assertThat(cu.sema.methodSymbol(Objects.requireNonNull(constructor.methodBinding)).signature())
+      .isEqualTo(constructor.symbol().signature())
+      .isEqualTo("org.example.C#<init>()V");
+    assertThat(cu.sema.methodSymbol(Objects.requireNonNull(method.methodBinding)).signature())
+      .isEqualTo(method.symbol().signature())
+      .isEqualTo("org.example.C#m(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;");
+  }
+
   private JavaTree.CompilationUnitTreeImpl test(String source) {
     List<File> classpath = Collections.emptyList();
     JavaTree.CompilationUnitTreeImpl t = (JavaTree.CompilationUnitTreeImpl) JParser.parse(
