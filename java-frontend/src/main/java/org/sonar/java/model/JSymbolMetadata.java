@@ -21,6 +21,8 @@ package org.sonar.java.model;
 
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.resolve.AnnotationValueResolve;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -89,9 +91,29 @@ final class JSymbolMetadata implements SymbolMetadata {
     public List<AnnotationValue> values() {
       List<AnnotationValue> r = new ArrayList<>();
       for (IMemberValuePairBinding pair : annotationBinding.getDeclaredMemberValuePairs()) {
-        r.add(new AnnotationValueResolve(pair.getName(), pair.getValue()));
+        r.add(new AnnotationValueResolve(pair.getName(), convertAnnotationValue(pair.getValue())));
       }
       return r;
+    }
+
+    private Object convertAnnotationValue(Object value) {
+      if (value instanceof IVariableBinding) {
+        return sema.variableSymbol((IVariableBinding) value);
+      } else if (value instanceof ITypeBinding) {
+        return sema.typeSymbol((ITypeBinding) value);
+      } else if (value instanceof IAnnotationBinding) {
+        return sema.annotation((IAnnotationBinding) value);
+      } else if (value instanceof Object[]) {
+        // Godin: probably better to not modify original array
+        Object[] a = (Object[]) value;
+        Object[] result = new Object[a.length];
+        for (int i = 0; i < a.length; i++) {
+          result[i] = convertAnnotationValue(a[i]);
+        }
+        return result;
+      } else {
+        return value;
+      }
     }
   }
 
