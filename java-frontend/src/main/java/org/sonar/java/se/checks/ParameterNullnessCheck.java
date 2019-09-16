@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
@@ -72,7 +73,7 @@ public class ParameterNullnessCheck extends SECheck {
     int nbArguments = arguments.size();
     List<SymbolicValue> argumentSVs = getArgumentSVs(state, syntaxNode, nbArguments);
     List<JavaSymbol> argumentSymbols = methodSymbol.getParameters().scopeSymbols();
-    int nbArgumentToCheck = Math.min(nbArguments, argumentSymbols.size() - (methodSymbol.isVarArgs() ? 1 : 0));
+    int nbArgumentToCheck = Math.min(nbArguments, argumentSymbols.size() - (JUtils.isVarArgsMethod(methodSymbol) ? 1 : 0));
     for (int i = 0; i < nbArgumentToCheck; i++) {
       ObjectConstraint constraint = state.getConstraint(argumentSVs.get(i), ObjectConstraint.class);
       if (constraint != null && constraint.isNull() && !parameterIsNullable(methodSymbol, argumentSymbols.get(i))) {

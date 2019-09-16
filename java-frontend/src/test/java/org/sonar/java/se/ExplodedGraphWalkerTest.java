@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.BooleanGratuitousExpressionsCheck;
 import org.sonar.java.se.checks.ConditionalUnreachableCodeCheck;
@@ -568,7 +568,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   private static MethodBehavior methodBehaviorForSymbol(Symbol.MethodSymbol symbol) {
-    boolean varArgs = ((JavaSymbol.MethodJavaSymbol) symbol).isVarArgs();
+    boolean varArgs = JUtils.isVarArgsMethod(symbol);
     return new MethodBehavior(symbol.signature(), varArgs);
   }
 }

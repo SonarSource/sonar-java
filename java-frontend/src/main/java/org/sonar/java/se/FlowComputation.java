@@ -45,7 +45,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PSet;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.checks.SyntaxTreeNameFinder;
 import org.sonar.java.se.constraint.Constraint;
@@ -771,7 +771,7 @@ public class FlowComputation {
 
   public static Flow flowsForArgumentsChangingName(List<Integer> argumentIndices, MethodInvocationTree mit) {
 
-    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) mit.symbol();
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) mit.symbol();
     MethodTree declaration = methodSymbol.declaration();
     if (declaration == null) {
       return Flow.empty();
@@ -781,7 +781,7 @@ public class FlowComputation {
 
     for (Integer argumentIndex : argumentIndices) {
       // do not consider varargs part
-      if (methodSymbol.isVarArgs() && argumentIndex >= methodParameters.size() - 1) {
+      if (JUtils.isVarArgsMethod(methodSymbol) && argumentIndex >= methodParameters.size() - 1) {
         break;
       }
       IdentifierTree argumentName = getArgumentIdentifier(mit, argumentIndex);
