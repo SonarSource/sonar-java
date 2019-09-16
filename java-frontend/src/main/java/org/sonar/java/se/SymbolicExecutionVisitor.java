@@ -25,8 +25,7 @@ import java.util.List;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.resolve.Flags;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
@@ -93,7 +92,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   }
 
   public static boolean methodCanNotBeOverriden(Symbol.MethodSymbol methodSymbol) {
-    if (Flags.isFlagged(((JavaSymbol.MethodJavaSymbol) methodSymbol).flags(), Flags.NATIVE)) {
+    if (JUtils.isNativeMethod(methodSymbol)) {
       return false;
     }
     return !methodSymbol.isAbstract() &&

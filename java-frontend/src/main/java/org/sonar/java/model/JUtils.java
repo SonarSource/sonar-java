@@ -192,6 +192,13 @@ public final class JUtils {
     return Modifier.isSynchronized(((JMethodSymbol) method).binding.getModifiers());
   }
 
+  public static boolean isNativeMethod(Symbol.MethodSymbol method) {
+    if (!(method instanceof JMethodSymbol)) {
+      return Flags.isFlagged(((MethodJavaSymbol) method).flags(), Flags.NATIVE);
+    }
+    return Modifier.isNative(((JMethodSymbol) method).binding.getModifiers());
+  }
+
   /**
    * Replacement for {@link MethodJavaSymbol#isDefault()}
    */
