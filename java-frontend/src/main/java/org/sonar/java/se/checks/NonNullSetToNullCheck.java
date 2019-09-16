@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -220,21 +220,20 @@ public class NonNullSetToNullCheck extends SECheck {
     }
 
     private void checkNullArguments(Tree syntaxTree, Symbol.MethodSymbol symbol, List<SymbolicValue> argumentValues) {
-      List<JavaSymbol> scopeSymbols = ((JavaSymbol.MethodJavaSymbol) symbol).getParameters().scopeSymbols();
       int parametersToTest = argumentValues.size();
-      if (scopeSymbols.size() < parametersToTest) {
+      if (symbol.parameterTypes().size() < parametersToTest) {
         // The last parameter is a variable length argument: the non-null condition does not apply to its values
-        parametersToTest = scopeSymbols.size() - 1;
+        parametersToTest = symbol.parameterTypes().size() - 1;
       }
       for (int i = 0; i < parametersToTest; i++) {
-        checkNullArgument(syntaxTree, symbol, scopeSymbols.get(i), argumentValues.get(i), i);
+        checkNullArgument(syntaxTree, symbol, i, argumentValues.get(i), i);
       }
     }
 
-    private void checkNullArgument(Tree syntaxTree, Symbol.MethodSymbol symbol, Symbol argumentSymbol, SymbolicValue argumentValue, int index) {
+    private void checkNullArgument(Tree syntaxTree, Symbol.MethodSymbol symbol, int param, SymbolicValue argumentValue, int index) {
       ObjectConstraint constraint = programState.getConstraint(argumentValue, ObjectConstraint.class);
       if (constraint != null && constraint.isNull()) {
-        String nonNullAnnotation = nonNullAnnotation(argumentSymbol);
+        String nonNullAnnotation = nonNullAnnotation(JUtils.parameterAnnotations(symbol, param));
         if (nonNullAnnotation != null) {
           String message = "Parameter {0} to this {1} is marked \"{2}\" but null could be passed.";
           reportIssue(syntaxTree, message, index + 1, ("<init>".equals(symbol.name()) ? "constructor" : "call"), nonNullAnnotation);

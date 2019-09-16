@@ -167,6 +167,14 @@ public final class NullableAnnotationUtils {
   }
 
   @CheckForNull
+  public static String nonNullAnnotation(SymbolMetadata metadata) {
+    if (isAnnotatedNullable(metadata)) {
+      return null;
+    }
+    return NONNULL_ANNOTATIONS.stream().filter(metadata::isAnnotatedWith).findFirst().orElse(null);
+  }
+
+  @CheckForNull
   public static String nonNullAnnotation(Symbol symbol) {
     SymbolMetadata metadata = symbol.metadata();
     if (isAnnotatedNullable(symbol.metadata())) {
