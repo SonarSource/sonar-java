@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import com.google.common.collect.ImmutableBiMap;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -32,6 +33,7 @@ import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
@@ -323,6 +325,16 @@ public final class JUtils {
    */
   public static Symbol typeParameterTreeSymbol(TypeParameterTree tree) {
     return ((TypeParameterTreeImpl) tree).symbol();
+  }
+
+  public static SymbolMetadata parameterAnnotations(Symbol.MethodSymbol method, int param) {
+    if (!(method instanceof JSymbol)) {
+      return ((MethodJavaSymbol) method).getParameters().scopeSymbols().get(param).metadata();
+    }
+    return new JSymbolMetadata(
+      ((JSymbol) method).sema,
+      ((IMethodBinding) ((JSymbol) method).binding).getParameterAnnotations(param)
+    );
   }
 
 }

@@ -76,7 +76,7 @@ public class ParameterNullnessCheck extends SECheck {
     int nbArgumentToCheck = Math.min(nbArguments, argumentSymbols.size() - (JUtils.isVarArgsMethod(methodSymbol) ? 1 : 0));
     for (int i = 0; i < nbArgumentToCheck; i++) {
       ObjectConstraint constraint = state.getConstraint(argumentSVs.get(i), ObjectConstraint.class);
-      if (constraint != null && constraint.isNull() && !parameterIsNullable(methodSymbol, argumentSymbols.get(i))) {
+      if (constraint != null && constraint.isNull() && !parameterIsNullable(methodSymbol, i)) {
         reportIssue(syntaxNode, arguments.get(i), methodSymbol);
       }
     }
@@ -113,7 +113,7 @@ public class ParameterNullnessCheck extends SECheck {
     return Lists.reverse(state.peekValues(nbArguments));
   }
 
-  private static boolean parameterIsNullable(Symbol.MethodSymbol method, Symbol argumentSymbol) {
-    return isAnnotatedNullable(argumentSymbol) || EQUALS_METHODS.anyMatch(method);
+  private static boolean parameterIsNullable(Symbol.MethodSymbol method, int param) {
+    return isAnnotatedNullable(JUtils.parameterAnnotations(method, param)) || EQUALS_METHODS.anyMatch(method);
   }
 }

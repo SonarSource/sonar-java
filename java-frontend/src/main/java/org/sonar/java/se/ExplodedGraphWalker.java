@@ -385,7 +385,7 @@ public class ExplodedGraphWalker {
     if (variableSymbol.type().isPrimitive()) {
       return false;
     }
-    return isAnnotatedNullable(variableSymbol) || (nullableParameters && !isAnnotatedNonNull(variableSymbol));
+    return isAnnotatedNullable(variableSymbol.metadata()) || (nullableParameters && !isAnnotatedNonNull(variableSymbol));
   }
 
   private void cleanUpProgramState(CFG.Block block) {

@@ -72,17 +72,16 @@ public final class NullableAnnotationUtils {
     "org.checkerframework.checker.nullness.qual.NonNull",
     "org.checkerframework.checker.nullness.compatqual.NonNullDecl");
 
-  public static boolean isAnnotatedNullable(Symbol symbol) {
-    return isUsingNullable(symbol) || collectMetaAnnotations(symbol).stream().anyMatch(NullableAnnotationUtils::isUsingNullable);
+  public static boolean isAnnotatedNullable(SymbolMetadata metadata) {
+    return isUsingNullable(metadata) || collectMetaAnnotations(metadata).stream().map(Symbol::metadata).anyMatch(NullableAnnotationUtils::isUsingNullable);
   }
 
-  private static boolean isUsingNullable(Symbol symbol) {
-    SymbolMetadata metadata = symbol.metadata();
-    return NULLABLE_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith) || isNullableThroughNonNull(symbol);
+  private static boolean isUsingNullable(SymbolMetadata metadata) {
+    return NULLABLE_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith) || isNullableThroughNonNull(metadata);
   }
 
-  private static boolean isNullableThroughNonNull(Symbol symbol) {
-    List<SymbolMetadata.AnnotationValue> valuesForAnnotation = symbol.metadata().valuesForAnnotation("javax.annotation.Nonnull");
+  private static boolean isNullableThroughNonNull(SymbolMetadata metadata) {
+    List<SymbolMetadata.AnnotationValue> valuesForAnnotation = metadata.valuesForAnnotation("javax.annotation.Nonnull");
     if (valuesForAnnotation == null || valuesForAnnotation.isEmpty()) {
       return false;
     }
@@ -129,14 +128,14 @@ public final class NullableAnnotationUtils {
   }
 
   public static boolean isAnnotatedNonNull(Symbol symbol) {
-    if (isAnnotatedNullable(symbol)) {
+    if (isAnnotatedNullable(symbol.metadata())) {
       return false;
     }
-    return isUsingNonNull(symbol) || collectMetaAnnotations(symbol).stream().anyMatch(NullableAnnotationUtils::isUsingNonNull);
+    return isUsingNonNull(symbol) || collectMetaAnnotations(symbol.metadata()).stream().anyMatch(NullableAnnotationUtils::isUsingNonNull);
   }
 
   private static boolean isUsingNonNull(Symbol symbol) {
-    if (isNullableThroughNonNull(symbol)) {
+    if (isNullableThroughNonNull(symbol.metadata())) {
       return false;
     }
     SymbolMetadata metadata = symbol.metadata();
@@ -147,7 +146,7 @@ public final class NullableAnnotationUtils {
 
   @CheckForNull
   private static String nonNullFieldAnnotation(Symbol symbol) {
-    if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !isUsingNullable(symbol)
+    if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !isUsingNullable(symbol.metadata())
       && valuesForGlobalAnnotation(symbol, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS) != null) {
       return ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS;
     }
@@ -156,7 +155,7 @@ public final class NullableAnnotationUtils {
 
   @CheckForNull
   private static String nonNullReturnTypeAnnotation(Symbol symbol) {
-    if (symbol.isMethodSymbol() && !isUsingNullable(symbol)) {
+    if (symbol.isMethodSymbol() && !isUsingNullable(symbol.metadata())) {
       Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
       if (isGloballyAnnotatedWithEclipseNonNullByDefault(methodSymbol, "RETURN_TYPE")) {
         return ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT;
@@ -170,7 +169,7 @@ public final class NullableAnnotationUtils {
   @CheckForNull
   public static String nonNullAnnotation(Symbol symbol) {
     SymbolMetadata metadata = symbol.metadata();
-    if (isAnnotatedNullable(symbol)) {
+    if (isAnnotatedNullable(symbol.metadata())) {
       return null;
     }
     Optional<String> result = NONNULL_ANNOTATIONS.stream().filter(metadata::isAnnotatedWith).findFirst();
@@ -221,20 +220,20 @@ public final class NullableAnnotationUtils {
     return valuesForGlobalAnnotation.isEmpty() || checkAnnotationParameter(valuesForGlobalAnnotation, "value", parameter);
   }
 
-  private static ArrayList<Symbol> collectMetaAnnotations(Symbol symbol) {
-    return collectMetaAnnotations(symbol, new HashSet<>());
+  private static ArrayList<Symbol> collectMetaAnnotations(SymbolMetadata metadata) {
+    return collectMetaAnnotations(metadata, new HashSet<>());
   }
 
-  private static ArrayList<Symbol> collectMetaAnnotations(Symbol symbol, Set<Type> knownTypes) {
+  private static ArrayList<Symbol> collectMetaAnnotations(SymbolMetadata metadata, Set<Type> knownTypes) {
     List<Symbol> result = new ArrayList<>();
-    for (SymbolMetadata.AnnotationInstance annotationInstance : symbol.metadata().annotations()) {
+    for (SymbolMetadata.AnnotationInstance annotationInstance : metadata.annotations()) {
       Symbol annotationSymbol = annotationInstance.symbol();
       Type annotationType = annotationSymbol.type();
       if (!knownTypes.contains(annotationType)) {
         knownTypes.add(annotationType);
         result.add(annotationSymbol);
         result.addAll(
-          collectMetaAnnotations(annotationSymbol, knownTypes)
+          collectMetaAnnotations(annotationSymbol.metadata(), knownTypes)
         );
       }
     }

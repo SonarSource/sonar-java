@@ -27,12 +27,27 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-abstract class JSymbolMetadata implements SymbolMetadata {
+final class JSymbolMetadata implements SymbolMetadata {
+
+  private final JSema sema;
+  private final IAnnotationBinding[] annotationBindings;
+
+  JSymbolMetadata(JSema sema, IAnnotationBinding[] annotationBindings) {
+    this.sema = Objects.requireNonNull(sema);
+    this.annotationBindings = annotationBindings;
+  }
 
   @Override
-  public abstract List<AnnotationInstance> annotations();
+  public List<AnnotationInstance> annotations() {
+    return Arrays.stream(annotationBindings)
+      .map(sema::annotation)
+      .collect(Collectors.toList());
+  }
 
   @Override
   public final boolean isAnnotatedWith(String fullyQualifiedName) {
@@ -57,17 +72,17 @@ abstract class JSymbolMetadata implements SymbolMetadata {
   }
 
   static final class JAnnotationInstance implements AnnotationInstance {
-    private final JSema ast;
+    private final JSema sema;
     private final IAnnotationBinding annotationBinding;
 
-    JAnnotationInstance(JSema ast, IAnnotationBinding annotationBinding) {
-      this.ast = ast;
+    JAnnotationInstance(JSema sema, IAnnotationBinding annotationBinding) {
+      this.sema = sema;
       this.annotationBinding = annotationBinding;
     }
 
     @Override
     public Symbol symbol() {
-      return ast.typeSymbol(annotationBinding.getAnnotationType());
+      return sema.typeSymbol(annotationBinding.getAnnotationType());
     }
 
     @Override

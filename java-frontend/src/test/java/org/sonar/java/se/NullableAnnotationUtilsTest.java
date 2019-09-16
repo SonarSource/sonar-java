@@ -132,10 +132,10 @@ public class NullableAnnotationUtilsTest {
   @Test
   public void testIsAnnotatedNullable() {
     Symbol foo = getSymbol("foo");
-    assertThat(isAnnotatedNullable(foo)).isFalse();
+    assertThat(isAnnotatedNullable(foo.metadata())).isFalse();
 
     getSymbols("nullable").forEach(s -> {
-      assertThat(isAnnotatedNullable(s)).as(s + " should be recognized as Nullable.").isTrue();
+      assertThat(isAnnotatedNullable(s.metadata())).as(s + " should be recognized as Nullable.").isTrue();
       assertThat(isAnnotatedNonNull(s)).as(s + " should NOT be recognized as Nonnull.").isFalse();
     });
   }
@@ -147,7 +147,7 @@ public class NullableAnnotationUtilsTest {
 
     getSymbols("nonnull").forEach(s -> {
       assertThat(isAnnotatedNonNull(s)).as(s + " should be recognized as Nonnull.").isTrue();
-      assertThat(isAnnotatedNullable(s)).as(s + " should NOT be recognized as Nullable.").isFalse();
+      assertThat(isAnnotatedNullable(s.metadata())).as(s + " should NOT be recognized as Nullable.").isFalse();
     });
   }
 
