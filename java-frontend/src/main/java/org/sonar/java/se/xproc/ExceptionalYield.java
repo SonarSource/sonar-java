@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.Sema;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
@@ -61,7 +61,7 @@ public class ExceptionalYield extends MethodYield {
     this.exceptionType = exceptionType;
   }
 
-  public Type exceptionType(SemanticModel semanticModel) {
+  public Type exceptionType(Sema semanticModel) {
     if (exceptionType == null) {
       return Symbols.unknownType;
     }

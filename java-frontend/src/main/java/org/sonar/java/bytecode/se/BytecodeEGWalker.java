@@ -40,7 +40,7 @@ import org.sonar.java.bytecode.cfg.BytecodeCFG;
 import org.sonar.java.bytecode.cfg.BytecodeCFGMethodVisitor;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.Sema;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.java.se.ExceptionUtils;
 import org.sonar.java.se.ExplodedGraph;
@@ -224,7 +224,7 @@ public class BytecodeEGWalker {
   private static final int MAX_STEPS = 16_000;
 
   private final BehaviorCache behaviorCache;
-  private final SemanticModel semanticModel;
+  private final Sema semanticModel;
 
   @VisibleForTesting
   ExplodedGraph explodedGraph;
@@ -268,7 +268,7 @@ public class BytecodeEGWalker {
   MethodBehavior methodBehavior;
   private CheckerDispatcher checkerDispatcher;
 
-  public BytecodeEGWalker(BehaviorCache behaviorCache, SemanticModel semanticModel){
+  public BytecodeEGWalker(BehaviorCache behaviorCache, Sema semanticModel) {
     this.behaviorCache = behaviorCache;
     this.semanticModel = semanticModel;
     checkerDispatcher = new CheckerDispatcher(this, Lists.newArrayList(

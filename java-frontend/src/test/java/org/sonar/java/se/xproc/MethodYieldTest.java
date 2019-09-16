@@ -37,6 +37,7 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
+import org.sonar.java.model.Sema;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraph;
@@ -226,7 +227,7 @@ public class MethodYieldTest {
   public void constraints_on_varargs() throws Exception {
     ActionParser<Tree> p = JavaParser.createParser();
     CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File("src/test/files/se/VarArgsYields.java"));
-    SemanticModel semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(new ArrayList<>()));
+    Sema semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(new ArrayList<>()));
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(new SECheck[]{}), new BehaviorCache(new SquidClassLoader(new ArrayList<>())));
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getTree()).thenReturn(cut);

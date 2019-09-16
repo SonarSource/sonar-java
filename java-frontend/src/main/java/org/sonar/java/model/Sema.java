@@ -17,45 +17,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.constraint;
+package org.sonar.java.model;
 
-import java.util.Objects;
-import org.sonar.java.model.Sema;
-import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 
-public class TypedConstraint implements Constraint {
+public interface Sema {
 
-  public final String type;
+  Type getClassType(String fullyQualifiedName);
 
-  public TypedConstraint(String type) {
-    this.type = type;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    if (type.charAt(0) == '!') {
-      return false;
-    }
-    TypedConstraint that = (TypedConstraint) o;
-    return type.equals(that.type);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(type);
-  }
-
-  public Type getType(Sema semanticModel) {
-    if (type.charAt(0) == '!') {
-      return Symbols.unknownType;
-    }
-    return semanticModel.getClassType(type);
-  }
 }

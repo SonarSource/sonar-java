@@ -26,6 +26,7 @@ import javax.annotation.CheckForNull;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -40,7 +41,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class SemanticModel {
+/**
+ * @deprecated use {@link Sema} instead
+ */
+@Deprecated
+public class SemanticModel implements Sema {
 
   private final Map<Tree, Symbol> symbolsTree = new HashMap<>();
 
@@ -132,6 +137,7 @@ public class SemanticModel {
     return getEnv(tree).enclosingClass;
   }
 
+  @Override
   public Type getClassType(String fullyQualifiedName) {
     return bytecodeCompleter.loadClass(fullyQualifiedName).type();
   }

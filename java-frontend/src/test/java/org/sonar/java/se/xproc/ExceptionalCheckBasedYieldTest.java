@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.Sema;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.ProgramState;
@@ -55,9 +55,9 @@ public class ExceptionalCheckBasedYieldTest {
     SymbolicExecutionVisitor sev;
     MethodBehavior mb;
 
-    Pair<SymbolicExecutionVisitor, SemanticModel> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(FILENAME);
+    Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(FILENAME);
     sev = visitorAndSemantic.a;
-    SemanticModel semanticModel = visitorAndSemantic.b;
+    Sema semanticModel = visitorAndSemantic.b;
     mb = getMethodBehavior(sev, methodName);
 
     // no creation of custom yields, 3 method yields

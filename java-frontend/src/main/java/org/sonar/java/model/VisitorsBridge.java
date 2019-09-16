@@ -199,7 +199,7 @@ public class VisitorsBridge {
   }
 
   protected JavaFileScannerContext createScannerContext(
-    CompilationUnitTree tree, SemanticModel semanticModel, SonarComponents sonarComponents, boolean fileParsed) {
+    CompilationUnitTree tree, Sema semanticModel, SonarComponents sonarComponents, boolean fileParsed) {
     return new DefaultJavaFileScannerContext(
       tree,
       currentFile,

@@ -37,6 +37,8 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -47,7 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class JSema {
+public final class JSema implements Sema {
 
   private final AST ast;
   final Map<IBinding, Tree> declarations = new HashMap<>();
@@ -95,6 +97,12 @@ public final class JSema {
       default:
         return binding;
     }
+  }
+
+  @Override
+  public Type getClassType(String fullyQualifiedName) {
+    ITypeBinding typeBinding = resolveType(fullyQualifiedName);
+    return typeBinding != null ? type(typeBinding) : Symbols.unknownType;
   }
 
   @Nullable

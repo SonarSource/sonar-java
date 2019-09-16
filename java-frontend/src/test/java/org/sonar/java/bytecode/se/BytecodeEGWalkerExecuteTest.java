@@ -41,6 +41,7 @@ import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.cfg.Instructions;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.model.Sema;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
@@ -105,7 +106,7 @@ public class BytecodeEGWalkerExecuteTest {
   private static final String TRY_WRONG_CATCH_SIGNATURE = BytecodeEGWalkerExecuteTest.class.getCanonicalName() + "#tryWrongCatch(Z)V";
 
 
-  static SemanticModel semanticModel;
+  static Sema semanticModel;
   private BytecodeEGWalker walker;
   private static SquidClassLoader squidClassLoader;
 
@@ -131,7 +132,7 @@ public class BytecodeEGWalkerExecuteTest {
   public void athrow_should_not_be_linked_to_next_label() throws Exception {
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse("class A {int field;}");
     SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/JsrRet")));
-    SemanticModel semanticModel = SemanticModel.createFor(tree, classLoader);
+    Sema semanticModel = SemanticModel.createFor(tree, classLoader);
     BehaviorCache behaviorCache = new BehaviorCache(classLoader);
     behaviorCache.setFileContext(null, semanticModel);
     BytecodeEGWalker walker = new BytecodeEGWalker(behaviorCache, semanticModel);

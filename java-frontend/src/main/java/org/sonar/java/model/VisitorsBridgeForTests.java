@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -63,9 +62,9 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   }
 
   @Override
-  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, SemanticModel semanticModel,
+  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, Sema semanticModel,
                                                         SonarComponents sonarComponents, boolean failedParsing) {
-    SemanticModel model = enableSemantic ? semanticModel : null;
+    Sema model = enableSemantic ? semanticModel : null;
     testContext = new TestJavaFileScannerContext(tree, currentFile, model, sonarComponents, javaVersion, failedParsing);
     return testContext;
   }
@@ -79,7 +78,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     private final Set<AnalyzerMessage> issues = new HashSet<>();
     private final SonarComponents sonarComponents;
 
-    public TestJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, SemanticModel semanticModel,
+    public TestJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                       @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean failedParsing) {
       super(tree, inputFile, semanticModel, sonarComponents, javaVersion, failedParsing);
       this.sonarComponents = sonarComponents;

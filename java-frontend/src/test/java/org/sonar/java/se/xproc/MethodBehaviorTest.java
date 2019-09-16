@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.junit.Test;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.Sema;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -81,9 +81,9 @@ public class MethodBehaviorTest {
 
   @Test
   public void method_behavior_handling_finally() {
-    Pair<SymbolicExecutionVisitor, SemanticModel> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/resources/se/ReturnAndFinally.java");
+    Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/resources/se/ReturnAndFinally.java");
     SymbolicExecutionVisitor sev = visitorAndSemantic.a;
-    SemanticModel semanticModel = visitorAndSemantic.b;
+    Sema semanticModel = visitorAndSemantic.b;
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
 
     MethodBehavior foo = getMethodBehavior(sev, "foo");
@@ -172,10 +172,10 @@ public class MethodBehaviorTest {
 
   @Test
   public void anonymous_classes_used_as_exception_should_be_resolved_to_supertype() {
-    Pair<SymbolicExecutionVisitor, SemanticModel> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(
+    Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(
       "src/test/java/org/sonar/java/resolve/targets/TestExceptionSupertypeResolution.java");
     SymbolicExecutionVisitor sev = visitorAndSemantic.a;
-    SemanticModel semanticModel = visitorAndSemantic.b;
+    Sema semanticModel = visitorAndSemantic.b;
     MethodBehavior mb = getMethodBehavior(sev, "throwException");
     List<ExceptionalYield> exceptionYields = mb.exceptionalPathYields().collect(Collectors.toList());
     assertThat(exceptionYields).hasSize(3);

@@ -39,6 +39,7 @@ import org.sonar.java.bytecode.se.testdata.BytecodeTestClass;
 import org.sonar.java.bytecode.se.testdata.ExceptionEnqueue;
 import org.sonar.java.bytecode.se.testdata.FinalBytecodeTestClass;
 import org.sonar.java.bytecode.se.testdata.MaxRelationBytecode;
+import org.sonar.java.model.Sema;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
@@ -62,7 +63,7 @@ public class BytecodeEGWalkerTest {
   @Rule
   public LogTester logTester = new LogTester();
 
-  private static SemanticModel semanticModel;
+  private static Sema semanticModel;
 
   @BeforeClass
   public static void setUp() throws Exception {

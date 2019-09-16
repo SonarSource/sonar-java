@@ -37,6 +37,7 @@ import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.MethodLookup;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.Sema;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
@@ -61,11 +62,11 @@ public class SETestUtils {
     return createSymbolicExecutionVisitorAndSemantic(fileName, checks).a;
   }
 
-  public static Pair<SymbolicExecutionVisitor, SemanticModel> createSymbolicExecutionVisitorAndSemantic(String fileName, SECheck... checks) {
+  public static Pair<SymbolicExecutionVisitor, Sema> createSymbolicExecutionVisitorAndSemantic(String fileName, SECheck... checks) {
     return createSymbolicExecutionVisitorAndSemantic(fileName, true, checks);
   }
 
-  public static Pair<SymbolicExecutionVisitor, SemanticModel> createSymbolicExecutionVisitorAndSemantic(String fileName, boolean crossFileEnabled, SECheck... checks) {
+  public static Pair<SymbolicExecutionVisitor, Sema> createSymbolicExecutionVisitorAndSemantic(String fileName, boolean crossFileEnabled, SECheck... checks) {
     InputFile inputFile = TestUtils.inputFile(fileName);
     CompilationUnitTree cut;
     try {
@@ -73,7 +74,7 @@ public class SETestUtils {
     } catch (IOException e) {
       throw new IllegalStateException(String.format("Unable to load file for test: '%s'", inputFile));
     }
-    SemanticModel semanticModel = SemanticModel.createFor(cut, CLASSLOADER);
+    Sema semanticModel = SemanticModel.createFor(cut, CLASSLOADER);
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks), new BehaviorCache(CLASSLOADER, crossFileEnabled));
     sev.scanFile(new DefaultJavaFileScannerContext(cut, inputFile, semanticModel, null, new JavaVersionImpl(8), true));
     return new Pair<>(sev, semanticModel);

@@ -50,8 +50,8 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.Sema;
 import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Types;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -144,7 +144,7 @@ public class ExplodedGraphWalker {
   CheckerDispatcher checkerDispatcher;
   private CFG.Block exitBlock;
 
-  private final SemanticModel semanticModel;
+  private final Sema semanticModel;
   private final BehaviorCache behaviorCache;
   @VisibleForTesting
   int steps;
@@ -183,7 +183,7 @@ public class ExplodedGraphWalker {
   }
 
   @VisibleForTesting
-  public ExplodedGraphWalker(BehaviorCache behaviorCache, SemanticModel semanticModel) {
+  public ExplodedGraphWalker(BehaviorCache behaviorCache, Sema semanticModel) {
     List<SECheck> checks = Lists.newArrayList(new NullDereferenceCheck(), new DivisionByZeroCheck(),
       new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck());
     this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
@@ -193,13 +193,13 @@ public class ExplodedGraphWalker {
   }
 
   @VisibleForTesting
-  ExplodedGraphWalker(BehaviorCache behaviorCache, SemanticModel semanticModel, boolean cleanup) {
+  ExplodedGraphWalker(BehaviorCache behaviorCache, Sema semanticModel, boolean cleanup) {
     this(behaviorCache, semanticModel);
     this.cleanup = cleanup;
   }
 
   @VisibleForTesting
-  protected ExplodedGraphWalker(List<SECheck> seChecks, BehaviorCache behaviorCache, SemanticModel semanticModel) {
+  protected ExplodedGraphWalker(List<SECheck> seChecks, BehaviorCache behaviorCache, Sema semanticModel) {
     this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
     this.checkerDispatcher = new CheckerDispatcher(this, seChecks);
     this.behaviorCache = behaviorCache;
@@ -1193,7 +1193,7 @@ public class ExplodedGraphWalker {
       seChecks.addAll(checks);
     }
 
-    public ExplodedGraphWalker createWalker(BehaviorCache behaviorCache, SemanticModel semanticModel) {
+    public ExplodedGraphWalker createWalker(BehaviorCache behaviorCache, Sema semanticModel) {
       return new ExplodedGraphWalker(seChecks, behaviorCache, semanticModel);
     }
 

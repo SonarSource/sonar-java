@@ -32,6 +32,7 @@ import org.objectweb.asm.Opcodes;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.model.Sema;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramPoint;
@@ -54,7 +55,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
 
   private static SquidClassLoader squidClassLoader;
   private static BytecodeEGWalker walker;
-  private static SemanticModel semanticModel;
+  private static Sema semanticModel;
   private SymbolicValue sv1;
   private SymbolicValue sv2;
   private ProgramState zeroZeroPs;

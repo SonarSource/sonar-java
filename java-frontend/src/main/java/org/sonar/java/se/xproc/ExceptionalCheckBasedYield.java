@@ -23,7 +23,7 @@ import com.google.common.base.Preconditions;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.Sema;
 import org.sonar.java.se.ExplodedGraph.Node;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.FlowComputation;
@@ -129,7 +129,7 @@ public class ExceptionalCheckBasedYield extends ExceptionalYield {
 
   @Nonnull
   @Override
-  public Type exceptionType(SemanticModel semanticModel) {
+  public Type exceptionType(Sema semanticModel) {
     Type exceptionType = super.exceptionType(semanticModel);
     Preconditions.checkArgument(!exceptionType.isUnknown(), "Exception type is required");
     return exceptionType;

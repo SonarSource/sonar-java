@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.model.Sema;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
@@ -58,7 +59,8 @@ public class ExceptionalYieldTest {
 
     yield.setExceptionType("java.lang.Exception");
     assertThat(yield).isEqualTo(otherYield);
-    SemanticModel semanticModel = SemanticModel.createFor((CompilationUnitTree) JavaParser.createParser().parse("class A{}"), new SquidClassLoader(new ArrayList<>()));
+
+    Sema semanticModel = SemanticModel.createFor((CompilationUnitTree) JavaParser.createParser().parse("class A{}"), new SquidClassLoader(new ArrayList<>()));
     assertThat(yield.exceptionType(semanticModel)).isEqualTo(otherYield.exceptionType(semanticModel));
 
     // same arity and parameters but happy yield
@@ -85,9 +87,9 @@ public class ExceptionalYieldTest {
 
   @Test
   public void exceptional_yields() {
-    Pair<SymbolicExecutionVisitor, SemanticModel> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYields.java");
+    Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYields.java");
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
-    SemanticModel semanticModel = sevAndSemantic.b;
+    Sema semanticModel = sevAndSemantic.b;
 
     MethodBehavior mb = getMethodBehavior(sev, "myMethod");
     assertThat(mb.yields()).hasSize(4);
@@ -126,9 +128,9 @@ public class ExceptionalYieldTest {
 
   @Test
   public void exceptional_yields_void_method() {
-    Pair<SymbolicExecutionVisitor, SemanticModel> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYieldsVoidMethod.java");
+    Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYieldsVoidMethod.java");
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
-    SemanticModel semanticModel = sevAndSemantic.b;
+    Sema semanticModel = sevAndSemantic.b;
     MethodBehavior mb = getMethodBehavior(sev, "myVoidMethod");
     assertThat(mb.yields()).hasSize(4);
 

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +31,6 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -41,15 +39,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final CompilationUnitTree tree;
-  @VisibleForTesting
-  private final SemanticModel semanticModel;
+  private final Sema semanticModel;
   private final SonarComponents sonarComponents;
   private final ComplexityVisitor complexityVisitor;
   private final InputFile inputFile;
   private final JavaVersion javaVersion;
   private final boolean fileParsed;
 
-  public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, SemanticModel semanticModel,
+  public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean fileParsed) {
     this.tree = tree;
     this.inputFile = inputFile;

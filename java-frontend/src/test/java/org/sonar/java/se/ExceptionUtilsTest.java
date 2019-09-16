@@ -20,7 +20,7 @@
 package org.sonar.java.se;
 
 import org.junit.Test;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.Sema;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -32,7 +32,7 @@ public class ExceptionUtilsTest {
   public void test_is_unchecked_exception() {
     assertThat(ExceptionUtils.isUncheckedException(null)).isFalse();
     assertThat(ExceptionUtils.isUncheckedException(Symbols.unknownType)).isFalse();
-    SemanticModel semanticModel = SETestUtils.getSemanticModel("src/test/java/org/sonar/java/se/ExceptionUtilsTest.java");
+    Sema semanticModel = SETestUtils.getSemanticModel("src/test/java/org/sonar/java/se/ExceptionUtilsTest.java");
     Type ex = semanticModel.getClassType("java.lang.IllegalArgumentException");
     assertThat(ExceptionUtils.isUncheckedException(ex)).isTrue();
     ex = semanticModel.getClassType("java.lang.Exception");
