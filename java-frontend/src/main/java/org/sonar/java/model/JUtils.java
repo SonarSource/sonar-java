@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -136,6 +137,13 @@ public final class JUtils {
       return symbol.owner().isMethodSymbol() && ((JavaSymbol.MethodJavaSymbol) symbol.owner()).getParameters().scopeSymbols().contains(symbol);
     }
     return symbol.isVariableSymbol() && ((IVariableBinding) ((JVariableSymbol) symbol).binding).isParameter();
+  }
+
+  public static Optional<Object> constantValue(Symbol.VariableSymbol symbol) {
+    if (!(symbol instanceof JSymbol)) {
+      return ((JavaSymbol.VariableJavaSymbol) symbol).constantValue();
+    }
+    return Optional.ofNullable(((IVariableBinding) ((JVariableSymbol) symbol).binding).getConstantValue());
   }
 
   /**

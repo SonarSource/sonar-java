@@ -20,8 +20,8 @@
 package org.sonar.java.checks.helpers;
 
 import javax.annotation.CheckForNull;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -110,7 +110,7 @@ public class ConstantUtils {
         return Boolean.FALSE;
       }
     }
-    return ((JavaSymbol.VariableJavaSymbol) symbol).constantValue().orElse(null);
+    return JUtils.constantValue((Symbol.VariableSymbol) symbol).orElse(null);
   }
 
   @CheckForNull
