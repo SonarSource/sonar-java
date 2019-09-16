@@ -74,72 +74,72 @@ public class JLabelSymbol implements Symbol.LabelSymbol, Symbol {
 
   @Override
   public boolean isTypeSymbol() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isMethodSymbol() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isPackageSymbol() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isStatic() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isFinal() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isEnum() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isInterface() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isAbstract() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isPublic() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isPrivate() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isProtected() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isPackageVisibility() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isDeprecated() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override
   public boolean isVolatile() {
-    throw new UnsupportedOperationException();
+    return false;
   }
 
   @Override

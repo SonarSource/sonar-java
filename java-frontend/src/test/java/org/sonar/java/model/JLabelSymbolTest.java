@@ -34,20 +34,20 @@ class JLabelSymbolTest {
       () -> assertThat(symbol.owner()).isNull(), // see e.g. InnerStaticClassesCheck
       () -> assertThat(symbol.type()).isSameAs(Symbols.unknownType), // see e.g. MethodIdenticalImplementationsCheck
       () -> assertThat(symbol.isVariableSymbol()).isFalse(), // see e.g. LombokFilter
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isTypeSymbol),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isMethodSymbol),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isPackageSymbol),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isStatic),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isFinal),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isEnum),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isInterface),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isAbstract),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isPublic),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isPrivate),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isProtected),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isPackageVisibility),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isDeprecated),
-      () -> assertThrows(UnsupportedOperationException.class, symbol::isVolatile),
+      () -> assertThat(symbol.isTypeSymbol()).isFalse(),
+      () -> assertThat(symbol.isMethodSymbol()).isFalse(),
+      () -> assertThat(symbol.isPackageSymbol()).isFalse(),
+      () -> assertThat(symbol.isStatic()).isFalse(),
+      () -> assertThat(symbol.isFinal()).isFalse(),
+      () -> assertThat(symbol.isEnum()).isFalse(),
+      () -> assertThat(symbol.isInterface()).isFalse(),
+      () -> assertThat(symbol.isAbstract()).isFalse(),
+      () -> assertThat(symbol.isPublic()).isFalse(),
+      () -> assertThat(symbol.isPrivate()).isFalse(),
+      () -> assertThat(symbol.isProtected()).isFalse(),
+      () -> assertThat(symbol.isPackageVisibility()).isFalse(),
+      () -> assertThat(symbol.isDeprecated()).isFalse(), // see e.g. CallToDeprecatedMethodCheck
+      () -> assertThat(symbol.isVolatile()).isFalse(),
       () -> assertThat(symbol.isUnknown()).isFalse(), // see e.g. StaticMethodCheck
       () -> assertThat(symbol.metadata()).isNotNull(),
       () -> assertThat(symbol.enclosingClass()).isNull() // see e.g. StandardInputReadCheck
