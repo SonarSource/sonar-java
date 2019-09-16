@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -70,7 +70,7 @@ public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisito
   private static Symbol getParam(ExpressionTree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
       Symbol reference = ((IdentifierTree) tree).symbol();
-      if (reference.owner().isMethodSymbol() && ((JavaSymbol.MethodJavaSymbol) reference.owner()).getParameters().scopeSymbols().contains(reference)) {
+      if (JUtils.isParameter(reference)) {
         return reference;
       }
     }

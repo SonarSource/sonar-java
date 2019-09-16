@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import com.google.common.collect.ImmutableBiMap;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.Flags;
@@ -128,6 +129,13 @@ public final class JUtils {
       return ((TypeJavaSymbol) typeSymbol).isAnnotation();
     }
     return ((JTypeSymbol) typeSymbol).typeBinding().isAnnotation();
+  }
+
+  public static boolean isParameter(Symbol symbol) {
+    if (!(symbol instanceof JSymbol)) {
+      return symbol.owner().isMethodSymbol() && ((JavaSymbol.MethodJavaSymbol) symbol.owner()).getParameters().scopeSymbols().contains(symbol);
+    }
+    return symbol.isVariableSymbol() && ((IVariableBinding) ((JVariableSymbol) symbol).binding).isParameter();
   }
 
   /**
