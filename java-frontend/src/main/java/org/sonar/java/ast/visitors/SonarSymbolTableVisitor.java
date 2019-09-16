@@ -21,8 +21,9 @@ package org.sonar.java.ast.visitors;
 
 import org.sonar.api.batch.sensor.symbol.NewSymbol;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
-import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbols;
+import org.sonar.java.model.JUtils;
+import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -42,12 +43,10 @@ import java.util.List;
 public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
   private final NewSymbolTable newSymbolTable;
-  private final SemanticModel semanticModel;
   private CompilationUnitTree outerClass;
 
-  public SonarSymbolTableVisitor(NewSymbolTable newSymbolTable, SemanticModel semanticModel) {
+  public SonarSymbolTableVisitor(NewSymbolTable newSymbolTable) {
     this.newSymbolTable = newSymbolTable;
-    this.semanticModel = semanticModel;
   }
 
   @Override
@@ -69,7 +68,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
       createSymbol(simpleName, tree.symbol().usages());
     }
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-      createSymbol(typeParameterTree.identifier(), typeParameterTree);
+      createSymbol(typeParameterTree.identifier(), JUtils.typeParameterTreeSymbol(typeParameterTree).usages());
     }
     super.visitClass(tree);
   }
@@ -82,7 +81,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
-    createSymbol(tree.simpleName(), tree);
+    createSymbol(tree.simpleName(), ((VariableTreeImpl) tree).symbol().usages());
     super.visitEnumConstant(tree);
   }
 
@@ -91,7 +90,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
     List<IdentifierTree> usages = tree.symbol().usages();
     createSymbol(tree.simpleName(), usages);
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-      createSymbol(typeParameterTree.identifier(), typeParameterTree);
+      createSymbol(typeParameterTree.identifier(), JUtils.typeParameterTreeSymbol(typeParameterTree).usages());
     }
     super.visitMethod(tree);
   }
@@ -112,17 +111,12 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
     }
     // Exclude on demands imports
     if (!"*".equals(identifierTree.name())) {
-      createSymbol(identifierTree, tree);
+      Symbol symbol = JUtils.importTreeSymbol(tree);
+      if (symbol != null) {
+        createSymbol(identifierTree, symbol.usages());
+      }
     }
     super.visitImport(tree);
-  }
-
-  private void createSymbol(IdentifierTree declaration, Tree tree) {
-    org.sonar.plugins.java.api.semantic.Symbol semanticSymbol = semanticModel.getSymbol(tree);
-    if (semanticSymbol == null) {
-      semanticSymbol = Symbols.unknownSymbol;
-    }
-    createSymbol(declaration, semanticSymbol.usages());
   }
 
   private void createSymbol(IdentifierTree declaration, List<IdentifierTree> usages) {

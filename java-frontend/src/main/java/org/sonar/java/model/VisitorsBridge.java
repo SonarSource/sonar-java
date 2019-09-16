@@ -228,7 +228,7 @@ public class VisitorsBridge {
 
   private void createSonarSymbolTable(CompilationUnitTree tree) {
     if (sonarComponents != null && !sonarComponents.isSonarLintContext()) {
-      SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(currentFile), semanticModel);
+      SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(currentFile));
       symVisitor.visitCompilationUnit(tree);
     }
   }
