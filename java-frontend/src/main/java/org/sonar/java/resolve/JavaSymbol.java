@@ -761,7 +761,7 @@ public class JavaSymbol implements Symbol {
       return isFlag(Flags.VARARGS);
     }
 
-    public boolean isConstructor() {
+    boolean isConstructor() {
       return "<init>".equals(name);
     }
 

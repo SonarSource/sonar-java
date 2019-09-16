@@ -200,7 +200,7 @@ public class NonNullSetToNullCheck extends SECheck {
       if (symbol.isMethodSymbol()) {
         int peekSize = syntaxTree.arguments().size();
         List<SymbolicValue> argumentValues = Lists.reverse(programState.peekValues(peekSize));
-        checkNullArguments(syntaxTree, (JavaSymbol.MethodJavaSymbol) symbol, argumentValues);
+        checkNullArguments(syntaxTree, (Symbol.MethodSymbol) symbol, argumentValues);
       }
     }
 
@@ -215,12 +215,12 @@ public class NonNullSetToNullCheck extends SECheck {
         if (reportTree.is(Tree.Kind.MEMBER_SELECT)) {
           reportTree = ((MemberSelectExpressionTree) reportTree).identifier();
         }
-        checkNullArguments(reportTree, (JavaSymbol.MethodJavaSymbol) symbol, argumentValues);
+        checkNullArguments(reportTree, (Symbol.MethodSymbol) symbol, argumentValues);
       }
     }
 
-    private void checkNullArguments(Tree syntaxTree, JavaSymbol.MethodJavaSymbol symbol, List<SymbolicValue> argumentValues) {
-      List<JavaSymbol> scopeSymbols = symbol.getParameters().scopeSymbols();
+    private void checkNullArguments(Tree syntaxTree, Symbol.MethodSymbol symbol, List<SymbolicValue> argumentValues) {
+      List<JavaSymbol> scopeSymbols = ((JavaSymbol.MethodJavaSymbol) symbol).getParameters().scopeSymbols();
       int parametersToTest = argumentValues.size();
       if (scopeSymbols.size() < parametersToTest) {
         // The last parameter is a variable length argument: the non-null condition does not apply to its values
@@ -231,13 +231,13 @@ public class NonNullSetToNullCheck extends SECheck {
       }
     }
 
-    private void checkNullArgument(Tree syntaxTree, JavaSymbol.MethodJavaSymbol symbol, JavaSymbol argumentSymbol, SymbolicValue argumentValue, int index) {
+    private void checkNullArgument(Tree syntaxTree, Symbol.MethodSymbol symbol, Symbol argumentSymbol, SymbolicValue argumentValue, int index) {
       ObjectConstraint constraint = programState.getConstraint(argumentValue, ObjectConstraint.class);
       if (constraint != null && constraint.isNull()) {
         String nonNullAnnotation = nonNullAnnotation(argumentSymbol);
         if (nonNullAnnotation != null) {
           String message = "Parameter {0} to this {1} is marked \"{2}\" but null could be passed.";
-          reportIssue(syntaxTree, message, index + 1, (symbol.isConstructor() ? "constructor" : "call"), nonNullAnnotation);
+          reportIssue(syntaxTree, message, index + 1, ("<init>".equals(symbol.name()) ? "constructor" : "call"), nonNullAnnotation);
         }
       }
     }

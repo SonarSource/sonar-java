@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -147,7 +148,7 @@ public final class NullableAnnotationUtils {
   @CheckForNull
   private static String nonNullFieldAnnotation(Symbol symbol) {
     if (symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !isUsingNullable(symbol)
-      && valuesForGlobalAnnotation((JavaSymbol) symbol, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS) != null) {
+      && valuesForGlobalAnnotation(symbol, ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS) != null) {
       return ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS;
     }
     return null;
@@ -204,14 +205,9 @@ public final class NullableAnnotationUtils {
   }
 
   @CheckForNull
-  private static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(Symbol.MethodSymbol method, String annotation) {
-    return valuesForGlobalAnnotation((JavaSymbol) method, annotation);
-  }
-
-  @CheckForNull
-  private static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(JavaSymbol method, String annotation) {
-    return Arrays.asList(method, method.enclosingClass(), method.packge()).stream()
-      .map(symbol -> symbol.metadata().valuesForAnnotation(annotation))
+  private static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(Symbol symbol, String annotation) {
+    return Stream.of(symbol, symbol.enclosingClass(), ((JavaSymbol) symbol).packge())
+      .map(s -> s.metadata().valuesForAnnotation(annotation))
       .filter(Objects::nonNull)
       .findFirst()
       .orElse(null);

@@ -82,10 +82,10 @@ public class ParameterNullnessCheck extends SECheck {
     }
   }
 
-  private void reportIssue(Tree syntaxNode, ExpressionTree argument, JavaSymbol.MethodJavaSymbol methodSymbol) {
+  private void reportIssue(Tree syntaxNode, ExpressionTree argument, Symbol.MethodSymbol methodSymbol) {
     String declarationMessage = "constructor declaration";
-    if (!methodSymbol.isConstructor()) {
-      declarationMessage = "method '" + methodSymbol.getName() + "' declaration";
+    if (!"<init>".equals(methodSymbol.name())) {
+      declarationMessage = "method '" + methodSymbol.name() + "' declaration";
     }
     String message = String.format("Annotate the parameter with @javax.annotation.Nullable in %s, or make sure that null can not be passed as argument.", declarationMessage);
 
