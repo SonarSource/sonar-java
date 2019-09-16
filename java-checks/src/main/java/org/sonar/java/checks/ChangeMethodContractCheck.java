@@ -23,9 +23,10 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -63,10 +64,9 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     }
     for (int i = 0; i < methodTree.parameters().size(); i++) {
       VariableTree parameter = methodTree.parameters().get(i);
-      Symbol overrideeParamSymbol = ((JavaSymbol.MethodJavaSymbol) overridee).getParameters().scopeSymbols().get(i);
-      checkParameter(parameter, overrideeParamSymbol);
+      checkParameter(parameter, JUtils.parameterAnnotations(overridee, i));
     }
-    if (nonNullVsNull(overridee, methodTree.symbol())) {
+    if (nonNullVsNull(overridee, methodTree.symbol().metadata())) {
       for (AnnotationTree annotationTree : methodTree.modifiers().annotations()) {
         if(annotationTree.symbolType().is(JAVAX_ANNOTATION_NULLABLE) || annotationTree.symbolType().is(JAVAX_ANNOTATION_CHECK_FOR_NULL)) {
           reportIssue(annotationTree, "Remove this \""+ annotationTree.symbolType().name() +"\" annotation to honor the overridden method's contract.");
@@ -75,9 +75,9 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkParameter(VariableTree parameter, Symbol overrideeParamSymbol) {
+  private void checkParameter(VariableTree parameter, SymbolMetadata overrideeParamMetadata) {
     Tree reportTree = parameter;
-    if (nonNullVsNull(parameter.symbol(), overrideeParamSymbol)) {
+    if (nonNullVsNull(parameter.symbol(), overrideeParamMetadata)) {
       for (AnnotationTree annotationTree : parameter.modifiers().annotations()) {
         if(annotationTree.symbolType().is(JAVAX_ANNOTATION_NONNULL)) {
           reportTree = annotationTree;
@@ -87,10 +87,10 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean nonNullVsNull(Symbol sym1, Symbol sym2) {
+  private static boolean nonNullVsNull(Symbol sym1, SymbolMetadata metadata2) {
     return sym1.metadata().isAnnotatedWith(JAVAX_ANNOTATION_NONNULL) &&
-      (sym2.metadata().isAnnotatedWith(JAVAX_ANNOTATION_NULLABLE)
-      || sym2.metadata().isAnnotatedWith(JAVAX_ANNOTATION_CHECK_FOR_NULL));
+      (metadata2.isAnnotatedWith(JAVAX_ANNOTATION_NULLABLE)
+      || metadata2.isAnnotatedWith(JAVAX_ANNOTATION_CHECK_FOR_NULL));
 
   }
 
