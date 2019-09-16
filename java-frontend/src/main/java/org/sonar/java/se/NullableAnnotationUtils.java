@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -213,7 +213,7 @@ public final class NullableAnnotationUtils {
 
   @CheckForNull
   private static List<SymbolMetadata.AnnotationValue> valuesForGlobalAnnotation(Symbol symbol, String annotation) {
-    return Stream.of(symbol, symbol.enclosingClass(), ((JavaSymbol) symbol).packge())
+    return Stream.of(symbol, symbol.enclosingClass(), JUtils.getPackage(symbol))
       .map(s -> s.metadata().valuesForAnnotation(annotation))
       .filter(Objects::nonNull)
       .findFirst()

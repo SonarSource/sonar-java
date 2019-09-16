@@ -186,6 +186,16 @@ public final class JUtils {
   }
 
   /**
+   * Replacement for {@link JavaSymbol#packge()}
+   */
+  public static Symbol getPackage(Symbol symbol) {
+    while (!symbol.isPackageSymbol()) {
+      symbol = symbol.owner();
+    }
+    return symbol;
+  }
+
+  /**
    * Replacement for {@link MethodJavaSymbol#isVarArgs()}
    */
   public static boolean isVarArgsMethod(Symbol.MethodSymbol method) {

@@ -137,7 +137,10 @@ public class JavaSymbol implements Symbol {
 
   /**
    * The package which indirectly owns this symbol.
+   *
+   * @deprecated use {@link JUtils#getPackage(Symbol)} instead
    */
+  @Deprecated
   public PackageJavaSymbol packge() {
     JavaSymbol result = this;
     while (result.kind != PCK) {
