@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.ProgramState;
@@ -65,15 +64,14 @@ public class ParameterNullnessCheck extends SECheck {
     if (!symbol.isMethodSymbol() || arguments.isEmpty()) {
       return;
     }
-    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
     if (nonNullAnnotationOnParameters(methodSymbol) == null) {
       // method is not annotated (locally or globally)
       return;
     }
     int nbArguments = arguments.size();
     List<SymbolicValue> argumentSVs = getArgumentSVs(state, syntaxNode, nbArguments);
-    List<JavaSymbol> argumentSymbols = methodSymbol.getParameters().scopeSymbols();
-    int nbArgumentToCheck = Math.min(nbArguments, argumentSymbols.size() - (JUtils.isVarArgsMethod(methodSymbol) ? 1 : 0));
+    int nbArgumentToCheck = Math.min(nbArguments, methodSymbol.parameterTypes().size() - (JUtils.isVarArgsMethod(methodSymbol) ? 1 : 0));
     for (int i = 0; i < nbArgumentToCheck; i++) {
       ObjectConstraint constraint = state.getConstraint(argumentSVs.get(i), ObjectConstraint.class);
       if (constraint != null && constraint.isNull() && !parameterIsNullable(methodSymbol, i)) {
