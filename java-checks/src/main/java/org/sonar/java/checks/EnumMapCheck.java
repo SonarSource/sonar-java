@@ -22,9 +22,8 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.resolve.MethodJavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
-import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -115,12 +114,8 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
     if (type instanceof MethodJavaType) {
       type = ((MethodJavaType) type).resultType();
     }
-    if (type instanceof ParametrizedTypeJavaType) {
-      ParametrizedTypeJavaType parametrizedTypeJavaType = (ParametrizedTypeJavaType) type;
-      List<TypeVariableJavaType> typeParameters = parametrizedTypeJavaType.typeParameters();
-      if (!typeParameters.isEmpty()) {
-        return parametrizedTypeJavaType.substitution(typeParameters.get(0)).symbol().isEnum();
-      }
+    if (JUtils.isParametrized(type)) {
+      return JUtils.typeArguments(type).get(0).symbol().isEnum();
     }
     return false;
   }
