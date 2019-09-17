@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -47,13 +46,11 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
 
   private JavaFileScannerContext context;
   private Deque<Tree> loopLevel = new LinkedList<>();
-  private SemanticModel semanticModel;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     loopLevel.clear();
-    semanticModel = (SemanticModel) context.getSemanticModel();
     scan(context.getTree());
   }
 
@@ -67,9 +64,25 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
 
   private boolean isNotLoopLocalVar(AssignmentExpressionTree tree) {
     IdentifierTree idTree = getIdentifierTree(tree.variable());
-    Tree envTree = semanticModel.getTree(semanticModel.getEnv(idTree.symbol()));
-    Tree loopTree = loopLevel.peek();
-    return envTree == null || !(envTree.equals(loopTree) || envTree.equals(loopStatement(loopTree)));
+    Tree declaration = idTree.symbol().declaration();
+    if (declaration == null) {
+      return true;
+    }
+    Tree parent = declaration.parent();
+    Tree parentLoop = loopLevel.peek();
+    while (parent != null && !parent.equals(parentLoop)) {
+      if (parent.is(
+        Tree.Kind.CLASS,
+        Tree.Kind.ENUM,
+        Tree.Kind.INTERFACE,
+        Tree.Kind.METHOD,
+        Tree.Kind.LAMBDA_EXPRESSION)) {
+        // declaration is necessarily not part of a loop
+        return true;
+      }
+      parent = parent.parent();
+    }
+    return parent == null;
   }
 
   private static boolean isNotArrayAccess(AssignmentExpressionTree tree) {
@@ -88,19 +101,6 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
       idTree = (IdentifierTree) tree;
     }
     return idTree;
-  }
-
-  private static Tree loopStatement(Tree loopTree) {
-    if (loopTree.is(Tree.Kind.FOR_STATEMENT)) {
-      return ((ForStatementTree) loopTree).statement();
-    } else if (loopTree.is(Tree.Kind.DO_STATEMENT)) {
-      return ((DoWhileStatementTree) loopTree).statement();
-    } else if (loopTree.is(Tree.Kind.WHILE_STATEMENT)) {
-      return ((WhileStatementTree) loopTree).statement();
-    } else if (loopTree.is(Tree.Kind.FOR_EACH_STATEMENT)) {
-      return ((ForEachStatement) loopTree).statement();
-    }
-    return null;
   }
 
   private static boolean isStringConcatenation(AssignmentExpressionTree tree) {
