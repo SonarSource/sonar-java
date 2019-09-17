@@ -27,8 +27,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Type;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -149,6 +157,39 @@ class JTypeTest {
   void elementType() {
     assertThat(type("int[][]").elementType())
       .isSameAs(type("int[]"));
+  }
+
+  @Test
+  void null_type() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return null; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
+    AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
+    JType nullType = cu.sema.type(Objects.requireNonNull(e.typeBinding));
+
+    assertThat(nullType.name())
+      .isEqualTo(e.symbolType().name())
+      .isEqualTo("<nulltype>");
+    assertThat(nullType.fullyQualifiedName())
+      .isEqualTo(e.symbolType().fullyQualifiedName())
+      .isEqualTo("<nulltype>");
+    assertThat(nullType.is("<nulltype>"))
+      .isEqualTo(e.symbolType().is("<nulltype>"))
+      .isTrue();
+  }
+
+  private static JavaTree.CompilationUnitTreeImpl test(String source) {
+    List<File> classpath = Collections.emptyList();
+    JavaTree.CompilationUnitTreeImpl t = (JavaTree.CompilationUnitTreeImpl) JParser.parse(
+      "12",
+      "File.java",
+      source,
+      true,
+      classpath
+    );
+    SemanticModel.createFor(t, new SquidClassLoader(classpath));
+    return t;
   }
 
   private JType type(String name) {

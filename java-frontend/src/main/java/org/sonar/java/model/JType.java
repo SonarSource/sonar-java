@@ -113,7 +113,9 @@ final class JType implements Type, Type.ArrayType {
   }
 
   private static String fullyQualifiedName(ITypeBinding typeBinding) {
-    if (typeBinding.isNullType() || typeBinding.isPrimitive()) {
+    if (typeBinding.isNullType()) {
+      return "<nulltype>";
+    } else if (typeBinding.isPrimitive()) {
       return typeBinding.getName();
     } else if (typeBinding.isArray()) {
       return fullyQualifiedName(typeBinding.getComponentType()) + "[]";
@@ -124,6 +126,9 @@ final class JType implements Type, Type.ArrayType {
 
   @Override
   public String name() {
+    if (typeBinding.isNullType()) {
+      return "<nulltype>";
+    }
     return typeBinding.getName();
   }
 
