@@ -1,5 +1,4 @@
-package java.util;
-
+import java.util.*;
 import static java.util.Calendar.MONTH;
 
 class A {
