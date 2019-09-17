@@ -38,8 +38,8 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
-  private final CompilationUnitTree tree;
-  private final Sema semanticModel;
+  private final JavaTree.CompilationUnitTreeImpl tree;
+  private final boolean semanticEnabled;
   private final SonarComponents sonarComponents;
   private final ComplexityVisitor complexityVisitor;
   private final InputFile inputFile;
@@ -48,9 +48,9 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean fileParsed) {
-    this.tree = tree;
+    this.tree = (JavaTree.CompilationUnitTreeImpl) tree;
     this.inputFile = inputFile;
-    this.semanticModel = semanticModel;
+    this.semanticEnabled = semanticModel != null;
     this.sonarComponents = sonarComponents;
     this.complexityVisitor = new ComplexityVisitor();
     this.javaVersion = javaVersion;
@@ -85,7 +85,10 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   @Nullable
   public Object getSemanticModel() {
-    return semanticModel;
+    if (!semanticEnabled) {
+      return null;
+    }
+    return tree.sema();
   }
 
   @Override

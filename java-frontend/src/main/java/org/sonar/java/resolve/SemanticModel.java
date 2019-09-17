@@ -72,6 +72,7 @@ public class SemanticModel implements Sema {
     } finally {
       handleMissingTypes(tree);
     }
+    ((JavaTree.CompilationUnitTreeImpl) tree).oldSema = semanticModel;
     return semanticModel;
   }
 

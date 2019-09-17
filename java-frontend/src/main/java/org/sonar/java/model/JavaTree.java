@@ -183,6 +183,11 @@ public abstract class JavaTree implements Tree {
       this.eofToken = eofToken;
     }
 
+    @Nullable
+    public Sema sema() {
+      return useNewSema ? sema : oldSema;
+    }
+
     @Override
     public Kind kind() {
       return Kind.COMPILATION_UNIT;

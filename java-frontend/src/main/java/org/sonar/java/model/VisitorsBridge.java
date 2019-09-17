@@ -71,7 +71,6 @@ public class VisitorsBridge {
   private List<JavaFileScanner> executableScanners;
   private final SonarComponents sonarComponents;
   private final boolean symbolicExecutionEnabled;
-  private SemanticModel semanticModel;
   protected InputFile currentFile;
   protected JavaVersion javaVersion;
   private final List<File> classpath;
@@ -122,7 +121,7 @@ public class VisitorsBridge {
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
-    semanticModel = null;
+    SemanticModel semanticModel = null;
     CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
     boolean fileParsed = parsedTree != null;
     if (fileParsed && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
@@ -130,7 +129,6 @@ public class VisitorsBridge {
       if (isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
         try {
           semanticModel = SemanticModel.createFor(tree, classLoader);
-          ((JavaTree.CompilationUnitTreeImpl) tree).oldSema = semanticModel;
         } catch (Exception e) {
           LOG.error(String.format("Unable to create symbol table for : '%s'", currentFile), e);
           addAnalysisError(e, currentFile, AnalysisError.Kind.SEMANTIC_ERROR);
