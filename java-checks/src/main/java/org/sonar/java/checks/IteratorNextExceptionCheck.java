@@ -104,8 +104,10 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
       if (throwsNoSuchElementException(((Symbol.MethodSymbol) symbol).thrownTypes())) {
         return true;
       }
-      MethodJavaType methodJavaType = (MethodJavaType) ExpressionUtils.methodName(methodInvocationTree).symbolType();
-      return throwsNoSuchElementException(methodJavaType.thrownTypes());
+      Type methodType = ExpressionUtils.methodName(methodInvocationTree).symbolType();
+        // not covered with new semantic - thrown types from method symbol are already correct
+      return methodType instanceof MethodJavaType
+        && throwsNoSuchElementException(((MethodJavaType) methodType).thrownTypes());
     }
 
     private static boolean throwsNoSuchElementException(List<? extends Type> thrownTypes) {
