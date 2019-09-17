@@ -4,7 +4,9 @@ class A {
     public String s1;
   }
 
-  void method() {
+  String field;
+
+  void method(String[] array, java.util.List<Object> list) {
     String s = "";
     Inner inner = new Inner();
     int i = 0;
@@ -13,8 +15,8 @@ class A {
       s += i;// Noncompliant {{Use a StringBuilder instead.}}
       inner.s1 = i + " : " + inner.s1; // Noncompliant {{Use a StringBuilder instead.}}
     }
-    for (Object i : list) {
-      s = i + " : " + s; // Noncompliant {{Use a StringBuilder instead.}}
+    for (Object j : list) {
+      s = j + " : " + s; // Noncompliant {{Use a StringBuilder instead.}}
     }
     do {
       s = i + " : " + s; // Noncompliant {{Use a StringBuilder instead.}}
@@ -30,7 +32,7 @@ class A {
     }
     s += "a" + "b";
     s = s + "a" + "b";
-    for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 10; j++) {
       MyObject myObject = new MyObject();
       myObject.stringProperty = "a" + "b";  //Compliant, var is local in the loop
       myObject.stringProperty += "a";//Compliant, var is local in the loop
@@ -38,12 +40,17 @@ class A {
       MyObject.newInstance().stringProperty += "b"; // Noncompliant {{Use a StringBuilder instead.}}
       MyObject.newInstance().stringProperty = "b" + MyObject.newInstance().stringProperty; // Noncompliant {{Use a StringBuilder instead.}}
     }
-    for (int i=0; i < array.length; i++) {
+    for (int j=0; j < array.length; j++) {
       array[i] = "a" + array[i]; // Compliant, it is an array access
+      foo()[i].field = "a" + array[j];// Compliant
     }
   }
 
-  class MyObject {
+  A[] foo() {
+    return new A[0];
+  }
+
+  static class MyObject {
     String stringProperty;
 
     static MyObject newInstance() {
