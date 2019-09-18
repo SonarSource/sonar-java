@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableMultiset;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.resolve.MethodJavaType;
@@ -33,6 +32,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 @Rule(key = "S3038")
@@ -74,7 +74,7 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean differentThrows(Symbol.MethodSymbol method, Symbol.MethodSymbol overridee) {
-    return !ImmutableMultiset.copyOf(method.thrownTypes()).equals(ImmutableMultiset.copyOf(overridee.thrownTypes()));
+    return !(new HashSet<>(method.thrownTypes()).equals(new HashSet<>(overridee.thrownTypes())));
   }
 
   private static boolean differentReturnType(Symbol.MethodSymbol method, Symbol.MethodSymbol overridee) {
