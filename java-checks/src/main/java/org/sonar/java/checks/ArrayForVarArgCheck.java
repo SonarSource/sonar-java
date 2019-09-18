@@ -21,8 +21,8 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -39,7 +39,6 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -72,34 +71,34 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
 
     if (sym.isMethodSymbol() && !args.isEmpty()) {
       ExpressionTree lastArg = args.get(args.size() - 1);
-      JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) sym;
-      MethodJavaType methodType = getMethodType(methodSymbol, methodName);
-      checkInvokedMethod(methodSymbol, methodType, lastArg);
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) sym;
+      Type methodType = getMethodType(methodSymbol, methodName);
+      if (methodType instanceof MethodJavaType) {
+        checkInvokedMethod(methodSymbol, (MethodJavaType) methodType, lastArg);
+      } else {
+        checkInvokedMethod(methodSymbol, lastArg);
+      }
     }
   }
 
   @CheckForNull
-  private static MethodJavaType getMethodType(JavaSymbol.MethodJavaSymbol methodSymbol, Tree methodName) {
-    if (!methodSymbol.isParametrized()) {
+  private static Type getMethodType(Symbol.MethodSymbol methodSymbol, Tree methodName) {
+    if (!JUtils.isParametrizedMethod(methodSymbol)) {
       return null;
     }
-    Type type = null;
     if (methodName.is(Tree.Kind.MEMBER_SELECT)) {
-      type = ((MemberSelectExpressionTree) methodName).identifier().symbolType();
+      return ((MemberSelectExpressionTree) methodName).identifier().symbolType();
     } else if (methodName.is(Tree.Kind.IDENTIFIER)) {
-      type = ((IdentifierTree) methodName).symbolType();
+      return ((IdentifierTree) methodName).symbolType();
     } else if (methodName.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      type = ((ParameterizedTypeTree) methodName).symbolType();
-    }
-    if (type instanceof MethodJavaType) {
-      return (MethodJavaType) type;
+      return ((ParameterizedTypeTree) methodName).symbolType();
     }
     return null;
   }
 
-  private void checkInvokedMethod(JavaSymbol.MethodJavaSymbol methodSymbol, @Nullable MethodJavaType methodType, ExpressionTree lastArg) {
-    if (methodSymbol.isVarArgs() && lastArg.is(Tree.Kind.NEW_ARRAY)) {
-      if (lastParamHasSameType(methodSymbol, methodType, lastArg.symbolType())) {
+  private void checkInvokedMethod(Symbol.MethodSymbol methodSymbol, MethodJavaType methodType, ExpressionTree lastArg) {
+    if (JUtils.isVarArgsMethod(methodSymbol) && lastArg.is(Tree.Kind.NEW_ARRAY)) {
+      if (lastParamHasSameType(methodType, lastArg.symbolType())) {
         String message = "Remove this array creation";
         NewArrayTree newArrayTree = (NewArrayTree) lastArg;
         if (newArrayTree.openBraceToken() == null) {
@@ -119,18 +118,35 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean isCallingOverload(JavaSymbol.MethodJavaSymbol methodSymbol, ExpressionTree lastArg) {
-    MethodTree enclosing = ExpressionUtils.getEnclosingMethod(lastArg);
-    return enclosing != null && haveSameParamButLast(enclosing.symbol(), methodSymbol);
+  private static boolean lastParamHasSameType(MethodJavaType methodType, Type lastArgType) {
+    Type lastParamType = getLastParameterType(methodType.argTypes());
+    return lastArgType.equals(lastParamType);
   }
 
-  private static boolean haveSameParamButLast(Symbol.MethodSymbol enclosing, JavaSymbol.MethodJavaSymbol methodSymbol) {
-    return enclosing.name().equals(methodSymbol.name())
-      && IntStream.range(0, enclosing.parameterTypes().size()).allMatch(i -> enclosing.parameterTypes().get(i) == methodSymbol.parameterTypes().get(i));
+  private void checkInvokedMethod(Symbol.MethodSymbol methodSymbol, ExpressionTree lastArg) {
+    if (JUtils.isVarArgsMethod(methodSymbol) && lastArg.is(Tree.Kind.NEW_ARRAY)) {
+      if (lastParamHasSameType(methodSymbol, lastArg.symbolType())) {
+        String message = "Remove this array creation";
+        NewArrayTree newArrayTree = (NewArrayTree) lastArg;
+        if (newArrayTree.openBraceToken() == null) {
+          ExpressionTree expression = newArrayTree.dimensions().get(0).expression();
+          Integer literalValue = LiteralUtils.intLiteralValue(expression);
+          if (literalValue == null || literalValue != 0 || isCallingOverload(methodSymbol, lastArg)) {
+            return;
+          }
+        } else if (!newArrayTree.initializers().isEmpty()) {
+          message += " and simply pass the elements";
+        }
+        reportIssue(lastArg, message + ".");
+      } else {
+        String type = ((Type.ArrayType) getLastParameterType(methodSymbol.parameterTypes())).elementType().name();
+        reportIssue(lastArg, "Disambiguate this call by either casting as \"" + type + "\" or \"" + type + "[]\".");
+      }
+    }
   }
 
-  private static boolean lastParamHasSameType(JavaSymbol.MethodJavaSymbol methodSymbol, @Nullable MethodJavaType methodType, Type lastArgType) {
-    Type lastParamType = methodType != null ? getLastParameterType(methodType.argTypes()) : getLastParameterType(methodSymbol.parameterTypes());
+  private static boolean lastParamHasSameType(Symbol.MethodSymbol methodSymbol, Type lastArgType) {
+    Type lastParamType = getLastParameterType(methodSymbol.parameterTypes());
     return lastArgType.equals(lastParamType);
   }
 
@@ -138,4 +154,13 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
     return list.get(list.size() - 1);
   }
 
+  private static boolean isCallingOverload(Symbol.MethodSymbol methodSymbol, ExpressionTree lastArg) {
+    MethodTree enclosing = ExpressionUtils.getEnclosingMethod(lastArg);
+    return enclosing != null && haveSameParamButLast(enclosing.symbol(), methodSymbol);
+  }
+
+  private static boolean haveSameParamButLast(Symbol.MethodSymbol enclosing, Symbol.MethodSymbol methodSymbol) {
+    return enclosing.name().equals(methodSymbol.name())
+      && IntStream.range(0, enclosing.parameterTypes().size()).allMatch(i -> enclosing.parameterTypes().get(i) == methodSymbol.parameterTypes().get(i));
+  }
 }
