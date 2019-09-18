@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 
 import java.io.File;
@@ -50,16 +52,21 @@ class JMethodSymbolTest {
 
   @Test
   void signature() {
-    JavaTree.CompilationUnitTreeImpl cu = test("package org.example; class C { C() {} Object m(Object p1, Object[] p2) { return null; } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("package org.example; class C { C() {} <T> Object m(Object p1, Object[] p2, T p3) { return m(null, null, 42); } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl constructor = (MethodTreeImpl) c.members().get(0);
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(1);
+    ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) Objects.requireNonNull(method.block()).body().get(0);
+    MethodInvocationTreeImpl methodInvocation = Objects.requireNonNull((MethodInvocationTreeImpl) s.expression());
     assertThat(cu.sema.methodSymbol(Objects.requireNonNull(constructor.methodBinding)).signature())
       .isEqualTo(constructor.symbol().signature())
       .isEqualTo("org.example.C#<init>()V");
     assertThat(cu.sema.methodSymbol(Objects.requireNonNull(method.methodBinding)).signature())
       .isEqualTo(method.symbol().signature())
-      .isEqualTo("org.example.C#m(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;");
+      .isEqualTo("org.example.C#m(Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    assertThat(cu.sema.methodSymbol(Objects.requireNonNull(methodInvocation.methodBinding)).signature())
+      .isEqualTo(method.symbol().signature())
+      .isEqualTo("org.example.C#m(Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
   }
 
   private JavaTree.CompilationUnitTreeImpl test(String source) {

@@ -101,7 +101,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   public String signature() {
     return methodBinding().getDeclaringClass().getBinaryName()
       + "#" + name()
-      + JSema.signature(methodBinding());
+      + JSema.signature(methodBinding().getMethodDeclaration());
   }
 
   @Nullable
