@@ -13,7 +13,7 @@ class SimpleCases {
   }
   
   abstract static class C implements I {
-    @Override abstract void bar();
+    abstract void bar();
   }
   
   abstract static class D extends C {
