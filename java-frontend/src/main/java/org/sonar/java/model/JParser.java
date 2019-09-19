@@ -2057,12 +2057,19 @@ public class JParser {
           );
         } else {
           final int firstDotTokenIndex = tokenManager.firstIndexAfter(e.getQualifier(), TerminalTokens.TokenNameDOT);
+          AbstractTypedTree qualifier = (AbstractTypedTree) convertExpression(e.getQualifier());
+          IdentifierTreeImpl keywordSuper = new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper));
+          MemberSelectExpressionTreeImpl qualifiedSuper = new MemberSelectExpressionTreeImpl(
+            (ExpressionTree) qualifier,
+            createSyntaxToken(firstDotTokenIndex),
+            keywordSuper
+          );
+          if (qualifier.typeBinding != null) {
+            keywordSuper.typeBinding = qualifier.typeBinding.getSuperclass();
+            qualifiedSuper.typeBinding = keywordSuper.typeBinding;
+          }
           outermostSelect = new MemberSelectExpressionTreeImpl(
-            new MemberSelectExpressionTreeImpl(
-              convertExpression(e.getQualifier()),
-              createSyntaxToken(firstDotTokenIndex),
-              new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper))
-            ),
+            qualifiedSuper,
             createSyntaxToken(nextTokenIndex(firstDotTokenIndex, TerminalTokens.TokenNameDOT)),
             rhs
           );

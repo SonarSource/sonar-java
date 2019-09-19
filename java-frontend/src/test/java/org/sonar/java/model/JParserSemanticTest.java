@@ -449,6 +449,18 @@ class JParserSemanticTest {
     assertThat(qualifiedMethodName.typeBinding)
       .isNull();
 
+    MemberSelectExpressionTreeImpl qualifiedSuper = (MemberSelectExpressionTreeImpl) qualifiedMethodName.expression();
+    assertThat(qualifiedSuper.typeBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((ClassTreeImpl) qualifiedSuper.symbolType().symbol().declaration()).typeBinding)
+      .isSameAs(superClass.typeBinding);
+
+    IdentifierTreeImpl keywordSuper = (IdentifierTreeImpl) qualifiedSuper.identifier();
+    assertThat(keywordSuper.typeBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((ClassTreeImpl) qualifiedSuper.symbolType().symbol().declaration()).typeBinding)
+      .isSameAs(superClass.typeBinding);
+
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) qualifiedMethodName.identifier();
     assertThat(identifier.binding)
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) identifier.symbol().declaration()).methodBinding)
