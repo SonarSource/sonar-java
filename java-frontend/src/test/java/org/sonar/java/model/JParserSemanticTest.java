@@ -425,6 +425,40 @@ class JParserSemanticTest {
   }
 
   /**
+   * @see org.eclipse.jdt.core.dom.SuperMethodInvocation
+   */
+  @Test
+  void expression_super_method_invocation_qualified() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class T extends S { class C { Object m() { return T.super.m(); } } } class S { Object m() { return null; } }");
+    ClassTreeImpl t = (ClassTreeImpl) cu.types().get(0);
+    ClassTreeImpl c = (ClassTreeImpl) t.members().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
+    MethodTreeImpl superClassMethod = (MethodTreeImpl) superClass.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+
+    MethodInvocationTreeImpl superMethodInvocation = (MethodInvocationTreeImpl) Objects.requireNonNull(s.expression());
+    assertThat(superMethodInvocation.methodBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) superMethodInvocation.symbol().declaration()).methodBinding)
+      .isSameAs(superClassMethod.methodBinding);
+
+    MemberSelectExpressionTreeImpl qualifiedMethodName = (MemberSelectExpressionTreeImpl) superMethodInvocation.methodSelect();
+    assertThat(qualifiedMethodName.symbolType().isUnknown())
+      .isTrue();
+    assertThat(qualifiedMethodName.typeBinding)
+      .isNull();
+
+    IdentifierTreeImpl identifier = (IdentifierTreeImpl) qualifiedMethodName.identifier();
+    assertThat(identifier.binding)
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) identifier.symbol().declaration()).methodBinding)
+      .isSameAs(superMethodInvocation.methodBinding);
+    assertThat(cu.sema.usages.get(identifier.binding))
+      .containsOnlyElementsOf(superMethodInvocation.symbol().usages())
+      .containsOnly(identifier);
+  }
+
+  /**
    * @see org.eclipse.jdt.core.dom.ConstructorInvocation
    */
   @Test
