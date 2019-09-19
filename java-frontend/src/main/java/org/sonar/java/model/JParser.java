@@ -1772,12 +1772,14 @@ public class JParser {
             firstTokenIn(e, TerminalTokens.TokenNamethis)
           );
         } else {
+          IdentifierTreeImpl keywordThis = new IdentifierTreeImpl(
+            firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamethis)
+          );
+          keywordThis.typeBinding = e.resolveTypeBinding();
           return new MemberSelectExpressionTreeImpl(
             convertExpression(e.getQualifier()),
             firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-            new IdentifierTreeImpl(
-              firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamethis)
-            )
+            keywordThis
           );
         }
       }

@@ -115,6 +115,28 @@ class JParserSemanticTest {
     assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.ThisExpression
+   */
+  @Test
+  void expression_this_qualified() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C1 { class C2 { Object m() { return C1.this; } } }");
+    ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
+    ClassTreeImpl c2 = (ClassTreeImpl) c1.members().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c2.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+    MemberSelectExpressionTreeImpl e = Objects.requireNonNull((MemberSelectExpressionTreeImpl) s.expression());
+    assertThat(e.typeBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((ClassTreeImpl) e.symbolType().symbol().declaration()).typeBinding)
+      .isSameAs(c1.typeBinding);
+    IdentifierTreeImpl keywordThis = (IdentifierTreeImpl) e.identifier();
+    assertThat(keywordThis.typeBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((ClassTreeImpl) keywordThis.symbolType().symbol().declaration()).typeBinding)
+      .isSameAs(c1.typeBinding);
+  }
+
   @Test
   void expression_field_access() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { int f; Object m() { return this.f; } }");
