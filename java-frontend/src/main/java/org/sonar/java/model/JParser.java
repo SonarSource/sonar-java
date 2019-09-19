@@ -1754,12 +1754,19 @@ public class JParser {
           );
         } else {
           // qualifier.super.name
+          AbstractTypedTree qualifier = (AbstractTypedTree) convertExpression(e.getQualifier());
+          IdentifierTreeImpl keywordSuper = new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper));
+          MemberSelectExpressionTreeImpl qualifiedSuper = new MemberSelectExpressionTreeImpl(
+            (ExpressionTree) qualifier,
+            firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+            keywordSuper
+          );
+          if (qualifier.typeBinding != null) {
+            keywordSuper.typeBinding = qualifier.typeBinding.getSuperclass();
+            qualifiedSuper.typeBinding = keywordSuper.typeBinding;
+          }
           return new MemberSelectExpressionTreeImpl(
-            new MemberSelectExpressionTreeImpl(
-              convertExpression(e.getQualifier()),
-              firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-              new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper))
-            ),
+            qualifiedSuper,
             firstTokenBefore(e.getName(), TerminalTokens.TokenNameDOT),
             rhs
           );
