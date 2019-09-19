@@ -137,18 +137,74 @@ class JParserSemanticTest {
       .isSameAs(c1.typeBinding);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.FieldAccess
+   */
   @Test
   void expression_field_access() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { int f; Object m() { return this.f; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl field = (VariableTreeImpl) c.members().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(1);
-    ReturnStatementTree s = (ReturnStatementTree) m.block().body().get(0);
-    MemberSelectExpressionTreeImpl e = (MemberSelectExpressionTreeImpl) s.expression();
-    assertThat(e.typeBinding).isNotNull();
-    IdentifierTreeImpl i = (IdentifierTreeImpl) e.identifier();
-    assertThat(i.typeBinding).isSameAs(e.typeBinding);
-    assertThat(i.binding).isNotNull();
-    assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+    MemberSelectExpressionTreeImpl expression = Objects.requireNonNull((MemberSelectExpressionTreeImpl) s.expression());
+    assertThat(expression.typeBinding)
+      .isNotNull();
+    IdentifierTreeImpl identifier = (IdentifierTreeImpl) expression.identifier();
+    assertThat(identifier.typeBinding)
+      .isSameAs(expression.typeBinding);
+    assertThat(identifier.binding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((VariableTreeImpl) identifier.symbol().declaration()).variableBinding)
+      .isSameAs(field.variableBinding);
+    assertThat(cu.sema.usages.get(identifier.binding))
+      .containsExactlyElementsOf(identifier.symbol().usages())
+      .containsOnly(identifier);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.SuperFieldAccess
+   */
+  @Test
+  void expression_super_field_access() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { Object m() { return super.f; } } class S { int f; }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
+    VariableTreeImpl superField = (VariableTreeImpl) superClass.members().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+    MemberSelectExpressionTreeImpl expression = Objects.requireNonNull((MemberSelectExpressionTreeImpl) s.expression());
+    IdentifierTreeImpl identifier = (IdentifierTreeImpl) expression.identifier();
+    assertThat(identifier.binding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((VariableTreeImpl) identifier.symbol().declaration()).variableBinding)
+      .isSameAs(superField.variableBinding);
+    assertThat(cu.sema.usages.get(identifier.binding))
+      .containsExactlyElementsOf(identifier.symbol().usages())
+      .containsOnly(identifier);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.SuperFieldAccess
+   */
+  @Test
+  void expression_super_field_access_qualified() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class T extends S { class C { Object m() { return T.super.f; } } } class S { int f; }");
+    ClassTreeImpl t = (ClassTreeImpl) cu.types().get(0);
+    ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
+    VariableTreeImpl superField = (VariableTreeImpl) superClass.members().get(0);
+    ClassTreeImpl c = (ClassTreeImpl) t.members().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+    MemberSelectExpressionTreeImpl expression = Objects.requireNonNull((MemberSelectExpressionTreeImpl) s.expression());
+    IdentifierTreeImpl identifier = (IdentifierTreeImpl) expression.identifier();
+    assertThat(identifier.binding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((VariableTreeImpl) identifier.symbol().declaration()).variableBinding)
+      .isSameAs(superField.variableBinding);
+    assertThat(cu.sema.usages.get(identifier.binding))
+      .containsExactlyElementsOf(identifier.symbol().usages())
+      .containsOnly(identifier);
   }
 
   /**
