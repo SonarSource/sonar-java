@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -42,19 +43,22 @@ final class JType implements Type, Type.ArrayType {
 
   @Override
   public boolean isSubtypeOf(String fullyQualifiedName) {
-    return typeBinding.isSubTypeCompatible(
-      sema.resolveType(fullyQualifiedName)
-    );
+    ITypeBinding otherTypeBinding = sema.resolveType(fullyQualifiedName);
+    return otherTypeBinding != null
+      && isSubtype(this.typeBinding, otherTypeBinding);
   }
 
   @Override
   public boolean isSubtypeOf(Type superType) {
-    if (superType.isUnknown()) {
-      return false;
+    return !superType.isUnknown()
+      && isSubtype(this.typeBinding, ((JType) superType).typeBinding);
+  }
+
+  private static boolean isSubtype(ITypeBinding left, ITypeBinding right) {
+    if (left.isNullType()) {
+      return !right.isPrimitive();
     }
-    return typeBinding.isSubTypeCompatible(
-      ((JType) superType).typeBinding
-    );
+    return left.isSubTypeCompatible(right);
   }
 
   @Override

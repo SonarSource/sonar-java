@@ -161,7 +161,7 @@ class JTypeTest {
 
   @Test
   void null_type() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return null; } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m(int p, int[] a) { return null; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
@@ -176,6 +176,23 @@ class JTypeTest {
       .isEqualTo("<nulltype>");
     assertThat(nullType.is("<nulltype>"))
       .isEqualTo(e.symbolType().is("<nulltype>"))
+      .isTrue();
+
+    JType classType = cu.sema.type(Objects.requireNonNull(c.typeBinding));
+    assertThat(nullType.isSubtypeOf(classType))
+      .isSameAs(e.symbolType().isSubtypeOf(c.symbol().type()))
+      .isTrue();
+
+    AbstractTypedTree primitive = (AbstractTypedTree) m.parameters().get(0).type();
+    JType primitiveType = cu.sema.type(Objects.requireNonNull(primitive.typeBinding));
+    assertThat(nullType.isSubtypeOf(primitiveType))
+      .isSameAs(e.symbolType().isSubtypeOf(primitive.symbolType()))
+      .isFalse();
+
+    AbstractTypedTree array = (AbstractTypedTree) m.parameters().get(1).type();
+    JType arrayType = cu.sema.type(Objects.requireNonNull(array.typeBinding));
+    assertThat(nullType.isSubtypeOf(arrayType))
+      .isSameAs(e.symbolType().isSubtypeOf(array.symbolType()))
       .isTrue();
   }
 
