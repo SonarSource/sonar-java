@@ -23,7 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
@@ -70,6 +72,19 @@ class JUtilsTest {
 
     assertThat(JUtils.isNullType(cu.sema.type(e.typeBinding)))
       .isEqualTo(JUtils.isNullType(e.symbolType()))
+      .isTrue();
+  }
+
+  @Test
+  void isIntersectionType() {
+    JavaTree.CompilationUnitTreeImpl cu = test(
+      "class C { java.io.Serializable f = (java.util.Comparator<Object> & java.io.Serializable) (o1, o2) -> o1.toString().compareTo(o2.toString()); }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl f = (VariableTreeImpl) c.members().get(0);
+    TypeCastExpressionTreeImpl e = (TypeCastExpressionTreeImpl) f.initializer();
+
+    assertThat(JUtils.isIntersectionType(cu.sema.type(e.typeBinding)))
+      .isEqualTo(JUtils.isIntersectionType(e.symbolType()))
       .isTrue();
   }
 

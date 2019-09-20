@@ -115,6 +115,16 @@ public final class JUtils {
   }
 
   /**
+   * Replacement for {@link JavaType#isTagged(int)} {@link JavaType#INTERSECTION}
+   */
+  public static boolean isIntersectionType(Type type) {
+    if (!(type instanceof JType)) {
+      return ((JavaType) type).isTagged(JavaType.INTERSECTION);
+    }
+    return ((JType) type).typeBinding.isIntersectionType();
+  }
+
+  /**
    * Replacement for {@link JavaType#isTagged(int)} {@link JavaType#TYPEVAR}
    */
   public static boolean isTypeVar(Type type) {
