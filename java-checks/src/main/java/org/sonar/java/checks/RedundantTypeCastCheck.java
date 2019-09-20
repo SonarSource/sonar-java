@@ -115,7 +115,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       case VARIABLE:
         return ((VariableTree) parent).symbol().type();
       case METHOD_INVOCATION:
-        // FIXME this can never happen. Dead code.
+        // FIXME(SONARJAVA-3191) dead code
         // If placed in invocation arguments, parent of typecast will be ARGUMENTS, not METHOD_INVOCATION
         MethodInvocationTree mit = (MethodInvocationTree) parent;
         if (mit.symbol().isMethodSymbol()) {
