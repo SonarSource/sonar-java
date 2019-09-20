@@ -1,5 +1,7 @@
 import java.util.function.Predicate;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,6 +42,13 @@ class Outer {
   }
 
   void foo(List<List<A>> a) {}
+
+  void castInArguments(List<String> p) {
+    Collection<String> v1 = Collections.emptyList();
+    List<String> v2 = Collections.emptyList();
+    castInArguments((List<String>) v1); // Compliant - cast needed
+    castInArguments((List<String>) v2); // Compliant - FN case not properly handled - would be the same with NEW_CLASS_TREE
+  }
 
   List<List<B>> foo2() {
     return null;
@@ -160,7 +169,7 @@ class G<T> {
   }
 
   class I {
-    <K> K getValue(String s) {
+    <K> K getValue(K s) {
       return s;
     }
     String foo() {
@@ -262,6 +271,8 @@ interface U<A extends Iterable> {
 
   default void test() {
     U u1 = (U<List>) (param) -> param.subList(0,1); // Compliant : cast needed to access sublist method
+    U<? extends Iterable> u2 = (U<List>) (param) -> param.subList(0,1); // Compliant : cast needed to access sublist method
+    U u4 = (U) (param) -> param; // Noncompliant
   }
 }
 
