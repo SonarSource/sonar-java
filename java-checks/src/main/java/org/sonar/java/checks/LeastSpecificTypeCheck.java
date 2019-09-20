@@ -26,11 +26,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.ClassJavaType;
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -81,7 +78,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
     if (parameter.type() != leastSpecificType
       && !leastSpecificType.is("java.lang.Object")) {
       String suggestedType = getSuggestedType(springInjectionAnnotated, leastSpecificType);
-      reportIssue(parameter.declaration(), String.format("Use '%s' here; it is a more general type than '%s'.", suggestedType, parameter.type().name()));
+      reportIssue(parameter.declaration(), String.format("Use '%s' here; it is a more general type than '%s'.", suggestedType, parameter.type().erasure().name()));
     }
   }
 
@@ -150,7 +147,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       }
 
       boolean definesSymbol = definesSymbol(m, typeSymbol);
-      boolean isSpecialization = !((JavaType) startType).isParameterized() && ((JavaType) type).isParameterized();
+      boolean isSpecialization = !JUtils.isParametrized(startType) && JUtils.isParametrized(type);
       if (definesSymbol && !isSpecialization && result.isEmpty()) {
         result.add(Lists.newArrayList(type));
       }
@@ -164,13 +161,13 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       }
     }
 
-    private static boolean definesOrInheritsSymbol(Symbol symbol, JavaSymbol.TypeJavaSymbol typeSymbol) {
+    private static boolean definesOrInheritsSymbol(Symbol symbol, Symbol.TypeSymbol typeSymbol) {
       return definesSymbol(symbol, typeSymbol)
-        || typeSymbol.superTypes().stream().anyMatch(superType -> definesSymbol(symbol, superType.symbol()));
+        || JUtils.superTypes(typeSymbol).stream().anyMatch(superType -> definesSymbol(symbol, superType.symbol()));
     }
 
     private static boolean definesSymbol(Symbol m, Symbol.TypeSymbol typeSymbol) {
-      return typeSymbol.memberSymbols().stream().anyMatch(s -> isOverriding(m, s, ((ClassJavaType) typeSymbol.type())));
+      return typeSymbol.memberSymbols().stream().anyMatch(s -> isOverriding(m, s));
     }
 
     private void refineChains(Symbol m) {
@@ -178,7 +175,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
         Iterator<Type> chainIterator = chain.iterator();
         while (chainIterator.hasNext()) {
           Type type = chainIterator.next();
-          if (definesOrInheritsSymbol(m, (JavaSymbol.TypeJavaSymbol) type.symbol())) {
+          if (definesOrInheritsSymbol(m, type.symbol())) {
             break;
           }
           chainIterator.remove();
@@ -204,12 +201,30 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       return longestChain.get(0);
     }
 
-    private static boolean isOverriding(Symbol s1, Symbol s2, ClassJavaType superClass) {
-      return s1.isMethodSymbol() && s2.isMethodSymbol() && isOverridingMethod(((JavaSymbol.MethodJavaSymbol) s1), ((JavaSymbol.MethodJavaSymbol) s2), superClass);
+    private static boolean isOverriding(Symbol s1, Symbol s2) {
+      return s1.isMethodSymbol()
+        && s2.isMethodSymbol()
+        && s1.name().equals(s2.name())
+        && isPotentialOverride((Symbol.MethodSymbol) s1, (Symbol.MethodSymbol) s2);
     }
 
-    private static boolean isOverridingMethod(JavaSymbol.MethodJavaSymbol s1, JavaSymbol.MethodJavaSymbol s2, ClassJavaType superClass) {
-      return s1.name().equals(s2.name()) && BooleanUtils.isTrue(s1.checkOverridingParameters(s2, superClass));
+    private static boolean isPotentialOverride(Symbol.MethodSymbol method, Symbol.MethodSymbol overrideeCandidate) {
+      List<Type> methodParameterTypes = method.parameterTypes();
+      List<Type> overrideeParameterTypes = overrideeCandidate.parameterTypes();
+      if (methodParameterTypes.size() != overrideeParameterTypes.size()) {
+        return false;
+      }
+      for (int i = 0; i < methodParameterTypes.size(); i++) {
+        Type methodParam = methodParameterTypes.get(i);
+        Type overrideeParamType = overrideeParameterTypes.get(i);
+        if (methodParam.isUnknown() || overrideeParamType.isUnknown()) {
+          return false;
+        }
+        if (!methodParam.erasure().equals(overrideeParamType.erasure())) {
+          return false;
+        }
+      }
+      return true;
     }
   }
 
