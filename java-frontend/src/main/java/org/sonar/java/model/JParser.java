@@ -1748,7 +1748,7 @@ public class JParser {
         if (e.getQualifier() == null) {
           // super.name
           return new MemberSelectExpressionTreeImpl(
-            new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
+            new UnqualifiedKeywordSuper(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
             firstTokenIn(e, TerminalTokens.TokenNameDOT),
             rhs
           );
@@ -2051,7 +2051,7 @@ public class JParser {
         ExpressionTree outermostSelect;
         if (e.getQualifier() == null) {
           outermostSelect = new MemberSelectExpressionTreeImpl(
-            new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
+            new UnqualifiedKeywordSuper(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
             firstTokenIn(e, TerminalTokens.TokenNameDOT),
             rhs
           );
@@ -2198,7 +2198,7 @@ public class JParser {
           );
         } else {
           t = new MethodReferenceTreeImpl(
-            new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
+            new UnqualifiedKeywordSuper(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
             firstTokenIn(e, TerminalTokens.TokenNameCOLON_COLON)
           );
         }

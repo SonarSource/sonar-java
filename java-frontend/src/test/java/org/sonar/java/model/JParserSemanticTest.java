@@ -174,6 +174,12 @@ class JParserSemanticTest {
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
     MemberSelectExpressionTreeImpl expression = Objects.requireNonNull((MemberSelectExpressionTreeImpl) s.expression());
+
+    UnqualifiedKeywordSuper keywordSuper = (UnqualifiedKeywordSuper) expression.expression();
+    assertThat(keywordSuper.resolveType().symbol().declaration())
+      .isSameAs(keywordSuper.symbolType().symbol().declaration())
+      .isSameAs(superClass.symbol().declaration());
+
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) expression.identifier();
     assertThat(identifier.binding)
       .isNotNull()
@@ -356,7 +362,13 @@ class JParserSemanticTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(0);
     ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) method.block().body().get(0);
-    MethodReferenceTreeImpl creationReference = (MethodReferenceTreeImpl) s.expression();
+    MethodReferenceTreeImpl creationReference = Objects.requireNonNull((MethodReferenceTreeImpl) s.expression());
+
+    UnqualifiedKeywordSuper keywordSuper = (UnqualifiedKeywordSuper) creationReference.expression();
+    assertThat(keywordSuper.resolveType().symbol().declaration())
+      .isSameAs(keywordSuper.symbolType().symbol().declaration())
+      .isSameAs(superClass.symbol().declaration());
+
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) creationReference.method();
     assertThat(identifier.binding)
       .isNotNull()
@@ -415,6 +427,12 @@ class JParserSemanticTest {
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) superMethodInvocation.symbol().declaration()).methodBinding)
       .isSameAs(superClassMethod.methodBinding);
     MemberSelectExpressionTreeImpl e2 = (MemberSelectExpressionTreeImpl) superMethodInvocation.methodSelect();
+
+    UnqualifiedKeywordSuper keywordSuper = (UnqualifiedKeywordSuper) e2.expression();
+    assertThat(keywordSuper.resolveType().symbol().declaration())
+      .isSameAs(keywordSuper.symbolType().symbol().declaration())
+      .isSameAs(superClass.symbol().declaration());
+
     IdentifierTreeImpl i = (IdentifierTreeImpl) e2.identifier();
     assertThat(i.binding)
       .isSameAs(Objects.requireNonNull((MethodTreeImpl) i.symbol().declaration()).methodBinding)
