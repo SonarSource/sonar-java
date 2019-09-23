@@ -22,20 +22,37 @@ package org.sonar.java.model;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.java.resolve.SymbolMetadataResolve;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
+
+  final SpecialField superSymbol = new SpecialField() {
+    @Override
+    public String name() {
+      return "super";
+    }
+
+    @Override
+    public Type type() {
+      return sema.type(typeBinding().getSuperclass());
+    }
+  };
 
   JTypeSymbol(JSema sema, ITypeBinding typeBinding) {
     super(sema, typeBinding);
@@ -91,6 +108,114 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   @Override
   public ClassTree declaration() {
     return (ClassTree) super.declaration();
+  }
+
+  abstract class SpecialField implements VariableSymbol {
+    @Override
+    public final Symbol owner() {
+      return JTypeSymbol.this;
+    }
+
+    @Override
+    public final boolean isVariableSymbol() {
+      return true;
+    }
+
+    @Override
+    public final boolean isTypeSymbol() {
+      return false;
+    }
+
+    @Override
+    public final boolean isMethodSymbol() {
+      return false;
+    }
+
+    @Override
+    public final boolean isPackageSymbol() {
+      return false;
+    }
+
+    @Override
+    public final boolean isStatic() {
+      return false;
+    }
+
+    @Override
+    public final boolean isFinal() {
+      return true;
+    }
+
+    @Override
+    public final boolean isEnum() {
+      return false;
+    }
+
+    @Override
+    public final boolean isInterface() {
+      return false;
+    }
+
+    @Override
+    public final boolean isAbstract() {
+      return false;
+    }
+
+    @Override
+    public final boolean isPublic() {
+      return false;
+    }
+
+    @Override
+    public final boolean isPrivate() {
+      return false;
+    }
+
+    @Override
+    public final boolean isProtected() {
+      return false;
+    }
+
+    @Override
+    public final boolean isPackageVisibility() {
+      return false;
+    }
+
+    @Override
+    public final boolean isDeprecated() {
+      return false;
+    }
+
+    @Override
+    public final boolean isVolatile() {
+      return false;
+    }
+
+    @Override
+    public final boolean isUnknown() {
+      return false;
+    }
+
+    @Override
+    public final SymbolMetadata metadata() {
+      return new SymbolMetadataResolve();
+    }
+
+    @Override
+    public final TypeSymbol enclosingClass() {
+      return JTypeSymbol.this;
+    }
+
+    @Override
+    public final List<IdentifierTree> usages() {
+      return Collections.emptyList();
+    }
+
+    @Nullable
+    @Override
+    public final VariableTree declaration() {
+      return null;
+    }
   }
 
 }

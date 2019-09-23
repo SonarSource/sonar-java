@@ -145,6 +145,9 @@ public final class JUtils {
   }
 
   public static boolean isParameter(Symbol symbol) {
+    if (symbol instanceof JTypeSymbol.SpecialField) {
+      return false;
+    }
     if (!(symbol instanceof JSymbol)) {
       return symbol.owner().isMethodSymbol() && ((JavaSymbol.MethodJavaSymbol) symbol.owner()).getParameters().scopeSymbols().contains(symbol);
     }
@@ -152,6 +155,9 @@ public final class JUtils {
   }
 
   public static Optional<Object> constantValue(Symbol.VariableSymbol symbol) {
+    if (symbol instanceof JTypeSymbol.SpecialField) {
+      return Optional.empty();
+    }
     if (!(symbol instanceof JSymbol)) {
       return ((JavaSymbol.VariableJavaSymbol) symbol).constantValue();
     }

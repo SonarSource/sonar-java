@@ -179,6 +179,8 @@ class JParserSemanticTest {
     assertThat(keywordSuper.resolveType().symbol().declaration())
       .isSameAs(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
+    assertThat(keywordSuper.resolveSymbol())
+      .isSameAs(cu.sema.typeSymbol(c.typeBinding).superSymbol);
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) expression.identifier();
     assertThat(identifier.binding)
@@ -368,6 +370,8 @@ class JParserSemanticTest {
     assertThat(keywordSuper.resolveType().symbol().declaration())
       .isSameAs(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
+    assertThat(keywordSuper.resolveSymbol())
+      .isSameAs(cu.sema.typeSymbol(c.typeBinding).superSymbol);
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) creationReference.method();
     assertThat(identifier.binding)
@@ -432,6 +436,8 @@ class JParserSemanticTest {
     assertThat(keywordSuper.resolveType().symbol().declaration())
       .isSameAs(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
+    assertThat(keywordSuper.resolveSymbol())
+      .isSameAs(cu.sema.typeSymbol(c.typeBinding).superSymbol);
 
     IdentifierTreeImpl i = (IdentifierTreeImpl) e2.identifier();
     assertThat(i.binding)

@@ -19,8 +19,11 @@
  */
 package org.sonar.java.model;
 
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 final class UnqualifiedKeywordSuper extends IdentifierTreeImpl {
@@ -30,7 +33,15 @@ final class UnqualifiedKeywordSuper extends IdentifierTreeImpl {
   }
 
   Type resolveType() {
-    return classNode().symbol().superClass();
+    return resolveSymbol().type();
+  }
+
+  Symbol resolveSymbol() {
+    ITypeBinding typeBinding = classNode().typeBinding;
+    if (typeBinding == null) {
+      return Symbols.unknownSymbol;
+    }
+    return root.sema.typeSymbol(typeBinding).superSymbol;
   }
 
   @Override
@@ -39,6 +50,14 @@ final class UnqualifiedKeywordSuper extends IdentifierTreeImpl {
       return resolveType();
     }
     return super.symbolType();
+  }
+
+  @Override
+  public Symbol symbol() {
+    if (root.useNewSema) {
+      return resolveSymbol();
+    }
+    return super.symbol();
   }
 
   private ClassTreeImpl classNode() {
