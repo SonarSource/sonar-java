@@ -114,7 +114,19 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   private static boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
     return isSubtypeOf(argumentType, collectionParameterType)
       || isSubtypeOf(collectionParameterType, argumentType)
-      || autoboxing(argumentType, collectionParameterType);
+      || autoboxing(argumentType, collectionParameterType)
+      // FIXME: Once enabled new semantic, it would make much more sense to ONLY check for assignment compatiblity
+      || JUtils.isAssignmentCompatible(collectionParameterType, argumentType)
+      // Kill the noise on type using wildcards
+      || containsWildcard(argumentType)
+      || containsWildcard(collectionParameterType);
+  }
+
+  private static boolean containsWildcard(Type type) {
+    if (JUtils.isParametrized(type)) {
+      return JUtils.typeArguments(type).stream().anyMatch(CollectionInappropriateCallsCheck::containsWildcard);
+    }
+    return JUtils.isWildcard(type) || JUtils.isCaptureType(type);
   }
 
   private static boolean isSubtypeOf(Type type, Type superType) {

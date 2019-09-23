@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class A {
@@ -30,6 +32,7 @@ class A {
     myList.contains(myString); // Compliant
     myBList.contains(myInteger); // Noncompliant {{A "ArrayList<B>" cannot contain a "Integer"}}
     mySetList.contains(myString); // Noncompliant {{A "List<Set>" cannot contain a "String"}}
+    // FIXME could have been List<Set<Integer>>...
     mySetList.contains(returnOne()); // Noncompliant {{A "List<Set>" cannot contain a "Integer"}}
     mySetList.remove(B.returnOne()); // Noncompliant {{A "List<Set>" cannot contain a "Integer"}}
     myBList.contains(new B()); // Compliant
@@ -211,5 +214,33 @@ class LombokVal {
   boolean foo(List<String> words) {
     lombok.val y = "Hello World";
     return  words.contains(y); // Noncompliant - FP - handled by lombok filter
+  }
+}
+
+class ClassUsage {
+  boolean example(java.util.Set<? extends Class<?>> s, Class<? extends ClassUsage> c) {
+    return s.contains(c); // Compliant
+  }
+}
+
+class WildcardUsage {
+  static class InPredicate<T> implements Predicate<T> {
+    private Collection<?> target;
+
+    @Override
+    public boolean test(T t) {
+      return target.contains(t); // Compliant
+    }
+  }
+
+  abstract static class EntrySet<K, V> implements Set<Entry<K, V>> {
+    Set<Entry<K, V>> esDelegate;
+
+    @Override
+    public boolean remove(Object object) {
+      Entry<?, ?> entry = (Entry<?, ?>) object;
+      Entry<K, V> e2 = (Entry<K, V>) object;
+      return esDelegate.remove(entry); // Compliant
+    }
   }
 }

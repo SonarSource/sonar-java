@@ -39,7 +39,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
-
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -132,6 +131,21 @@ public final class JUtils {
       return ((JavaType) type).isTagged(JavaType.TYPEVAR);
     }
     return ((JType) type).typeBinding.isTypeVariable();
+  }
+
+  public static boolean isWildcard(Type type) {
+    if (!(type instanceof JType)) {
+      return ((JavaType) type).isTagged(JavaType.WILDCARD);
+    }
+    return ((JType) type).typeBinding.isWildcardType();
+  }
+
+  public static boolean isCaptureType(Type type) {
+    if (type instanceof JType) {
+      return ((JType) type).typeBinding.isCapture();
+    }
+    // no notion of capture in old semantic
+    return false;
   }
 
   /**
@@ -302,6 +316,23 @@ public final class JUtils {
       result[i] = t.sema.type(typeArguments[i]);
     }
     return Arrays.asList(result);
+  }
+
+  /**
+   * Tells if a theoretical variable of type 'variableType' can be assigned
+   * with the type corresponding of an expression 'expressionType'
+   *
+   * @param variableType the type of the variable
+   * @param expressionType the type of the expression
+   * @return true if the variable can be assigned with the type of expression
+   */
+  public static boolean isAssignmentCompatible(Type variableType, Type expressionType) {
+    if (variableType instanceof JType) {
+      ITypeBinding v = ((JType) variableType).typeBinding;
+      ITypeBinding e = ((JType) expressionType).typeBinding;
+      return e.isAssignmentCompatible(v);
+    }
+    return false;
   }
 
   /**
