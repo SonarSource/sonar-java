@@ -205,27 +205,9 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       return s1.isMethodSymbol()
         && s2.isMethodSymbol()
         && s1.name().equals(s2.name())
-        && isPotentialOverride((Symbol.MethodSymbol) s1, (Symbol.MethodSymbol) s2);
+        && ConfusingOverloadCheck.isPotentialOverride((Symbol.MethodSymbol) s1, (Symbol.MethodSymbol) s2);
     }
 
-    private static boolean isPotentialOverride(Symbol.MethodSymbol method, Symbol.MethodSymbol overrideeCandidate) {
-      List<Type> methodParameterTypes = method.parameterTypes();
-      List<Type> overrideeParameterTypes = overrideeCandidate.parameterTypes();
-      if (methodParameterTypes.size() != overrideeParameterTypes.size()) {
-        return false;
-      }
-      for (int i = 0; i < methodParameterTypes.size(); i++) {
-        Type methodParam = methodParameterTypes.get(i);
-        Type overrideeParamType = overrideeParameterTypes.get(i);
-        if (methodParam.isUnknown() || overrideeParamType.isUnknown()) {
-          return false;
-        }
-        if (!methodParam.erasure().equals(overrideeParamType.erasure())) {
-          return false;
-        }
-      }
-      return true;
-    }
   }
 
   private static boolean isMethodInvocationOnParameter(Symbol parameter, MethodInvocationTree mit) {

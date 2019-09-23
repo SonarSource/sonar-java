@@ -100,7 +100,7 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
       && isPotentialOverride(methodSymbol, symbolWithSameName);
   }
 
-  private static boolean isPotentialOverride(Symbol.MethodSymbol method, Symbol.MethodSymbol overrideeCandidate) {
+  static boolean isPotentialOverride(Symbol.MethodSymbol method, Symbol.MethodSymbol overrideeCandidate) {
     List<Type> methodParameterTypes = method.parameterTypes();
     List<Type> overrideeParameterTypes = overrideeCandidate.parameterTypes();
     if (methodParameterTypes.size() != overrideeParameterTypes.size()) {
