@@ -118,7 +118,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   }
 
   private static boolean isSubtypeOf(Type type, Type superType) {
-    return type.isSubtypeOf(superType);
+    return type.isSubtypeOf(superType.erasure());
   }
 
   private static boolean autoboxing(Type argumentType, Type collectionParameterType) {
