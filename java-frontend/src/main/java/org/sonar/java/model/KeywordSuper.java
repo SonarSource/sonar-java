@@ -25,9 +25,11 @@ import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
-final class UnqualifiedKeywordSuper extends IdentifierTreeImpl {
+import javax.annotation.Nullable;
 
-  UnqualifiedKeywordSuper(InternalSyntaxToken token, ITypeBinding typeBinding) {
+final class KeywordSuper extends IdentifierTreeImpl {
+
+  KeywordSuper(InternalSyntaxToken token, @Nullable ITypeBinding typeBinding) {
     super(token);
     this.typeBinding = typeBinding;
   }

@@ -1756,15 +1756,15 @@ public class JParser {
         } else {
           // qualifier.super.name
           AbstractTypedTree qualifier = (AbstractTypedTree) convertExpression(e.getQualifier());
-          IdentifierTreeImpl keywordSuper = new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper));
+          KeywordSuper keywordSuper = new KeywordSuper(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper), null);
           MemberSelectExpressionTreeImpl qualifiedSuper = new MemberSelectExpressionTreeImpl(
             (ExpressionTree) qualifier,
             firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
             keywordSuper
           );
           if (qualifier.typeBinding != null) {
-            keywordSuper.typeBinding = qualifier.typeBinding.getSuperclass();
-            qualifiedSuper.typeBinding = keywordSuper.typeBinding;
+            keywordSuper.typeBinding = qualifier.typeBinding;
+            qualifiedSuper.typeBinding = keywordSuper.typeBinding.getSuperclass();
           }
           return new MemberSelectExpressionTreeImpl(
             qualifiedSuper,
@@ -2059,15 +2059,15 @@ public class JParser {
         } else {
           final int firstDotTokenIndex = tokenManager.firstIndexAfter(e.getQualifier(), TerminalTokens.TokenNameDOT);
           AbstractTypedTree qualifier = (AbstractTypedTree) convertExpression(e.getQualifier());
-          IdentifierTreeImpl keywordSuper = new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper));
+          KeywordSuper keywordSuper = new KeywordSuper(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper), null);
           MemberSelectExpressionTreeImpl qualifiedSuper = new MemberSelectExpressionTreeImpl(
             (ExpressionTree) qualifier,
             createSyntaxToken(firstDotTokenIndex),
             keywordSuper
           );
           if (qualifier.typeBinding != null) {
-            keywordSuper.typeBinding = qualifier.typeBinding.getSuperclass();
-            qualifiedSuper.typeBinding = keywordSuper.typeBinding;
+            keywordSuper.typeBinding = qualifier.typeBinding;
+            qualifiedSuper.typeBinding = keywordSuper.typeBinding.getSuperclass();
           }
           outermostSelect = new MemberSelectExpressionTreeImpl(
             qualifiedSuper,
@@ -2324,13 +2324,13 @@ public class JParser {
     }
   }
 
-  private UnqualifiedKeywordSuper unqualifiedKeywordSuper(ASTNode node) {
+  private KeywordSuper unqualifiedKeywordSuper(ASTNode node) {
     InternalSyntaxToken token = firstTokenIn(node, TerminalTokens.TokenNamesuper);
     do {
       if (node instanceof AbstractTypeDeclaration) {
-        return new UnqualifiedKeywordSuper(token, ((AbstractTypeDeclaration) node).resolveBinding());
+        return new KeywordSuper(token, ((AbstractTypeDeclaration) node).resolveBinding());
       } else if (node instanceof AnonymousClassDeclaration) {
-        return new UnqualifiedKeywordSuper(token, ((AnonymousClassDeclaration) node).resolveBinding());
+        return new KeywordSuper(token, ((AnonymousClassDeclaration) node).resolveBinding());
       }
       node = node.getParent();
     } while (true);
