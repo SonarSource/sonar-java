@@ -24,10 +24,7 @@ import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.ClassJavaType;
-import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -66,7 +63,7 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
 
   private boolean checkStaticMethod(Tree reportTree, Symbol.MethodSymbol methodSymbol, Type superClass) {
     for (Symbol methodWithSameName : superClass.symbol().lookupSymbols(methodSymbol.name())) {
-      if (methodWithSameName.isMethodSymbol() && hideStaticMethod(methodSymbol, superClass, methodWithSameName)) {
+      if (methodWithSameName.isMethodSymbol() && hideStaticMethod(methodSymbol, (Symbol.MethodSymbol) methodWithSameName)) {
         reportIssue(reportTree, "Rename this method or make it \"static\".");
         return true;
       }
@@ -78,7 +75,7 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
     boolean reportStaticIssue = false;
     for (Symbol methodWithSameName : superClass.symbol().lookupSymbols(methodSymbol.name())) {
       if (methodWithSameName.isMethodSymbol()) {
-        if (hideStaticMethod(methodSymbol, superClass, methodWithSameName)) {
+        if (hideStaticMethod(methodSymbol, (Symbol.MethodSymbol) methodWithSameName)) {
           reportIssue(reportTree, "Rename this method or make it \"static\".");
           reportStaticIssue = true;
         } else if (confusingOverload(methodSymbol, (Symbol.MethodSymbol) methodWithSameName)) {
@@ -97,10 +94,29 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
     return message;
   }
 
-  private static boolean hideStaticMethod(Symbol.MethodSymbol methodSymbol, Type superClass, Symbol symbolWithSameName) {
+  private static boolean hideStaticMethod(Symbol.MethodSymbol methodSymbol, Symbol.MethodSymbol symbolWithSameName) {
     return symbolWithSameName.isStatic()
       && !methodSymbol.isStatic()
-      && BooleanUtils.isTrue(((MethodJavaSymbol) methodSymbol).checkOverridingParameters((MethodJavaSymbol) symbolWithSameName, (ClassJavaType) superClass));
+      && isPotentialOverride(methodSymbol, symbolWithSameName);
+  }
+
+  static boolean isPotentialOverride(Symbol.MethodSymbol method, Symbol.MethodSymbol overrideeCandidate) {
+    List<Type> methodParameterTypes = method.parameterTypes();
+    List<Type> overrideeParameterTypes = overrideeCandidate.parameterTypes();
+    if (methodParameterTypes.size() != overrideeParameterTypes.size()) {
+      return false;
+    }
+    for (int i = 0; i < methodParameterTypes.size(); i++) {
+      Type methodParam = methodParameterTypes.get(i);
+      Type overrideeParamType = overrideeParameterTypes.get(i);
+      if (methodParam.isUnknown() || overrideeParamType.isUnknown()) {
+        return false;
+      }
+      if (!methodParam.erasure().equals(overrideeParamType.erasure())) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private static boolean confusingOverload(Symbol.MethodSymbol methodSymbol, Symbol.MethodSymbol methodWithSameName) {

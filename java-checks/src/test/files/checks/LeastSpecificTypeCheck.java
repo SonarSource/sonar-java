@@ -204,10 +204,18 @@ class A {
 
   public interface IMB {
     void ma();
+    void ma_1(Unknown u);
+
+    interface Inner {}
+    void ma_2(Inner i);
   }
 
   public interface IMA {
     void ma();
+    void ma_1(Unknown u);
+
+    interface Inner {}
+    void ma_2(Inner i);
   }
 
   static class T extends T2 implements IMB, IMA {}
@@ -221,9 +229,19 @@ class A {
     t.mt1();
   }
 
-  public static void meh(T t) { // Noncompliant  {{Use 'A.IMA' here; it is a more general type than 'T'.}}
+  public static void ma(T t) { // Noncompliant  {{Use 'A.IMA' here; it is a more general type than 'T'.}}
     // defined in both T2 and IMA, interface is preferred
     t.ma();
+  }
+
+  public static void ma_1(T t) { // Compliant - ambiguous as Unknown type is unknown
+    // defined in both T2 and IMA, unknow makes it indecidable
+    t.ma_1(null);
+  }
+
+  public static void ma_2(T t) { // Noncompliant {{Use 'A.IMB' here; it is a more general type than 'T'.}}
+    // defined in both T2 and IMA, but call is ambiguous
+    t.ma_2(null);
   }
 
   public interface IG<T> {

@@ -84,3 +84,12 @@ class UnknownParamChild extends UnknownParam {
 
   }
 }
+
+class A {
+  static void foo(Fruit f) {}
+}
+
+class B extends A {
+  static class Fruit {}
+  void foo(Fruit f) {} // Noncompliant {{Rename this method or correct the type of the argument(s) to override the parent class method.}}
+}
