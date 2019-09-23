@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.ArrayCreation;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
@@ -1748,7 +1749,7 @@ public class JParser {
         if (e.getQualifier() == null) {
           // super.name
           return new MemberSelectExpressionTreeImpl(
-            new UnqualifiedKeywordSuper(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
+            unqualifiedKeywordSuper(e),
             firstTokenIn(e, TerminalTokens.TokenNameDOT),
             rhs
           );
@@ -2051,7 +2052,7 @@ public class JParser {
         ExpressionTree outermostSelect;
         if (e.getQualifier() == null) {
           outermostSelect = new MemberSelectExpressionTreeImpl(
-            new UnqualifiedKeywordSuper(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
+            unqualifiedKeywordSuper(e),
             firstTokenIn(e, TerminalTokens.TokenNameDOT),
             rhs
           );
@@ -2198,7 +2199,7 @@ public class JParser {
           );
         } else {
           t = new MethodReferenceTreeImpl(
-            new UnqualifiedKeywordSuper(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
+            unqualifiedKeywordSuper(e),
             firstTokenIn(e, TerminalTokens.TokenNameCOLON_COLON)
           );
         }
@@ -2321,6 +2322,18 @@ public class JParser {
         );
       }
     }
+  }
+
+  private UnqualifiedKeywordSuper unqualifiedKeywordSuper(ASTNode node) {
+    InternalSyntaxToken token = firstTokenIn(node, TerminalTokens.TokenNamesuper);
+    do {
+      if (node instanceof AbstractTypeDeclaration) {
+        return new UnqualifiedKeywordSuper(token, ((AbstractTypeDeclaration) node).resolveBinding());
+      } else if (node instanceof AnonymousClassDeclaration) {
+        return new UnqualifiedKeywordSuper(token, ((AnonymousClassDeclaration) node).resolveBinding());
+      }
+      node = node.getParent();
+    } while (true);
   }
 
   private TypeTree convertType(@Nullable Type node) {

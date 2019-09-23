@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -28,8 +27,9 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 final class UnqualifiedKeywordSuper extends IdentifierTreeImpl {
 
-  UnqualifiedKeywordSuper(InternalSyntaxToken token) {
+  UnqualifiedKeywordSuper(InternalSyntaxToken token, ITypeBinding typeBinding) {
     super(token);
+    this.typeBinding = typeBinding;
   }
 
   Type resolveType() {
@@ -37,7 +37,6 @@ final class UnqualifiedKeywordSuper extends IdentifierTreeImpl {
   }
 
   Symbol resolveSymbol() {
-    ITypeBinding typeBinding = classNode().typeBinding;
     if (typeBinding == null) {
       return Symbols.unknownSymbol;
     }
@@ -58,14 +57,6 @@ final class UnqualifiedKeywordSuper extends IdentifierTreeImpl {
       return resolveSymbol();
     }
     return super.symbol();
-  }
-
-  private ClassTreeImpl classNode() {
-    JavaTree node = this;
-    while (!node.is(Kind.CLASS, Kind.ENUM)) {
-      node = (JavaTree) node.parent();
-    }
-    return (ClassTreeImpl) node;
   }
 
 }
