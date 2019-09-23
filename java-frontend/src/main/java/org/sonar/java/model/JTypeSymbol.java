@@ -53,6 +53,17 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       return sema.type(typeBinding().getSuperclass());
     }
   };
+  final SpecialField thisSymbol = new SpecialField() {
+    @Override
+    public String name() {
+      return "this";
+    }
+
+    @Override
+    public Type type() {
+      return sema.type(typeBinding());
+    }
+  };
 
   JTypeSymbol(JSema sema, ITypeBinding typeBinding) {
     super(sema, typeBinding);

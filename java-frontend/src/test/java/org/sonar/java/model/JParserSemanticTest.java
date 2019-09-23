@@ -119,6 +119,27 @@ class JParserSemanticTest {
    * @see org.eclipse.jdt.core.dom.ThisExpression
    */
   @Test
+  void expression_this() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return this; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+    KeywordThis keywordThis = Objects.requireNonNull((KeywordThis) s.expression());
+    assertThat(keywordThis.typeBinding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((ClassTreeImpl) keywordThis.symbolType().symbol().declaration()).typeBinding)
+      .isSameAs(c.typeBinding);
+    assertThat(keywordThis.resolveSymbol())
+      .isSameAs(cu.sema.typeSymbol(c.typeBinding).thisSymbol);
+    assertThat(keywordThis.resolveSymbol().isVariableSymbol())
+      .isSameAs(keywordThis.symbol().isVariableSymbol())
+      .isTrue();
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.ThisExpression
+   */
+  @Test
   void expression_this_qualified() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C1 { class C2 { Object m() { return C1.this; } } }");
     ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
@@ -130,11 +151,16 @@ class JParserSemanticTest {
       .isNotNull()
       .isSameAs(Objects.requireNonNull((ClassTreeImpl) e.symbolType().symbol().declaration()).typeBinding)
       .isSameAs(c1.typeBinding);
-    IdentifierTreeImpl keywordThis = (IdentifierTreeImpl) e.identifier();
+    KeywordThis keywordThis = (KeywordThis) e.identifier();
     assertThat(keywordThis.typeBinding)
       .isNotNull()
       .isSameAs(Objects.requireNonNull((ClassTreeImpl) keywordThis.symbolType().symbol().declaration()).typeBinding)
       .isSameAs(c1.typeBinding);
+    assertThat(keywordThis.resolveSymbol())
+      .isSameAs(cu.sema.typeSymbol(c1.typeBinding).thisSymbol);
+    assertThat(keywordThis.resolveSymbol().isVariableSymbol())
+      .isSameAs(keywordThis.symbol().isVariableSymbol())
+      .isTrue();
   }
 
   /**

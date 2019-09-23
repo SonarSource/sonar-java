@@ -1776,14 +1776,15 @@ public class JParser {
       case ASTNode.THIS_EXPRESSION: {
         ThisExpression e = (ThisExpression) node;
         if (e.getQualifier() == null) {
-          return new IdentifierTreeImpl(
-            firstTokenIn(e, TerminalTokens.TokenNamethis)
+          return new KeywordThis(
+            firstTokenIn(e, TerminalTokens.TokenNamethis),
+            null
           );
         } else {
-          IdentifierTreeImpl keywordThis = new IdentifierTreeImpl(
-            firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamethis)
+          KeywordThis keywordThis = new KeywordThis(
+            firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamethis),
+            e.resolveTypeBinding()
           );
-          keywordThis.typeBinding = e.resolveTypeBinding();
           return new MemberSelectExpressionTreeImpl(
             convertExpression(e.getQualifier()),
             firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
