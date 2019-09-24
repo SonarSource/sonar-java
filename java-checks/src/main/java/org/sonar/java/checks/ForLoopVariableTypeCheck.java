@@ -20,12 +20,12 @@
 package org.sonar.java.checks;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 import javax.annotation.CheckForNull;
-
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.ClassJavaType;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.WildCardType;
@@ -77,25 +77,33 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
 
   @CheckForNull
   private static Type getCollectionItemType(ExpressionTree expression) {
-    JavaType expressionType = (JavaType) expression.symbolType();
-    if (expressionType.isSubtypeOf("java.util.Collection") && !expressionType.isParameterized()) {
+    Type expressionType = expression.symbolType();
+    if (expressionType.isSubtypeOf("java.util.Collection") && !JUtils.isParametrized(expressionType)) {
       // Ignoring raw collections (too many FP)
       return null;
     }
     if (expressionType.isArray()) {
       return ((Type.ArrayType) expressionType).elementType();
     } else if(expressionType.isClass()) {
-      ClassJavaType clazz = (ClassJavaType) expressionType;
-      return clazz.superTypes()
+      // FIXME when dropping old semantic, can be replaced by:
+      // return JUtils.superTypes(expressionType.symbol()).stream()...
+      return superTypes(expressionType)
         .stream()
-        .filter(t -> t.is("java.lang.Iterable") && t.isParameterized())
+        .filter(t -> t.is("java.lang.Iterable") && JUtils.isParametrized(t))
         .findFirst()
-        .map(iter -> {
-          ParametrizedTypeJavaType ptype = (ParametrizedTypeJavaType) iter;
-          return ptype.substitution(ptype.typeParameters().get(0));
-        }).orElse(null);
+        .map(iter -> JUtils.typeArguments(iter).get(0))
+        .orElse(null);
     }
     return null;
+  }
+
+  private static Set<Type> superTypes(Type type) {
+    Set<Type> types = new HashSet<>();
+    for (Type superType : JUtils.directSuperTypes(type)) {
+      types.add(superType);
+      types.addAll(superTypes(superType));
+    }
+    return types;
   }
 
   private static boolean isMostPreciseType(Type variableType, Type collectionItemType) {
