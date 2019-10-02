@@ -121,35 +121,37 @@ public class VisitorsBridge {
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
-    SemanticModel semanticModel = null;
-    CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
+    SemanticModel oldSemanticModel = null;
+    JavaTree.CompilationUnitTreeImpl tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
     boolean fileParsed = parsedTree != null;
     if (fileParsed && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
-      tree = (CompilationUnitTree) parsedTree;
-      if (isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
-        try {
-          semanticModel = SemanticModel.createFor(tree, classLoader);
-        } catch (Exception e) {
-          LOG.error(String.format("Unable to create symbol table for : '%s'", currentFile), e);
-          addAnalysisError(e, currentFile, AnalysisError.Kind.SEMANTIC_ERROR);
-          sonarComponents.reportAnalysisError(currentFile, e.getMessage());
-          return;
-        }
-        createSonarSymbolTable(tree);
-      } else {
-        SemanticModel.handleMissingTypes(tree);
+      tree = (JavaTree.CompilationUnitTreeImpl) parsedTree;
+
+      try {
+        oldSemanticModel = SemanticModel.createFor(currentFile.filename(), tree, classLoader);
+      } catch (Exception e) {
+        LOG.error(String.format("Unable to create symbol table for : '%s'", currentFile), e);
+        addAnalysisError(e, currentFile, AnalysisError.Kind.SEMANTIC_ERROR);
+        sonarComponents.reportAnalysisError(currentFile, e.getMessage());
+        return;
       }
     }
-    JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, semanticModel, sonarComponents, fileParsed);
+
+    if (tree.sema() != null) {
+      createSonarSymbolTable(tree);
+    }
+
+    JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.sema(), sonarComponents, fileParsed);
     // Symbolic execution checks
-    if (symbolicExecutionEnabled && isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
+    if (symbolicExecutionEnabled && tree.sema() != null) {
       runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache), AnalysisError.Kind.SE_ERROR);
       behaviorCache.cleanup();
     }
     executableScanners.forEach(scanner -> runScanner(javaFileScannerContext, scanner, AnalysisError.Kind.CHECK_ERROR));
     scannerRunner.run(javaFileScannerContext);
-    if (semanticModel != null) {
-      classesNotFound.addAll(semanticModel.classesNotFound());
+
+    if (oldSemanticModel != null) {
+      classesNotFound.addAll(oldSemanticModel.classesNotFound());
     }
   }
 
@@ -197,7 +199,7 @@ public class VisitorsBridge {
   }
 
   protected JavaFileScannerContext createScannerContext(
-    CompilationUnitTree tree, Sema semanticModel, SonarComponents sonarComponents, boolean fileParsed) {
+    CompilationUnitTree tree, @Nullable Sema semanticModel, SonarComponents sonarComponents, boolean fileParsed) {
     return new DefaultJavaFileScannerContext(
       tree,
       currentFile,
@@ -205,23 +207,6 @@ public class VisitorsBridge {
       sonarComponents,
       javaVersion,
       fileParsed);
-  }
-
-  private boolean isNotJavaLangOrSerializable(String packageName) {
-    String name = currentFile.filename();
-    return !(inJavaLang(packageName) || isAnnotation(packageName, name) || isSerializable(packageName, name));
-  }
-
-  private static boolean isSerializable(String packageName, String name) {
-    return "java/io".equals(packageName) && "Serializable.java".equals(name);
-  }
-
-  private static boolean isAnnotation(String packageName, String name) {
-    return "java/lang/annotation".equals(packageName) && "Annotation.java".equals(name);
-  }
-
-  private static boolean inJavaLang(String packageName) {
-    return "java/lang".equals(packageName);
   }
 
   private void createSonarSymbolTable(CompilationUnitTree tree) {

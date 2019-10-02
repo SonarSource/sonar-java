@@ -26,6 +26,7 @@ import javax.annotation.CheckForNull;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.PackageUtils;
 import org.sonar.java.model.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -56,6 +57,22 @@ public class SemanticModel implements Sema {
   @VisibleForTesting
   SemanticModel(BytecodeCompleter bytecodeCompleter) {
     this.bytecodeCompleter = bytecodeCompleter;
+  }
+
+  @Nullable
+  public static SemanticModel createFor(String fileName, CompilationUnitTree tree, SquidClassLoader classLoader) {
+    if (isJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"), fileName)) {
+      SemanticModel.handleMissingTypes(tree);
+      return null;
+    } else {
+      return createFor(tree, classLoader);
+    }
+  }
+
+  private static boolean isJavaLangOrSerializable(String packageName, String fileName) {
+    return "java/lang".equals(packageName)
+      || ("java/lang/annotation".equals(packageName) && "Annotation.java".equals(fileName))
+      || ("java/io".equals(packageName) && "Serializable.java".equals(fileName));
   }
 
   public static SemanticModel createFor(CompilationUnitTree tree, SquidClassLoader classLoader) {
