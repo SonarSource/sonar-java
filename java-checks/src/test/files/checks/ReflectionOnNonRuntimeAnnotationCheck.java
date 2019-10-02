@@ -5,7 +5,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 class A {
   void foo() {
     Method m;
-    Class<T> c;
+    Class<?> c;
     m.isAnnotationPresent(Override.class); // Noncompliant [[sc=27;ec=41]] {{"@Override" is not available at runtime and cannot be seen with reflection.}}
     c.isAnnotationPresent(Override.class); // Noncompliant {{"@Override" is not available at runtime and cannot be seen with reflection.}}
     m.isAnnotationPresent(Deprecated.class); //Compliant, runtime retention
@@ -28,7 +28,7 @@ class A {
   public @interface Expose3 {}
   @Target(ElementType.METHOD)
   public @interface Expose4 {}
-  private void addMethod(Class<T> c) {
+  private void addMethod(Class<?> c) {
     Expose annotation = c.isAnnotationPresent(Expose1.class); //Compliant
     Expose annotation2 = c.isAnnotationPresent(Expose2.class); // Noncompliant {{"@Expose2" is not available at runtime and cannot be seen with reflection.}}
     Expose annotation3 = c.isAnnotationPresent(Expose3.class); // Noncompliant {{"@Expose3" is not available at runtime and cannot be seen with reflection.}}
