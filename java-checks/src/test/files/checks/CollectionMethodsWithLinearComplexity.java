@@ -104,7 +104,7 @@ class CopyOnWriteArrayListUsage {
 class CopyOnWriteArraySetUsage {
 
   CopyOnWriteArraySet<Object> field;
-  private List<Object> iface = new CopyOnWriteArraySet<>();
+  private List<Object> iface = new CopyOnWriteArrayList<>();
 
   CopyOnWriteArraySetUsage() {
     local.contains(a);
@@ -113,7 +113,7 @@ class CopyOnWriteArraySetUsage {
   }
 
   void cowSet(Object a) {
-    CopyOnWriteArraySet<Object> local = new CopyOnWriteArrayList<>();
+    CopyOnWriteArraySet<Object> local = new CopyOnWriteArraySet<>();
     local.contains(a);
     field.contains(a); // Noncompliant
     iface.contains(a); // Noncompliant
