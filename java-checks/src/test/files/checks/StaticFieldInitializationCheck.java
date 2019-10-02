@@ -156,7 +156,7 @@ class A {
       CONFIG = null; // Compliant
     }
 
-    synchronized Consumer<String> bar() {
+    synchronized java.util.function.Consumer<String> bar() {
       return s -> {
         CONFIG = null; // Noncompliant
       };
