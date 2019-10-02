@@ -165,7 +165,7 @@ public class A1 {
     int foo;
     class C {
       Bar foo() {
-        return new String() {
+        return new Bar() {
           public String toString() {
             return "" + foo;
           }
