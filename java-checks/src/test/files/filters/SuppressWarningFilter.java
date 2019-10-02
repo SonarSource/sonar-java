@@ -5,7 +5,7 @@
  * - BadConstantNameCheck (S00115)
  * - SuppressWarningCheck (S1309) - Raise an issue on all the @SuppressWarning annotation, can not be suppressed
  */
-class A {
+class Test {
   class UnusedPrivateFieldCheck {
     private String s; // WithIssue
   }
