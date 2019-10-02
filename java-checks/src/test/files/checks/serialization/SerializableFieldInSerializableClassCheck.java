@@ -44,7 +44,7 @@ class Person5 implements Serializable {
 class B<T> {}
 
 class Person6<E, F extends Serializable> implements Serializable {
-  private B<Objects> bs; // Noncompliant
+  private B<Object> bs; // Noncompliant
   private List<Person6> persons; // Compliant
   private List things; // Noncompliant {{Make "things" transient or serializable.}}
   private List<MyObject> objects; // Noncompliant {{Make "objects" transient or serializable.}}
