@@ -51,8 +51,10 @@ class LazyArgEvaluationCheck {
       myField = new MyClass() {
         @Overidde
         void doSomethingAllTheTime() {
-          slf4j.info("logging all the time consuming resources for nothing " + computeValue() + generateStuff()); // Noncompliant
+          slf4j.info("logging all the time consuming resources for nothing " + computeValue()); // Noncompliant
         }
+
+        String computeValue() { return ""; }
       };
     }
   }
