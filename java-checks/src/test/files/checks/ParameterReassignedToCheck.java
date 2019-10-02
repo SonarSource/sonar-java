@@ -1,3 +1,5 @@
+import java.util.function.Supplier;
+
 class A {
   public void f() {
   }
@@ -65,11 +67,11 @@ class A {
       s1 = ""; // compliant
     }
     for (String s : list) {
-      Object o = () -> new Object();
+      Supplier o = () -> new Object();
       s = ""; // Noncompliant
     }
     for (String s3 : list) {
-      Object o = () -> s3.length();
+      Supplier o = () -> s3.length();
       s3 = ""; // compliant
     }
   }
