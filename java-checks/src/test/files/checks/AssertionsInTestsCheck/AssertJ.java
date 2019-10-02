@@ -209,7 +209,7 @@ public abstract class AssertionsInTestsCheckAssertJ {
 
   @Test
   public void bdd_assertions_split_with_intermediate_assertion() { // Compliant
-    AbstractListAssert<?, ? extends List<? extends String>, String> thenResult = BDDAssertions.then(listStringMethod());
+    AbstractListAssert<?, ? extends List<? extends String>, String, ?> thenResult = BDDAssertions.then(listStringMethod());
     thenResult
       .contains("Bob", "Alice")
       .doesNotContain("Maurice");
