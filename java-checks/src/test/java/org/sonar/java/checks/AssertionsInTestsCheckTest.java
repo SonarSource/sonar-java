@@ -19,20 +19,34 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AssertionsInTestsCheckTest {
+@EnableRuleMigrationSupport
+class AssertionsInTestsCheckTest {
 
-  public static final List<String> FRAMEWORKS = Arrays.asList(
+  private AssertionsInTestsCheck check = new AssertionsInTestsCheck();
+
+  @Rule
+  public LogTester logTester = new LogTester();
+
+  @BeforeEach
+  void setup() {
+    check.customAssertionMethods = "org.sonarsource.helper.AssertionsHelper$ConstructorAssertion#<init>,org.sonarsource.helper.AssertionsHelper#customAssertionAsRule*," +
+      "org.sonarsource.helper.AssertionsHelper#customInstanceAssertionAsRuleParameter,blabla,bla# , #bla";
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
     "Junit3",
     "Junit4",
     "Junit5",
@@ -51,36 +65,22 @@ public class AssertionsInTestsCheckTest {
     "Selenide",
     "JMockit",
     "Custom"
-  );
-  private AssertionsInTestsCheck check = new AssertionsInTestsCheck();
-
-  @Rule
-  public LogTester logTester = new LogTester();
-
-  @Before
-  public void setup() {
-    check.customAssertionMethods = "org.sonarsource.helper.AssertionsHelper$ConstructorAssertion#<init>,org.sonarsource.helper.AssertionsHelper#customAssertionAsRule*," +
-      "org.sonarsource.helper.AssertionsHelper#customInstanceAssertionAsRuleParameter,blabla,bla# , #bla";
+  })
+  void test(String framework) {
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/" + framework + ".java", check);
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(
+      "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'blabla'",
+      "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'bla# '",
+      "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ' #bla'");
   }
 
   @Test
-  public void test() {
-    FRAMEWORKS.forEach(framework -> {
-      JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/" + framework + ".java", check);
-      assertThat(logTester.logs(LoggerLevel.WARN)).contains(
-        "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'blabla'",
-        "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'bla# '",
-        "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ' #bla'");
-    });
-  }
-
-  @Test
-  public void testNoIssuesWithout() {
+  void testNoIssuesWithout() {
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/AssertionsInTestsCheck/Junit3.java", check);
   }
 
   @Test
-  public void testWithEmptyCustomAssertionMethods() {
+  void testWithEmptyCustomAssertionMethods() {
     check.customAssertionMethods = "";
     JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Junit3.java", check);
     assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ''");
