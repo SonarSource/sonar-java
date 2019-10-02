@@ -1,39 +1,51 @@
-class MyClass extends Class3 {
+class Case_1 extends Class3 {
   @Override
   protected void finalize() throws Throwable {  // Compliant
     System.out.println("foo");
     super.finalize();
   }
+}
 
+class Case_2 extends Class3 {
   @Override
   protected void finalize() throws Throwable {
     super.finalize();                           // Noncompliant [[sc=5;ec=21]] {{Move this super.finalize() call to the end of this Object.finalize() implementation.}}
     System.out.println("foo");
   }
+}
 
+class Case_3 extends Class3 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant [[sc=18;ec=26]] {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
     new Object().finalize();
     System.out.println("foo");
   }
+}
 
+class Case_4 extends Class3 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
     Object object = new Object();
     object.finalize();
     System.out.println("foo");
   }
+}
 
+class Case_5 extends Class3 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
     finalize();
     System.out.println("foo");
   }
+}
 
+class Case_6 extends Class3 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
   }
+}
 
+class Case_7 extends Class3 {
   @Override
   protected void finalize() throws Throwable {  // Noncompliant
     System.out.println("foo");
@@ -43,7 +55,9 @@ class MyClass extends Class3 {
   @Override
   protected void foo() throws Throwable {       // Compliant
   }
+}
 
+class Case_8 extends Class3 {
   void finalize() {
     if (0) {
       super.finalize();
@@ -51,7 +65,9 @@ class MyClass extends Class3 {
       super.finalize();                         // Noncompliant
     }
   }
+}
 
+class Case_9 extends Class3 {
   void finalize() {
     try {
       // ...
@@ -61,7 +77,9 @@ class MyClass extends Class3 {
 
     int a;
   }
+}
 
+class Case_10 extends Class3 {
   void finalize() {
     try {
       // ...
@@ -70,7 +88,9 @@ class MyClass extends Class3 {
       System.out.println();
     }
   }
+}
 
+class Case_11 extends Class3 {
   void finalize() {
     try {
       // ...
@@ -78,8 +98,8 @@ class MyClass extends Class3 {
       super.finalize();                         // Noncompliant
     }
   }
-  public void finalize(Object pf, int mode) {
 
+  public void finalize(Object pf, int mode) {
   }
 }
 
