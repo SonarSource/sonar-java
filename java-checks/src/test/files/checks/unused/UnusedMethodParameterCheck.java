@@ -77,9 +77,10 @@ class F {
 }
 
 class G implements inter {
-  void foo(int a) {
+  public void foo(int a) {
     System.out.println("plop");
   }
+
   private void writeObject(ObjectOutputStream out) // Compliant
       throws IOException {
     throw new NotSerializableException(getClass().getName());
