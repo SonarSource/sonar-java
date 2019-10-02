@@ -129,7 +129,7 @@ class Utilities {
     }
   }
   
-  private <T> int sizeOfMap(Map<T> map) { // Noncompliant
+  private <T> int sizeOfMap(Map<T, ?> map) { // Noncompliant
     return map.size();
   }
   
