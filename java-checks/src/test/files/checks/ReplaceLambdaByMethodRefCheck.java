@@ -1,5 +1,7 @@
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class A {
   void fun() {
@@ -19,9 +21,16 @@ class A {
 
     Arrays.asList("bar").stream().filter(string -> string.startsWith("b")); // Compliant
     Arrays.asList(new A()).stream().filter(a -> a.coolerThan(0, a)); // Compliant
-    foo((x, y) -> x * y);
-    foo((x, y) -> { ; });
-    foo((x, y) -> { ;; });
+
+    biConsumer((x, y) -> x * y);
+    biConsumer((x, y) -> { ; });
+    biConsumer((x, y) -> { ;; });
+  }
+
+  void biConsumer(BiConsumer consumer) {
+  }
+
+  void runnable(Runnable runnable) {
   }
 
   void foo(List<String> list, String a) {
@@ -82,15 +91,15 @@ class A {
     default void process(String s1, String s2, int i){}
     default void fun2(){
       IntStream.range(1, 5).forEach(i -> { process("foo", "bar", i); });
-      foo((x, y) -> myMethod(x , y)); // Noncompliant
-      foo((x, y) -> myMethod(y , x));
-      foo((x, y) -> myMethod(y));
-      foo((x,y) -> new ClassTree(x, y)); // Noncompliant
-      foo((x,y) -> new ClassTree(y, x));
-      foo((x,y) -> new ClassTree(x, y) {
+      biConsumer((x, y) -> myMethod(x , y)); // Noncompliant
+      biConsumer((x, y) -> myMethod(y , x));
+      biConsumer((x, y) -> myMethod(y));
+      biConsumer((x,y) -> new ClassTree(x, y)); // Noncompliant
+      biConsumer((x,y) -> new ClassTree(y, x));
+      biConsumer((x,y) -> new ClassTree(x, y) {
         //can get some capture
       });
-      foo(() -> myMethod()); // Noncompliant
+      runnable(() -> myMethod()); // Noncompliant
     }
   }
 
