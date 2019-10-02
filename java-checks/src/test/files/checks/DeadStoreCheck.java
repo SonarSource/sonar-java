@@ -2,12 +2,11 @@ import com.google.common.collect.Lists;
 
 import java.lang.Exception;
 import java.io.*;
+import java.util.function.IntFunction;
 
 class A {
 
   int var;
-
-  abstract int foo();
 
   int foo(int u) {
     int x = 0;// Compliant - default value
@@ -52,12 +51,9 @@ class A {
     };
   }
 
-  void lambdas_using_local_vars() {
-    int a;
-    if(cond) {
-      a = 42;
-    }
-    plop(y -> a + y);
+  void lambdas_using_local_vars(IntFunction lambda) {
+    int a = 42;
+    lambdas_using_local_vars(y -> a + y);
   }
 
   void ignore_try_finally() {
