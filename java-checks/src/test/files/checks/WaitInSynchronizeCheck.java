@@ -34,7 +34,7 @@ class A {
     wait();
   }
 
-  synchronized Consumer<String> foo3() {
+  synchronized java.util.function.Consumer<String> foo3() {
     wait(); // Compliant
     return s -> {
       wait(); // Noncompliant
