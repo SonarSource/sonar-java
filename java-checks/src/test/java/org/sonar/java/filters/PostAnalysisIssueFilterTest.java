@@ -23,9 +23,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Set;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
@@ -38,9 +36,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PostAnalysisIssueFilterTest {
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
 
   private static final InputFile INPUT_FILE = CheckTestUtils.inputFile("src/test/files/filters/PostAnalysisIssueFilter.java");
   private static JavaFileScannerContext context;
