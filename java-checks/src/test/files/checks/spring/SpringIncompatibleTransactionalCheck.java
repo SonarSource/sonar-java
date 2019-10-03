@@ -63,6 +63,19 @@ public class IncompatibilityMatrix {
     supports();
   }
 
+  @Transactional(readOnly = true)
+  public void transactionalOtherProperty() {
+    nonTransactional();
+    transactional();
+    mandatory();
+    nested();       // Noncompliant
+    never();        // Noncompliant
+    notSupported(); // Noncompliant
+    required();
+    requiresNew();  // Noncompliant
+    supports();
+  }
+
   @Transactional(propagation = Propagation.MANDATORY)
   public void mandatory() {
     nonTransactional();

@@ -168,17 +168,24 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
   }
 
   private static String getAnnotationAttributeAsString(List<AnnotationValue> values, String attributeName, String defaultValue) {
-    return values.stream()
-      .filter(annotationValue -> annotationValue.name().equals(attributeName))
-      .map(AnnotationValue::value)
-      .filter(Tree.class::isInstance)
-      .map(Tree.class::cast)
-      .map(tree -> tree.is(Tree.Kind.MEMBER_SELECT) ? ((MemberSelectExpressionTree) tree).identifier() : tree)
-      .filter(tree -> tree.is(Tree.Kind.IDENTIFIER))
-      .map(IdentifierTree.class::cast)
-      .map(IdentifierTree::name)
-      .findFirst()
-      .orElse(defaultValue);
+    for (AnnotationValue annotationValue : values) {
+      if (attributeName.equals(annotationValue.name())) {
+        Object value = annotationValue.value();
+        if (value instanceof Symbol.VariableSymbol) {
+          // expected values are constant from a Enum, translated into variable symbol
+          return ((Symbol.VariableSymbol) value).name();
+        } else if (value instanceof Tree) {
+          Tree tree = (Tree) value;
+          if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+            tree = ((MemberSelectExpressionTree) tree).identifier();
+          }
+          if (tree.is(Tree.Kind.IDENTIFIER)) {
+            return ((IdentifierTree) tree).name();
+          }
+        }
+      }
+    }
+    return defaultValue;
   }
 
 }
