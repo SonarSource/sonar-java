@@ -23,6 +23,8 @@ import org.junit.Test;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 public class CommentRegularExpressionCheckTest {
 
   @Test
@@ -40,11 +42,12 @@ public class CommentRegularExpressionCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/CommentRegularExpressionCheck2.java", check);
   }
 
-  @Test(expected = AnalysisException.class)
+  @Test
   public void bad_regex() {
     CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
     check.regularExpression = "[[";
-    JavaCheckVerifier.verify("src/test/files/checks/CommentRegularExpressionCheck.java", check);
+    assertThrows(AnalysisException.class,
+      () -> JavaCheckVerifier.verify("src/test/files/checks/CommentRegularExpressionCheck.java", check));
   }
 
 }

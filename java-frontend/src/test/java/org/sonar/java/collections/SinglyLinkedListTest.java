@@ -27,6 +27,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SinglyLinkedListTest {
 
@@ -96,14 +97,16 @@ public class SinglyLinkedListTest {
     assertThat(s1.equals(s2)).isFalse();
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void empty_pop() {
-    PCollections.emptyStack().pop();
+    assertThrows(IllegalStateException.class,
+      () -> PCollections.emptyStack().pop());
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void empty_peek() {
-    PCollections.emptyStack().peek();
+    assertThrows(IllegalStateException.class,
+      () -> PCollections.emptyStack().peek());
   }
 
   @Test

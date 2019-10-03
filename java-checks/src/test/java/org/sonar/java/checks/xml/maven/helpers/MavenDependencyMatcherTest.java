@@ -23,19 +23,24 @@ import javax.annotation.Nullable;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MavenDependencyMatcherTest {
 
   private MavenDependencyMatcher matcher;
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test
   public void no_name_should_fail() {
-    new MavenDependencyMatcher("", "");
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+      () -> new MavenDependencyMatcher("", ""));
+    assertThat(e.getMessage()).isEqualTo("Invalid dependency name. Should match '[groupId]:[artifactId]' use '*' as wildcard");
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test
   public void invalid_format_should_fail() {
-    new MavenDependencyMatcher(":", "");
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+      () -> new MavenDependencyMatcher(":", ""));
+    assertThat(e.getMessage()).isEqualTo("Invalid dependency name. Should match '[groupId]:[artifactId]' use '*' as wildcard");
   }
 
   @Test

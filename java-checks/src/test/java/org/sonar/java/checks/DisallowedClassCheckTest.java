@@ -19,10 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.assertj.core.api.Fail;
 import org.junit.Test;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DisallowedClassCheckTest {
 
@@ -49,16 +51,14 @@ public class DisallowedClassCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheckRegex.java", visitor);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void checkBadRegex() throws Throwable {
+  @Test
+  public void checkBadRegex() {
     DisallowedClassCheck visitor = new DisallowedClassCheck();
     // bad regex
     visitor.disallowedClass = "java.lang(";
-    try {
-      JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheckRegex.java", visitor);
-      Fail.fail("Should have failed");
-    } catch (AnalysisException e) {
-      throw e.getCause();
-    }
+
+    AnalysisException e = assertThrows(AnalysisException.class,
+      () -> JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheckRegex.java", visitor));
+    assertThat(e.getCause()).isInstanceOf(IllegalArgumentException.class);
   }
 }

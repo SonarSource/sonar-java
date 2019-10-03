@@ -24,6 +24,7 @@ import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RangedVersionMatcherTest {
 
@@ -43,14 +44,17 @@ public class RangedVersionMatcherTest {
     assertNotMatch("1.invalid");
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void fail_with_double_wildcard() {
-    new RangedVersionMatcher("*", "*");
+    assertThrows(IllegalArgumentException.class,
+      () -> new RangedVersionMatcher("*", "*"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void fail_with_invalid_version() {
-    new RangedVersionMatcher("1.2.3", "invalid");
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+      () -> new RangedVersionMatcher("1.2.3", "invalid"));
+    assertThat(e.getMessage()).isEqualTo("Provided version does not match expected pattern: <major version>.<minor version>.<incremental version> (recieved: invalid)");
   }
 
   @Test

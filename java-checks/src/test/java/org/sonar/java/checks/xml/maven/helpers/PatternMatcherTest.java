@@ -22,6 +22,7 @@ package org.sonar.java.checks.xml.maven.helpers;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PatternMatcherTest {
 
@@ -34,9 +35,11 @@ public class PatternMatcherTest {
     assertThat(matcher.test("012")).isFalse();
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void should_fail_on_invalid_regex() {
-    new PatternMatcher("*");
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+      () -> new PatternMatcher("*"));
+    assertThat(e.getMessage()).isEqualTo("Unable to compile the regular expression: *");
   }
 
 }

@@ -23,6 +23,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 public class DisallowedDependenciesCheckTest {
 
   private DisallowedDependenciesCheck check;
@@ -52,16 +55,20 @@ public class DisallowedDependenciesCheckTest {
     SonarXmlCheckVerifier.verifyIssues("rangeVersion/pom.xml", check);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void should_fail_with_invalid_name_provided() {
     check.dependencyName = "org.sonar";
-    SonarXmlCheckVerifier.verifyIssues("noVersion/pom.xml", check);
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+      () -> SonarXmlCheckVerifier.verifyIssues("noVersion/pom.xml", check));
+    assertThat(e.getMessage()).isEqualTo("[S3417] Unable to build matchers from provided dependency name: org.sonar");
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void should_fail_with_invalid_version_provided() {
     check.dependencyName = "org.sonar.*:*";
     check.version = "version-0";
-    SonarXmlCheckVerifier.verifyIssues("noVersion/pom.xml", check);
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+      () -> SonarXmlCheckVerifier.verifyIssues("noVersion/pom.xml", check));
+    assertThat(e.getMessage()).isEqualTo("[S3417] Unable to build matchers from provided dependency name: org.sonar.*:*");
   }
 }

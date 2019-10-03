@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JavaCheckVerifierTest {
 
@@ -105,9 +106,10 @@ public class JavaCheckVerifierTest {
     JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, expectedMessage, visitor);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void verify_issue_on_file_incorrect() {
-    JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", new FakeVisitor().withDefaultIssues());
+    assertThrows(IllegalStateException.class,
+      () -> JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", new FakeVisitor().withDefaultIssues()));
   }
 
   @Test
