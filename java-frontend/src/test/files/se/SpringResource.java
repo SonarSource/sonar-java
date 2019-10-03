@@ -22,7 +22,7 @@ abstract class SpringResource {
   }
 }
 
-class MyCloseable extends Closeable {
+class MyCloseable implements Closeable {
 
 }
 

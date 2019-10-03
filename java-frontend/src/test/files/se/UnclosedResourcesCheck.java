@@ -286,7 +286,7 @@ public class A {
    return;
   }
 
-  public void forLoopHandling(int maxLoop) {
+  public void forLoopHandling2(int maxLoop) {
     Reader reader = null;
     for (int i = 0; i < MAX_LOOP; i++) {
       reader = new FileReader(""); // Noncompliant {{Use try-with-resources or close this "FileReader" in a "finally" clause.}}
@@ -294,7 +294,7 @@ public class A {
     reader.close();
   }
 
-  public void forEachLoopHandling(List<Object> objects) {
+  public void forEachLoopHandling2(List<Object> objects) {
     Writer writer = null;
     for (Object object : objects) {
       writer = new FileWriter(""); // Noncompliant {{Use try-with-resources or close this "FileWriter" in a "finally" clause.}}
