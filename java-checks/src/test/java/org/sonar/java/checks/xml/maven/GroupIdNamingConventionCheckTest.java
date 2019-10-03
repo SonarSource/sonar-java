@@ -19,15 +19,13 @@
  */
 package org.sonar.java.checks.xml.maven;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class GroupIdNamingConventionCheckTest {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
+public class GroupIdNamingConventionCheckTest {
 
   @Test
   public void test_default() {
@@ -50,12 +48,12 @@ public class GroupIdNamingConventionCheckTest {
 
   @Test
   public void invalid_regex() {
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("[S3419] Unable to compile the regular expression: *");
-
     GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
     check.regex = "*";
-    SonarXmlCheckVerifier.verifyNoIssue("defaultNOK/pom.xml", check);
+
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+      () -> SonarXmlCheckVerifier.verifyNoIssue("defaultNOK/pom.xml", check));
+    assertThat(e.getMessage()).isEqualTo("[S3419] Unable to compile the regular expression: *");
   }
 
   @Test

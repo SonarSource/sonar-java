@@ -19,18 +19,15 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public class FileHeaderCheckTest {
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void test() {
@@ -103,13 +100,13 @@ public class FileHeaderCheckTest {
 
   @Test
   public void should_fail_with_bad_regular_expression() {
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("[" + FileHeaderCheck.class.getSimpleName() + "] Unable to compile the regular expression: *");
-
     FileHeaderCheck check = new FileHeaderCheck();
     check.headerFormat = "**";
     check.isRegularExpression = true;
-    check.scanFile(mock(JavaFileScannerContext.class));
+
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+      () -> check.scanFile(mock(JavaFileScannerContext.class)));
+    assertThat(e.getMessage()).isEqualTo("[FileHeaderCheck] Unable to compile the regular expression: **");
   }
 
 }
