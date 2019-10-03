@@ -22,6 +22,7 @@ package org.sonar.java.checks.spring;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationValue;
@@ -60,10 +61,17 @@ public class SpringComponentWithWrongScopeCheck extends IssuableSubscriptionVisi
   private static boolean isScopeSingleton(SymbolMetadata clazzMeta) {
     List<AnnotationValue> values = clazzMeta.valuesForAnnotation(SCOPE_ANNOTATION_FQN);
     for (AnnotationValue annotationValue : values) {
-      if (("value".equals(annotationValue.name()) || "scopeName".equals(annotationValue.name()))
-        && annotationValue.value() instanceof LiteralTree
-        && !"\"singleton\"".equals(((LiteralTree) annotationValue.value()).value())) {
-        return false;
+      if ("value".equals(annotationValue.name()) || "scopeName".equals(annotationValue.name())) {
+        Object value = annotationValue.value();
+        String stringValue = null;
+        if (value instanceof String) {
+          stringValue = (String) value;
+        } else if (value instanceof LiteralTree) {
+          stringValue = LiteralUtils.trimQuotes(((LiteralTree) value).value());
+        }
+        if (stringValue != null && !"singleton".equals(stringValue)) {
+          return false;
+        }
       }
     }
     return true;
