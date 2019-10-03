@@ -112,7 +112,16 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   }
 
   private void addToScannedPackages(SymbolMetadata.AnnotationValue annotationValue) {
-    if (COMPONENT_SCAN_ARGUMENTS.contains(annotationValue.name()) && annotationValue.value() instanceof ExpressionTree) {
+    if (!COMPONENT_SCAN_ARGUMENTS.contains(annotationValue.name())) {
+      return;
+    }
+    if (annotationValue.value() instanceof Object[]) {
+      for (Object o : (Object[]) annotationValue.value()) {
+        if (o instanceof String) {
+          packagesScannedBySpring.add((String) o);
+        }
+      }
+    } else if (annotationValue.value() instanceof ExpressionTree) {
       ExpressionTree values = (ExpressionTree) annotationValue.value();
       if (values.is(Tree.Kind.STRING_LITERAL)) {
         String packageName = ConstantUtils.resolveAsStringConstant(values);
