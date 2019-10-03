@@ -46,6 +46,10 @@ To submit a contribution, create a pull request for this repository. Please make
 
 If you have an idea for a rule but you are not sure that everyone needs it you can implement a [custom rule](https://docs.sonarqube.org/latest/analysis/languages/java/) available only for you. Note that in order to help you, we highly recommend to first follow the [Custom Rules 101 tutorial](https://redirect.sonarsource.com/doc/java-custom-rules-guide.html) before diving directly into implementing rules from scratch.
 
+### Work with us
+Would you like to work on this project full-time? We are hiring! Check out https://www.sonarsource.com/hiring 
+
+
 <a name="testing"></a>
 Testing
 -------
