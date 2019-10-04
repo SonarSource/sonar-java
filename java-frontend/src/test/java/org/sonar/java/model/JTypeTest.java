@@ -157,6 +157,22 @@ class JTypeTest {
   }
 
   @Test
+  void name_of_type_variable() {
+    JavaTree.CompilationUnitTreeImpl cu = test("interface I { <T> T m(); }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
+    JType typeVariable = cu.sema.type(Objects.requireNonNull(e.typeBinding));
+    assertThat(typeVariable.name())
+      .isEqualTo(e.symbolType().name())
+      .isEqualTo(cu.sema.typeSymbol(e.typeBinding).name())
+      .isEqualTo("T");
+    assertThat(typeVariable.fullyQualifiedName())
+      .isEqualTo(e.symbolType().fullyQualifiedName())
+      .isEqualTo("T");
+  }
+
+  @Test
   void symbol() {
     ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType("java.lang.Object"));
     assertThat(sema.type(typeBinding).symbol())

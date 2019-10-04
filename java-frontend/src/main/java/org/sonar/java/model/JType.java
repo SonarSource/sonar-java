@@ -123,6 +123,8 @@ final class JType implements Type, Type.ArrayType {
       return typeBinding.getName();
     } else if (typeBinding.isArray()) {
       return fullyQualifiedName(typeBinding.getComponentType()) + "[]";
+    } else if (typeBinding.isTypeVariable()) {
+      return typeBinding.getName();
     } else {
       return typeBinding.getBinaryName();
     }
