@@ -72,7 +72,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   private void checkClass(ClassTree classTree) {
     if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
       Symbol.TypeSymbol classSymbol = classTree.symbol();
-      Stream<Symbol.MethodSymbol> members = getAllMembers(classSymbol, checkRunWith(classSymbol, "Enclosed.class"));
+      Stream<Symbol.MethodSymbol> members = getAllMembers(classSymbol, checkRunWith(classSymbol, "Enclosed"));
       IdentifierTree simpleName = classTree.simpleName();
       if (classSymbol.metadata().isAnnotatedWith("org.testng.annotations.Test")) {
         checkTestNGmembers(simpleName, members);
@@ -111,21 +111,28 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean runWithCucumberOrSuiteOrTheoriesRunner(Symbol.TypeSymbol symbol) {
-    return checkRunWith(symbol, "Cucumber.class","Suite.class", "Theories.class");
+    return checkRunWith(symbol, "Cucumber", "Suite", "Theories");
   }
 
   private static boolean runWitZohhak(Symbol.TypeSymbol symbol) {
-    return checkRunWith(symbol, "ZohhakRunner.class");
+    return checkRunWith(symbol, "ZohhakRunner");
   }
 
   private static boolean checkRunWith(Symbol.TypeSymbol symbol, String... runnerClasses) {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbol.metadata().valuesForAnnotation("org.junit.runner.RunWith");
     if (annotationValues != null && annotationValues.size() == 1) {
       Object value = annotationValues.get(0).value();
-      if (value instanceof MemberSelectExpressionTree) {
+      if (value instanceof Symbol.TypeSymbol) {
+        Symbol.TypeSymbol runnerParam = (Symbol.TypeSymbol) value;
+        for (String runnerClass : runnerClasses) {
+          if (runnerClass.equals(runnerParam.name())) {
+            return true;
+          }
+        }
+      } else if (value instanceof MemberSelectExpressionTree) {
         String runnerParam = ExpressionsHelper.concatenate((ExpressionTree) value);
         for (String runnerClass : runnerClasses) {
-          if (runnerParam.endsWith(runnerClass)) {
+          if (runnerParam.endsWith(runnerClass + ".class")) {
             return true;
           }
         }
