@@ -141,6 +141,22 @@ class JTypeTest {
   }
 
   @Test
+  void name_of_parameterized_type() {
+    JavaTree.CompilationUnitTreeImpl cu = test("interface I { java.util.List<String> m(); }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
+    JType parameterizedType = cu.sema.type(Objects.requireNonNull(e.typeBinding));
+    assertThat(parameterizedType.name())
+      .isEqualTo(e.symbolType().name())
+      .isEqualTo(cu.sema.typeSymbol(e.typeBinding).name())
+      .isEqualTo("List");
+    assertThat(parameterizedType.fullyQualifiedName())
+      .isEqualTo(e.symbolType().fullyQualifiedName())
+      .isEqualTo("java.util.List");
+  }
+
+  @Test
   void symbol() {
     ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType("java.lang.Object"));
     assertThat(sema.type(typeBinding).symbol())

@@ -128,10 +128,16 @@ final class JType implements Type, Type.ArrayType {
     }
   }
 
+  /**
+   * @see JSymbol#name()
+   */
   @Override
   public String name() {
     if (typeBinding.isNullType()) {
       return "<nulltype>";
+    } else if (typeBinding.isParameterizedType()) {
+      // without names of parameters
+      return typeBinding.getErasure().getName();
     }
     return typeBinding.getName();
   }
