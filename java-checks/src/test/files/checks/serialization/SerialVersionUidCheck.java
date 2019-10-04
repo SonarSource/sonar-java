@@ -36,6 +36,9 @@ class J implements Serializable {}
 @SuppressWarnings("deprecation")
 class K implements Serializable {} // Noncompliant
 
+@SuppressWarnings({"serial", "deprecation"})
+class M implements Serializable {} // Noncompliant - FP
+
 @SuppressWarnings(UNKNOWN)
 class L implements Serializable {} // Noncompliant
 enum MyEnum {

@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -122,21 +123,21 @@ public class SerialVersionUidCheck extends IssuableSubscriptionVisitor {
 
   private static boolean hasSuppressWarningAnnotation(Symbol.TypeSymbol symbol) {
     List<SymbolMetadata.AnnotationValue> annotations = symbol.metadata().valuesForAnnotation("java.lang.SuppressWarnings");
-    if (annotations != null) {
-      for (SymbolMetadata.AnnotationValue annotationValue : annotations) {
-        if ("serial".equals(stringLiteralValue(annotationValue.value()))) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return annotations != null && annotations.stream()
+        .map(SymbolMetadata.AnnotationValue::value)
+        .anyMatch(SerialVersionUidCheck::isSuppressingEquals);
   }
 
-  private static String stringLiteralValue(Object object) {
+  private static boolean isSuppressingEquals(Object object) {
     if (object instanceof LiteralTree) {
       LiteralTree literal = (LiteralTree) object;
-      return LiteralUtils.trimQuotes(literal.value());
+      return "serial".equals(LiteralUtils.trimQuotes(literal.value()));
+    } else if (object instanceof Object[]) {
+      return Arrays.stream((Object[]) object)
+        .filter(String.class::isInstance)
+        .map(String.class::cast)
+        .anyMatch("serial"::equals);
     }
-    return null;
+    return false;
   }
 }
