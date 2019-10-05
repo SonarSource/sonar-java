@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
 
-@Rule(key = "SXXXX")
+@Rule(key = "S5301")
 public class XxeActiveMQCheck extends AbstractMethodDetection implements JavaFileScanner {
   private static final String CONSTRUCTOR = "<init>";
 
