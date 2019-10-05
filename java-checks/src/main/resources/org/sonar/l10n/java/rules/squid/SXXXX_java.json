@@ -1,0 +1,29 @@
+{
+  "title": "ActiveMQConnectionFactory should be secured",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a4"
+  ],
+  "standards": [
+    "CWE",
+    "OWASP Top Ten"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5301",
+  "sqKey": "S5301",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      611
+    ],
+    "OWASP": [
+      "A4"
+    ]
+  }
+}

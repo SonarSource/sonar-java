@@ -620,6 +620,11 @@
                   <artifactId>maven-plugin-annotations</artifactId>
                   <version>3.6.0</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.activemq</groupId>
+                  <artifactId>activemq-client</artifactId>
+                  <version>5.15.8</version>
+                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
