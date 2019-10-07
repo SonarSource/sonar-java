@@ -307,9 +307,10 @@ class JParserSemanticTest {
    */
   @Test
   void expression_anonymous_class_instance_creation() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return new Object() { }; } }");
-    ClassTree c = (ClassTree) cu.types().get(0);
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return new C() { }; } protected C(){} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTree m = (MethodTree) c.members().get(0);
+    MethodTreeImpl constructor = (MethodTreeImpl) c.members().get(1);
     ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
     NewClassTreeImpl e = (NewClassTreeImpl) s.expression();
     ClassTreeImpl b = (ClassTreeImpl) e.classBody();
@@ -317,6 +318,15 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(b.typeBinding))
       .isSameAs(b.symbol().declaration())
       .isSameAs(b);
+
+    IdentifierTreeImpl identifier = (IdentifierTreeImpl) e.getConstructorIdentifier();
+    assertThat(identifier.binding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) identifier.symbol().declaration()).methodBinding)
+      .isSameAs(constructor.methodBinding);
+    assertThat(cu.sema.usages.get(constructor.methodBinding))
+      .containsOnlyElementsOf(constructor.symbol().usages())
+      .containsOnly(identifier);
   }
 
   /**

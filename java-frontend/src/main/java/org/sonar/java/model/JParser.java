@@ -64,6 +64,7 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
@@ -1970,8 +1971,11 @@ public class JParser {
         }
 
         IdentifierTreeImpl i = (IdentifierTreeImpl) t.getConstructorIdentifier();
-        // TODO should be constructor of i.typeBinding instead of constructor of anonymous class ?
-        i.binding = e.resolveConstructorBinding();
+        if (e.getAnonymousClassDeclaration() == null) {
+          i.binding = e.resolveConstructorBinding();
+        } else {
+          i.binding = findConstructorForAnonymousClass(e.getAST(), i.typeBinding, e.resolveConstructorBinding());
+        }
         usage(i.binding, i);
 
         return t;
@@ -2513,6 +2517,22 @@ public class JParser {
         return t;
       }
     }
+  }
+
+  @Nullable
+  private static IMethodBinding findConstructorForAnonymousClass(AST ast, @Nullable ITypeBinding typeBinding, @Nullable IMethodBinding methodBinding) {
+    if (typeBinding == null || methodBinding == null) {
+      return null;
+    }
+    if (typeBinding.isInterface()) {
+      typeBinding = ast.resolveWellKnownType("java.lang.Object");
+    }
+    for (IMethodBinding m : typeBinding.getDeclaredMethods()) {
+      if (methodBinding.isSubsignature(m)) {
+        return m;
+      }
+    }
+    return null;
   }
 
   private List<AnnotationTree> convertAnnotations(List e) {
