@@ -44,6 +44,13 @@ final class JSymbolMetadata implements SymbolMetadata {
     this.annotationBindings = annotationBindings;
   }
 
+  JSymbolMetadata(JSema sema, IAnnotationBinding[] typeAnnotationBindings, IAnnotationBinding[] annotationBindings) {
+    this.sema = Objects.requireNonNull(sema);
+    this.annotationBindings = new IAnnotationBinding[typeAnnotationBindings.length + annotationBindings.length];
+    System.arraycopy(typeAnnotationBindings, 0, this.annotationBindings, 0, typeAnnotationBindings.length);
+    System.arraycopy(annotationBindings, 0, this.annotationBindings, typeAnnotationBindings.length, annotationBindings.length);
+  }
+
   @Override
   public List<AnnotationInstance> annotations() {
     return Arrays.stream(annotationBindings)

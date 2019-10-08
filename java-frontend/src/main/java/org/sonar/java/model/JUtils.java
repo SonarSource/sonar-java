@@ -357,9 +357,11 @@ public final class JUtils {
     if (!(method instanceof JSymbol)) {
       return ((MethodJavaSymbol) method).getParameters().scopeSymbols().get(param).metadata();
     }
+    IMethodBinding methodBinding = (IMethodBinding) ((JSymbol) method).binding;
     return new JSymbolMetadata(
       ((JSymbol) method).sema,
-      ((IMethodBinding) ((JSymbol) method).binding).getParameterAnnotations(param)
+      methodBinding.getParameterTypes()[param].getTypeAnnotations(),
+      methodBinding.getParameterAnnotations(param)
     );
   }
 

@@ -914,6 +914,21 @@ class JParserSemanticTest {
     assertThat(t.typeBinding.getDimensions()).isEqualTo(2);
   }
 
+  @Test
+  void annotation_on_type() {
+    JavaTree.CompilationUnitTreeImpl cu = test("interface I { void m(@Annotation Object p); }" +
+      " @java.lang.annotation.Target({java.lang.annotation.ElementType.TYPE_USE}) @interface Annotation { }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl parameter = (VariableTreeImpl) m.parameters().get(0);
+    assertThat(cu.sema.variableSymbol(parameter.variableBinding).metadata().annotations().size())
+      .isEqualTo(parameter.symbol().metadata().annotations().size())
+      .isEqualTo(1);
+    assertThat(JUtils.parameterAnnotations(cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding)), 0).annotations().size())
+      .isEqualTo(JUtils.parameterAnnotations(m.symbol(), 0).annotations().size())
+      .isEqualTo(1);
+  }
+
   /**
    * @see org.eclipse.jdt.core.dom.LabeledStatement
    */

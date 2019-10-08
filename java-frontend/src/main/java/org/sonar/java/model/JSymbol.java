@@ -238,6 +238,13 @@ abstract class JSymbol implements Symbol {
   public final SymbolMetadata metadata() {
     if (binding.getKind() == IBinding.PACKAGE) {
       return new JSymbolMetadata(sema, sema.resolvePackageAnnotations(binding.getName()));
+
+    } else if (binding.getKind() == IBinding.VARIABLE) {
+      return new JSymbolMetadata(sema,
+        ((IVariableBinding) binding).getType().getTypeAnnotations(),
+        binding.getAnnotations()
+      );
+
     } else {
       return new JSymbolMetadata(sema, binding.getAnnotations());
     }
