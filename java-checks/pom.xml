@@ -222,6 +222,12 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.springframework</groupId>
+                  <artifactId>spring-aop</artifactId>
+                  <version>5.0.6.RELEASE</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.springframework.security</groupId>
                   <artifactId>spring-security-acl</artifactId>
                   <version>5.1.1.RELEASE</version>
