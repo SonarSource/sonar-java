@@ -155,13 +155,25 @@ public final class JUtils {
   }
 
   public static Optional<Object> constantValue(Symbol.VariableSymbol symbol) {
+    if (!symbol.isFinal() || !symbol.isStatic()) {
+      return Optional.empty();
+    }
     if (symbol instanceof JTypeSymbol.SpecialField) {
       return Optional.empty();
     }
     if (!(symbol instanceof JSymbol)) {
       return ((JavaSymbol.VariableJavaSymbol) symbol).constantValue();
     }
-    return Optional.ofNullable(((IVariableBinding) ((JVariableSymbol) symbol).binding).getConstantValue());
+
+    Object c = ((IVariableBinding) ((JVariableSymbol) symbol).binding).getConstantValue();
+    if (c instanceof Short) {
+      c = Integer.valueOf((Short) c);
+    } else if (c instanceof Byte) {
+      c = Integer.valueOf((Byte) c);
+    } else if (c instanceof Character) {
+      c = Integer.valueOf((Character) c);
+    }
+    return Optional.ofNullable(c);
   }
 
   /**

@@ -132,6 +132,28 @@ class JUtilsTest {
       .isEqualTo("[Integer, String]");
   }
 
+  @Test
+  void constantValue() {
+    JavaTree.CompilationUnitTreeImpl cu = test("interface I { short SHORT = 42; char CHAR = 42; byte BYTE = 42; boolean BOOLEAN = false; }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    Symbol.VariableSymbol shortConstant = cu.sema.variableSymbol(((VariableTreeImpl) c.members().get(0)).variableBinding);
+    assertThat(JUtils.constantValue(shortConstant).orElseThrow(AssertionError::new))
+      .isInstanceOf(Integer.class)
+      .isEqualTo(42);
+    Symbol.VariableSymbol charConstant = cu.sema.variableSymbol(((VariableTreeImpl) c.members().get(1)).variableBinding);
+    assertThat(JUtils.constantValue(charConstant).orElseThrow(AssertionError::new))
+      .isInstanceOf(Integer.class)
+      .isEqualTo(42);
+    Symbol.VariableSymbol byteConstant = cu.sema.variableSymbol(((VariableTreeImpl) c.members().get(2)).variableBinding);
+    assertThat(JUtils.constantValue(byteConstant).orElseThrow(AssertionError::new))
+      .isInstanceOf(Integer.class)
+      .isEqualTo(42);
+    Symbol.VariableSymbol booleanConstant = cu.sema.variableSymbol(((VariableTreeImpl) c.members().get(3)).variableBinding);
+    assertThat(JUtils.constantValue(booleanConstant).orElseThrow(AssertionError::new))
+      .isInstanceOf(Boolean.class)
+      .isEqualTo(false);
+  }
+
   private JavaTree.CompilationUnitTreeImpl test(String source) {
     List<File> classpath = Collections.emptyList();
     JavaTree.CompilationUnitTreeImpl t = (JavaTree.CompilationUnitTreeImpl) JParser.parse("12", "File.java", source, true, classpath);
