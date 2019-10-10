@@ -915,6 +915,20 @@ class JParserSemanticTest {
   }
 
   @Test
+  void symbol_unknown() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class A implements UnknownInterface { }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    IdentifierTreeImpl i = (IdentifierTreeImpl) c.superInterfaces().get(0);
+    Symbol s = cu.sema.typeSymbol(Objects.requireNonNull((ITypeBinding) i.binding));
+    assertThat(s.isUnknown())
+      .isEqualTo(i.symbol().isUnknown())
+      .isTrue();
+    assertThat(s.isTypeSymbol())
+      .isEqualTo(i.symbol().isTypeSymbol())
+      .isFalse();
+  }
+
+  @Test
   void annotation_on_type() {
     JavaTree.CompilationUnitTreeImpl cu = test("interface I { void m(@Annotation Object p); }" +
       " @java.lang.annotation.Target({java.lang.annotation.ElementType.TYPE_USE}) @interface Annotation { }");

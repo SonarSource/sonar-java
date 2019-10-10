@@ -153,7 +153,7 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final boolean isTypeSymbol() {
-    return binding.getKind() == IBinding.TYPE;
+    return !isUnknown() && binding.getKind() == IBinding.TYPE;
   }
 
   @Override

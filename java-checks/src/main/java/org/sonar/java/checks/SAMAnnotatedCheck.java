@@ -89,7 +89,7 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements Ja
   }
 
   private static long numberOfAbstractMethod(Symbol symbol) {
-    if (!symbol.isTypeSymbol()) {
+    if (symbol.isUnknown()) {
       // unknown interface
       return Integer.MAX_VALUE;
     }
