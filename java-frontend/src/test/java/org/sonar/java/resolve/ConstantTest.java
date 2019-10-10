@@ -66,6 +66,24 @@ public class ConstantTest {
     assertThat(valuesByFieldName.get("nonFinal")).isNull();
     assertThat(valuesByFieldName.get("BOOLEAN_TRUE")).isEqualTo(true);
     assertThat(valuesByFieldName.get("BOOLEAN_FALSE")).isEqualTo(false);
+
+    // See Java 13 Virtual Machine Specification 4.7.2:
+    // constant values of short, char and byte types are stored in bytecode as CONSTANT_Integer
+    assertThat(valuesByFieldName.get("INT"))
+      .isInstanceOf(Integer.class);
+    assertThat(valuesByFieldName.get("SHORT"))
+      .isInstanceOf(Integer.class);
+    assertThat(valuesByFieldName.get("CHAR"))
+      .isInstanceOf(Integer.class);
+    assertThat(valuesByFieldName.get("BYTE"))
+      .isInstanceOf(Integer.class);
+
+    assertThat(valuesByFieldName.get("FLOAT"))
+      .isInstanceOf(Float.class);
+    assertThat(valuesByFieldName.get("LONG"))
+      .isInstanceOf(Long.class);
+    assertThat(valuesByFieldName.get("DOUBLE"))
+      .isInstanceOf(Double.class);
   }
 
 }
