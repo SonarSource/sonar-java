@@ -164,4 +164,17 @@ final class JType implements Type, Type.ArrayType {
     return sema.type(typeBinding.getComponentType());
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof JType) {
+      JType other = (JType) obj;
+      if (this.typeBinding.isWildcardType() && other.typeBinding.isWildcardType()) {
+        return Objects.equals(this.typeBinding.getBound(), other.typeBinding.getBound())
+          && this.typeBinding.isUpperbound() == other.typeBinding.isUpperbound();
+      }
+      return this.typeBinding.equals(other.typeBinding);
+    }
+    return false;
+  }
+
 }

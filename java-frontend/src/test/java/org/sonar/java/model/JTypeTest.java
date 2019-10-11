@@ -30,6 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -226,6 +227,24 @@ class JTypeTest {
     assertThat(nullType.isSubtypeOf(arrayType))
       .isSameAs(e.symbolType().isSubtypeOf(array.symbolType()))
       .isTrue();
+  }
+
+  @Test
+  void wildcard() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C<T1, T2, T3> { C<? extends String, ? extends String, ? super String> f; }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl f = (VariableTreeImpl) c.members().get(0);
+    JavaTree.ParameterizedTypeTreeImpl p = (JavaTree.ParameterizedTypeTreeImpl) f.type();
+    JavaTree.WildcardTreeImpl w1 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(0);
+    JavaTree.WildcardTreeImpl w2 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(1);
+    JavaTree.WildcardTreeImpl w3 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(2);
+    JType wildcardType1 = cu.sema.type(Objects.requireNonNull(w1.typeBinding));
+    JType wildcardType2 = cu.sema.type(Objects.requireNonNull(w2.typeBinding));
+    JType wildcardType3 = cu.sema.type(Objects.requireNonNull(w3.typeBinding));
+    assertThat(wildcardType1.equals(wildcardType2))
+      .isTrue();
+    assertThat(wildcardType1.equals(wildcardType3))
+      .isFalse();
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {
