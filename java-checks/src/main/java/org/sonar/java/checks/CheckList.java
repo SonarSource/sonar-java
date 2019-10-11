@@ -515,7 +515,6 @@ public final class CheckList {
       AtLeastOneConstructorCheck.class,
       CatchExceptionCheck.class,
       VariableDeclarationScopeCheck.class,
-      AnnotationArgumentOrderCheck.class,
       AnnotationDefaultArgumentCheck.class,
       DeadStoreCheck.class,
       DiamondOperatorCheck.class,
