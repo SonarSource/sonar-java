@@ -451,6 +451,25 @@ class JParserSemanticTest {
   }
 
   /**
+   * @see org.eclipse.jdt.core.dom.MethodInvocation
+   */
+  @Test
+  void expression_method_invocation_recovery() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return m(42); } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl method = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(method.block()).body().get(0);
+    MethodInvocationTreeImpl methodInvocation = Objects.requireNonNull((MethodInvocationTreeImpl) s.expression());
+    assertThat(methodInvocation.methodBinding)
+      .isNull();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) methodInvocation.methodSelect();
+    assertThat(i.binding)
+      .isNull();
+    assertThat(cu.sema.usages.get(Objects.requireNonNull(method.methodBinding)))
+      .isNull();
+  }
+
+  /**
    * @see org.eclipse.jdt.core.dom.SuperMethodInvocation
    */
   @Test
@@ -483,6 +502,29 @@ class JParserSemanticTest {
     assertThat(cu.sema.usages.get(i.binding))
       .containsOnlyElementsOf(superMethodInvocation.symbol().usages())
       .containsOnly(i);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.SuperMethodInvocation
+   */
+  @Test
+  void expression_super_method_invocation_recovery() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { Object m() { return super.m(42); } } class S { Object m() { return null; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
+    MethodTreeImpl superClassMethod = (MethodTreeImpl) superClass.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+
+    MethodInvocationTreeImpl superMethodInvocation = (MethodInvocationTreeImpl) Objects.requireNonNull(s.expression());
+    assertThat(superMethodInvocation.methodBinding)
+      .isNull();
+    MemberSelectExpressionTreeImpl e = (MemberSelectExpressionTreeImpl) superMethodInvocation.methodSelect();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) e.identifier();
+    assertThat(i.binding)
+      .isNull();
+    assertThat(cu.sema.usages.get(Objects.requireNonNull(superClassMethod.methodBinding)))
+      .isNull();
   }
 
   /**
@@ -562,6 +604,29 @@ class JParserSemanticTest {
   }
 
   /**
+   * @see org.eclipse.jdt.core.dom.ConstructorInvocation
+   */
+  @Test
+  void statement_constructor_invocation_recovery() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { C() { this(42); } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ExpressionStatementTree s = (ExpressionStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+
+    MethodInvocationTreeImpl constructorInvocation = (MethodInvocationTreeImpl) s.expression();
+    assertThat(constructorInvocation.methodBinding)
+      .isNull();
+    assertThat(constructorInvocation.typeBinding)
+      .isNotNull()
+      .isSameAs(c.typeBinding);
+    IdentifierTreeImpl i = (IdentifierTreeImpl) constructorInvocation.methodSelect();
+    assertThat(i.binding)
+      .isNull();
+    assertThat(cu.sema.usages.get(Objects.requireNonNull(m.methodBinding)))
+      .isNull();
+  }
+
+  /**
    * @see org.eclipse.jdt.core.dom.SuperConstructorInvocation
    */
   @Test
@@ -589,6 +654,31 @@ class JParserSemanticTest {
     assertThat(cu.sema.usages.get(i.binding))
       .containsOnlyElementsOf(superClassConstructor.symbol().usages())
       .containsOnly(i);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.SuperConstructorInvocation
+   */
+  @Test
+  void statement_super_constructor_invocation_recovery() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { C() { super(42); } } class S { S() { } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
+    MethodTreeImpl superClassConstructor = (MethodTreeImpl) superClass.members().get(0);
+    ExpressionStatementTree s = (ExpressionStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+
+    MethodInvocationTreeImpl superConstructorInvocation = (MethodInvocationTreeImpl) s.expression();
+    assertThat(superConstructorInvocation.methodBinding)
+      .isNull();
+    assertThat(superConstructorInvocation.typeBinding)
+      .isNotNull()
+      .isSameAs(superClass.typeBinding);
+    IdentifierTreeImpl i = (IdentifierTreeImpl) superConstructorInvocation.methodSelect();
+    assertThat(i.binding)
+      .isNull();
+    assertThat(cu.sema.usages.get(Objects.requireNonNull(superClassConstructor.methodBinding)))
+      .isNull();
   }
 
   @Test

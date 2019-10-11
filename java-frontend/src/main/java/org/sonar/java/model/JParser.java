@@ -1604,8 +1604,6 @@ public class JParser {
         IdentifierTreeImpl i = new IdentifierTreeImpl(e.arguments().isEmpty()
           ? lastTokenIn(e, TerminalTokens.TokenNamethis)
           : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNamethis));
-        i.binding = e.resolveConstructorBinding();
-        usage(i.binding, i);
         MethodInvocationTreeImpl t = new MethodInvocationTreeImpl(
           i,
           convertTypeArguments(e.typeArguments()),
@@ -1614,7 +1612,10 @@ public class JParser {
         t.methodBinding = e.resolveConstructorBinding();
         if (t.methodBinding != null) {
           t.typeBinding = t.methodBinding.getDeclaringClass();
+          t.methodBinding = excludeRecovery(t.methodBinding, arguments.size());
         }
+        i.binding = t.methodBinding;
+        usage(i.binding, i);
         return new ExpressionStatementTreeImpl(
           t,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
@@ -1624,9 +1625,6 @@ public class JParser {
         SuperConstructorInvocation e = (SuperConstructorInvocation) node;
 
         IdentifierTreeImpl i = new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper));
-        i.binding = e.resolveConstructorBinding();
-        usage(i.binding, i);
-
         ExpressionTree methodSelect = i;
         if (e.getExpression() != null) {
           methodSelect = new MemberSelectExpressionTreeImpl(
@@ -1650,7 +1648,10 @@ public class JParser {
         t.methodBinding = e.resolveConstructorBinding();
         if (t.methodBinding != null) {
           t.typeBinding = t.methodBinding.getDeclaringClass();
+          t.methodBinding = excludeRecovery(t.methodBinding, arguments.size());
         }
+        i.binding = t.methodBinding;
+        usage(i.binding, i);
         return new ExpressionStatementTreeImpl(
           t,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
@@ -2025,8 +2026,6 @@ public class JParser {
         );
 
         IdentifierTreeImpl rhs = convertSimpleName(e.getName());
-        usage(rhs.binding, rhs);
-
         ExpressionTree memberSelect;
         if (e.getExpression() == null) {
           memberSelect = rhs;
@@ -2042,7 +2041,9 @@ public class JParser {
           convertTypeArguments(e.typeArguments()),
           arguments
         );
-        t.methodBinding = e.resolveMethodBinding();
+        t.methodBinding = excludeRecovery(e.resolveMethodBinding(), arguments.size());
+        rhs.binding = t.methodBinding;
+        usage(rhs.binding, rhs);
         return t;
       }
       case ASTNode.SUPER_METHOD_INVOCATION: {
@@ -2055,7 +2056,6 @@ public class JParser {
         );
 
         IdentifierTreeImpl rhs = convertSimpleName(e.getName());
-        usage(rhs.binding, rhs);
 
         ExpressionTree outermostSelect;
         if (e.getQualifier() == null) {
@@ -2089,7 +2089,9 @@ public class JParser {
           null,
           arguments
         );
-        t.methodBinding = e.resolveMethodBinding();
+        t.methodBinding = excludeRecovery(e.resolveMethodBinding(), arguments.size());
+        rhs.binding = t.methodBinding;
+        usage(rhs.binding, rhs);
         return t;
       }
       case ASTNode.PARENTHESIZED_EXPRESSION: {
@@ -2520,6 +2522,23 @@ public class JParser {
         return t;
       }
     }
+  }
+
+  @Nullable
+  private static IMethodBinding excludeRecovery(@Nullable IMethodBinding methodBinding, int arguments) {
+    if (methodBinding == null) {
+      return null;
+    }
+    if (methodBinding.isVarargs()) {
+      if (arguments + 1 < methodBinding.getParameterTypes().length) {
+        return null;
+      }
+    } else {
+      if (arguments != methodBinding.getParameterTypes().length) {
+        return null;
+      }
+    }
+    return methodBinding;
   }
 
   @Nullable
