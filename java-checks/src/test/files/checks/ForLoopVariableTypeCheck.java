@@ -88,13 +88,20 @@ public class CheckForLoop {
 }
 class MyMap<K, V> extends java.util.AbstractMap<K, V> {
   @Override
-  void putAll(java.util.Map<? extends K, ? extends V> m) {
-    for (Entry<? extends K, ? extends V> e : m.entrySet()) {
+  public void putAll(java.util.Map<? extends K, ? extends V> m) {
+    for (java.util.Map.Entry<? extends K, ? extends V> e : m.entrySet()) {
       put(e.getKey(), e.getValue());
     }
   }
 }
 
+class Wildcard {
+  public void method(java.util.Collection<?> c) {
+    for (Object o : c) { // Compliant
+      java.util.Map.Entry<?, ?> entry = (java.util.Map.Entry<?, ?>) o;
+    }
+  }
+}
 
 class I {}
 class J extends I {}

@@ -112,7 +112,7 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
     } else if (collectionItemType instanceof ParametrizedTypeJavaType) {
       return ((ParametrizedTypeJavaType) collectionItemType).erasure().equals(variableType.erasure());
     } else {
-      return variableType.equals(collectionItemType);
+      return variableType.erasure().equals(collectionItemType.erasure());
     }
   }
 
