@@ -79,7 +79,7 @@ public class LoggerClassCheck extends IssuableSubscriptionVisitor {
       && LOG_FACTORIES.anyMatch((MethodInvocationTree) initializer)) {
       ExpressionTree firstArg = ((MethodInvocationTree) initializer).arguments().get(0);
       Symbol classLiteral = classLiteral(firstArg);
-      if (classLiteral != null && !clazz.equals(classLiteral)) {
+      if (classLiteral != null && !clazz.type().erasure().equals(classLiteral.type().erasure())) {
         reportIssue(firstArg, "Update this logger to use \"" + clazz.name() + ".class\".");
       }
     }
