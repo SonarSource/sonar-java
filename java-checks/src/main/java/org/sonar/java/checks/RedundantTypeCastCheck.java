@@ -146,7 +146,8 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isUnnecessarySubtypeCast(Type childType, TypeCastTree typeCastTree, Type parentType) {
-    return childType.isSubtypeOf(parentType)
+    return !childType.isPrimitive()
+      && childType.isSubtypeOf(parentType)
       && (!ExpressionUtils.skipParentheses(typeCastTree.expression()).is(Tree.Kind.LAMBDA_EXPRESSION)
         || isUnnecessaryLambdaCast(childType, parentType));
   }

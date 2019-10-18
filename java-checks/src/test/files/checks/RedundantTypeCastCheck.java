@@ -41,6 +41,10 @@ class Outer {
     int e = (int) d;
   }
 
+  private static int charConversion(char c) {
+    return (char) ((c | 0x20) - 'a'); // Compliant
+  }
+
   void foo(List<List<A>> a) {}
 
   void castInArguments(List<String> p) {
