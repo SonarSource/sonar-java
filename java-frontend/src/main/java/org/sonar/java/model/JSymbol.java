@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -49,12 +50,46 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final boolean equals(Object obj) {
-    return super.equals(obj);
+    if (!(obj instanceof JSymbol)) {
+      return false;
+    }
+    JSymbol other = (JSymbol) obj;
+    if (this.binding.getKind() != other.binding.getKind()) {
+      return false;
+    }
+    switch (this.binding.getKind()) {
+      case IBinding.TYPE: {
+        return JType.areEqual(
+          (ITypeBinding) this.binding,
+          (ITypeBinding) other.binding
+        );
+      }
+      case IBinding.VARIABLE: {
+        IVariableBinding thisBinding = (IVariableBinding) this.binding;
+        IVariableBinding otherBinding = (IVariableBinding) other.binding;
+        return thisBinding.getVariableId() == otherBinding.getVariableId()
+          && this.owner().equals(other.owner());
+      }
+      case IBinding.METHOD: {
+        IMethodBinding thisBinding = (IMethodBinding) this.binding;
+        IMethodBinding otherBinding = (IMethodBinding) other.binding;
+        return this.name().equals(other.name())
+          && this.owner().equals(other.owner())
+          && Arrays.equals(thisBinding.getParameterTypes(), otherBinding.getParameterTypes())
+          && Arrays.equals(thisBinding.getTypeParameters(), otherBinding.getTypeParameters())
+          && Arrays.equals(thisBinding.getTypeArguments(), otherBinding.getTypeArguments());
+      }
+      default:
+        return super.equals(obj);
+    }
   }
 
   @Override
   public final int hashCode() {
-    return super.hashCode();
+    Symbol owner = owner();
+    int result = owner == null ? 0 : owner.hashCode() * 31;
+    result += name().hashCode();
+    return result;
   }
 
   /**
@@ -78,6 +113,8 @@ abstract class JSymbol implements Symbol {
   @Override
   public final Symbol owner() {
     switch (binding.getKind()) {
+      case IBinding.PACKAGE:
+        return null;
       case IBinding.TYPE: {
         ITypeBinding typeBinding = (ITypeBinding) binding;
         IMethodBinding declaringMethod = typeBinding.getDeclaringMethod();
