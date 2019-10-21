@@ -83,3 +83,20 @@ class UnknownInvocation {
     }
   }
 }
+
+class Parent {
+
+  interface G1<T> {  }
+  interface G2<K, V> {  }
+
+  private static <K, V> G2<K, V> m(G2<K, V> o) { // Noncompliant
+    return null;
+  }
+
+  static class Inner {
+    Inner(G2<String, Integer> p1, G2<String, G1<Double>> p2) {
+      m(p1);
+      m(p2);
+    }
+  }
+}
