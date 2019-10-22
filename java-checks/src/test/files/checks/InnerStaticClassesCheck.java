@@ -103,12 +103,11 @@ class Fruit {
   }
 
 }
-public class Bar {
+class Bar {
   public int plop() {return 1;}
 }
 
-
-public class A {
+class A {
   private int fielda;
 
   class B { // Compliant inner class refers to field.
@@ -208,5 +207,18 @@ public class A4 {
       }
     }
   }
+}
+
+class Parent {
+  static class Generic<T> {
+    abstract class A implements java.util.List<T> { } // Compliant
+    abstract class B extends A { } // Compliant
+    class C extends Generic<T> { } // Compliant
+    class C2 extends Other.Generic<T> { } // Compliant
+    abstract class D<T> implements java.util.List<T> { } // Noncompliant
+  }
+}
+class Other {
+  static class Generic<X> {}
 }
 

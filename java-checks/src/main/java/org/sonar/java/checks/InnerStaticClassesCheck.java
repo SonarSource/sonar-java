@@ -21,7 +21,9 @@ package org.sonar.java.checks;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -31,7 +33,9 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2694")
@@ -49,16 +53,19 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
 
   @Override
   public void visitClass(ClassTree tree) {
-    Symbol.TypeSymbol symbol = tree.symbol();
     if (!tree.is(Tree.Kind.CLASS)) {
       return;
     }
+    Symbol.TypeSymbol symbol = tree.symbol();
     outerClasses.push(symbol);
     atLeastOneReference.push(Boolean.FALSE);
     scan(tree.members());
     Boolean oneReference = atLeastOneReference.pop();
     outerClasses.pop();
-    if (!symbol.isStatic() && !oneReference && couldBeDeclaredStatic(symbol)) {
+    if (!symbol.isStatic()
+      && !oneReference
+      && !isParameterizedWithTypeVarFromParent(tree)
+      && couldBeDeclaredStatic(symbol)) {
       Tree reportTree = tree.simpleName();
       if(reportTree == null) {
         // Ignore issues on anonymous classes
@@ -89,6 +96,28 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
       }
     }
     return false;
+  }
+
+  private static boolean isParameterizedWithTypeVarFromParent(ClassTree tree) {
+    if (!tree.typeParameters().isEmpty()) {
+      return false;
+    }
+    List<ParameterizedTypeTree> parameterizedSuperTypes = new LinkedList<>();
+    TypeTree superClass = tree.superClass();
+    if (superClass != null && superClass.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      parameterizedSuperTypes.add((ParameterizedTypeTree) superClass);
+    }
+    for (TypeTree typeTree : tree.superInterfaces()) {
+      if (typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+        parameterizedSuperTypes.add((ParameterizedTypeTree) typeTree);
+      }
+    }
+
+    return parameterizedSuperTypes.stream()
+      .flatMap(parameterizedTypeTree -> parameterizedTypeTree.typeArguments().stream())
+      .filter(typeArgument -> typeArgument instanceof TypeTree)
+      .map(typeArgument -> ((TypeTree) typeArgument).symbolType())
+      .anyMatch(JUtils::isTypeVar);
   }
 
   @Override
