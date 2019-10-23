@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SwitchStatement;
@@ -104,6 +105,9 @@ class JParserSemanticTest {
     assertThat(leftOperand.typeBinding).isSameAs(e.typeBinding);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.SimpleName
+   */
   @Test
   void expression_simple_name() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { int f; Object m() { return f; } }");
@@ -113,6 +117,50 @@ class JParserSemanticTest {
     IdentifierTreeImpl i = (IdentifierTreeImpl) s.expression();
     assertThat(i.binding).isNotNull();
     assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.QualifiedName
+   */
+  @Test
+  void expression_qualified_name() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return java.lang.System.out; } }");
+
+    cu.useNewSema = true;
+
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) m.block().body().get(0);
+    MemberSelectExpressionTreeImpl javaLangSystemOut = (MemberSelectExpressionTreeImpl) s.expression();
+
+    MemberSelectExpressionTreeImpl javaLangSystem = (MemberSelectExpressionTreeImpl) javaLangSystemOut.expression();
+    assertThat(javaLangSystem.typeBinding).isNotNull();
+    assertThat(cu.sema.type(javaLangSystem.typeBinding).is("java.lang.System"))
+      .isEqualTo(javaLangSystem.symbolType().is("java.lang.System"))
+      .isTrue();
+
+    MemberSelectExpressionTreeImpl javaLang = (MemberSelectExpressionTreeImpl) javaLangSystem.expression();
+    assertThat(javaLang.typeBinding).isNull();
+
+    IdentifierTreeImpl java = (IdentifierTreeImpl) javaLang.expression();
+    assertThat(java.typeBinding).isNull();
+    assertThat(java.binding).isNotNull();
+    assertThat(java.binding.getKind() == IBinding.PACKAGE).isTrue();
+    assertThat(java.symbol().isPackageSymbol()).isTrue();
+
+    IdentifierTreeImpl lang = (IdentifierTreeImpl) javaLang.identifier();
+    assertThat(lang.typeBinding).isNull();
+    assertThat(lang.binding).isNotNull();
+    assertThat(lang.binding.getKind() == IBinding.PACKAGE).isTrue();
+    assertThat(lang.symbol().isPackageSymbol()).isTrue();
+
+    IdentifierTreeImpl system = (IdentifierTreeImpl) javaLangSystem.identifier();
+    assertThat(system.binding).isNotNull();
+    assertThat(system.binding).isEqualTo(system.typeBinding);
+    assertThat(system.binding.getKind() == IBinding.TYPE).isTrue();
+    assertThat(cu.sema.type(system.typeBinding).is("java.lang.System"))
+      .isEqualTo(system.symbolType().is("java.lang.System"))
+      .isTrue();
   }
 
   /**

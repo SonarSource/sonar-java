@@ -66,7 +66,7 @@ public final class JSema implements Sema {
     return types.computeIfAbsent(typeBinding, k -> new JType(this, k));
   }
 
-  JPackageSymbol packageSymbol(IPackageBinding packageBinding) {
+  public JPackageSymbol packageSymbol(IPackageBinding packageBinding) {
     return (JPackageSymbol) symbols.computeIfAbsent(packageBinding, k -> new JPackageSymbol(this, (IPackageBinding) k));
   }
 

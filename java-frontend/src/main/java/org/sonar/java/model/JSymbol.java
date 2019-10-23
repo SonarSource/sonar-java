@@ -114,7 +114,7 @@ abstract class JSymbol implements Symbol {
   public final Symbol owner() {
     switch (binding.getKind()) {
       case IBinding.PACKAGE:
-        return null;
+        return Symbols.rootPackage;
       case IBinding.TYPE: {
         ITypeBinding typeBinding = (ITypeBinding) binding;
         IMethodBinding declaringMethod = typeBinding.getDeclaringMethod();

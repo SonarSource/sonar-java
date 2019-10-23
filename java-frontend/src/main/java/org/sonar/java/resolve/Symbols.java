@@ -34,7 +34,7 @@ import java.util.Map.Entry;
  */
 public class Symbols {
 
-  static final JavaSymbol.PackageJavaSymbol rootPackage;
+  public static final JavaSymbol.PackageJavaSymbol rootPackage;
   final JavaSymbol.PackageJavaSymbol defaultPackage;
 
   /**

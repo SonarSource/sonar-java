@@ -26,6 +26,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.model.AbstractTypedTree;
@@ -90,6 +91,8 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
             return root.sema.methodSymbol((IMethodBinding) binding);
           case IBinding.VARIABLE:
             return root.sema.variableSymbol((IVariableBinding) binding);
+          case IBinding.PACKAGE:
+            return root.sema.packageSymbol((IPackageBinding) binding);
         }
       }
       if (labelSymbol != null) {
