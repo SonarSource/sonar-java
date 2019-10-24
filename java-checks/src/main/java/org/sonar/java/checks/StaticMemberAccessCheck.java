@@ -58,7 +58,7 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
     if (symbol.isStatic()  && !isListOrSetOf(mse)) {
       ExpressionTree expression = mse.expression();
       Type staticType = symbol.owner().type();
-      if (!expression.symbolType().equals(staticType)) {
+      if (!expression.symbolType().erasure().equals(staticType.erasure())) {
         reportIssue(mse.identifier(),
           format("Use static access with \"%s\" for \"%s\".", staticType.fullyQualifiedName(), symbol.name()));
       }
