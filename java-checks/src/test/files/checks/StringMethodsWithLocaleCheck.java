@@ -10,11 +10,6 @@ class A {
     myString.toUpperCase(); // Noncompliant
     myString.toLowerCase(java.util.Locale.US);
     myString.toUpperCase(java.util.Locale.US);
-    String s = new String() {
-      void foo() {
-        toLowerCase(); // Noncompliant [[sc=9;ec=20]] {{Define the locale to be used in this String operation.}}
-      }
-    };
 
     myString.format("foo"); // Compliant
     myString.format("foo", "bar", "qix"); // Compliant
