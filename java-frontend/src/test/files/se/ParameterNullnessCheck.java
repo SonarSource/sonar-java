@@ -5,9 +5,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 abstract class A {
 
-  A(String s) { }
-  A(Object o1, Object o2) { } // flow@A [[order=2]] {{Constructor declaration.}}
-
   Object field;
 
   void foo(Object o) { // flow@foo [[order=2]] {{Method 'foo' declaration.}}
@@ -28,8 +25,8 @@ abstract class A {
     gul(null, o, null, o); // Compliant - ignore variadic argument
     gul2(null, o, null, o); // Noncompliant [[sc=5;ec=9]] - first parameter is not variadic
 
-    A a1 = new A(null); // Noncompliant
-    A a2 = new A(o, // Noncompliant [[sc=16;ec=17;flows=A]] {{Annotate the parameter with @javax.annotation.Nullable in constructor declaration, or make sure that null can not be passed as argument.}}
+    C c1 = new C(null); // Noncompliant
+    C c2 = new C(o, // Noncompliant [[sc=16;ec=17;flows=A]] {{Annotate the parameter with @javax.annotation.Nullable in constructor declaration, or make sure that null can not be passed as argument.}}
       null); // flow@A [[order=1]] {{Argument can be null.}}
     B b = new B();
 
@@ -76,4 +73,10 @@ abstract class A {
 
 class B {
   static void foo(Object o) { }
+}
+
+@ParametersAreNonnullByDefault
+class C {
+  C(String s) { }
+  C(Object o1, Object o2) { } // flow@A [[order=2]] {{Constructor declaration.}}
 }
