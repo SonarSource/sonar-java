@@ -51,8 +51,6 @@ import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.Types;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
@@ -875,11 +873,11 @@ public class ExplodedGraphWalker {
   private void executeTypeCast(TypeCastTree typeCast) {
     Type type = typeCast.type().symbolType();
     if (type.isPrimitive()) {
-      JavaType expType = (JavaType) typeCast.expression().symbolType();
+      Type expType = typeCast.expression().symbolType();
       // create SV to consume factory if any
       SymbolicValue castSV = constraintManager.createSymbolicValue(typeCast);
       // if exp type is a primitive and subtype of cast type, we can reuse the same symbolic value
-      if (!expType.isPrimitive() || !new Types().isSubtype(expType, (JavaType) type)) {
+      if (!expType.isPrimitive() || !(expType == type || expType.isSubtypeOf(type))) {
         ProgramState.Pop unstack = programState.unstackValue(1);
         programState = unstack.state;
         programState = programState.stackValue(castSV);
