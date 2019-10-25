@@ -65,6 +65,10 @@ public abstract class JavaTree implements Tree {
 
   protected CompilationUnitTreeImpl root;
 
+  public boolean isNewSema() {
+    return root.useNewSema;
+  }
+
   @Nullable
   private Tree parent;
 
