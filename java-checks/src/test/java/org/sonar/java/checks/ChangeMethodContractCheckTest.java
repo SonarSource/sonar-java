@@ -29,8 +29,4 @@ public class ChangeMethodContractCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/ChangeMethodContractCheck.java", new ChangeMethodContractCheck());
   }
 
-  @Test
-  public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ChangeMethodContractCheck_no_semantic.java", new ChangeMethodContractCheck());
-  }
 }
