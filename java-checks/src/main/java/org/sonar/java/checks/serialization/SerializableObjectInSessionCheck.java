@@ -55,17 +55,13 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
     if (type.isPrimitive()) {
       return true;
     }
-    if (isSerializableArray(type)) {
-      return true;
+    if (type.isArray()) {
+      return isSerializable(((Type.ArrayType) type).elementType());
     }
     if (JUtils.isParametrized(type)) {
       return isSerializableParametrized(type);
     }
     return type.isSubtypeOf("java.io.Serializable");
-  }
-
-  private static boolean isSerializableArray(Type type) {
-    return type.isArray() && isSerializable(((Type.ArrayType) type).elementType());
   }
 
   private static boolean isSerializableParametrized(Type type) {
