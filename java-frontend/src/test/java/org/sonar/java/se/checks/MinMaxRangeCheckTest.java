@@ -28,9 +28,4 @@ public class MinMaxRangeCheckTest {
   public void test() {
     JavaCheckVerifier.verify("src/test/java/org/sonar/java/resolve/targets/se/MinMaxRangeCheck.java", new MinMaxRangeCheck());
   }
-
-  @Test
-  public void test_without_corresponding_bytecode() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MinMaxRangeCheckNoBytecode.java", new MinMaxRangeCheck());
-  }
 }
