@@ -201,6 +201,11 @@
 830,
 ],
 'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+158,
+161,
+180,
+186,
+192,
 2021,
 2057,
 2063,
@@ -271,6 +276,9 @@
 'com.google.guava:guava:src/com/google/common/collect/TreeBasedTable.java':[
 80,
 84,
+],
+'com.google.guava:guava:src/com/google/common/hash/BloomFilter.java':[
+96,
 ],
 'com.google.guava:guava:src/com/google/common/hash/ChecksumHashFunction.java':[
 31,

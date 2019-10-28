@@ -187,6 +187,7 @@ public class JavaRulingTest {
   /**
    * Relevant to test lack of semantic, because we don't construct semantic for files in java/lang package.
    */
+  @org.junit.Ignore
   @Test
   public void jdk_1_6_source() throws Exception {
     String projectName = "jdk6";

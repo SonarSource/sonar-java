@@ -76,6 +76,8 @@ public class SemanticModel implements Sema {
   }
 
   public static SemanticModel createFor(CompilationUnitTree tree, SquidClassLoader classLoader) {
+    boolean useNewSema = ((JavaTree.CompilationUnitTreeImpl) tree).useNewSema;
+    ((JavaTree.CompilationUnitTreeImpl) tree).useNewSema = false;
     ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
     BytecodeCompleter bytecodeCompleter = new BytecodeCompleter(classLoader, parametrizedTypeCache);
     Symbols symbols = new Symbols(bytecodeCompleter);
@@ -88,6 +90,7 @@ public class SemanticModel implements Sema {
       new LabelsVisitor(semanticModel).visitCompilationUnit(tree);
     } finally {
       handleMissingTypes(tree);
+      ((JavaTree.CompilationUnitTreeImpl) tree).useNewSema = useNewSema;
     }
     ((JavaTree.CompilationUnitTreeImpl) tree).oldSema = semanticModel;
     return semanticModel;

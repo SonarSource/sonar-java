@@ -13,4 +13,7 @@
 'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
 3608,
 ],
+'com.google.guava:guava:src/com/google/common/hash/Hashing.java':[
+320,
+],
 }

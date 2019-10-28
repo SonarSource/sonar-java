@@ -8,8 +8,14 @@
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/BasicAuthenticator.java':[
 90,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/InitFilter.java':[
+87,
+],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/JwtSerializer.java':[
 116,
+],
+'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/OAuth2CallbackFilter.java':[
+82,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/RealmAuthenticator.java':[
 114,

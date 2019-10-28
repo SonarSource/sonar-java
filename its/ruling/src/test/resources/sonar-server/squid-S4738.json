@@ -124,6 +124,7 @@
 78,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/coverage/CoverageFormula.java':[
+42,
 44,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/coverage/CoverageUtils.java':[

@@ -398,7 +398,7 @@ class A {
   }
 
   class Child1 extends Parent1 {
-    public Child1(Long a) throws IllegalAccessException { // FN, the symbol of the call to super is not properly resolved
+    public Child1(Long a) throws IllegalAccessException { // Noncompliant
       A.this.super("a:" + a);
     }
   }

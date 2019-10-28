@@ -16,9 +16,13 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/DeleteEventAction.java':[
 84,
+85,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/UpdateEventAction.java':[
 101,
+102,
+104,
+105,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImpl.java':[
 175,
