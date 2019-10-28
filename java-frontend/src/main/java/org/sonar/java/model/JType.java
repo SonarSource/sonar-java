@@ -127,7 +127,12 @@ final class JType implements Type, Type.ArrayType {
     } else if (typeBinding.isTypeVariable()) {
       return typeBinding.getName();
     } else {
-      return typeBinding.getBinaryName();
+      String binaryName = typeBinding.getBinaryName();
+      if (binaryName == null) {
+        // e.g. anonymous class in unreachable code
+        return typeBinding.getKey();
+      }
+      return binaryName;
     }
   }
 

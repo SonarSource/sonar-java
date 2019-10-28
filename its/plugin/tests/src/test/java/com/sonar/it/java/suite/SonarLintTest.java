@@ -96,7 +96,7 @@ public class SonarLintTest {
       "public class FooTest {\n"
         + "  @org.junit.Test\n"
         + "  @org.junit.Ignore\n"
-        + "  public void testName() throws Exception {\n" // S1607(ignored test) - requires semantic
+        + "  public void testName() throws Exception {\n" // S1607(ignored test)
         + "    Foo foo = new Foo();\n"
         + "    org.assertj.core.api.Assertions.assertThat(foo.isFooActive());\n" // S2970(incomplete assertions) - requires semantic
         + "    java.lang.Thread.sleep(Long.MAX_VALUE);" // S2925(thread.sleep in test)
@@ -114,7 +114,7 @@ public class SonarLintTest {
     sonarlintEngine.analyze(new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      // tuple("squid:S1607", 4, inputFile.getPath(), "MAJOR"),
+      tuple("squid:S1607", 4, inputFile.getPath(), "MAJOR"),
       // tuple("squid:S2970", 6, inputFile.getPath(), "BLOCKER"),
       tuple("squid:S2925", 7, inputFile.getPath(), "MAJOR"));
   }

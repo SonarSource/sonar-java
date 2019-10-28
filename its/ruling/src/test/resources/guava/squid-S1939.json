@@ -8,6 +8,17 @@
 'com.google.guava:guava:src/com/google/common/collect/MapMaker.java':[
 869,
 ],
+'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+1014,
+1061,
+1096,
+1268,
+1316,
+1352,
+1526,
+1574,
+1610,
+],
 'com.google.guava:guava:src/com/google/common/collect/Synchronized.java':[
 1109,
 ],

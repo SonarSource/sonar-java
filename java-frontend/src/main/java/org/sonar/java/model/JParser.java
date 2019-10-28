@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTUtils;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
@@ -237,7 +238,7 @@ import java.util.Map;
 public class JParser {
 
   public static CompilationUnitTree parse(String version, String unitName, String source, List<File> classpath) {
-    return parse(version, unitName, source, false, classpath);
+    return parse(version, unitName, source, true, classpath);
   }
 
   /**
@@ -253,6 +254,7 @@ public class JParser {
   ) {
     ASTParser astParser = ASTParser.newParser(AST.JLS12);
     Map<String, String> options = new HashMap<>();
+    options.put(JavaCore.COMPILER_COMPLIANCE, version);
     options.put(JavaCore.COMPILER_SOURCE, version);
     options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     astParser.setCompilerOptions(options);
@@ -291,6 +293,10 @@ public class JParser {
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;
+
+    tree.useNewSema = true;
+    ASTUtils.mayTolerateMissingType(astNode.getAST());
+
     setParents(tree);
     return tree;
   }

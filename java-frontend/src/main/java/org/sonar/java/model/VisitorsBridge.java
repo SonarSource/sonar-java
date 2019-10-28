@@ -127,6 +127,7 @@ public class VisitorsBridge {
     if (fileParsed && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
       tree = (JavaTree.CompilationUnitTreeImpl) parsedTree;
 
+      if (!tree.useNewSema)
       try {
         oldSemanticModel = SemanticModel.createFor(currentFile.filename(), tree, classLoader);
       } catch (Exception e) {

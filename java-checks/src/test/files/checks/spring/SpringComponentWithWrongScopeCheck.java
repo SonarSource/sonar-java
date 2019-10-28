@@ -55,7 +55,7 @@ class MyClassNotAnnotatedWithScope { // Compliant
 class MyClassNotAnnotatedAtAll { // Compliant
 }
 
-@Scope(ControllerHelloWorld.PROTOTYPE) // Compliant: this is a case we can't cover yet, so ignored (False-Negative)
+@Scope(ControllerHelloWorld.PROTOTYPE) // Noncompliant
 @Controller
 public class ScopeControllerWithConstante {
 

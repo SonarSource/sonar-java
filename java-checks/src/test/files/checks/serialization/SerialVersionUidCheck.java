@@ -37,7 +37,7 @@ class J implements Serializable {}
 class K implements Serializable {} // Noncompliant
 
 @SuppressWarnings({"serial", "deprecation"})
-class M implements Serializable {} // Noncompliant - FP
+class M implements Serializable {} // Compliant
 
 @SuppressWarnings(UNKNOWN)
 class L implements Serializable {} // Noncompliant

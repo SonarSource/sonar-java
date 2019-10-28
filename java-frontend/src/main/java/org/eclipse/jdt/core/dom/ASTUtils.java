@@ -29,6 +29,10 @@ public final class ASTUtils {
   private ASTUtils() {
   }
 
+  public static void mayTolerateMissingType(AST ast) {
+    ast.getBindingResolver().lookupEnvironment().mayTolerateMissingType = true;
+  }
+
   @Nullable
   public static ITypeBinding resolveType(AST ast, String name) {
     BindingResolver bindingResolver = ast.getBindingResolver();

@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@org.junit.Ignore("test of deprecated semantic analysis")
 public class GenericsSubstitutionFromBytecode {
 
   @Test

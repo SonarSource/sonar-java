@@ -174,7 +174,7 @@ public class JParserTest {
 
   @Test
   public void declaration_package() {
-    test("@Annotation package org.example;");
+    test("package-info.java", "@Annotation package org.example;");
   }
 
   @Test

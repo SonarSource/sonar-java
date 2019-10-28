@@ -2,6 +2,10 @@
 'com.google.guava:guava:src/com/google/common/collect/AbstractBiMap.java':[
 95,
 ],
+'com.google.guava:guava:src/com/google/common/collect/Cut.java':[
+73,
+76,
+],
 'com.google.guava:guava:src/com/google/common/collect/HashBiMap.java':[
 142,
 158,
@@ -20,6 +24,8 @@
 'com.google.guava:guava:src/com/google/common/collect/Range.java':[
 355,
 356,
+365,
+393,
 ],
 'com.google.guava:guava:src/com/google/common/collect/TreeRangeSet.java':[
 506,
