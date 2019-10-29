@@ -19,14 +19,20 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.Collections;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class XmlExternalEntityProcessingCheckTest {
 
+  /**
+   * @see org.sonar.java.checks.eclipsebug.EclipseBugTest#javax_conflict()
+   */
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/XmlExternalEntityProcessingCheck.java", new XmlExternalEntityProcessingCheck());
+      JavaCheckVerifier.verify("src/test/files/checks/security/XmlExternalEntityProcessingCheck.java",
+      new XmlExternalEntityProcessingCheck(),
+      // FIXME should not requires an empty classpath
+      Collections.emptyList());
   }
-
 }

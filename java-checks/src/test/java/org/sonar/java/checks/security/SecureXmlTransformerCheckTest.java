@@ -19,14 +19,21 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.Collections;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SecureXmlTransformerCheckTest {
 
+  /**
+   * @see org.sonar.java.checks.eclipsebug.EclipseBugTest#javax_conflict()
+   */
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/SecureXmlTransformerCheck.java", new SecureXmlTransformerCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/security/SecureXmlTransformerCheck.java",
+      new SecureXmlTransformerCheck(),
+      // FIXME should not requires an empty classpath
+      Collections.emptyList());
   }
 
 }
