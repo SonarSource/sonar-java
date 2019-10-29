@@ -19,14 +19,21 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.Collections;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class LDAPAuthenticatedConnectionCheckTest {
 
+  /**
+   * @see org.sonar.java.checks.eclipsebug.EclipseBugTest#javax_conflict()
+   */
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/LDAPAuthenticatedConnectionCheck.java", new LDAPAuthenticatedConnectionCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/security/LDAPAuthenticatedConnectionCheck.java",
+      new LDAPAuthenticatedConnectionCheck(),
+      // FIXME should not requires an empty classpath
+      Collections.emptyList());
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/LDAPAuthenticatedConnectionCheck.java", new LDAPAuthenticatedConnectionCheck());
   }
 }
