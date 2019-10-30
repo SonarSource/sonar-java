@@ -122,15 +122,14 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     } else if (importTree.qualifiedIdentifier().is(Tree.Kind.MEMBER_SELECT)) {
       id = ((MemberSelectExpressionTree) importTree.qualifiedIdentifier()).identifier();
     }
-    if (id != null) {
-      if (context.getSemanticModel() != null) {
-        Symbol symbol = JUtils.importTreeSymbol(importTree);
-        if (symbol != null) {
-          Symbol owner = symbol.owner();
-          // Exclude method symbols : they could be ambiguous or unresolved and lead to FP.
-          if (symbol.isVariableSymbol() && symbol.usages().stream().allMatch(identifierTree -> JUtils.enclosingClass(identifierTree) == owner)) {
-            context.reportIssue(this, importTree, "Remove this unused import '" + importName + "'.");
-          }
+    // 'id' would only be null if we allow empty statement ';' as being an importTree
+    if (id != null && context.getSemanticModel() != null) {
+      Symbol symbol = JUtils.importTreeSymbol(importTree);
+      if (symbol != null) {
+        Symbol owner = symbol.owner();
+        // Exclude method symbols : they could be ambiguous or unresolved and lead to FP.
+        if (symbol.isVariableSymbol() && symbol.usages().stream().allMatch(identifierTree -> JUtils.enclosingClass(identifierTree) == owner)) {
+          context.reportIssue(this, importTree, "Remove this unused import '" + importName + "'.");
         }
       }
     }
@@ -184,7 +183,9 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     }
     return !currentPackage.isEmpty()
       && (importName.equals(currentPackage)
-          || (reference.startsWith(currentPackage) && reference.charAt(currentPackage.length()) == '.') && reference.indexOf('.', currentPackage.length() + 1) == -1);
+        || (reference.startsWith(currentPackage)
+          && reference.charAt(currentPackage.length()) == '.'
+          && reference.indexOf('.', currentPackage.length() + 1) == -1));
   }
 
   private boolean isDuplicatedImport(String reference) {
