@@ -45,7 +45,7 @@ public class ModuleDeclarationTreeImpl extends JavaTree implements ModuleDeclara
   private final List<ModuleDirectiveTree> moduleDirectives;
   private final InternalSyntaxToken closeBraceToken;
 
-  public ModuleDeclarationTreeImpl(List<AnnotationTree> annotations, InternalSyntaxToken openKeyword, InternalSyntaxToken moduleKeyword, ModuleNameTree moduleName,
+  public ModuleDeclarationTreeImpl(List<AnnotationTree> annotations, @Nullable InternalSyntaxToken openKeyword, InternalSyntaxToken moduleKeyword, ModuleNameTree moduleName,
     InternalSyntaxToken openBraceToken, List<ModuleDirectiveTree> moduleDirectives, InternalSyntaxToken closeBraceToken) {
     super(Tree.Kind.MODULE);
     this.annotations = annotations;

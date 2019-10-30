@@ -181,7 +181,7 @@ public final class JUtils {
    */
   public static Set<Type> superTypes(Symbol.TypeSymbol typeSymbol) {
     if (!(typeSymbol instanceof JSymbol)) {
-      return (Set<Type>) (Set) ((TypeJavaSymbol) typeSymbol).superTypes();
+      return (Set) ((TypeJavaSymbol) typeSymbol).superTypes();
     }
     Set<Type> result = new HashSet<>();
     collectSuperTypes(result, ((JTypeSymbol) typeSymbol).sema, ((JTypeSymbol) typeSymbol).typeBinding());
@@ -210,7 +210,7 @@ public final class JUtils {
       result = symbol;
       symbol = symbol.owner();
     }
-    return (JavaSymbol.TypeSymbol) result;
+    return (Symbol.TypeSymbol) result;
   }
 
   /**

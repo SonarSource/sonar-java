@@ -279,6 +279,7 @@ public class JParser {
         continue;
       }
       if ((problem.getID() & IProblem.Syntax) == 0) {
+        // TODO logging semantic error?
         continue;
       }
       final int line = problem.getSourceLineNumber();
@@ -584,8 +585,6 @@ public class JParser {
 
   private ModuleNameTreeImpl convertModuleName(Name node) {
     switch (node.getNodeType()) {
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.QUALIFIED_NAME: {
         QualifiedName e = (QualifiedName) node;
         ModuleNameTreeImpl t = convertModuleName(e.getQualifier());
@@ -602,6 +601,8 @@ public class JParser {
         );
         return t;
       }
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
   }
 
@@ -619,21 +620,19 @@ public class JParser {
 
   private ModuleDirectiveTree convertModuleDirective(ModuleDirective node) {
     switch (node.getNodeType()) {
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.REQUIRES_DIRECTIVE: {
         RequiresDirective e = (RequiresDirective) node;
         ModifiersTreeImpl modifiers = new ModifiersTreeImpl(new ArrayList<>());
         for (Object o : e.modifiers()) {
           switch (((ModuleModifier) o).getKeyword().toString()) {
-            default:
-              throw new IllegalStateException();
             case "static":
               modifiers.add(new ModifierKeywordTreeImpl(Modifier.STATIC, firstTokenIn((ASTNode) o, ANY_TOKEN)));
               break;
             case "transitive":
               modifiers.add(new ModifierKeywordTreeImpl(Modifier.TRANSITIVE, firstTokenIn((ASTNode) o, ANY_TOKEN)));
               break;
+            default:
+              throw new IllegalStateException();
           }
         }
         return new RequiresDirectiveTreeImpl(
@@ -689,6 +688,8 @@ public class JParser {
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
       }
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
   }
 
@@ -723,8 +724,6 @@ public class JParser {
 
     Tree.Kind kind;
     switch (e.getNodeType()) {
-      default:
-        throw new IllegalStateException();
       case ASTNode.ENUM_DECLARATION:
         kind = Tree.Kind.ENUM;
         break;
@@ -734,6 +733,8 @@ public class JParser {
       case ASTNode.TYPE_DECLARATION:
         kind = ((TypeDeclaration) e).isInterface() ? Tree.Kind.INTERFACE : Tree.Kind.CLASS;
         break;
+      default:
+        throw new IllegalStateException();
     }
     ClassTreeImpl t = new ClassTreeImpl(
       kind,
@@ -744,8 +745,6 @@ public class JParser {
       convertModifiers(e.modifiers())
     );
     switch (kind) {
-      default:
-        break;
       case ENUM:
         t.completeDeclarationKeyword(firstTokenBefore(e.getName(), TerminalTokens.TokenNameenum));
         t.completeIdentifier(convertSimpleName(e.getName()));
@@ -765,6 +764,8 @@ public class JParser {
           convertSimpleName(e.getName())
         );
         break;
+      default:
+        break;
     }
 
     if (kind == Tree.Kind.CLASS || kind == Tree.Kind.INTERFACE) {
@@ -775,8 +776,6 @@ public class JParser {
     }
 
     switch (kind) {
-      default:
-        break;
       case CLASS: {
         TypeDeclaration ee = (TypeDeclaration) e;
         if (ee.getSuperclassType() != null) {
@@ -809,6 +808,8 @@ public class JParser {
         }
         break;
       }
+      default:
+        break;
     }
 
     t.typeBinding = e.resolveBinding();
@@ -851,8 +852,6 @@ public class JParser {
     final int separatorTokenIndex = firstTokenIndexAfter(e);
     final InternalSyntaxToken separatorToken;
     switch (tokenManager.get(separatorTokenIndex).tokenType) {
-      default:
-        throw new IllegalStateException();
       case TerminalTokens.TokenNameCOMMA:
       case TerminalTokens.TokenNameSEMICOLON:
         separatorToken = createSyntaxToken(separatorTokenIndex);
@@ -860,6 +859,8 @@ public class JParser {
       case TerminalTokens.TokenNameRBRACE:
         separatorToken = null;
         break;
+      default:
+        throw new IllegalStateException();
     }
 
     IdentifierTreeImpl identifier = convertSimpleName(e.getName());
@@ -890,8 +891,6 @@ public class JParser {
     final int lastTokenIndex;
 
     switch (node.getNodeType()) {
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.ANNOTATION_TYPE_DECLARATION:
       case ASTNode.ENUM_DECLARATION:
       case ASTNode.TYPE_DECLARATION: {
@@ -1021,6 +1020,8 @@ public class JParser {
         lastTokenIndex = tokenManager.lastIndexIn(node, TerminalTokens.TokenNameSEMICOLON);
         break;
       }
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
 
     addEmptyDeclarationsToList(lastTokenIndex, members);
@@ -1127,7 +1128,7 @@ public class JParser {
   /**
    * @param extraDimensions list of {@link org.eclipse.jdt.core.dom.Dimension}
    */
-  private TypeTree applyExtraDimensions(TypeTree type, List extraDimensions) {
+  private TypeTree applyExtraDimensions(@Nullable TypeTree type, List extraDimensions) {
     if (type == null) {
       // e.g. return type of constructor
       return null;
@@ -1223,8 +1224,6 @@ public class JParser {
 
   private ExpressionTree convertName(Name node) {
     switch (node.getNodeType()) {
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.SIMPLE_NAME: {
         SimpleName e = (SimpleName) node;
         return new IdentifierTreeImpl(
@@ -1240,6 +1239,8 @@ public class JParser {
           rhs
         );
       }
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
   }
 
@@ -1273,11 +1274,12 @@ public class JParser {
         ).completeModifiers(
           modifiers
         );
-        if (fragment.getInitializer() != null) {
+        Expression initalizer = fragment.getInitializer();
+        if (initalizer != null) {
           t.completeTypeAndInitializer(
             t.type(),
             firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL),
-            convertExpression(fragment.getInitializer())
+            convertExpression(initalizer)
           );
         }
         t.setEndToken(
@@ -1300,8 +1302,6 @@ public class JParser {
       return null;
     }
     switch (node.getNodeType()) {
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.BLOCK:
         return convertBlock((Block) node);
       case ASTNode.EMPTY_STATEMENT: {
@@ -1663,17 +1663,19 @@ public class JParser {
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
       }
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
   }
 
   private List<CaseGroupTreeImpl> convertSwitchStatements(List list) {
     List<CaseGroupTreeImpl> groups = new ArrayList<>();
-    List<CaseLabelTreeImpl> labels = null;
+    List<CaseLabelTreeImpl> caselabels = null;
     BlockStatementListTreeImpl body = null;
     for (Object o : list) {
       if (o instanceof SwitchCase) {
-        if (labels == null) {
-          labels = new ArrayList<>();
+        if (caselabels == null) {
+          caselabels = new ArrayList<>();
           body = new BlockStatementListTreeImpl(new ArrayList<>());
         }
 
@@ -1686,31 +1688,32 @@ public class JParser {
           );
         }
 
-        labels.add(new CaseLabelTreeImpl(
+        caselabels.add(new CaseLabelTreeImpl(
           firstTokenIn(c, c.isDefault() ? TerminalTokens.TokenNamedefault : TerminalTokens.TokenNamecase),
           expressions,
           lastTokenIn(c, /* TerminalTokens.TokenNameCOLON or TerminalTokens.TokenNameARROW */ ANY_TOKEN)
         ));
       } else {
-        if (labels != null) {
+        if (caselabels != null) {
           groups.add(new CaseGroupTreeImpl(
-            labels,
+            caselabels,
             body
           ));
         }
-        labels = null;
+        caselabels = null;
         addStatementToList((Statement) o, body);
       }
     }
-    if (labels != null) {
+    if (caselabels != null) {
       groups.add(new CaseGroupTreeImpl(
-        labels,
+        caselabels,
         body
       ));
     }
     return groups;
   }
 
+  @Nullable
   private ExpressionTree convertExpression(@Nullable Expression node) {
     if (node == null) {
       // e.g. condition expression in for-statement
@@ -1725,8 +1728,6 @@ public class JParser {
 
   private ExpressionTree createExpression(Expression node) {
     switch (node.getNodeType()) {
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.SIMPLE_NAME: {
         SimpleName e = (SimpleName) node;
         IdentifierTreeImpl t = convertSimpleName(e);
@@ -2254,8 +2255,6 @@ public class JParser {
         }
         ExpressionTree result;
         switch (tokenType) {
-          default:
-            throw new IllegalStateException();
           case TerminalTokens.TokenNameIntegerLiteral:
             result = new LiteralTreeImpl(Tree.Kind.INT_LITERAL, createSyntaxToken(tokenIndex));
             break;
@@ -2268,6 +2267,8 @@ public class JParser {
           case TerminalTokens.TokenNameDoubleLiteral:
             result = new LiteralTreeImpl(Tree.Kind.DOUBLE_LITERAL, createSyntaxToken(tokenIndex));
             break;
+          default:
+            throw new IllegalStateException();
         }
         ((LiteralTreeImpl) result).typeBinding = e.resolveTypeBinding();
         if (unaryMinus) {
@@ -2337,6 +2338,8 @@ public class JParser {
           arguments
         );
       }
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
   }
 
@@ -2352,20 +2355,17 @@ public class JParser {
     } while (true);
   }
 
+  @Nullable
   private TypeTree convertType(@Nullable Type node) {
     if (node == null) {
       // e.g. return type of constructor
       return null;
     }
     switch (node.getNodeType()) {
-      default:
-        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.PRIMITIVE_TYPE: {
         PrimitiveType e = (PrimitiveType) node;
         final JavaTree.PrimitiveTypeTreeImpl t;
         switch (e.getPrimitiveTypeCode().toString()) {
-          default:
-            throw new IllegalStateException(e.getPrimitiveTypeCode().toString());
           case "byte":
             t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamebyte));
             break;
@@ -2393,6 +2393,8 @@ public class JParser {
           case "void":
             t = new JavaTree.PrimitiveTypeTreeImpl(lastTokenIn(e, TerminalTokens.TokenNamevoid));
             break;
+          default:
+            throw new IllegalStateException(e.getPrimitiveTypeCode().toString());
         }
         t.complete(
           convertAnnotations(e.annotations())
@@ -2527,6 +2529,8 @@ public class JParser {
         t.typeBinding = e.resolveBinding();
         return t;
       }
+      default:
+        throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
   }
 
@@ -2583,43 +2587,45 @@ public class JParser {
 
   private ModifierTree convertModifier(IExtendedModifier node) {
     switch (((ASTNode) node).getNodeType()) {
-      default:
-        throw new IllegalStateException();
       case ASTNode.NORMAL_ANNOTATION:
       case ASTNode.MARKER_ANNOTATION:
       case ASTNode.SINGLE_MEMBER_ANNOTATION:
         return (AnnotationTree) convertExpression((Expression) node);
-      case ASTNode.MODIFIER: {
-        org.eclipse.jdt.core.dom.Modifier e = (org.eclipse.jdt.core.dom.Modifier) node;
-        switch (e.getKeyword().toString()) {
-          default:
-            throw new IllegalStateException(e.getKeyword().toString());
-          case "public":
-            return new ModifierKeywordTreeImpl(Modifier.PUBLIC, firstTokenIn(e, TerminalTokens.TokenNamepublic));
-          case "protected":
-            return new ModifierKeywordTreeImpl(Modifier.PROTECTED, firstTokenIn(e, TerminalTokens.TokenNameprotected));
-          case "private":
-            return new ModifierKeywordTreeImpl(Modifier.PRIVATE, firstTokenIn(e, TerminalTokens.TokenNameprivate));
-          case "static":
-            return new ModifierKeywordTreeImpl(Modifier.STATIC, firstTokenIn(e, TerminalTokens.TokenNamestatic));
-          case "abstract":
-            return new ModifierKeywordTreeImpl(Modifier.ABSTRACT, firstTokenIn(e, TerminalTokens.TokenNameabstract));
-          case "final":
-            return new ModifierKeywordTreeImpl(Modifier.FINAL, firstTokenIn(e, TerminalTokens.TokenNamefinal));
-          case "native":
-            return new ModifierKeywordTreeImpl(Modifier.NATIVE, firstTokenIn(e, TerminalTokens.TokenNamenative));
-          case "synchronized":
-            return new ModifierKeywordTreeImpl(Modifier.SYNCHRONIZED, firstTokenIn(e, TerminalTokens.TokenNamesynchronized));
-          case "transient":
-            return new ModifierKeywordTreeImpl(Modifier.TRANSIENT, firstTokenIn(e, TerminalTokens.TokenNametransient));
-          case "volatile":
-            return new ModifierKeywordTreeImpl(Modifier.VOLATILE, firstTokenIn(e, TerminalTokens.TokenNamevolatile));
-          case "strictfp":
-            return new ModifierKeywordTreeImpl(Modifier.STRICTFP, firstTokenIn(e, TerminalTokens.TokenNamestrictfp));
-          case "default":
-            return new ModifierKeywordTreeImpl(Modifier.DEFAULT, firstTokenIn(e, TerminalTokens.TokenNamedefault));
-        }
-      }
+      case ASTNode.MODIFIER:
+        return convertModifier((org.eclipse.jdt.core.dom.Modifier) node);
+      default:
+        throw new IllegalStateException();
+    }
+  }
+
+  private ModifierTree convertModifier(org.eclipse.jdt.core.dom.Modifier node) {
+    switch (node.getKeyword().toString()) {
+      case "public":
+        return new ModifierKeywordTreeImpl(Modifier.PUBLIC, firstTokenIn(node, TerminalTokens.TokenNamepublic));
+      case "protected":
+        return new ModifierKeywordTreeImpl(Modifier.PROTECTED, firstTokenIn(node, TerminalTokens.TokenNameprotected));
+      case "private":
+        return new ModifierKeywordTreeImpl(Modifier.PRIVATE, firstTokenIn(node, TerminalTokens.TokenNameprivate));
+      case "static":
+        return new ModifierKeywordTreeImpl(Modifier.STATIC, firstTokenIn(node, TerminalTokens.TokenNamestatic));
+      case "abstract":
+        return new ModifierKeywordTreeImpl(Modifier.ABSTRACT, firstTokenIn(node, TerminalTokens.TokenNameabstract));
+      case "final":
+        return new ModifierKeywordTreeImpl(Modifier.FINAL, firstTokenIn(node, TerminalTokens.TokenNamefinal));
+      case "native":
+        return new ModifierKeywordTreeImpl(Modifier.NATIVE, firstTokenIn(node, TerminalTokens.TokenNamenative));
+      case "synchronized":
+        return new ModifierKeywordTreeImpl(Modifier.SYNCHRONIZED, firstTokenIn(node, TerminalTokens.TokenNamesynchronized));
+      case "transient":
+        return new ModifierKeywordTreeImpl(Modifier.TRANSIENT, firstTokenIn(node, TerminalTokens.TokenNametransient));
+      case "volatile":
+        return new ModifierKeywordTreeImpl(Modifier.VOLATILE, firstTokenIn(node, TerminalTokens.TokenNamevolatile));
+      case "strictfp":
+        return new ModifierKeywordTreeImpl(Modifier.STRICTFP, firstTokenIn(node, TerminalTokens.TokenNamestrictfp));
+      case "default":
+        return new ModifierKeywordTreeImpl(Modifier.DEFAULT, firstTokenIn(node, TerminalTokens.TokenNamedefault));
+      default:
+        throw new IllegalStateException(node.getKeyword().toString());
     }
   }
 
