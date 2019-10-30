@@ -34,7 +34,6 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
-import org.sonar.api.platform.Server;
 import org.sonar.api.utils.Version;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -52,27 +51,19 @@ public class JavaSquidTest {
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
+  private FileLinesContext fileLinesContext;
+  private JavaClasspath javaClasspath;
+  private JavaTestClasspath javaTestClasspath;
+
+  private SonarComponents sonarComponents;
+  private SensorContextTester context;
+
   @Test
   public void number_of_visitors_in_sonarLint_context_LTS() throws Exception {
-    SensorContextTester context = SensorContextTester.create(temp.getRoot().getAbsoluteFile());
 
     String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n}";
-    InputFile defaultFile = addFile(code, context);
 
-    // Set sonarLint runtime
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-
-    // Mock visitor for metrics.
-    FileLinesContext fileLinesContext = mock(FileLinesContext.class);
-    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
-    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
-
-    JavaClasspath javaClasspath = mock(JavaClasspath.class);
-    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
-    sonarComponents.setSensorContext(context);
-    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
-    javaSquid.scan(Collections.singletonList(defaultFile), Collections.emptyList());
+    InputFile defaultFile = scanForErrors(code);
 
     // No symbol table : check reference to foo is empty.
     assertThat(context.referencesForSymbolAt(defaultFile.key(), 3, 8)).isNull();
@@ -85,13 +76,13 @@ public class JavaSquidTest {
 
     verify(javaClasspath, times(1)).getElements();
     verify(javaTestClasspath, times(1)).getElements();
-
   }
 
   @Test
   public void verify_analysis_errors_are_collected_on_parse_error() throws Exception {
     String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n";
-    SonarComponents sonarComponents = collectAnalysisErrors(code);
+    scanForErrors(code);
+
     assertThat(sonarComponents.analysisErrors).hasSize(1);
     AnalysisError analysisError = sonarComponents.analysisErrors.get(0);
     assertThat(analysisError.getMessage()).startsWith("Parse error at line 5 column 1:");
@@ -104,7 +95,8 @@ public class JavaSquidTest {
   @Test
   public void verify_analysis_errors_are_collected_on_semantic_error() throws Exception {
     String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n}\nclass A {}";
-    SonarComponents sonarComponents = collectAnalysisErrors(code);
+    scanForErrors(code);
+
     assertThat(sonarComponents.analysisErrors).hasSize(1);
     AnalysisError analysisError = sonarComponents.analysisErrors.get(0);
     assertThat(analysisError.getMessage()).startsWith("Registering class 2 times : A");
@@ -113,31 +105,9 @@ public class JavaSquidTest {
     assertThat(analysisError.getKind()).isEqualTo(AnalysisError.Kind.SEMANTIC_ERROR);
   }
 
-  private SonarComponents collectAnalysisErrors(String code) throws IOException {
-    SensorContextTester context = SensorContextTester.create(temp.getRoot().getAbsoluteFile());
-    InputFile defaultFile = addFile(code, context);
-
-    context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    // Mock visitor for metrics.
-    FileLinesContext fileLinesContext = mock(FileLinesContext.class);
-    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
-    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
-
-    Server server = mock(Server.class);
-    when(server.getPublicRootUrl()).thenReturn("https://sonarcloud.io");
-
-    JavaClasspath javaClasspath = mock(JavaClasspath.class);
-    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
-    sonarComponents.setSensorContext(context);
-    JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
-    javaSquid.scan(Collections.singletonList(defaultFile), Collections.emptyList());
-    return sonarComponents;
-  }
-
   @Test
   public void parsing_errors_should_be_reported_to_sonarlint() throws Exception {
-    SensorContextTester context = setupAnalysisError("class A {");
+    scanForErrors("class A {");
 
     assertThat(context.allAnalysisErrors()).hasSize(1);
     assertThat(context.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 8");
@@ -146,33 +116,35 @@ public class JavaSquidTest {
   @org.junit.Ignore("new semantic analysis does not throw exception in this case")
   @Test
   public void semantic_errors_should_be_reported_to_sonarlint() throws Exception {
-    SensorContextTester context = setupAnalysisError("class A {} class A {}");
+    scanForErrors("class A {} class A {}");
 
     assertThat(context.allAnalysisErrors()).hasSize(1);
     assertThat(context.allAnalysisErrors().iterator().next().message()).isEqualTo("Registering class 2 times : A");
   }
 
-  private SensorContextTester setupAnalysisError(String code) throws IOException {
-    File baseDir = temp.getRoot().getAbsoluteFile();
-    SensorContextTester context = SensorContextTester.create(baseDir);
 
-    InputFile inputFile = addFile(code, context);
+  private InputFile scanForErrors(String code) throws IOException {
+    File baseDir = temp.getRoot().getAbsoluteFile();
+    context = SensorContextTester.create(baseDir);
 
     // Set sonarLint runtime
     context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
 
+    InputFile inputFile = addFile(code, context);
+
     // Mock visitor for metrics.
-    FileLinesContext fileLinesContext = mock(FileLinesContext.class);
+    fileLinesContext = mock(FileLinesContext.class);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
 
-    JavaClasspath javaClasspath = mock(JavaClasspath.class);
-    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
+    javaClasspath = mock(JavaClasspath.class);
+    javaTestClasspath = mock(JavaTestClasspath.class);
+    sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
     JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
     javaSquid.scan(Collections.singletonList(inputFile), Collections.emptyList());
-    return context;
+
+    return inputFile;
   }
 
   private InputFile addFile(String code, SensorContextTester context) throws IOException {
