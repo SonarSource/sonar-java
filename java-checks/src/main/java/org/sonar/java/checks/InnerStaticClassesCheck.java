@@ -63,7 +63,7 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
     Boolean oneReference = atLeastOneReference.pop();
     outerClasses.pop();
     if (!symbol.isStatic()
-      && !oneReference
+      && !Boolean.TRUE.equals(oneReference)
       && !isParameterizedWithTypeVarFromParent(tree)
       && couldBeDeclaredStatic(symbol)) {
       Tree reportTree = tree.simpleName();

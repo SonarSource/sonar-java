@@ -26,6 +26,11 @@ public class UselessImportCheckTest {
 
   @Test
   public void detected_with_package() {
+    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/WithinPackage.java", new UselessImportCheck());
+  }
+
+  @Test
+  public void detected_within_package_info() {
     JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/package-info.java", new UselessImportCheck());
   }
 
