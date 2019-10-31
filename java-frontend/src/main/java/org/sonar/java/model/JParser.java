@@ -778,10 +778,11 @@ public class JParser {
     switch (kind) {
       case CLASS: {
         TypeDeclaration ee = (TypeDeclaration) e;
-        if (ee.getSuperclassType() != null) {
+        Type superclassType = ee.getSuperclassType();
+        if (superclassType != null) {
           t.completeSuperclass(
-            firstTokenBefore(ee.getSuperclassType(), TerminalTokens.TokenNameextends),
-            convertType(ee.getSuperclassType())
+            firstTokenBefore(superclassType, TerminalTokens.TokenNameextends),
+            convertType(superclassType)
           );
         }
         // fall through
@@ -968,14 +969,16 @@ public class JParser {
           thrownExceptionTypes.add(convertType(o));
         }
 
+        Block body = e.getBody();
+        Type returnType = e.getReturnType2();
         MethodTreeImpl t = new MethodTreeImpl(
-          applyExtraDimensions(convertType(e.getReturnType2()), e.extraDimensions()),
+          returnType == null ? null : applyExtraDimensions(convertType(returnType), e.extraDimensions()),
           convertSimpleName(e.getName()),
           parameters,
           e.thrownExceptionTypes().isEmpty() ? null : firstTokenBefore((Type) e.thrownExceptionTypes().get(0), TerminalTokens.TokenNamethrows),
           thrownExceptionTypes,
-          convertBlock(e.getBody()),
-          e.getBody() == null ? lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON) : null
+          body == null ? null : convertBlock(body),
+          body == null ? lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON) : null
         ).completeWithModifiers(
           convertModifiers(e.modifiers())
         ).completeWithTypeParameters(
@@ -985,7 +988,7 @@ public class JParser {
         declaration(t.methodBinding, t);
 
         members.add(t);
-        lastTokenIndex = tokenManager.lastIndexIn(node, e.getBody() == null ? TerminalTokens.TokenNameSEMICOLON : TerminalTokens.TokenNameRBRACE);
+        lastTokenIndex = tokenManager.lastIndexIn(node, body == null ? TerminalTokens.TokenNameSEMICOLON : TerminalTokens.TokenNameRBRACE);
         break;
       }
       case ASTNode.FIELD_DECLARATION: {
@@ -1128,11 +1131,7 @@ public class JParser {
   /**
    * @param extraDimensions list of {@link org.eclipse.jdt.core.dom.Dimension}
    */
-  private TypeTree applyExtraDimensions(@Nullable TypeTree type, List extraDimensions) {
-    if (type == null) {
-      // e.g. return type of constructor
-      return null;
-    }
+  private TypeTree applyExtraDimensions(TypeTree type, List extraDimensions) {
     ITypeBinding typeBinding = ((AbstractTypedTree) type).typeBinding;
     for (int i = 0; i < extraDimensions.size(); i++) {
       Dimension e = (Dimension) extraDimensions.get(i);
@@ -1209,11 +1208,7 @@ public class JParser {
     }
   }
 
-  private IdentifierTreeImpl convertSimpleName(@Nullable SimpleName e) {
-    if (e == null) {
-      // e.g. break-statement without label
-      return null;
-    }
+  private IdentifierTreeImpl convertSimpleName(SimpleName e) {
     IdentifierTreeImpl t = new IdentifierTreeImpl(
       firstTokenIn(e, TerminalTokens.TokenNameIdentifier)
     );
@@ -1244,11 +1239,7 @@ public class JParser {
     }
   }
 
-  private BlockTreeImpl convertBlock(@Nullable Block e) {
-    if (e == null) {
-      // e.g. abstract method or finally
-      return null;
-    }
+  private BlockTreeImpl convertBlock(Block e) {
     List<StatementTree> statements = new ArrayList<>();
     for (Object o : e.statements()) {
       addStatementToList((Statement) o, statements);
@@ -1296,11 +1287,7 @@ public class JParser {
     }
   }
 
-  private StatementTree convertStatement(@Nullable Statement node) {
-    if (node == null) {
-      // e.g. else-statement
-      return null;
-    }
+  private StatementTree convertStatement(Statement node) {
     switch (node.getNodeType()) {
       case ASTNode.BLOCK:
         return convertBlock((Block) node);
@@ -1312,9 +1299,10 @@ public class JParser {
       }
       case ASTNode.RETURN_STATEMENT: {
         ReturnStatement e = (ReturnStatement) node;
+        Expression expression = e.getExpression();
         return new ReturnStatementTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNamereturn),
-          convertExpression(e.getExpression()),
+          expression == null ? null : convertExpression(expression),
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
       }
@@ -1355,16 +1343,17 @@ public class JParser {
         final int firstSemicolonTokenIndex = e.initializers().isEmpty()
           ? tokenManager.firstIndexIn(e, TerminalTokens.TokenNameSEMICOLON)
           : tokenManager.firstIndexAfter((ASTNode) e.initializers().get(e.initializers().size() - 1), TerminalTokens.TokenNameSEMICOLON);
-        final int secondSemicolonTokenIndex = e.getExpression() == null
+        Expression expression = e.getExpression();
+        final int secondSemicolonTokenIndex = expression == null
           ? nextTokenIndex(firstSemicolonTokenIndex, TerminalTokens.TokenNameSEMICOLON)
-          : tokenManager.firstIndexAfter(e.getExpression(), TerminalTokens.TokenNameSEMICOLON);
+          : tokenManager.firstIndexAfter(expression, TerminalTokens.TokenNameSEMICOLON);
 
         return new ForStatementTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNamefor),
           firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
           forInitStatement,
           createSyntaxToken(firstSemicolonTokenIndex),
-          convertExpression(e.getExpression()),
+          expression == null ? null : convertExpression(expression),
           createSyntaxToken(secondSemicolonTokenIndex),
           forUpdateStatement,
           firstTokenBefore(e.getBody(), TerminalTokens.TokenNameRPAREN),
@@ -1383,23 +1372,25 @@ public class JParser {
       }
       case ASTNode.IF_STATEMENT: {
         IfStatement e = (IfStatement) node;
-        if (e.getElseStatement() != null) {
+        Expression expression = e.getExpression();
+        Statement elseStatement = e.getElseStatement();
+        if (elseStatement != null) {
           return new IfStatementTreeImpl(
             firstTokenAfter(e.getThenStatement(), TerminalTokens.TokenNameelse),
-            convertStatement(e.getElseStatement())
+            convertStatement(elseStatement)
           ).complete(
             firstTokenIn(e, TerminalTokens.TokenNameif),
-            firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN),
-            convertExpression(e.getExpression()),
-            firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN),
+            firstTokenBefore(expression, TerminalTokens.TokenNameLPAREN),
+            convertExpression(expression),
+            firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
             convertStatement(e.getThenStatement())
           );
         } else {
           return new IfStatementTreeImpl(
             firstTokenIn(e, TerminalTokens.TokenNameif),
-            firstTokenBefore(e.getExpression(), TerminalTokens.TokenNameLPAREN),
-            convertExpression(e.getExpression()),
-            firstTokenAfter(e.getExpression(), TerminalTokens.TokenNameRPAREN),
+            firstTokenBefore(expression, TerminalTokens.TokenNameLPAREN),
+            convertExpression(expression),
+            firstTokenAfter(expression, TerminalTokens.TokenNameRPAREN),
             convertStatement(e.getThenStatement())
           );
         }
@@ -1414,7 +1405,8 @@ public class JParser {
         }
         ExpressionTree expression;
         if (e.getExpression() == null) {
-          IdentifierTreeImpl i = convertSimpleName(e.getLabel());
+          SimpleName label = e.getLabel();
+          IdentifierTreeImpl i = label == null ? null : convertSimpleName(label);
           usageLabel(i);
           expression = i;
         } else {
@@ -1488,7 +1480,8 @@ public class JParser {
       }
       case ASTNode.CONTINUE_STATEMENT: {
         ContinueStatement e = (ContinueStatement) node;
-        IdentifierTreeImpl i = convertSimpleName(e.getLabel());
+        SimpleName label = e.getLabel();
+        IdentifierTreeImpl i = label == null ? null : convertSimpleName(label);
         usageLabel(i);
         return new ContinueStatementTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNamecontinue),
@@ -1583,6 +1576,7 @@ public class JParser {
           }
         }
 
+        Block f = e.getFinally();
         return new TryStatementTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNametry),
           e.resources().isEmpty() ? null : firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
@@ -1590,8 +1584,8 @@ public class JParser {
           e.resources().isEmpty() ? null : firstTokenBefore(e.getBody(), TerminalTokens.TokenNameRPAREN),
           convertBlock(e.getBody()),
           catches,
-          e.getFinally() == null ? null : firstTokenBefore(e.getFinally(), TerminalTokens.TokenNamefinally),
-          convertBlock(e.getFinally())
+          f == null ? null : firstTokenBefore(f, TerminalTokens.TokenNamefinally),
+          f == null ? null : convertBlock(f)
         );
       }
       case ASTNode.TYPE_DECLARATION_STATEMENT: {
@@ -1713,12 +1707,7 @@ public class JParser {
     return groups;
   }
 
-  @Nullable
-  private ExpressionTree convertExpression(@Nullable Expression node) {
-    if (node == null) {
-      // e.g. condition expression in for-statement
-      return null;
-    }
+  private ExpressionTree convertExpression(Expression node) {
     ExpressionTree t = createExpression(node);
     if (!t.is(Tree.Kind.SWITCH_EXPRESSION)) {
       ((AbstractTypedTree) t).typeBinding = node.resolveTypeBinding();
@@ -2160,12 +2149,13 @@ public class JParser {
             );
           }
         }
+        ASTNode body = e.getBody();
         return new LambdaExpressionTreeImpl(
           e.hasParentheses() ? firstTokenIn(e, TerminalTokens.TokenNameLPAREN) : null,
           parameters,
-          e.hasParentheses() ? firstTokenBefore(e.getBody(), TerminalTokens.TokenNameRPAREN) : null,
-          firstTokenBefore(e.getBody(), TerminalTokens.TokenNameARROW),
-          e.getBody().getNodeType() == ASTNode.BLOCK ? convertBlock((Block) e.getBody()) : convertExpression((Expression) e.getBody())
+          e.hasParentheses() ? firstTokenBefore(body, TerminalTokens.TokenNameRPAREN) : null,
+          firstTokenBefore(body, TerminalTokens.TokenNameARROW),
+          body.getNodeType() == ASTNode.BLOCK ? convertBlock((Block) body) : convertExpression((Expression) body)
         );
       }
       case ASTNode.CREATION_REFERENCE: {
@@ -2355,12 +2345,7 @@ public class JParser {
     } while (true);
   }
 
-  @Nullable
-  private TypeTree convertType(@Nullable Type node) {
-    if (node == null) {
-      // e.g. return type of constructor
-      return null;
-    }
+  private TypeTree convertType(Type node) {
     switch (node.getNodeType()) {
       case ASTNode.PRIMITIVE_TYPE: {
         PrimitiveType e = (PrimitiveType) node;
@@ -2510,15 +2495,16 @@ public class JParser {
           ? firstTokenIn(e, TerminalTokens.TokenNameQUESTION)
           : firstTokenAfter((ASTNode) e.annotations().get(e.annotations().size() - 1), TerminalTokens.TokenNameQUESTION);
         JavaTree.WildcardTreeImpl t;
-        if (e.getBound() == null) {
+        Type bound = e.getBound();
+        if (bound == null) {
           t = new JavaTree.WildcardTreeImpl(
             questionToken
           );
         } else {
           t = new JavaTree.WildcardTreeImpl(
             e.isUpperBound() ? Tree.Kind.EXTENDS_WILDCARD : Tree.Kind.SUPER_WILDCARD,
-            e.isUpperBound() ? firstTokenBefore(e.getBound(), TerminalTokens.TokenNameextends) : firstTokenBefore(e.getBound(), TerminalTokens.TokenNamesuper),
-            convertType(e.getBound())
+            e.isUpperBound() ? firstTokenBefore(bound, TerminalTokens.TokenNameextends) : firstTokenBefore(bound, TerminalTokens.TokenNamesuper),
+            convertType(bound)
           ).complete(
             questionToken
           );
