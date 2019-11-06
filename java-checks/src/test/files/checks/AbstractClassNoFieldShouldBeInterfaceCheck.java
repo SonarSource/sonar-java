@@ -1,3 +1,4 @@
+import com.google.auto.value.AutoOneOf;
 import com.google.auto.value.AutoValue;
 import org.immutables.value.Value;
 
@@ -65,6 +66,13 @@ abstract class Foo { // Compliant
   @AutoValue.Builder
   abstract static class Builder {
     abstract Builder namer(String name);
+  }
+}
+
+@AutoOneOf(StringOrInteger.Kind.class)
+abstract class StringOrInteger { // Compliant
+  public enum Kind {
+    STRING, INTEGER
   }
 }
 
