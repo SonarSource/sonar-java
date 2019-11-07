@@ -12,4 +12,15 @@ class A {
       break;
     }
   }
+
+  void bar() {
+    i: { // Compliant
+      new Object() {
+        void qix() {
+          i: break i;
+        }
+      }.qix();
+      break i;
+    }
+  }
 }
