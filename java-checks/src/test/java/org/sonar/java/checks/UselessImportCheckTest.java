@@ -51,6 +51,6 @@ public class UselessImportCheckTest {
 
   @Test
   public void intersection_type() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UselessImportCheck/IntersectionCase.java", new UselessImportCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/IntersectionCase.java", new UselessImportCheck());
   }
 }

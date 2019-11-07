@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
@@ -168,7 +167,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
 
   @Override
   public void visitTypeCast(TypeCastTree tree) {
-    tree.bounds().stream().map(x -> Objects.requireNonNull(x.firstToken()).text()).forEach(pendingReferences::add);
+    scan(tree.bounds());
     super.visitTypeCast(tree);
   }
 
