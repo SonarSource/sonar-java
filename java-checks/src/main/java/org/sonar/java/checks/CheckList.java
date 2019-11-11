@@ -321,6 +321,7 @@ public final class CheckList {
       ImmediatelyReturnedVariableCheck.class,
       LambdaSingleExpressionCheck.class,
       LambdaOptionalParenthesisCheck.class,
+      LambdaTooBigCheck.class,
       LambdaTypeParameterCheck.class,
       AnonymousClassShouldBeLambdaCheck.class,
       AbstractClassNoFieldShouldBeInterfaceCheck.class,
