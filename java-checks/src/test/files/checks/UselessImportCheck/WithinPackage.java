@@ -38,6 +38,8 @@ import java.util.HashMap;
 import javax.annotation.Nonnull;
 import checks.UselessImportCheck.WithPackageAux; // Noncompliant {{Remove this unnecessary import: same package classes are always implicitly imported.}}
 
+import static checks.UselessImportCheck.SomeEntity.FIND_BY_NAME;
+import static checks.UselessImportCheck.SomeEntity.FIND_BY_AGE; // Noncompliant
 import static checks.UselessImportCheck.Foo2.A.BAR; // Noncompliant
 import static checks.UselessImportCheck.Foo2.A.FLUP; // compliant, used outside of owning class
 import static checks.UselessImportCheck.Foo2.A.qix; // compliant : Method symbols are ignored.
@@ -84,4 +86,20 @@ public class Foo2 extends Foo {
     }
   }
 
+}
+
+@MyAnnotation(name = FIND_BY_NAME)
+class SomeEntity {
+  public static final String FIND_BY_NAME = "SomeEntity.findByName";
+  public static final String FIND_BY_AGE = "SomeEntity.findByAge";
+  private String name;
+
+  @MyAnnotation(name = FIND_BY_AGE)
+  public String getEntityName() {
+    return name;
+  }
+}
+
+@interface MyAnnotation {
+  String name();
 }

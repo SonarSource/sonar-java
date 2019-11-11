@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -129,11 +130,27 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
       if (symbol != null) {
         Symbol owner = symbol.owner();
         // Exclude method symbols : they could be ambiguous or unresolved and lead to FP.
-        if (symbol.isVariableSymbol() && symbol.usages().stream().allMatch(identifierTree -> JUtils.enclosingClass(identifierTree) == owner)) {
+        if (symbol.isVariableSymbol() && symbol.usages().stream().allMatch(identifierTree -> enclosingClass(identifierTree) == owner)) {
           context.reportIssue(this, importTree, "Remove this unused import '" + importName + "'.");
         }
       }
     }
+  }
+
+  private static Symbol enclosingClass(Tree t) {
+    do {
+      if (t == null || isClassAnnotation(t)) {
+        return null;
+      } else if (t.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
+        return ((ClassTree) t).symbol();
+      }
+      t = t.parent();
+    } while (true);
+  }
+
+  private static boolean isClassAnnotation(Tree t) {
+    return t.is(Tree.Kind.ANNOTATION)
+      && t.parent().parent().is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
   }
 
   private static ExpressionTree getPackageName(CompilationUnitTree cut) {
