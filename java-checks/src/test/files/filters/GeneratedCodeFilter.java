@@ -1,16 +1,18 @@
-import javax.annotation.Generated;
+package foo;
+
+import javax.annotation.processing.Generated;
 
 class this_is_a_bad_class_name { // WithIssue
 
   Object This_Is_A_Bad_Field_Name; // WithIssue
 
-  @Generated
+  @Generated("value")
   void Bad_Generated_Method_Name() {  // NoIssue
-    Objet Bad_Variable_Name; // NoIssue
+    Object Bad_Variable_Name; // NoIssue
   }
 
   void Bad_Method_Name() { // WithIssue
-    Objet Bad_Variable_Name; // WithIssue
+    Object Bad_Variable_Name; // WithIssue
   }
 }
 
@@ -18,12 +20,32 @@ class this_is_a_bad_class_name { // WithIssue
 /**
  * Other comment
  */
-@Generated
+@Generated("value")
 class this_is_a_bad_generated_class_name { // NoIssue
 
   Object This_Is_A_Bad_Field_Name; // NoIssue
 
   void Bad_Method_Name() { // NoIssue
-    Objet Bad_Variable_Name; // NoIssue
+    Object Bad_Variable_Name; // NoIssue
+  }
+}
+
+@javax.annotation.Generated("value")
+class bad_generated_name { //NoIssue
+
+  Object Bad_Field_Name; // NoIssue
+
+  void Bad_Method_Name() { // NoIssue
+    Object Bad_Variable_Name; // NoIssue
+  }
+}
+
+@unrelated.Generated
+class unrelated_bad_name { //WithIssue
+
+  Object Bad_Field_Name; // WithIssue
+
+  void Bad_Method_Name() { // WithIssue
+    Object Bad_Variable_Name; // WithIssue
   }
 }

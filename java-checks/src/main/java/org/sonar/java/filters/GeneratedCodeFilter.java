@@ -52,6 +52,7 @@ public class GeneratedCodeFilter extends AnyRuleIssueFilter {
   }
 
   private static boolean isGenerated(Symbol symbol) {
-    return symbol.metadata().isAnnotatedWith("javax.annotation.Generated");
+    return symbol.metadata().isAnnotatedWith("javax.annotation.Generated")
+      || symbol.metadata().isAnnotatedWith("javax.annotation.processing.Generated");
   }
 }
