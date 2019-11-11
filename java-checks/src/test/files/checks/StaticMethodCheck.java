@@ -29,6 +29,17 @@ class Utilities {
     return magicWord;
   }
 
+  public final String magicWord() { // Noncompliant [[sc=23;ec=32]] {{Make "magicWord" a "static" method.}}
+    return magicWord;
+  }
+
+  public static final String magicWordOK() {
+    return magicWord;
+  }
+
+  public final String getOtherWord() {
+    return this.otherWord;
+  }
   private void setMagicWord(String value) { // Noncompliant {{Make "setMagicWord" a "static" method.}}
     magicWord = value;
   }
@@ -254,5 +265,42 @@ class EnclosingInstance extends SuperClass {
         return foo.EnclosingInstance.super.bar == 0;
       }
     };
+  }
+}
+
+class ParentClass {
+  int value;
+
+  public int getMagicNumber() {
+    return value;
+  }
+}
+
+final class ChildClass extends ParentClass {
+  @Override
+  public int getMagicNumber() { // OK, overrides parent method
+    return 42;
+  }
+}
+
+final class FinalClass {
+  static int magicNumber = 42;
+
+  public int getMagicNumber() { // Noncompliant [[sc=14;ec=28]] {{Make "getMagicNumber" a "static" method.}}
+    return magicNumber;
+  }
+
+  public static getMagicNumberOK() {
+    return magicNumber;
+  }
+}
+
+private enum SomeEnum {
+  A,
+  B,
+  C;
+
+  public SomeEnum getOne() {
+    return A;
   }
 }

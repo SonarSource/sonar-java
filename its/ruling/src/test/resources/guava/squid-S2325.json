@@ -1,9 +1,13 @@
 {
 'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+1964,
 3515,
 ],
 'com.google.guava:guava:src/com/google/common/collect/HashBiMap.java':[
 358,
+],
+'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+1975,
 ],
 'com.google.guava:guava:src/com/google/common/collect/TreeRangeMap.java':[
 263,
