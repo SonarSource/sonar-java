@@ -77,6 +77,7 @@ public class InvariantReturnCheck extends SECheck {
     private static List<ReturnStatementTree> extractReturnStatements(MethodTree methodTree) {
       ReturnExtractor visitor = new ReturnExtractor();
       methodTree.accept(visitor);
+      visitor.returns.sort((r1, r2) -> Integer.compare(r2.returnKeyword().line(), r1.returnKeyword().line()));
       return visitor.returns;
     }
   }
