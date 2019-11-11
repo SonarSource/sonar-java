@@ -22,6 +22,7 @@ package org.sonar.java.filters;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,6 +33,7 @@ import org.sonar.java.checks.CollectionInappropriateCallsCheck;
 import org.sonar.java.checks.ConstantsShouldBeStaticFinalCheck;
 import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
+import org.sonar.java.checks.FieldModifierCheck;
 import org.sonar.java.checks.PrivateFieldUsedLocallyCheck;
 import org.sonar.java.checks.SillyEqualsCheck;
 import org.sonar.java.checks.UselessImportCheck;
@@ -62,7 +64,8 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     ConstantsShouldBeStaticFinalCheck.class,
     SillyEqualsCheck.class,
     CollectionInappropriateCallsCheck.class,
-    UselessImportCheck.class);
+    UselessImportCheck.class,
+    FieldModifierCheck.class);
 
   private static final String LOMBOK_VAL = "lombok.val";
 
@@ -115,6 +118,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     excludeLinesIfTrue(generatesEquals, tree, EqualsNotOverriddenInSubclassCheck.class, EqualsNotOverridenWithCompareToCheck.class);
     excludeLinesIfTrue(generatesPrivateConstructor(tree), tree, UtilityClassWithPublicConstructorCheck.class);
     excludeLinesIfTrue(usesAnnotation(tree, UTILITY_CLASS), tree, BadFieldNameCheck.class, ConstantsShouldBeStaticFinalCheck.class);
+    excludeLinesIfTrue(usesAnnotation(tree, Collections.singletonList("lombok.Value")), tree, FieldModifierCheck.class);
 
     super.visitClass(tree);
   }
