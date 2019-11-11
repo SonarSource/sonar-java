@@ -56,7 +56,7 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
   }
 
   private static boolean shouldImplementEquals(ClassTree classTree) {
-    return hasAtLeastOneField(classTree) && !hasNotFinalEqualsMethod(classTree.symbol()) && parentClassImplementsEquals(classTree);
+    return hasAtLeastOneField(classTree) && !hasEqualsMethod(classTree.symbol()) && parentClassImplementsEquals(classTree);
   }
 
   private static boolean hasAtLeastOneField(ClassTree classTree) {
@@ -83,8 +83,8 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
     return false;
   }
 
-  private static boolean hasNotFinalEqualsMethod(Symbol.TypeSymbol type) {
-    return equalsMethod(type).filter(equalsMethod -> !equalsMethod.isFinal()).isPresent();
+  private static boolean hasEqualsMethod(Symbol.TypeSymbol type) {
+    return equalsMethod(type).isPresent();
   }
 
   private static Optional<Symbol> equalsMethod(Symbol.TypeSymbol type) {
