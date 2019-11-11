@@ -40,6 +40,7 @@ import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
+import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.MethodReferenceTreeImpl;
@@ -621,6 +622,35 @@ class JParserSemanticTest {
     assertThat(cu.sema.usages.get(identifier.binding))
       .containsOnlyElementsOf(superMethodInvocation.symbol().usages())
       .containsOnly(identifier);
+  }
+
+  @Test
+  void expression_nested_lambda() {
+    String source = "class A {\n" +
+      "  void m() {\n" +
+      "    java.util.function.Function<Integer, java.util.function.Supplier<Integer>> v =\n" +
+      "      p1 -> {\n" +
+      "        return () -> 42;\n" +
+      "      };\n" +
+      "  }\n" +
+      "}";
+
+    // FIXME remove after drop of old engine: computation of inferred type for lambdas fails with old engine
+    assertThrows(IndexOutOfBoundsException.class, () -> test(source));
+
+    JavaTree.CompilationUnitTreeImpl cu = testNewSemaOnly(source);
+
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) m.block().body().get(0);
+    LambdaExpressionTreeImpl l1 = (LambdaExpressionTreeImpl) v.initializer();
+
+    BlockTreeImpl body = (BlockTreeImpl) l1.body();
+    ReturnStatementTreeImpl r = (ReturnStatementTreeImpl) body.body().get(0);
+    LambdaExpressionTreeImpl l2 = (LambdaExpressionTreeImpl) r.expression();
+
+    assertThat(l2.typeBinding).isNotNull();
+    assertThat(cu.sema.type(l2.typeBinding).is("java.util.function.Supplier")).isTrue();
   }
 
   /**
