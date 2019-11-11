@@ -38,41 +38,6 @@ class A {
       }
 
     };
-
-    Callable<Integer> c0 = ()-> {
-      return 1;
-    };
-    Callable<Integer> c1 = ()-> { // Noncompliant [[sc=28;ec=32;secondary=52]] {{Reduce this lambda expression number of lines from 8 to at most 6.}}
-      System.out.println();
-      System.out.println();
-      System.out.println();
-      System.out.println();
-      System.out.println();
-      return 1;
-    };
-
-    Callable<Integer> c2 = ()-> 1 + 2;
-    Callable<Integer> c3 = ()-> 1 + 2+ // Noncompliant [[sc=28;ec=32;secondary=61]] {{Reduce this lambda expression number of lines from 7 to at most 6.}}
-        2 +
-        3 * 4 +
-        5+
-        3+
-        1+
-        1;
-
-    Runnable r2 = () -> System.out.println("Hello world two!");
-    
-    Predicate<Person> allDraftees = 
-      p -> 
-        p.getAge() >= 18 
-        && p.getAge() <= 25 
-        && p.getGender() == Gender.MALE;
-    
-    List<Person> pl = Person.createShortList();
-    pl.forEach(p -> { 
-      System.out.println(p.printCustom(r -> 
-        "Name: " + r.getGivenName() + " EMail: " + r.getEmail())); 
-      });
   }
 }
 

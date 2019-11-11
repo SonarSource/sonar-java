@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
@@ -27,9 +26,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1188")
@@ -38,7 +35,7 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   private static final int DEFAULT_MAX = 20;
 
   @RuleProperty(key = "Max",
-    description = "Maximum allowed lines in an anonymous class/lambda",
+    description = "Maximum allowed lines in an anonymous class",
     defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
@@ -72,19 +69,6 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   public void visitEnumConstant(EnumConstantTree tree) {
     isEnumConstantBody = true;
     super.visitEnumConstant(tree);
-  }
-
-  @Override
-  public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    int lines = getNumberOfLines(lambdaExpressionTree);
-    if (lines > max) {
-      SyntaxToken firstToken = lambdaExpressionTree.firstToken();
-      SyntaxToken lastSyntaxToken = lambdaExpressionTree.lastToken();
-      JavaFileScannerContext.Location lastTokenLocation = new JavaFileScannerContext.Location(lines + " lines", lastSyntaxToken);
-      context.reportIssue(this, firstToken, lambdaExpressionTree.arrowToken(),
-        "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".", Lists.newArrayList(lastTokenLocation), null);
-    }
-    super.visitLambdaExpression(lambdaExpressionTree);
   }
 
   private static int getNumberOfLines(Tree tree) {
