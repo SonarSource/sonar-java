@@ -37,6 +37,7 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
@@ -69,8 +70,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JParserSemanticTest {
 
@@ -620,6 +621,46 @@ class JParserSemanticTest {
     assertThat(cu.sema.usages.get(identifier.binding))
       .containsOnlyElementsOf(superMethodInvocation.symbol().usages())
       .containsOnly(identifier);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.ConditionalExpression
+   */
+  @Test
+  void conditional_expression() {
+    String source = "class A {\n" +
+      "  void foo(Class<? extends java.io.Serializable>[] arr1, Class<?>[] arr2, boolean b) {\n" +
+      "    Class<?>[] t = b ? arr1 : arr2;\n" +
+      "  }\n" +
+      "}";
+
+    // FIXME remove after drop of old engine: computation of LUB corresponding to conditional expression fails with old engine
+    assertThrows(IllegalArgumentException.class, () -> test(source));
+
+    JavaTree.CompilationUnitTreeImpl cu = testNewSemaOnly(source);
+
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl a = (VariableTreeImpl) m.block().body().get(0);
+    ConditionalExpressionTreeImpl cond = (ConditionalExpressionTreeImpl) a.initializer();
+    IdentifierTreeImpl c1 = (IdentifierTreeImpl) cond.trueExpression();
+    IdentifierTreeImpl c2 = (IdentifierTreeImpl) cond.falseExpression();
+
+    assertThat(cond.typeBinding).isNotNull();
+    JType tcond = cu.sema.type(cond.typeBinding);
+    assertThat(tcond.is("java.lang.Class[]")).isTrue();
+
+    assertThat(c1.typeBinding).isNotNull();
+    JType tc1 = cu.sema.type(c1.typeBinding);
+    assertThat(tc1.is("java.lang.Class[]")).isTrue();
+
+    assertThat(c2.typeBinding).isNotNull();
+    JType tc2 = cu.sema.type(c2.typeBinding);
+    assertThat(tc2.is("java.lang.Class[]")).isTrue();
+
+    assertThat(tc2)
+      .isNotEqualTo(tc1)
+      .isEqualTo(tcond);
   }
 
   /**
@@ -1201,6 +1242,10 @@ class JParserSemanticTest {
     JavaTree.CompilationUnitTreeImpl t = (JavaTree.CompilationUnitTreeImpl) JParser.parse("12", "File.java", source, true, classpath);
     t.oldSema = SemanticModel.createFor(t, new SquidClassLoader(classpath));
     return t;
+  }
+
+  private JavaTree.CompilationUnitTreeImpl testNewSemaOnly(String source) {
+    return (JavaTree.CompilationUnitTreeImpl) JParser.parse("12", "File.java", source, true, Collections.emptyList());
   }
 
   @Test
