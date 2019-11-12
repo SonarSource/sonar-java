@@ -52,6 +52,17 @@ class A {
     }
     return new ArrayList<Object>(); // Noncompliant [[sc=25;ec=33]]
   }
+
+  public void assignmentOnMethodInvocation() {
+    this.bar()[0] = new GenericClass<String, Integer, Integer>();
+  }
+
+  public MyInterface[] bar() {
+    return new MyInterface[1];
+  }
+
+  interface MyInterface { }
+  static class GenericClass<X, Y, Z> implements MyInterface { }
 }
 
 enum SonarProblemCase {
