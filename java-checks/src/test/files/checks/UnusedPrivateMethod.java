@@ -3,8 +3,16 @@ package org.sonar.java.checks.targets;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
+import java.util.List;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import static java.util.Collections.emptySet;
 
-public class UnusedPrivateMethod {
+class UnusedPrivateMethod {
 
   private UnusedPrivateMethod() {}
   private UnusedPrivateMethod(int a) {} // Noncompliant
@@ -182,7 +190,7 @@ class KillTheNoiseUnresolvedMethodCall {
     }
   }
 }
-public class Bar {
+class Bar {
   public void print() {
     java.util.List<String> list = java.util.Arrays.asList("x", "y", "z");
     java.util.List<Foo> foos = list.stream().map(Foo::new).collect(Collectors.toList());
@@ -194,5 +202,43 @@ public class Bar {
     private Foo(String foo) {
       this.foo = foo;
     }
+  }
+}
+
+class NestedTypeInference1 {
+  public <D, L extends List<D>> void foo(Callback2<L> cb2) {
+    qix(rs -> bar(cb2.doStuff(rs)));
+  }
+
+  private void qix(Callback1 cb1) {}
+
+  private <D, L extends List<D>> void bar(L data) {}
+
+  @FunctionalInterface
+  private interface Callback1 {
+    void doStuff(String rs);
+  }
+
+  @FunctionalInterface
+  private interface Callback2<T> {
+    T doStuff(String rs);
+  }
+}
+
+class NestedTypeInference2 {
+  public Supplier<Map<Boolean, BigDecimal>> branch() {
+    return turnover(calculateTurnover(this::extractSourceBranches));
+  }
+
+  private Supplier<Map<Boolean, BigDecimal>> turnover(Function<Double, BigDecimal> param1) {
+    return Collections::emptyMap;
+  }
+
+  private <A, S> Function<A, BigDecimal> calculateTurnover(Function<A, Set<S>> param1) {
+    return x -> BigDecimal.ZERO;
+  }
+
+  private Set<Integer> extractSourceBranches(Double param) {
+    return emptySet();
   }
 }
