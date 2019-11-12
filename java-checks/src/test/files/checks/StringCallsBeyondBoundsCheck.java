@@ -44,6 +44,7 @@ class A {
     str.codePointBefore(0);             // Noncompliant
     str.codePointBefore(zero);
 
+    str.getChars(str.length(), 0, array, 0);        // Noncompliant
     str.getChars(0, str.length(), array, 0);
     str.getChars(-1, str.length(), array, 0);       // Noncompliant
     str.getChars(minusOne, str.length(), array, 0);
@@ -54,7 +55,7 @@ class A {
     str.getChars(0, str.length(), array, -1);       // Noncompliant
     str.getChars(0, str.length(), array, minusOne);
 
-    str.offsetByCodePoints(str.length(), any);
+    str.offsetByCodePoints(str.length(), any);  // Noncompliant
     str.offsetByCodePoints(25, any);
     str.offsetByCodePoints(0, any);
     "str".offsetByCodePoints(any, any + 5);
@@ -65,6 +66,7 @@ class A {
 
     str.subSequence(0, str.length());
     str.subSequence(-1, str.length());         // Noncompliant
+    str.subSequence(str.length(), 0);          // Noncompliant
     str.subSequence(minusOne, str.length());
     str.subSequence(0, -1);                    // Noncompliant
     str.subSequence(5, 0);                     // Noncompliant
@@ -73,7 +75,7 @@ class A {
     "str".subSequence(0, 2);
     "str".subSequence(minusOne, str.length());
 
-    str.substring(str.length());
+    str.substring(str.length()); // Noncompliant
     str.substring(25);
     "str".substring(25);          // Noncompliant
     "str".substring(1);
@@ -82,6 +84,7 @@ class A {
     str.substring(minusOne);
 
     str.substring(0, str.length());
+    str.substring(str.length(), 0);         // Noncompliant
     str.substring(-1, str.length());        // Noncompliant
     str.substring(minusOne, str.length());
     str.substring(0, -1);                   // Noncompliant
