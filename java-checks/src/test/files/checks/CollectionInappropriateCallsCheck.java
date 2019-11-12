@@ -240,3 +240,11 @@ class WildcardUsage {
     }
   }
 }
+
+class FlatMapUsage {
+  public void test(Set<Integer> used, List<List<Integer>> allInts) {
+    allInts.stream()
+      .flatMap(List::stream)
+      .filter(i -> !used.contains(i)); // Compliant - list of lists is flattened into a list of integers
+  }
+}
