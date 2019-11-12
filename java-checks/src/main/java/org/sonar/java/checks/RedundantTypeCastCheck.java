@@ -33,6 +33,7 @@ import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -114,16 +115,10 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
         return null;
       case VARIABLE:
         return ((VariableTree) parent).symbol().type();
-      case METHOD_INVOCATION:
-        // FIXME(SONARJAVA-3191) dead code
-        // If placed in invocation arguments, parent of typecast will be ARGUMENTS, not METHOD_INVOCATION
-        MethodInvocationTree mit = (MethodInvocationTree) parent;
-        if (mit.symbol().isMethodSymbol()) {
-          Symbol.MethodSymbol sym = (Symbol.MethodSymbol) mit.symbol();
-          int castArgIndex = mit.arguments().indexOf(typeCastTree);
-          return sym.parameterTypes().get(castArgIndex);
-        }
-        return null;
+      case ARGUMENTS:
+        Arguments arguments = (Arguments)parent;
+        int castArgIndex = arguments.indexOf(typeCastTree);
+        return arguments.get(castArgIndex).symbolType();
       case MEMBER_SELECT:
       case CONDITIONAL_EXPRESSION:
         return typeCastTree.type().symbolType();

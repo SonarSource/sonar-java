@@ -18,16 +18,16 @@ class Outer {
     Object o1 = (List<String>) foo(); // Noncompliant [[sc=18;ec=30]] {{Remove this unnecessary cast to "List".}}
     Object o2 = (List<? extends String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}}
     Object o3 = (List<? super String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}}
-    String s1 = (String) obj; //Compliant
+    String s1 = (String) obj; // Compliant
     String s2 = (String) s1; // Noncompliant {{Remove this unnecessary cast to "String".}}
     A a = (A) new B(); // Noncompliant {{Remove this unnecessary cast to "A".}}
     A[][] as = (A[][]) new B[1][1]; // Noncompliant {{Remove this unnecessary cast to "A[][]".}}
     B b;
     fun(b);
-    fun((A) b);
+    fun((A) b); // Noncompliant
     List<B> bees = new java.util.ArrayList<B>();
     java.util.List<A> aaas = (java.util.List) bees;
-    C c = new C((A)null);
+    C c = new C((A)null); // Noncompliant
     foo((List<List<A>>) (List<?>) foo2()); // compliant
     obj = (Unknown<String>) unknown;
     String[] stringList = (String[]) list.toArray(new String[0]); // Compliant
@@ -52,7 +52,7 @@ class Outer {
     Collection<String> v1 = Collections.emptyList();
     List<String> v2 = Collections.emptyList();
     castInArguments((List<String>) v1); // Compliant - cast needed
-    castInArguments((List<String>) v2); // Compliant - FN case not properly handled - would be the same with NEW_CLASS_TREE
+    castInArguments((List<String>) v2); // Noncompliant
   }
 
   List<List<B>> foo3() {
