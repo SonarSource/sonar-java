@@ -1,3 +1,5 @@
+import java.util.*;
+
 class CallToDeprecatedMethod {
 
   public CallToDeprecatedMethod() {
@@ -98,4 +100,17 @@ class MyCustomClass {
 @Deprecated
 class MyDeprecatedType {
   // some stuff
+}
+
+class MethodResolution {
+  public static void test() {
+    HasDeprecations.method(new ArrayList<>());
+    HasDeprecations.method(new HashMap<>()); // Noncompliant [[sc=21;ec=27]] {{Remove this use of "method"; it is deprecated.}}
+  }
+
+  static class HasDeprecations {
+    @Deprecated
+    public static void method(final Map<String, String> m) { }
+    public static void method(final List<String> l) { }
+  }
 }
