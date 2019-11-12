@@ -128,6 +128,10 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
 
   private static boolean checkGetChars(MethodInvocationTree tree) {
     return check(tree, (str, args) -> {
+      if (isStringLength(str, args.get(0))) {
+        return true;
+      }
+
       Integer srcBegin = constant(args.get(0));
       if (srcBegin != null && srcBegin < 0) {
         return true;
@@ -147,6 +151,10 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
 
   private static boolean checkOffsetByCodePoints(MethodInvocationTree tree) {
     return check(tree, (str, args) -> {
+      if (isStringLength(str, args.get(0))) {
+        return true;
+      }
+
       Integer index = constant(args.get(0));
       if (index != null && index < 0) {
         return true;
@@ -162,6 +170,9 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
       return checkSubsequence(tree);
     }
     return check(tree, (str, args) -> {
+      if (isStringLength(str, args.get(0))) {
+        return true;
+      }
       Integer index = constant(args.get(0));
       if (index != null && index < 0) {
         return true;
@@ -173,6 +184,10 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
 
   private static boolean checkSubsequence(MethodInvocationTree tree) {
     return check(tree, (str, args) -> {
+      if (isStringLength(str, args.get(0))) {
+        return true;
+      }
+
       Integer beginIndex = constant(args.get(0));
       if (beginIndex != null && beginIndex < 0) {
         return true;
