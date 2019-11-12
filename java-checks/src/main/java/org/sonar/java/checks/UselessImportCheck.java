@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -137,6 +138,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     }
   }
 
+  @CheckForNull
   private static Symbol enclosingClass(Tree t) {
     do {
       if (t == null || isClassAnnotation(t)) {
