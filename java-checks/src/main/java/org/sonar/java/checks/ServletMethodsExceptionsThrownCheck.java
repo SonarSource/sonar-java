@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
@@ -68,7 +69,7 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
         tryCatches.pop();
         tryCatches.add(Collections.emptyList());
       } else if (tree.is(Tree.Kind.THROW_STATEMENT)) {
-        addIssueIfNotCaught(Collections.singletonList(((ThrowStatementTree) tree).expression().symbolType()), tree, "Add a \"try/catch\" block.");
+        addIssueIfNotCaught(((ThrowStatementTree) tree).expression().symbolType(), tree);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         checkMethodInvocation((MethodInvocationTree) tree);
       }
@@ -104,18 +105,34 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
     if (symbol.isMethodSymbol()) {
       List<Type> types = ((Symbol.MethodSymbol) symbol).thrownTypes();
       if (!types.isEmpty()) {
-        addIssueIfNotCaught(types, ExpressionUtils.methodName(node), "Add a \"try/catch\" block for \"" + symbol.name() + "\".");
+        addIssueIfNotCaught(types, ExpressionUtils.methodName(node), symbol.name());
       }
     }
   }
 
-  private void addIssueIfNotCaught(Iterable<Type> thrown, Tree node, String message) {
+  private void addIssueIfNotCaught(Type thrown, Tree node) {
+    if (isNotCaught(thrown)) {
+      String message = "Handle the " + "\"" + thrown.name() + "\"" + " thrown here in a \"try/catch\" block.";
+      reportIssue(node, message);
+    }
+  }
+
+  private void addIssueIfNotCaught(Iterable<Type> thrown, Tree node, String methodName) {
+    List<Type> uncaughtTypes = new ArrayList<>();
     for (Type type : thrown) {
       if (isNotCaught(type)) {
-        reportIssue(node, message);
-        return;
+        uncaughtTypes.add(type);
       }
     }
+    if (!uncaughtTypes.isEmpty()) {
+      reportIssue(node, buildMessage(methodName, uncaughtTypes));
+    }
+  }
+
+  private static String buildMessage(String methodName, List<Type> uncaughtTypes) {
+    String uncaught = uncaughtTypes.stream().map(Type::name).collect(Collectors.joining(", ")) + ".";
+    return uncaughtTypes.size() == 1 ? "Handle the following exception that could be thrown by " + "\"" + methodName + "\": " + uncaught
+      : "Handle the following exceptions that could be thrown by " + "\"" + methodName + "\": " + uncaught;
   }
 
   private boolean isNotCaught(Type type) {
