@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -179,6 +180,8 @@ public class DiamondOperatorCheck extends IssuableSubscriptionVisitor implements
         case MEMBER_SELECT:
           identifier = ((MemberSelectExpressionTree) expression).identifier();
           break;
+        case METHOD_INVOCATION:
+          return getAssignedVariable(((MethodInvocationTree) expression).methodSelect());
         default:
           throw new IllegalStateException("Unexpected expression " + expression.kind().name() + " at: " + ((JavaTree) expression).getLine());
       }
