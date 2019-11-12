@@ -19,6 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Objects;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -28,15 +32,11 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.CheckForNull;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Objects;
 
 @Rule(key = "S2325")
 public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -76,7 +76,11 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
     scan(tree.parameters());
     scan(tree.block());
     MethodReference reference = methodReferences.pop();
-    if (symbol.isPrivate() && !symbol.isStatic() && !reference.hasNonStaticReference()) {
+    ClassTree classTree = (ClassTree) tree.parent();
+    if (Boolean.TRUE.equals(tree.isOverriding()) || classTree.is(Tree.Kind.ENUM)) {
+      return;
+    }
+    if ((symbol.isPrivate() || symbol.isFinal() || classTree.symbol().isFinal()) && !symbol.isStatic() && !reference.hasNonStaticReference()) {
       context.reportIssue(this, tree.simpleName(), "Make \"" + symbol.name() + "\" a \"static\" method.");
     }
   }

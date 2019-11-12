@@ -13,15 +13,15 @@ class Utilities {
 
   public Utilities() {
   }
-  
+
   private void registerPrimitives(final boolean type) {
     register(Boolean.TYPE, new Toto());
   }
-  
+
   private void register(final Class<?> clazz, final Object converter) {
     otherWord = "";
   }
-  
+
   private String getMagicWord() { // Noncompliant [[sc=18;ec=30]] {{Make "getMagicWord" a "static" method.}}
     return magicWord;
   }
@@ -29,6 +29,17 @@ class Utilities {
     return magicWord;
   }
 
+  public final String magicWord() { // Noncompliant [[sc=23;ec=32]] {{Make "magicWord" a "static" method.}}
+    return magicWord;
+  }
+
+  public static final String magicWordOK() {
+    return magicWord;
+  }
+
+  public final String getOtherWordFinal() {
+    return this.otherWord;
+  }
   private void setMagicWord(String value) { // Noncompliant {{Make "setMagicWord" a "static" method.}}
     magicWord = value;
   }
@@ -39,11 +50,11 @@ class Utilities {
   private String getClassName() {
     return getClass().getSimpleName();
   }
-  
+
   private void checkClassLoader() throws IllegalArgumentException {
     if (getClass().getClassLoader() != null) {
       throw new IllegalArgumentException ("invalid address type");
-  }
+    }
   }
 
   private String getOtherWord() {
@@ -65,15 +76,15 @@ class Utilities {
     // coverage
     otherWord = value;
   }
-  
+
   private int useOnlyArguments(int a, int b) {  // Noncompliant
     return a + b;
   }
-  
+
   private String methodOnlyOnArgument(Object obj) {  // Noncompliant
     return (obj == null ? null : obj.toString());
   }
-  
+
   private String attributeOnArgument(Utilities obj) {  // Noncompliant
     return obj.otherWord;
   }
@@ -85,7 +96,7 @@ class Utilities {
     public final String getMagicWord() {
       return "a";
     }
-    
+
     public String getOuterOtherWord() {
       return Utilities.this.getOtherWord();
     }
@@ -99,7 +110,7 @@ class Utilities {
 
   public void publicMethod() {
   }
-  
+
   public int localAccessViasClass() {  // Compliant
     return Integer.valueOf(otherWord);
   }
@@ -107,7 +118,7 @@ class Utilities {
   private Utilities.Inner createInner() { // Compliant because there is a reference to an inner, non-static class
     return new Utilities.Inner("", "");
   }
-  
+
   private Utilities.Nested createNested() { // Noncompliant
     return new Utilities.Nested();
   }
@@ -119,22 +130,22 @@ class Utilities {
   private Map newMap() { // Noncompliant
     return new HashMap();
   }
-  
+
   private static final int BOOLEAN_TYPE = 1;
-  
+
   private void writeAnyClass(final Class<?> clazz) { // Noncompliant
     int primitiveType = 0;
     if (Boolean.TYPE.equals(clazz)) {
-        primitiveType = BOOLEAN_TYPE;
+      primitiveType = BOOLEAN_TYPE;
     }
   }
-  
+
   private <T> int sizeOfMap(Map<T, ?> map) { // Noncompliant
     return map.size();
   }
-  
+
   private void callMethodOfStaticClass() { // Noncompliant
-    new FooBar().myHash();
+    new foo.Inner.FooBar().myHash();
   }
 
 }
@@ -159,7 +170,7 @@ class SerializableExclusions implements Serializable {
   private void recursive() { // Noncompliant
     recursive();
   }
-  
+
   private void delegateOther() {  // Compliant since other() is not static (although it should...)
     other();
   }
@@ -170,38 +181,39 @@ class SerializableExclusions implements Serializable {
   }
   private Object writeReplace() throws ObjectStreamException { }
 }
-
-static class FooBar {
-  enum MyEnum{
-    FOO;
-  }
-  private void plop() { // Noncompliant enum is static and enum constants are static
-    Object o = MyEnum.FOO;
-  }
-  int myHash() {
-    return hashCode();
-  }
-}
-
-static class FooBarQix {
-  private int instanceVariable;
-  
-  public void instanceMethod() {}
-
-  private void foo() { // Compliant: foo cannot be static because it references a non-static method
-    new Plop(){
-      void plop1(){
-        instanceMethod();
-      }
-    };
+class Inner {
+  static class FooBar {
+    enum MyEnum{
+      FOO;
+    }
+    private void plop() { // Noncompliant enum is static and enum constants are static
+      Object o = MyEnum.FOO;
+    }
+    int myHash() {
+      return hashCode();
+    }
   }
 
-  private void init() { // Compliant: foo cannot be static because it references a non-static field
-    new Plop(){
-      void plop1(){
-        instanceVariable = 0;
-      }
-    };
+  static class FooBarQix {
+    private int instanceVariable;
+
+    public void instanceMethod() {}
+
+    private void foo() { // Compliant: foo cannot be static because it references a non-static method
+      new Plop(){
+        void plop1(){
+          instanceMethod();
+        }
+      };
+    }
+
+    private void init() { // Compliant: foo cannot be static because it references a non-static field
+      new Plop(){
+        void plop1(){
+          instanceVariable = 0;
+        }
+      };
+    }
   }
 }
 
@@ -242,7 +254,7 @@ class EnclosingInstance extends SuperClass {
     new I() {
       @Override
       public boolean gul() {
-        return foo.EnclosingInstance.this.foo == 0;
+        return EnclosingInstance.this.foo == 0;
       }
     };
   }
@@ -251,8 +263,45 @@ class EnclosingInstance extends SuperClass {
     new I() {
       @Override
       public boolean gul() {
-        return foo.EnclosingInstance.super.bar == 0;
+        return EnclosingInstance.super.bar == 0;
       }
     };
+  }
+}
+
+class ParentClass {
+  int value;
+
+  public int getMagicNumber() {
+    return value;
+  }
+}
+
+final class ChildClass extends ParentClass {
+  @Override
+  public int getMagicNumber() { // OK, overrides parent method
+    return 42;
+  }
+}
+
+final class FinalClass {
+  static int magicNumber = 42;
+
+  public int getMagicNumber() { // Noncompliant [[sc=14;ec=28]] {{Make "getMagicNumber" a "static" method.}}
+    return magicNumber;
+  }
+
+  public static int getMagicNumberOK() {
+    return magicNumber;
+  }
+}
+
+enum SomeEnum {
+  A,
+  B,
+  C;
+
+  final SomeEnum getOne() {
+    return A;
   }
 }
