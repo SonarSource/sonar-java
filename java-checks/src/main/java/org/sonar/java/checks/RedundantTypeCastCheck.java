@@ -65,9 +65,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     }
     Type cast = typeCastTree.type().symbolType();
     Type target = targetType(typeCastTree);
-    boolean isArgument = skipParentheses(typeCastTree.parent()).is(Tree.Kind.ARGUMENTS);
-    if (target != null &&
-      (isRedundantNumericalCast(cast, expressionType) || isUnnecessarySubtypeCast(expressionType, typeCastTree, target, isArgument))) {
+    if (target != null &&(isRedundantNumericalCast(cast, expressionType) || isUnnecessarySubtypeCast(expressionType, typeCastTree, target))) {
       reportIssue(typeCastTree.type(), "Remove this unnecessary cast to \"" + cast.erasure() + "\".");
     }
   }
@@ -142,7 +140,8 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     return skip;
   }
 
-  private static boolean isUnnecessarySubtypeCast(Type childType, TypeCastTree typeCastTree, Type parentType, boolean isArgument) {
+  private static boolean isUnnecessarySubtypeCast(Type childType, TypeCastTree typeCastTree, Type parentType) {
+    boolean isArgument = skipParentheses(typeCastTree.parent()).is(Tree.Kind.ARGUMENTS);
     return !childType.isPrimitive()
       // Exception: subtype cast are tolerated in method or constructor call arguments
       && ((isArgument && childType.equals(parentType)) || (!isArgument && childType.isSubtypeOf(parentType)))
