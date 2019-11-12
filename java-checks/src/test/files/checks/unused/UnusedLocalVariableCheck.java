@@ -1,4 +1,5 @@
-
+import java.util.function.BinaryOperator;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 class Foo {
@@ -56,4 +57,11 @@ class Foo {
     return false;
   }
 
+  public BinaryOperator<UnaryOperator<Object>> foo() {
+    return (a, b) -> input -> {
+      Object o = a.apply(input); // Compliant, lambda expression correctly handled
+      o.toString();
+      return o;
+    };
+  }
 }
