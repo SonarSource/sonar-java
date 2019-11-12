@@ -58,14 +58,16 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       return;
     }
     TypeCastTree typeCastTree = (TypeCastTree) tree;
-    Type cast = typeCastTree.type().symbolType();
-    Type target = targetType(typeCastTree);
     Type expressionType = typeCastTree.expression().symbolType();
     if (isPrimitiveWrapperInConditional(expressionType, typeCastTree) || requiredForMemberAccess(typeCastTree)) {
       // Primitive wrappers excluded because covered by S2154
       return;
     }
-    if (target != null && (isRedundantNumericalCast(cast, expressionType) || isUnnecessarySubtypeCast(expressionType, typeCastTree, target))) {
+    Type cast = typeCastTree.type().symbolType();
+    Type target = targetType(typeCastTree);
+    boolean isArgument = skipParentheses(typeCastTree.parent()).is(Tree.Kind.ARGUMENTS);
+    if (target != null &&
+      (isRedundantNumericalCast(cast, expressionType) || isUnnecessarySubtypeCast(expressionType, typeCastTree, target, isArgument))) {
       reportIssue(typeCastTree.type(), "Remove this unnecessary cast to \"" + cast.erasure() + "\".");
     }
   }
@@ -140,9 +142,10 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     return skip;
   }
 
-  private static boolean isUnnecessarySubtypeCast(Type childType, TypeCastTree typeCastTree, Type parentType) {
+  private static boolean isUnnecessarySubtypeCast(Type childType, TypeCastTree typeCastTree, Type parentType, boolean isArgument) {
     return !childType.isPrimitive()
-      && childType.isSubtypeOf(parentType)
+      // Exception: subtype cast are tolerated in method or constructor call arguments
+      && ((isArgument && childType.equals(parentType)) || (!isArgument && childType.isSubtypeOf(parentType)))
       && (!ExpressionUtils.skipParentheses(typeCastTree.expression()).is(Tree.Kind.LAMBDA_EXPRESSION)
         || isUnnecessaryLambdaCast(childType, parentType));
   }
