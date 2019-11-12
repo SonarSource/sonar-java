@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Stream;
+import net.sf.cglib.asm.$Type;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
@@ -113,6 +115,7 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
     for (Type type : thrown) {
       if (isNotcatched(type)) {
         reportIssue(node, message);
+        return;
       }
     }
   }
