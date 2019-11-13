@@ -14,11 +14,13 @@ class A {
     RED, GREEN, BLUE, ORANGE;
   }
 
-  class SetString implements Set<String> {
+  public enum E {
+    E1, E2, E3, E4, E5, E6
   }
-  class SetColor implements Set<COLOR> {
+
+  abstract class SetString implements Set<String> {
   }
-  class ExtendedSet<E> implements Set<E> {
+  abstract class ExtendedSet<E> implements Set<E> {
   }
 
   public void doSomething(Set<COLOR> param) { // compliant, we ignore parameters.
@@ -27,14 +29,12 @@ class A {
     warm.add(COLOR.ORANGE);
     Set foo = new HashSet();
     SetString ss;
-    SetColor sc;
     ExtendedSet<COLOR> es; // Compliant, we check only initializer.
     Set warm2 = new HashSet<COLOR>(); // Noncompliant [[sc=17;ec=37]] {{Convert this Set to an EnumSet.}}
     EnumSet<COLOR> warm3 = EnumSet.of(COLOR.RED, COLOR.ORANGE);
     Set<COLOR> warm4 = EnumSet.of(COLOR.RED, COLOR.ORANGE);
     Set<Integer> ports2 = new HashSet<>();
     Set<COLOR> ports = new HashSet<>(); // Noncompliant [[sc=24;ec=39]] {{Convert this Set to an EnumSet.}}
-    SetColor ports3 = new HashSet<>();
     Set<COLOR> ports4 = Sets.immutableEnumSet(COLOR.RED); // Compliant - guava use an enum set with constraint of immutability
     Set<COLOR> ports5 = Sets.immutableEnumSet(Lists.newArrayList(COLOR.RED)); // Compliant - guava use an enum set with constraint of immutability
     Set<COLOR> ports6 = Sets.newHashSet(COLOR.RED); // Noncompliant {{Convert this Set to an EnumSet.}}
@@ -48,6 +48,7 @@ class A {
     Set<COLOR> col7 = ImmutableSet.of(COLOR.RED, COLOR.BLUE, COLOR.RED, COLOR.ORANGE, COLOR.GREEN, COLOR.ORANGE, COLOR.BLUE); // Noncompliant
 
     Set<COLOR> col8 = Set.of(COLOR.RED); // Noncompliant
+    Set set= EnumSet.of(E.E1,E.E2,E.E3,E.E4,E.E5,E.E6); //Compliant, overload of(E first, E... rest) properly resolved
   }
 
   private Set<COLOR> rgb() {
