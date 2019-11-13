@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 @EnableWebSecurity
-public class SecurityConfig {
+class SecurityConfig {
 
   @Autowired
   private DataSource dataSource;
@@ -51,6 +51,16 @@ public class SecurityConfig {
   @Autowired
   public void userDetailsService2(AuthenticationManagerBuilder auth, DataSource dataSource, UserDetailsService userDetailsService) throws Exception {
     auth.userDetailsService(userDetailsService).passwordEncoder(new Pbkdf2PasswordEncoder()); // Compliant - secure encoder
+  }
+
+  @Autowired
+  public void userDetailsService3(AuthenticationManagerBuilder auth, DataSource dataSource, UserDetailsService userDetailsService) throws Exception {
+    auth.userDetailsService(null); // Noncompliant
+  }
+
+  @Autowired
+  public void userDetailsService4(AuthenticationManagerBuilder auth, DataSource dataSource, UserDetailsService userDetailsService) throws Exception {
+    auth.userDetailsService(null).passwordEncoder(new Pbkdf2PasswordEncoder());  // Compliant
   }
 
   @Autowired
