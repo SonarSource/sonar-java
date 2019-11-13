@@ -24,11 +24,13 @@ class Outer {
     A[][] as = (A[][]) new B[1][1]; // Noncompliant {{Remove this unnecessary cast to "A[][]".}}
     B b;
     fun(b);
+    fun((B) b); // Noncompliant
     fun((A) b); // Compliant - exception to distinguish the method to call
+    funBParameter((A) b); // Noncompliant
     List<B> bees = new java.util.ArrayList<B>();
     java.util.List<A> aaas = (java.util.List) bees;
-    C c = new C((A)null); // Compliant - exception to distinguish the constructor to call
-    C c2 = new C((B)b); // Noncompliant
+    C c = new C((A) null); // Compliant - exception to distinguish the constructor to call
+    C c2 = new C((B) b); // Noncompliant
     foo((List<List<A>>) (List<?>) foo2()); // compliant
     obj = (Unknown<String>) unknown;
     String[] stringList = (String[]) list.toArray(new String[0]); // Compliant
@@ -63,6 +65,9 @@ class Outer {
   }
 
   void fun(B b) {
+  }
+
+  void funBParameter(B b) {
   }
 
   class C {
