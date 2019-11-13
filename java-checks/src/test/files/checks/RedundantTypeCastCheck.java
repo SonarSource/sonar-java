@@ -356,3 +356,12 @@ abstract class Discuss {
     int  i = ((String) getMeta()).length(); // Compliant - generic method correctly handled
   }
 }
+
+public class ClassWithAnnotation {
+  @MyAnnotation((int) (0L + 42))
+  Object field;
+
+  @interface MyAnnotation {
+    int value() default 42;
+  }
+}

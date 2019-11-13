@@ -118,13 +118,14 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
         return ((VariableTree) parent).symbol().type();
       case ARGUMENTS:
         Arguments arguments = (Arguments) parent;
-        if (arguments.parent().is(Tree.Kind.METHOD_INVOCATION)) {
-          MethodInvocationTree mit = (MethodInvocationTree) arguments.parent();
-          return targetTypeFromMethodSymbol(mit.symbol(), mit.arguments(), typeCastTree);
-        } else if (arguments.parent().is(Tree.Kind.NEW_CLASS)) {
-          NewClassTree nct = (NewClassTree) arguments.parent();
-          return targetTypeFromMethodSymbol(nct.constructorSymbol(), nct.arguments(), typeCastTree);
+        Tree invocation = arguments.parent();
+        if (invocation.is(Tree.Kind.METHOD_INVOCATION)) {
+          return targetTypeFromMethodSymbol(((MethodInvocationTree) invocation).symbol(), arguments, typeCastTree);
         }
+        if (invocation.is(Tree.Kind.NEW_CLASS)) {
+          return targetTypeFromMethodSymbol(((NewClassTree) invocation).constructorSymbol(), arguments, typeCastTree);
+        }
+        // Last possible case is AnnotationTree which we do not consider
         return null;
       case MEMBER_SELECT:
       case CONDITIONAL_EXPRESSION:
