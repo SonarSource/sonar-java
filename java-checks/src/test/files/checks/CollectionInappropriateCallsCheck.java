@@ -46,6 +46,12 @@ class A {
     myUnknownCollection.stream().filter(s -> myASet.contains(s.toString())).collect(Collectors.toSet()); // Compliant
   }
 
+  void streamLambdaWithRawtypeCollection(String myString, Collection<String> myCol) {
+    ((Collection) myCol).stream().filter(item -> {
+      return myCol.contains(item);
+    });
+  }
+
   private static Integer returnOne() {
     return Integer.valueOf(1);
   }
