@@ -19,6 +19,8 @@
  */
 package org.sonar.java.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -52,6 +54,7 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -1289,6 +1292,31 @@ class JParserSemanticTest {
         // .containsExactlyElementsOf(l2.symbol().usages()) // TODO Broken old implementation...
         .containsOnly(i2);
     }
+  }
+
+  @Test
+  public void constructor_with_type_arguments() {
+    String source =
+      "class MyClass {\n" +
+        "  <T extends I> MyClass(T t) {}\n" +
+        "  <T extends J & I> MyClass(T t) {}\n" +
+        "  void foo(B b, C c) {\n" +
+        "    new<B>MyClass((I) b);\n" +
+        "    new<C>MyClass(c);\n" +
+        "  }\n" +
+        "}\n" +
+        "interface I {}\n" +
+        "interface J {}\n" +
+        "class B implements I {}\n" +
+        "class C implements I, J {}\n";
+
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree firstConstructor = (MethodTree) c.members().get(0);
+    MethodTree secondConstructor = (MethodTree) c.members().get(1);
+
+    assertThat(firstConstructor.symbol().usages()).hasSize(1);
+    assertThat(secondConstructor.symbol().usages()).hasSize(1);
   }
 
   private ExpressionTree expression(String expression) {
