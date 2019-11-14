@@ -340,7 +340,7 @@ class AWT {
 
   void foo() {
     byte a = 42;
-    a = (byte) -a; // FP, cast is required
+    a = (byte) -a; // Compliant - cast is required
   }
 }
 
@@ -370,7 +370,11 @@ class ClassWithVariadicFunction {
   void variadicFunction(int ... p) {}
   void fun() {
     variadicFunction(1, 2, (int) 3.4);
+    variadicFunction(1, 2, ((int) 3.4));
     variadicFunction((int) 1, 2, 3); // Noncompliant
+    variadicFunction(((int) 1), 2, 3); // Noncompliant
     variadicFunction(1, 2, 3, (int) 4); // Noncompliant
+
+    ClassWithVariadicFunction c = new ClassWithVariadicFunction((int) 3.4); // recovered constructor
   }
 }
