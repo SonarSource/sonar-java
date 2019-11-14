@@ -1314,4 +1314,27 @@ class JParserSemanticTest {
     return (CompilationUnit) astParser.createAST(null);
   }
 
+  @Test
+  void super_constructor_external_inner_class() {
+    final String source = "class C {\n" +
+      "    class InnerC {\n" +
+      "        InnerC(int i) {}\n" +
+      "    }\n" +
+      "}\n" +
+      "\n" +
+      "class B {\n" +
+      "    class InnerB extends C.InnerC {\n" +
+      "        InnerB(C c, int i) {\n" +
+      "            c.super(i);\n" +
+      "        }\n" +
+      "    }\n" +
+      "}";
+
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTree c = (ClassTree) cu.types().get(0);
+    ClassTree innerC = (ClassTree) c.members().get(0);
+    MethodTree innerConstructor = (MethodTree) innerC.members().get(0);
+    assertThat(innerConstructor.symbol().usages()).hasSize(1);
+  }
+
 }
