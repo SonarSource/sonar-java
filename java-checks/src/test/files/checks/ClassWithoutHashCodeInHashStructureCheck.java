@@ -47,3 +47,8 @@ class D {
   @Override
   public int hashCode() { return 0; }
 }
+
+class E {
+  Hashtable<String, Unknown> entries;
+  E() { entries = new Hashtable<>(); } // Compliant - unknown type for values
+}
