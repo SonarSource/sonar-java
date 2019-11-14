@@ -122,7 +122,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
   private static boolean isInStaticInnerClass(VariableTree hiddenVariable, VariableTree variableTree) {
     Symbol hiddenVariableOwner = hiddenVariable.symbol().owner();
     Symbol owner = variableTree.symbol().owner();
-    while (!owner.equals(hiddenVariableOwner)) {
+    while (owner != null && !owner.equals(hiddenVariableOwner)) {
       if (owner.isTypeSymbol() && owner.isStatic()) {
         return true;
       }
