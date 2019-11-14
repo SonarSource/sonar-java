@@ -625,6 +625,38 @@ class JParserSemanticTest {
   }
 
   @Test
+  void expression_lambda() {
+    String source = "package org.foo;\n" +
+      "class A {\n" +
+      "  java.util.function.Consumer<String> f = p -> { };\n" +
+      "}";
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl f = (VariableTreeImpl) c.members().get(0);
+    LambdaExpressionTreeImpl lambda = (LambdaExpressionTreeImpl) f.initializer();
+    VariableTreeImpl p = (VariableTreeImpl) lambda.parameters().get(0);
+
+    // FIXME remove after drop of old engine: owner of lambda parameter was the enclosing class/method where the lambda was declared
+    Symbol oldSymbol = cu.oldSema.getSymbol(p);
+    assertThat(oldSymbol.declaration().firstToken().line()).isEqualTo(3);
+    Symbol oldOwner = oldSymbol.owner();
+    assertThat(oldOwner).isNotNull();
+    assertThat(oldOwner.isMethodSymbol()).isFalse();
+    assertThat(oldOwner.isTypeSymbol()).isTrue();
+    assertThat(oldOwner.type().fullyQualifiedName()).isEqualTo("org.foo.A");
+
+    // owner of lambda parameter is the method which defines the functional interface
+    Symbol newSymbol = cu.sema.variableSymbol(p.variableBinding);
+    assertThat(newSymbol.declaration().firstToken().line()).isEqualTo(3);
+    Symbol newOwner = newSymbol.owner();
+    assertThat(newOwner).isNotNull();
+    assertThat(newOwner.isMethodSymbol()).isTrue();
+    assertThat(newOwner.isTypeSymbol()).isFalse();
+    assertThat(newOwner.name()).isEqualTo("accept");
+    assertThat(newOwner.owner().type().fullyQualifiedName()).isEqualTo("java.util.function.Consumer");
+  }
+
+  @Test
   void expression_nested_lambda() {
     String source = "class A {\n" +
       "  void m() {\n" +
