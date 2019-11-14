@@ -144,13 +144,25 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   private static Type targetTypeFromMethodSymbol(Symbol symbol, Arguments arguments, TypeCastTree typeCastTree) {
     if (symbol.isMethodSymbol()) {
       Symbol.MethodSymbol sym = (Symbol.MethodSymbol) symbol;
-      int castArgIndex = arguments.indexOf(typeCastTree);
+      int castArgIndex = indexOfTypeCast(arguments, typeCastTree);
       List<Type> parameterTypes = sym.parameterTypes();
       int nbParameters = parameterTypes.size();
       // Handle varargs
       return nbParameters > castArgIndex ? parameterTypes.get(castArgIndex) : parameterTypes.get(nbParameters - 1);
     }
     return null;
+  }
+
+  private static int indexOfTypeCast(Arguments arguments, TypeCastTree typeCastTree) {
+    int i = 0;
+    do {
+      // typeCastTree is necessarily within the arguments
+      Tree arg = ExpressionUtils.skipParentheses(arguments.get(i));
+      if (typeCastTree.equals(arg)) {
+        return i;
+      }
+      i++;
+    } while (true);
   }
 
   private static Tree skipParentheses(Tree parent) {
