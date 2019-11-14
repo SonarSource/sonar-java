@@ -1971,10 +1971,11 @@ public class JParser {
         }
 
         IdentifierTreeImpl i = (IdentifierTreeImpl) t.getConstructorIdentifier();
+        int nbArguments = arguments.size();
         if (e.getAnonymousClassDeclaration() == null) {
-          i.binding = e.resolveConstructorBinding();
+          i.binding = excludeRecovery(e.resolveConstructorBinding(), nbArguments);
         } else {
-          i.binding = findConstructorForAnonymousClass(e.getAST(), i.typeBinding, e.resolveConstructorBinding());
+          i.binding = excludeRecovery(findConstructorForAnonymousClass(e.getAST(), i.typeBinding, e.resolveConstructorBinding()), nbArguments);
         }
         usage(i.binding, i);
 
