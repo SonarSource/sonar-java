@@ -357,11 +357,20 @@ abstract class Discuss {
   }
 }
 
-public class ClassWithAnnotation {
+class ClassWithAnnotation {
   @MyAnnotation((int) (0L + 42))
   Object field;
 
   @interface MyAnnotation {
     int value() default 42;
+  }
+}
+
+class ClassWithVariadicFunction {
+  void variadicFunction(int ... p) {}
+  void fun() {
+    variadicFunction(1, 2, (int) 3.4);
+    variadicFunction((int) 1, 2, 3); // Noncompliant
+    variadicFunction(1, 2, 3, (int) 4); // Noncompliant
   }
 }
