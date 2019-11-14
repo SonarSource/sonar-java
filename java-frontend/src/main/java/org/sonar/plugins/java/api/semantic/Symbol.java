@@ -43,8 +43,9 @@ public interface Symbol {
 
   /**
    * The owner of this symbol.
-   * @return the symbol that owns this symbol.
+   * @return the symbol that owns this symbol, null for package symbols, or unknown symbols
    */
+  @Nullable
   Symbol owner();
 
   /**
