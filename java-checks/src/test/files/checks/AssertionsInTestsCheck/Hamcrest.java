@@ -1,5 +1,7 @@
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 public class AssertionsInTestsCheckHamcrest {
 
@@ -17,4 +19,10 @@ public class AssertionsInTestsCheckHamcrest {
     MatcherAssert.assertThat("message", 1, org.hamcrest.CoreMatchers.is(1));
   }
 
+  @Test
+  public void hamcrest_assertThat_Object() {
+    Object actualValue = "test";
+    String requiredValue = "test";
+    MatcherAssert.assertThat(actualValue, is(equalTo(requiredValue))); // correct resolution of assertThat method
+  }
 }
