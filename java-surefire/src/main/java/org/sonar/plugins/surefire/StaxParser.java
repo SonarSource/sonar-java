@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.surefire;
 
+import com.ctc.wstx.api.WstxInputProperties;
 import com.ctc.wstx.stax.WstxInputFactory;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,12 +44,13 @@ public class StaxParser {
       WstxInputFactory wstxInputfactory = (WstxInputFactory) xmlInputFactory;
       wstxInputfactory.configureForLowMemUsage();
       wstxInputfactory.getConfig().setUndeclaredEntityResolver((String publicID, String systemID, String baseURI, String namespace) -> namespace);
+      wstxInputfactory.setProperty(WstxInputProperties.P_MAX_ATTRIBUTE_SIZE, Integer.MAX_VALUE);
     }
     this.inf = new SMInputFactory(xmlInputFactory);
   }
 
   public void parse(File xmlFile) throws XMLStreamException {
-    try(FileInputStream input = new FileInputStream(xmlFile)) {
+    try (FileInputStream input = new FileInputStream(xmlFile)) {
       parse(inf.rootElementCursor(input));
     } catch (IOException e) {
       throw new XMLStreamException(e);
