@@ -20,8 +20,12 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -44,13 +48,6 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
-
-import javax.annotation.Nullable;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S1200")
 public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScanner {
