@@ -10,12 +10,14 @@ class MyComparable implements Comparable<MyComparable> {
 
   public void aMethod(MyComparable other, NotComparable notComparable) {
     if (compareTo(other) == -1) {} // Noncompliant [[sc=26;ec=28]] {{Only the sign of the result should be examined.}}
+    if (compareTo(other) == (-1)) {} // Noncompliant
     if (compareTo(other) == -5) {} // Noncompliant
     if (compareTo(other) == 0) {}
     if (compareTo(other) == 1) {} // Noncompliant
     if (compareTo(other) != 1) {} // Noncompliant
     if (other.compareTo(this) == 1) {} // Noncompliant
-    if (-1 == compareTo(other)) {} // Noncompliant 
+    if (-1 == compareTo(other)) {} // Noncompliant
+    if ((-1) == compareTo(other)) {} // Noncompliant
     boolean result = compareTo(other) == -1; // Noncompliant
     if (notComparable.compareTo(other) == 1) {}
     if (compareTo(other) == hashCode()) {}
@@ -45,7 +47,15 @@ class MyComparable implements Comparable<MyComparable> {
     
     int c6 = compareTo(other, other);
     if (c6 == 1) {}
-    
+
+    int c7 = compareTo(other);
+    (c7)++;
+    if (c7 == 1) {}
+
+    int c8 = compareTo(other);
+    (c8) = 2;
+    if (c8 == 1) {}
+
     if (compareTo(other) + 1 == 1) {}
     if (compareToField == 1) {}    
     if (unknownVar == 1) {}
