@@ -136,6 +136,13 @@ public class SurefireSensorTest {
   }
 
   @Test
+  public void shouldSupportLongAttributeValues() throws URISyntaxException {
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/should_support_long_attribute_values/");
+    assertThat(context.allAnalysisErrors()).hasSize(0);
+  }
+
+  @Test
   public void shouldManageClassesWithDefaultPackage() throws URISyntaxException {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
