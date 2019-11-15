@@ -378,3 +378,19 @@ class ClassWithVariadicFunction {
     ClassWithVariadicFunction c = new ClassWithVariadicFunction((int) 3.4); // recovered constructor
   }
 }
+
+class GenericClass<T> {
+  private GenericClass<?> type() {
+    return null;
+  }
+
+  void foo() {
+    GenericClass<? super T> g = (GenericClass<? super T>) type(); // type of the method invocation is well-handled
+  }
+}
+
+class CastRawType {
+  public static void paramsErrorMessage(Class clazz) {
+    Outer.A r = (Outer.A) clazz.getAnnotation(Outer.A.class); // Handle cast of raw types
+  }
+}
