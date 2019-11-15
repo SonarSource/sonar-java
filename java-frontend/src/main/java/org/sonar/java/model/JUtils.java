@@ -294,7 +294,10 @@ public final class JUtils {
       return type instanceof ParametrizedTypeJavaType;
     }
     JType t = (JType) type;
-    return t.typeBinding.isParameterizedType();
+    return t.typeBinding.isParameterizedType()
+      // when diamond operator is not fully resolved by ECJ, there is 0 typeArguments, while ECJ
+      // knows it is a Parameterized Type
+      && t.typeBinding.getTypeArguments().length > 0;
   }
 
   /**
