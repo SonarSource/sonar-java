@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -63,6 +64,8 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isInvalidTest(ExpressionTree operand1, ExpressionTree operand2) {
+    operand1 = ExpressionUtils.skipParentheses(operand1);
+    operand2 = ExpressionUtils.skipParentheses(operand2);
     return (isNonZeroInt(operand1) && isCompareToResult(operand2))
       || (isNonZeroInt(operand2) && isCompareToResult(operand1));
   }
@@ -135,6 +138,7 @@ public class CompareToResultTestCheck extends IssuableSubscriptionVisitor {
     }
 
     private void checkReAssignment(ExpressionTree expression) {
+      expression = ExpressionUtils.skipParentheses(expression);
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) expression;
         if (usages.contains(identifier)) {
