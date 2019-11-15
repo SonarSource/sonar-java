@@ -1397,4 +1397,29 @@ class JParserSemanticTest {
     assertThat(innerConstructor.symbol().usages()).hasSize(1);
   }
 
+  @Test
+  void inner_class_depending_on_outer_class_parametrized_type() {
+    final String source =
+      "class X<T> {\n" +
+      "  InnerClass innerClass;\n" +
+      "  class InnerClass {\n" +
+      "    T method() {\n" +
+      "      return null;\n" +
+      "    }\n" +
+      "  }\n" +
+      "  static void test() {\n" +
+      "    new X<Y>().innerClass.method().method1();\n" +
+      "  }\n" +
+      "}" +
+      "class Y {\n" +
+      "  void method1() {\n" +
+      "  }\n" +
+      "}";
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTree classX = (ClassTree) cu.types().get(0);
+    MethodTreeImpl method = (MethodTreeImpl) ((ClassTree) classX.members().get(1)).members().get(0);
+    MethodTreeImpl method1 = ((MethodTreeImpl) ((ClassTree) cu.types().get(1)).members().get(0));
+    assertThat(method1.symbol().usages()).hasSize(1);
+    assertThat(method.symbol().usages()).hasSize(1);
+  }
 }
