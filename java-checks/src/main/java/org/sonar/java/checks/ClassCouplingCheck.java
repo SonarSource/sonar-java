@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -189,16 +192,17 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
     if (type.is(Tree.Kind.IDENTIFIER)) {
       types.add(((IdentifierTree) type).name());
     } else if (type.is(Tree.Kind.MEMBER_SELECT)) {
+      Deque<String> fullyQualifiedNameComponents = new ArrayDeque<>();
       ExpressionTree expr = (ExpressionTree) type;
       while (expr.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-        types.add(mse.identifier().name());
+        fullyQualifiedNameComponents.push(mse.identifier().name());
         expr = mse.expression();
       }
       if (expr.is(Tree.Kind.IDENTIFIER)) {
-        types.add(((IdentifierTree) expr).name());
+        fullyQualifiedNameComponents.push(((IdentifierTree) expr).name());
       }
-      types.add(((MemberSelectExpressionTree) type).identifier().name());
+      types.add(String.join(".", fullyQualifiedNameComponents));
     }
   }
 }

@@ -191,3 +191,32 @@ class Tmp<T1, T2> { // Noncompliant
     boolean t18 = 0 instanceof T18;
   }
 }
+
+public class FullyQualifiedName1 extends sonar.source.support.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.T4 {
+  sonar.source.support.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t.T6 t6;
+  another.pack.T6 othert6;
+}
+
+public class FullyQualifiedName2 { // Noncompliant
+  a.T1 ta;
+  b.T1 tb;
+  c.T1 tc;
+  d.T1 td;
+  e.T1 te;
+  f.T1 tf;
+  g.T1 tg;
+  h.T1 th;
+  i.T1 ti;
+  j.T1 tj;
+  k.T1 tk;
+  l.T1 tl;
+  m.T1 tm;
+  n.T1 tn;
+  o.T1 to;
+  p.T1 tp;
+  q.T1 tq;
+  r.T1 tr;
+  s.T1 ts;
+  t.T1 tt;
+  u.T1 tu;
+}
