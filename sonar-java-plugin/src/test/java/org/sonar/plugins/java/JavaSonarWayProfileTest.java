@@ -65,10 +65,9 @@ public class JavaSonarWayProfileTest {
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
-    BuiltInQualityProfilesDefinition.BuiltInActiveRule rule = profile.rule(RuleKey.of("squid", "S2092"));
+    BuiltInQualityProfilesDefinition.BuiltInActiveRule rule = profile.rule(RuleKey.of("java", "S2092"));
     assertThat(rule).isNotNull();
   }
-
 
   @Test
   public void should_contains_security_rules_if_present() {
@@ -78,7 +77,7 @@ public class JavaSonarWayProfileTest {
 
     // one security rule available
     JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S3649"));
-    assertThat(JavaSonarWayProfile.getSecurityRuleKeys(true)).containsOnly(RuleKey.of("squid", "S3649"));
+    assertThat(JavaSonarWayProfile.getSecurityRuleKeys(true)).containsOnly(RuleKey.of("java", "S3649"));
     assertThat(JavaSonarWayProfile.getSecurityRuleKeys(false)).containsOnly(RuleKey.of("security-repo-key", "S3649"));
   }
 

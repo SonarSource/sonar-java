@@ -4,7 +4,7 @@
   <language>java</language>
   <rules>
     <rule>
-      <repositoryKey>squid</repositoryKey>
+      <repositoryKey>java</repositoryKey>
       <key>S3423</key>
       <priority>MAJOR</priority>
     </rule>

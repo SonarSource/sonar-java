@@ -90,7 +90,7 @@ public class JavaTest {
     List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.java:test-project:pom.xml");
 
     assertThat(issues).hasSize(1);
-    assertThat(issues.iterator().next().getRule()).isEqualTo("squid:S3423");
+    assertThat(issues.iterator().next().getRule()).isEqualTo("java:S3423");
   }
 
   @Test
@@ -135,7 +135,7 @@ public class JavaTest {
 
     assertThat(issues).hasSize(2);
     for (Issue issue : issues) {
-      assertThat(issue.getRule()).matches(value -> "squid:S1444".equals(value) || "squid:ClassVariableVisibilityCheck".equals(value));
+      assertThat(issue.getRule()).matches(value -> "java:S1444".equals(value) || "java:ClassVariableVisibilityCheck".equals(value));
       assertThat(issue.getLine()).isEqualTo(17);
     }
   }

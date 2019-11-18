@@ -269,7 +269,7 @@ public abstract class CheckVerifier {
   }
 
   private static RuleJSON getRuleJSON(String ruleKey) throws IOException {
-    String ruleJson = "/org/sonar/l10n/java/rules/squid/" + ruleKey + "_java.json";
+    String ruleJson = "/org/sonar/l10n/java/rules/java/" + ruleKey + "_java.json";
     URL resource = CheckVerifier.class.getResource(ruleJson);
     if(resource == null) {
       throw new IOException(ruleJson + " not found");

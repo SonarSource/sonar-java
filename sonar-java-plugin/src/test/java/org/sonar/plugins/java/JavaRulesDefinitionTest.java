@@ -43,6 +43,8 @@ public class JavaRulesDefinitionTest {
 
   private Configuration settings;
 
+  private static final String REPOSITORY_KEY = "java";
+
   @Before
   public void setUp() {
     settings = new MapSettings().asConfig();
@@ -53,7 +55,7 @@ public class JavaRulesDefinitionTest {
     JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
-    RulesDefinition.Repository repository = context.repository("squid");
+    RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
     assertThat(repository.name()).isEqualTo("SonarAnalyzer");
     assertThat(repository.language()).isEqualTo("java");
@@ -91,7 +93,7 @@ public class JavaRulesDefinitionTest {
     JavaRulesDefinition definition = new JavaRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
-    RulesDefinition.Repository repository = context.repository("squid");
+    RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
     assertThat(repository.name()).isEqualTo("SonarAnalyzer");
     assertThat(repository.language()).isEqualTo("java");
@@ -106,7 +108,7 @@ public class JavaRulesDefinitionTest {
     JavaRulesDefinition definition = new JavaRulesDefinition(settings.asConfig());
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
-    RulesDefinition.Repository repository = context.repository("squid");
+    RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
     assertThat(repository.name()).isEqualTo("SonarAnalyzer");
     assertThat(repository.language()).isEqualTo("java");
@@ -148,20 +150,19 @@ public class JavaRulesDefinitionTest {
     JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
-    RulesDefinition.Repository repository = context.repository("squid");
+    RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
     RulesDefinition.Rule hardcodedCredentialsRule = repository.rule("S1313");
     assertThat(hardcodedCredentialsRule.type()).isEqualTo(RuleType.SECURITY_HOTSPOT);
     assertThat(hardcodedCredentialsRule.activatedByDefault()).isFalse();
   }
 
-
   @Test
   public void test_security_standards() throws Exception {
     JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
-    RulesDefinition.Repository repository = context.repository("squid");
+    RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
     RulesDefinition.Rule rule = repository.rule("S1989");
     assertThat(rule.securityStandards()).containsExactlyInAnyOrder("cwe:600", "owaspTop10:a3");

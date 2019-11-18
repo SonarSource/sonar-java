@@ -703,7 +703,7 @@ class RaisedExceptionCannotBeNull {
       for (Throwable cause = ex; cause != null; cause = cause.getCause()) { // assigned to cause then tested agains null...
         // do something
       }
-      ex.getCause(); // FP on squid:S2259 as it might have been null or not because of the for loop condition
+      ex.getCause(); // FP on java:S2259 as it might have been null or not because of the for loop condition
     }
   }
 }

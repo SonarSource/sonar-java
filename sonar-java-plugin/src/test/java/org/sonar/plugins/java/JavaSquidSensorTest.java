@@ -71,7 +71,7 @@ public class JavaSquidSensorTest {
 
   static {
     when(checks.addAnnotatedChecks(any(Iterable.class))).thenReturn(checks);
-    when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(BadMethodNameCheck.class)));
+    when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("java", RuleAnnotationUtils.getRuleKey(BadMethodNameCheck.class)));
     when(checkFactory.create(anyString())).thenReturn(checks);
   }
 

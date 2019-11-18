@@ -1,4 +1,4 @@
-@SuppressWarnings("squid:S1197")
+@SuppressWarnings("java:S1197")
 public class SuppressWarningsAtClassLevelWithRule {
   int var[];
   @SuppressWarnings({"java-extension:example"})
