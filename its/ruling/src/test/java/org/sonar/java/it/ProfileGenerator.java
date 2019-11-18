@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 public class ProfileGenerator {
   private static final String LANGUAGE = "java";
-  private static final String REPOSITORY_KEY = "squid";
+  private static final String REPOSITORY_KEY = "java";
   // note that 500 is the maximum allowed by SQ rules/api/search
   private static final int NUMBER_RULES_BY_PAGE = 500;
 

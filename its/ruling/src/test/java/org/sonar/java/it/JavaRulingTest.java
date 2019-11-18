@@ -138,7 +138,7 @@ public class JavaRulingTest {
   private static void copyDumpSubset(Path srcProjectDir, Path dstProjectDir) {
     Try.of(() -> Files.createDirectory(dstProjectDir)).orElseThrow(Throwables::propagate);
     SUBSET_OF_ENABLED_RULES.stream()
-      .map(ruleKey -> srcProjectDir.resolve("squid-" + ruleKey + ".json"))
+      .map(ruleKey -> srcProjectDir.resolve("java-" + ruleKey + ".json"))
       .filter(p -> p.toFile().exists())
       .forEach(srcJsonFile -> Try.of(() -> Files.copy(srcJsonFile, dstProjectDir.resolve(srcJsonFile.getFileName()), StandardCopyOption.REPLACE_EXISTING))
         .orElseThrow(Throwables::propagate));
@@ -300,7 +300,7 @@ public class JavaRulingTest {
       .setParam("markdown_description", instantiationKey)
       .setParam("severity", "INFO")
       .setParam("status", "READY")
-      .setParam("template_key", "squid:" + ruleTemplateKey)
+      .setParam("template_key", "java:" + ruleTemplateKey)
       .setParam("custom_key", instantiationKey)
       .setParam("prevent_reactivation", "true")
       .setParam("params", "name=\"" + instantiationKey + "\";key=\"" + instantiationKey + "\";markdown_description=\"" + instantiationKey + "\";" + params)
@@ -323,7 +323,7 @@ public class JavaRulingTest {
     if (StringUtils.isEmpty(profileKey)) {
       LOG.error("Could not retrieve profile key : Template rule " + ruleTemplateKey + " has not been activated");
     } else {
-      String ruleKey = "squid:" + instantiationKey;
+      String ruleKey = "java:" + instantiationKey;
       HttpResponse activateRuleResponse = orchestrator.getServer()
         .newHttpCall("api/qualityprofiles/activate_rule")
         .setAdminCredentials()

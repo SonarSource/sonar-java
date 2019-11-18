@@ -47,7 +47,7 @@ import org.sonar.java.checks.CheckList;
  */
 public class JavaRulesDefinition implements RulesDefinition {
 
-  private static final String RESOURCE_BASE_PATH = "/org/sonar/l10n/java/rules/squid";
+  private static final String RESOURCE_BASE_PATH = "/org/sonar/l10n/java/rules/java";
   private static final Gson GSON = new Gson();
 
   /**

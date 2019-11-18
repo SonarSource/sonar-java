@@ -6,7 +6,7 @@ public class CreateTempFile {
     File tempDir;
     tempDir = File.createTempFile("", ".");
     tempDir.delete();
-    tempDir.mkdir(); // squid:S2976 when sonar.java.source is set to java7+
+    tempDir.mkdir(); // java:S2976 when sonar.java.source is set to java7+
   }
 }
 

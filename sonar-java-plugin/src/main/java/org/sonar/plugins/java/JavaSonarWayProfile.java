@@ -81,7 +81,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
   }
 
   static Profile readProfile() {
-    URL resource = JavaSonarWayProfile.class.getResource("/org/sonar/l10n/java/rules/squid/Sonar_way_profile.json");
+    URL resource = JavaSonarWayProfile.class.getResource("/org/sonar/l10n/java/rules/java/Sonar_way_profile.json");
     return new Gson().fromJson(readResource(resource), Profile.class);
   }
 

@@ -49,7 +49,7 @@ public class SquidTest {
     List<Issue> issues = TestUtils.issuesForComponent(orchestrator, "org.sonarsource.it.projects:squid");
 
     assertThat(issues).hasSize(2);
-    assertThat(issues.stream().map(Issue::getRule)).allMatch("squid:S1228"::equals);
+    assertThat(issues.stream().map(Issue::getRule)).allMatch("java:S1228"::equals);
     assertThat(issues.stream().map(Issue::getLine)).allMatch(line -> line == 0);
     String sep = "[/\\\\]";
     Pattern packagePattern = Pattern.compile("'src" + sep + "main" + sep + "java" + sep + "package[12]'");

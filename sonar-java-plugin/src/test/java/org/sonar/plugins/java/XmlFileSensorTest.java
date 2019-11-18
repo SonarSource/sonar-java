@@ -53,7 +53,7 @@ public class XmlFileSensorTest {
   @Rule
   public LogTester logTester = new LogTester();
 
-  private static final RuleKey XML_RULE_KEY = RuleKey.of("squid", "S3281");
+  private static final RuleKey XML_RULE_KEY = RuleKey.of("java", "S3281");
   private SensorContextTester context;
 
   @Before
@@ -192,7 +192,7 @@ public class XmlFileSensorTest {
     sensor.scanFile(context, xmlFile, new TestCheck(), XML_RULE_KEY);
 
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).isEqualTo("Failed to analyze 'test.xml' with rule squid:S3281");
+    assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).isEqualTo("Failed to analyze 'test.xml' with rule java:S3281");
   }
 
   private InputFile addFileWithIssue(String extension) {

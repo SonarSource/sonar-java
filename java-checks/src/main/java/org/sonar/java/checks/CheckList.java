@@ -155,7 +155,7 @@ import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 
 public final class CheckList {
 
-  public static final String REPOSITORY_KEY = "squid";
+  public static final String REPOSITORY_KEY = "java";
 
   private CheckList() {
   }

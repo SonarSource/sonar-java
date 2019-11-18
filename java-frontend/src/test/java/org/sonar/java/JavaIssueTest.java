@@ -46,7 +46,7 @@ public class JavaIssueTest {
   @Test
   public void testIssueCreation() {
     InputFile inputFile = inputFile();
-    RuleKey ruleKey = RuleKey.of("squid", "ruleKey");
+    RuleKey ruleKey = RuleKey.of("java", "ruleKey");
     SensorContext sensorContext = mock(SensorContext.class);
     SensorStorage storage = mock(SensorStorage.class);
     DefaultIssue newIssue = new DefaultIssue(project, storage);
@@ -93,7 +93,7 @@ public class JavaIssueTest {
   @Test
   public void test_addFlow() throws Exception {
     InputFile inputFile = inputFile();
-    RuleKey ruleKey = RuleKey.of("squid", "ruleKey");
+    RuleKey ruleKey = RuleKey.of("java", "ruleKey");
     SensorContext sensorContext = mock(SensorContext.class);
     SensorStorage storage = mock(SensorStorage.class);
     DefaultIssue newIssueEmptyFlow = new DefaultIssue(project, storage);

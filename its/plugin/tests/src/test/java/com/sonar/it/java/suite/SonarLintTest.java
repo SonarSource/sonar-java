@@ -86,9 +86,9 @@ public class SonarLintTest {
     sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("squid:S106", 4, inputFile.getPath(), "MAJOR"),
-      tuple("squid:S1220", null, inputFile.getPath(), "MINOR"),
-      tuple("squid:S1481", 3, inputFile.getPath(), "MINOR"));
+      tuple("java:S106", 4, inputFile.getPath(), "MAJOR"),
+      tuple("java:S1220", null, inputFile.getPath(), "MINOR"),
+      tuple("java:S1481", 3, inputFile.getPath(), "MINOR"));
   }
 
   @Test
@@ -119,9 +119,9 @@ public class SonarLintTest {
     sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("squid:S1607", 4, inputFile.getPath(), "MAJOR"),
+      tuple("java:S1607", 4, inputFile.getPath(), "MAJOR"),
       // tuple("squid:S2970", 6, inputFile.getPath(), "BLOCKER"),
-      tuple("squid:S2925", 7, inputFile.getPath(), "MAJOR"));
+      tuple("java:S2925", 7, inputFile.getPath(), "MAJOR"));
   }
 
   @Test
@@ -148,14 +148,14 @@ public class SonarLintTest {
     sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("squid:S3421", 7, inputFile.getPath(), "MINOR"));
+      tuple("java:S3421", 7, inputFile.getPath(), "MINOR"));
   }
 
   @Test
   public void supportJavaSuppressWarning() throws Exception {
     ClientInputFile inputFile = prepareInputFile("Foo.java",
       "public class Foo {\n"
-        + "  @SuppressWarnings(\"squid:S106\")\n"
+        + "  @SuppressWarnings(\"java:S106\")\n"
         + "  public void foo() {\n"
         + "    int x;\n"
         + "    System.out.println(\"Foo\");\n"
@@ -172,8 +172,8 @@ public class SonarLintTest {
     sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("squid:S1220", null, inputFile.getPath(), "MINOR"),
-      tuple("squid:S1481", 4, inputFile.getPath(), "MINOR"));
+      tuple("java:S1220", null, inputFile.getPath(), "MINOR"),
+      tuple("java:S1481", 4, inputFile.getPath(), "MINOR"));
   }
 
   @Test
