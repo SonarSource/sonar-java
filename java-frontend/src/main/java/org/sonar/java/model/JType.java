@@ -56,6 +56,9 @@ final class JType implements Type, Type.ArrayType {
   }
 
   private static boolean isSubtype(ITypeBinding left, ITypeBinding right) {
+    if (left.isRecovered()) {
+      return false;
+    }
     if (left.isNullType()) {
       return !right.isPrimitive();
     }
@@ -124,6 +127,8 @@ final class JType implements Type, Type.ArrayType {
       return typeBinding.getName();
     } else if (typeBinding.isArray()) {
       return fullyQualifiedName(typeBinding.getComponentType()) + "[]";
+    } else if (typeBinding.isCapture()) {
+      return "!capture!";
     } else if (typeBinding.isTypeVariable()) {
       return typeBinding.getName();
     } else {

@@ -28,6 +28,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -190,6 +191,23 @@ class JTypeTest {
   void elementType() {
     assertThat(type("int[][]").elementType())
       .isSameAs(type("int[]"));
+  }
+
+  @Test
+  void capture_type() {
+    CompilationUnitTreeImpl cu = test("class A {\n" +
+      "  Object foo(java.util.List<? extends A> list) {\n" +
+      "    return list.get(0);\n" +
+      "  }\n" +
+      "}");
+    cu.types().get(0);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
+    AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
+    Type captureType = e.symbolType();
+
+    assertThat(captureType.fullyQualifiedName()).isEqualTo("!capture!");
   }
 
   @Test
