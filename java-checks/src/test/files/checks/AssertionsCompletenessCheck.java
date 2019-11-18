@@ -104,11 +104,63 @@ public class AssertionsCompletenessCheck {
   }
 
   @Test
+  public void assertj_java6assertions() {
+    org.assertj.core.api.Java6Assertions.assertThat(1).isGreaterThan(0);
+    org.assertj.core.api.Java6Assertions.assertThat(1); // Noncompliant
+    org.assertj.core.api.Java6Assertions.assertThat(1).withThreadDumpOnError().isGreaterThan(0);
+    org.assertj.core.api.Java6Assertions.assertThat(1).withThreadDumpOnError(); // Noncompliant
+    org.assertj.core.api.Java6Assertions.assertThat(1).overridingErrorMessage("error").isGreaterThan(0);
+    org.assertj.core.api.Java6Assertions.assertThat(1).overridingErrorMessage("error"); // Noncompliant
+    org.assertj.core.api.Java6Assertions.assertThat(1).usingDefaultComparator().isGreaterThan(0);
+    org.assertj.core.api.Java6Assertions.assertThat(1).usingDefaultComparator(); // Noncompliant
+    Comparator customComparator = null;
+    org.assertj.core.api.Java6Assertions.assertThat(1).usingComparator(customComparator).isGreaterThanOrEqualTo(0);
+    org.assertj.core.api.Java6Assertions.assertThat(1).usingComparator(customComparator); // Noncompliant
+    org.assertj.core.api.Java6Assertions.assertThat("a").asString().hasSize(1);
+    org.assertj.core.api.Java6Assertions.assertThat("a").asString(); // Noncompliant
+    List a = null;
+    org.assertj.core.api.Java6Assertions.assertThat(a).asList().hasSize(0);
+    org.assertj.core.api.Java6Assertions.assertThat(a).asList(); // Noncompliant
+    org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
+    softly.assertThat(null); // Noncompliant
+    softly.assertAll();
+  }
+
+  @Test
   public void assertj_soft_assertions_without_assertAll() {
     org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
     softly.assertThat(5).isLessThan(3);
     softly.assertThat(1).isGreaterThan(2);
   } // Noncompliant {{Add a call to 'assertAll' after all 'assertThat'.}}
+
+  @Test
+  void assertj_java6_soft_assertions_without_assertAll() {
+    org.assertj.core.api.Java6SoftAssertions softly = new org.assertj.core.api.Java6SoftAssertions();
+    softly.assertThat(new A()); // Noncompliant
+    softly.assertThat(5).isLessThan(3);
+  } // Noncompliant
+
+  @Test
+  void assertj_java6_abstract_standard_soft_assertions() {
+    org.assertj.core.api.Java6AbstractStandardSoftAssertions softly = new org.assertj.core.api.Java6AbstractStandardSoftAssertions(); // Noncompliant
+    softly.assertThat(5).isLessThan(3);
+    softly.assertThat(5);
+  }
+
+  @Test
+  public void assertj_soft_assertions_ok() {
+    org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
+    softly.assertThat(5).isLessThan(3);
+    softly.assertThat(1).isGreaterThan(2);
+    softly.assertAll();
+  }
+
+  @Test
+  void assertj_java6_soft_assertions_ok() {
+    org.assertj.core.api.Java6SoftAssertions softly = new org.assertj.core.api.Java6SoftAssertions().assertThat(new A());
+    softly.assertThat(5).isLessThan(3);
+    softly.assertAll();
+  }
 
   @Test
   public void assertj_soft_assertions_without_assertThat() {
@@ -182,7 +234,7 @@ public class AssertionsCompletenessCheck {
 
   @Test
   public void assertj_junit_soft_assertions_cross_methods_6() throws Exception {
-    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=208,213]] {{Add one or more 'assertThat' before 'assertAll'.}}
+    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=265,260]] {{Add one or more 'assertThat' before 'assertAll'.}}
   }
 
   private void doSomething(org.assertj.core.api.SoftAssertions softly) {

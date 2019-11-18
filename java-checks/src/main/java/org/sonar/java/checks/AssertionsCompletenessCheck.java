@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -56,10 +57,12 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
   private static final String FEST_ASSERT_SUPERTYPE = "org.fest.assertions.Assert";
   private static final String ASSERTJ_SUPERTYPE = "org.assertj.core.api.AbstractAssert";
   private static final String TRUTH_SUPERTYPE = "com.google.common.truth.TestVerb";
+  private static final String JAVA6_ABSTRACT_SOFT_ASSERT = "org.assertj.core.api.Java6AbstractStandardSoftAssertions";
   private static final MethodMatcher MOCKITO_VERIFY = MethodMatcher.create()
     .typeDefinition("org.mockito.Mockito").name("verify").withAnyParameters();
-  private static final MethodMatcher ASSERTJ_ASSERT_ALL = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.SoftAssertions")).name("assertAll").withAnyParameters();
+  private static final MethodMatcherCollection ASSERTJ_ASSERT_ALL = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.SoftAssertions")).name("assertAll").withAnyParameters(),
+    MethodMatcher.create().typeDefinition("org.assertj.core.api.Java6SoftAssertions").name("assertAll").withAnyParameters());
   private static final MethodMatcher ASSERTJ_ASSERT_THAT = MethodMatcher.create()
     .typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractSoftAssertions"))
     .name(NameCriteria.startsWith("assertThat"))
@@ -76,7 +79,9 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     assertThatOnType("org.assertj.core.api.AbstractSoftAssertions"),
     // AssertJ 2.X
     assertThatOnType("org.assertj.core.api.Assertions"),
+    assertThatOnType("org.assertj.core.api.Java6Assertions"),
     assertThatOnType("org.assertj.core.api.AbstractStandardSoftAssertions"),
+    assertThatOnType(JAVA6_ABSTRACT_SOFT_ASSERT),
     // AssertJ 3.X
     assertThatOnType("org.assertj.core.api.StrictAssertions"),
     // Truth 0.29
@@ -109,6 +114,18 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
 
   private static MethodMatcher methodWithName(String superType, NameCriteria nameCriteria) {
     return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(superType)).name(nameCriteria).withAnyParameters();
+  }
+
+  private static boolean isMethodCalledOnJava6AbstractStandardSoftAssertions(MethodInvocationTree mit) {
+    // Java6AbstractStandardSoftAssertions does not contain 'assertAll()' method so this class should not be used
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      Type type = ((MemberSelectExpressionTree) methodSelect).expression().symbolType();
+      if (type.is(JAVA6_ABSTRACT_SOFT_ASSERT)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
@@ -161,6 +178,10 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
   }
 
   private boolean incompleteAssertion(MethodInvocationTree mit) {
+    if (isMethodCalledOnJava6AbstractStandardSoftAssertions(mit)) {
+      return false;
+    }
+
     if (((FEST_LIKE_ASSERT_THAT.anyMatch(mit) && (mit.arguments().size() == 1)) || MOCKITO_VERIFY.matches(mit)) && !Boolean.TRUE.equals(chainedToAnyMethodButFestExclusions)) {
       context.reportIssue(this, mit.methodSelect(), "Complete the assertion.");
       return true;
@@ -182,14 +203,28 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     }
 
     @Override
+    public void visitNewClass(NewClassTree tree) {
+      if (tree.symbolType().is(JAVA6_ABSTRACT_SOFT_ASSERT)) {
+        context.reportIssue(AssertionsCompletenessCheck.this, tree, "Use 'Java6SoftAssertions' instead of 'Java6AbstractStandardSoftAssertions'.");
+        return;
+      }
+      super.visitNewClass(tree);
+    }
+
+    @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
+      if (isMethodCalledOnJava6AbstractStandardSoftAssertions(mit)) {
+        return;
+      }
+
       boolean assertThatStateBeforeInvocation = assertThatCalled;
       super.visitMethodInvocation(mit);
+
       if (ASSERTJ_ASSERT_SOFTLY.matches(mit)) {
         assertThatCalled = assertThatStateBeforeInvocation;
       }
 
-      if (ASSERTJ_ASSERT_ALL.matches(mit)) {
+      if (ASSERTJ_ASSERT_ALL.anyMatch(mit)) {
         if (assertThatCalled) {
           assertThatCalled = false;
         } else {
