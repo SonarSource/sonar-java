@@ -50,6 +50,11 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
     @Override
     public Type type() {
+      if (typeBinding().isInterface()) {
+        // JLS § 15.12.1:
+        // for "T.super.foo()", if T is an interface, 'super' keyword is used to access method of the interface itself
+        return sema.type(typeBinding());
+      }
       return sema.type(typeBinding().getSuperclass());
     }
   };
