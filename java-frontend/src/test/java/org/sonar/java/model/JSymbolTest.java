@@ -34,6 +34,8 @@ import org.sonar.java.resolve.Symbols;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -159,6 +161,43 @@ class JSymbolTest {
 
     assertThat(cu.sema.methodSymbol(method.methodBinding).type())
       .isSameAs(Symbols.unknownType);
+  }
+
+  @Test
+  void var_type_as_local_variable() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C {void m() { var v = new java.util.ArrayList<String>(); }}");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl method = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl variable = (VariableTreeImpl) method.block().body().get(0);
+
+    assertThat(variable.type().symbolType().fullyQualifiedName())
+      .isEqualTo("java.util.ArrayList");
+
+    assertThat(variable.symbol().type().fullyQualifiedName())
+      .isEqualTo("java.util.ArrayList");
+
+    assertThat(cu.sema.variableSymbol(variable.variableBinding).type())
+      .isSameAs(cu.sema.type(variable.variableBinding.getType()));
+  }
+
+  @Test
+  void var_type_as_lambda_parameters() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { java.util.function.BiFunction<Long, Boolean, String> f = (var x, var y) -> x + \",\" + y; }");
+
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl field = (VariableTreeImpl) c.members().get(0);
+    LambdaExpressionTree lambda = (LambdaExpressionTree) field.initializer();
+
+    assertThat(field.symbol().type().fullyQualifiedName())
+      .isEqualTo("java.util.function.BiFunction");
+
+    VariableTree x = lambda.parameters().get(0);
+    assertThat(x.symbol().type().fullyQualifiedName())
+      .isEqualTo("java.lang.Long");
+
+    VariableTree y = lambda.parameters().get(1);
+    assertThat(y.symbol().type().fullyQualifiedName())
+      .isEqualTo("java.lang.Boolean");
   }
 
   @Nested
