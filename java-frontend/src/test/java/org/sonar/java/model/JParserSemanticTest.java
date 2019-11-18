@@ -611,7 +611,7 @@ class JParserSemanticTest {
 
     KeywordSuper keywordSuper = (KeywordSuper) qualifiedSuper.identifier();
     assertThat(keywordSuper.resolveType().symbol().declaration())
-      .isSameAs((ClassTreeImpl) qualifiedSuper.symbolType().symbol().declaration())
+      .isSameAs(qualifiedSuper.symbolType().symbol().declaration())
       .isSameAs(superClass);
     assertThat(keywordSuper.resolveSymbol())
       .isSameAs(cu.sema.typeSymbol(t.typeBinding).superSymbol);
@@ -623,6 +623,27 @@ class JParserSemanticTest {
     assertThat(cu.sema.usages.get(identifier.binding))
       .containsOnlyElementsOf(superMethodInvocation.symbol().usages())
       .containsOnly(identifier);
+  }
+
+  @Test
+  void expression_super_method_invocation_interface() {
+    String source = "interface MyIterable<T> extends Iterable<T> {\n" +
+      "  @Override\n" +
+      "  default void forEach(java.util.function.Consumer<? super T> action) {\n" +
+      "    Iterable.super.forEach(action);\n" +
+      "  }\n" +
+      "}";
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl forEach = (MethodTreeImpl) c.members().get(0);
+    ExpressionStatementTreeImpl e = (ExpressionStatementTreeImpl) forEach.block().body().get(0);
+    MethodInvocationTreeImpl m = (MethodInvocationTreeImpl) e.expression();
+    MemberSelectExpressionTreeImpl iterable_super_forEach = (MemberSelectExpressionTreeImpl) m.methodSelect();
+    MemberSelectExpressionTreeImpl iterable_super = (MemberSelectExpressionTreeImpl) iterable_super_forEach.expression();
+    IdentifierTreeImpl super_keyword = (IdentifierTreeImpl) iterable_super.identifier();
+
+    assertThat(super_keyword.typeBinding).isNotNull();
+    assertThat(super_keyword.symbolType().fullyQualifiedName()).isEqualTo("java.lang.Iterable");
   }
 
   @Test
