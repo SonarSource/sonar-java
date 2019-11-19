@@ -26,11 +26,9 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import static com.sonar.it.java.suite.JavaTestSuite.getComponent;
-import static com.sonar.it.java.suite.JavaTestSuite.getMeasure;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsDouble;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.offset;
 
 public class Struts139Test {
 
@@ -43,8 +41,7 @@ public class Struts139Test {
 
   @BeforeClass
   public static void analyzeProject() {
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("struts-1.3.9-lite"))
-      .setGoals("org.jacoco:jacoco-maven-plugin:prepare-agent clean verify");
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("struts-1.3.9-lite")).setGoals("clean verify");
     MavenBuild analysis = MavenBuild.create(TestUtils.projectPom("struts-1.3.9-lite"))
       .setProperty("sonar.scm.disabled", "true")
       .setProperty("sonar.exclusions", "**/pom.xml")
@@ -76,13 +73,6 @@ public class Struts139Test {
 
   @Test
   public void unit_test_metrics() {
-    int linesToCover = isGreater76() ? 15452 : 15476;
-    assertThat(getMeasureAsDouble(PROJECT_STRUTS, "lines_to_cover")).isEqualTo(linesToCover, offset(10.0));
-    assertThat(getMeasureAsDouble(PROJECT_STRUTS, "coverage")).isEqualTo(25.1, offset(0.2));
-    assertThat(getMeasureAsDouble(moduleKey(), "coverage")).isEqualTo(36.8, offset(0.2));
-    assertThat(getMeasureAsDouble(PROJECT_STRUTS, "line_coverage")).isEqualTo(25.4, offset(0.5));
-    assertThat(getMeasureAsDouble(PROJECT_STRUTS, "branch_coverage")).isEqualTo(23.9);
-
     assertThat(getMeasureAsInteger(PROJECT_STRUTS, "tests")).isEqualTo(307);
     assertThat(getMeasureAsInteger(PROJECT_STRUTS, "test_execution_time")).isGreaterThan(200);
     assertThat(getMeasureAsInteger(PROJECT_STRUTS, "test_errors")).isEqualTo(0);
@@ -118,11 +108,4 @@ public class Struts139Test {
     return orchestrator.getServer().version().isGreaterThanOrEquals(7, 6);
   }
 
-  private static boolean isGreater76() {
-    return orchestrator.getServer().version().isGreaterThanOrEquals(7, 7);
-  }
-
-  private static String getMeasureValue(String componentKey, String metricKey) {
-    return getMeasure(componentKey, metricKey).getValue();
-  }
 }
