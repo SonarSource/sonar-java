@@ -49,7 +49,6 @@ import static java.util.Collections.singletonList;
   SquidTest.class,
   Struts139Test.class,
   JavaClasspathTest.class,
-  JaCoCoControllerTest.class,
   SuppressWarningTest.class,
   SonarLintTest.class,
   ExternalReportTest.class,
