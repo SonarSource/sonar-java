@@ -21,7 +21,6 @@ package org.sonar.java.checks.naming;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -36,9 +35,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00115")
-@RspecKey("S115")
+@DeprecatedRuleKey(ruleKey = "S00115")
+@Rule(key = "S115")
 public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_FORMAT = "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$";

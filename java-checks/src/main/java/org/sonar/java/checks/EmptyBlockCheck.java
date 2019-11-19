@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -28,9 +27,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Arrays;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00108")
-@RspecKey("S108")
+@DeprecatedRuleKey(ruleKey = "S00108")
+@Rule(key = "S108")
 public class EmptyBlockCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Either remove or fill this block of code.";

@@ -5,7 +5,7 @@
   <rules>
     <rule>
       <repositoryKey>java</repositoryKey>
-      <key>MethodCyclomaticComplexity</key>
+      <key>S1541</key>
       <priority>MAJOR</priority>
       <parameters>
         <parameter>

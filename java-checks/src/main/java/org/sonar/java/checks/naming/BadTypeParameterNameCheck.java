@@ -21,7 +21,6 @@ package org.sonar.java.checks.naming;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -32,9 +31,10 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00119")
-@RspecKey("S119")
+@DeprecatedRuleKey(ruleKey = "S00119")
+@Rule(key = "S119")
 public class BadTypeParameterNameCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_FORMAT = "^[A-Z][0-9]?$";

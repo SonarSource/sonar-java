@@ -21,16 +21,16 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "ClassCyclomaticComplexity")
-@RspecKey("S1311")
+@DeprecatedRuleKey(ruleKey = "ClassCyclomaticComplexity")
+@Rule(key = "S1311")
 public class ClassComplexityCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAX = 200;

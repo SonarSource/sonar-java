@@ -50,9 +50,9 @@ public class JavaSonarWayProfileTest {
     for (BuiltInQualityProfilesDefinition.BuiltInActiveRule activeRule : activeRules) {
       keys.add(activeRule.ruleKey());
     }
-    //Check that we store active rule with legacy keys, not RSPEC keys
-    assertThat(keys.contains("S116")).isFalse();
-    assertThat(keys).contains("S00116");
+    //We no longer store active rules with legacy keys, only RSPEC keys are used.
+    assertThat(keys.contains("S00116")).isFalse();
+    assertThat(keys).contains("S116");
     assertThat(validation.hasErrors()).isFalse();
 
     // Check that we use severity from the read rule and not default one.

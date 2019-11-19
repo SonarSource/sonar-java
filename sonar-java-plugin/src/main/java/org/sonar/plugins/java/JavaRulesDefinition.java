@@ -41,6 +41,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.checks.CheckList;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 /**
  * Definition of rules.
@@ -109,6 +110,10 @@ public class JavaRulesDefinition implements RulesDefinition {
     NewRule rule = repository.rule(ruleKey);
     if (rule == null) {
       throw new IllegalStateException("No rule was created for " + ruleClass + " in " + repository.key());
+    }
+    DeprecatedRuleKey deprecatedRuleKeyAnnotation = AnnotationUtils.getAnnotation(ruleClass, DeprecatedRuleKey.class);
+    if (deprecatedRuleKeyAnnotation != null) {
+      rule.addDeprecatedRuleKey(repository.key(), deprecatedRuleKeyAnnotation.ruleKey());
     }
     String rspecKey = rspecKey(ruleClass, rule);
     RuleMetadata ruleMetadata = readRuleMetadata(rspecKey);
@@ -212,10 +217,10 @@ public class JavaRulesDefinition implements RulesDefinition {
     String linearFactor;
 
     public DebtRemediationFunction remediationFunction(DebtRemediationFunctions drf) {
-      if(func.startsWith("Constant")) {
+      if (func.startsWith("Constant")) {
         return drf.constantPerIssue(constantCost.replace("mn", "min"));
       }
-      if("Linear".equals(func)) {
+      if ("Linear".equals(func)) {
         return drf.linear(linearFactor.replace("mn", "min"));
       }
       return drf.linearWithOffset(linearFactor.replace("mn", "min"), linearOffset.replace("mn", "min"));

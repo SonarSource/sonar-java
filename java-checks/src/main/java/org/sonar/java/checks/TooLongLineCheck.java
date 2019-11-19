@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -35,9 +34,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00103")
-@RspecKey("S103")
+@DeprecatedRuleKey(ruleKey = "S00103")
+@Rule(key = "S103")
 public class TooLongLineCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAXIMUM_LINE_LENGTH = 120;

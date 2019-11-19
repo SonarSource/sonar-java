@@ -19,8 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -31,13 +33,10 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
-
-@Rule(key = "ClassVariableVisibilityCheck")
-@RspecKey("S1104")
+@DeprecatedRuleKey(ruleKey = "ClassVariableVisibilityCheck")
+@Rule(key = "S1104")
 public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private Deque<Boolean> isClassStack = new ArrayDeque<>();

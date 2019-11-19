@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class TooLongLineCheckTest {
 
-  private static final String BASEDIR = "src/test/files/checks/TooLongLine_S00103_Check";
+  private static final String BASEDIR = "src/test/files/checks/TooLongLine_S103_Check";
 
   TooLongLineCheck check = new TooLongLineCheck();
 

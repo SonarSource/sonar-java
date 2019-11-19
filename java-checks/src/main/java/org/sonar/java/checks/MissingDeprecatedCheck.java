@@ -19,19 +19,18 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-import java.util.Deque;
-import java.util.LinkedList;
-
-@Rule(key = "MissingDeprecatedCheck")
-@RspecKey("S1123")
+@DeprecatedRuleKey(ruleKey = "MissingDeprecatedCheck")
+@Rule(key = "S1123")
 public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();

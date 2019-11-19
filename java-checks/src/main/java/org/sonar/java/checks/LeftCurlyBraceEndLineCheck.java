@@ -20,11 +20,11 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "LeftCurlyBraceEndLineCheck")
-@RspecKey("S1105")
+@DeprecatedRuleKey(ruleKey = "LeftCurlyBraceEndLineCheck")
+@Rule(key = "S1105")
 public class LeftCurlyBraceEndLineCheck extends LeftCurlyBraceBaseTreeVisitor {
 
   @Override

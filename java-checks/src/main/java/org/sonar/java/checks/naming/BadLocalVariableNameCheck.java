@@ -21,7 +21,6 @@ package org.sonar.java.checks.naming;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -35,9 +34,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.regex.Pattern;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00117")
-@RspecKey("S117")
+@DeprecatedRuleKey(ruleKey = "S00117")
+@Rule(key = "S117")
 public class BadLocalVariableNameCheck  extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String DEFAULT_FORMAT = "^[a-z][a-zA-Z0-9]*$";

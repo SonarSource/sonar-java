@@ -5,7 +5,7 @@
   <rules>
     <rule>
       <repositoryKey>java</repositoryKey>
-      <key>MaximumInheritanceDepth</key>
+      <key>S110</key>
       <priority>MAJOR</priority>
     </rule>
   </rules>

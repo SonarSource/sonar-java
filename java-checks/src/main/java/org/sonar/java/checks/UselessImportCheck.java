@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.JUtils;
@@ -47,9 +46,10 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "UselessImportCheck")
-@RspecKey("S1128")
+@DeprecatedRuleKey(ruleKey = "UselessImportCheck")
+@Rule(key = "S1128")
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Map<String, ImportTree> lineByImportReference = new HashMap<>();

@@ -2,7 +2,7 @@
  * Extra rules running:
  * - TodoTagPresenceCheck (S1135)
  * - UnusedPrivateFieldCheck (S1068)
- * - BadConstantNameCheck (S00115)
+ * - BadConstantNameCheck (S115)
  * - SuppressWarningCheck (S1309) - Raise an issue on all the @SuppressWarning annotation, can not be suppressed
  */
 class Test {
@@ -33,7 +33,7 @@ class Test {
     }
   }
 
-  @SuppressWarnings({"repo:S1068", "repo:S00115"}) // WithIssue
+  @SuppressWarnings({"repo:S1068", "repo:S115"}) // WithIssue
   class C {
     private static final int bad_constant_name = 42; // NoIssue
 
@@ -44,7 +44,7 @@ class Test {
     }
   }
 
-  @SuppressWarnings("repo:S00115") // WithIssue
+  @SuppressWarnings("repo:S115") // WithIssue
   class D {
     private static final int bad_constant_name = 42; // NoIssue
 
@@ -62,7 +62,7 @@ class Test {
   }
 
   class F {
-    @SuppressWarnings("repo:S00115") // WithIssue
+    @SuppressWarnings("repo:S115") // WithIssue
     private static final int bad_constant_name = 42; // NoIssue
 
     @SuppressWarnings("repo:S1068") // WithIssue

@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
@@ -56,9 +55,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "RedundantThrowsDeclarationCheck")
-@RspecKey("S1130")
+@DeprecatedRuleKey(ruleKey = "RedundantThrowsDeclarationCheck")
+@Rule(key = "S1130")
 public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor {
 
   @Override

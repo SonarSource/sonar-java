@@ -10,7 +10,7 @@
     </rule>
     <rule>
       <repositoryKey>java</repositoryKey>
-      <key>ClassVariableVisibilityCheck</key>
+      <key>S1104</key>
       <priority>MAJOR</priority>
     </rule>
   </rules>

@@ -23,16 +23,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "SwitchLastCaseIsDefaultCheck")
-@RspecKey("S131")
+@DeprecatedRuleKey(ruleKey = "SwitchLastCaseIsDefaultCheck")
+@Rule(key = "S131")
 public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
 
   @Override

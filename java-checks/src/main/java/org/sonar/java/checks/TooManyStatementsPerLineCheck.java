@@ -23,7 +23,6 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -51,9 +50,10 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import java.util.Arrays;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00122")
-@RspecKey("S122")
+@DeprecatedRuleKey(ruleKey = "S00122")
+@Rule(key = "S122")
 public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
 
   @Override

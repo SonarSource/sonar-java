@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -30,9 +29,10 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "ObjectFinalizeCheck")
-@RspecKey("S1111")
+@DeprecatedRuleKey(ruleKey = "ObjectFinalizeCheck")
+@Rule(key = "S1111")
 public class ObjectFinalizeCheck extends IssuableSubscriptionVisitor {
 
   private boolean isInFinalizeMethod = false;

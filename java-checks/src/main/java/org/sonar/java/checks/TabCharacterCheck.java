@@ -20,16 +20,16 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00105")
-@RspecKey("S105")
+@DeprecatedRuleKey(ruleKey = "S00105")
+@Rule(key = "S105")
 public class TabCharacterCheck extends IssuableSubscriptionVisitor {
 
   @Override
