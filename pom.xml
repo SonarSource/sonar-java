@@ -60,7 +60,6 @@
     <module>sonar-java-plugin</module>
     <module>java-surefire</module>
     <module>java-jacoco</module>
-    <module>sonar-jacoco-listeners</module>
     <module>its</module>
   </modules>
 
