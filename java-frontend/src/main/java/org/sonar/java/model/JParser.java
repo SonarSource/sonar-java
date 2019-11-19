@@ -2402,8 +2402,7 @@ public class JParser {
             ((Annotation) o)
           ));
         }
-        boolean isVarType = e.getName().getNodeType() == ASTNode.SIMPLE_NAME && "var".equals(e.getName().getFullyQualifiedName());
-        JavaTree.AnnotatedTypeTree t = isVarType ? convertVarType(e) : (JavaTree.AnnotatedTypeTree) convertExpression(e.getName());
+        JavaTree.AnnotatedTypeTree t = e.isVar() ? convertVarType(e) : (JavaTree.AnnotatedTypeTree) convertExpression(e.getName());
         t.complete(annotations);
         // typeBinding is assigned by convertVarType or convertExpression
         return t;
