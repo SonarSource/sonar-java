@@ -35,7 +35,6 @@ import org.sonar.java.JavaSonarLintClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
-import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefireExtensions;
 
 public class JavaPlugin implements Plugin {
@@ -49,7 +48,7 @@ public class JavaPlugin implements Plugin {
       builder.add(JavaSonarLintClasspath.class);
     } else {
       builder.addAll(SurefireExtensions.getExtensions());
-      builder.addAll(JaCoCoExtensions.getExtensions());
+      builder.add(DroppedPropertiesSensor.class);
       builder.add(JavaSonarWayProfile.class);
       builder.add(JavaClasspath.class);
       builder.add(PropertyDefinition.builder(SonarComponents.FAIL_ON_EXCEPTION_KEY)

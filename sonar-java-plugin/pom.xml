@@ -29,11 +29,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>java-jacoco</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>java-frontend</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -117,8 +112,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>17500000</maxsize>
-                  <minsize>17300000</minsize>
+                  <maxsize>17400000</maxsize>
+                  <minsize>17200000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>

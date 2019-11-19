@@ -59,7 +59,6 @@
     <module>external-reports</module>
     <module>sonar-java-plugin</module>
     <module>java-surefire</module>
-    <module>java-jacoco</module>
     <module>its</module>
   </modules>
 
@@ -87,7 +86,6 @@
     <analyzer.commons.version>1.10.2.456</analyzer.commons.version>
     <orchestrator.version>3.27.0.2172</orchestrator.version>
     <sslr.version>1.23</sslr.version>
-    <jacoco.version>0.8.3</jacoco.version>
     <asm.version>7.1</asm.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
@@ -163,23 +161,6 @@
             <groupId>org.hamcrest</groupId>
           </exclusion>
         </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jacoco</groupId>
-        <artifactId>org.jacoco.core</artifactId>
-        <version>${jacoco.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jacoco</groupId>
-        <artifactId>org.jacoco.agent</artifactId>
-        <version>${jacoco.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jacoco</groupId>
-        <artifactId>org.jacoco.agent</artifactId>
-        <version>${jacoco.version}</version>
-        <classifier>runtime</classifier>
       </dependency>
 
       <dependency>
