@@ -39,6 +39,7 @@ import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.sonar.java.externalreport.ExternalReportTestUtils.onlyOneLogElement;
 
 public class SpotBugsSensorTest {
@@ -59,7 +60,8 @@ public class SpotBugsSensorTest {
     RulesDefinition.Context context = new RulesDefinition.Context();
     new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER, SpotBugsSensor.SPOTBUGS_KEY).define(context);
     new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER, SpotBugsSensor.FINDSECBUGS_KEY).define(context);
-    assertThat(context.repositories()).hasSize(2);
+    new ExternalRulesDefinition(SpotBugsSensor.FBCONTRIB_LOADER, SpotBugsSensor.FBCONTRIB_KEY).define(context);
+    assertThat(context.repositories()).hasSize(3);
 
     RulesDefinition.Repository repository = context.repository("external_spotbugs");
     assertThat(repository.name()).isEqualTo("SpotBugs");
@@ -138,6 +140,19 @@ public class SpotBugsSensorTest {
     assertThat(first.primaryLocation().textRange().start().line()).isEqualTo(6);
 
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
+  }
+
+  @Test
+  public void fbcontrib_issue() throws Exception {
+    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "spotbugsXml-fbcontrib.xml");
+    assertThat(externalIssues).hasSize(1);
+    assertThat(externalIssues).extracting(ExternalIssue::engineId,
+      ExternalIssue::ruleId,
+      i -> i.primaryLocation().message(),
+      i -> i.primaryLocation().textRange().start().line())
+      .containsExactly(
+        tuple("fbcontrib", "ABC_ARRAY_BASED_COLLECTIONS", "Method org.myapp.App.getGreeting(int[]) uses array as basis of collection", 14)
+      );
   }
 
   @Test

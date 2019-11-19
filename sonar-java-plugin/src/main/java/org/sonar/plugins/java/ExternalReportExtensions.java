@@ -68,6 +68,7 @@ public final class ExternalReportExtensions {
 
       context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER, SpotBugsSensor.SPOTBUGS_KEY));
       context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER, SpotBugsSensor.FINDSECBUGS_KEY));
+      context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.FBCONTRIB_LOADER, SpotBugsSensor.FBCONTRIB_KEY));
       context.addExtension(
         PropertyDefinition.builder(SpotBugsSensor.REPORT_PROPERTY_KEY)
           .name("SpotBugs Report Files")
