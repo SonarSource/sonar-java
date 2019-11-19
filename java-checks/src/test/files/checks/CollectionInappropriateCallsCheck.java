@@ -265,7 +265,7 @@ class TestColorList {
     colors.remove(c);
     specificColors.remove(c);
 
-    colors.remove(a); // Noncompliant
-    specificColors.remove(a); // Noncompliant
+    colors.remove(a); // Noncompliant {{"ColorList" is a Collection"<Color>" which cannot contain a "Animal"}}
+    specificColors.remove(a); // Noncompliant {{"SpecificColorList" is a Collection"<Color>" which cannot contain a "Animal"}}
   }
 }
