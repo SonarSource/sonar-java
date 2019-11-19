@@ -29,7 +29,7 @@ public class SuppressWarningFilterTest {
   /**
    * Constant used in test for rule key.
    */
-  public static final String CONSTANT_RULE_KEY = "repo:S00115";
+  public static final String CONSTANT_RULE_KEY = "repo:S115";
   @Test
   public void verify() {
     FilterVerifier.verify("src/test/files/filters/SuppressWarningFilter.java", new SuppressWarningFilter(),

@@ -24,12 +24,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.sonar.check.Rule;
 import org.sonar.java.ExceptionHandler;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "ParsingError")
-@RspecKey("S2260")
+@DeprecatedRuleKey(ruleKey = "ParsingError")
+@Rule(key = "S2260")
 public class ParsingErrorCheck implements ExceptionHandler, JavaFileScanner {
 
   private JavaFileScannerContext context;

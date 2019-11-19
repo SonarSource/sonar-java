@@ -23,16 +23,16 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(  key = "S00107")
-@RspecKey("S107")
+@DeprecatedRuleKey(ruleKey = "S00107")
+@Rule(key = "S107")
 public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final int DEFAULT_MAXIMUM = 7;

@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Rule;
@@ -72,10 +73,6 @@ public class JavaRulesDefinitionTest {
     assertThat(magicNumber.params()).isNotEmpty();
     assertThat(magicNumber.activatedByDefault()).isFalse();
 
-    // check if a rule using a legacy key is also enabled
-    RulesDefinition.Rule unusedPrivateMethodRule = repository.rule("UnusedPrivateMethod");
-    assertThat(unusedPrivateMethodRule.activatedByDefault()).isEqualTo(true);
-
     // rule templates are manually defined
     assertThat(repository.rules().stream()
       .filter(RulesDefinition.Rule::template)
@@ -88,7 +85,7 @@ public class JavaRulesDefinitionTest {
   @Test
   public void rules_definition_should_be_locale_independent() {
     Locale defaultLocale = Locale.getDefault();
-    Locale trlocale= Locale.forLanguageTag("tr-TR");
+    Locale trlocale = Locale.forLanguageTag("tr-TR");
     Locale.setDefault(trlocale);
     JavaRulesDefinition definition = new JavaRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
@@ -126,19 +123,19 @@ public class JavaRulesDefinitionTest {
     try {
       definition.newRule(CheckWithNoAnnotation.class, newRepository, profile);
     } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessage("No Rule annotation was found on class "+CheckWithNoAnnotation.class.getName());
+      assertThat(iae).hasMessage("No Rule annotation was found on class " + CheckWithNoAnnotation.class.getName());
     }
 
     try {
       definition.newRule(EmptyRuleKey.class, newRepository, profile);
     } catch (IllegalArgumentException iae) {
-      assertThat(iae).hasMessage("No key is defined in Rule annotation of class "+EmptyRuleKey.class.getName());
+      assertThat(iae).hasMessage("No key is defined in Rule annotation of class " + EmptyRuleKey.class.getName());
     }
 
     try {
       definition.newRule(UnregisteredRule.class, newRepository, profile);
     } catch (IllegalStateException ise) {
-      assertThat(ise).hasMessage("No rule was created for class "+UnregisteredRule.class.getName()+" in test");
+      assertThat(ise).hasMessage("No rule was created for class " + UnregisteredRule.class.getName() + " in test");
     }
     // no metadata defined, does not fail on registration of rule
     definition.newRule(CorrectRule.class, newRepository, profile);
@@ -166,6 +163,21 @@ public class JavaRulesDefinitionTest {
 
     RulesDefinition.Rule rule = repository.rule("S1989");
     assertThat(rule.securityStandards()).containsExactlyInAnyOrder("cwe:600", "owaspTop10:a3");
+  }
+
+  @Test
+  public void test_deprecated_key() {
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
+
+    RulesDefinition.Rule rule = repository.rule("S1104");
+    assertThat(rule.activatedByDefault()).isEqualTo(true);
+    assertThat(rule.deprecatedRuleKeys()).hasSize(1);
+    RuleKey deprecatedKey = rule.deprecatedRuleKeys().iterator().next();
+    assertThat(deprecatedKey.repository()).isEqualTo("java");
+    assertThat(deprecatedKey.rule()).isEqualTo("ClassVariableVisibilityCheck");
   }
 
   @Test

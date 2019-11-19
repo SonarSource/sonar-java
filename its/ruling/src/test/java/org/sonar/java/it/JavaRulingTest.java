@@ -88,7 +88,7 @@ public class JavaRulingTest {
   public static void prepare_quality_profiles() {
     ImmutableMap<String, ImmutableMap<String, String>> rulesParameters = ImmutableMap.<String, ImmutableMap<String, String>>builder()
       .put(
-        "IndentationCheck",
+        "S1120",
         ImmutableMap.of("indentationLevel", "4"))
       .put(
         "S1451",
@@ -99,10 +99,10 @@ public class JavaRulingTest {
           " * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."))
       .build();
     ImmutableSet<String> disabledRules = ImmutableSet.of(
-      "CallToDeprecatedMethod",
+      "S1874",
       "CycleBetweenPackages",
       // disable because it generates too many issues, performance reasons
-      "LeftCurlyBraceStartLineCheck"
+      "S1106"
       );
     Set<String> activatedRuleKeys = new HashSet<>();
     ProfileGenerator.generate(orchestrator, rulesParameters, disabledRules, SUBSET_OF_ENABLED_RULES, activatedRuleKeys);

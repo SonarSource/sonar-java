@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -28,9 +27,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "ObjectFinalizeOverridenCheck")
-@RspecKey("S1113")
+@DeprecatedRuleKey(ruleKey = "ObjectFinalizeOverridenCheck")
+@Rule(key = "S1113")
 public class ObjectFinalizeOverridenCheck extends IssuableSubscriptionVisitor {
 
   @Override

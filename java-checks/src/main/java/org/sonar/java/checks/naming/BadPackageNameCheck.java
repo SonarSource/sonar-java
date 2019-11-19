@@ -22,15 +22,15 @@ package org.sonar.java.checks.naming;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.java.model.PackageUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00120")
-@RspecKey("S120")
+@DeprecatedRuleKey(ruleKey = "S00120")
+@Rule(key = "S120")
 public class BadPackageNameCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String DEFAULT_FORMAT = "^[a-z_]+(\\.[a-z_][a-z0-9_]*)*$";

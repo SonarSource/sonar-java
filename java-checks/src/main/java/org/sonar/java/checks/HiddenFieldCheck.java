@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -42,9 +41,10 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "HiddenFieldCheck")
-@RspecKey("S1117")
+@DeprecatedRuleKey(ruleKey = "HiddenFieldCheck")
+@Rule(key = "S1117")
 public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
   private final Deque<ImmutableMap<String, VariableTree>> fields = new LinkedList<>();

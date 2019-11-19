@@ -135,7 +135,7 @@ public class JavaTest {
 
     assertThat(issues).hasSize(2);
     for (Issue issue : issues) {
-      assertThat(issue.getRule()).matches(value -> "java:S1444".equals(value) || "java:ClassVariableVisibilityCheck".equals(value));
+      assertThat(issue.getRule()).matches(value -> "java:S1444".equals(value) || "java:S1104".equals(value));
       assertThat(issue.getLine()).isEqualTo(17);
     }
   }

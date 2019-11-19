@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
@@ -33,9 +32,10 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import java.util.Arrays;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00121")
-@RspecKey("S121")
+@DeprecatedRuleKey(ruleKey = "S00121")
+@Rule(key = "S121")
 public class MissingCurlyBracesCheck extends IssuableSubscriptionVisitor {
 
   @Override

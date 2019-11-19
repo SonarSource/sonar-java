@@ -20,16 +20,16 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "LabelsShouldNotBeUsedCheck")
-@RspecKey("S1119")
+@DeprecatedRuleKey(ruleKey = "LabelsShouldNotBeUsedCheck")
+@Rule(key = "S1119")
 public class LabelsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor {
 
   @Override

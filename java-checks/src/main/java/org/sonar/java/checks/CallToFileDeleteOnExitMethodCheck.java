@@ -22,14 +22,14 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "CallToFileDeleteOnExitMethod")
-@RspecKey("S2308")
+@DeprecatedRuleKey(ruleKey = "CallToFileDeleteOnExitMethod")
+@Rule(key = "S2308")
 public class CallToFileDeleteOnExitMethodCheck extends AbstractMethodDetection {
 
   @Override

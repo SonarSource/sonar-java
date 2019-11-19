@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -37,9 +36,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "AssignmentInSubExpressionCheck")
-@RspecKey("S1121")
+@DeprecatedRuleKey(ruleKey = "AssignmentInSubExpressionCheck")
+@Rule(key = "S1121")
 public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Kind[] ASSIGNMENT_EXPRESSIONS = new Kind[]{

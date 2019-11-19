@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableSet;
 import java.util.HashSet;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -37,9 +36,10 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00112")
-@RspecKey("S112")
+@DeprecatedRuleKey(ruleKey = "S00112")
+@Rule(key = "S112")
 public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Set<String> RAW_EXCEPTIONS = ImmutableSet.of("java.lang.Throwable", "java.lang.Error", "java.lang.Exception", "java.lang.RuntimeException");

@@ -15,7 +15,7 @@
     </rule>
     <rule>
       <repositoryKey>java</repositoryKey>
-      <key>UnusedPrivateMethod</key>
+      <key>S1144</key>
       <priority>MAJOR</priority>
     </rule>
   </rules>

@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -35,9 +34,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "ModifiersOrderCheck")
-@RspecKey("S1124")
+@DeprecatedRuleKey(ruleKey = "ModifiersOrderCheck")
+@Rule(key = "S1124")
 public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
 
 
