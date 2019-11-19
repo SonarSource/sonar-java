@@ -73,12 +73,11 @@ public class VisitorsBridgeForTestsTest {
     AnalyzerMessage message = lastContext.createAnalyzerMessage(javaCheck, parse, "test");
     lastContext.addIssue(-1, javaCheck, "test");
     lastContext.addIssue(-1, javaCheck, "test", 15);
-    lastContext.addIssue(new File("."), javaCheck, -1, "test");
     lastContext.addIssueOnFile(javaCheck, "test");
     lastContext.addIssueOnProject(javaCheck, "test");
     lastContext.reportIssue(message);
     assertThat(message.getMessage()).isEqualTo("test");
-    assertThat(lastContext.getIssues()).hasSize(6);
+    assertThat(lastContext.getIssues()).hasSize(5);
   }
 
   private static class DummyVisitor implements JavaFileScanner {

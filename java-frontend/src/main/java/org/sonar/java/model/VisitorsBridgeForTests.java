@@ -88,15 +88,6 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
       return issues;
     }
 
-    /**
-     * @deprecated since SonarJava 5.12 - Should only report on InputComponent
-     */
-    @Deprecated
-    @Override
-    public void addIssue(File file, JavaCheck javaCheck, int line, String message) {
-      issues.add(new AnalyzerMessage(javaCheck, sonarComponents.inputFromIOFileOrDirectory(file), line, message, 0));
-    }
-
     @Override
     public void addIssueOnProject(JavaCheck javaCheck, String message) {
       issues.add(new AnalyzerMessage(javaCheck, sonarComponents.project(), null, message, 0));
