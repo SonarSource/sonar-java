@@ -19,18 +19,17 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -46,30 +45,31 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1612")
-public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
+public class ReplaceLambdaByMethodRefCheck extends SubscriptionVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    if (context.getSemanticModel() != null) {
-      scan(context.getTree());
-    }
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
-  public void visitLambdaExpression(LambdaExpressionTree tree) {
+  public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
+    visitLambdaExpression((LambdaExpressionTree) tree);
+  }
+
+  private void visitLambdaExpression(LambdaExpressionTree tree) {
     if (isReplaceableSingleMethodInvocation(tree) || isBodyBlockInvokingMethod(tree)) {
       context.reportIssue(this, tree.arrowToken(), "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
     } else {
       getNullCheck(tree)
-        .ifPresent(nullMethod -> 
+        .ifPresent(nullMethod ->
           context.reportIssue(this, tree.arrowToken(),
             "Replace this lambda with method reference 'Objects::" + nullMethod + "'." + context.getJavaVersion().java8CompatibilityMessage())
-      );
+        );
     }
-    super.visitLambdaExpression(tree);
   }
 
   private static Optional<String> getNullCheck(LambdaExpressionTree lambda) {
@@ -142,8 +142,8 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   private static boolean isMethodInvocation(@Nullable Tree tree, LambdaExpressionTree lambdaTree) {
     if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
       Arguments arguments;
-      if(tree.is(Tree.Kind.NEW_CLASS)) {
-        if(((NewClassTree) tree).classBody() != null) {
+      if (tree.is(Tree.Kind.NEW_CLASS)) {
+        if (((NewClassTree) tree).classBody() != null) {
           return false;
         }
         arguments = ((NewClassTree) tree).arguments();
