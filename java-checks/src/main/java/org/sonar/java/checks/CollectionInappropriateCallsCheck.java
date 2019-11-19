@@ -81,7 +81,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
       if (JUtils.isParametrized(collectionType)) {
         message = "A \"{0}<{1}>\" cannot contain a \"{2}\"";
       } else {
-        message = "\"{0}\" is a Collection\"<{1}>\" which cannot contain a \"{2}\"";
+        message = "\"{0}\" is a \"Collection<{1}>\" which cannot contain a \"{2}\"";
       }
       reportIssue(ExpressionUtils.methodName(tree), MessageFormat.format(message, collectionType, collectionParameterType, argumentType));
     }
