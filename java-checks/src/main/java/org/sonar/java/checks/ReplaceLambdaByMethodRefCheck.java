@@ -222,8 +222,32 @@ public class ReplaceLambdaByMethodRefCheck extends SubscriptionVisitor {
     ExpressionTree methodSelect = ((MethodInvocationTree) tree).methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-      return expression.is(Tree.Kind.IDENTIFIER) && parameters.get(0).symbol().equals(((IdentifierTree) expression).symbol());
+      Symbol parameterSymbol = parameters.get(0).symbol();
+      return expression.is(Tree.Kind.IDENTIFIER) &&
+        !parameterSymbol.isUnknown() &&
+        !isAmbiguous((MethodInvocationTree) tree, parameterSymbol) &&
+        parameterSymbol.equals(((IdentifierTree) expression).symbol());
     }
     return false;
+  }
+
+  /**
+   * This is a crude way to shutdown the FPs when method reference is ambiguous in case of lambda like x -> x.foo()
+   * Full resolution algorithm is described in JLS 15.13.1
+   */
+  private static boolean isAmbiguous(MethodInvocationTree tree, Symbol parameterSymbol) {
+    Symbol method = tree.symbol();
+    Symbol.TypeSymbol methodOwner = (Symbol.TypeSymbol) method.owner();
+    if (methodOwner.isUnknown() || method.isUnknown()) {
+      return true;
+    }
+    // suitable method is instance method with no parameters, or static method with single parameter of the same type as lambda argument
+    return methodOwner.lookupSymbols(method.name())
+      .stream()
+      .filter(Symbol::isMethodSymbol)
+      .map(s -> (Symbol.MethodSymbol) s)
+      .filter(m -> (!m.isStatic() && m.parameterTypes().isEmpty())
+        ||  (m.isStatic() && m.parameterTypes().size() == 1 && m.parameterTypes().get(0).equals(parameterSymbol.type())))
+      .count() > 1;
   }
 }

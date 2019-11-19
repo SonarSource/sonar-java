@@ -1,5 +1,6 @@
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -168,3 +169,41 @@ public class D {
     bar(new D(param)::foo);
   }
 }
+
+class AmbiguousMethods {
+
+  public static void main(String[] args) {
+    Function<Ambiguous, String> f = a -> a.f();  // Compliant, A::f is ambiguous
+
+    Function<NotAmbiguous1, String> f2 = a -> a.f();  // Noncompliant
+    Function<NotAmbiguous2, String> f3 = a -> a.f(a);  // FN, could be replaced by NotAmbiguous2::f
+
+    Function<Ambiguous, String> f4 = a -> a.unknown();  // Compliant, A::f is ambiguous
+    Function<Unknown, String> f4 = a -> a.unknown();  // Compliant, A::f is ambiguous
+  }
+}
+
+class Ambiguous {
+
+  String f() {
+    return "";
+  }
+
+  static String f(Ambiguous a) {
+    return "";
+  }
+
+}
+
+class NotAmbiguous1 {
+  String f() {
+    return "";
+  }
+}
+
+class NotAmbiguous2 {
+  static String f(NotAmbiguous2 a) {
+    return "";
+  }
+}
+
