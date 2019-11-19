@@ -254,3 +254,18 @@ class FlatMapUsage {
       .filter(i -> !used.contains(i)); // Compliant - list of lists is flattened into a list of integers
   }
 }
+
+class Animal {}
+class Color {}
+abstract class ColorList implements java.util.List<Color> {}
+abstract class SpecificColorList extends ColorList {}
+
+class TestColorList {
+  void foo(ColorList colors, SpecificColorList specificColors, Color c, Animal a) {
+    colors.remove(c);
+    specificColors.remove(c);
+
+    colors.remove(a); // Noncompliant
+    specificColors.remove(a); // Noncompliant
+  }
+}

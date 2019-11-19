@@ -100,15 +100,13 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   private static Type getTypeArgument(Type collectionType) {
     if (collectionType.is("java.util.Collection") && JUtils.isParametrized(collectionType)) {
       return JUtils.typeArguments(collectionType).get(0);
-    } else if (JUtils.isParametrized(collectionType)) {
-      return JUtils.directSuperTypes(collectionType)
-        .stream()
-        .map(CollectionInappropriateCallsCheck::getTypeArgument)
-        .filter(Objects::nonNull)
-        .findFirst()
-        .orElse(null);
     }
-    return null;
+    return JUtils.directSuperTypes(collectionType)
+      .stream()
+      .map(CollectionInappropriateCallsCheck::getTypeArgument)
+      .filter(Objects::nonNull)
+      .findFirst()
+      .orElse(null);
   }
 
   private static boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
