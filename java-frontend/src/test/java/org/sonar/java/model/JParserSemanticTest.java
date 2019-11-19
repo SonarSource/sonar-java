@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -54,9 +52,9 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -1185,6 +1183,19 @@ class JParserSemanticTest {
     assertThat(JUtils.parameterAnnotations(cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding)), 0).annotations().size())
       .isEqualTo(JUtils.parameterAnnotations(m.symbol(), 0).annotations().size())
       .isEqualTo(1);
+  }
+
+  @Test
+  void annotation_on_var_type_local_variable() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() { @Annotation var v = 42; } }" +
+      " @java.lang.annotation.Target({java.lang.annotation.ElementType.LOCAL_VARIABLE}) @interface Annotation { }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl variable = (VariableTreeImpl) m.block().body().get(0);
+
+    List<SymbolMetadata.AnnotationInstance> annotations = variable.symbol().metadata().annotations();
+    assertThat(annotations).hasSize(1);
+    assertThat(annotations.get(0).symbol().name()).isEqualTo("Annotation");
   }
 
   /**
