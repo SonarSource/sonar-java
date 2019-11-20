@@ -91,11 +91,6 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void get_file_key() {
-    assertThat(context.getFileKey()).isEqualTo(JAVA_INPUT_FILE.file().getAbsolutePath());
-  }
-
-  @Test
   public void get_java_version() {
     assertThat(context.getJavaVersion()).isNotNull();
   }
@@ -103,19 +98,6 @@ public class DefaultJavaFileScannerContextTest {
   @Test
   public void get_file_content() {
     assertThat(context.getFileContent()).isEqualTo("content");
-  }
-
-  @Test
-  public void get_file() {
-    assertThat(context.getFile()).isEqualTo(JAVA_INPUT_FILE.file());
-  }
-
-  @Test
-  public void add_issue_with_file() {
-    context.addIssue(JAVA_FILE, CHECK, 1, "msg");
-
-    assertThat(reportedMessage.getMessage()).isEqualTo("msg");
-    assertThat(reportedMessage.getInputComponent()).isEqualTo(JAVA_INPUT_FILE);
   }
 
   @Test
@@ -276,16 +258,6 @@ public class DefaultJavaFileScannerContextTest {
       reportedMessage = (AnalyzerMessage) invocation.getArguments()[0];
       return null;
     }).when(sonarComponents).reportIssue(any(AnalyzerMessage.class));
-
-    doAnswer(invocation -> {
-      Integer cost = invocation.getArgument(4);
-      reportedMessage = new AnalyzerMessage(invocation.getArgument(1),
-        JAVA_INPUT_FILE,
-        null,
-        invocation.getArgument(3),
-        cost != null ? cost : 0);
-      return null;
-    }).when(sonarComponents).addIssue(any(File.class), any(JavaCheck.class), anyInt(), anyString(), any());
 
     doAnswer(invocation -> {
       Integer cost = invocation.getArgument(4);

@@ -101,26 +101,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     return fileParsed;
   }
 
-  /**
-   * @deprecated since SonarJava 5.12 - Use key of InputFile instead, using {@link #getInputFile()}.
-   */
-  @Deprecated
-  @Override
-  public String getFileKey() {
-    return inputFile.file().getAbsolutePath();
-  }
-
-  /**
-   * @deprecated since SonarJava 5.12 - Use 'reportIssue' instead, or dedicated method to report issue directly on file or project
-   */
-  @Deprecated
-  @Override
-  public void addIssue(File file, JavaCheck check, int line, String message) {
-    if (sonarComponents != null) {
-      sonarComponents.addIssue(file, check, line, message, null);
-    }
-  }
-
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
     reportIssue(javaCheck, tree, message, Collections.emptyList(), null);
@@ -180,15 +160,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
       analyzerMessage.flows.add(sonarqubeFlow);
     }
     return analyzerMessage;
-  }
-
-  /**
-   * @deprecated since SonarJava 5.12 - Rely on {@link #getInputFile()} instead
-   */
-  @Deprecated
-  @Override
-  public File getFile() {
-    return inputFile.file();
   }
 
   @Override
