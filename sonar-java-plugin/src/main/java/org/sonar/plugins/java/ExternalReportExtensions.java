@@ -22,7 +22,6 @@ package org.sonar.plugins.java;
 import org.sonar.api.Plugin.Context;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
-import org.sonar.api.utils.Version;
 import org.sonar.java.externalreport.CheckstyleSensor;
 import org.sonar.java.externalreport.ExternalRulesDefinition;
 import org.sonar.java.externalreport.PmdSensor;
@@ -42,43 +41,41 @@ public final class ExternalReportExtensions {
     context.addExtension(PmdSensor.class);
     context.addExtension(SpotBugsSensor.class);
 
-    boolean externalIssuesSupported = context.getSonarQubeVersion().isGreaterThanOrEqual(Version.create(7, 2));
-    if (externalIssuesSupported) {
-      context.addExtension(new ExternalRulesDefinition(CheckstyleSensor.RULE_LOADER, CheckstyleSensor.LINTER_KEY));
-      context.addExtension(
-        PropertyDefinition.builder(CheckstyleSensor.REPORT_PROPERTY_KEY)
-          .name("Checkstyle Report Files")
-          .description("Paths (absolute or relative) to xml files with Checkstyle issues.")
-          .category(EXTERNAL_ANALYZERS_CATEGORY)
-          .subCategory(JAVA_SUBCATEGORY)
-          .onQualifiers(Qualifiers.PROJECT)
-          .multiValues(true)
-          .build());
+    context.addExtension(new ExternalRulesDefinition(CheckstyleSensor.RULE_LOADER, CheckstyleSensor.LINTER_KEY));
+    context.addExtension(
+      PropertyDefinition.builder(CheckstyleSensor.REPORT_PROPERTY_KEY)
+        .name("Checkstyle Report Files")
+        .description("Paths (absolute or relative) to xml files with Checkstyle issues.")
+        .category(EXTERNAL_ANALYZERS_CATEGORY)
+        .subCategory(JAVA_SUBCATEGORY)
+        .onQualifiers(Qualifiers.PROJECT)
+        .multiValues(true)
+        .build());
 
-      context.addExtension(new ExternalRulesDefinition(PmdSensor.RULE_LOADER, PmdSensor.LINTER_KEY));
-      context.addExtension(
-        PropertyDefinition.builder(PmdSensor.REPORT_PROPERTY_KEY)
-          .name("PMD Report Files")
-          .description("Paths (absolute or relative) to xml files with PMD issues.")
-          .category(EXTERNAL_ANALYZERS_CATEGORY)
-          .subCategory(JAVA_SUBCATEGORY)
-          .onQualifiers(Qualifiers.PROJECT)
-          .multiValues(true)
-          .build());
+    context.addExtension(new ExternalRulesDefinition(PmdSensor.RULE_LOADER, PmdSensor.LINTER_KEY));
+    context.addExtension(
+      PropertyDefinition.builder(PmdSensor.REPORT_PROPERTY_KEY)
+        .name("PMD Report Files")
+        .description("Paths (absolute or relative) to xml files with PMD issues.")
+        .category(EXTERNAL_ANALYZERS_CATEGORY)
+        .subCategory(JAVA_SUBCATEGORY)
+        .onQualifiers(Qualifiers.PROJECT)
+        .multiValues(true)
+        .build());
 
-      context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER, SpotBugsSensor.SPOTBUGS_KEY));
-      context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER, SpotBugsSensor.FINDSECBUGS_KEY));
-      context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.FBCONTRIB_LOADER, SpotBugsSensor.FBCONTRIB_KEY));
-      context.addExtension(
-        PropertyDefinition.builder(SpotBugsSensor.REPORT_PROPERTY_KEY)
-          .name("SpotBugs Report Files")
-          .description("Paths (absolute or relative) to xml files with SpotBugs issues.")
-          .category(EXTERNAL_ANALYZERS_CATEGORY)
-          .subCategory(JAVA_SUBCATEGORY)
-          .onQualifiers(Qualifiers.PROJECT)
-          .multiValues(true)
-          .build());
-    }
+    context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER, SpotBugsSensor.SPOTBUGS_KEY));
+    context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.FINDSECBUGS_LOADER, SpotBugsSensor.FINDSECBUGS_KEY));
+    context.addExtension(new ExternalRulesDefinition(SpotBugsSensor.FBCONTRIB_LOADER, SpotBugsSensor.FBCONTRIB_KEY));
+    context.addExtension(
+      PropertyDefinition.builder(SpotBugsSensor.REPORT_PROPERTY_KEY)
+        .name("SpotBugs Report Files")
+        .description("Paths (absolute or relative) to xml files with SpotBugs issues.")
+        .category(EXTERNAL_ANALYZERS_CATEGORY)
+        .subCategory(JAVA_SUBCATEGORY)
+        .onQualifiers(Qualifiers.PROJECT)
+        .multiValues(true)
+        .build());
   }
+
 
 }

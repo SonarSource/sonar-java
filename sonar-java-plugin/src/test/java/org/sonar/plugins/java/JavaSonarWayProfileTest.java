@@ -37,7 +37,7 @@ public class JavaSonarWayProfileTest {
   public void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
 
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(SonarVersion.SQ_73_RUNTIME);
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
@@ -61,7 +61,7 @@ public class JavaSonarWayProfileTest {
 
   @Test
   public void should_activate_hotspots_when_supported() {
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(SonarVersion.SQ_73_RUNTIME);
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
@@ -69,15 +69,6 @@ public class JavaSonarWayProfileTest {
     assertThat(rule).isNotNull();
   }
 
-  @Test
-  public void should_not_activate_hotspots_when_not_supported() {
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(SonarVersion.SQ_67_RUNTIME);
-    BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
-    profileDef.define(context);
-    BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
-    BuiltInQualityProfilesDefinition.BuiltInActiveRule rule = profile.rule(RuleKey.of("squid", "S2092"));
-    assertThat(rule).isNull();
-  }
 
   @Test
   public void should_contains_security_rules_if_present() {

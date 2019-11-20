@@ -13,7 +13,7 @@
 
   <properties>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-    <sonarlint-core.version>4.2.0.2266</sonarlint-core.version>
+    <sonarlint-core.version>4.6.0.2652</sonarlint-core.version>
   </properties>
 
   <dependencies>

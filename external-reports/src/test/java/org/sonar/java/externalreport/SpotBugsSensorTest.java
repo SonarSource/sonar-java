@@ -95,16 +95,10 @@ public class SpotBugsSensorTest {
     ExternalReportTestUtils.assertNoErrorWarnDebugLogs(logTester);
   }
 
-  @Test
-  public void no_issues_with_sonarqube_71() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting(7, 1, "spotbugsXml.xml");
-    assertThat(externalIssues).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.ERROR)).containsExactly("Import of external issues requires SonarQube 7.2 or greater.");
-  }
 
   @Test
   public void issues_with_sonarqube_72() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "spotbugsXml.xml");
+    List<ExternalIssue> externalIssues = executeSensorImporting("spotbugsXml.xml");
     assertThat(externalIssues).hasSize(1);
 
     ExternalIssue first = externalIssues.get(0);
@@ -124,7 +118,7 @@ public class SpotBugsSensorTest {
 
   @Test
   public void findsecbugs_issue() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "spotbugsXml-findsecbugs.xml");
+    List<ExternalIssue> externalIssues = executeSensorImporting("spotbugsXml-findsecbugs.xml");
     assertThat(externalIssues).hasSize(1);
 
     ExternalIssue first = externalIssues.get(0);
@@ -144,7 +138,7 @@ public class SpotBugsSensorTest {
 
   @Test
   public void fbcontrib_issue() throws Exception {
-    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "spotbugsXml-fbcontrib.xml");
+    List<ExternalIssue> externalIssues = executeSensorImporting("spotbugsXml-fbcontrib.xml");
     assertThat(externalIssues).hasSize(1);
     assertThat(externalIssues).extracting(ExternalIssue::engineId,
       ExternalIssue::ruleId,
@@ -157,14 +151,14 @@ public class SpotBugsSensorTest {
 
   @Test
   public void no_issues_without_report_paths_property() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, null);
+    List<ExternalIssue> externalIssues = executeSensorImporting(null);
     assertThat(externalIssues).isEmpty();
     ExternalReportTestUtils.assertNoErrorWarnDebugLogs(logTester);
   }
 
   @Test
   public void no_issues_with_invalid_report_path() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "invalid-path.txt");
+    List<ExternalIssue> externalIssues = executeSensorImporting("invalid-path.txt");
     assertThat(externalIssues).isEmpty();
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.WARN)))
@@ -174,7 +168,7 @@ public class SpotBugsSensorTest {
 
   @Test
   public void no_issues_with_invalid_spotbugs_file() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "not-spotbugs-file.xml");
+    List<ExternalIssue> externalIssues = executeSensorImporting("not-spotbugs-file.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
       .startsWith("Failed to import external issues report:")
@@ -183,7 +177,7 @@ public class SpotBugsSensorTest {
 
   @Test
   public void no_issues_with_invalid_line_number() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "spotbugsXml-with-invalid-line.xml");
+    List<ExternalIssue> externalIssues = executeSensorImporting("spotbugsXml-with-invalid-line.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
       .startsWith("Failed to import external issues report:")
@@ -192,7 +186,7 @@ public class SpotBugsSensorTest {
 
   @Test
   public void no_issues_with_invalid_xml_report() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "invalid-file.xml");
+    List<ExternalIssue> externalIssues = executeSensorImporting("invalid-file.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
       .startsWith("Failed to import external issues report:")
@@ -201,7 +195,7 @@ public class SpotBugsSensorTest {
 
   @Test
   public void issues_when_xml_file_has_errors() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "spotbugsXml-with-errors.xml");
+    List<ExternalIssue> externalIssues = executeSensorImporting("spotbugsXml-with-errors.xml");
     assertThat(externalIssues).hasSize(1);
 
     ExternalIssue first = externalIssues.get(0);
@@ -224,14 +218,14 @@ public class SpotBugsSensorTest {
 
   @Test
   public void no_issues_without_srcdir() throws IOException {
-    List<ExternalIssue> externalIssues = executeSensorImporting(7, 2, "spotbugsXml-without-srcdir.xml");
+    List<ExternalIssue> externalIssues = executeSensorImporting("spotbugsXml-without-srcdir.xml");
     assertThat(externalIssues).hasSize(0);
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactlyInAnyOrder(
       "Unexpected missing 'BugCollection/Project/SrcDir/text()'.");
   }
 
-  private List<ExternalIssue> executeSensorImporting(int majorVersion, int minorVersion, @Nullable String fileName) throws IOException {
-    SensorContextTester context = ExternalReportTestUtils.createContext(PROJECT_DIR, majorVersion, minorVersion);
+  private List<ExternalIssue> executeSensorImporting(@Nullable String fileName) throws IOException {
+    SensorContextTester context = ExternalReportTestUtils.createContext(PROJECT_DIR);
     if (fileName != null) {
       File reportFile = ExternalReportTestUtils.generateReport(PROJECT_DIR, tmp, fileName);
       context.settings().setProperty("sonar.java.spotbugs.reportPaths", reportFile.getPath());
