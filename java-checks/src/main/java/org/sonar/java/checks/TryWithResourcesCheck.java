@@ -86,7 +86,8 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
       }
     }
 
-    return false; // Unreachable by construction because the CFG has been built on top of a NewClass element
+    // Unreachable by construction because the CFG has been built on top of a NewClass element
+    return false;
   }
 
   private static boolean newFollowedByTryStatement(CFG.Block cfgBlock) {
@@ -114,7 +115,8 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
           break;
       }
     }
-    return false; // Unreachable: by construction at least one element of the CFG.Block is a NewClass of type "java.lang.AutoCloseable"
+    // Unreachable: by construction at least one element of the CFG.Block is a NewClass of type "java.lang.AutoCloseable"
+    return false;
   }
 
   @Override
