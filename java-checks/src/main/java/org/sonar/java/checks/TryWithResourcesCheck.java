@@ -73,7 +73,7 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
     }
   }
 
-  private boolean isFollowedByTryWithFinally(Tree tree) {
+  private static boolean isFollowedByTryWithFinally(Tree tree) {
     Tree blockParent = tree.parent();
     while (blockParent != null && !blockParent.is(Tree.Kind.BLOCK)) {
       blockParent = blockParent.parent();
