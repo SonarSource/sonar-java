@@ -50,7 +50,7 @@ public class JavaRulesDefinitionTest {
 
   @Test
   public void test_creation_of_rules() {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_73_RUNTIME);
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -88,7 +88,7 @@ public class JavaRulesDefinitionTest {
     Locale defaultLocale = Locale.getDefault();
     Locale trlocale= Locale.forLanguageTag("tr-TR");
     Locale.setDefault(trlocale);
-    JavaRulesDefinition definition = new JavaRulesDefinition(SonarVersion.SQ_73_RUNTIME);
+    JavaRulesDefinition definition = new JavaRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -103,7 +103,7 @@ public class JavaRulesDefinitionTest {
   public void debug_rules() {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.debug", true);
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings.asConfig(), SonarVersion.SQ_73_RUNTIME);
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings.asConfig());
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -118,7 +118,7 @@ public class JavaRulesDefinitionTest {
     RulesDefinition.Context context = new RulesDefinition.Context();
     RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
     newRepository.createRule("correctRule");
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_73_RUNTIME);
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     JavaSonarWayProfile.Profile profile = new JavaSonarWayProfile.Profile();
     profile.ruleKeys = new ArrayList<>();
     try {
@@ -145,7 +145,7 @@ public class JavaRulesDefinitionTest {
 
   @Test
   public void test_security_hotspot() throws Exception {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_73_RUNTIME);
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -155,21 +155,10 @@ public class JavaRulesDefinitionTest {
     assertThat(hardcodedCredentialsRule.activatedByDefault()).isFalse();
   }
 
-  @Test
-  public void test_security_hotspot_lts() throws Exception {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_67_RUNTIME);
-    RulesDefinition.Context context = new RulesDefinition.Context();
-    definition.define(context);
-    RulesDefinition.Repository repository = context.repository("squid");
-
-    RulesDefinition.Rule hardcodedCredentialsRule = repository.rule("S1313");
-    assertThat(hardcodedCredentialsRule.type()).isEqualTo(RuleType.VULNERABILITY);
-    assertThat(hardcodedCredentialsRule.activatedByDefault()).isFalse();
-  }
 
   @Test
   public void test_security_standards() throws Exception {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_73_RUNTIME);
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
     RulesDefinition.Repository repository = context.repository("squid");
@@ -180,7 +169,7 @@ public class JavaRulesDefinitionTest {
 
   @Test
   public void test_security_standards_not_set_when_unsupported() throws Exception {
-    JavaRulesDefinition definition = new JavaRulesDefinition(settings, SonarVersion.SQ_67_RUNTIME);
+    JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.NewRepository repository = mock(RulesDefinition.NewRepository.class);
     RulesDefinition.NewRule newRule = mock(RulesDefinition.NewRule.class);
     when(repository.rule(any())).thenReturn(newRule);

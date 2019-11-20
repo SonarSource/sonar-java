@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -277,7 +278,7 @@ public class SonarComponentsTest {
     context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
     assertThat(sonarComponents.reportAnalysisError(parseError, inputFile)).isTrue();
 
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(V6_7, SonarQubeSide.SCANNER));
+    context.setRuntime(SonarRuntimeImpl.forSonarQube(V6_7, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
     assertThat(sonarComponents.reportAnalysisError(parseError, inputFile)).isFalse();
 
   }

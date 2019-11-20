@@ -29,8 +29,10 @@ import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
+import org.sonar.api.batch.rule.internal.NewActiveRule;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
@@ -61,7 +63,7 @@ public class XmlFileSensorTest {
 
   @Test
   public void test() throws Exception {
-    CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build());
+    CheckFactory checkFactory = new CheckFactory(activeRules());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
     DefaultInputFile xml = (DefaultInputFile) addFileWithIssue("xml");
@@ -77,9 +79,15 @@ public class XmlFileSensorTest {
     assertThat(issue.primaryLocation().textRange().start().line()).isEqualTo(5);
   }
 
+  private ActiveRules activeRules() {
+    ActiveRulesBuilder activeRulesBuilder = new ActiveRulesBuilder();
+    activeRulesBuilder.addRule(new NewActiveRule.Builder().setRuleKey(XML_RULE_KEY).build());
+    return activeRulesBuilder.build();
+  }
+
   @Test
   public void testDoNothingIfNoXmlFile() throws Exception {
-    CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build());
+    CheckFactory checkFactory = new CheckFactory(activeRules());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
     addFileWithIssue("foo");
@@ -116,7 +124,7 @@ public class XmlFileSensorTest {
 
   @Test
   public void testDoNothingIfParsingError() throws Exception {
-    CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build());
+    CheckFactory checkFactory = new CheckFactory(activeRules());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
     DefaultInputFile notXml = TestInputFileBuilder.create("moduleKey", "test.xml")
@@ -134,7 +142,7 @@ public class XmlFileSensorTest {
 
   @Test
   public void testDoNotFailAnalysisIfUnexpectedIssue() throws Exception {
-    CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build());
+    CheckFactory checkFactory = new CheckFactory(activeRules());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
     DefaultInputFile inputFile = TestInputFileBuilder.create("moduleKey", "test.xml")
@@ -167,7 +175,7 @@ public class XmlFileSensorTest {
     assertThat(descriptor.isGlobal()).isFalse();
     assertThat(descriptor.configurationPredicate().test(new MapSettings().asConfig())).isFalse();
 
-    sensor = new XmlFileSensor(new CheckFactory(new ActiveRulesBuilder().create(XML_RULE_KEY).activate().build()));
+    sensor = new XmlFileSensor(new CheckFactory(activeRules()));
     descriptor = new DefaultSensorDescriptor();
     sensor.describe(descriptor);
     assertThat(descriptor.languages()).isEmpty();

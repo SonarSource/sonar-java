@@ -33,7 +33,6 @@ import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.SonarRuntime;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.rules.RuleType;
@@ -62,20 +61,17 @@ public class JavaRulesDefinition implements RulesDefinition {
     "S3546",
     "S4011");
   private final boolean isDebugEnabled;
-  private final boolean supportsSecurityHotspots;
 
   /**
    * 'Configuration' does exists yet in SonarLint context, consequently, in standalone mode, this constructor will be used.
    * See {@link https://jira.sonarsource.com/browse/SLCORE-159}
    */
-  public JavaRulesDefinition(SonarRuntime sonarRuntime) {
+  public JavaRulesDefinition() {
     this.isDebugEnabled = false;
-    this.supportsSecurityHotspots = SecurityHotspots.securityHotspotsSupported(sonarRuntime);
   }
 
-  public JavaRulesDefinition(Configuration settings, SonarRuntime sonarRuntime) {
+  public JavaRulesDefinition(Configuration settings) {
     this.isDebugEnabled = settings.getBoolean(Java.DEBUG_RULE_KEY).orElse(false);
-    this.supportsSecurityHotspots = SecurityHotspots.securityHotspotsSupported(sonarRuntime);
   }
 
   @Override
@@ -160,19 +156,14 @@ public class JavaRulesDefinition implements RulesDefinition {
     rule.setSeverity(metadata.defaultSeverity.toUpperCase(Locale.US));
     rule.setName(metadata.title);
     rule.addTags(metadata.tags);
-    if (metadata.isSecurityHotspot() && !supportsSecurityHotspots) {
-      rule.setType(RuleType.VULNERABILITY);
-    } else {
-      rule.setType(RuleType.valueOf(metadata.type));
-    }
+    rule.setType(RuleType.valueOf(metadata.type));
+
     rule.setStatus(RuleStatus.valueOf(metadata.status.toUpperCase(Locale.US)));
     if (metadata.remediation != null) {
       rule.setDebtRemediationFunction(metadata.remediation.remediationFunction(rule.debtRemediationFunctions()));
       rule.setGapDescription(metadata.remediation.linearDesc);
     }
-    if (supportsSecurityHotspots) {
-      addSecurityStandards(rule, metadata.securityStandards);
-    }
+    addSecurityStandards(rule, metadata.securityStandards);
   }
 
   private static void addSecurityStandards(NewRule rule, SecurityStandards securityStandards) {

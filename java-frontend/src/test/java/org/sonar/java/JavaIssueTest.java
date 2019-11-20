@@ -27,6 +27,7 @@ import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
+import org.sonar.api.batch.fs.internal.DefaultInputProject;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorStorage;
@@ -40,15 +41,17 @@ import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
 public class JavaIssueTest {
 
+  private DefaultInputProject project = mock(DefaultInputProject.class);
+
   @Test
   public void testIssueCreation() {
     InputFile inputFile = inputFile();
     RuleKey ruleKey = RuleKey.of("squid", "ruleKey");
     SensorContext sensorContext = mock(SensorContext.class);
     SensorStorage storage = mock(SensorStorage.class);
-    DefaultIssue newIssue = new DefaultIssue(storage);
-    DefaultIssue newIssueOnFile = new DefaultIssue(storage);
-    DefaultIssue newIssueOnLine = new DefaultIssue(storage);
+    DefaultIssue newIssue = new DefaultIssue(project, storage);
+    DefaultIssue newIssueOnFile = new DefaultIssue(project, storage);
+    DefaultIssue newIssueOnLine = new DefaultIssue(project, storage);
     Mockito.when(sensorContext.newIssue()).thenReturn(newIssue, newIssueOnFile, newIssueOnLine);
 
     // issue with secondary locations
@@ -93,8 +96,8 @@ public class JavaIssueTest {
     RuleKey ruleKey = RuleKey.of("squid", "ruleKey");
     SensorContext sensorContext = mock(SensorContext.class);
     SensorStorage storage = mock(SensorStorage.class);
-    DefaultIssue newIssueEmptyFlow = new DefaultIssue(storage);
-    DefaultIssue newIssueWithFlow = new DefaultIssue(storage);
+    DefaultIssue newIssueEmptyFlow = new DefaultIssue(project, storage);
+    DefaultIssue newIssueWithFlow = new DefaultIssue(project, storage);
     Mockito.when(sensorContext.newIssue()).thenReturn(newIssueEmptyFlow, newIssueWithFlow);
 
     JavaIssue javaIssue = JavaIssue.create(sensorContext, ruleKey, null);
