@@ -30,6 +30,7 @@ import org.sonarqube.ws.Common.Severity;
 import org.sonarqube.ws.Issues.Issue;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 public class ExternalReportTest {
 
@@ -90,16 +91,15 @@ public class ExternalReportTest {
 
     String projectKey = "org.sonarsource.it.projects:spotbugs-external-report";
     List<Issue> issues = getExternalIssues(projectKey);
-    boolean externalIssuesSupported = orchestrator.getServer().version().isGreaterThanOrEquals(7, 2);
-    if (externalIssuesSupported) {
-      assertThat(issues).hasSize(1);
-      Issue issue = issues.get(0);
-      assertThat(issue.getComponent()).isEqualTo(projectKey + ":src/main/java/org/myapp/Main.java");
-      assertThat(issue.getRule()).isEqualTo("external_spotbugs:HE_EQUALS_USE_HASHCODE");
-      assertThat(issue.getLine()).isEqualTo(6);
-      assertThat(issue.getMessage()).isEqualTo("org.myapp.Main defines equals and uses Object.hashCode()");
-      assertThat(issue.getSeverity()).isEqualTo(Severity.MAJOR);
-      assertThat(issue.getDebt()).isEqualTo("5min");
+    if (externalIssuesSupported()) {
+      assertThat(issues).hasSize(4);
+      assertThat(issues).extracting(Issue::getComponent, Issue::getRule, Issue::getLine, Issue::getMessage, Issue::getSeverity, Issue::getDebt)
+        .containsExactlyInAnyOrder(
+          tuple(projectKey + ":src/main/java/org/myapp/Main.java", "external_spotbugs:HE_EQUALS_USE_HASHCODE", 6, "org.myapp.Main defines equals and uses Object.hashCode()", Severity.MAJOR, "5min"),
+          tuple(projectKey + ":src/main/java/org/myapp/App.java", "external_fbcontrib:DLC_DUBIOUS_LIST_COLLECTION", 14, "Class org.myapp.App defines List based fields but uses them like Sets", Severity.MAJOR, "5min"),
+          tuple(projectKey + ":src/main/java/org/myapp/App.java", "external_fbcontrib:ABC_ARRAY_BASED_COLLECTIONS", 14, "Method org.myapp.App.getGreeting(int[]) uses array as basis of collection", Severity.MAJOR, "5min"),
+          tuple(projectKey + ":src/main/java/org/myapp/App.java", "external_spotbugs:RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", 14, "Return value of java.util.List.contains(Object) ignored, but method has no side effect", Severity.MAJOR, "5min")
+        );
     } else {
       assertThat(issues).isEmpty();
     }

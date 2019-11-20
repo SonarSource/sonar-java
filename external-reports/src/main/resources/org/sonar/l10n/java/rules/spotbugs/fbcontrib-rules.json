@@ -1,0 +1,1850 @@
+[
+  {
+    "key": "ABC_ARRAY_BASED_COLLECTIONS",
+    "name": "Method uses array as basis of collection",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#ABC_ARRAY_BASED_COLLECTIONS"
+  },
+  {
+    "key": "ACEM_ABSTRACT_CLASS_EMPTY_METHODS",
+    "name": "Empty method could be declared abstract",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#ACEM_ABSTRACT_CLASS_EMPTY_METHODS"
+  },
+  {
+    "key": "AFBR_ABNORMAL_FINALLY_BLOCK_RETURN",
+    "name": "Method has abnormal exit from finally block",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#AFBR_ABNORMAL_FINALLY_BLOCK_RETURN"
+  },
+  {
+    "key": "AIOB_ARRAY_INDEX_OUT_OF_BOUNDS",
+    "name": "Method attempts to access an array element outside the array\u0027s size",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#AIOB_ARRAY_INDEX_OUT_OF_BOUNDS"
+  },
+  {
+    "key": "AIOB_ARRAY_STORE_TO_NULL_REFERENCE",
+    "name": "Method attempts to store an array element to an array that does not appear to be allocated",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#AIOB_ARRAY_STORE_TO_NULL_REFERENCE"
+  },
+  {
+    "key": "AI_ANNOTATION_ISSUES_NEEDS_NULLABLE",
+    "name": "Method that can return null, is missing a @Nullable annotation",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#AI_ANNOTATION_ISSUES_NEEDS_NULLABLE"
+  },
+  {
+    "key": "AOM_ABSTRACT_OVERRIDDEN_METHOD",
+    "name": "Abstract method overrides a concrete implementation",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#AOM_ABSTRACT_OVERRIDDEN_METHOD"
+  },
+  {
+    "key": "AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE",
+    "name": "Method uses 1 element array to simulate call by reference",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE"
+  },
+  {
+    "key": "BAS_BLOATED_ASSIGNMENT_SCOPE",
+    "name": "Method assigns a variable in a larger scope than is needed",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#BAS_BLOATED_ASSIGNMENT_SCOPE"
+  },
+  {
+    "key": "BED_BOGUS_EXCEPTION_DECLARATION",
+    "name": "Non derivable method declares throwing an exception that isn\u0027t thrown",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#BED_BOGUS_EXCEPTION_DECLARATION"
+  },
+  {
+    "key": "BED_HIERARCHICAL_EXCEPTION_DECLARATION",
+    "name": "Method declares throwing two or more exceptions related by inheritance",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#BED_HIERARCHICAL_EXCEPTION_DECLARATION"
+  },
+  {
+    "key": "BL_BURYING_LOGIC",
+    "name": "Method buries logic to the right (indented) more than it needs to be",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#BL_BURYING_LOGIC"
+  },
+  {
+    "key": "BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS",
+    "name": "Method uses backported libraries that are now built in",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS"
+  },
+  {
+    "key": "BSB_BLOATED_SYNCHRONIZED_BLOCK",
+    "name": "Method overly synchronizes a block of code",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#BSB_BLOATED_SYNCHRONIZED_BLOCK"
+  },
+  {
+    "key": "CAAL_CONFUSING_ARRAY_AS_LIST",
+    "name": "Method calls Array.asList on an array of primitive values",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CAAL_CONFUSING_ARRAY_AS_LIST"
+  },
+  {
+    "key": "CAO_CONFUSING_AUTOBOXED_OVERLOADING",
+    "name": "Class defines methods which confuse Character with int parameters",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CAO_CONFUSING_AUTOBOXED_OVERLOADING"
+  },
+  {
+    "key": "CBC_CONTAINS_BASED_CONDITIONAL",
+    "name": "This method uses an excessively complex conditional that can be replaced with Set.contains",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CBC_CONTAINS_BASED_CONDITIONAL"
+  },
+  {
+    "key": "CBX_CUSTOM_BUILT_XML",
+    "name": "Method builds XML strings through ad hoc concatenation",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CBX_CUSTOM_BUILT_XML"
+  },
+  {
+    "key": "CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY",
+    "name": "Method gets and sets a value of a ConcurrentHashMap in a racy manner",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY"
+  },
+  {
+    "key": "CCNE_COMPARE_CLASS_EQUALS_NAME",
+    "name": "Method compares class name instead of comparing class",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CCNE_COMPARE_CLASS_EQUALS_NAME"
+  },
+  {
+    "key": "CC_CYCLOMATIC_COMPLEXITY",
+    "name": "Method is excessively complex",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CC_CYCLOMATIC_COMPLEXITY"
+  },
+  {
+    "key": "CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS",
+    "name": "Method returns the result of invoking equals() on EqualsBuilder",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS"
+  },
+  {
+    "key": "CE_CLASS_ENVY",
+    "name": "Method excessively uses methods of another class",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CE_CLASS_ENVY"
+  },
+  {
+    "key": "CFS_CONFUSING_FUNCTION_SEMANTICS",
+    "name": "Method returns modified parameter",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CFS_CONFUSING_FUNCTION_SEMANTICS"
+  },
+  {
+    "key": "CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE",
+    "name": "Method returns the result of invoking hashCode() on HashCodeBuilder",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE"
+  },
+  {
+    "key": "CLI_CONSTANT_LIST_INDEX",
+    "name": "Method accesses list or array with constant index",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CLI_CONSTANT_LIST_INDEX"
+  },
+  {
+    "key": "CNC_COLLECTION_NAMING_CONFUSION",
+    "name": "Collection variable is named with a different type of collection in the name",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CNC_COLLECTION_NAMING_CONFUSION"
+  },
+  {
+    "key": "COM_COPIED_OVERRIDDEN_METHOD",
+    "name": "Method is implemented with an exact copy of its superclass\u0027 method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#COM_COPIED_OVERRIDDEN_METHOD"
+  },
+  {
+    "key": "COM_PARENT_DELEGATED_CALL",
+    "name": "Method merely delegates to its superclass\u0027s version",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#COM_PARENT_DELEGATED_CALL"
+  },
+  {
+    "key": "CRF_CONFLATING_RESOURCES_AND_FILES",
+    "name": "This method accesses URL resources using the File API",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CRF_CONFLATING_RESOURCES_AND_FILES"
+  },
+  {
+    "key": "CSBTS_COMMONS_STRING_BUILDER_TOSTRING",
+    "name": "Method returns the result of invoking toString() without intermediate invocation of append() in ToStringBuilder",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CSBTS_COMMONS_STRING_BUILDER_TOSTRING"
+  },
+  {
+    "key": "CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING",
+    "name": "This method uses an unknown character encoding literal",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING"
+  },
+  {
+    "key": "CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET",
+    "name": "This method needlessly uses a String literal as a Charset encoding",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET"
+  },
+  {
+    "key": "CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME",
+    "name": "This method should use a StandardCharsets.XXX.name() to specify an encoding",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME"
+  },
+  {
+    "key": "CTU_CONFLICTING_TIME_UNITS",
+    "name": "This method performs arithmetic operations on time values with different units",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CTU_CONFLICTING_TIME_UNITS"
+  },
+  {
+    "key": "CU_CLONE_USABILITY_MISMATCHED_RETURN",
+    "name": "Clone method declares it returns a type different than the owning class",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CU_CLONE_USABILITY_MISMATCHED_RETURN"
+  },
+  {
+    "key": "CU_CLONE_USABILITY_OBJECT_RETURN",
+    "name": "Clone method declares it returns an Object",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CU_CLONE_USABILITY_OBJECT_RETURN"
+  },
+  {
+    "key": "CU_CLONE_USABILITY_THROWS",
+    "name": "Clone method declares it throws CloneNotSupportedException",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CU_CLONE_USABILITY_THROWS"
+  },
+  {
+    "key": "CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT",
+    "name": "Method performs a contravariant array assignment",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT"
+  },
+  {
+    "key": "CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT",
+    "name": "Method performs a contravariant array element assignment",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT"
+  },
+  {
+    "key": "DDC_DOUBLE_DATE_COMPARISON",
+    "name": "Method uses two date comparisons when one would do",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#DDC_DOUBLE_DATE_COMPARISON"
+  },
+  {
+    "key": "DLC_DUBIOUS_LIST_COLLECTION",
+    "name": "Class defines List based fields but uses them like Sets",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#DLC_DUBIOUS_LIST_COLLECTION"
+  },
+  {
+    "key": "DMC_DUBIOUS_MAP_COLLECTION",
+    "name": "Class holds a map-type field, but uses it as only a List",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#DMC_DUBIOUS_MAP_COLLECTION"
+  },
+  {
+    "key": "DRE_DECLARED_RUNTIME_EXCEPTION",
+    "name": "Method declares RuntimeException in throws clause",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#DRE_DECLARED_RUNTIME_EXCEPTION"
+  },
+  {
+    "key": "DSOC_DUBIOUS_SET_OF_COLLECTIONS",
+    "name": "Method uses a set of collections",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#DSOC_DUBIOUS_SET_OF_COLLECTIONS"
+  },
+  {
+    "key": "DTEP_DEPRECATED_TYPESAFE_ENUM_PATTERN",
+    "name": "Class appears to implement the old style type safe enum pattern",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#DTEP_DEPRECATED_TYPESAFE_ENUM_PATTERN"
+  },
+  {
+    "key": "DWI_DELETING_WHILE_ITERATING",
+    "name": "Method deletes collection element while iterating",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#DWI_DELETING_WHILE_ITERATING"
+  },
+  {
+    "key": "DWI_MODIFYING_WHILE_ITERATING",
+    "name": "Method modifies collection element while iterating",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#DWI_MODIFYING_WHILE_ITERATING"
+  },
+  {
+    "key": "EXS_EXCEPTION_SOFTENING_HAS_CHECKED",
+    "name": "Constrained method converts checked exception to unchecked instead of another allowable checked exception",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#EXS_EXCEPTION_SOFTENING_HAS_CHECKED"
+  },
+  {
+    "key": "EXS_EXCEPTION_SOFTENING_NO_CHECKED",
+    "name": "Constrained method converts checked exception to unchecked",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#EXS_EXCEPTION_SOFTENING_NO_CHECKED"
+  },
+  {
+    "key": "EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS",
+    "name": "Unconstrained method converts checked exception to unchecked",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"
+  },
+  {
+    "key": "EXS_EXCEPTION_SOFTENING_RETURN_FALSE",
+    "name": "method converts an exception into a boolean \u0027error code\u0027 value",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#EXS_EXCEPTION_SOFTENING_RETURN_FALSE"
+  },
+  {
+    "key": "FCBL_FIELD_COULD_BE_LOCAL",
+    "name": "Class defines fields that are used only as locals",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#FCBL_FIELD_COULD_BE_LOCAL"
+  },
+  {
+    "key": "FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY",
+    "name": "Class has a circular dependency with other classes",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY"
+  },
+  {
+    "key": "FII_AVOID_CONTAINS_ON_COLLECTED_STREAM",
+    "name": "Method calls contains() on a collected lambda expression",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#FII_AVOID_CONTAINS_ON_COLLECTED_STREAM"
+  },
+  {
+    "key": "FII_AVOID_SIZE_ON_COLLECTED_STREAM",
+    "name": "Method calls size() on a collected lambda expression",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#FII_AVOID_SIZE_ON_COLLECTED_STREAM"
+  },
+  {
+    "key": "FII_COMBINE_FILTERS",
+    "name": "Method implements a stream using back to back filters",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#FII_COMBINE_FILTERS"
+  },
+  {
+    "key": "FII_USE_ANY_MATCH",
+    "name": "Method suboptimally finds any match in a stream",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#FII_USE_ANY_MATCH"
+  },
+  {
+    "key": "FII_USE_FIND_FIRST",
+    "name": "Method collects a List from a stream() just to get the first element",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#FII_USE_FIND_FIRST"
+  },
+  {
+    "key": "FII_USE_FUNCTION_IDENTITY",
+    "name": "Method declares an identity lambda function rather than using Function.identity()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#FII_USE_FUNCTION_IDENTITY"
+  },
+  {
+    "key": "FII_USE_METHOD_REFERENCE",
+    "name": "Method creates an anonymous lambda expression instead of specifying a method reference",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#FII_USE_METHOD_REFERENCE"
+  },
+  {
+    "key": "FPL_FLOATING_POINT_LOOPS",
+    "name": "Method uses floating point indexed loops",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#FPL_FLOATING_POINT_LOOPS"
+  },
+  {
+    "key": "FP_FINAL_PARAMETERS",
+    "name": "Method does not define a parameter as final, but could",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#FP_FINAL_PARAMETERS"
+  },
+  {
+    "key": "HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD",
+    "name": "Unreleased HttpRequest network resources (field)",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD"
+  },
+  {
+    "key": "HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL",
+    "name": "Unreleased HttpRequest network resources (local)",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL"
+  },
+  {
+    "key": "HES_EXECUTOR_NEVER_SHUTDOWN",
+    "name": "ExecutorService field doesn\u0027t ever get shutdown",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#HES_EXECUTOR_NEVER_SHUTDOWN"
+  },
+  {
+    "key": "HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN",
+    "name": "An ExecutorService isn\u0027t shutdown before the reference to it is lost",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN"
+  },
+  {
+    "key": "HES_LOCAL_EXECUTOR_SERVICE",
+    "name": "Suspicious Local Executor Service",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#HES_LOCAL_EXECUTOR_SERVICE"
+  },
+  {
+    "key": "ICA_INVALID_CONSTANT_ARGUMENT",
+    "name": "Method passes an invalid value as a method argument",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#ICA_INVALID_CONSTANT_ARGUMENT"
+  },
+  {
+    "key": "IICU_INCORRECT_INTERNAL_CLASS_USE",
+    "name": "Class relies on internal API classes",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IICU_INCORRECT_INTERNAL_CLASS_USE"
+  },
+  {
+    "key": "IKNC_INCONSISTENT_HTTP_ATTRIBUTE_CASING",
+    "name": "Method uses the same HttpSession attribute name but with different casing",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IKNC_INCONSISTENT_HTTP_ATTRIBUTE_CASING"
+  },
+  {
+    "key": "IKNC_INCONSISTENT_HTTP_PARAM_CASING",
+    "name": "Method uses the same HttpRequest parameter name but with different casing",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IKNC_INCONSISTENT_HTTP_PARAM_CASING"
+  },
+  {
+    "key": "IMC_IMMATURE_CLASS_BAD_SERIALVERSIONUID",
+    "name": "Class defines a computed serialVersionUID that doesn\u0027t equate to the calculated value",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IMC_IMMATURE_CLASS_BAD_SERIALVERSIONUID"
+  },
+  {
+    "key": "IMC_IMMATURE_CLASS_IDE_GENERATED_PARAMETER_NAMES",
+    "name": "Method uses IDE generated parameter names",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IMC_IMMATURE_CLASS_IDE_GENERATED_PARAMETER_NAMES"
+  },
+  {
+    "key": "IMC_IMMATURE_CLASS_LOWER_CLASS",
+    "name": "Class does not start with an upper case letter",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IMC_IMMATURE_CLASS_LOWER_CLASS"
+  },
+  {
+    "key": "IMC_IMMATURE_CLASS_NO_EQUALS",
+    "name": "Class does not implement an equals method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IMC_IMMATURE_CLASS_NO_EQUALS"
+  },
+  {
+    "key": "IMC_IMMATURE_CLASS_NO_HASHCODE",
+    "name": "Class does not implement a hashCode method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IMC_IMMATURE_CLASS_NO_HASHCODE"
+  },
+  {
+    "key": "IMC_IMMATURE_CLASS_NO_PACKAGE",
+    "name": "Class is defined in the default package",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IMC_IMMATURE_CLASS_NO_PACKAGE"
+  },
+  {
+    "key": "IMC_IMMATURE_CLASS_NO_TOSTRING",
+    "name": "Class does not implement a toString method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IMC_IMMATURE_CLASS_NO_TOSTRING"
+  },
+  {
+    "key": "IMC_IMMATURE_CLASS_PRINTSTACKTRACE",
+    "name": "Method prints the stack trace to the console",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IMC_IMMATURE_CLASS_PRINTSTACKTRACE"
+  },
+  {
+    "key": "IMC_IMMATURE_CLASS_UPPER_PACKAGE",
+    "name": "Class is defined in a package with upper case characters",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IMC_IMMATURE_CLASS_UPPER_PACKAGE"
+  },
+  {
+    "key": "IMC_IMMATURE_CLASS_VAR_NAME",
+    "name": "Class defines a field or local variable named \u0027var\u0027",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IMC_IMMATURE_CLASS_VAR_NAME"
+  },
+  {
+    "key": "IMC_IMMATURE_CLASS_WRONG_FIELD_ORDER",
+    "name": "Class orders instance fields before static fields",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IMC_IMMATURE_CLASS_WRONG_FIELD_ORDER"
+  },
+  {
+    "key": "IOI_COPY_WITH_READER",
+    "name": "Method performs bulk stream copy with a java.io.Reader derived input",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IOI_COPY_WITH_READER"
+  },
+  {
+    "key": "IOI_DOUBLE_BUFFER_COPY",
+    "name": "Method passes a Buffered Stream/Reader/Writer to a already buffering copy method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IOI_DOUBLE_BUFFER_COPY"
+  },
+  {
+    "key": "IOI_UNENDED_ZLIB_OBJECT",
+    "name": "Method creates a ZLIB Inflater or Deflater and doesn\u0027t appear to end() it",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IOI_UNENDED_ZLIB_OBJECT"
+  },
+  {
+    "key": "IOI_USE_OF_FILE_STREAM_CONSTRUCTORS",
+    "name": "Method uses a FileInputStream or FileOutputStream constructor",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IOI_USE_OF_FILE_STREAM_CONSTRUCTORS"
+  },
+  {
+    "key": "IPU_IMPROPER_PROPERTIES_USE",
+    "name": "Method puts non-String values into a Properties object",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IPU_IMPROPER_PROPERTIES_USE"
+  },
+  {
+    "key": "IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY",
+    "name": "Method uses Properties.put instead of Properties.setProperty",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY"
+  },
+  {
+    "key": "ISB_EMPTY_STRING_APPENDING",
+    "name": "Method concatenates an empty string to effect type conversion",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#ISB_EMPTY_STRING_APPENDING"
+  },
+  {
+    "key": "ISB_INEFFICIENT_STRING_BUFFERING",
+    "name": "Method passes simple concatenating string in StringBuffer or StringBuilder append",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#ISB_INEFFICIENT_STRING_BUFFERING"
+  },
+  {
+    "key": "ISB_TOSTRING_APPENDING",
+    "name": "Method concatenates the result of a toString() call",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#ISB_TOSTRING_APPENDING"
+  },
+  {
+    "key": "ITC_INHERITANCE_TYPE_CHECKING",
+    "name": "Method uses instanceof on multiple types to arbitrate logic",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#ITC_INHERITANCE_TYPE_CHECKING"
+  },
+  {
+    "key": "ITU_INAPPROPRIATE_TOSTRING_USE",
+    "name": "Method performs algorithmic operations on the result of a toString() call",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#ITU_INAPPROPRIATE_TOSTRING_USE"
+  },
+  {
+    "key": "JPAI_HC_EQUALS_ON_MANAGED_ENTITY",
+    "name": "JPA Entity with Generated @Id defined with hashCode/equals",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JPAI_HC_EQUALS_ON_MANAGED_ENTITY"
+  },
+  {
+    "key": "JPAI_IGNORED_MERGE_RESULT",
+    "name": "Method ignores the return value of EntityManager.merge",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JPAI_IGNORED_MERGE_RESULT"
+  },
+  {
+    "key": "JPAI_INEFFICIENT_EAGER_FETCH",
+    "name": "OneToMany join specifies 1+n EAGER join",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JPAI_INEFFICIENT_EAGER_FETCH"
+  },
+  {
+    "key": "JPAI_NON_PROXIED_TRANSACTION_CALL",
+    "name": "Method annotated with @Transactional is called from a non Spring proxy",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JPAI_NON_PROXIED_TRANSACTION_CALL"
+  },
+  {
+    "key": "JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING",
+    "name": "Method does not specify how to handle transaction when exception is thrown",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING"
+  },
+  {
+    "key": "JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD",
+    "name": "Method has a Spring @Transactional annotation on it, but is non-public",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD"
+  },
+  {
+    "key": "JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING",
+    "name": "Method declares handling a transactional exception that won\u0027t be thrown",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING"
+  },
+  {
+    "key": "JVR_JDBC_VENDOR_RELIANCE",
+    "name": "Method uses JDBC vendor specific classes and methods",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JVR_JDBC_VENDOR_RELIANCE"
+  },
+  {
+    "key": "JXI_GET_ENDPOINT_CONSUMES_CONTENT",
+    "name": "JAX-RS Method implements a GET request but consumes input",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JXI_GET_ENDPOINT_CONSUMES_CONTENT"
+  },
+  {
+    "key": "JXI_INVALID_CONTEXT_PARAMETER_TYPE",
+    "name": "JAX-RS Method specifies an invalid @Context parameter type",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JXI_INVALID_CONTEXT_PARAMETER_TYPE"
+  },
+  {
+    "key": "JXI_PARM_PARAM_NOT_FOUND_IN_PATH",
+    "name": "JAX-RS Method specifies non-resolveable @PathParam",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JXI_PARM_PARAM_NOT_FOUND_IN_PATH"
+  },
+  {
+    "key": "JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT",
+    "name": "JAX-RS Method defines a parameter that has no @*Param or @Context annotation, or @Consumes method annotation",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT"
+  },
+  {
+    "key": "LEST_LOST_EXCEPTION_STACK_TRACE",
+    "name": "Method throws alternative exception from catch block without history",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LEST_LOST_EXCEPTION_STACK_TRACE"
+  },
+  {
+    "key": "LGO_LINGERING_GRAPHICS_OBJECT",
+    "name": "Method allocations a java.awt.Graphics object without disposing it",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LGO_LINGERING_GRAPHICS_OBJECT"
+  },
+  {
+    "key": "LII_LIST_INDEXED_ITERATING",
+    "name": "Method uses integer based for loops to iterate over a List",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LII_LIST_INDEXED_ITERATING"
+  },
+  {
+    "key": "LO_APPENDED_STRING_IN_FORMAT_STRING",
+    "name": "Method passes a concatenated string to SLF4J\u0027s or Log4j2\u0027s format string",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_APPENDED_STRING_IN_FORMAT_STRING"
+  },
+  {
+    "key": "LO_EMBEDDED_SIMPLE_STRING_FORMAT_IN_FORMAT_STRING",
+    "name": "Method passes a simple String.format result to an SLF4J\u0027s or Log4j2\u0027s format string",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_EMBEDDED_SIMPLE_STRING_FORMAT_IN_FORMAT_STRING"
+  },
+  {
+    "key": "LO_EXCEPTION_WITH_LOGGER_PARMS",
+    "name": "Method creates exception with logger parameter markers in message",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_EXCEPTION_WITH_LOGGER_PARMS"
+  },
+  {
+    "key": "LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS",
+    "name": "Method passes an incorrect number of parameters to an SLF4J or Log4j2 logging statement",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS"
+  },
+  {
+    "key": "LO_INVALID_FORMATTING_ANCHOR",
+    "name": "Method attempts to log using numbered formatting anchors",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_INVALID_FORMATTING_ANCHOR"
+  },
+  {
+    "key": "LO_INVALID_STRING_FORMAT_NOTATION",
+    "name": "Method attempts to log using String.format notation",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_INVALID_STRING_FORMAT_NOTATION"
+  },
+  {
+    "key": "LO_LOGGER_LOST_EXCEPTION_STACK_TRACE",
+    "name": "Method incorrectly passes exception as first argument to logger method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_LOGGER_LOST_EXCEPTION_STACK_TRACE"
+  },
+  {
+    "key": "LO_NON_PRIVATE_STATIC_LOGGER",
+    "name": "Class defines non private logger using a static class context",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_NON_PRIVATE_STATIC_LOGGER"
+  },
+  {
+    "key": "LO_STUTTERED_MESSAGE",
+    "name": "Method stutters exception message in logger",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_STUTTERED_MESSAGE"
+  },
+  {
+    "key": "LO_SUSPECT_LOG_CLASS",
+    "name": "Method specifies an unrelated class when allocating a Logger",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_SUSPECT_LOG_CLASS"
+  },
+  {
+    "key": "LO_SUSPECT_LOG_PARAMETER",
+    "name": "Constructor declares a Logger parameter",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_SUSPECT_LOG_PARAMETER"
+  },
+  {
+    "key": "LO_TOSTRING_PARAMETER",
+    "name": "Method explicitly calls toString() on a logger parameter",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LO_TOSTRING_PARAMETER"
+  },
+  {
+    "key": "LSC_LITERAL_STRING_COMPARISON",
+    "name": "Method makes literal string comparisons passing the literal as an argument",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LSC_LITERAL_STRING_COMPARISON"
+  },
+  {
+    "key": "LSYC_LOCAL_SYNCHRONIZED_COLLECTION",
+    "name": "Method creates local variable-based synchronized collection",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LSYC_LOCAL_SYNCHRONIZED_COLLECTION"
+  },
+  {
+    "key": "LUI_USE_COLLECTION_ADD",
+    "name": "Method passes a temporary one item list to Collection.addAll()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LUI_USE_COLLECTION_ADD"
+  },
+  {
+    "key": "LUI_USE_GET0",
+    "name": "Method uses collection streaming to get first item in a List",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LUI_USE_GET0"
+  },
+  {
+    "key": "LUI_USE_SINGLETON_LIST",
+    "name": "Method builds a list from one element using Arrays.asList",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#LUI_USE_SINGLETON_LIST"
+  },
+  {
+    "key": "MAC_MANUAL_ARRAY_COPY",
+    "name": "Method copies arrays manually",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MAC_MANUAL_ARRAY_COPY"
+  },
+  {
+    "key": "MDM_BIGDECIMAL_EQUALS",
+    "name": "Method calls BigDecimal.equals()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_BIGDECIMAL_EQUALS"
+  },
+  {
+    "key": "MDM_INETADDRESS_GETLOCALHOST",
+    "name": "Method calls InetAddress.getLocalHost()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_INETADDRESS_GETLOCALHOST"
+  },
+  {
+    "key": "MDM_LOCK_ISLOCKED",
+    "name": "Method tests if a lock is locked",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_LOCK_ISLOCKED"
+  },
+  {
+    "key": "MDM_PROMISCUOUS_SERVERSOCKET",
+    "name": "Method creates promiscuous ServerSocket object",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_PROMISCUOUS_SERVERSOCKET"
+  },
+  {
+    "key": "MDM_RANDOM_SEED",
+    "name": "Method creates insecure Random object",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_RANDOM_SEED"
+  },
+  {
+    "key": "MDM_RUNFINALIZATION",
+    "name": "Method triggers finalization",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_RUNFINALIZATION"
+  },
+  {
+    "key": "MDM_RUNTIME_EXIT_OR_HALT",
+    "name": "Method calls Runtime.exit() or Runtime.halt()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_RUNTIME_EXIT_OR_HALT"
+  },
+  {
+    "key": "MDM_SECURERANDOM",
+    "name": "Method calls deprecated SecureRandom method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_SECURERANDOM"
+  },
+  {
+    "key": "MDM_SETDEFAULTLOCALE",
+    "name": "Method calls Locale.setDefault()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_SETDEFAULTLOCALE"
+  },
+  {
+    "key": "MDM_SIGNAL_NOT_SIGNALALL",
+    "name": "Method calls Condition.signal() rather than Condition.signalAll()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_SIGNAL_NOT_SIGNALALL"
+  },
+  {
+    "key": "MDM_STRING_BYTES_ENCODING",
+    "name": "Method encodes String bytes without specifying the character encoding",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_STRING_BYTES_ENCODING"
+  },
+  {
+    "key": "MDM_THREAD_FAIRNESS",
+    "name": "Method ignores Lock\u0027s fairness settings by calling tryLock()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_THREAD_FAIRNESS"
+  },
+  {
+    "key": "MDM_THREAD_PRIORITIES",
+    "name": "Method uses suspicious thread priorities",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_THREAD_PRIORITIES"
+  },
+  {
+    "key": "MDM_THREAD_YIELD",
+    "name": "Method attempts to manually schedule threads",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_THREAD_YIELD"
+  },
+  {
+    "key": "MDM_WAIT_WITHOUT_TIMEOUT",
+    "name": "Method sleeps without timeout",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MDM_WAIT_WITHOUT_TIMEOUT"
+  },
+  {
+    "key": "MOM_MISLEADING_OVERLOAD_MODEL",
+    "name": "Class \u0027overloads\u0027 a method with both instance and static versions",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MOM_MISLEADING_OVERLOAD_MODEL"
+  },
+  {
+    "key": "MRC_METHOD_RETURNS_CONSTANT",
+    "name": "Private or static method only returns one constant value",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MRC_METHOD_RETURNS_CONSTANT"
+  },
+  {
+    "key": "MUC_MODIFYING_UNMODIFIABLE_COLLECTION",
+    "name": "This method attempts to modify collection that appears to possibly be immutable",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MUC_MODIFYING_UNMODIFIABLE_COLLECTION"
+  },
+  {
+    "key": "MUI_CALLING_SIZE_ON_SUBCONTAINER",
+    "name": "Method calls size() on a sub collection of a Map",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MUI_CALLING_SIZE_ON_SUBCONTAINER"
+  },
+  {
+    "key": "MUI_CONTAINSKEY_BEFORE_GET",
+    "name": "Method check a map with containsKey(), before using get()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MUI_CONTAINSKEY_BEFORE_GET"
+  },
+  {
+    "key": "MUI_GET_BEFORE_REMOVE",
+    "name": "Method gets an item from a map with get(), before using remove()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MUI_GET_BEFORE_REMOVE"
+  },
+  {
+    "key": "MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR",
+    "name": "Method checks whether the keySet(), entrySet() or values() collection of a Map is null",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR"
+  },
+  {
+    "key": "MUI_USE_CONTAINSKEY",
+    "name": "Method calls keySet() just to call contains, use containsKey instead",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#MUI_USE_CONTAINSKEY"
+  },
+  {
+    "key": "NAB_NEEDLESS_AUTOBOXING_CTOR",
+    "name": "Method passes primitive wrapper to same primitive wrapper constructor",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NAB_NEEDLESS_AUTOBOXING_CTOR"
+  },
+  {
+    "key": "NAB_NEEDLESS_AUTOBOXING_VALUEOF",
+    "name": "Method passes primitive wrapper to Wrapper class valueOf method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NAB_NEEDLESS_AUTOBOXING_VALUEOF"
+  },
+  {
+    "key": "NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION",
+    "name": "Method needlessly boxes a boolean constant",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION"
+  },
+  {
+    "key": "NAB_NEEDLESS_BOXING_PARSE",
+    "name": "Method converts String to primitive using excessive boxing",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NAB_NEEDLESS_BOXING_PARSE"
+  },
+  {
+    "key": "NAB_NEEDLESS_BOXING_STRING_CTOR",
+    "name": "Method passes parsed string to primitive wrapper constructor",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NAB_NEEDLESS_BOXING_STRING_CTOR"
+  },
+  {
+    "key": "NAB_NEEDLESS_BOXING_VALUEOF",
+    "name": "Method converts String to boxed primitive using excessive boxing",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NAB_NEEDLESS_BOXING_VALUEOF"
+  },
+  {
+    "key": "NAB_NEEDLESS_BOX_TO_CAST",
+    "name": "Method creates Boxed primitive from primitive only to cast to another primitive type",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NAB_NEEDLESS_BOX_TO_CAST"
+  },
+  {
+    "key": "NAB_NEEDLESS_BOX_TO_UNBOX",
+    "name": "Method creates Boxed primitive from primitive only to get primitive value",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NAB_NEEDLESS_BOX_TO_UNBOX"
+  },
+  {
+    "key": "NCMU_NON_COLLECTION_METHOD_USE",
+    "name": "Method uses old non collections interface methods",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NCMU_NON_COLLECTION_METHOD_USE"
+  },
+  {
+    "key": "NCS_NEEDLESS_CUSTOM_SERIALIZATION",
+    "name": "Method needlessly implements what is default streaming behavior",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NCS_NEEDLESS_CUSTOM_SERIALIZATION"
+  },
+  {
+    "key": "NFF_NON_FUNCTIONAL_FIELD",
+    "name": "Serializable class defines a final transient field",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NFF_NON_FUNCTIONAL_FIELD"
+  },
+  {
+    "key": "NIR_NEEDLESS_INSTANCE_RETRIEVAL",
+    "name": "Method retrieves instance to load static member",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NIR_NEEDLESS_INSTANCE_RETRIEVAL"
+  },
+  {
+    "key": "NMCS_NEEDLESS_MEMBER_COLLECTION_SYNCHRONIZATION",
+    "name": "Class defines unneeded synchronization on member collection",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NMCS_NEEDLESS_MEMBER_COLLECTION_SYNCHRONIZATION"
+  },
+  {
+    "key": "NOS_NON_OWNED_SYNCHRONIZATION",
+    "name": "Class uses non owned variables to synchronize on",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NOS_NON_OWNED_SYNCHRONIZATION"
+  },
+  {
+    "key": "NPMC_NON_PRODUCTIVE_METHOD_CALL",
+    "name": "Method ignores return value of a non mutating method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NPMC_NON_PRODUCTIVE_METHOD_CALL"
+  },
+  {
+    "key": "NRTL_NON_RECYCLEABLE_TAG_LIB",
+    "name": "Tag library is not recycleable",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NRTL_NON_RECYCLEABLE_TAG_LIB"
+  },
+  {
+    "key": "NSE_NON_SYMMETRIC_EQUALS",
+    "name": "Equals method compares this object against other types in a non symmetric way",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#NSE_NON_SYMMETRIC_EQUALS"
+  },
+  {
+    "key": "OCP_OVERLY_CONCRETE_PARAMETER",
+    "name": "Method needlessly defines parameter with concrete classes",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#OCP_OVERLY_CONCRETE_PARAMETER"
+  },
+  {
+    "key": "OC_OVERZEALOUS_CASTING",
+    "name": "Method manually casts the right hand side of an assignment more specifically than needed",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#OC_OVERZEALOUS_CASTING"
+  },
+  {
+    "key": "ODN_ORPHANED_DOM_NODE",
+    "name": "Method creates DOM node but doesn\u0027t attach it to a document",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#ODN_ORPHANED_DOM_NODE"
+  },
+  {
+    "key": "OI_OPTIONAL_ISSUES_CHECKING_REFERENCE",
+    "name": "Method checks an Optional reference for null",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#OI_OPTIONAL_ISSUES_CHECKING_REFERENCE"
+  },
+  {
+    "key": "OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED",
+    "name": "Method uses a java.util.Optional when use of OptionalInt, OptionalLong, OptionalDouble would be more clear",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED"
+  },
+  {
+    "key": "OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION",
+    "name": "Method uses delayed execution of a block of code that is trivial",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION"
+  },
+  {
+    "key": "OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION",
+    "name": "Method uses immediate execution of a block of code that is often not used",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION"
+  },
+  {
+    "key": "OI_OPTIONAL_ISSUES_USES_ORELSEGET_WITH_NULL",
+    "name": "Method uses Optional.orElseGet(null)",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#OI_OPTIONAL_ISSUES_USES_ORELSEGET_WITH_NULL"
+  },
+  {
+    "key": "OPM_OVERLY_PERMISSIVE_METHOD",
+    "name": "This method is declared more permissively than is used in the code base",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#OPM_OVERLY_PERMISSIVE_METHOD"
+  },
+  {
+    "key": "PCAIL_POSSIBLE_CONSTANT_ALLOCATION_IN_LOOP",
+    "name": "Method allocates an object that is used in a constant way in a loop",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PCAIL_POSSIBLE_CONSTANT_ALLOCATION_IN_LOOP"
+  },
+  {
+    "key": "PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS",
+    "name": "Constructor makes call to non-final method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS"
+  },
+  {
+    "key": "PDP_POORLY_DEFINED_PARAMETER",
+    "name": "Method defines parameters more abstractly than needed to function properly",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PDP_POORLY_DEFINED_PARAMETER"
+  },
+  {
+    "key": "PIS_POSSIBLE_INCOMPLETE_SERIALIZATION",
+    "name": "Class doesn\u0027t serialize superclass fields",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PIS_POSSIBLE_INCOMPLETE_SERIALIZATION"
+  },
+  {
+    "key": "PL_PARALLEL_LISTS",
+    "name": "Class defines two or more one for one associated lists or arrays",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PL_PARALLEL_LISTS"
+  },
+  {
+    "key": "PMB_INSTANCE_BASED_THREAD_LOCAL",
+    "name": "Field is an instance based ThreadLocal variable",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PMB_INSTANCE_BASED_THREAD_LOCAL"
+  },
+  {
+    "key": "PMB_LOCAL_BASED_JAXB_CONTEXT",
+    "name": "Local JAXBContext created on demand",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PMB_LOCAL_BASED_JAXB_CONTEXT"
+  },
+  {
+    "key": "PMB_POSSIBLE_MEMORY_BLOAT",
+    "name": "Potential memory bloat in static field",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PMB_POSSIBLE_MEMORY_BLOAT"
+  },
+  {
+    "key": "PME_POOR_MANS_ENUM",
+    "name": "Simple field is used like an enum",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PME_POOR_MANS_ENUM"
+  },
+  {
+    "key": "PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS",
+    "name": "Method appears to call the same method on the same object redundantly",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS"
+  },
+  {
+    "key": "PSC_PRESIZE_COLLECTIONS",
+    "name": "Method does not presize the allocation of a collection",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PSC_PRESIZE_COLLECTIONS"
+  },
+  {
+    "key": "PSC_SUBOPTIMAL_COLLECTION_SIZING",
+    "name": "Method uses suboptimal sizing to allocate a collection",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PSC_SUBOPTIMAL_COLLECTION_SIZING"
+  },
+  {
+    "key": "PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION",
+    "name": "Method serializes an instance of a non-static inner class",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION"
+  },
+  {
+    "key": "RFI_SET_ACCESSIBLE",
+    "name": "Method uses AccessibleObject.setAccessible to modify accessibility of classes",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#RFI_SET_ACCESSIBLE"
+  },
+  {
+    "key": "ROOM_REFLECTION_ON_OBJECT_METHODS",
+    "name": "Method uses reflection to call a method available on java.lang.Object",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#ROOM_REFLECTION_ON_OBJECT_METHODS"
+  },
+  {
+    "key": "S508C_APPENDED_STRING",
+    "name": "Method passes appended string to title/label of component",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#S508C_APPENDED_STRING"
+  },
+  {
+    "key": "S508C_NON_ACCESSIBLE_JCOMPONENT",
+    "name": "Class extends JComponent but does not implement Accessible interface",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#S508C_NON_ACCESSIBLE_JCOMPONENT"
+  },
+  {
+    "key": "S508C_NON_TRANSLATABLE_STRING",
+    "name": "Method passes constant string to title/label of component",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#S508C_NON_TRANSLATABLE_STRING"
+  },
+  {
+    "key": "S508C_NO_SETLABELFOR",
+    "name": "JLabel doesn\u0027t specify what it\u0027s labeling",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#S508C_NO_SETLABELFOR"
+  },
+  {
+    "key": "S508C_NO_SETSIZE",
+    "name": "Window sets size manually, and doesn\u0027t use pack",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#S508C_NO_SETSIZE"
+  },
+  {
+    "key": "S508C_NULL_LAYOUT",
+    "name": "GUI uses absolute layout",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#S508C_NULL_LAYOUT"
+  },
+  {
+    "key": "S508C_SET_COMP_COLOR",
+    "name": "Method explicitly sets the color of a Component",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#S508C_SET_COMP_COLOR"
+  },
+  {
+    "key": "SACM_STATIC_ARRAY_CREATED_IN_METHOD",
+    "name": "Method creates array using constants",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SACM_STATIC_ARRAY_CREATED_IN_METHOD"
+  },
+  {
+    "key": "SAT_SUSPICIOUS_ARGUMENT_TYPES",
+    "name": "This method invokes a method with parameters that seem incorrect for their intended use",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SAT_SUSPICIOUS_ARGUMENT_TYPES"
+  },
+  {
+    "key": "SCA_SUSPICIOUS_CLONE_ALGORITHM",
+    "name": "Clone method stores a new value to member field of source object",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SCA_SUSPICIOUS_CLONE_ALGORITHM"
+  },
+  {
+    "key": "SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR",
+    "name": "Class implements interface by relying on unknowing superclass methods",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR"
+  },
+  {
+    "key": "SCI_SYNCHRONIZED_COLLECTION_ITERATORS",
+    "name": "Method creates iterators on synchronized collections",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SCI_SYNCHRONIZED_COLLECTION_ITERATORS"
+  },
+  {
+    "key": "SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES",
+    "name": "Comparator method doesn\u0027t seem to return all ordering values",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES"
+  },
+  {
+    "key": "SCR_SLOPPY_CLASS_REFLECTION",
+    "name": "Method accesses statically bound class with Class.forName",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SCR_SLOPPY_CLASS_REFLECTION"
+  },
+  {
+    "key": "SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT",
+    "name": "Method modifies an http session attribute without calling setAttribute",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT"
+  },
+  {
+    "key": "SEC_SIDE_EFFECT_CONSTRUCTOR",
+    "name": "Method uses a Side Effect Constructor",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SEC_SIDE_EFFECT_CONSTRUCTOR"
+  },
+  {
+    "key": "SEO_SUBOPTIMAL_EXPRESSION_ORDER",
+    "name": "Method orders expressions in a conditional in a sub optimal way",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SEO_SUBOPTIMAL_EXPRESSION_ORDER"
+  },
+  {
+    "key": "SGSU_SUSPICIOUS_GETTER_SETTER_USE",
+    "name": "Method uses same bean\u0027s getter value for setter",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SGSU_SUSPICIOUS_GETTER_SETTER_USE"
+  },
+  {
+    "key": "SG_SLUGGISH_GUI",
+    "name": "Method performs time consuming operation in GUI thread",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SG_SLUGGISH_GUI"
+  },
+  {
+    "key": "SIL_SQL_IN_LOOP",
+    "name": "Method executes SQL queries inside of loops",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SIL_SQL_IN_LOOP"
+  },
+  {
+    "key": "SJVU_SUSPICIOUS_JDK_VERSION_USE",
+    "name": "Method uses rt.jar class or method that does not exist",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SJVU_SUSPICIOUS_JDK_VERSION_USE"
+  },
+  {
+    "key": "SLS_SUSPICIOUS_LOOP_SEARCH",
+    "name": "This method continues a loop after finding an equality condition",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SLS_SUSPICIOUS_LOOP_SEARCH"
+  },
+  {
+    "key": "SMII_STATIC_METHOD_INSTANCE_INVOCATION",
+    "name": "Method calls static method on instance reference",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SMII_STATIC_METHOD_INSTANCE_INVOCATION"
+  },
+  {
+    "key": "SNG_SUSPICIOUS_NULL_FIELD_GUARD",
+    "name": "Method tests a field for not null as guard and reassigns it",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SNG_SUSPICIOUS_NULL_FIELD_GUARD"
+  },
+  {
+    "key": "SNG_SUSPICIOUS_NULL_LOCAL_GUARD",
+    "name": "Method tests a local variable for not null as guard and reassigns it",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SNG_SUSPICIOUS_NULL_LOCAL_GUARD"
+  },
+  {
+    "key": "SPP_CONVERSION_OF_STRING_LITERAL",
+    "name": "Method converts a String literal",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_CONVERSION_OF_STRING_LITERAL"
+  },
+  {
+    "key": "SPP_DOUBLE_APPENDED_LITERALS",
+    "name": "Method appends two literal strings back to back to a StringBuilder",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_DOUBLE_APPENDED_LITERALS"
+  },
+  {
+    "key": "SPP_EMPTY_CASING",
+    "name": "Method passes an empty string to equalsIgnoreCase or compareToIgnoreCase",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_EMPTY_CASING"
+  },
+  {
+    "key": "SPP_EQUALS_ON_ENUM",
+    "name": "Method calls equals on an enum instance",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_EQUALS_ON_ENUM"
+  },
+  {
+    "key": "SPP_EQUALS_ON_STRING_BUILDER",
+    "name": "Method calls equals(Object o) on a StringBuilder or StringBuffer",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_EQUALS_ON_STRING_BUILDER"
+  },
+  {
+    "key": "SPP_INTERN_ON_CONSTANT",
+    "name": "Method calls intern on a string constant",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_INTERN_ON_CONSTANT"
+  },
+  {
+    "key": "SPP_INVALID_BOOLEAN_NULL_CHECK",
+    "name": "Method uses invalid C++ style null check on Boolean",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_INVALID_BOOLEAN_NULL_CHECK"
+  },
+  {
+    "key": "SPP_INVALID_CALENDAR_COMPARE",
+    "name": "Method passes a non calendar object to Calendar.before or Calendar.after",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_INVALID_CALENDAR_COMPARE"
+  },
+  {
+    "key": "SPP_NEGATIVE_BITSET_ITEM",
+    "name": "Method passes a negative number as a bit to a BitSet which isn\u0027t supported",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_NEGATIVE_BITSET_ITEM"
+  },
+  {
+    "key": "SPP_NON_ARRAY_PARM",
+    "name": "Method passes a non array object to a parameter that expects an array",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_NON_ARRAY_PARM"
+  },
+  {
+    "key": "SPP_NON_USEFUL_TOSTRING",
+    "name": "Method calls toString() on an instance of a class that hasn\u0027t overridden toString()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_NON_USEFUL_TOSTRING"
+  },
+  {
+    "key": "SPP_NO_CHAR_SB_CTOR",
+    "name": "Method appears to pass character to StringBuffer or StringBuilder integer constructor",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_NO_CHAR_SB_CTOR"
+  },
+  {
+    "key": "SPP_NULL_BEFORE_INSTANCEOF",
+    "name": "Method checks a reference for null before calling instanceof",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_NULL_BEFORE_INSTANCEOF"
+  },
+  {
+    "key": "SPP_SERIALVER_SHOULD_BE_PRIVATE",
+    "name": "Class defines a serialVersionUID as non private",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_SERIALVER_SHOULD_BE_PRIVATE"
+  },
+  {
+    "key": "SPP_STATIC_FORMAT_STRING",
+    "name": "Method calls String.format on a static (non parameterized) format string",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_STATIC_FORMAT_STRING"
+  },
+  {
+    "key": "SPP_STRINGBUFFER_WITH_EMPTY_STRING",
+    "name": "Method passes an empty string to StringBuffer of StringBuilder constructor",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_STRINGBUFFER_WITH_EMPTY_STRING"
+  },
+  {
+    "key": "SPP_STRINGBUILDER_IS_MUTABLE",
+    "name": "Method needlessly assigns a StringBuilder to itself, as it\u0027s mutable",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_STRINGBUILDER_IS_MUTABLE"
+  },
+  {
+    "key": "SPP_STUTTERED_ASSIGNMENT",
+    "name": "Method assigns a value to a local twice in a row",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_STUTTERED_ASSIGNMENT"
+  },
+  {
+    "key": "SPP_SUSPECT_STRING_TEST",
+    "name": "Method possibly mixes up normal strings and empty strings in branching logic",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_SUSPECT_STRING_TEST"
+  },
+  {
+    "key": "SPP_TEMPORARY_TRIM",
+    "name": "Method trims a String temporarily",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_TEMPORARY_TRIM"
+  },
+  {
+    "key": "SPP_TOSTRING_ON_STRING",
+    "name": "Method calls toString() on a String",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_TOSTRING_ON_STRING"
+  },
+  {
+    "key": "SPP_USELESS_CASING",
+    "name": "Method compares string without case after enforcing a case",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_USELESS_CASING"
+  },
+  {
+    "key": "SPP_USELESS_TERNARY",
+    "name": "Method uses a ternary operator to cast a boolean to true or false",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_USELESS_TERNARY"
+  },
+  {
+    "key": "SPP_USE_BIGDECIMAL_STRING_CTOR",
+    "name": "Method passes double value to BigDecimal Constructor",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_USE_BIGDECIMAL_STRING_CTOR"
+  },
+  {
+    "key": "SPP_USE_CHARAT",
+    "name": "Method fetches character array just to do the equivalent of the charAt method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_USE_CHARAT"
+  },
+  {
+    "key": "SPP_USE_GET0",
+    "name": "Method uses iterator().next() on a List to get the first item",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_USE_GET0"
+  },
+  {
+    "key": "SPP_USE_GETPROPERTY",
+    "name": "Method calls getProperties just to get one property, use getProperty instead",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_USE_GETPROPERTY"
+  },
+  {
+    "key": "SPP_USE_ISEMPTY",
+    "name": "Method checks the size of a collection against zero rather than using isEmpty()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_USE_ISEMPTY"
+  },
+  {
+    "key": "SPP_USE_ISNAN",
+    "name": "Method incorrectly compares a floating point number to NaN",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_USE_ISNAN"
+  },
+  {
+    "key": "SPP_USE_MATH_CONSTANT",
+    "name": "Method uses non-standard math constant",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_USE_MATH_CONSTANT"
+  },
+  {
+    "key": "SPP_USE_STRINGBUILDER_LENGTH",
+    "name": "Method converts StringBuffer or Builder to String just to get its length",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_USE_STRINGBUILDER_LENGTH"
+  },
+  {
+    "key": "SPP_USE_ZERO_WITH_COMPARATOR",
+    "name": "Method compares the result of a compareTo method to a value other than zero",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_USE_ZERO_WITH_COMPARATOR"
+  },
+  {
+    "key": "SPP_WRONG_COMMONS_TO_STRING_OBJECT",
+    "name": "Method does not pass an object to commons-lang\u0027s ToStringBuilder",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SPP_WRONG_COMMONS_TO_STRING_OBJECT"
+  },
+  {
+    "key": "SSCU_SUSPICIOUS_SHADED_CLASS_USE",
+    "name": "Method calls a method from a class that has been shaded by a 3rdparty jar",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SSCU_SUSPICIOUS_SHADED_CLASS_USE"
+  },
+  {
+    "key": "STB_STACKED_TRY_BLOCKS",
+    "name": "Method stacks similar try/catch blocks",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#STB_STACKED_TRY_BLOCKS"
+  },
+  {
+    "key": "STS_SPURIOUS_THREAD_STATES",
+    "name": "Method calls wait, notify or notifyAll on a Thread instance",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#STS_SPURIOUS_THREAD_STATES"
+  },
+  {
+    "key": "STT_STRING_PARSING_A_FIELD",
+    "name": "This method parses a String that is a field",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#STT_STRING_PARSING_A_FIELD"
+  },
+  {
+    "key": "STT_TOSTRING_MAP_KEYING",
+    "name": "This method uses a concatenated String as a map key",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#STT_TOSTRING_MAP_KEYING"
+  },
+  {
+    "key": "STT_TOSTRING_STORED_IN_FIELD",
+    "name": "This method stores the value of a toString() call into a field",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#STT_TOSTRING_STORED_IN_FIELD"
+  },
+  {
+    "key": "SUA_SUSPICIOUS_UNINITIALIZED_ARRAY",
+    "name": "Method returns an array that appears not to be initialized",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SUA_SUSPICIOUS_UNINITIALIZED_ARRAY"
+  },
+  {
+    "key": "SUI_CONTAINS_BEFORE_ADD",
+    "name": "Method checks for an item in a set with contains, before using add()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SUI_CONTAINS_BEFORE_ADD"
+  },
+  {
+    "key": "SUI_CONTAINS_BEFORE_REMOVE",
+    "name": "Method checks for an item in a set with contains, before using remove()",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SUI_CONTAINS_BEFORE_REMOVE"
+  },
+  {
+    "key": "SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT",
+    "name": "Method calls wait when await was probably intended",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT"
+  },
+  {
+    "key": "TBP_TRISTATE_BOOLEAN_PATTERN",
+    "name": "Method returns null for Boolean type",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#TBP_TRISTATE_BOOLEAN_PATTERN"
+  },
+  {
+    "key": "TR_TAIL_RECURSION",
+    "name": "Method employs tail recursion",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#TR_TAIL_RECURSION"
+  },
+  {
+    "key": "UAA_USE_ADD_ALL",
+    "name": "Method uses simple loop to copy contents of one collection to another",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UAA_USE_ADD_ALL"
+  },
+  {
+    "key": "UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT",
+    "name": "Method constructs a Date object, merely to convert it to an Instant object",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT"
+  },
+  {
+    "key": "UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH",
+    "name": "Method constructs a File object, merely to convert it to a Path object",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH"
+  },
+  {
+    "key": "UCC_UNRELATED_COLLECTION_CONTENTS",
+    "name": "Method adds unrelated types to collection or array",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UCC_UNRELATED_COLLECTION_CONTENTS"
+  },
+  {
+    "key": "UCPM_USE_CHARACTER_PARAMETERIZED_METHOD",
+    "name": "Method passes constant String of length 1 to character overridden method",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UCPM_USE_CHARACTER_PARAMETERIZED_METHOD"
+  },
+  {
+    "key": "UEC_USE_ENUM_COLLECTIONS",
+    "name": "Class uses an ordinary set or map with an enum class as the key",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UEC_USE_ENUM_COLLECTIONS"
+  },
+  {
+    "key": "UJM_UNJITABLE_METHOD",
+    "name": "This method is too long to be compiled by the JIT",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UJM_UNJITABLE_METHOD"
+  },
+  {
+    "key": "UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER",
+    "name": "Method declares unbound method template parameter(s)",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER"
+  },
+  {
+    "key": "UNNC_UNNECESSARY_NEW_NULL_CHECK",
+    "name": "Method checks the result of a new allocation",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UNNC_UNNECESSARY_NEW_NULL_CHECK"
+  },
+  {
+    "key": "UP_UNUSED_PARAMETER",
+    "name": "Static or private method has unused parameters",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UP_UNUSED_PARAMETER"
+  },
+  {
+    "key": "URV_CHANGE_RETURN_TYPE",
+    "name": "Method returns more specific type of object than declared",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#URV_CHANGE_RETURN_TYPE"
+  },
+  {
+    "key": "URV_INHERITED_METHOD_WITH_RELATED_TYPES",
+    "name": "Inherited method returns more specific type of object than declared",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#URV_INHERITED_METHOD_WITH_RELATED_TYPES"
+  },
+  {
+    "key": "URV_UNRELATED_RETURN_VALUES",
+    "name": "Method returns different types of unrelated Objects",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#URV_UNRELATED_RETURN_VALUES"
+  },
+  {
+    "key": "USBR_UNNECESSARY_STORE_BEFORE_RETURN",
+    "name": "Method stores return result in local before immediately returning it",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#USBR_UNNECESSARY_STORE_BEFORE_RETURN"
+  },
+  {
+    "key": "USFW_UNSYNCHRONIZED_SINGLETON_FIELD_WRITES",
+    "name": "Method of Singleton class writes to a field in an unsynchronized manner",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#USFW_UNSYNCHRONIZED_SINGLETON_FIELD_WRITES"
+  },
+  {
+    "key": "USS_USE_STRING_SPLIT",
+    "name": "Method builds String array using String Tokenizing",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#USS_USE_STRING_SPLIT"
+  },
+  {
+    "key": "UTAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT",
+    "name": "JUnit test method passes constant to second (actual) assertion parameter",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT"
+  },
+  {
+    "key": "UTAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED",
+    "name": "JUnit test method uses Java asserts rather than a JUnit assertion",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED"
+  },
+  {
+    "key": "UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT",
+    "name": "JUnit test method asserts that a value is equal to true or false",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT"
+  },
+  {
+    "key": "UTAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL",
+    "name": "JUnit test method asserts that an autoboxed value is not null",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL"
+  },
+  {
+    "key": "UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE",
+    "name": "JUnit test method asserts that two doubles are exactly equal",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE"
+  },
+  {
+    "key": "UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT",
+    "name": "JUnit test method appears to have no assertions",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT"
+  },
+  {
+    "key": "UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS",
+    "name": "JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS"
+  },
+  {
+    "key": "UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS",
+    "name": "JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS"
+  },
+  {
+    "key": "UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL",
+    "name": "JUnit test method passes null Assert.assertNotEquals",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL"
+  },
+  {
+    "key": "UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NULL",
+    "name": "JUnit test method passes null Assert.assertEquals",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NULL"
+  },
+  {
+    "key": "UTAO_JUNIT_ASSERTION_ODDITIES_USING_DEPRECATED",
+    "name": "JUnit 4 test using deprecated junit.framework.* classes",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_JUNIT_ASSERTION_ODDITIES_USING_DEPRECATED"
+  },
+  {
+    "key": "UTAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT",
+    "name": "TestNG test method passes constant to first (actual) assertion parameter",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT"
+  },
+  {
+    "key": "UTAO_TESTNG_ASSERTION_ODDITIES_ASSERT_USED",
+    "name": "TestNG test method uses Java asserts rather than a TestNG assertion",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_TESTNG_ASSERTION_ODDITIES_ASSERT_USED"
+  },
+  {
+    "key": "UTAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT",
+    "name": "TestNG test method asserts that a value is true or false",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT"
+  },
+  {
+    "key": "UTAO_TESTNG_ASSERTION_ODDITIES_IMPOSSIBLE_NULL",
+    "name": "TestNG test method asserts that an autoboxed value is not null",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_TESTNG_ASSERTION_ODDITIES_IMPOSSIBLE_NULL"
+  },
+  {
+    "key": "UTAO_TESTNG_ASSERTION_ODDITIES_INEXACT_DOUBLE",
+    "name": "TestNG test method asserts that two doubles are exactly equal",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_TESTNG_ASSERTION_ODDITIES_INEXACT_DOUBLE"
+  },
+  {
+    "key": "UTAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT",
+    "name": "TestNG test method appears to have no assertions",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT"
+  },
+  {
+    "key": "UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS",
+    "name": "TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS"
+  },
+  {
+    "key": "UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS",
+    "name": "TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS"
+  },
+  {
+    "key": "UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL",
+    "name": "TestNG test method passes null Assert.assertNotEquals",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL"
+  },
+  {
+    "key": "UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NULL",
+    "name": "TestNG test method passes null Assert.assertEquals",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NULL"
+  },
+  {
+    "key": "UTA_USE_TO_ARRAY",
+    "name": "Method manually creates array from collection",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTA_USE_TO_ARRAY"
+  },
+  {
+    "key": "UTWR_USE_TRY_WITH_RESOURCES",
+    "name": "Method manually handles closing an auto-closeable resource",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UTWR_USE_TRY_WITH_RESOURCES"
+  },
+  {
+    "key": "UVA_USE_VAR_ARGS",
+    "name": "Method defines parameter list with array as last argument, rather than vararg",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#UVA_USE_VAR_ARGS"
+  },
+  {
+    "key": "WEM_OBSCURING_EXCEPTION",
+    "name": "Method throws a java.lang.Exception that wraps a more useful exception",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#WEM_OBSCURING_EXCEPTION"
+  },
+  {
+    "key": "WEM_WEAK_EXCEPTION_MESSAGING",
+    "name": "Method throws exception with static message string",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#WEM_WEAK_EXCEPTION_MESSAGING"
+  },
+  {
+    "key": "WI_DUPLICATE_WIRED_TYPES",
+    "name": "Class auto wires the same object into two separate fields in a class hierarchy",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#WI_DUPLICATE_WIRED_TYPES"
+  },
+  {
+    "key": "WI_MANUALLY_ALLOCATING_AN_AUTOWIRED_BEAN",
+    "name": "Method allocates an object with new when the class is defined as an autowireable bean",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#WI_MANUALLY_ALLOCATING_AN_AUTOWIRED_BEAN"
+  },
+  {
+    "key": "WI_WIRING_OF_STATIC_FIELD",
+    "name": "Static field is autowired",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#WI_WIRING_OF_STATIC_FIELD"
+  },
+  {
+    "key": "WOC_WRITE_ONLY_COLLECTION_FIELD",
+    "name": "Class creates and initializes a collection but never reads or gains information from it",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#WOC_WRITE_ONLY_COLLECTION_FIELD"
+  },
+  {
+    "key": "WOC_WRITE_ONLY_COLLECTION_LOCAL",
+    "name": "Method creates and initializes a collection but never reads or gains information from it",
+    "type": "BUG",
+    "url": "http://fb-contrib.sourceforge.net/bugdescriptions.html#WOC_WRITE_ONLY_COLLECTION_LOCAL"
+  }
+]
