@@ -90,9 +90,19 @@ class A {
     formatter.format(loc, "value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
 
     pr.format("value is "+"asd");
-    pr.format("value is "+
-        value); // Compliant operand not on the same line.
     String.format("value is %d", value); // Compliant
+
+    pr.format("value is "
+      +"asd");
+    pr.format("value is "+ // Noncompliant
+      value);
+    pr.format("value " + " is "+ value + "."); // Noncompliant
+    String.format(
+      "value is " + " %d " +
+      ".", value);
+    String.format(
+      "line1 %s " +
+      "line2", "myValue");
 
     String.format("%0$s", "tmp");
 

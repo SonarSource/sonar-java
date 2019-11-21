@@ -29,7 +29,6 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -249,18 +248,13 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   @Override
   protected void handleOtherFormatTree(MethodInvocationTree mit, ExpressionTree formatTree) {
-    if (isConcatenationOnSameLine(formatTree)) {
+    if (isIncorrectConcatenation(formatTree)) {
       reportIssue(mit, "Format specifiers should be used instead of string concatenation.");
     }
   }
 
-  private static boolean isConcatenationOnSameLine(ExpressionTree formatStringTree) {
+  private static boolean isIncorrectConcatenation(ExpressionTree formatStringTree) {
     return formatStringTree.is(Tree.Kind.PLUS)
-      && operandsAreOnSameLine((BinaryExpressionTree) formatStringTree)
       && ConstantUtils.resolveAsConstant(formatStringTree) == null;
-  }
-
-  private static boolean operandsAreOnSameLine(BinaryExpressionTree formatStringTree) {
-    return formatStringTree.leftOperand().firstToken().line() == formatStringTree.rightOperand().firstToken().line();
   }
 }
