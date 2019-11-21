@@ -137,4 +137,15 @@ class A {
       a1.close();
     }
   }
+
+  void method_with_while_continue(boolean a) {
+    while (a) {
+      new java.io.BufferedInputStream(null, 4096);
+      try { // Noncompliant
+      } finally {
+        continue;
+      }
+    }
+  }
+
 }
