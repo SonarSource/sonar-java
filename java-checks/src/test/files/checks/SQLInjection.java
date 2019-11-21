@@ -40,6 +40,9 @@ class A {
       ps  = conn.prepareStatement("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant
       ps = conn.prepareStatement(query2);
 
+      final String queryNoConcatenation = bool ? param : param2;
+      conn.prepareStatement(queryNoConcatenation);
+
       //Callable Statement
       CallableStatement cs = conn.prepareCall("SELECT Lname FROM Customers WHERE Snum = 2001");
       cs.executeQuery(query); // Noncompliant
