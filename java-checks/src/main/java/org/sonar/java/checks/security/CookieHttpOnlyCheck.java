@@ -208,9 +208,15 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkCookieBuilder(VariableTree declaration) {
+    Symbol symbol = declaration.symbol();
+    if (!symbol.isVariableSymbol()) {
+      // might happen in context of lambda, where symbol of variable cannot be resolve
+      return;
+    }
     ExpressionTree initializer = declaration.initializer();
-    if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) && declaration.symbol() instanceof VariableSymbol) {
-      addToIgnoredVariables((VariableSymbol) declaration.symbol(), (MethodInvocationTree) initializer);
+    if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) initializer;
+      addToIgnoredVariables((VariableSymbol) symbol, mit);
     }
   }
 

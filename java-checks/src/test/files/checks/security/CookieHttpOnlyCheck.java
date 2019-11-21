@@ -275,6 +275,6 @@ class B {
     i = 1;
     a.c = new Cookie("1", "2"); // FN
     unknown = new A("1", "2");
-    Objects.nonNull(() -> { Class<Strring> v = unknown(); });
+    Unknown.unkown(() -> { Class<String> v = unknown(); });
   }
 }
