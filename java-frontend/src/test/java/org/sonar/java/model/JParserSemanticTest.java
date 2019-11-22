@@ -19,6 +19,12 @@
  */
 package org.sonar.java.model;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -67,12 +73,6 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -1058,7 +1058,7 @@ class JParserSemanticTest {
     assertThat(recovered.returnType()).isNotNull();
     assertThat(recovered.returnType().isUnknown()).isTrue();
 
-    assertThat(recovered.type()).isNull();
+    assertThat(recovered.type().isUnknown()).isTrue();
     assertThat(recovered.declaration()).isNull();
     assertThat(recovered.overriddenSymbol()).isNull();
     assertThat(recovered.parameterTypes()).isEmpty();

@@ -186,7 +186,7 @@ public interface Symbol {
      * Retrieve the overridden symbol, which may may not be able to determine (returning 'unknown' symbol).
      * Note that if the method returns null, the method is not overriding any method for sure.
      *
-     * @return the overridden symbol, unknown if overriding can not be determined (incomplete semantic), or null if the method is not overriding any method
+     * @return the overridden symbol, null if the method is not overriding any method or overriding can not be determined (incomplete semantic)
      */
     @Nullable
     Symbol.MethodSymbol overriddenSymbol();

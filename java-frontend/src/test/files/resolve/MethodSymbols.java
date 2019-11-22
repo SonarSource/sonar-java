@@ -28,5 +28,7 @@ class E {
 }
 
 class F extends E {
-  void foo(UnknownF a, UnknownF2 b) {}
+  void foo(UnknownF a, UnknownF2 b) {
+    unknown();
+  }
 }
