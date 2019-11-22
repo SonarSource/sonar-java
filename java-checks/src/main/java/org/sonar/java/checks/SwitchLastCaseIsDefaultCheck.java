@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "SwitchLastCaseIsDefaultCheck")
+@DeprecatedRuleKey(ruleKey = "SwitchLastCaseIsDefaultCheck", repositoryKey = "squid")
 @Rule(key = "S131")
 public class SwitchLastCaseIsDefaultCheck extends IssuableSubscriptionVisitor {
 

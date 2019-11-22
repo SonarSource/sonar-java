@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "LabelsShouldNotBeUsedCheck")
+@DeprecatedRuleKey(ruleKey = "LabelsShouldNotBeUsedCheck", repositoryKey = "squid")
 @Rule(key = "S1119")
 public class LabelsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor {
 

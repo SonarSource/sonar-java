@@ -41,7 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "UnusedPrivateMethod")
+@DeprecatedRuleKey(ruleKey = "UnusedPrivateMethod", repositoryKey = "squid")
 @Rule(key = "S1144")
 public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 

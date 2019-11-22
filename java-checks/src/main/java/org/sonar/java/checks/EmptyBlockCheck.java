@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00108")
+@DeprecatedRuleKey(ruleKey = "S00108", repositoryKey = "squid")
 @Rule(key = "S108")
 public class EmptyBlockCheck extends IssuableSubscriptionVisitor {
 

@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "ClassVariableVisibilityCheck")
+@DeprecatedRuleKey(ruleKey = "ClassVariableVisibilityCheck", repositoryKey = "squid")
 @Rule(key = "S1104")
 public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements JavaFileScanner {
 

@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "ObjectFinalizeOverridenCheck")
+@DeprecatedRuleKey(ruleKey = "ObjectFinalizeOverridenCheck", repositoryKey = "squid")
 @Rule(key = "S1113")
 public class ObjectFinalizeOverridenCheck extends IssuableSubscriptionVisitor {
 

@@ -27,7 +27,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00116")
+@DeprecatedRuleKey(ruleKey = "S00116", repositoryKey = "squid")
 @Rule(key = "S116")
 public class BadFieldNameCheck extends AbstractBadFieldNameChecker {
 

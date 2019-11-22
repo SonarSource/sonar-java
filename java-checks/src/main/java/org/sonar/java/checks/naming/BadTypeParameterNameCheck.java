@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00119")
+@DeprecatedRuleKey(ruleKey = "S00119", repositoryKey = "squid")
 @Rule(key = "S119")
 public class BadTypeParameterNameCheck extends IssuableSubscriptionVisitor {
 

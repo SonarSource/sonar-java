@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00105")
+@DeprecatedRuleKey(ruleKey = "S00105", repositoryKey = "squid")
 @Rule(key = "S105")
 public class TabCharacterCheck extends IssuableSubscriptionVisitor {
 

@@ -36,7 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "MaximumInheritanceDepth")
+@DeprecatedRuleKey(ruleKey = "MaximumInheritanceDepth", repositoryKey = "squid")
 @Rule(key = "S110")
 public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 

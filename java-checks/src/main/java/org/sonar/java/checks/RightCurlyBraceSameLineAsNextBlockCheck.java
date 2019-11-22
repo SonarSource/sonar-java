@@ -24,7 +24,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "RightCurlyBraceSameLineAsNextBlockCheck")
+@DeprecatedRuleKey(ruleKey = "RightCurlyBraceSameLineAsNextBlockCheck", repositoryKey = "squid")
 @Rule(key = "S1107")
 public class RightCurlyBraceSameLineAsNextBlockCheck extends RightCurlyBraceToNextBlockAbstractVisitor {
 

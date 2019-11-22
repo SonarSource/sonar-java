@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import javax.annotation.Nullable;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "AssignmentInSubExpressionCheck")
+@DeprecatedRuleKey(ruleKey = "AssignmentInSubExpressionCheck", repositoryKey = "squid")
 @Rule(key = "S1121")
 public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
 

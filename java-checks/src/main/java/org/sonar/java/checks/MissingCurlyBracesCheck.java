@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00121")
+@DeprecatedRuleKey(ruleKey = "S00121", repositoryKey = "squid")
 @Rule(key = "S121")
 public class MissingCurlyBracesCheck extends IssuableSubscriptionVisitor {
 

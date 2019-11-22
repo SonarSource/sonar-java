@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "RightCurlyBraceStartLineCheck")
+@DeprecatedRuleKey(ruleKey = "RightCurlyBraceStartLineCheck", repositoryKey = "squid")
 @Rule(key = "S1109")
 public class RightCurlyBraceStartLineCheck extends IssuableSubscriptionVisitor {
 

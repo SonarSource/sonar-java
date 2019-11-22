@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "ParsingError")
+@DeprecatedRuleKey(ruleKey = "ParsingError", repositoryKey = "squid")
 @Rule(key = "S2260")
 public class ParsingErrorCheck implements ExceptionHandler, JavaFileScanner {
 

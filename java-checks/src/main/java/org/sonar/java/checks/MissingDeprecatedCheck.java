@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "MissingDeprecatedCheck")
+@DeprecatedRuleKey(ruleKey = "MissingDeprecatedCheck", repositoryKey = "squid")
 @Rule(key = "S1123")
 public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 

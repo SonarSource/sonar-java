@@ -52,7 +52,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00122")
+@DeprecatedRuleKey(ruleKey = "S00122", repositoryKey = "squid")
 @Rule(key = "S122")
 public class TooManyStatementsPerLineCheck extends IssuableSubscriptionVisitor {
 

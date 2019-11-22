@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "CallToDeprecatedMethod")
+@DeprecatedRuleKey(ruleKey = "CallToDeprecatedMethod", repositoryKey = "squid")
 @Rule(key = "S1874")
 public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
 

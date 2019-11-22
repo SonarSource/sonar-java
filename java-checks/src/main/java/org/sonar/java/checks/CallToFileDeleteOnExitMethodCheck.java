@@ -28,7 +28,7 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "CallToFileDeleteOnExitMethod")
+@DeprecatedRuleKey(ruleKey = "CallToFileDeleteOnExitMethod", repositoryKey = "squid")
 @Rule(key = "S2308")
 public class CallToFileDeleteOnExitMethodCheck extends AbstractMethodDetection {
 

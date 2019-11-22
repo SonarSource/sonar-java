@@ -35,7 +35,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "ForLoopCounterChangedCheck")
+@DeprecatedRuleKey(ruleKey = "ForLoopCounterChangedCheck", repositoryKey = "squid")
 @Rule(key = "S127")
 public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
