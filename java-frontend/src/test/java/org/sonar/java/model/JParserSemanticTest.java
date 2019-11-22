@@ -54,6 +54,7 @@ import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -1016,6 +1017,52 @@ class JParserSemanticTest {
     assertThat(cu.sema.methodSymbol(methodInvocation.methodBinding).usages())
       .containsExactlyElementsOf(methodInvocation.symbol().usages())
       .containsOnly(i);
+  }
+
+  @Test
+  void declaration_method_parameterized_recovered() {
+    String source = "class D<E> {\n" +
+      "  private java.util.Collection<UnknownClass.Entry<E>> samples() {\n" +
+      "    return null;\n" +
+      "  }\n" +
+      "}";
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+
+    assertThat(m.methodBinding).isNull();
+    MethodSymbol recovered = m.symbol();
+    assertThat(recovered.isUnknown()).isTrue();
+
+    assertThat(recovered.isTypeSymbol()).isFalse();
+    assertThat(recovered.isVariableSymbol()).isFalse();
+    assertThat(recovered.isMethodSymbol()).isFalse();
+    assertThat(recovered.isPackageSymbol()).isFalse();
+
+    assertThat(recovered.isAbstract()).isFalse();
+    assertThat(recovered.isDeprecated()).isFalse();
+    assertThat(recovered.isEnum()).isFalse();
+    assertThat(recovered.isFinal()).isFalse();
+    assertThat(recovered.isInterface()).isFalse();
+    assertThat(recovered.isPackageVisibility()).isFalse();
+    assertThat(recovered.isPrivate()).isFalse();
+    assertThat(recovered.isProtected()).isFalse();
+    assertThat(recovered.isPublic()).isFalse();
+    assertThat(recovered.isStatic()).isFalse();
+    assertThat(recovered.isVolatile()).isFalse();
+
+    assertThat(recovered.owner()).isNotNull();
+    assertThat(recovered.owner().isUnknown()).isTrue();
+    assertThat(recovered.enclosingClass()).isNotNull();
+    assertThat(recovered.enclosingClass().isUnknown()).isTrue();
+    assertThat(recovered.returnType()).isNotNull();
+    assertThat(recovered.returnType().isUnknown()).isTrue();
+
+    assertThat(recovered.type()).isNull();
+    assertThat(recovered.declaration()).isNull();
+    assertThat(recovered.overriddenSymbol()).isNull();
+    assertThat(recovered.parameterTypes()).isEmpty();
+    assertThat(recovered.thrownTypes()).isEmpty();
   }
 
   @Test

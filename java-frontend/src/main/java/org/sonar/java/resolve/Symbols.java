@@ -23,10 +23,12 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map.Entry;
 
 /**
@@ -136,8 +138,23 @@ public class Symbols {
       }
 
       @Override
+      public List<Type> parameterTypes() {
+        return Collections.emptyList();
+      }
+
+      @Override
+      public boolean isPackageVisibility() {
+        return false;
+      }
+
+      @Override
       public boolean isUnknown() {
         return true;
+      }
+
+      @Override
+      public List<Type> thrownTypes() {
+        return Collections.emptyList();
       }
     };
   }
