@@ -43,7 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "HiddenFieldCheck")
+@DeprecatedRuleKey(ruleKey = "HiddenFieldCheck", repositoryKey = "squid")
 @Rule(key = "S1117")
 public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 

@@ -113,7 +113,10 @@ public class JavaRulesDefinition implements RulesDefinition {
     }
     DeprecatedRuleKey deprecatedRuleKeyAnnotation = AnnotationUtils.getAnnotation(ruleClass, DeprecatedRuleKey.class);
     if (deprecatedRuleKeyAnnotation != null) {
-      rule.addDeprecatedRuleKey(repository.key(), deprecatedRuleKeyAnnotation.ruleKey());
+      rule.addDeprecatedRuleKey(deprecatedRuleKeyAnnotation.repositoryKey(), deprecatedRuleKeyAnnotation.ruleKey());
+    } else {
+      // Keep link with legacy "squid" repository key
+      rule.addDeprecatedRuleKey("squid", ruleKey);
     }
     String rspecKey = rspecKey(ruleClass, rule);
     RuleMetadata ruleMetadata = readRuleMetadata(rspecKey);

@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 import org.sonarsource.analyzer.recognizers.CodeRecognizer;
 
-@DeprecatedRuleKey(ruleKey = "CommentedOutCodeLine")
+@DeprecatedRuleKey(ruleKey = "CommentedOutCodeLine", repositoryKey = "squid")
 @Rule(key = "S125")
 public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 

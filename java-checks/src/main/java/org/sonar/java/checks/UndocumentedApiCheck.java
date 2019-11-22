@@ -46,7 +46,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "UndocumentedApi")
+@DeprecatedRuleKey(ruleKey = "UndocumentedApi", repositoryKey = "squid")
 @Rule(key = "S1176")
 public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {
 

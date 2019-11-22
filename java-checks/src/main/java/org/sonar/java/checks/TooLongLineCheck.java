@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Set;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00103")
+@DeprecatedRuleKey(ruleKey = "S00103", repositoryKey = "squid")
 @Rule(key = "S103")
 public class TooLongLineCheck extends IssuableSubscriptionVisitor {
 

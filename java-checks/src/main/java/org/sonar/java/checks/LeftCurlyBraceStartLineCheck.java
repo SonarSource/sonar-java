@@ -23,7 +23,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "LeftCurlyBraceStartLineCheck")
+@DeprecatedRuleKey(ruleKey = "LeftCurlyBraceStartLineCheck", repositoryKey = "squid")
 @Rule(key = "S1106")
 public class LeftCurlyBraceStartLineCheck extends LeftCurlyBraceBaseTreeVisitor {
 

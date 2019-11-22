@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00120")
+@DeprecatedRuleKey(ruleKey = "S00120", repositoryKey = "squid")
 @Rule(key = "S120")
 public class BadPackageNameCheck extends BaseTreeVisitor implements JavaFileScanner {
 

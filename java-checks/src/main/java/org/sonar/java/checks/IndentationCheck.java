@@ -40,7 +40,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "IndentationCheck")
+@DeprecatedRuleKey(ruleKey = "IndentationCheck", repositoryKey = "squid")
 @Rule(key = "S1120")
 public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner {
 

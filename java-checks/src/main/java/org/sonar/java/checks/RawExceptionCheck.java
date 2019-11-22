@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00112")
+@DeprecatedRuleKey(ruleKey = "S00112", repositoryKey = "squid")
 @Rule(key = "S112")
 public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanner {
 

@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "TrailingCommentCheck")
+@DeprecatedRuleKey(ruleKey = "TrailingCommentCheck", repositoryKey = "squid")
 @Rule(key = "S139")
 public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
 

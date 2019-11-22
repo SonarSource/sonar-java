@@ -21,6 +21,7 @@ package org.sonar.plugins.java;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.regex.Pattern;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.config.Configuration;
@@ -68,6 +69,7 @@ public class JavaRulesDefinitionTest {
     assertThat(unusedLabelRule.internalKey()).isNull();
     assertThat(unusedLabelRule.name()).isEqualTo("Unused labels should be removed");
     assertThat(repository.rule("S2095").type()).isEqualTo(RuleType.BUG);
+    assertThat(repository.rule("S2095").deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S2095"));
     assertThat(repository.rule("S2095").activatedByDefault()).isEqualTo(true);
     RulesDefinition.Rule magicNumber = repository.rule("S109");
     assertThat(magicNumber.params()).isNotEmpty();
@@ -150,6 +152,7 @@ public class JavaRulesDefinitionTest {
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
     RulesDefinition.Rule hardcodedCredentialsRule = repository.rule("S1313");
+    assertThat(hardcodedCredentialsRule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S1313"));
     assertThat(hardcodedCredentialsRule.type()).isEqualTo(RuleType.SECURITY_HOTSPOT);
     assertThat(hardcodedCredentialsRule.activatedByDefault()).isFalse();
   }
@@ -162,6 +165,7 @@ public class JavaRulesDefinitionTest {
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
     RulesDefinition.Rule rule = repository.rule("S1989");
+    assertThat(rule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S1989"));
     assertThat(rule.securityStandards()).containsExactlyInAnyOrder("cwe:600", "owaspTop10:a3");
   }
 
@@ -174,10 +178,22 @@ public class JavaRulesDefinitionTest {
 
     RulesDefinition.Rule rule = repository.rule("S1104");
     assertThat(rule.activatedByDefault()).isEqualTo(true);
-    assertThat(rule.deprecatedRuleKeys()).hasSize(1);
-    RuleKey deprecatedKey = rule.deprecatedRuleKeys().iterator().next();
-    assertThat(deprecatedKey.repository()).isEqualTo("java");
-    assertThat(deprecatedKey.rule()).isEqualTo("ClassVariableVisibilityCheck");
+    assertThat(rule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "ClassVariableVisibilityCheck"));
+  }
+
+  @Test
+  public void rules_should_not_have_legacy_key() {
+    JavaRulesDefinition definition = new JavaRulesDefinition();
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    definition.define(context);
+    Pattern pattern = Pattern.compile("^S[0-9]{3,5}$");
+    RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
+    repository.rules().forEach(r -> {
+      // NoSonar key can't be changed to RSPEC key
+      if (!r.key().equals("NoSonar")) {
+        assertThat(pattern.matcher(r.key()).matches()).isTrue();
+      }
+    });
   }
 
   @Test

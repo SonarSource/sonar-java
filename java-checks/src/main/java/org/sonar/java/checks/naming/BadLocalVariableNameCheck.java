@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import java.util.regex.Pattern;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00117")
+@DeprecatedRuleKey(ruleKey = "S00117", repositoryKey = "squid")
 @Rule(key = "S117")
 public class BadLocalVariableNameCheck  extends BaseTreeVisitor implements JavaFileScanner {
 

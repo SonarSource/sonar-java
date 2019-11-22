@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "UselessParenthesesCheck")
+@DeprecatedRuleKey(ruleKey = "UselessParenthesesCheck", repositoryKey = "squid")
 @Rule(key = "S1110")
 public class UselessParenthesesCheck extends IssuableSubscriptionVisitor {
 

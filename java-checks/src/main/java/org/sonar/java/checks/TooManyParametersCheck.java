@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00107")
+@DeprecatedRuleKey(ruleKey = "S00107", repositoryKey = "squid")
 @Rule(key = "S107")
 public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileScanner {
 

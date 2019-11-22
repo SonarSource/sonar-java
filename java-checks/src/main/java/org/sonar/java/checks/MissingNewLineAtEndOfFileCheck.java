@@ -24,7 +24,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00113")
+@DeprecatedRuleKey(ruleKey = "S00113", repositoryKey = "squid")
 @Rule(key = "S113")
 public class MissingNewLineAtEndOfFileCheck implements JavaFileScanner {
 

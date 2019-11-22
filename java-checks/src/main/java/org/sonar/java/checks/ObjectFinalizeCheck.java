@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "ObjectFinalizeCheck")
+@DeprecatedRuleKey(ruleKey = "ObjectFinalizeCheck", repositoryKey = "squid")
 @Rule(key = "S1111")
 public class ObjectFinalizeCheck extends IssuableSubscriptionVisitor {
 

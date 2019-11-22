@@ -57,7 +57,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "RedundantThrowsDeclarationCheck")
+@DeprecatedRuleKey(ruleKey = "RedundantThrowsDeclarationCheck", repositoryKey = "squid")
 @Rule(key = "S1130")
 public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor {
 

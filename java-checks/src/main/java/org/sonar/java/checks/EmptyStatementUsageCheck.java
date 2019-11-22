@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.Collections;
 import java.util.List;
 
-@DeprecatedRuleKey(ruleKey = "EmptyStatementUsageCheck")
+@DeprecatedRuleKey(ruleKey = "EmptyStatementUsageCheck", repositoryKey = "squid")
 @Rule(key = "S1116")
 public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {
 

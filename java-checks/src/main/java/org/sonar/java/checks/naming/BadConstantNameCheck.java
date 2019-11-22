@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00115")
+@DeprecatedRuleKey(ruleKey = "S00115", repositoryKey = "squid")
 @Rule(key = "S115")
 public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
 

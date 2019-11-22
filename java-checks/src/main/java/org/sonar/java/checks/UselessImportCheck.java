@@ -48,7 +48,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "UselessImportCheck")
+@DeprecatedRuleKey(ruleKey = "UselessImportCheck", repositoryKey = "squid")
 @Rule(key = "S1128")
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
 

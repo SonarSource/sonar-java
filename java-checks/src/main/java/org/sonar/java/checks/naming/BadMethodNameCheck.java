@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00100")
+@DeprecatedRuleKey(ruleKey = "S00100", repositoryKey = "squid")
 @Rule(key = "S100")
 public class BadMethodNameCheck extends IssuableSubscriptionVisitor {
 

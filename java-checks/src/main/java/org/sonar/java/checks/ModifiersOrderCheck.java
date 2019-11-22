@@ -36,7 +36,7 @@ import java.util.ListIterator;
 import java.util.Set;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "ModifiersOrderCheck")
+@DeprecatedRuleKey(ruleKey = "ModifiersOrderCheck", repositoryKey = "squid")
 @Rule(key = "S1124")
 public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
 

@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.regex.Pattern;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "S00114")
+@DeprecatedRuleKey(ruleKey = "S00114", repositoryKey = "squid")
 @Rule(key = "S114")
 public class BadInterfaceNameCheck extends BaseTreeVisitor implements JavaFileScanner {
 

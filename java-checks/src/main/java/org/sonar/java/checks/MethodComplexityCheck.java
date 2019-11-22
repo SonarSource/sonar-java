@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "MethodCyclomaticComplexity")
+@DeprecatedRuleKey(ruleKey = "MethodCyclomaticComplexity", repositoryKey = "squid")
 @Rule(key = "S1541")
 public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
 
