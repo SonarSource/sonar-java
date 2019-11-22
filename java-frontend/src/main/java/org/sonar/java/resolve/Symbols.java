@@ -22,14 +22,14 @@ package org.sonar.java.resolve;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
+import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 /**
  * Predefined symbols.
@@ -150,6 +150,17 @@ public class Symbols {
       @Override
       public boolean isUnknown() {
         return true;
+      }
+
+      @Nullable
+      @Override
+      public MethodJavaSymbol overriddenSymbol() {
+        return null;
+      }
+
+      @Override
+      public Type type() {
+        return unknownType;
       }
 
       @Override
