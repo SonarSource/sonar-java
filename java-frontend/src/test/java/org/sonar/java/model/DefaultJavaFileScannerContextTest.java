@@ -90,6 +90,15 @@ public class DefaultJavaFileScannerContextTest {
     assertThat(context.fileParsed()).isTrue();
   }
 
+  /**
+   * This API needs to be kept at least till release of LTS 8.X,
+   * in order to guarantee compatibility with SonarSecurity 7.9 LTS
+   */
+  @Test
+  public void get_file_key() {
+    assertThat(context.getFileKey()).isEqualTo(JAVA_INPUT_FILE.file().getAbsolutePath());
+  }
+
   @Test
   public void get_java_version() {
     assertThat(context.getJavaVersion()).isNotNull();
