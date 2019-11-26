@@ -199,7 +199,8 @@ abstract class JSymbol implements Symbol {
       case IBinding.TYPE:
         return sema.type((ITypeBinding) binding);
       case IBinding.VARIABLE:
-        return sema.type(((IVariableBinding) binding).getType());
+        ITypeBinding variableType = ((IVariableBinding) binding).getType();
+        return variableType != null ? sema.type(variableType) : Symbols.unknownType;
       case IBinding.METHOD:
         return Symbols.unknownType;
       default:
