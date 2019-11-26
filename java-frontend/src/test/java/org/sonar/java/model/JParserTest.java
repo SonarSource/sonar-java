@@ -20,11 +20,11 @@
 package org.sonar.java.model;
 
 import com.sonar.sslr.api.RecognitionException;
+import java.io.File;
+import java.util.Collections;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -33,12 +33,11 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Collections;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JParserTest {
 
@@ -58,6 +57,17 @@ public class JParserTest {
     } catch (RecognitionException e) {
       assertEquals("Parse error at line 1 column 10: Syntax error on token \";\", delete this token", e.getMessage());
     }
+  }
+
+  @Test
+  public void should_recover_if_parser_fails() {
+    assertThrows(
+      RecognitionException.class,
+      () -> JParser.parse(
+        "12",
+        "A",
+        "class A { }",
+        Collections.singletonList(new File("unknownFile"))));
   }
 
   @Test
