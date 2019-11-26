@@ -62,6 +62,7 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -1174,6 +1175,37 @@ class JParserSemanticTest {
     ParameterizedTypeTree p = (ParameterizedTypeTree) v.type();
     AbstractTypedTree t = ((AbstractTypedTree) p.typeArguments().get(0));
     assertThat(t.typeBinding).isNotNull();
+  }
+
+  @Test
+  void type_try_with_resource() {
+    {
+      // closeable is unknown but recognized as closeable
+      CompilationUnitTree cu = test("class C { void m(UnknownCloseable p) { try (UnknownCloseable f = p) { } } }");
+      ClassTree c = (ClassTree) cu.types().get(0);
+      MethodTree m = (MethodTree) c.members().get(0);
+      TryStatementTree s = (TryStatementTree) m.block().body().get(0);
+      VariableTreeImpl v = (VariableTreeImpl) s.resourceList().get(0);
+      AbstractTypedTree t = (AbstractTypedTree) v.type();
+      assertThat(t.typeBinding).isNotNull();
+      JType t2 = (JType) v.symbol().type();
+      assertThat(t2).isNotNull();
+      assertThat(t2.isUnknown()).isTrue();
+      assertThat(t2.typeBinding).isNotNull();
+    }
+    {
+      // C not recognized as closeable
+      CompilationUnitTree cu = test("class C { void m(C p) { try (C f = p) { } } }");
+      ClassTree c = (ClassTree) cu.types().get(0);
+      MethodTree m = (MethodTree) c.members().get(0);
+      TryStatementTree s = (TryStatementTree) m.block().body().get(0);
+      VariableTreeImpl v = (VariableTreeImpl) s.resourceList().get(0);
+      AbstractTypedTree t = (AbstractTypedTree) v.type();
+      assertThat(t.typeBinding).isNotNull();
+      Type type = v.symbol().type();
+      assertThat(type).isNotNull();
+      assertThat(type.isUnknown()).isTrue();
+    }
   }
 
   @Test
