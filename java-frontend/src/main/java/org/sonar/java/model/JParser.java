@@ -135,6 +135,8 @@ import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.BlockStatementListTreeImpl;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
@@ -237,6 +239,8 @@ import java.util.Map;
 @ParametersAreNonnullByDefault
 public class JParser {
 
+  private static final Logger LOG = Loggers.get(JParser.class);
+
   public static CompilationUnitTree parse(String version, String unitName, String source, List<File> classpath) {
     return parse(version, unitName, source, true, classpath);
   }
@@ -273,7 +277,13 @@ public class JParser {
     char[] sourceChars = source.toCharArray();
     astParser.setSource(sourceChars);
 
-    CompilationUnit astNode = (CompilationUnit) astParser.createAST(null);
+    CompilationUnit astNode;
+    try {
+      astNode = (CompilationUnit) astParser.createAST(null);
+    } catch (Exception e) {
+      LOG.error("ECJ: Unable to parse file", e);
+      throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
+    }
     for (IProblem problem : astNode.getProblems()) {
       if (!problem.isError()) {
         continue;
