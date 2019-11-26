@@ -48,7 +48,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class LombokFilter extends BaseTreeVisitorIssueFilter {
@@ -160,15 +159,9 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
   @Nullable
   private static String getAccessLevelValue(Object value) {
-    if (value instanceof Tree) {
-      Tree tree = (Tree) value;
-      if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-        return ((MemberSelectExpressionTree) tree).identifier().name();
-      } else if (tree.is(Tree.Kind.IDENTIFIER)) {
-        return ((IdentifierTree) tree).name();
-      }
+    if (value instanceof Symbol) {
+      return ((Symbol) value).name();
     }
-    // can not be anything else than a Tree, because we start from the syntax tree
     return null;
   }
 
