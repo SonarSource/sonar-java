@@ -1064,6 +1064,10 @@ class JParserSemanticTest {
     assertThat(recovered.overriddenSymbol()).isNull();
     assertThat(recovered.parameterTypes()).isEmpty();
     assertThat(recovered.thrownTypes()).isEmpty();
+
+    SymbolMetadata metadata = recovered.metadata();
+    assertThat(metadata).isNotNull();
+    assertThat(metadata.annotations()).isEmpty();
   }
 
   @Test

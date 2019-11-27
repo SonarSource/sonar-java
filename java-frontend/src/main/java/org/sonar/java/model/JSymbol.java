@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -302,8 +303,10 @@ abstract class JSymbol implements Symbol {
       return new JSymbolMetadata(sema, sema.resolvePackageAnnotations(binding.getName()));
 
     } else if (binding.getKind() == IBinding.VARIABLE) {
-      return new JSymbolMetadata(sema,
-        ((IVariableBinding) binding).getType().getTypeAnnotations(),
+      ITypeBinding type = ((IVariableBinding) binding).getType();
+      return new JSymbolMetadata(
+        sema,
+        type == null ? new IAnnotationBinding[0] : type.getTypeAnnotations(),
         binding.getAnnotations()
       );
 
