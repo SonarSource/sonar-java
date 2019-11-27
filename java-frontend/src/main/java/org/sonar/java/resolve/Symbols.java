@@ -122,6 +122,9 @@ public class Symbols {
     unknownType = new UnknownType(unknownSymbol);
     unknownSymbol.type = unknownType;
     unknownMethodSymbol = new JavaSymbol.MethodJavaSymbol(0, "!unknown!", unknownSymbol) {
+
+      private final SymbolMetadataResolve metadata = new SymbolMetadataResolve();
+
       @Override
       public boolean isMethodSymbol() {
         return false;
@@ -166,6 +169,11 @@ public class Symbols {
       @Override
       public List<Type> thrownTypes() {
         return Collections.emptyList();
+      }
+
+      @Override
+      public SymbolMetadataResolve metadata() {
+        return metadata;
       }
     };
   }
