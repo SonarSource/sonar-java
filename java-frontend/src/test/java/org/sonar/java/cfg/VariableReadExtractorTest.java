@@ -60,7 +60,10 @@ public class VariableReadExtractorTest {
 
   @Test
   public void should_extract_fields_read() {
-    MethodTree methodTree = buildMethodTree("void foo(boolean a) { bar(p -> { System.out.println(a + field1); foo(this.field2); }); }");
+    MethodTree methodTree = buildMethodTree(
+      "void foo(int a) { bar(p -> { System.out.println(a + field1); foo(this.field2); }); } " +
+      "void bar(java.util.function.Consumer<Object> consumer) {}"
+    );
     StatementTree statementTree = methodTree.block().body().get(0);
     VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), true);
     statementTree.accept(extractor);
