@@ -85,7 +85,7 @@ public class VariableReadExtractor extends BaseTreeVisitor {
   }
 
   private static boolean isField(Symbol identifierSymbol, Symbol methodOwnerSymbol) {
-    return methodOwnerSymbol.equals(identifierSymbol.owner()) && !"this".equals(identifierSymbol.name());
+    return methodOwnerSymbol.equals(identifierSymbol.owner()) && !"this".equals(identifierSymbol.name()) && !identifierSymbol.isMethodSymbol();
   }
 
 }
