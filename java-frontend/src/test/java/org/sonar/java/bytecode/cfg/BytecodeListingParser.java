@@ -26,8 +26,7 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.util.Printer;
-import org.sonar.java.resolve.JavaSymbol;
-
+import org.sonar.java.bytecode.BytecodeHelper;
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.IINC;
@@ -39,17 +38,15 @@ import static org.sonar.java.bytecode.cfg.Instructions.METHOD_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.NO_OPERAND_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.TYPE_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.VAR_INSN;
-import static org.sonar.java.resolve.BytecodeCompleter.ASM_API_VERSION;
 
 public class BytecodeListingParser {
 
 
   public static BytecodeCFG getCFG(String bytecodeInstructions) {
     // Define class and method stub for instructions
-    ClassWriter cw = new ClassWriter(ASM_API_VERSION);
+    ClassWriter cw = new ClassWriter(BytecodeHelper.ASM_API_VERSION);
     cw.visit(V1_8, ACC_PUBLIC, "A", null, "java/lang/Object", null);
     MethodVisitor mv = cw.visitMethod(ACC_PRIVATE, "test", "()V", null, null);
-    JavaSymbol.MethodJavaSymbol methodStub = new JavaSymbol.MethodJavaSymbol(0, "test", null);
     Map<Integer, Label> labelIndexes =  new HashMap<>();
     String[] lines = bytecodeInstructions.split("\n");
     for (String line : lines) {

@@ -20,7 +20,6 @@
 package org.sonar.java.se.xproc;
 
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,13 +32,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.collections.PCollections;
 import org.sonar.java.collections.PMap;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
 import org.sonar.java.se.ProgramPoint;
@@ -56,7 +54,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -70,6 +67,7 @@ import static org.mockito.Mockito.when;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
+import static org.sonar.java.se.SETestUtils.variable;;
 
 public class MethodYieldTest {
   @Test
@@ -81,7 +79,7 @@ public class MethodYieldTest {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue sv3 = new SymbolicValue();
-    Symbol sym = new JavaSymbol.VariableJavaSymbol(0, "myVar", new JavaSymbol.MethodJavaSymbol(0, "dummy", null));
+    Symbol sym = variable("myVar");
     ps = ps.put(sym, sv1);
 
     MethodYield methodYield = mb.happyPathYields().findFirst().get();
@@ -225,9 +223,8 @@ public class MethodYieldTest {
 
   @Test
   public void constraints_on_varargs() throws Exception {
-    ActionParser<Tree> p = JavaParser.createParser();
-    CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File("src/test/files/se/VarArgsYields.java"));
-    Sema semanticModel = SemanticModel.createFor(cut, new SquidClassLoader(new ArrayList<>()));
+    JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(new File("src/test/files/se/VarArgsYields.java"));
+    Sema semanticModel = cut.sema;
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(new SECheck[]{}), new BehaviorCache(new SquidClassLoader(new ArrayList<>())));
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getTree()).thenReturn(cut);
@@ -333,6 +330,4 @@ public class MethodYieldTest {
     methodYield.setResult(resultIndex, resultConstraint);
     return methodYield;
   }
-
-
 }

@@ -305,7 +305,6 @@ public class JParser {
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;
 
-    tree.useNewSema = true;
     ASTUtils.mayTolerateMissingType(astNode.getAST());
 
     setParents(tree);
@@ -1842,7 +1841,7 @@ public class JParser {
             firstTokenAfter((Expression) o, TerminalTokens.TokenNameRBRACKET)
           ));
         }
-
+        // !!!!!!!!!!
         InitializerListTreeImpl initializers = new InitializerListTreeImpl(new ArrayList<>(), new ArrayList<>());
         if (e.getInitializer() != null) {
           assert dimensions.isEmpty();
@@ -1850,11 +1849,12 @@ public class JParser {
           TypeTree type = convertType(e.getType());
           while (type.is(Tree.Kind.ARRAY_TYPE)) {
             ArrayTypeTree arrayType = (ArrayTypeTree) type;
-            dimensions.add(/* TODO suboptimal */ 0, new ArrayDimensionTreeImpl(
+            ArrayDimensionTreeImpl dimension = new ArrayDimensionTreeImpl(
               arrayType.openBracketToken(),
               null,
               arrayType.closeBracketToken()
-            ));
+            ).completeAnnotations(arrayType.annotations());
+            dimensions.add(/* TODO suboptimal */ 0, dimension);
             type = arrayType.type();
           }
 

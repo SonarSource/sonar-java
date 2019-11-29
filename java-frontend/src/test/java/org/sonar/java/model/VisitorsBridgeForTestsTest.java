@@ -28,7 +28,6 @@ import org.sonar.api.utils.Version;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -43,13 +42,13 @@ public class VisitorsBridgeForTestsTest {
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponents.setSensorContext(context);
 
-    Tree parse = JavaParser.createParser().parse("class A{}");
+    Tree parse = JParserTestUtils.parse("class A{}");
     VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(new DummyVisitor()), sonarComponents);
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
     visitorsBridgeForTests.visitFile(parse);
     assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNull();
 
-    parse = JavaParser.createParser().parse("class A{}");
+    parse = JParserTestUtils.parse("class A{}");
     visitorsBridgeForTests = new VisitorsBridgeForTests(new DummyVisitor(), sonarComponents);
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
     visitorsBridgeForTests.visitFile(parse);
@@ -62,7 +61,7 @@ public class VisitorsBridgeForTestsTest {
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
     sonarComponents.setSensorContext(context);
 
-    Tree parse = JavaParser.createParser().parse("class A{}");
+    Tree parse = JParserTestUtils.parse("class A{}");
     DummyVisitor javaCheck = new DummyVisitor();
     VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(javaCheck), sonarComponents);
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));

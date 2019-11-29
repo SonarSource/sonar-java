@@ -19,18 +19,13 @@
  */
 package org.sonar.java.model;
 
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
-import org.sonar.java.resolve.SemanticModel;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,17 +64,8 @@ class JMethodSymbolTest {
       .isEqualTo("org.example.C#m(Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
   }
 
-  private JavaTree.CompilationUnitTreeImpl test(String source) {
-    List<File> classpath = Collections.emptyList();
-    JavaTree.CompilationUnitTreeImpl t = (JavaTree.CompilationUnitTreeImpl) JParser.parse(
-      "12",
-      "File.java",
-      source,
-      true,
-      classpath
-    );
-    SemanticModel.createFor(t, new SquidClassLoader(classpath));
-    return t;
+  private static CompilationUnitTreeImpl test(String source) {
+    return (CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }
 
 }

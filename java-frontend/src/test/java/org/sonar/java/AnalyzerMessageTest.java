@@ -23,7 +23,7 @@ import org.assertj.core.api.Fail;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage.TextSpan;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -99,7 +99,7 @@ public class AnalyzerMessageTest {
 
   @Test
   public void textSpanForTrees() {
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse("class A {\n}\n");
+    CompilationUnitTree cut = JParserTestUtils.parse("class A {\n}\n");
     ClassTree classTree = (ClassTree) cut.types().get(0);
 
     TextSpan textSpan;
@@ -119,8 +119,7 @@ public class AnalyzerMessageTest {
 
   @Test
   public void shouldFailOnEmptySpans() {
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser()
-      .parse("class A {\n}\n");
+    CompilationUnitTree cut = JParserTestUtils.parse("class A {\n}\n");
 
     try {
       AnalyzerMessage.textSpanFor(cut.eofToken());
@@ -133,8 +132,8 @@ public class AnalyzerMessageTest {
 
   @Test
   public void shouldNotFailOnEmptyTrees() {
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser()
-      .parse("class A {\n" +
+    CompilationUnitTree cut = JParserTestUtils.parse(
+      "class A {\n" +
         "  void foo(java.util.List l) {\n" +
         "    l.forEach(o -> {});\n" +
         "  }\n" +

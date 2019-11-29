@@ -1,13 +1,11 @@
-package javax.annotation;
+package org.foo;
 
 import java.text.ParseException;
 import java.util.List;
 
-@interface CheckForNull {}
-
-@interface Nonnull {}
-
-@interface Nullable {}
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 class NullPointerTest {
 
@@ -66,7 +64,7 @@ class NullPointerTest {
     parameter.hashCode();
   }
 
-  public void testCheckNotNull(@CheckForNull Object parameter) {
+  public void testCheckNotNull1(@CheckForNull Object parameter) {
     int i;
     Object o;
 
@@ -78,7 +76,7 @@ class NullPointerTest {
     Object[] array2 = checkForNullMethod(); // flow@array {{'checkForNullMethod()' can return null.}} flow@array {{Implies 'array2' can be null.}}
     i = array2.length; // Noncompliant [[flows=array]] {{A "NullPointerException" could be thrown; "array2" is nullable here.}} flow@array
   }
-  public void testCheckNotNull(@CheckForNull Object parameter) {
+  public void testCheckNotNull2(@CheckForNull Object parameter) {
     int i;
     i = checkForNullMethod().length; // Noncompliant {{A "NullPointerException" could be thrown; "checkForNullMethod()" can return null.}}
   }
@@ -98,7 +96,7 @@ class NullPointerTest {
     i = nullableMethod().length; // Compliant
   }
 
-  public class A {
+  class A {
     @DummyAnnotation
     Object a;
     @CheckForNull
@@ -370,14 +368,14 @@ class NullPointerTest {
     a.toString();
   }
   protected Constructor constructor = null;
-  public void newInstanceBis() throws IllegalAccessException, InstantiationException {
+  public Object newInstanceBis() throws IllegalAccessException, InstantiationException {
     if (constructor == null) {
       this.setDynaBeanClass();
     }
     return ((DynaBean) constructor.newInstance(constructorValues));
   }
 
-  public void testWhileLoop() {
+  public void testWhileLoop1() {
     Object object1 = null, object2 = new Object();
     while(object1.hashCode() > 0) { // Noncompliant {{A "NullPointerException" could be thrown; "object1" is nullable here.}}
       object2.hashCode(); // Compliant, issue already raised
@@ -385,7 +383,7 @@ class NullPointerTest {
     object1.hashCode(); // Compliant, issue already raised
     object2.hashCode(); // Compliant
   }
-  public void testWhileLoop() {
+  public void testWhileLoop2() {
     Object object1 = new Object(), object2 = null, object3 = null;
     while(object1.hashCode() > 0) { // compliant
       object2.hashCode(); // Noncompliant
@@ -436,14 +434,14 @@ class NullPointerTest {
     str3.length(); // Noncompliant {{A "NullPointerException" could be thrown; "str3" is nullable here.}}
   }
 
-  public void testMergeOnParameter(@CheckForNull Object o) {
+  public void testMergeOnParameter1(@CheckForNull Object o) {
     if(o != null) {
       return;
     }
     o.toString(); // Noncompliant
   }
 
-  public void testMergeOnParameter(@Nullable Object o) {
+  public void testMergeOnParameter2(@Nullable Object o) {
     if(o == null) {
       return;
     }

@@ -42,7 +42,6 @@ import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -87,7 +86,7 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
     when(sonarComponents.getRuleKey(any())).thenReturn(RuleKey.of("repository", "rule"));
 
     InputFile inputFile = TestUtils.inputFile("src/test/files/api/JavaFileScannerContext.java");
-    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser().parse(inputFile.contents());
+    CompilationUnitTree cut = JParserTestUtils.parse(inputFile.contents());
     tree = cut.types().get(0);
     scannerContext = new DefaultJavaFileScannerContext(cut, inputFile, null, sonarComponents, null, true);
   }

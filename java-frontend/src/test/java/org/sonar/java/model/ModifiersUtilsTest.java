@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -47,7 +46,7 @@ public class ModifiersUtilsTest {
   @Test
   public void test_int_and_long_value() throws Exception {
     File file = new File("src/test/files/model/ModifiersUtilsTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     ClassTree classTree = (ClassTree) tree.types().get(0);
     assertThat(ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.PUBLIC)).isTrue();
     assertThat(ModifiersUtils.getModifier(classTree.modifiers(), Modifier.PUBLIC).keyword().text()).isEqualTo("public");
@@ -58,7 +57,7 @@ public class ModifiersUtilsTest {
   @Test
   public void test_find_modifier() {
     File file = new File("src/test/files/model/ModifiersUtilsTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     ClassTree classTree = (ClassTree) tree.types().get(0);
     assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.PUBLIC).isPresent()).isTrue();
     assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.ABSTRACT).isPresent()).isFalse();

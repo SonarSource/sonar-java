@@ -88,7 +88,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     if (!semanticEnabled) {
       return null;
     }
-    return tree.sema();
+    return tree.sema;
   }
 
   @Override

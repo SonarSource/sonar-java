@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -35,7 +34,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -121,8 +119,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbol.metadata().valuesForAnnotation("org.junit.runner.RunWith");
     if (annotationValues != null && annotationValues.size() == 1) {
       Object value = annotationValues.get(0).value();
-      return (value instanceof Symbol.TypeSymbol && checkRunWithType((Symbol.TypeSymbol) value, runnerClasses))
-        || (value instanceof MemberSelectExpressionTree && checkRunWithTree((MemberSelectExpressionTree) value, runnerClasses));
+      return value instanceof Symbol.TypeSymbol && checkRunWithType((Symbol.TypeSymbol) value, runnerClasses);
     }
     return false;
   }
@@ -130,16 +127,6 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   private static boolean checkRunWithType(Symbol.TypeSymbol value, String... runnerClasses) {
     for (String runnerClass : runnerClasses) {
       if (runnerClass.equals(value.name())) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private static boolean checkRunWithTree(MemberSelectExpressionTree value, String[] runnerClasses) {
-    String runnerParam = ExpressionsHelper.concatenate(value);
-    for (String runnerClass : runnerClasses) {
-      if (runnerParam.endsWith(runnerClass + ".class")) {
         return true;
       }
     }

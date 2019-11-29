@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -47,7 +46,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends IssuableSubscriptio
       Collection<Symbol> members = typeSymbol.memberSymbols();
       int nbAbstractMethod = countAbstractMethods(members);
       // don't count this and super as members
-      int nbOfMembers = members.size() - (((JavaTree) tree).isNewSema() ? 0 : 2);
+      int nbOfMembers = members.size();
       if (hasDefaultConstructor(members)) {
         //remove default constructor from members
         nbOfMembers -=1;

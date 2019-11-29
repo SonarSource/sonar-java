@@ -19,22 +19,18 @@
  */
 package org.sonar.java.se.xproc;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.Pair;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
@@ -60,7 +56,7 @@ public class ExceptionalYieldTest {
     yield.setExceptionType("java.lang.Exception");
     assertThat(yield).isEqualTo(otherYield);
 
-    Sema semanticModel = SemanticModel.createFor((CompilationUnitTree) JavaParser.createParser().parse("class A{}"), new SquidClassLoader(new ArrayList<>()));
+    Sema semanticModel = ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A{}")).sema;
     assertThat(yield.exceptionType(semanticModel)).isEqualTo(otherYield.exceptionType(semanticModel));
 
     // same arity and parameters but happy yield

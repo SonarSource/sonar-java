@@ -27,7 +27,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -72,17 +71,9 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
 
   @Nullable
   private static String getRetentionValue(Object value) {
-    String retentionValue = null;
-    if (value instanceof Tree) {
-      Tree tree = (Tree) value;
-      if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-        retentionValue = ((MemberSelectExpressionTree) tree).identifier().name();
-      } else if (tree.is(Tree.Kind.IDENTIFIER)) {
-        retentionValue = ((IdentifierTree) tree).name();
-      }
-    } else if (value instanceof Symbol.VariableSymbol) {
-      retentionValue = ((Symbol.VariableSymbol) value).name();
+    if (value instanceof Symbol.VariableSymbol) {
+      return ((Symbol.VariableSymbol) value).name();
     }
-    return retentionValue;
+    return null;
   }
 }

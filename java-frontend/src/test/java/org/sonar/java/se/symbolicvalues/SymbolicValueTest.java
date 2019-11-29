@@ -20,13 +20,12 @@
 package org.sonar.java.se.symbolicvalues;
 
 import org.junit.Test;
-
-import org.sonar.java.resolve.ClassJavaType;
-import org.sonar.java.resolve.Flags;
-import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SymbolicValueTest {
 
@@ -36,9 +35,7 @@ public class SymbolicValueTest {
     // contains the exception
     assertThat(unknownException.toString()).contains("!unknownException!");
 
-    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
-    JavaSymbol.TypeJavaSymbol exceptionSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyException", packageSymbol);
-    Type exceptionType = new ClassJavaType(exceptionSymbol);
+    Type exceptionType = type("MyException", "org.foo.bar");
     SymbolicValue.ExceptionalSymbolicValue knownException = new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
 
     // contains the exception
@@ -47,9 +44,7 @@ public class SymbolicValueTest {
 
   @Test
   public void exceptional_SV_equals() {
-    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
-    JavaSymbol.TypeJavaSymbol exceptionSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyException", packageSymbol);
-    Type exceptionType = new ClassJavaType(exceptionSymbol);
+    Type exceptionType = type("MyException", "org.foo.bar");
 
     SymbolicValue.ExceptionalSymbolicValue sv = new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
 
@@ -116,5 +111,19 @@ public class SymbolicValueTest {
     SymbolicValue sv2 = new SymbolicValue();
     assertThat(sv1).isNotEqualTo(sv2);
     assertThat(sv1.hashCode()).isNotEqualTo(sv2.hashCode());
+  }
+
+  private static Type type(String name, String ownerName) {
+    Symbol owner = mock(Symbol.class);
+    when(owner.name()).thenReturn(ownerName);
+    Symbol.TypeSymbol typeSymbol = mock(Symbol.TypeSymbol.class);
+    Type type = mock(Type.class);
+    when(type.symbol()).thenReturn(typeSymbol);
+    when(type.name()).thenReturn(name);
+    when(type.fullyQualifiedName()).thenReturn(ownerName + "." + name);
+    when(typeSymbol.type()).thenReturn(type);
+    when(typeSymbol.name()).thenReturn(name);
+    when(typeSymbol.owner()).thenReturn(owner);
+    return type;
   }
 }

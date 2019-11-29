@@ -61,7 +61,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-@org.junit.Ignore
 public class RulesSanityTest {
 
   private static final Logger LOG = Loggers.get(RulesSanityTest.class);

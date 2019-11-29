@@ -22,17 +22,15 @@ package org.sonar.java.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.sonar.java.resolve.SymbolMetadataResolve;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 
 import javax.annotation.Nullable;
 
-public class JLabelSymbol implements Symbol.LabelSymbol, Symbol {
+public class JLabelSymbol extends Symbols.DefaultSymbol implements Symbol.LabelSymbol {
 
   private final String name;
   LabeledStatementTree declaration;
@@ -68,90 +66,8 @@ public class JLabelSymbol implements Symbol.LabelSymbol, Symbol {
   }
 
   @Override
-  public boolean isVariableSymbol() {
-    return false;
-  }
-
-  @Override
-  public boolean isTypeSymbol() {
-    return false;
-  }
-
-  @Override
-  public boolean isMethodSymbol() {
-    return false;
-  }
-
-  @Override
-  public boolean isPackageSymbol() {
-    return false;
-  }
-
-  @Override
-  public boolean isStatic() {
-    return false;
-  }
-
-  @Override
-  public boolean isFinal() {
-    return false;
-  }
-
-  @Override
-  public boolean isEnum() {
-    return false;
-  }
-
-  @Override
-  public boolean isInterface() {
-    return false;
-  }
-
-  @Override
-  public boolean isAbstract() {
-    return false;
-  }
-
-  @Override
-  public boolean isPublic() {
-    return false;
-  }
-
-  @Override
-  public boolean isPrivate() {
-    return false;
-  }
-
-  @Override
-  public boolean isProtected() {
-    return false;
-  }
-
-  @Override
-  public boolean isPackageVisibility() {
-    return false;
-  }
-
-  @Override
-  public boolean isDeprecated() {
-    return false;
-  }
-
-  @Override
-  public boolean isVolatile() {
-    return false;
-  }
-
-  @Override
   public boolean isUnknown() {
     return false;
-  }
-
-  private static final SymbolMetadata METADATA = new SymbolMetadataResolve();
-
-  @Override
-  public SymbolMetadata metadata() {
-    return METADATA;
   }
 
   @Nullable

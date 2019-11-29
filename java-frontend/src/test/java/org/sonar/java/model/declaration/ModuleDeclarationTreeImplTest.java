@@ -19,12 +19,9 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.sonar.sslr.api.typed.ActionParser;
-
+import java.util.List;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -33,32 +30,19 @@ import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
 import org.sonar.plugins.java.api.tree.ModuleNameTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModuleDeclarationTreeImplTest {
 
-  private final ActionParser<Tree> p = JavaParser.createParser();
-
-  private CompilationUnitTree createTree(String... lines) {
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(Arrays.stream(lines).collect(Collectors.joining("\n")));
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
-    return compilationUnitTree;
-  }
-
   @Test
   public void no_module() {
-    CompilationUnitTree cut = createTree("package org.foo;");
+    CompilationUnitTree cut = JParserTestUtils.parseModule("package org.foo;");
     assertThat(cut.moduleDeclaration()).isNull();
   }
 
   @Test
   public void with_module() {
-    CompilationUnitTree cut = createTree("module org.foo { }");
+    CompilationUnitTree cut = JParserTestUtils.parseModule("module org.foo { }");
     ModuleDeclarationTree moduleDeclaration = cut.moduleDeclaration();
     assertThat(moduleDeclaration).isNotNull();
     assertThat(moduleDeclaration.is(Tree.Kind.MODULE)).isTrue();
@@ -77,7 +61,7 @@ public class ModuleDeclarationTreeImplTest {
 
   @Test
   public void test_BaseTreeVisitor() {
-    CompilationUnitTree cut = createTree(
+    CompilationUnitTree cut = JParserTestUtils.parseModule(
       "import org.foo.Bar;",
       "",
       "@Bar",

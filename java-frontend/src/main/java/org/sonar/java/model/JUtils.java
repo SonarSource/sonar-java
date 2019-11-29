@@ -24,14 +24,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.sonar.java.resolve.ClassJavaType;
-import org.sonar.java.resolve.Flags;
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
-import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
-import org.sonar.java.resolve.TypeVariableJavaType;
+import org.sonar.java.resolve.SymbolMetadataResolve;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -42,11 +35,11 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public final class JUtils {
 
@@ -68,21 +61,12 @@ public final class JUtils {
       .build();
   }
 
-  /**
-   * Replacement for {@link JavaType#isPrimitiveWrapper()}
-   */
   public static boolean isPrimitiveWrapper(Type type) {
     return type.isClass() && WRAPPER_TO_PRIMITIVE.containsKey(type.fullyQualifiedName());
   }
 
-  /**
-   * Replacement for {@link JavaType#primitiveWrapperType()}
-   */
   @Nullable
   public static Type primitiveWrapperType(Type type) {
-    if (!(type instanceof JType)) {
-      return ((JavaType) type).primitiveWrapperType();
-    }
     String name = WRAPPER_TO_PRIMITIVE.inverse().get(type.fullyQualifiedName());
     if (name == null) {
       return null;
@@ -91,14 +75,8 @@ public final class JUtils {
     return sema.type(sema.resolveType(name));
   }
 
-  /**
-   * Replacement for {@link JavaType#primitiveType()}
-   */
   @Nullable
   public static Type primitiveType(Type type) {
-    if (!(type instanceof JType)) {
-      return ((JavaType) type).primitiveType();
-    }
     String name = WRAPPER_TO_PRIMITIVE.get(type.fullyQualifiedName());
     if (name == null) {
       return null;
@@ -108,48 +86,24 @@ public final class JUtils {
   }
 
   public static boolean isNullType(Type type) {
-    if (!(type instanceof JType)) {
-      return ((JavaType) type).isTagged(JavaType.BOT);
-    }
-    return ((JType) type).typeBinding.isNullType();
+    return !type.isUnknown() && ((JType) type).typeBinding.isNullType();
   }
 
-  /**
-   * Replacement for {@link JavaType#isTagged(int)} {@link JavaType#INTERSECTION}
-   */
   public static boolean isIntersectionType(Type type) {
-    if (!(type instanceof JType)) {
-      return ((JavaType) type).isTagged(JavaType.INTERSECTION);
-    }
-    return ((JType) type).typeBinding.isIntersectionType();
+    return !type.isUnknown() && ((JType) type).typeBinding.isIntersectionType();
   }
 
-  /**
-   * Replacement for {@link JavaType#isTagged(int)} {@link JavaType#TYPEVAR}
-   */
   public static boolean isTypeVar(Type type) {
-    if (!(type instanceof JType)) {
-      return ((JavaType) type).isTagged(JavaType.TYPEVAR);
-    }
-    return ((JType) type).typeBinding.isTypeVariable();
+    return !type.isUnknown() && ((JType) type).typeBinding.isTypeVariable();
   }
 
-  /**
-   * Replacement for {@link TypeJavaSymbol#isAnnotation()}
-   */
   public static boolean isAnnotation(Symbol.TypeSymbol typeSymbol) {
-    if (!(typeSymbol instanceof JSymbol)) {
-      return ((TypeJavaSymbol) typeSymbol).isAnnotation();
-    }
-    return ((JTypeSymbol) typeSymbol).typeBinding().isAnnotation();
+    return !typeSymbol.isUnknown() && ((JTypeSymbol) typeSymbol).typeBinding().isAnnotation();
   }
 
   public static boolean isParameter(Symbol symbol) {
     if (symbol instanceof JTypeSymbol.SpecialField) {
       return false;
-    }
-    if (!(symbol instanceof JSymbol)) {
-      return symbol.owner().isMethodSymbol() && ((JavaSymbol.MethodJavaSymbol) symbol.owner()).getParameters().scopeSymbols().contains(symbol);
     }
     return symbol.isVariableSymbol() && ((IVariableBinding) ((JVariableSymbol) symbol).binding).isParameter();
   }
@@ -161,10 +115,6 @@ public final class JUtils {
     if (symbol instanceof JTypeSymbol.SpecialField) {
       return Optional.empty();
     }
-    if (!(symbol instanceof JSymbol)) {
-      return ((JavaSymbol.VariableJavaSymbol) symbol).constantValue();
-    }
-
     Object c = ((IVariableBinding) ((JVariableSymbol) symbol).binding).getConstantValue();
     if (c instanceof Short) {
       c = Integer.valueOf((Short) c);
@@ -176,12 +126,9 @@ public final class JUtils {
     return Optional.ofNullable(c);
   }
 
-  /**
-   * Replacement for {@link TypeJavaSymbol#superTypes()}
-   */
   public static Set<Type> superTypes(Symbol.TypeSymbol typeSymbol) {
-    if (!(typeSymbol instanceof JSymbol)) {
-      return (Set) ((TypeJavaSymbol) typeSymbol).superTypes();
+    if (typeSymbol.isUnknown()) {
+      return Collections.emptySet();
     }
     Set<Type> result = new HashSet<>();
     collectSuperTypes(result, ((JTypeSymbol) typeSymbol).sema, ((JTypeSymbol) typeSymbol).typeBinding());
@@ -200,9 +147,6 @@ public final class JUtils {
     }
   }
 
-  /**
-   * Replacement for {@link TypeJavaSymbol#outermostClass()}
-   */
   public static Symbol.TypeSymbol outermostClass(Symbol.TypeSymbol typeSymbol) {
     Symbol symbol = typeSymbol;
     Symbol result = null;
@@ -213,9 +157,6 @@ public final class JUtils {
     return (Symbol.TypeSymbol) result;
   }
 
-  /**
-   * Replacement for {@link JavaSymbol#packge()}
-   */
   public static Symbol getPackage(Symbol symbol) {
     while (!symbol.isPackageSymbol()) {
       symbol = symbol.owner();
@@ -223,75 +164,45 @@ public final class JUtils {
     return symbol;
   }
 
-  /**
-   * Replacement for {@link MethodJavaSymbol#isVarArgs()}
-   */
   public static boolean isVarArgsMethod(Symbol.MethodSymbol method) {
-    if (!(method instanceof JMethodSymbol)) {
-      return ((MethodJavaSymbol) method).isVarArgs();
-    }
-    return ((JMethodSymbol) method).methodBinding().isVarargs();
+    return !method.isUnknown() && ((JMethodSymbol) method).methodBinding().isVarargs();
   }
 
   public static boolean isSynchronizedMethod(Symbol.MethodSymbol method) {
-    if (!(method instanceof JMethodSymbol)) {
-      return Flags.isFlagged(((MethodJavaSymbol) method).flags(), Flags.SYNCHRONIZED);
-    }
-    return Modifier.isSynchronized(((JMethodSymbol) method).binding.getModifiers());
+    return !method.isUnknown() && Modifier.isSynchronized(((JMethodSymbol) method).binding.getModifiers());
   }
 
   public static boolean isNativeMethod(Symbol.MethodSymbol method) {
-    if (!(method instanceof JMethodSymbol)) {
-      return Flags.isFlagged(((MethodJavaSymbol) method).flags(), Flags.NATIVE);
-    }
-    return Modifier.isNative(((JMethodSymbol) method).binding.getModifiers());
+    return !method.isUnknown() && Modifier.isNative(((JMethodSymbol) method).binding.getModifiers());
   }
 
-  /**
-   * Replacement for {@link MethodJavaSymbol#isDefault()}
-   */
   public static boolean isDefaultMethod(Symbol.MethodSymbol method) {
-    if (!(method instanceof JMethodSymbol)) {
-      return ((MethodJavaSymbol) method).isDefault();
-    }
-    return Modifier.isDefault(((JMethodSymbol) method).binding.getModifiers());
+    return !method.isUnknown() && Modifier.isDefault(((JMethodSymbol) method).binding.getModifiers());
   }
 
-  /**
-   * Replacement for {@link MethodJavaSymbol#defaultValue()}
-   */
   @Nullable
   public static Object defaultValue(Symbol.MethodSymbol method) {
-    if (!(method instanceof JMethodSymbol)) {
-      return ((MethodJavaSymbol) method).defaultValue();
+    if (method.isUnknown()) {
+      return null;
     }
     return ((JMethodSymbol) method).methodBinding().getDefaultValue();
   }
 
-  /**
-   * Replacement for {@link MethodJavaSymbol#isOverridable()}
-   */
   public static boolean isOverridable(Symbol.MethodSymbol method) {
-    return !(method.isPrivate() || method.isStatic() || method.isFinal() || method.owner().isFinal());
+    return !method.isUnknown() && !(method.isPrivate() || method.isStatic() || method.isFinal() || method.owner().isFinal());
   }
 
-  /**
-   * Replacement for {@link MethodJavaSymbol#isParametrized()}
-   */
   public static boolean isParametrizedMethod(Symbol.MethodSymbol method) {
-    if (!(method instanceof JMethodSymbol)) {
-      return ((JavaSymbol.MethodJavaSymbol) method).isParametrized();
+    if (method.isUnknown()) {
+      return false;
     }
     return ((JMethodSymbol) method).methodBinding().isParameterizedMethod()
       || ((JMethodSymbol) method).methodBinding().isGenericMethod();
   }
 
-  /**
-   * Replacement for {@link JavaType#isParameterized()}
-   */
   public static boolean isParametrized(Type type) {
-    if (!(type instanceof JType)) {
-      return type instanceof ParametrizedTypeJavaType;
+    if (type.isUnknown()) {
+      return false;
     }
     JType t = (JType) type;
     return t.typeBinding.isParameterizedType()
@@ -300,15 +211,9 @@ public final class JUtils {
       && t.typeBinding.getTypeArguments().length > 0;
   }
 
-  /**
-   * Replacement for {@link ParametrizedTypeJavaType#substitution(TypeVariableJavaType)}
-   */
   public static List<Type> typeArguments(Type type) {
-    if (!(type instanceof JType)) {
-      ParametrizedTypeJavaType t = (ParametrizedTypeJavaType) type;
-      return t.typeParameters().stream()
-        .map(t::substitution)
-        .collect(Collectors.toList());
+    if (type.isUnknown()) {
+      return Collections.emptyList();
     }
     JType t = (JType) type;
     ITypeBinding[] typeArguments = t.typeBinding.getTypeArguments();
@@ -319,12 +224,9 @@ public final class JUtils {
     return Arrays.asList(result);
   }
 
-  /**
-   * Replacement {@link ClassJavaType#directSuperTypes()}
-   */
   public static Set<Type> directSuperTypes(Type type) {
-    if (!(type instanceof JType)) {
-      return (Set) ((JavaType) type).directSuperTypes();
+    if (type.isUnknown()) {
+      return Collections.emptySet();
     }
     Set<Type> result = new HashSet<>();
     JType t = (JType) type;
@@ -338,9 +240,6 @@ public final class JUtils {
     return result;
   }
 
-  /**
-   * Replacement for {@link org.sonar.java.resolve.SemanticModel#getEnclosingClass(Tree)}
-   */
   @Nullable
   public static Symbol enclosingClass(Tree t) {
     do {
@@ -353,24 +252,18 @@ public final class JUtils {
     } while (true);
   }
 
-  /**
-   * Replacement for {@link org.sonar.java.resolve.SemanticModel#getSymbol(Tree)}
-   */
   @Nullable
   public static Symbol importTreeSymbol(ImportTree tree) {
     return ((JavaTree.ImportTreeImpl) tree).symbol();
   }
 
-  /**
-   * Replacement for {@link org.sonar.java.resolve.SemanticModel#getSymbol(Tree)}
-   */
   public static Symbol typeParameterTreeSymbol(TypeParameterTree tree) {
     return ((TypeParameterTreeImpl) tree).symbol();
   }
 
   public static SymbolMetadata parameterAnnotations(Symbol.MethodSymbol method, int param) {
-    if (!(method instanceof JSymbol)) {
-      return ((MethodJavaSymbol) method).getParameters().scopeSymbols().get(param).metadata();
+    if (method.isUnknown()) {
+      new SymbolMetadataResolve();
     }
     IMethodBinding methodBinding = (IMethodBinding) ((JSymbol) method).binding;
     return new JSymbolMetadata(

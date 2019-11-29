@@ -34,7 +34,6 @@ import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
@@ -70,7 +69,7 @@ public class DefaultJavaFileScannerContextTest {
   @Before
   public void setup() {
     sonarComponents = createSonarComponentsMock();
-    compilationUnitTree = (CompilationUnitTree) JavaParser.createParser().parse(JAVA_FILE);
+    compilationUnitTree = JParserTestUtils.parse(JAVA_FILE);
     context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true);
     reportedMessage = null;
   }

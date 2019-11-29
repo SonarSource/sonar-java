@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -38,6 +37,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
@@ -62,7 +62,7 @@ public class ExpressionUtilsTest {
   @Test
   public void test_skip_parenthesis() throws Exception {
     File file = new File("src/test/java/org/sonar/java/model/ExpressionUtilsTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(0);
     ExpressionTree parenthesis = ((ReturnStatementTree) methodTree.block().body().get(0)).expression();
 
@@ -75,7 +75,7 @@ public class ExpressionUtilsTest {
   @Test
   public void test_simple_assignments() throws Exception {
     File file = new File("src/test/java/org/sonar/java/model/ExpressionUtilsTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
     List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);
 
@@ -89,7 +89,7 @@ public class ExpressionUtilsTest {
   @Test
   public void method_name() throws Exception {
     File file = new File("src/test/files/model/ExpressionUtilsMethodNameTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(0);
 
     MethodInvocationTree firstMIT = (MethodInvocationTree) ((ExpressionStatementTree) methodTree.block().body().get(0)).expression();
@@ -112,7 +112,7 @@ public class ExpressionUtilsTest {
   @Test
   public void test_extract_identifier_mixed_access() throws Exception {
     File file = new File("src/test/files/model/ExpressionUtilsTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
     List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);
 
@@ -133,18 +133,20 @@ public class ExpressionUtilsTest {
 
   @Test
   public void securing_byte() {
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(
-      "class A {static{\n" +
-        "12;\n" +
-        "12 & 0xFF;\n" +
-        "0xff & 12;\n" +
-        "12 & 12;\n" +
-        "}}\n");
+    CompilationUnitTree tree = JParserTestUtils.parse(
+      "class A {\n" +
+        "  static {\n" +
+        "    int i1 = 12;\n" +
+        "    int i2 = 12 & 0xFF;\n" +
+        "    int i3 = 0xff & 12;\n" +
+        "    int i4 = 12 & 12;\n" +
+        "  }\n" +
+        "}");
 
     StaticInitializerTree staticInitializer = (StaticInitializerTree) ((ClassTree) tree.types().get(0)).members().get(0);
     List<ExpressionTree> expressions = staticInitializer.body().stream()
-      .map(ExpressionStatementTree.class::cast)
-      .map(ExpressionStatementTree::expression)
+      .map(VariableTree.class::cast)
+      .map(VariableTree::initializer)
       .collect(Collectors.toList());
 
     assertThat(ExpressionUtils.isSecuringByte(expressions.get(0))).isFalse();
@@ -166,7 +168,7 @@ public class ExpressionUtilsTest {
   @Test
   public void enclosing_method_test() {
     File file = new File("src/test/files/model/ExpressionEnclosingMethodTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     FindAssignment findAssignment = new FindAssignment();
     tree.accept(findAssignment);
     findAssignment.assignments.forEach(a -> {

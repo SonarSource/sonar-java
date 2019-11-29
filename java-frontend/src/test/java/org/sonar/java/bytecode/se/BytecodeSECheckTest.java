@@ -29,11 +29,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.Sema;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
@@ -45,8 +45,6 @@ import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.ExceptionalYield;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -69,8 +67,8 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
     List<File> files = new ArrayList<>();
     files.add(new File("target/test-classes"));
     squidClassLoader = new SquidClassLoader(files);
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse("class A {}");
-    semanticModel = SemanticModel.createFor(tree, squidClassLoader);
+    CompilationUnitTreeImpl tree = (CompilationUnitTreeImpl) JParserTestUtils.parse("class A {}");
+    semanticModel = tree.sema;
     walker = getEGWalker();
   }
 

@@ -21,11 +21,10 @@ package org.sonar.java.se;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import junit.framework.Assert;
+import java.util.List;
+import java.util.Set;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
-
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.Symbols;
 import org.sonar.java.se.ProgramState.Pop;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -36,12 +35,9 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValueTestUtil;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
-import java.util.List;
-import java.util.Set;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
+import static org.sonar.java.se.SETestUtils.variable;
 
 public class ProgramStateTest {
 
@@ -66,7 +62,7 @@ public class ProgramStateTest {
     assertThat(values).hasSize(2).containsSequence(sv2, sv1);
     try {
       state.peekValues(3);
-      Assert.fail("Able to retrieve more values than there are actually on the stack!");
+      Assertions.fail("Able to retrieve more values than there are actually on the stack!");
     } catch (IllegalStateException e) {
       // Expected behavior
     }
@@ -87,7 +83,7 @@ public class ProgramStateTest {
       }
     };
     ProgramState state = ProgramState.EMPTY_STATE.stackValue(sv3);
-    Symbol variable = new JavaSymbol.VariableJavaSymbol(0, "x", new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
+    Symbol variable = variable("x");
     SymbolicValue sv4 = new SymbolicValue() {
       @Override
       public String toString() {
@@ -152,7 +148,7 @@ public class ProgramStateTest {
     ProgramState child = ProgramState.EMPTY_STATE;
     assertThat(child.learnedAssociations(parent)).isEmpty();
 
-    Symbol symbol = new JavaSymbol.VariableJavaSymbol(0, "symbol", mock(JavaSymbol.MethodJavaSymbol.class));
+    Symbol symbol = variable("symbol");
     SymbolicValue sv1 = new SymbolicValue();
     child = child.put(symbol, sv1);
     Set<LearnedAssociation> learnedAssociations = child.learnedAssociations(parent);
@@ -202,15 +198,11 @@ public class ProgramStateTest {
     assertThat(ps1.hashCode()).isEqualTo(ps2.hashCode());
   }
 
-  private JavaSymbol.VariableJavaSymbol variable(String name) {
-    return new JavaSymbol.VariableJavaSymbol(0, name, new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
-  }
-
   @Test
   public void test_symbols_on_stack() {
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue sv = new SymbolicValue();
-    JavaSymbol.VariableJavaSymbol symbol = variable("a");
+    Symbol.VariableSymbol symbol = variable("a");
     ps = ps.stackValue(sv, symbol);
     Pop pop = ps.unstackValue(1);
     assertThat(ps.peekValue()).isEqualTo(sv);
@@ -224,7 +216,7 @@ public class ProgramStateTest {
     ProgramState ps1 = ProgramState.EMPTY_STATE;
     ProgramState ps2 = ProgramState.EMPTY_STATE;
     SymbolicValue sv = new SymbolicValue();
-    JavaSymbol.VariableJavaSymbol symbol = variable("a");
+    Symbol.VariableSymbol symbol = variable("a");
     ps1 = ps1.stackValue(sv);
     ps2 = ps2.stackValue(sv, symbol);
     assertThat(ps1).isEqualTo(ps2);

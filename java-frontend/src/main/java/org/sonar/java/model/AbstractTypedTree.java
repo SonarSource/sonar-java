@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.sslr.grammar.GrammarRuleKey;
@@ -32,12 +31,6 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractTypedTree extends JavaTree {
 
-  /**
-   * Can be {@code null} before and during semantic analysis, but not after.
-   */
-  // TODO(Godin): never should be null, i.e. better to assign default value
-  private Type type;
-
   @Nullable
   public ITypeBinding typeBinding;
 
@@ -45,34 +38,10 @@ public abstract class AbstractTypedTree extends JavaTree {
     super(grammarRuleKey);
   }
 
-  /**
-   * This method is intended for internal use only during semantic analysis.
-   */
-  public boolean isTypeSet() {
-    return type != null;
-  }
-
   public Type symbolType() {
-    if (root.useNewSema) {
-      return typeBinding != null
-        ? root.sema.type(typeBinding)
-        : Symbols.unknownType;
-    }
-    return type;
-  }
-
-  public void setType(Type type) {
-    this.type = type;
-  }
-
-  public void setInferedType(Type type) {
-    this.type = type;
-  }
-
-  public void completeMissingType() {
-    if(type == null || ((JavaType) type).isTagged(JavaType.DEFERRED)) {
-      type = Symbols.unknownType;
-    }
+    return typeBinding != null
+      ? root.sema.type(typeBinding)
+      : Symbols.unknownType;
   }
 
 }

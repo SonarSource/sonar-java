@@ -27,18 +27,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Type;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -266,16 +261,7 @@ class JTypeTest {
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {
-    List<File> classpath = Collections.emptyList();
-    JavaTree.CompilationUnitTreeImpl t = (JavaTree.CompilationUnitTreeImpl) JParser.parse(
-      "12",
-      "File.java",
-      source,
-      true,
-      classpath
-    );
-    SemanticModel.createFor(t, new SquidClassLoader(classpath));
-    return t;
+    return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }
 
   private JType type(String name) {

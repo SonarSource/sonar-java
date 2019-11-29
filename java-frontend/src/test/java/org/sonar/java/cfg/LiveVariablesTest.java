@@ -19,30 +19,21 @@
  */
 package org.sonar.java.cfg;
 
-import com.sonar.sslr.api.typed.ActionParser;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LiveVariablesTest {
 
-  public static final ActionParser<Tree> PARSER = JavaParser.createParser();
-
   private static CFG buildCFG(String methodCode) {
-    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse("class A { int field1; int field2; static int staticField; " + methodCode + " }");
-    SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
+    CompilationUnitTree cut = JParserTestUtils.parse("class A { int field1; int field2; static int staticField; " + methodCode + " }");
     MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(3));
     return CFG.build(tree);
   }
@@ -105,22 +96,16 @@ public class LiveVariablesTest {
 
   @Test
   public void lambdas_read_liveness() {
-    CFG cfg = buildCFG("boolean foo(int a) { if(true) { System.out.println(''); }foo(x -> a + 1);}");
+    CFG cfg = buildCFG("void foo(int a) { if (true) { System.out.println(); } bar(x -> a + 1); } void bar(java.util.function.IntFunction<Integer> func) {}");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).hasSize(1);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).hasSize(1);
-
-    cfg = buildCFG("boolean foo(int a) { if(true) { System.out.println(''); }foo(x -> a = 2);}");
-    liveVariables = LiveVariables.analyze(cfg);
-    assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
-    assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).isEmpty();
-    assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).isEmpty();
   }
 
   @Test
   public void method_ref_liveness() throws Exception {
-    CFG cfg = buildCFG("boolean foo(Object a) { if(true) { System.out.println(''); }foo(a::toString);}");
+    CFG cfg = buildCFG("void foo(Object a) { if(true) { System.out.println(); } bar(a::toString);} void bar(java.util.function.Supplier<String> func) {}");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).hasSize(1);
@@ -129,13 +114,13 @@ public class LiveVariablesTest {
 
   @Test
   public void anonymous_class_liveness()  {
-    CFG cfg = buildCFG("boolean foo(int a) { if(true) { System.out.println(''); } new Object() { String toString(){return a;} }; }");
+    CFG cfg = buildCFG("boolean foo(int a) { if(true) { System.out.println(); } new Object() { String toString(){return a;} }; }");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).hasSize(1);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).hasSize(1);
 
-    cfg = buildCFG("boolean foo(int a) { if(true) { new A().field = 2;System.out.println(''); } new Object() { String toString(){return a = 2;} }; }");
+    cfg = buildCFG("boolean foo(int a) { if(true) { new A().field = 2;System.out.println(); } new Object() { String toString(){return a = 2;} }; }");
     liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).isEmpty();

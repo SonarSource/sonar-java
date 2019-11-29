@@ -53,7 +53,7 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
     this.annotations = ImmutableList.<AnnotationTree>builder().addAll(annotations).build();
   }
 
-  public ArrayDimensionTreeImpl completeAnnotations(List<AnnotationTreeImpl> annotations) {
+  public ArrayDimensionTreeImpl completeAnnotations(List<AnnotationTree> annotations) {
     this.annotations = ImmutableList.<AnnotationTree>builder().addAll(annotations).build();
     return this;
   }

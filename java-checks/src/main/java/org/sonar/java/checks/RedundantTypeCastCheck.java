@@ -28,8 +28,6 @@ import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.resolve.MethodJavaType;
-import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -81,10 +79,6 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     if (!symbol.isMethodSymbol()) {
       return false;
     }
-    Type returnType = ((Symbol.MethodSymbol) symbol).returnType().type();
-    if ((returnType instanceof TypeVariableJavaType) && ((TypeVariableJavaType) returnType).bounds().get(0).is("java.lang.Object")) {
-      return false;
-    }
     // consider REQUIRED as soon as the parent expression is a member access (killing the noise), without checking if cast could have been avoided
     // as the member accessed could have also been part of initial type
     return skipParentheses(typeCastTree.parent()).is(Tree.Kind.MEMBER_SELECT);
@@ -106,12 +100,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
           method = method.parent();
         }
         if (method.is(Tree.Kind.METHOD)) {
-          MethodTree methodTree = (MethodTree) method;
-          Type type = methodTree.symbol().type();
-          if (type instanceof MethodJavaType) {
-            return ((MethodJavaType) type).resultType();
-          }
-          return methodTree.symbol().returnType().type();
+          return ((MethodTree) method).symbol().returnType().type();
         }
         return null;
       case VARIABLE:

@@ -19,8 +19,6 @@
  */
 package org.sonar.java.model;
 
-import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +36,6 @@ import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -58,7 +55,6 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -75,7 +71,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JParserSemanticTest {
 
@@ -130,8 +125,6 @@ class JParserSemanticTest {
   @Test
   void expression_qualified_name() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return java.lang.System.out; } }");
-
-    cu.useNewSema = true;
 
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
@@ -660,15 +653,6 @@ class JParserSemanticTest {
     LambdaExpressionTreeImpl lambda = (LambdaExpressionTreeImpl) f.initializer();
     VariableTreeImpl p = (VariableTreeImpl) lambda.parameters().get(0);
 
-    // FIXME remove after drop of old engine: owner of lambda parameter was the enclosing class/method where the lambda was declared
-    Symbol oldSymbol = cu.oldSema.getSymbol(p);
-    assertThat(oldSymbol.declaration().firstToken().line()).isEqualTo(3);
-    Symbol oldOwner = oldSymbol.owner();
-    assertThat(oldOwner).isNotNull();
-    assertThat(oldOwner.isMethodSymbol()).isFalse();
-    assertThat(oldOwner.isTypeSymbol()).isTrue();
-    assertThat(oldOwner.type().fullyQualifiedName()).isEqualTo("org.foo.A");
-
     // owner of lambda parameter is the method which defines the functional interface
     Symbol newSymbol = cu.sema.variableSymbol(p.variableBinding);
     assertThat(newSymbol.declaration().firstToken().line()).isEqualTo(3);
@@ -691,10 +675,7 @@ class JParserSemanticTest {
       "  }\n" +
       "}";
 
-    // FIXME remove after drop of old engine: computation of inferred type for lambdas fails with old engine
-    assertThrows(IndexOutOfBoundsException.class, () -> test(source));
-
-    JavaTree.CompilationUnitTreeImpl cu = testNewSemaOnly(source);
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
 
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
@@ -720,10 +701,7 @@ class JParserSemanticTest {
       "  }\n" +
       "}";
 
-    // FIXME remove after drop of old engine: computation of LUB corresponding to conditional expression fails with old engine
-    assertThrows(IllegalArgumentException.class, () -> test(source));
-
-    JavaTree.CompilationUnitTreeImpl cu = testNewSemaOnly(source);
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
 
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
@@ -891,7 +869,6 @@ class JParserSemanticTest {
     assertThat(i.binding)
       .isNotNull();
     assertThat(cu.sema.typeSymbol((ITypeBinding) i.binding).usages())
-      .containsExactlyElementsOf(cu.oldSema.getSymbol(i).usages())
       .isEmpty();
   }
 
@@ -904,8 +881,6 @@ class JParserSemanticTest {
 
     TypeParameterTreeImpl typeParameter = (TypeParameterTreeImpl) c.typeParameters().get(0);
     assertThat(typeParameter.typeBinding)
-      .isNotNull();
-    assertThat(cu.oldSema.getSymbol(typeParameter))
       .isNotNull();
   }
 
@@ -1385,7 +1360,6 @@ class JParserSemanticTest {
         .isSameAs(i1.labelSymbol.declaration)
         .isSameAs(l1);
       assertThat(l1.labelSymbol.usages())
-        // .containsExactlyElementsOf(l1.symbol().usages()) // TODO Broken old implementation...
         .containsOnly(i1);
 
       ExpressionStatementTreeImpl e = (ExpressionStatementTreeImpl) block.body().get(0);
@@ -1404,7 +1378,6 @@ class JParserSemanticTest {
         .isSameAs(i2.labelSymbol.declaration)
         .isSameAs(l2);
       assertThat(l2.labelSymbol.usages())
-        // .containsExactlyElementsOf(l2.symbol().usages()) // TODO Broken old implementation...
         .containsOnly(i2);
     }
   }
@@ -1434,7 +1407,7 @@ class JParserSemanticTest {
     assertThat(secondConstructor.symbol().usages()).hasSize(1);
   }
 
-  private ExpressionTree expression(String expression) {
+  private static ExpressionTree expression(String expression) {
     CompilationUnitTree cu = test("class C { Object m() { return " + expression + " ; } }");
     ClassTree c = (ClassTree) cu.types().get(0);
     MethodTree m = (MethodTree) c.members().get(0);
@@ -1442,15 +1415,8 @@ class JParserSemanticTest {
     return Objects.requireNonNull(s.expression());
   }
 
-  private JavaTree.CompilationUnitTreeImpl test(String source) {
-    List<File> classpath = Collections.emptyList();
-    JavaTree.CompilationUnitTreeImpl t = (JavaTree.CompilationUnitTreeImpl) JParser.parse("12", "File.java", source, true, classpath);
-    t.oldSema = SemanticModel.createFor(t, new SquidClassLoader(classpath));
-    return t;
-  }
-
-  private JavaTree.CompilationUnitTreeImpl testNewSemaOnly(String source) {
-    return (JavaTree.CompilationUnitTreeImpl) JParser.parse("12", "File.java", source, true, Collections.emptyList());
+  private static JavaTree.CompilationUnitTreeImpl test(String source) {
+    return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }
 
   @Test

@@ -27,7 +27,6 @@ import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -63,7 +62,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private SyntaxToken implementsKeyword;
   private ListTree<TypeTree> superInterfaces;
-  private JavaSymbol.TypeJavaSymbol symbol = Symbols.unknownSymbol;
   @Nullable
   public ITypeBinding typeBinding;
 
@@ -184,12 +182,9 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public Symbol.TypeSymbol symbol() {
-    if (root.useNewSema) {
-      return typeBinding != null
-        ? root.sema.typeSymbol(typeBinding)
-        : Symbols.unknownSymbol;
-    }
-    return symbol;
+    return typeBinding != null
+      ? root.sema.typeSymbol(typeBinding)
+      : Symbols.unknownTypeSymbol;
   }
 
   @Nullable
@@ -209,11 +204,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitClass(this);
-  }
-
-  public void setSymbol(JavaSymbol.TypeJavaSymbol symbol) {
-    Preconditions.checkState(this.symbol.equals(Symbols.unknownSymbol));
-    this.symbol = symbol;
   }
 
   @Override

@@ -19,10 +19,9 @@
  */
 package org.sonar.java.cfg;
 
-import com.sonar.sslr.api.typed.ActionParser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -46,8 +45,7 @@ public class CFGTestLoader {
         printer.println(line);
       }
       printer.flush();
-      ActionParser<Tree> parser = JavaParser.createParser();
-      compiledTest = (CompilationUnitTree) parser.parse(buffer.toString());
+      compiledTest = JParserTestUtils.parse(buffer.toString());
     } catch (Exception e) {
       Assert.fail("Unable to compile file " + file.getAbsolutePath());
     }

@@ -19,9 +19,8 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -30,8 +29,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AccessorsUtilsTest {
-
-  private final ActionParser p = JavaParser.createParser();
 
   @Test
   public void method_badly_named_is_not_accessor() {
@@ -145,7 +142,7 @@ public class AccessorsUtilsTest {
   }
 
   private ClassTree parseClass(String code) {
-    return extractClass((CompilationUnitTree) p.parse(code));
+    return extractClass(JParserTestUtils.parse(code));
   }
 
   private ClassTree extractClass(CompilationUnitTree cut) {

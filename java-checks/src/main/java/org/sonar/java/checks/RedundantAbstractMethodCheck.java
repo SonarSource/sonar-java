@@ -21,8 +21,6 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.resolve.MethodJavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -84,10 +82,6 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Type resultType(Symbol.MethodSymbol method) {
-    Type type = method.type();
-    if (type instanceof MethodJavaType) {
-      return ((MethodJavaType) type).resultType();
-    }
     return method.returnType().type();
   }
 
@@ -111,9 +105,6 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean useRawTypeOfParametrizedType(Type methodParam, Type overrideeParam) {
-    if (overrideeParam instanceof ParametrizedTypeJavaType) {
-      return methodParam.equals(overrideeParam.erasure());
-    }
     return !JUtils.isParametrized(methodParam)
       && JUtils.isParametrized(overrideeParam)
       && methodParam.erasure().equals(overrideeParam.erasure());

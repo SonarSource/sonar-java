@@ -23,7 +23,6 @@ import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JLabelSymbol;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
@@ -38,7 +37,6 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
   private final IdentifierTree label;
   private final InternalSyntaxToken colonToken;
   private final StatementTree statement;
-  private Symbol.LabelSymbol symbol;
 
   public JLabelSymbol labelSymbol;
 
@@ -71,10 +69,7 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
 
   @Override
   public Symbol.LabelSymbol symbol() {
-    if (/* TODO null-check only because some test constructs node without parser */ root != null && root.useNewSema) {
-      return labelSymbol;
-    }
-    return symbol;
+    return labelSymbol;
   }
 
   @Override
@@ -88,9 +83,5 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
       label,
       colonToken,
       statement);
-  }
-
-  public void setSymbol(JavaSymbol.JavaLabelSymbol symbol) {
-    this.symbol = symbol;
   }
 }

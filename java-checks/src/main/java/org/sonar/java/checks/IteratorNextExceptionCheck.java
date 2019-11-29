@@ -24,8 +24,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -101,13 +99,7 @@ public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
       if (!symbol.isMethodSymbol()) {
         return false;
       }
-      if (throwsNoSuchElementException(((Symbol.MethodSymbol) symbol).thrownTypes())) {
-        return true;
-      }
-      Type methodType = ExpressionUtils.methodName(methodInvocationTree).symbolType();
-        // not covered with new semantic - thrown types from method symbol are already correct
-      return methodType instanceof MethodJavaType
-        && throwsNoSuchElementException(((MethodJavaType) methodType).thrownTypes());
+      return throwsNoSuchElementException(((Symbol.MethodSymbol) symbol).thrownTypes());
     }
 
     private static boolean throwsNoSuchElementException(List<? extends Type> thrownTypes) {

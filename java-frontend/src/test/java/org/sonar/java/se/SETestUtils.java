@@ -19,9 +19,7 @@
  */
 package org.sonar.java.se;
 
-import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,22 +28,24 @@ import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.cfg.BytecodeCFG;
 import org.sonar.java.bytecode.cfg.BytecodeCFGMethodVisitor;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.MethodLookup;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.Sema;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.VariableSymbol;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SETestUtils {
 
@@ -55,7 +55,6 @@ public class SETestUtils {
     CLASS_PATH.add(new File("target/test-classes"));
   }
 
-  private static final ActionParser<Tree> PARSER = JavaParser.createParser();
   public static final SquidClassLoader CLASSLOADER = new SquidClassLoader(CLASS_PATH);
 
   public static SymbolicExecutionVisitor createSymbolicExecutionVisitor(String fileName, SECheck... checks) {
@@ -68,22 +67,17 @@ public class SETestUtils {
 
   public static Pair<SymbolicExecutionVisitor, Sema> createSymbolicExecutionVisitorAndSemantic(String fileName, boolean crossFileEnabled, SECheck... checks) {
     InputFile inputFile = TestUtils.inputFile(fileName);
-    CompilationUnitTree cut;
-    try {
-      cut = (CompilationUnitTree) PARSER.parse(inputFile.contents());
-    } catch (IOException e) {
-      throw new IllegalStateException(String.format("Unable to load file for test: '%s'", inputFile));
-    }
-    Sema semanticModel = SemanticModel.createFor(cut, CLASSLOADER);
+    JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(inputFile.file(), CLASS_PATH);
+    Sema semanticModel = cut.sema;
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks), new BehaviorCache(CLASSLOADER, crossFileEnabled));
     sev.scanFile(new DefaultJavaFileScannerContext(cut, inputFile, semanticModel, null, new JavaVersionImpl(8), true));
     return new Pair<>(sev, semanticModel);
   }
 
-  public static SemanticModel getSemanticModel(String filename) {
+  public static Sema getSemanticModel(String filename) {
     File file = new File(filename);
-    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse(file);
-    return SemanticModel.createFor(cut, CLASSLOADER);
+    JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(file, CLASS_PATH);
+    return cut.sema;
   }
 
   public static MethodBehavior getMethodBehavior(SymbolicExecutionVisitor sev, String methodName) {
@@ -128,5 +122,13 @@ public class SETestUtils {
 
     MethodLookup.lookup(signature, classLoader, cfgMethodVisitor);
     return cfgMethodVisitor.getCfg();
+  }
+
+  public static Symbol.VariableSymbol variable(String name) {
+    VariableSymbol variable = mock(Symbol.VariableSymbol.class);
+    when(variable.name()).thenReturn(name);
+    when(variable.toString()).thenReturn("A#" + name);
+    // return new JavaSymbol.VariableJavaSymbol(0, name, new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
+    return variable;
   }
 }

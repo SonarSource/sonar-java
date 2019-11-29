@@ -17,10 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.resolve;
+package org.sonar.java.bytecode;
 
-public class IntersectionType extends ClassJavaType {
-  public IntersectionType(JavaSymbol.TypeJavaSymbol symbol) {
-    super(INTERSECTION, symbol);
+import org.objectweb.asm.Opcodes;
+
+public final class BytecodeHelper {
+
+  public static final int ASM_API_VERSION = Opcodes.ASM7;
+
+  private BytecodeHelper() {
+    // Utility class
   }
+
 }

@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -46,7 +45,6 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   private final Arguments arguments;
   @Nullable
   private TypeArguments typeArguments;
-  private Symbol symbol = Symbols.unknownSymbol;
 
   @Nullable
   public IMethodBinding methodBinding;
@@ -93,12 +91,9 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
 
   @Override
   public Symbol symbol() {
-    if (root.useNewSema) {
-      return methodBinding != null
-        ? root.sema.methodSymbol(methodBinding)
-        : Symbols.unknownMethodSymbol;
-    }
-    return symbol;
+    return methodBinding != null
+      ? root.sema.methodSymbol(methodBinding)
+      : Symbols.unknownMethodSymbol;
   }
 
   @Override
@@ -111,10 +106,5 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
     return Iterables.concat(
       typeArguments != null ? Collections.singletonList(typeArguments) : Collections.<Tree>emptyList(),
       Lists.newArrayList(methodSelect, arguments));
-  }
-
-  public void setSymbol(Symbol symbol) {
-    Preconditions.checkState(this.symbol.isUnknown());
-    this.symbol = symbol;
   }
 }

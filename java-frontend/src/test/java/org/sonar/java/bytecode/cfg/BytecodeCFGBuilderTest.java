@@ -40,12 +40,11 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.util.Printer;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.BytecodeHelper;
 import org.sonar.java.bytecode.cfg.testdata.CFGTestData;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.BytecodeCompleter;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.resolve.Convert;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -134,8 +133,7 @@ public class BytecodeCFGBuilderTest {
   private BytecodeCFG getCFGForMethod(String methodName) {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     File file = new File("src/test/java/org/sonar/java/bytecode/cfg/BytecodeCFGBuilderTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(tree, squidClassLoader);
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     Symbol.TypeSymbol innerClass = ((Symbol.TypeSymbol) ((ClassTree) tree.types().get(0)).symbol().lookupSymbols("InnerClass").iterator().next());
     Symbol.MethodSymbol symbol = (Symbol.MethodSymbol) innerClass.lookupSymbols(methodName).iterator().next();
     return SETestUtils.bytecodeCFG(symbol.signature(), squidClassLoader);
@@ -145,11 +143,10 @@ public class BytecodeCFGBuilderTest {
   public void test_all_instructions_are_part_of_CFG() throws Exception {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     File file = new File("src/test/java/org/sonar/java/bytecode/cfg/testdata/CFGTestData.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(tree, squidClassLoader);
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     Symbol.TypeSymbol testClazz = ((ClassTree) tree.types().get(0)).symbol();
     ClassReader cr = new ClassReader(squidClassLoader.getResourceAsStream(Convert.bytecodeName(CFGTestData.class.getCanonicalName()) + ".class"));
-    ClassNode classNode = new ClassNode(BytecodeCompleter.ASM_API_VERSION);
+    ClassNode classNode = new ClassNode(BytecodeHelper.ASM_API_VERSION);
     cr.accept(classNode, 0);
     for (MethodNode method : classNode.methods) {
       Multiset<String> opcodes = Arrays.stream(method.instructions.toArray())
@@ -411,8 +408,7 @@ public class BytecodeCFGBuilderTest {
   public static BytecodeCFG getBytecodeCFG(String methodName, String filename) {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     File file = new File(filename);
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(tree, squidClassLoader);
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     List<Tree> classMembers = ((ClassTree) tree.types().get(0)).members();
     Symbol.MethodSymbol symbol = classMembers.stream()
       .filter( m-> m instanceof MethodTree)

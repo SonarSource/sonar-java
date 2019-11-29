@@ -19,11 +19,8 @@
  */
 package org.sonar.java.model.expression;
 
-import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -33,13 +30,9 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 
-import java.util.Collections;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MethodInvocationTreeImplTest {
-
-  private final ActionParser p = JavaParser.createParser();
 
   @Test
   public void symbol_should_be_set() {
@@ -83,9 +76,7 @@ public class MethodInvocationTreeImplTest {
     assertThat(firstToken.text()).isEqualTo("new");
   }
 
-  private CompilationUnitTree createTree(String code) {
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(code);
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
-    return compilationUnitTree;
+  private static CompilationUnitTree createTree(String code) {
+    return JParserTestUtils.parse(code);
   }
 }

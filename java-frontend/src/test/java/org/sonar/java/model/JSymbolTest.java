@@ -22,18 +22,13 @@ package org.sonar.java.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.Symbols;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -401,17 +396,8 @@ class JSymbolTest {
     }
   }
 
-  JavaTree.CompilationUnitTreeImpl test(String source) {
-    List<File> classpath = Collections.emptyList();
-    JavaTree.CompilationUnitTreeImpl t = (JavaTree.CompilationUnitTreeImpl) JParser.parse(
-      "12",
-      "File.java",
-      source,
-      true,
-      classpath
-    );
-    SemanticModel.createFor(t, new SquidClassLoader(classpath));
-    return t;
+  private static JavaTree.CompilationUnitTreeImpl test(String source) {
+    return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }
 
 }

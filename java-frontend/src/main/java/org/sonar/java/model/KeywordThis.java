@@ -42,10 +42,7 @@ final class KeywordThis extends IdentifierTreeImpl {
 
   @Override
   public Symbol symbol() {
-    if (root.useNewSema) {
-      return resolveSymbol();
-    }
-    return super.symbol();
+    return resolveSymbol();
   }
 
 }

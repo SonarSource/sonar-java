@@ -1,4 +1,4 @@
-package javax.annotation;
+package org.foo;
 
 import java.util.List;
 
@@ -31,10 +31,10 @@ import sun.awt.SunToolkit;
 import sun.awt.CausedFocusEvent;
 import static java.lang.Boolean.TRUE;
 
-@interface CheckForNull {}
-@interface Nullable {}
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
-public class Class extends SuperClass {
+class Class extends SuperClass {
 
   private static class Class1 {
     Object field;
@@ -408,7 +408,7 @@ public class Class extends SuperClass {
     }
   }
 
-  public void statement_for(boolean parameter1, boolean parameter2) {
+  public void statement_for2(boolean parameter1, boolean parameter2) {
     for (; parameter1 == parameter2; ) {
       if (parameter1 == parameter2) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
       }
@@ -498,7 +498,7 @@ public class Class extends SuperClass {
     return (T) result;
   }
 
-  public void test_assign_invalidate(boolean condition) {
+  public void test_assign_invalidate1(boolean condition) {
     boolean local1 = true;
     do {
       if (local1) { // Compliant
@@ -512,7 +512,7 @@ public class Class extends SuperClass {
     }
   }
 
-  public void test_assign_invalidate(boolean condition) {
+  public void test_assign_invalidate2(boolean condition) {
     boolean local2 = true;
     for (Object object : new ArrayList<Object>()) {
       if (local2) { // Compliant
@@ -525,7 +525,7 @@ public class Class extends SuperClass {
     }
   }
 
-  public void test_assign_invalidate(boolean condition) {
+  public void test_assign_invalidate3(boolean condition) {
     boolean local3 = true;
     for (; condition; ) {
       if (local3) { // Compliant
@@ -539,7 +539,7 @@ public class Class extends SuperClass {
     }
   }
 
-  public void test_assign_invalidate(boolean condition) {
+  public void test_assign_invalidate4(boolean condition) {
     boolean local2 = true;
     while (condition) {
       if (local2) { // Compliant
@@ -768,7 +768,7 @@ public class Class extends SuperClass {
     }
   }
 
-  public test_instance_fields(boolean local, boolean local1, boolean local2) {
+  public void test_instance_fields(boolean local, boolean local1, boolean local2) {
     if (field && this.field1 == field2) {
       if (this.field) { // Noncompliant
       }
@@ -1037,7 +1037,7 @@ public class Class extends SuperClass {
     }
   }
 
-  public abstract boolean otherMethod();
+  public boolean otherMethod() { return true; }
 
   int intField;
 
@@ -1196,14 +1196,14 @@ public class Class extends SuperClass {
     value = (b1 ^ !b2) ? 1 : 2; // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
   }
 
-  public void handlePreAssignedBoolean() {
+  public void handlePreAssignedBoolean1() {
     if (preAssignedBoolean) { // Compliant because it is a field
       System.out.print("Was true");
     }
     System.out.println();
   }
 
-  public void handlePreAssignedBoolean() {
+  public void handlePreAssignedBoolean2() {
     Boolean preAssignedBoolean = true;
     if (preAssignedBoolean) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
       System.out.print("Was true");
@@ -1211,7 +1211,7 @@ public class Class extends SuperClass {
     System.out.println();
   }
 
-  public void handlePreAssignedBoolean() {
+  public void handlePreAssignedBoolean3() {
     Boolean preAssignedBoolean = Boolean.TRUE;
     if (preAssignedBoolean) { // Noncompliant {{Remove this expression which always evaluates to "true"}}
       System.out.print("Was true");
@@ -1600,7 +1600,7 @@ class SuperClass {
   }
 }
 
-public class TryCatchCFG {
+class TryCatchCFG {
 
   private Object monitor;
   private boolean shutdown;
@@ -1637,7 +1637,7 @@ public class TryCatchCFG {
   }
 }
 
-public class MultiThread {
+class MultiThread {
 
   private final Object monitor = new Object();
   private boolean shutdown;
@@ -1849,7 +1849,7 @@ class KeyboardFocusManager {
   }
 }
 
-public class MyConstantsTestClass {
+class MyConstantsTestClass {
 
   private final Object finalObject = new Object();
 
@@ -1881,7 +1881,7 @@ public class MyConstantsTestClass {
   }
 }
 
-public class Squid2583 {
+class Squid2583 {
     private final transient ByteArrayOutputStream trasientBaos = new ByteArrayOutputStream();
 
     private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -2109,7 +2109,7 @@ class ResetFieldWhenThisUsedAsParameter {
 }
 
 class OptionalEmptyNotPresent {
-  private Optional fun() {
+  private java.util.Optional fun() {
     java.util.Optional<String> op = java.util.Optional.empty();
     if (op.isPresent()) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       // unreachable by definition of Optional.empty()
