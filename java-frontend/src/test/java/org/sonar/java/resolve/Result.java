@@ -19,10 +19,14 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Lists;
-import com.sonar.sslr.api.typed.ActionParser;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
+import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import javax.annotation.Nullable;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -31,21 +35,14 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
-import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-
 public class Result {
 
-  private static final ActionParser parser = JavaParser.createParser();
-  private final SemanticModel semanticModel;
   private final Collection<Symbol> symbolsUsed;
+  private final Map<Tree, Symbol> symbolsTree;
 
-  private Result(SemanticModel semanticModel, Collection<Symbol> symbolsUsed) {
-    this.semanticModel = semanticModel;
+  private Result(Collection<Symbol> symbolsUsed, Map<Tree, Symbol> symbolsTree) {
     this.symbolsUsed = symbolsUsed;
+    this.symbolsTree = Collections.unmodifiableMap(symbolsTree);
   }
 
   public static Result createFor(String name) {
@@ -54,27 +51,29 @@ public class Result {
 
   public static Result createForJavaFile(String filePath) {
     File file = new File(filePath + ".java");
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) parser.parse(file);
-    SemanticModel semanticModel = SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
+    CompilationUnitTree compilationUnitTree = JParserTestUtils.parse(file);
     UsageVisitor usageVisitor = new UsageVisitor();
     compilationUnitTree.accept(usageVisitor);
-    return new Result(semanticModel, usageVisitor.symbolsUsed);
+    return new Result(usageVisitor.symbolsUsed, usageVisitor.symbolsTree);
   }
 
   private static class UsageVisitor extends BaseTreeVisitor {
 
-    public Collection<Symbol> symbolsUsed = new HashSet<>();
+    private final Collection<Symbol> symbolsUsed = new HashSet<>();
+    private final Map<Tree, Symbol> symbolsTree = new HashMap<>();
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      symbolsUsed.add(tree.symbol());
+      Symbol symbol = tree.symbol();
+      symbolsUsed.add(symbol);
+      symbolsTree.put(tree, symbol);
       super.visitIdentifier(tree);
     }
   }
 
-  public JavaSymbol symbol(String name) {
+  public Symbol symbol(String name) {
     Symbol result = null;
-    for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
+    for (Symbol symbol : symbolsTree.values()) {
       if (name.equals(symbol.name())) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");
@@ -85,12 +84,12 @@ public class Result {
     if (result == null) {
       throw new IllegalArgumentException("Symbol not found");
     }
-    return (JavaSymbol) result;
+    return result;
   }
 
-  public JavaSymbol symbol(String name, int line) {
+  public Symbol symbol(String name, int line) {
     Symbol result = null;
-    for (Map.Entry<Tree, Symbol> entry : semanticModel.getSymbolsTree().entrySet()) {
+    for (Map.Entry<Tree, Symbol> entry : symbolsTree.entrySet()) {
       if (name.equals(entry.getValue().name()) && ((JavaTree) entry.getKey()).getLine() == line) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");
@@ -101,15 +100,15 @@ public class Result {
     if (result == null) {
       throw new IllegalArgumentException("Symbol not found");
     }
-    return (JavaSymbol) result;
+    return result;
   }
 
-  public JavaSymbol reference(int line, int column) {
-    return (JavaSymbol) referenceTree(line, column, true, null);
+  public Symbol reference(int line, int column) {
+    return (Symbol) referenceTree(line, column, true, null);
   }
 
-  public JavaSymbol reference(int line, int column, String name) {
-    return (JavaSymbol) referenceTree(line, column, true, name);
+  public Symbol reference(int line, int column, String name) {
+    return (Symbol) referenceTree(line, column, true, name);
   }
 
   public IdentifierTree referenceTree(int line, int column) {
@@ -117,7 +116,6 @@ public class Result {
   }
 
   private Object referenceTree(int line, int column, boolean searchSymbol, @Nullable String name) {
-    // In SSLR column starts at 0, but here we want consistency with IDE, so we start from 1:
     column -= 1;
     for (Symbol symbol : symbolsUsed) {
       if (name != null && !name.equals(symbol.name())) {

@@ -39,7 +39,6 @@ import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.java.se.JavaCheckVerifier;
 import org.sonar.java.se.ProgramState;
@@ -442,7 +441,7 @@ public class RelationalSymbolicValueTest {
   @Test
   public void test_to_string() throws Exception {
     RelationalSymbolicValue rsv = new RelationalSymbolicValue(EQUAL);
-    Symbol var = new JavaSymbol.VariableJavaSymbol(0, "x", new JavaSymbol(JavaSymbol.TYP, 0, "A", Symbols.unknownSymbol));
+    Symbol var = SETestUtils.variable("x");
     SymbolicValue left = new SymbolicValue() {
       @Override
       public String toString() {

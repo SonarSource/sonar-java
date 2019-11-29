@@ -47,16 +47,16 @@ class ClassesLayoutTest {
   @Test
   void identifier() {
     assertAll(
-      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64)).isEqualTo(104),
-      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64_COOPS)).isEqualTo(56)
+      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64)).isEqualTo(88),
+      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
 
   @Test
   void literal() {
     assertAll(
-      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64)).isEqualTo(80),
-      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
+      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64)).isEqualTo(72),
+      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64_COOPS)).isEqualTo(40)
     );
   }
 

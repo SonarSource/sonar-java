@@ -19,7 +19,6 @@
  */
 package org.sonar.java.cfg;
 
-import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,11 +27,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG.Block;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -435,18 +432,15 @@ public class CFGTest {
 
   }
 
-  public static final ActionParser<Tree> parser = JavaParser.createParser();
-
   public static CFG buildCFG(String methodCode) {
-    return buildCFGFromCUT((CompilationUnitTree) parser.parse("class A { " + methodCode + " }"));
+    return buildCFGFromCUT(JParserTestUtils.parse("class A { " + methodCode + " }"));
   }
 
   public static CFG buildCFG(File file) {
-    return buildCFGFromCUT((CompilationUnitTree) parser.parse(file));
+    return buildCFGFromCUT(JParserTestUtils.parse(file));
   }
 
   private static CFG buildCFGFromCUT(CompilationUnitTree cut) {
-    SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
     final MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
     return CFG.build(tree);
   }
@@ -2934,8 +2928,7 @@ public class CFGTest {
 
   private void build_partial_cfg(String breakOrContinue) {
     String methodCode = "void meth(){ try {fun(); } catch ( Exception e) {e.printStackTrace(); "+breakOrContinue+"; } }";
-    CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A {" + methodCode + "}");
-    SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
+    CompilationUnitTree cut = JParserTestUtils.parse("class A {" + methodCode + "}");
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
     List<StatementTree> body = methodTree.block().body();
     CFG cfg = CFG.buildCFG(body, true);

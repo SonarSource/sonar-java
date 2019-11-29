@@ -7,7 +7,7 @@ package javax.annotation;
 @interface Nullable {}
 
 class A {
-  void null_assigned(Object b, Object c) {
+  void null_assigned1(Object b, Object c) {
     if(b == null);
     if(c == null);
     Object a = null; // flow@fl1 {{Implies 'a' is null.}}
@@ -18,7 +18,7 @@ class A {
     return null;
   }
 
-  void null_assigned(Object b, Object c) {
+  void null_assigned2(Object b, Object c) {
     if(b == null);
     if(c == null);
     getA().toString(); // Noncompliant [[flows=mnull]] flow@mnull {{'getA()' returns null.}} flow@mnull {{Result of 'getA()' is dereferenced.}}
@@ -77,9 +77,9 @@ class A {
     return new Object();
   }
 
-  class A {}
+  class B {}
 
-  public void testMemberSelect(A a1, @CheckForNull A a2, @Nullable A a3) { // flow@a2 [[sc=54;ec=56]] {{Implies 'a2' can be null.}} flow@a3 [[sc=70;ec=72]] {{Implies 'a3' can be null.}}
+  public void testMemberSelect(B a1, @CheckForNull B a2, @Nullable B a3) { // flow@a2 [[sc=54;ec=56]] {{Implies 'a2' can be null.}} flow@a3 [[sc=70;ec=72]] {{Implies 'a3' can be null.}}
     a1.hashCode(); // No issue
     a2.hashCode(); // Noncompliant [[flows=a2]] {{A "NullPointerException" could be thrown; "a2" is nullable here.}} flow@a2 {{'a2' is dereferenced.}}
     a3.hashCode(); // Noncompliant [[flows=a3]] {{A "NullPointerException" could be thrown; "a3" is nullable here.}} flow@a3 {{'a3' is dereferenced.}}

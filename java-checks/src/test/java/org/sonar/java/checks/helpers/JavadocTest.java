@@ -20,16 +20,12 @@
 package org.sonar.java.checks.helpers;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -51,8 +47,7 @@ public class JavadocTest {
   @BeforeClass
   public static void setup() {
     File file = new File("src/test/files/checks/helpers/JavadocTest.java");
-    tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    SemanticModel.createFor(tree, new SquidClassLoader(Collections.emptyList()));
+    tree = JParserTestUtils.parse(file);
 
     Map<String, MethodTree> methods = ((ClassTree) tree.types().get(0)).members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))

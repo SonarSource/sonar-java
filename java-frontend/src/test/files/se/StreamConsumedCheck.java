@@ -68,7 +68,7 @@ abstract class A {
 
   List list;
 
-  void test() {
+  void test2() {
     list.stream().count();
     list.stream().filter(e -> true).collect(Collectors.toList());
   }

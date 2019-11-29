@@ -70,8 +70,8 @@ class A {
     return new ArrayList<String>();
   }
 
-  java.util.Map<String> f() {
-    java.util.Map<String> foo = new java.util.HashMap<String>();
+  java.util.Map<String,String> g() {
+    java.util.Map<String,String> foo = new java.util.HashMap<String,String>();
     if (bool) {
       return foo;
     }

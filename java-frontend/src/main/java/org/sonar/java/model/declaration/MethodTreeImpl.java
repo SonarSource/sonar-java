@@ -32,7 +32,6 @@ import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -73,10 +72,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Nullable
   private CFG cfg;
-
-  //FIXME nullable if semantic analysis is not set. Should have a default value.
-  @Nullable
-  private JavaSymbol.MethodJavaSymbol symbol;
 
   @Nullable
   public IMethodBinding methodBinding;
@@ -217,22 +212,14 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public Symbol.MethodSymbol symbol() {
-    if (root.useNewSema) {
-      return methodBinding != null
-        ? root.sema.methodSymbol(methodBinding)
-        : Symbols.unknownMethodSymbol;
-    }
-    return symbol;
+    return methodBinding != null
+      ? root.sema.methodSymbol(methodBinding)
+      : Symbols.unknownMethodSymbol;
   }
 
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitMethod(this);
-  }
-
-  public void setSymbol(JavaSymbol.MethodJavaSymbol symbol) {
-    Preconditions.checkState(this.symbol == null);
-    this.symbol = symbol;
   }
 
   @Override

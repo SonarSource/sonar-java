@@ -19,28 +19,19 @@
  */
 package org.sonar.java.cfg;
 
-import com.sonar.sslr.api.typed.ActionParser;
-import java.util.Collections;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VariableReadExtractorTest {
 
-  public static final ActionParser<Tree> PARSER = JavaParser.createParser();
-
-
   private static MethodTree buildMethodTree(String methodCode) {
-    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse("class A { int field1; int field2; " + methodCode + " }");
-    SemanticModel.createFor(cut, new SquidClassLoader(Collections.emptyList()));
+    CompilationUnitTree cut = JParserTestUtils.parse("class A { int field1; int field2; " + methodCode + " }");
     return (MethodTree) ((ClassTree) cut.types().get(0)).members().get(2);
   }
 

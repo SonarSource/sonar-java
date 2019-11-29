@@ -19,328 +19,309 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
-import javax.annotation.Nullable;
-import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 /**
  * Predefined symbols.
  */
 public class Symbols {
 
-  public static final JavaSymbol.PackageJavaSymbol rootPackage;
-  final JavaSymbol.PackageJavaSymbol defaultPackage;
-
-  /**
-   * Owns all predefined symbols (builtin types, operators).
-   */
-  final JavaSymbol.TypeJavaSymbol predefClass;
-
-  /**
-   * Type, which can't be modelled for the moment.
-   */
-  public static final UnknownType unknownType;
-  public static final JavaSymbol.TypeJavaSymbol unknownSymbol;
-  public static final JavaSymbol.MethodJavaSymbol unknownMethodSymbol;
-
-  final JavaSymbol.TypeJavaSymbol arrayClass;
-
-  final JavaSymbol.TypeJavaSymbol methodClass;
-  final JavaSymbol.TypeJavaSymbol noSymbol;
-
-  // builtin types
-  final JavaType byteType;
-  final JavaType charType;
-  final JavaType shortType;
-  final JavaType intType;
-  final JavaType longType;
-  final JavaType floatType;
-  final JavaType doubleType;
-  final JavaType booleanType;
-  final JavaType nullType;
-  final JavaType voidType;
-
-  final BiMap<JavaType, JavaType> boxedTypes;
-
-  // predefined types
-
-  /**
-   * {@link java.lang.Object}
-   */
-  final JavaType objectType;
-
-  final JavaType cloneableType;
-  final JavaType serializableType;
-  final JavaType classType;
-  final JavaType stringType;
-
-  final WildCardType unboundedWildcard;
-
-  /**
-   * {@link java.lang.annotation.Annotation}
-   */
-  final JavaType annotationType;
-
-  /**
-   * {@link java.lang.Enum}
-   */
-  final JavaType enumType;
-
-  static {
-    rootPackage = new JavaSymbol.PackageJavaSymbol("", null);
-    unknownSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "!unknownSymbol!", rootPackage) {
-      @Override
-      public void addUsage(IdentifierTree tree) {
-        // noop
-      }
-
-      @Override
-      public boolean isTypeSymbol() {
-        return false;
-      }
-
-      @Override
-      public boolean isUnknown() {
-        return true;
-      }
-    };
-    unknownSymbol.members = new Scope(unknownSymbol) {
-      @Override
-      public void enter(JavaSymbol symbol) {
-        // noop
-      }
-
-    };
-    unknownType = new UnknownType(unknownSymbol);
-    unknownSymbol.type = unknownType;
-    unknownMethodSymbol = new JavaSymbol.MethodJavaSymbol(0, "!unknown!", unknownSymbol) {
-
-      private final SymbolMetadataResolve metadata = new SymbolMetadataResolve();
-
-      @Override
-      public boolean isMethodSymbol() {
-        return false;
-      }
-
-      @Override
-      public TypeJavaSymbol getReturnType() {
-        return unknownSymbol;
-      }
-
-      @Override
-      public TypeSymbol returnType() {
-        return unknownSymbol;
-      }
-
-      @Override
-      public List<Type> parameterTypes() {
-        return Collections.emptyList();
-      }
-
-      @Override
-      public boolean isPackageVisibility() {
-        return false;
-      }
-
-      @Override
-      public boolean isUnknown() {
-        return true;
-      }
-
-      @Nullable
-      @Override
-      public MethodJavaSymbol overriddenSymbol() {
-        return null;
-      }
-
-      @Override
-      public Type type() {
-        return unknownType;
-      }
-
-      @Override
-      public List<Type> thrownTypes() {
-        return Collections.emptyList();
-      }
-
-      @Override
-      public SymbolMetadataResolve metadata() {
-        return metadata;
-      }
-    };
+  private Symbols() {
+    // Utility class
   }
 
-  public Symbols(BytecodeCompleter bytecodeCompleter) {
-    defaultPackage = new JavaSymbol.PackageJavaSymbol("", rootPackage);
+  public static final Type unknownType = new UnknownType();
 
-    predefClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "", rootPackage);
-    predefClass.members = new Scope(predefClass);
-    ((ClassJavaType) predefClass.type).interfaces = Collections.emptyList();
+  public static final Symbol rootPackage = new RootPackageSymbol();
+  public static final Symbol unknownSymbol = new UnknownSymbol();
+  public static final Symbol.TypeSymbol unknownTypeSymbol = new UnkownTypeSymbol();
+  public static final Symbol.MethodSymbol unknownMethodSymbol = new UnknownMethodSymbol();
 
-    // TODO should have type "noType":
-    noSymbol = new JavaSymbol.TypeJavaSymbol(0, "", rootPackage);
+  public abstract static class DefaultSymbol implements Symbol {
+    private static final SymbolMetadataResolve METADATA = new SymbolMetadataResolve();
 
-    methodClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "", noSymbol);
-
-    // builtin types
-    byteType = initType(JavaType.BYTE, "byte");
-    charType = initType(JavaType.CHAR, "char");
-    shortType = initType(JavaType.SHORT, "short");
-    intType = initType(JavaType.INT, "int");
-    longType = initType(JavaType.LONG, "long");
-    floatType = initType(JavaType.FLOAT, "float");
-    doubleType = initType(JavaType.DOUBLE, "double");
-    booleanType = initType(JavaType.BOOLEAN, "boolean");
-    nullType = initType(JavaType.BOT, "<nulltype>");
-    voidType = initType(JavaType.VOID, "void");
-
-    bytecodeCompleter.init(this);
-
-    // predefined types for java lang
-    JavaSymbol.PackageJavaSymbol javalang = bytecodeCompleter.enterPackage("java.lang");
-    // define a star import scope to let resolve types to java.lang when needed.
-    javalang.members = new Scope.StarImportScope(javalang, bytecodeCompleter);
-    javalang.members.enter(javalang);
-
-    objectType = bytecodeCompleter.loadClass("java.lang.Object").type;
-    classType = bytecodeCompleter.loadClass("java.lang.Class").type;
-    stringType = bytecodeCompleter.loadClass("java.lang.String").type;
-    cloneableType = bytecodeCompleter.loadClass("java.lang.Cloneable").type;
-    serializableType = bytecodeCompleter.loadClass("java.io.Serializable").type;
-    annotationType = bytecodeCompleter.loadClass("java.lang.annotation.Annotation").type;
-    enumType = bytecodeCompleter.loadClass("java.lang.Enum").type;
-
-    unboundedWildcard = new WildCardType(objectType, WildCardType.BoundType.UNBOUNDED);
-
-    // Associate boxed types
-    boxedTypes = HashBiMap.create();
-    boxedTypes.put(byteType, bytecodeCompleter.loadClass("java.lang.Byte").type);
-    boxedTypes.put(charType, bytecodeCompleter.loadClass("java.lang.Character").type);
-    boxedTypes.put(shortType, bytecodeCompleter.loadClass("java.lang.Short").type);
-    boxedTypes.put(intType, bytecodeCompleter.loadClass("java.lang.Integer").type);
-    boxedTypes.put(longType, bytecodeCompleter.loadClass("java.lang.Long").type);
-    boxedTypes.put(floatType, bytecodeCompleter.loadClass("java.lang.Float").type);
-    boxedTypes.put(doubleType, bytecodeCompleter.loadClass("java.lang.Double").type);
-    boxedTypes.put(booleanType, bytecodeCompleter.loadClass("java.lang.Boolean").type);
-
-    for (Entry<JavaType, JavaType> entry : boxedTypes.entrySet()) {
-      entry.getKey().primitiveWrapperType = entry.getValue();
-      entry.getValue().primitiveType = entry.getKey();
+    @Override
+    public boolean isVariableSymbol() {
+      return false;
     }
 
-    arrayClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "Array", noSymbol);
-    ClassJavaType arrayClassType = (ClassJavaType) arrayClass.type;
-    arrayClassType.supertype = objectType;
-    arrayClassType.interfaces = ImmutableList.of(cloneableType, serializableType);
-    // clone method return type is handled during method resolution.
-    arrayClass.members = new Scope(arrayClass);
-    arrayClass.members().enter(new JavaSymbol.VariableJavaSymbol(Flags.PUBLIC | Flags.FINAL, "length", intType, arrayClass));
-
-    // java.lang.Synthetic is a virtual annotation added by ASM to workaround a bug in javac on inner classes parameter numbers.
-    // Predefining this type avoids to look it up in classpath where it will not be found. We rely on this to detect synthetic parameters on some enum constructor for instance.
-    JavaSymbol.TypeJavaSymbol syntheticAnnotation = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC | Flags.ANNOTATION, "Synthetic", javalang);
-    javalang.members.enter(syntheticAnnotation);
-    bytecodeCompleter.registerClass(syntheticAnnotation);
-    enterOperators();
-  }
-
-  /**
-   * Registers builtin types as symbols, so that they can be found as an usual identifiers.
-   */
-  private JavaType initType(int tag, String name) {
-    JavaSymbol.TypeJavaSymbol symbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, name, rootPackage);
-    symbol.members = new Scope(symbol);
-    predefClass.members.enter(symbol);
-    ((ClassJavaType) symbol.type).interfaces = Collections.emptyList();
-    symbol.type.tag = tag;
-    return symbol.type;
-  }
-
-  /**
-   * Registers operators as methods, so that they can be found as an usual methods.
-   */
-  private void enterOperators() {
-    for (String op : new String[] {"+", "-", "*", "/", "%"}) {
-      for (JavaType type : Arrays.asList(doubleType, floatType, longType, intType)) {
-        enterBinop(op, type, type, type);
-      }
+    @Override
+    public final boolean isTypeSymbol() {
+      return false;
     }
-    for (String op : new String[] {"&", "|", "^"}) {
-      for (JavaType type : Arrays.asList(booleanType, longType, intType)) {
-        enterBinop(op, type, type, type);
-      }
-    }
-    for (String op : new String[] {"<<", ">>", ">>>"}) {
-      enterBinop(op, longType, longType, longType);
-      enterBinop(op, intType, longType, intType);
-      enterBinop(op, longType, intType, longType);
-      enterBinop(op, intType, intType, intType);
-    }
-    for (String op : new String[] {"<", ">", ">=", "<="}) {
-      for (JavaType type : Arrays.asList(doubleType, floatType, longType, intType)) {
-        enterBinop(op, type, type, booleanType);
-      }
-    }
-    for (String op : new String[] {"==", "!="}) {
-      for (JavaType type : Arrays.asList(objectType, booleanType, doubleType, floatType, longType, intType)) {
-        enterBinop(op, type, type, booleanType);
-      }
-    }
-    enterBinop("&&", booleanType, booleanType, booleanType);
-    enterBinop("||", booleanType, booleanType, booleanType);
 
-    // string concatenation
-    for (JavaType type : Arrays.asList(nullType, objectType, booleanType, doubleType, floatType, longType, intType)) {
-      enterBinop("+", stringType, type, stringType);
-      enterBinop("+", type, stringType, stringType);
+    @Override
+    public final boolean isMethodSymbol() {
+      return false;
     }
-    enterBinop("+", stringType, stringType, stringType);
-  }
 
-  private void enterBinop(String name, JavaType left, JavaType right, JavaType result) {
-    JavaType type = new MethodJavaType(ImmutableList.of(left, right), result, Collections.emptyList(), methodClass);
-    JavaSymbol symbol = new JavaSymbol.MethodJavaSymbol(Flags.PUBLIC | Flags.STATIC, name, type, predefClass);
-    predefClass.members.enter(symbol);
-  }
+    @Override
+    public boolean isPackageSymbol() {
+      return false;
+    }
 
-  public JavaType getPrimitiveFromDescriptor(char descriptor) {
-    switch (descriptor) {
-      case 'S':
-        return shortType;
-      case 'I':
-        return intType;
-      case 'C':
-        return charType;
-      case 'Z':
-        return booleanType;
-      case 'B':
-        return byteType;
-      case 'J':
-        return longType;
-      case 'F':
-        return floatType;
-      case 'D':
-        return doubleType;
-      case 'V':
-        return voidType;
-      default:
-        throw new IllegalStateException("Descriptor '" + descriptor + "' cannot be mapped to a primitive type");
+    @Override
+    public final boolean isStatic() {
+      return false;
+    }
+
+    @Override
+    public boolean isFinal() {
+      return false;
+    }
+
+    @Override
+    public final boolean isEnum() {
+      return false;
+    }
+
+    @Override
+    public final boolean isInterface() {
+      return false;
+    }
+
+    @Override
+    public final boolean isAbstract() {
+      return false;
+    }
+
+    @Override
+    public final boolean isPublic() {
+      return false;
+    }
+
+    @Override
+    public final boolean isPrivate() {
+      return false;
+    }
+
+    @Override
+    public final boolean isProtected() {
+      return false;
+    }
+
+    @Override
+    public final boolean isPackageVisibility() {
+      return false;
+    }
+
+    @Override
+    public final boolean isDeprecated() {
+      return false;
+    }
+
+    @Override
+    public final boolean isVolatile() {
+      return false;
+    }
+
+    @Override
+    public final SymbolMetadata metadata() {
+      return METADATA;
     }
   }
 
-  public JavaType deferedType(AbstractTypedTree tree) {
-    return new DeferredType(tree);
+  private static class UnknownSymbol extends DefaultSymbol {
+    @Override
+    public boolean isUnknown() {
+      return true;
+    }
+
+    @Override
+    public String name() {
+      return "!unknown!";
+    }
+
+    @Override
+    public Symbol owner() {
+      return rootPackage;
+    }
+
+    @Override
+    public final Type type() {
+      return unknownType;
+    }
+
+    @Override
+    public final Symbol.TypeSymbol enclosingClass() {
+      return unknownTypeSymbol;
+    }
+
+    @Override
+    public Tree declaration() {
+      return null;
+    }
+
+    @Override
+    public final List<IdentifierTree> usages() {
+      return Collections.emptyList();
+    }
   }
 
-  public JavaType deferedType(JavaType uninferedType) {
-    return new DeferredType(uninferedType);
+  private static final class UnkownTypeSymbol extends UnknownSymbol implements Symbol.TypeSymbol {
+    @Override
+    public ClassTree declaration() {
+      return null;
+    }
+
+    @Override
+    public Type superClass() {
+      return null;
+    }
+
+    @Override
+    public List<Type> interfaces() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<Symbol> memberSymbols() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<Symbol> lookupSymbols(String name) {
+      return Collections.emptyList();
+    }
+  }
+
+  private static final class RootPackageSymbol extends UnknownSymbol {
+    @Override
+    public boolean isPackageSymbol() {
+      return true;
+    }
+
+    @Override
+    public String name() {
+      return "";
+    }
+
+    @Override
+    public Symbol owner() {
+      return null;
+    }
+  }
+
+  private static final class UnknownMethodSymbol extends UnknownSymbol implements Symbol.MethodSymbol {
+    @Override
+    public MethodTree declaration() {
+      return null;
+    }
+
+    @Override
+    public List<Type> parameterTypes() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public Symbol.TypeSymbol returnType() {
+      return unknownTypeSymbol;
+    }
+
+    @Override
+    public List<Type> thrownTypes() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public Symbol.MethodSymbol overriddenSymbol() {
+      return null;
+    }
+
+    @Override
+    public Symbol owner() {
+      return unknownTypeSymbol;
+    }
+
+    @Override
+    public String name() {
+      return "!unknownMethod!";
+    }
+
+    @Override
+    public String signature() {
+      return "!unknownMethod!";
+    }
+  }
+
+  private static final class UnknownType implements Type {
+    @Override
+    public boolean is(String fullyQualifiedName) {
+      return false;
+    }
+
+    @Override
+    public boolean isSubtypeOf(String fullyQualifiedName) {
+      return false;
+    }
+
+    @Override
+    public boolean isSubtypeOf(Type superType) {
+      return false;
+    }
+
+    @Override
+    public boolean isArray() {
+      return false;
+    }
+
+    @Override
+    public boolean isClass() {
+      return false;
+    }
+
+    @Override
+    public boolean isVoid() {
+      return false;
+    }
+
+    @Override
+    public boolean isPrimitive() {
+      return false;
+    }
+
+    @Override
+    public boolean isPrimitive(Primitives primitive) {
+      return false;
+    }
+
+    @Override
+    public boolean isUnknown() {
+      return true;
+    }
+
+    @Override
+    public boolean isNumerical() {
+      return false;
+    }
+
+    @Override
+    public String fullyQualifiedName() {
+      return "!Unknown!";
+    }
+
+    @Override
+    public String name() {
+      return "!Unknown!";
+    }
+
+    @Override
+    public Symbol.TypeSymbol symbol() {
+      return unknownTypeSymbol;
+    }
+
+    @Override
+    public Type erasure() {
+      return unknownType;
+    }
   }
 }

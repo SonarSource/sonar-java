@@ -19,10 +19,9 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.sonar.sslr.api.typed.ActionParser;
 import java.util.List;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -34,12 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ComplexityVisitorTest {
 
-  private final ActionParser<Tree> p = JavaParser.createParser();
-
-
   @Test
   public void lambda_complexity() throws Exception {
-    CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A { Function f = s -> {if(s.isEmpty()) return s; return new MyClass(){ void foo(){if(a) return;} };};}");
+    CompilationUnitTree cut = JParserTestUtils.parse("class A { Function f = s -> {if(s.isEmpty()) return s; return new MyClass(){ void foo(){if(a) return;} };};}");
     ExpressionTree lambda = ((VariableTree) ((ClassTree) cut.types().get(0)).members().get(0)).initializer();
     List<Tree> nodes = new ComplexityVisitor().getNodes(lambda);
     assertThat(nodes).hasSize(2);
@@ -47,7 +43,7 @@ public class ComplexityVisitorTest {
 
   @Test
   public void method_complexity() throws Exception {
-    CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A {" +
+    CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
         " Object foo(){" +
         " if(a) { " +
         "    return new MyClass(){ " +
@@ -64,7 +60,7 @@ public class ComplexityVisitorTest {
 
   @Test
   public void switch_handling() throws Exception {
-    CompilationUnitTree cut = (CompilationUnitTree) p.parse(
+    CompilationUnitTree cut = JParserTestUtils.parse(
       "class A {" +
         "  String foo(int a) {" +
         "    switch (a) {" +

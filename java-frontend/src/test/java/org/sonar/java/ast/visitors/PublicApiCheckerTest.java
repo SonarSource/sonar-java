@@ -20,10 +20,9 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -44,8 +43,7 @@ public class PublicApiCheckerTest {
 
   @Before
   public void setUp() {
-    ActionParser p = JavaParser.createParser();
-    cut = (CompilationUnitTree) p.parse(new File("src/test/files/ast/PublicApi.java"));
+    cut = JParserTestUtils.parse(new File("src/test/files/ast/PublicApi.java"));
   }
 
   @Test

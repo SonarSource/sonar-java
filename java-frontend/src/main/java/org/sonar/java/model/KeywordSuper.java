@@ -47,18 +47,12 @@ final class KeywordSuper extends IdentifierTreeImpl {
 
   @Override
   public Type symbolType() {
-    if (root.useNewSema) {
-      return resolveType();
-    }
-    return super.symbolType();
+    return resolveType();
   }
 
   @Override
   public Symbol symbol() {
-    if (root.useNewSema) {
-      return resolveSymbol();
-    }
-    return super.symbol();
+    return resolveSymbol();
   }
 
 }

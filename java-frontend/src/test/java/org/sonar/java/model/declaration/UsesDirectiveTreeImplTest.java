@@ -19,12 +19,10 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.sonar.sslr.api.typed.ActionParser;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -33,27 +31,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UsesDirectiveTree;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UsesDirectiveTreeImplTest {
-  
-  private final ActionParser<Tree> p = JavaParser.createParser();
 
-  private CompilationUnitTree createTree(String... lines) {
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(Arrays.stream(lines).collect(Collectors.joining("\n")));
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
-    return compilationUnitTree;
-  }
-
-  private UsesDirectiveTree moduleDirective(String exportsDirective) {
-    CompilationUnitTree compilationUnitTree = createTree("module org.foo {\n  " + exportsDirective + "\n}");
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
+  private static UsesDirectiveTree moduleDirective(String exportsDirective) {
+    CompilationUnitTree compilationUnitTree = JParserTestUtils.parseModule("module org.foo {\n  " + exportsDirective + "\n}");
     return (UsesDirectiveTree) compilationUnitTree.moduleDeclaration().moduleDirectives().get(0);
   }
 
@@ -71,7 +54,7 @@ public class UsesDirectiveTreeImplTest {
 
   @Test
   public void test_BaseTreeVisitor() {
-    CompilationUnitTree cut = createTree(
+    CompilationUnitTree cut = JParserTestUtils.parseModule(
       "open module com.greetings {",
       "  uses org.bar.MyInterface;",
       "  uses org.gul.MyOtherInterface;",

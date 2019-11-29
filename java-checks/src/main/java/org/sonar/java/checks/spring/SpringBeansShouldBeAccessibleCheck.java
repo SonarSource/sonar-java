@@ -30,15 +30,12 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4605")
@@ -119,17 +116,6 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       for (Object o : (Object[]) annotationValue.value()) {
         if (o instanceof String) {
           packagesScannedBySpring.add((String) o);
-        }
-      }
-    } else if (annotationValue.value() instanceof ExpressionTree) {
-      ExpressionTree values = (ExpressionTree) annotationValue.value();
-      if (values.is(Tree.Kind.STRING_LITERAL)) {
-        String packageName = ConstantUtils.resolveAsStringConstant(values);
-        packagesScannedBySpring.add(packageName);
-      } else if (values.is(Tree.Kind.NEW_ARRAY)) {
-        for (ExpressionTree p : ((NewArrayTree) values).initializers()) {
-          String packageName = ConstantUtils.resolveAsStringConstant(p);
-          packagesScannedBySpring.add(packageName);
         }
       }
     }

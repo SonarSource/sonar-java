@@ -1,7 +1,7 @@
 import java.util.stream.*;
 import java.util.List;
 
-class A {
+abstract class A {
 
   void test() {
     Stream<Integer> stream = Stream.of(1, 2, 3);
@@ -13,7 +13,7 @@ class A {
     stream.filter(e -> true).skip(2).limit(1); // Noncompliant
   }
 
-  void test2() {
+  void test3() {
     Stream<Integer> stream = Stream.of(1, 2, 3);
     stream = stream.filter(e -> true);  // Noncompliant
     stream = stream.skip(2);

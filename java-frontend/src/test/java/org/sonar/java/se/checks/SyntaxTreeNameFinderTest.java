@@ -19,9 +19,8 @@
  */
 package org.sonar.java.se.checks;
 
-import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -31,16 +30,13 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SyntaxTreeNameFinderTest {
 
-  public static ActionParser<Tree> parser = JavaParser.createParser();
-
   private static MethodTree buildSyntaxTree(String methodCode) {
-    CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A { " + methodCode + " }");
+    CompilationUnitTree cut = JParserTestUtils.parse("class A { " + methodCode + " }");
     return ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
   }
 

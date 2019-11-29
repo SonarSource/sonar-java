@@ -31,14 +31,17 @@ class A<T, S extends CharSequence> {
     return param;
   }
   <P> P method2(P plop) {
+    return plop;
   }
 
   <P> P method3() {
-    Object myObject = <String>method3();
+    Object myObject = this.<String>method3();
+    return null;
   }
 
   <Q> C<Q> method4() {
-    Object myObject = <String>method4();
+    Object myObject = this.<String>method4();
+    return null;
   }
 
   class D<V> {
@@ -57,15 +60,16 @@ class A<T, S extends CharSequence> {
   void e_method() {
     A.<E>methodStatic().method_of_e();
   }
-  static <T> T methodStatic(){};
+  static <T> T methodStatic() { return null; };
   void unknownSymbol() {
     Foo<String> foo;
   }
 
+  private static class Foo<T> { }
 }
 
 
-public class MyClass implements MyInterface<MyClass.B<Object>> {
+class MyClass implements MyInterface<MyClass.B<Object>> {
   public static class B<T> extends C<T> {
   }
 }

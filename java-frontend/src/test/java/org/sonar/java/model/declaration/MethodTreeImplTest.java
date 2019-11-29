@@ -19,15 +19,11 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.sonar.sslr.api.typed.ActionParser;
-import java.util.Collections;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.Flags;
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -36,11 +32,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MethodTreeImplTest {
 
-  private final ActionParser p = JavaParser.createParser();
-
   @Test
   public void override_without_annotation_should_be_detected() {
-    CompilationUnitTree cut = createTree("interface T { int m(); } class A implements T { int m(){return 0;}}");
+    CompilationUnitTree cut = createTree("interface T { int m(); } class A implements T { public int m(){return 0;}}");
     ClassTree interfaze = (ClassTree) cut.types().get(0);
     MethodTreeImpl methodInterface = (MethodTreeImpl) interfaze.members().get(0);
     ClassTree clazz = (ClassTree) cut.types().get(1);
@@ -79,14 +73,14 @@ public class MethodTreeImplTest {
 
   @Test
   public void override_from_object_should_be_detected() {
-    MethodTreeImpl method = getUniqueMethod("class A { String toString(){return \"\";}}");
+    MethodTreeImpl method = getUniqueMethod("class A { public String toString(){return \"\";}}");
     assertThat(method.isOverriding()).isTrue();
   }
 
   @Test
   public void override_unknown() {
     MethodTreeImpl method = getUniqueMethod("class A extends Unknown { void foo(){}}");
-    assertThat(method.isOverriding()).isNull();
+    assertThat(method.isOverriding()).isFalse();
   }
 
   @Test
@@ -108,13 +102,6 @@ public class MethodTreeImplTest {
     assertThat(getUniqueMethod("class A{ @foo.bar.lang.Override void m(){}}").isOverriding()).isFalse();
     assertThat(getUniqueMethod("class A{ @foo.lang.Override void m(){}}").isOverriding()).isFalse();
     assertThat(getUniqueMethod("class A{ @Foo void m(){}}").isOverriding()).isFalse();
-  }
-
-  @Test
-  public void symbol_not_set_should_lead_to_null_result() throws Exception {
-    CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A { String toString(){return \"\";}}");
-    MethodTreeImpl methodTree = (MethodTreeImpl) ((ClassTree) cut.types().get(0)).members().get(0);
-    assertThat(methodTree.isOverriding()).isNull();
   }
 
   @Test
@@ -146,21 +133,19 @@ public class MethodTreeImplTest {
 
   @Test
   public void varargs_flag() {
-    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) getUniqueMethod("class A { public static void main(String[] args){} }").symbol();
-    assertThat((methodSymbol.flags() & Flags.VARARGS) != 0).isFalse();
-    methodSymbol = (JavaSymbol.MethodJavaSymbol) getUniqueMethod("class A { public static void main(String... args){} }").symbol();
-    assertThat((methodSymbol.flags() & Flags.VARARGS) != 0).isTrue();
+    Symbol.MethodSymbol methodSymbol = getUniqueMethod("class A { public static void main(String[] args){} }").symbol();
+    assertThat(JUtils.isVarArgsMethod(methodSymbol)).isFalse();
+    methodSymbol = getUniqueMethod("class A { public static void main(String... args){} }").symbol();
+    assertThat(JUtils.isVarArgsMethod(methodSymbol)).isTrue();
   }
 
-  private MethodTreeImpl getUniqueMethod(String code) {
+  private static MethodTreeImpl getUniqueMethod(String code) {
     CompilationUnitTree cut = createTree(code);
     return (MethodTreeImpl) ((ClassTree) cut.types().get(0)).members().get(0);
   }
 
-  private CompilationUnitTree createTree(String code) {
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(code);
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
-    return compilationUnitTree;
+  private static CompilationUnitTree createTree(String code) {
+    return JParserTestUtils.parse(code);
   }
 
 }

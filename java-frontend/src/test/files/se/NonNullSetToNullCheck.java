@@ -6,7 +6,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-public class MainClass {
+class MainClass {
 
   @Nonnull
   private String primary;
@@ -155,7 +155,7 @@ public class MainClass {
   }
 }
 
-public class Coverage {
+class Coverage {
 
   @Nonnull
   public Object[] notnullableField;
@@ -166,7 +166,7 @@ public class Coverage {
   public void method1(@Nonnull Object[] a1, @Nonnull Object... variadic) {
   }
 
-  private void callMethods(Supplier<String> supplier) {
+  private void callMethods(java.util.function.Supplier<String> supplier) {
     String[] texts = new String[2];
     checkColors("a");
     checkColors("a", "b");
@@ -179,7 +179,7 @@ public class Coverage {
 }
 
 @javax.persistence.Entity
-public class JpaEntityInvalidDefault {
+class JpaEntityInvalidDefault {
 
   @Nonnull
   private String itemName;
@@ -192,7 +192,7 @@ public class JpaEntityInvalidDefault {
 }
 
 @javax.persistence.Embeddable
-public class JpaEmbeddable {
+class JpaEmbeddable {
 
   @Nonnull
   private String itemName;
@@ -207,16 +207,16 @@ public class JpaEmbeddable {
 }
 
 @javax.persistence.MappedSuperclass
-public class JpaMappedSuperClass {
+class JpaMappedSuperClass {
 
   @Nonnull
   private String itemName;
 
-  public JpaMappedSuperclass() { // Compliant
+  public JpaMappedSuperClass() { // Compliant
     // Default constructor for JPA
   }
 
-  public JpaMappedSuperclass(String name) {
+  public JpaMappedSuperClass(String name) {
     itemName = name;
   }
 }
@@ -331,7 +331,7 @@ abstract class ExcludedMethods {
 }
 
 
-public class MultipleConstructors {
+class MultipleConstructors {
 
   @Nonnull
   private final String a;

@@ -19,16 +19,11 @@
  */
 package org.sonar.java.checks.helpers;
 
-import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -43,7 +38,6 @@ import static org.sonar.java.checks.helpers.ConstantUtils.resolveAsIntConstant;
 
 public class ConstantUtilsTest {
 
-  private final ActionParser<Tree> parser = JavaParser.createParser();
   private final ClassTree classTree = parse();
 
   @Test
@@ -96,7 +90,7 @@ public class ConstantUtilsTest {
   }
 
   private ExpressionTree expression(String expressionAsString) {
-    CompilationUnitTree compilationUnit = (CompilationUnitTree) parser.parse("class A { Object obj = " + expressionAsString + "; } ");
+    CompilationUnitTree compilationUnit = JParserTestUtils.parse("class A { Object obj = " + expressionAsString + "; } ");
     ClassTree classTree = (ClassTree) compilationUnit.types().get(0);
     VariableTree field = (VariableTree) classTree.members().get(0);
     return field.initializer();
@@ -104,8 +98,7 @@ public class ConstantUtilsTest {
 
   private ClassTree parse() {
     File file = new File("src/test/java/org/sonar/java/checks/helpers/ClassWithConstants.java");
-    CompilationUnitTree tree = (CompilationUnitTree) parser.parse(file);
-    SemanticModel.createFor(tree, new SquidClassLoader(Collections.singletonList(new File("target/test-classes"))));
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     return (ClassTree) tree.types().get(0);
   }
 

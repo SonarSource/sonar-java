@@ -134,8 +134,12 @@ abstract class JSymbol implements Symbol {
       case IBinding.VARIABLE:
         return variableOwner((IVariableBinding) binding);
       default:
-        throw new IllegalStateException("Unexpected binding Kind: " + binding.getKind());
+        throw new IllegalStateException(unexpectedBinding());
     }
+  }
+
+  private String unexpectedBinding() {
+    return "Unexpected binding Kind: " + binding.getKind();
   }
 
   private Symbol typeOwner(ITypeBinding typeBinding) {
@@ -205,7 +209,7 @@ abstract class JSymbol implements Symbol {
       case IBinding.METHOD:
         return Symbols.unknownType;
       default:
-        throw new IllegalStateException("Unexpected binding Kind: " + binding.getKind());
+        throw new IllegalStateException(unexpectedBinding());
     }
   }
 
@@ -331,7 +335,7 @@ abstract class JSymbol implements Symbol {
       case IBinding.VARIABLE:
         return variableEnclosingClass((IVariableBinding) binding);
       default:
-        throw new IllegalStateException("Unexpected binding Kind: " + binding.getKind());
+        throw new IllegalStateException(unexpectedBinding());
     }
   }
 
@@ -364,7 +368,7 @@ abstract class JSymbol implements Symbol {
     Tree node = sema.declarations.get(variableBinding);
     if (node == null) {
       // array.length
-      return Symbols.unknownSymbol;
+      return Symbols.unknownTypeSymbol;
     }
     do {
       node = node.parent();

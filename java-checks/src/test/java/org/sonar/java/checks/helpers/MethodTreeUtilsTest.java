@@ -19,16 +19,10 @@
  */
 package org.sonar.java.checks.helpers;
 
-import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-
-import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -70,9 +64,7 @@ public class MethodTreeUtilsTest {
   }
 
   private MethodTree parseMethod(String code) {
-    ActionParser parser = JavaParser.createParser();
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) parser.parse(code);
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
+    CompilationUnitTree compilationUnitTree = JParserTestUtils.parse(code);
     ClassTree classTree = (ClassTree) compilationUnitTree.types().get(0);
     return (MethodTree) classTree.members().get(0);
   }

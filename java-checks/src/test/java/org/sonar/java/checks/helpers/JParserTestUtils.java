@@ -19,12 +19,13 @@
  */
 package org.sonar.java.checks.helpers;
 
-import com.sonar.sslr.api.typed.ActionParser;
+import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 import java.util.List;
-import java.util.Collections;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
+import java.util.stream.Collectors;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import org.sonar.java.model.JParser;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -37,8 +38,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-public abstract class JavaParserHelper {
-  private final ActionParser<Tree> p = JavaParser.createParser();
+abstract class JParserTestUtils {
 
   static IdentifierTree variableFromLastReturnStatement(List<StatementTree> statements) {
     return (IdentifierTree) ((ReturnStatementTree) statements.get(statements.size() - 1)).expression();
@@ -53,8 +53,7 @@ public abstract class JavaParserHelper {
   }
 
   ClassTree classTree(String classBody) {
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(classBody);
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
+    CompilationUnitTree compilationUnitTree = parse(classBody);
     return (ClassTree) compilationUnitTree.types().get(0);
   }
 
@@ -74,6 +73,19 @@ public abstract class JavaParserHelper {
       sb.append(string).append(lineSeparator);
     }
     return sb.append("}").append(lineSeparator).toString();
+  }
+
+  public static CompilationUnitTree parse(File file) {
+    try {
+      return parse(Files.readLines(file, StandardCharsets.UTF_8).stream().collect(Collectors.joining("\n")));
+    } catch (Exception e) {
+      throw new IllegalStateException("Unable to read file", e);
+    }
+  }
+
+  public static CompilationUnitTree parse(String source) {
+    List<File> classpath = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
+    return JParser.parse("12", "test", source, classpath);
   }
 
 }

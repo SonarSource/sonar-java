@@ -23,7 +23,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sonar.sslr.api.RecognitionException;
-import com.sonar.sslr.impl.LexerException;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
@@ -273,7 +272,7 @@ public class SonarComponentsTest {
     assertThat(issues.get(1).primaryLocation().message()).isEqualTo("message on line 42");
     assertThat(issues.get(2).primaryLocation().message()).isEqualTo("other message");
 
-    RecognitionException parseError = new RecognitionException(new LexerException("parse error"));
+    RecognitionException parseError = new RecognitionException(-1, "invalid code", new Exception("parse error"));
 
     context.setRuntime(SonarRuntimeImpl.forSonarLint(V6_7));
     assertThat(sonarComponents.reportAnalysisError(parseError, inputFile)).isTrue();

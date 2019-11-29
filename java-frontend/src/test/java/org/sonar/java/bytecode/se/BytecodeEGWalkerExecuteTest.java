@@ -35,14 +35,14 @@ import org.junit.Test;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.cfg.BytecodeCFG;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.cfg.Instructions;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.Sema;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.se.ProgramPoint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SETestUtils;
@@ -117,8 +117,8 @@ public class BytecodeEGWalkerExecuteTest {
     files.add(new File("target/test-classes"));
     squidClassLoader = new SquidClassLoader(files);
     File file = new File("src/test/java/org/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
-    semanticModel = SemanticModel.createFor(tree, squidClassLoader);
+    CompilationUnitTreeImpl tree = (CompilationUnitTreeImpl) JParserTestUtils.parse(file);
+    semanticModel = tree.sema;
   }
 
   @Before
@@ -130,9 +130,8 @@ public class BytecodeEGWalkerExecuteTest {
 
   @Test
   public void athrow_should_not_be_linked_to_next_label() throws Exception {
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse("class A {int field;}");
+    CompilationUnitTree tree = JParserTestUtils.parse("class A {int field;}");
     SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/JsrRet")));
-    Sema semanticModel = SemanticModel.createFor(tree, classLoader);
     BehaviorCache behaviorCache = new BehaviorCache(classLoader);
     behaviorCache.setFileContext(null, semanticModel);
     BytecodeEGWalker walker = new BytecodeEGWalker(behaviorCache, semanticModel);

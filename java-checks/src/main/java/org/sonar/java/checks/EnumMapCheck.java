@@ -23,7 +23,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -111,9 +110,6 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static boolean hasEnumKey(Type symbolType) {
     Type type = symbolType;
-    if (type instanceof MethodJavaType) {
-      type = ((MethodJavaType) type).resultType();
-    }
     if (JUtils.isParametrized(type)) {
       return JUtils.typeArguments(type).get(0).symbol().isEnum();
     }

@@ -296,8 +296,11 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
     }
 
     private static Optional<Symbol.MethodSymbol> getImplicitlyCalledConstructor(MethodTree methodTree) {
-      Type superType = ((Symbol.TypeSymbol)methodTree.symbol().owner()).superClass();
-      // superClass() returns null only for java.lang.Object; it is not possible.
+      Type superType = ((Symbol.TypeSymbol) methodTree.symbol().owner()).superClass();
+      if (superType == null) {
+        // superClass() returns null only for java.lang.Object and methods not correctly recovered
+        return Optional.empty();
+      }
       return Objects.requireNonNull(superType).symbol().memberSymbols().stream()
         .filter(ThrownExceptionVisitor::isDefaultConstructor)
         .map(Symbol.MethodSymbol.class::cast)

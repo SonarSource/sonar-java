@@ -1,10 +1,10 @@
-package javax.annotation;
+package org.foo;
 
-@interface CheckForNull {}
-
-@interface Nonnull {}
-
-@interface Nullable {}
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 class A {
  public void testCheckNotNull2(@CheckForNull Object parameter) {
@@ -57,7 +57,7 @@ class A {
     char getPreviousValue();
   }
 
-  private void foo(boolean b) {
+  private void qix(boolean b) {
     boolean plop = bar() || b;
     printState();
     if(plop) {

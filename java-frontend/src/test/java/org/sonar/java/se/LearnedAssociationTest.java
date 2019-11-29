@@ -21,14 +21,14 @@ package org.sonar.java.se;
 
 import org.junit.Test;
 
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class LearnedAssociationTest {
-
 
   @Test
   public void test_toString() throws Exception {
@@ -38,8 +38,14 @@ public class LearnedAssociationTest {
         return "SV_1";
       }
     };
-    LearnedAssociation la = new LearnedAssociation(sv, new JavaSymbol.VariableJavaSymbol(JavaSymbol.VAR, "a", mock(JavaSymbol.MethodJavaSymbol.class)));
+    LearnedAssociation la = new LearnedAssociation(sv, variable("a"));
     assertThat(la.toString()).isEqualTo("SV_1 - a");
+  }
+
+  private static final Symbol.VariableSymbol variable(String name) {
+    Symbol.VariableSymbol variable = mock(Symbol.VariableSymbol.class);
+    when(variable.name()).thenReturn(name);
+    return variable;
   }
 
 }
