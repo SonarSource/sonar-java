@@ -631,7 +631,7 @@ public class JParser {
     switch (node.getNodeType()) {
       case ASTNode.REQUIRES_DIRECTIVE: {
         RequiresDirective e = (RequiresDirective) node;
-        ModifiersTreeImpl modifiers = new ModifiersTreeImpl(new ArrayList<>());
+        List<ModifierTree> modifiers = new ArrayList<>();
         for (Object o : e.modifiers()) {
           switch (((ModuleModifier) o).getKeyword().toString()) {
             case "static":
@@ -646,7 +646,7 @@ public class JParser {
         }
         return new RequiresDirectiveTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNamerequires),
-          modifiers,
+          new ModifiersTreeImpl(modifiers),
           convertModuleName(e.getName()),
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
