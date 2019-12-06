@@ -1841,7 +1841,6 @@ public class JParser {
             firstTokenAfter((Expression) o, TerminalTokens.TokenNameRBRACKET)
           ));
         }
-        // !!!!!!!!!!
         InitializerListTreeImpl initializers = new InitializerListTreeImpl(new ArrayList<>(), new ArrayList<>());
         if (e.getInitializer() != null) {
           assert dimensions.isEmpty();
@@ -1864,7 +1863,13 @@ public class JParser {
             .completeDimensions(dimensions);
         } else {
           TypeTree type = convertType(e.getType());
+          int index = dimensions.size() - 1;
           while (type.is(Tree.Kind.ARRAY_TYPE)) {
+            if (!type.annotations().isEmpty()) {
+              ((ArrayDimensionTreeImpl) dimensions.get(index))
+                .completeAnnotations(type.annotations());
+            }
+            index--;
             type = ((ArrayTypeTree) type).type();
           }
 

@@ -21,9 +21,12 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import java.util.List;
+import java.util.Objects;
+import javax.annotation.Nullable;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.ArrayDimensionTreeImpl;
-import org.sonar.java.model.declaration.AnnotationTreeImpl;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
@@ -32,10 +35,6 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
-
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Objects;
 
 public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
 
@@ -82,7 +81,7 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
     return this;
   }
 
-  public NewArrayTreeImpl completeFirstDimension(List<AnnotationTreeImpl> annotations) {
+  public NewArrayTreeImpl completeFirstDimension(List<AnnotationTree> annotations) {
     ((ArrayDimensionTreeImpl) this.dimensions.get(0)).completeAnnotations(annotations);
     return this;
   }
