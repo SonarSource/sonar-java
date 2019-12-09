@@ -87,7 +87,7 @@ public final class JSema implements Sema {
     return annotations.computeIfAbsent(annotationBinding, k -> new JSymbolMetadata.JAnnotationInstance(this, k));
   }
 
-  IBinding declarationBinding(IBinding binding) {
+  static IBinding declarationBinding(IBinding binding) {
     switch (binding.getKind()) {
       case IBinding.TYPE:
         return ((ITypeBinding) binding).getTypeDeclaration();

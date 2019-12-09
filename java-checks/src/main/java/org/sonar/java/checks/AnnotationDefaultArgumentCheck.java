@@ -57,7 +57,7 @@ public class AnnotationDefaultArgumentCheck extends IssuableSubscriptionVisitor 
     Map<String, Object> defaultValueByName = annotationSymbol.memberSymbols().stream()
       .filter(Symbol::isMethodSymbol)
       .map(Symbol.MethodSymbol.class::cast)
-      .filter(s -> JUtils.defaultValue((Symbol.MethodSymbol) s) != null)
+      .filter(s -> JUtils.defaultValue(s) != null)
       .collect(Collectors.toMap(Symbol::name, JUtils::defaultValue));
 
     for (ExpressionTree argument : annotationTree.arguments()) {

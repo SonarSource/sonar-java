@@ -387,14 +387,14 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final List<IdentifierTree> usages() {
-    List<IdentifierTree> usages = sema.usages.get(sema.declarationBinding(binding));
+    List<IdentifierTree> usages = sema.usages.get(JSema.declarationBinding(binding));
     return usages != null ? usages : Collections.emptyList();
   }
 
   @Nullable
   @Override
   public Tree declaration() {
-    return sema.declarations.get(sema.declarationBinding(binding));
+    return sema.declarations.get(JSema.declarationBinding(binding));
   }
 
 }

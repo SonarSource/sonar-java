@@ -375,7 +375,7 @@ public class JParser {
     if (binding == null) {
       return;
     }
-    binding = sema.declarationBinding(binding);
+    binding = JSema.declarationBinding(binding);
     sema.usages.computeIfAbsent(binding, k -> new ArrayList<>())
       .add(node);
   }
