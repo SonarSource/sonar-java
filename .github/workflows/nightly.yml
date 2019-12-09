@@ -30,6 +30,6 @@ jobs:
       uses: Ilshidur/action-slack@1.6.2
       if: failure()
       env:
-        SLACK_OVERRIDE_MESSAGE: 'Nightly build: failed, see the logs at https://github.com/SonarSource/sonar-java/actions'
+        SLACK_OVERRIDE_MESSAGE: 'Nightly build: *failed*, see the logs at https://github.com/SonarSource/sonar-java/actions'
       with:
         args: 'Fail to build dogfood branch'
