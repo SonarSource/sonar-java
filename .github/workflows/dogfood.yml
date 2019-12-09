@@ -41,7 +41,7 @@ jobs:
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         SLACK_USERNAME: Dogfood build action      
-        SLACK_OVERRIDE_MESSAGE: 'Dogfood build for ${{ steps.dogfood.outputs.sha1 }}: failed, see the logs at https://github.com/SonarSource/sonar-dummy/actions'
+        SLACK_OVERRIDE_MESSAGE: 'Dogfood build for ${{ steps.dogfood.outputs.sha1 }}: failed, see the logs at https://github.com/SonarSource/sonar-java/actions'
       with:
         args: 'Fail to build dogfood branch'
 
