@@ -131,8 +131,10 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
 
   private static String buildMessage(String methodName, List<Type> uncaughtTypes) {
     String uncaught = uncaughtTypes.stream().map(Type::name).collect(Collectors.joining(", ")) + ".";
-    return uncaughtTypes.size() == 1 ? "Handle the following exception that could be thrown by " + "\"" + methodName + "\": " + uncaught
-      : "Handle the following exceptions that could be thrown by " + "\"" + methodName + "\": " + uncaught;
+    return String.format("Handle the following exception%s that could be thrown by \"%s\": %s",
+      (uncaughtTypes.size() == 1 ? "" : "s"),
+      methodName,
+      uncaught);
   }
 
   private boolean isNotCaught(Type type) {
