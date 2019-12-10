@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
@@ -51,7 +52,7 @@ public class LoopsOnSameSetCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     Map<Symbol, Integer> forEachSymbols = new HashMap<>();
     Tree previousForeachIterable = null;
-    for (Tree item : ((BlockTree) tree).body()) {
+    for (StatementTree item : ((BlockTree) tree).body()) {
       if (item.is(Tree.Kind.FOR_EACH_STATEMENT)) {
         ForEachStatement forEachStatement = (ForEachStatement) item;
         checkForEach(forEachSymbols, previousForeachIterable, forEachStatement);

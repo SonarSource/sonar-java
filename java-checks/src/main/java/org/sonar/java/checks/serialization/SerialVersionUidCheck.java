@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.serialization;
 
-import com.google.common.base.Joiner;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -80,7 +79,7 @@ public class SerialVersionUidCheck extends IssuableSubscriptionVisitor {
     }
     VariableTree variableTree = serialVersionUidSymbol.declaration();
     if (variableTree != null && !missingModifiers.isEmpty()) {
-      reportIssue(variableTree.simpleName(), "Make this \"serialVersionUID\" field \"" + Joiner.on(' ').join(missingModifiers) + "\".");
+      reportIssue(variableTree.simpleName(), "Make this \"serialVersionUID\" field \"" + String.join(" ", missingModifiers) + "\".");
     }
   }
 

@@ -179,7 +179,7 @@ public final class Javadoc {
       .collect(Collectors.toList());
   }
 
-  private boolean noDescriptionForException(Map<String, List<String>> thrownExceptionsMap, String exceptionSimpleName) {
+  private static boolean noDescriptionForException(Map<String, List<String>> thrownExceptionsMap, String exceptionSimpleName) {
     List<String> descriptions = thrownExceptionsMap.get(exceptionSimpleName);
     if (descriptions == null) {
       // exceptions used in javadoc is using fully qualified name when method declaration use simple name

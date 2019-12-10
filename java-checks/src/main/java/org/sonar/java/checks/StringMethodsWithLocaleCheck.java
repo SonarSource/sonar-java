@@ -92,7 +92,7 @@ public class StringMethodsWithLocaleCheck extends AbstractMethodDetection {
 
     @Override
     public void visitLiteral(LiteralTree tree) {
-      String value = tree.value().replaceAll("%%", "");
+      String value = tree.value().replace("%%", "");
       if (tree.is(Tree.Kind.STRING_LITERAL) && LOCALE_DEPENDENT_FORMATTERS.matcher(value).matches()) {
         hasLocaleDependantFormatter = true;
       }

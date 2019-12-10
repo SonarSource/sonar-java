@@ -102,7 +102,7 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
       || isCustomInjectionAnnotated(ctor.metadata()) || constructors.size() == 1;
   }
 
-  private Set<Symbol> symbolsUsedInMethod(Symbol.MethodSymbol methodSymbol) {
+  private static Set<Symbol> symbolsUsedInMethod(Symbol.MethodSymbol methodSymbol) {
     IdentifierCollector identifierCollector = new IdentifierCollector();
     methodSymbol.declaration().accept(identifierCollector);
     return identifierCollector.identifiers;
