@@ -20,12 +20,12 @@
 package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -1087,7 +1087,9 @@ public class ExplodedGraphWalker {
 
   private static void debugPrint(Object... toPrint) {
     if (DEBUG_MODE_ACTIVATED) {
-      LOG.error(Joiner.on(" - ").join(toPrint));
+      LOG.error(Arrays.stream(toPrint)
+        .map(Object::toString)
+        .collect(Collectors.joining(" - ")));
     }
   }
 

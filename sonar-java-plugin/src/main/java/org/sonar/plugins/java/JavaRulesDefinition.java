@@ -157,7 +157,7 @@ public class JavaRulesDefinition implements RulesDefinition {
     return null;
   }
 
-  private void addMetadata(NewRule rule, @Nullable RuleMetadata metadata) {
+  private static void addMetadata(NewRule rule, @Nullable RuleMetadata metadata) {
     if (metadata == null) {
       return;
     }

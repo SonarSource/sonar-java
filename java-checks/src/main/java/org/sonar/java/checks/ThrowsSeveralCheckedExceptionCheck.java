@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
 import java.util.Collections;
@@ -46,7 +45,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends IssuableSubscriptionVisi
     if (hasSemantic() && isPublic(methodTree) && !MethodTreeUtils.isMainMethod(methodTree)) {
       List<String> thrownCheckedExceptions = getThrownCheckedExceptions(methodTree);
       if (thrownCheckedExceptions.size() > 1 && isNotOverridden(methodTree)) {
-        reportIssue(methodTree.simpleName(), "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
+        reportIssue(methodTree.simpleName(), "Refactor this method to throw at most one checked exception instead of: " + String.join(", ", thrownCheckedExceptions));
       }
     }
   }

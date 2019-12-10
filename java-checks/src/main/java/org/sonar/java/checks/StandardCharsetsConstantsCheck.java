@@ -93,7 +93,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   private static Map<String, String> createAliasToConstantNameMap() {
     ImmutableMap.Builder<String, String> constantNames = ImmutableMap.builder();
     for (Charset charset : STANDARD_CHARSETS) {
-      String constantName = charset.name().replaceAll("-", "_");
+      String constantName = charset.name().replace("-", "_");
       constantNames.put(charset.name(), constantName);
 
       for (String alias : charset.aliases()) {

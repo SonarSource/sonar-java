@@ -19,16 +19,16 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S1150")
 public class ImplementsEnumerationCheck extends IssuableSubscriptionVisitor {
@@ -41,7 +41,7 @@ public class ImplementsEnumerationCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    for (Tree superInterface : classTree.superInterfaces()) {
+    for (TypeTree superInterface : classTree.superInterfaces()) {
       IdentifierTree identifierTree = null;
       if (superInterface.is(Tree.Kind.IDENTIFIER)) {
         identifierTree = (IdentifierTree) superInterface;

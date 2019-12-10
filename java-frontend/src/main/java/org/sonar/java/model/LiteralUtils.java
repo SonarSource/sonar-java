@@ -48,7 +48,7 @@ public class LiteralUtils {
   }
 
   private static Integer intLiteralValue(LiteralTree literal) {
-    String literalValue = literal.value().replaceAll("_", "");
+    String literalValue = literal.value().replace("_", "");
     if (literalValue.startsWith("0b") || literalValue.startsWith("0B")) {
       // assume it is used as bit mask
       return Integer.parseUnsignedInt(literalValue.substring(2), 2);

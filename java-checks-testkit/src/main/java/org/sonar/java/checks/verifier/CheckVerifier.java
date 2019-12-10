@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -275,7 +276,7 @@ public abstract class CheckVerifier {
       throw new IOException(ruleJson + " not found");
     }
     Gson gson = new Gson();
-    return gson.fromJson(new InputStreamReader(resource.openStream(), "UTF-8"), RuleJSON.class);
+    return gson.fromJson(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8), RuleJSON.class);
   }
 
   private static String ruleKey(AnalyzerMessage issue) {

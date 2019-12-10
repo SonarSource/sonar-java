@@ -351,7 +351,6 @@ public class BytecodeEGWalker {
     }
 
     handleEndOfExecutionPath();
-    executeCheckEndOfExecution();
     methodBehavior.completed();
     // Cleanup:
     workList = null;
@@ -782,7 +781,10 @@ public class BytecodeEGWalker {
         .forEach(yield -> {
           Type exceptionType = yield.exceptionType(semanticModel);
           yield.statesAfterInvocation(
-            arguments, Collections.emptyList(), programState, () -> constraintManager.createExceptionalSymbolicValue(exceptionType)).forEach(ps -> {
+            arguments,
+            Collections.emptyList(),
+            programState,
+            () -> constraintManager.createExceptionalSymbolicValue(exceptionType)).forEach(ps -> {
               ps.storeExitValue();
               enqueueExceptionHandlers(exceptionType, ps);
           });
@@ -940,10 +942,6 @@ public class BytecodeEGWalker {
       .forEach(b -> enqueue(new ProgramPoint(b), programState));
   }
 
-  private void executeCheckEndOfExecution() {
-    // TODO callback to checks at end of execution
-  }
-
   @VisibleForTesting
   Iterable<ProgramState> startingStates(String signature, ProgramState currentState, boolean isStaticMethod) {
     // TODO : deal with parameter annotations, equals methods etc.
@@ -991,10 +989,7 @@ public class BytecodeEGWalker {
     ExplodedGraph.Node savedNode = node;
     endOfExecutionPath.forEach(n -> {
       setNode(n);
-//      if (!programState.exitingOnRuntimeException()) {
-//        checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
-//      }
-      if (/*!interrupted && */methodBehavior != null) {
+      if (methodBehavior != null) {
         methodBehavior.createYield(node, false);
       }
     });

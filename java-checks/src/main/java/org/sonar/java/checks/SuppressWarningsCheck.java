@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -34,6 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,7 +67,7 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
           .filter(currentWarning -> !ruleWarnings.contains(currentWarning))
           .collect(Collectors.toList());
         if (!issues.isEmpty()) {
-          StringBuilder sb = new StringBuilder("Suppressing the '").append(Joiner.on(", ").join(issues))
+          StringBuilder sb = new StringBuilder("Suppressing the '").append(String.join(", ", issues))
             .append("' warning").append(issues.size() > 1 ? "s" : "").append(" is not allowed");
           reportIssue(annotationTree.annotationType(), sb.toString());
         }
@@ -86,12 +85,9 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
     }
 
     allowedWarnings = new ArrayList<>();
-    Iterable<String> listOfWarnings = Splitter.on(",").trimResults().split(warningsCommaSeparated);
-    for (String warning : listOfWarnings) {
-      if (StringUtils.isNotBlank(warning)) {
-        allowedWarnings.add(warning);
-      }
-    }
+    Arrays.stream(warningsCommaSeparated.split(","))
+      .filter(StringUtils::isNotBlank)
+      .forEach(allowedWarnings::add);
 
     return allowedWarnings;
   }
