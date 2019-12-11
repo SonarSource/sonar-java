@@ -303,19 +303,23 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final SymbolMetadata metadata() {
-    if (binding.getKind() == IBinding.PACKAGE) {
-      return new JSymbolMetadata(sema, sema.resolvePackageAnnotations(binding.getName()));
-
-    } else if (binding.getKind() == IBinding.VARIABLE) {
-      ITypeBinding type = ((IVariableBinding) binding).getType();
-      return new JSymbolMetadata(
-        sema,
-        type == null ? new IAnnotationBinding[0] : type.getTypeAnnotations(),
-        binding.getAnnotations()
-      );
-
-    } else {
-      return new JSymbolMetadata(sema, binding.getAnnotations());
+    switch (binding.getKind()) {
+      case IBinding.PACKAGE:
+        return new JSymbolMetadata(sema, sema.resolvePackageAnnotations(binding.getName()));
+      case IBinding.VARIABLE:
+        ITypeBinding type = ((IVariableBinding) binding).getType();
+        return new JSymbolMetadata(
+          sema,
+          type == null ? new IAnnotationBinding[0] : type.getTypeAnnotations(),
+          binding.getAnnotations());
+      case IBinding.METHOD:
+        ITypeBinding returnType = ((IMethodBinding) binding).getReturnType();
+        return new JSymbolMetadata(
+          sema,
+          returnType.getTypeAnnotations(),
+          binding.getAnnotations());
+      default:
+        return new JSymbolMetadata(sema, binding.getAnnotations());
     }
   }
 

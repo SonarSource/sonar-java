@@ -60,7 +60,7 @@ public class NullableAnnotationUtilsTest {
   }
 
   @Test
-  @org.junit.Ignore("meta-annotations not properly handled with ECJ")
+  @org.junit.Ignore
   public void testEclipseIsGloballyAnnotatedNonNull() {
     List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
     classPath.add(new File("target/test-classes"));
@@ -85,7 +85,7 @@ public class NullableAnnotationUtilsTest {
   }
 
   @Test
-  @org.junit.Ignore("meta-annotations not properly handled with ECJ")
+  @org.junit.Ignore
   public void testSpringIsPackageAnnotatedNonNull() {
     List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
     classPath.add(new File("target/test-classes"));
@@ -117,39 +117,37 @@ public class NullableAnnotationUtilsTest {
     String name = s.name();
     boolean annotatedNonNull = isAnnotatedNonNull(s);
     if (StringUtils.containsIgnoreCase(name, "ReturnNonNull")) {
-      assertThat(annotatedNonNull).as(s + " should be recognized as returning NonNull.").isTrue();
+      assertThat(annotatedNonNull).as(s.name() + " should be recognized as returning NonNull.").isTrue();
     } else {
-      assertThat(annotatedNonNull).as(s + " should NOT be recognized as returning NonNull.").isFalse();
+      assertThat(annotatedNonNull).as(s.name() + " should NOT be recognized as returning NonNull.").isFalse();
     }
     boolean globallyAnnotatedParameterNonNull = isGloballyAnnotatedParameterNonNull(s);
     if (StringUtils.containsIgnoreCase(name, "nonNullParameters")) {
-      assertThat(globallyAnnotatedParameterNonNull).as(s + " should be recognized as NonNull for parameters.").isTrue();
+      assertThat(globallyAnnotatedParameterNonNull).as(s.name() + " should be recognized as NonNull for parameters.").isTrue();
     } else {
-      assertThat(globallyAnnotatedParameterNonNull).as(s + " should NOT be recognized as NonNull for parameters.").isFalse();
+      assertThat(globallyAnnotatedParameterNonNull).as(s.name() + " should NOT be recognized as NonNull for parameters.").isFalse();
     }
   }
 
   @Test
-  @org.junit.Ignore("meta-annotations not properly handled with ECJ")
   public void testIsAnnotatedNullable() {
     Symbol foo = getSymbol("foo");
     assertThat(isAnnotatedNullable(foo.metadata())).isFalse();
 
     getSymbols("nullable").forEach(s -> {
-      assertThat(isAnnotatedNullable(s.metadata())).as(s + " should be recognized as Nullable.").isTrue();
-      assertThat(isAnnotatedNonNull(s)).as(s + " should NOT be recognized as Nonnull.").isFalse();
+      assertThat(isAnnotatedNullable(s.metadata())).as(s.name() + " should be recognized as Nullable.").isTrue();
+      assertThat(isAnnotatedNonNull(s)).as(s.name() + " should NOT be recognized as Nonnull.").isFalse();
     });
   }
 
   @Test
-  @org.junit.Ignore("meta-annotations not properly handled with ECJ")
   public void testIsAnnotatedNonNull() {
     Symbol foo = getSymbol("foo");
     assertThat(isAnnotatedNonNull(foo)).isFalse();
 
     getSymbols("nonnull").forEach(s -> {
-      assertThat(isAnnotatedNonNull(s)).as(s + " should be recognized as Nonnull.").isTrue();
-      assertThat(isAnnotatedNullable(s.metadata())).as(s + " should NOT be recognized as Nullable.").isFalse();
+      assertThat(isAnnotatedNonNull(s)).as(s.name() + " should be recognized as Nonnull.").isTrue();
+      assertThat(isAnnotatedNullable(s.metadata())).as(s.name() + " should NOT be recognized as Nullable.").isFalse();
     });
   }
 
