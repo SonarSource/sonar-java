@@ -33,18 +33,14 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.test.MutableTestPlan;
-import org.sonar.api.test.TestCase;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.surefire.data.UnitTestClassReport;
 import org.sonar.plugins.surefire.data.UnitTestIndex;
-import org.sonar.plugins.surefire.data.UnitTestResult;
 
 /**
  * @since 2.4
@@ -53,11 +49,9 @@ import org.sonar.plugins.surefire.data.UnitTestResult;
 public class SurefireJavaParser {
 
   private static final Logger LOGGER = Loggers.get(SurefireJavaParser.class);
-  private final ResourcePerspectives perspectives;
   private final JavaResourceLocator javaResourceLocator;
 
-  public SurefireJavaParser(ResourcePerspectives perspectives, JavaResourceLocator javaResourceLocator) {
-    this.perspectives = perspectives;
+  public SurefireJavaParser(JavaResourceLocator javaResourceLocator) {
     this.javaResourceLocator = javaResourceLocator;
   }
 
@@ -155,27 +149,13 @@ public class SurefireJavaParser {
     return result;
   }
 
-  private void save(UnitTestClassReport report, InputFile inputFile, SensorContext context) {
+  private static void save(UnitTestClassReport report, InputFile inputFile, SensorContext context) {
     int testsCount = report.getTests() - report.getSkipped();
     saveMeasure(context, inputFile, CoreMetrics.SKIPPED_TESTS, report.getSkipped());
     saveMeasure(context, inputFile, CoreMetrics.TESTS, testsCount);
     saveMeasure(context, inputFile, CoreMetrics.TEST_ERRORS, report.getErrors());
     saveMeasure(context, inputFile, CoreMetrics.TEST_FAILURES, report.getFailures());
     saveMeasure(context, inputFile, CoreMetrics.TEST_EXECUTION_TIME, report.getDurationMilliseconds());
-    saveResults(inputFile, report);
-  }
-
-  protected void saveResults(InputFile testFile, UnitTestClassReport report) {
-    for (UnitTestResult unitTestResult : report.getResults()) {
-      MutableTestPlan testPlan = perspectives.as(MutableTestPlan.class, testFile);
-      if (testPlan != null) {
-        testPlan.addTestCase(unitTestResult.getName())
-            .setDurationInMs(Math.max(unitTestResult.getDurationMilliseconds(), 0))
-            .setStatus(TestCase.Status.of(unitTestResult.getStatus()))
-            .setMessage(unitTestResult.getMessage())
-            .setStackTrace(unitTestResult.getStackTrace());
-      }
-    }
   }
 
   @CheckForNull

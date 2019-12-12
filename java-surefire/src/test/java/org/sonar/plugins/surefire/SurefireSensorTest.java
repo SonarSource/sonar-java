@@ -31,7 +31,6 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.scan.filesystem.PathResolver;
@@ -45,7 +44,6 @@ import static org.mockito.Mockito.when;
 
 public class SurefireSensorTest {
 
-  private ResourcePerspectives perspectives;
   private JavaResourceLocator javaResourceLocator;
   private SurefireSensor surefireSensor;
   private DefaultFileSystem fs;
@@ -56,12 +54,11 @@ public class SurefireSensorTest {
     fs = new DefaultFileSystem(new File("src/test/resources"));
     DefaultInputFile javaFile = new TestInputFileBuilder("", "src/org/foo/java").setLanguage("java").build();
     fs.add(javaFile);
-    perspectives = mock(ResourcePerspectives.class);
 
     javaResourceLocator = mock(JavaResourceLocator.class);
     when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(invocation -> resource((String) invocation.getArguments()[0]));
 
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), new MapSettings().asConfig(), fs, pathResolver);
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(javaResourceLocator), new MapSettings().asConfig(), fs, pathResolver);
   }
 
   private DefaultInputFile resource(String key) {
@@ -70,7 +67,7 @@ public class SurefireSensorTest {
 
   @Test
   public void should_execute_if_filesystem_contains_java_files() {
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), new MapSettings().asConfig(), fs, pathResolver);
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(javaResourceLocator), new MapSettings().asConfig(), fs, pathResolver);
     DefaultSensorDescriptor defaultSensorDescriptor = new DefaultSensorDescriptor();
     surefireSensor.describe(defaultSensorDescriptor);
     assertThat(defaultSensorDescriptor.languages()).containsOnly("java");
