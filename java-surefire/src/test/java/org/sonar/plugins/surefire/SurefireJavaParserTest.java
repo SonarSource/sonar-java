@@ -27,27 +27,16 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.test.MutableTestCase;
-import org.sonar.api.test.MutableTestPlan;
-import org.sonar.api.test.TestCase;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -55,7 +44,6 @@ import static org.mockito.Mockito.when;
 
 public class SurefireJavaParserTest {
 
-  private ResourcePerspectives perspectives;
   private JavaResourceLocator javaResourceLocator;
   private SurefireJavaParser parser;
 
@@ -64,35 +52,11 @@ public class SurefireJavaParserTest {
 
   @Before
   public void before() {
-    perspectives = mock(ResourcePerspectives.class);
-
     javaResourceLocator = mock(JavaResourceLocator.class);
     when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(invocation -> new TestInputFileBuilder("", (String) invocation.getArguments()[0]).build());
 
-    parser = new SurefireJavaParser(perspectives, javaResourceLocator);
+    parser = new SurefireJavaParser(javaResourceLocator);
   }
-
-  @Test
-  public void should_register_tests() throws URISyntaxException {
-    SensorContextTester context = SensorContextTester.create(new File(""));
-
-    MutableTestCase testCase = mock(MutableTestCase.class);
-    when(testCase.setDurationInMs(anyLong())).thenReturn(testCase);
-    when(testCase.setStatus(any(TestCase.Status.class))).thenReturn(testCase);
-    when(testCase.setMessage(isNull())).thenReturn(testCase);
-    when(testCase.setStackTrace(anyString())).thenReturn(testCase);
-    when(testCase.setType(anyString())).thenReturn(testCase);
-    MutableTestPlan testPlan = mock(MutableTestPlan.class);
-    when(testPlan.addTestCase(anyString())).thenReturn(testCase);
-    when(perspectives.as(eq(MutableTestPlan.class),
-      argThat((ArgumentMatcher<InputFile>) o -> ":ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest".equals(o.key())))).thenReturn(testPlan);
-
-    parser.collect(context, getDirs("multipleReports"), true);
-
-    verify(testPlan).addTestCase("testGetUnKnownCollector");
-    verify(testPlan).addTestCase("testGetJDependsCollector");
-  }
-
 
   @Test
   public void should_store_zero_tests_when_directory_is_null_or_non_existing_or_a_file() throws Exception {
@@ -228,7 +192,7 @@ public class SurefireJavaParserTest {
   @Test
   public void should_log_missing_resource_with_debug_level() throws Exception {
     SensorContextTester context = mockContext();
-    parser =  new SurefireJavaParser(mock(ResourcePerspectives.class), mock(JavaResourceLocator.class));
+    parser = new SurefireJavaParser(mock(JavaResourceLocator.class));
     parser.collect(context, getDirs("resourceNotFound"), true);
     assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Resource not found: org.sonar.Foo");
