@@ -2771,8 +2771,7 @@ public class JavaTreeModelTest {
     param = tree.get(1);
     assertThat(param.identifier().name()).isEqualTo("U");
     assertThat(param.bounds()).hasSize(2);
-    // FIXME missing bound separator
-    assertThat(param.bounds().separators()).isEmpty();
+    assertThat(param.bounds().separators()).hasSize(1);
     assertThat(((IdentifierTree) param.bounds().get(0)).name()).isEqualTo("Object");
     assertThat(((IdentifierTree) param.bounds().get(1)).name()).isEqualTo("Number");
     assertThatChildrenIteratorHasSize(param, 3);
