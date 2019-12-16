@@ -1,5 +1,5 @@
 {
-  "title": "Untrusted XML should be parsed without resolving external data",
+  "title": "XML parsers should not be vulnerable to XXE attacks",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {

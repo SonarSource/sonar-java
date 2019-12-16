@@ -10,7 +10,6 @@
     "cwe",
     "spring",
     "sans-top25-porous",
-    "owasp-a2",
     "owasp-a3"
   ],
   "defaultSeverity": "Minor",
@@ -24,7 +23,6 @@
       315
     ],
     "OWASP": [
-      "A2",
       "A3"
     ]
   }

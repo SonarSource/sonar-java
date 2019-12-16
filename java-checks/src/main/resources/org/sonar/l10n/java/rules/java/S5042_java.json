@@ -8,8 +8,8 @@
   },
   "tags": [
     "cwe",
-    "owasp-a1",
-    "cert"
+    "cert",
+    "owasp-a5"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5042",
@@ -20,7 +20,7 @@
       409
     ],
     "OWASP": [
-      "A1"
+      "A5"
     ]
   }
 }

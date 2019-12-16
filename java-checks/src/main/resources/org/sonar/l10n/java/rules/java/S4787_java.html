@@ -7,7 +7,7 @@
 <p>Proper encryption requires both the encryption algorithm and the key to be strong. Obviously the private key needs to remain secret and be renewed
 regularly. However these are not the only means to defeat or weaken an encryption.</p>
 <p> </p>
-<p>This rule flags function calls that initiate encryption/decryption. The goal is to guide security code reviews.</p>
+<p>This rule flags function calls that initiate encryption/decryption.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
   <li> the private key might not be random, strong enough or the same key is reused for a long long time. </li>
@@ -55,7 +55,7 @@ regularly. However these are not the only means to defeat or weaken an encryptio
 <pre>
 // === javax.crypto ===
 import javax.crypto.Cipher;
-Cipher c = Cipher.getInstance(...);  // Questionable
+Cipher c = Cipher.getInstance(...);  // Sensitive
 
 // === apache.commons.crypto ===
 import java.util.Properties;
@@ -66,7 +66,7 @@ import org.apache.commons.crypto.cipher.CryptoCipherFactory.CipherProvider;
 Properties properties = new Properties();
 properties.setProperty(CryptoCipherFactory.CLASSES_KEY, CipherProvider.OPENSSL.getClassName());
 final String transform = "AES/CBC/PKCS5Padding";
-Utils.getCipherInstance(transform, properties);  // Questionable
+Utils.getCipherInstance(transform, properties);  // Sensitive
 </pre>
 <h2>See</h2>
 <ul>
@@ -81,7 +81,6 @@ Utils.getCipherInstance(transform, properties);  // Questionable
   <li> <a href="http://cwe.mitre.org/data/definitions/325.html">MITRE, CWE-325</a> - Missing Required Cryptographic Step </li>
   <li> <a href="http://cwe.mitre.org/data/definitions/326.html">MITRE, CWE-326</a> - Inadequate Encryption Strength </li>
   <li> <a href="http://cwe.mitre.org/data/definitions/327.html">MITRE, CWE-327</a> - Use of a Broken or Risky Cryptographic Algorithm </li>
-  <li> <a href="http://cwe.mitre.org/data/definitions/522.html">MITRE, CWE-522</a> - Insufficiently Protected Credentials </li>
   <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
 </ul>
 

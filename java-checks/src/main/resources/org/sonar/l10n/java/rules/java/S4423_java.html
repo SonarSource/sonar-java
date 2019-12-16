@@ -1,6 +1,6 @@
-<p><code>javax.net.ssl.SSLContext.getInstance</code> returns a SSLContext object that implements the specified secure socket protocol. However, not
-all protocols are created equal and some legacy ones like "SSL", have been proven to be insecure.</p>
-<p>This rule raises an issue when an <code>SSLContext</code> is created with an insecure protocol (ie: a protocol different from "TLS", "DTLS",
+<p><code>javax.net.ssl.SSLContext.getInstance</code> returns a SSLContext object that implements the specified secure socket protocol. However, older
+protocol versions like "SSLv3" have been proven to be insecure.</p>
+<p>This rule raises an issue when an <code>SSLContext</code> is created with an insecure protocol version(ie: a protocol different from "TLS", "DTLS",
 "TLSv1.2", "DTLSv1.2", "TLSv1.3", "DTLSv1.3").</p>
 <p>The recommended value is "TLS" or "DTLS" as it will always use the latest version of the protocol. However an issue will be raised if the bytecode
 was compiled with JDK7 or an even older version of JDK because they are not alias for TLSv1.2 and DTLSv1.2 but for weaker protocols.</p>
@@ -10,7 +10,7 @@ possible to enable only specific protocol versions by calling <code>setEnabledPr
 or <code>SSLEngine</code>. However this should be rarely needed as clients usually ask for the most secure protocol supported.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-context = SSLContext.getInstance("SSL"); // Noncompliant
+context = SSLContext.getInstance("SSLv3"); // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
@@ -26,5 +26,7 @@ context = SSLContext.getInstance("TLSv1.2");
   <li> <a href="http://cwe.mitre.org/data/definitions/327.html">MITRE, CWE-326</a> - Use of a Broken or Risky Cryptographic Algorithm </li>
   <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
   <li> <a href="https://blogs.oracle.com/java-platform-group/diagnosing-tls,-ssl,-and-https">Diagnosing TLS, SSL, and HTTPS</a> </li>
+  <li> <a href="https://github.com/ssllabs/research/wiki/SSL-and-TLS-Deployment-Best-Practices#22-use-secure-protocols">SSL and TLS Deployment Best
+  Practices - Use secure protocols</a> </li>
 </ul>
 

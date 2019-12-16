@@ -12,7 +12,7 @@
     "sans-top25-insecure",
     "owasp-a6"
   ],
-  "defaultSeverity": "Blocker",
+  "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-3752",
   "sqKey": "S3752",
   "scope": "All",

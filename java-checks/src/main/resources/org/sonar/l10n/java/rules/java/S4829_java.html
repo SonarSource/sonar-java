@@ -17,14 +17,14 @@ can be dangerous and should be validated.</p>
 <pre>
 class A {
     void foo(String fmt, Object args) throws Exception {
-        // Questionable. Check how the standard input is used.
+        // Sensitive. Check how the standard input is used.
         System.in.read();
 
-        // Questionable. Check how safe this new InputStream is.
+        // Sensitive. Check how safe this new InputStream is.
         System.setIn(new java.io.FileInputStream("test.txt"));
 
         java.io.Console console = System.console();
-        // Questionable. All the following calls should be reviewed as they use the standard input.
+        // Sensitive. All the following calls should be reviewed as they use the standard input.
         console.reader();
         console.readLine();
         console.readLine(fmt, args);

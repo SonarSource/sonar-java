@@ -39,25 +39,25 @@ class A {
     void foo(SocketFactory factory, String address, int port, InetAddress localAddr, int localPort, boolean stream,
             String host, Proxy proxy, int backlog, InetAddress bindAddr)
             throws Exception {
-        new Socket(); // Questionable.
-        new Socket(address, port); // Questionable.
-        new Socket(address, port, localAddr, localPort); // Questionable.
-        new Socket(host, port, stream); // Questionable.
-        new Socket(proxy); // Questionable.
-        new Socket(host, port); // Questionable.
-        new Socket(host, port, stream); // Questionable.
-        new Socket(host, port, localAddr, localPort); // Questionable.
+        new Socket(); // Sensitive.
+        new Socket(address, port); // Sensitive.
+        new Socket(address, port, localAddr, localPort); // Sensitive.
+        new Socket(host, port, stream); // Sensitive.
+        new Socket(proxy); // Sensitive.
+        new Socket(host, port); // Sensitive.
+        new Socket(host, port, stream); // Sensitive.
+        new Socket(host, port, localAddr, localPort); // Sensitive.
 
-        new ServerSocket(); // Questionable.
-        new ServerSocket(port); // Questionable.
-        new ServerSocket(port, backlog); // Questionable.
-        new ServerSocket(port, backlog, bindAddr); // Questionable.
+        new ServerSocket(); // Sensitive.
+        new ServerSocket(port); // Sensitive.
+        new ServerSocket(port, backlog); // Sensitive.
+        new ServerSocket(port, backlog, bindAddr); // Sensitive.
 
-        factory.createSocket(); // Questionable
+        factory.createSocket(); // Sensitive
     }
 }
 
-abstract class mySocketFactory extends SocketFactory { // Questionable. Review how the sockets are created.
+abstract class mySocketFactory extends SocketFactory { // Sensitive. Review how the sockets are created.
     // ...
 }
 </pre>
@@ -72,13 +72,13 @@ import java.nio.channels.ServerSocketChannel;
 
 class A {
     void foo(AsynchronousChannelGroup group, SocketAddress remote) throws Exception {
-        AsynchronousServerSocketChannel.open(); // Questionable.
-        AsynchronousServerSocketChannel.open(group); // Questionable.
-        AsynchronousSocketChannel.open(); // Questionable.
-        AsynchronousSocketChannel.open(group); // Questionable.
-        SocketChannel.open(); // Questionable.
-        SocketChannel.open(remote); // Questionable.
-        ServerSocketChannel.open(); // Questionable.
+        AsynchronousServerSocketChannel.open(); // Sensitive.
+        AsynchronousServerSocketChannel.open(group); // Sensitive.
+        AsynchronousSocketChannel.open(); // Sensitive.
+        AsynchronousSocketChannel.open(group); // Sensitive.
+        SocketChannel.open(); // Sensitive.
+        SocketChannel.open(remote); // Sensitive.
+        ServerSocketChannel.open(); // Sensitive.
     }
 }
 </pre>
@@ -88,7 +88,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 
-class CustomChannelInitializer extends ChannelInitializer&lt;ServerSocketChannel&gt; { // Questionable. Review how the SocketChannel is used.
+class CustomChannelInitializer extends ChannelInitializer&lt;ServerSocketChannel&gt; { // Sensitive. Review how the SocketChannel is used.
     @Override
     protected void initChannel(ServerSocketChannel ch) throws Exception {
     }
@@ -96,7 +96,7 @@ class CustomChannelInitializer extends ChannelInitializer&lt;ServerSocketChannel
 
 class A {
     void foo() {
-        new ChannelInitializer&lt;SocketChannel&gt;() {  // Questionable
+        new ChannelInitializer&lt;SocketChannel&gt;() {  // Sensitive
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
                 // ...

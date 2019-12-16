@@ -26,7 +26,7 @@ method should not be used for security-critical applications or for protecting s
 </ul>
 <h2>Sensitive Code Example</h2>
 <pre>
-Random random = new Random(); // Questionable use of Random
+Random random = new Random(); // Sensitive use of Random
 byte bytes[] = new byte[20];
 random.nextBytes(bytes); // Check if bytes is used for hashing, encryption, etc...
 </pre>

@@ -24,11 +24,11 @@ ClassLoaders and SecurityManagers in order to sandbox any untrusted code and for
 <pre>
 public void makeItPublic(String methodName) throws NoSuchMethodException {
 
-  this.getClass().getMethod(methodName).setAccessible(true); // Questionable
+  this.getClass().getMethod(methodName).setAccessible(true); // Sensitive
 }
 
 public void setItAnyway(String fieldName, int value) {
-  this.getClass().getDeclaredField(fieldName).setInt(this, value); // Questionable; bypasses controls in setter
+  this.getClass().getDeclaredField(fieldName).setInt(this, value); // Sensitive; bypasses controls in setter
 }
 </pre>
 <h2>See</h2>

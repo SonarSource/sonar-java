@@ -60,7 +60,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.*;
 import org.apache.logging.log4j.core.config.*;
 
-// Questionable: creating a new custom configuration
+// Sensitive: creating a new custom configuration
 abstract class CustomConfigFactory extends ConfigurationFactory {
     // ...
 }
@@ -71,28 +71,28 @@ class A {
             java.io.File file, java.net.URL url, String source, ClassLoader loader, Level level, Filter filter)
             throws java.io.IOException {
         // Creating a new custom configuration
-        ConfigurationBuilderFactory.newConfigurationBuilder();  // Questionable
+        ConfigurationBuilderFactory.newConfigurationBuilder();  // Sensitive
 
         // Setting loggers level can result in writing sensitive information in production
-        Configurator.setAllLevels("com.example", Level.DEBUG);  // Questionable
-        Configurator.setLevel("com.example", Level.DEBUG);  // Questionable
-        Configurator.setLevel(levelMap);  // Questionable
-        Configurator.setRootLevel(Level.DEBUG);  // Questionable
+        Configurator.setAllLevels("com.example", Level.DEBUG);  // Sensitive
+        Configurator.setLevel("com.example", Level.DEBUG);  // Sensitive
+        Configurator.setLevel(levelMap);  // Sensitive
+        Configurator.setRootLevel(Level.DEBUG);  // Sensitive
 
-        config.addAppender(appender); // Questionable: this modifies the configuration
+        config.addAppender(appender); // Sensitive: this modifies the configuration
 
         LoggerConfig loggerConfig = config.getRootLogger();
-        loggerConfig.addAppender(appender, level, filter); // Questionable
-        loggerConfig.setLevel(level); // Questionable
+        loggerConfig.addAppender(appender, level, filter); // Sensitive
+        loggerConfig.setLevel(level); // Sensitive
 
-        context.setConfigLocation(uri); // Questionable
+        context.setConfigLocation(uri); // Sensitive
 
         // Load the configuration from a stream or file
-        new ConfigurationSource(stream);  // Questionable
-        new ConfigurationSource(stream, file);  // Questionable
-        new ConfigurationSource(stream, url);  // Questionable
-        ConfigurationSource.fromResource(source, loader);  // Questionable
-        ConfigurationSource.fromUri(uri);  // Questionable
+        new ConfigurationSource(stream);  // Sensitive
+        new ConfigurationSource(stream, file);  // Sensitive
+        new ConfigurationSource(stream, url);  // Sensitive
+        ConfigurationSource.fromResource(source, loader);  // Sensitive
+        ConfigurationSource.fromUri(uri);  // Sensitive
     }
 }
 
@@ -106,10 +106,10 @@ import java.util.logging.*;
 class M {
     void foo(LogManager logManager, Logger logger, java.io.InputStream is, Handler handler)
             throws SecurityException, java.io.IOException {
-        logManager.readConfiguration(is); // Questionable
+        logManager.readConfiguration(is); // Sensitive
 
-        logger.setLevel(Level.FINEST); // Questionable
-        logger.addHandler(handler); // Questionable
+        logger.setLevel(Level.FINEST); // Sensitive
+        logger.addHandler(handler); // Sensitive
     }
 }
 </pre>
@@ -123,11 +123,11 @@ import ch.qos.logback.classic.*;
 
 class M {
     void foo(Logger logger, Appender&lt;ILoggingEvent&gt; fileAppender) {
-        System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "config.xml"); // Questionable
-        JoranConfigurator configurator = new JoranConfigurator(); // Questionable
+        System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, "config.xml"); // Sensitive
+        JoranConfigurator configurator = new JoranConfigurator(); // Sensitive
 
-        logger.addAppender(fileAppender); // Questionable
-        logger.setLevel(Level.DEBUG); // Questionable
+        logger.addAppender(fileAppender); // Sensitive
+        logger.setLevel(Level.DEBUG); // Sensitive
     }
 }
 </pre>

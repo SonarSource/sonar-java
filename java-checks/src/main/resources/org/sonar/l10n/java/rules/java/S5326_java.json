@@ -5,7 +5,8 @@
   "tags": [
     "cwe",
     "owasp-a6",
-    "sans-top25-porous"
+    "sans-top25-porous",
+    "owasp-a3"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5326",
@@ -16,7 +17,8 @@
       295
     ],
     "OWASP": [
-      "A6"
+      "A6",
+      "A3"
     ]
   }
 }

@@ -1,17 +1,36 @@
-<p>The <code>HttpOnly</code> cookie attribute tells the browser to prevent client-side scripts from reading cookies with the attribute, and its use
-can go a long way to defending against Cross-Site Scripting (XSS) attacks. Thus, as a precaution, the attribute should be set by default on all
-cookies set server-side, such as session id cookies.</p>
-<p>When implementing Cross Site Request Forgery (XSRF) protection, a JavaScript-readable session cookie, generally named XSRF-TOKEN, should be created
-on the first HTTP GET request. For such a cookie, the <code>HttpOnly</code> attribute should be set to "false".</p>
-<p>Setting the attribute can be done either programmatically, or globally via configuration files. </p>
-<h2>Noncompliant Code Example</h2>
+<p>When a cookie is configured with the <code>HttpOnly</code> attribute set to <em>true</em>, the browser guaranties that no client-side script will
+be able to read it. In most cases, when a cookie is created, the default value of <code>HttpOnly</code> is <em>false</em> and it's up to the developer
+to decide whether or not the content of the cookie can be read by the client-side script. As a majority of Cross-Site Scripting (XSS) attacks target
+the theft of session-cookies, the <code>HttpOnly</code> attribute can help to reduce their impact as it won't be possible to exploit the XSS
+vulnerability to steal session-cookies.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> the cookie is a <em>session-cookie</em> and the <code>HttpOnly</code> flag is not set to <em>true</em> </li>
+  <li> the content of the cookie is sensitive and the <code>HttpOnly</code> flag is not set to <em>true</em> </li>
+  <li> the <code>HttpOnly</code> attribute offer an additional protection (not the case for an <em>XSRF-TOKEN cookie</em> / CSRF token for example)
+  but it is not set to <em>true</em> </li>
+</ul>
+<p>You are at risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> You should by default set the <code>HttpOnly</code> flag to <em>true</em> for most of your cookies and it's mandatory for session /
+  sensitive-security cookies. </li>
+</ul>
+<h2>Sensitive Code Examples</h2>
+<p>If you create a security-sensitive cookie in your JAVA code:</p>
 <pre>
-Cookie cookie = new Cookie("myCookieName", value); // Noncompliant; by default cookie.isHttpOnly() is returning false
+Cookie c = new Cookie(COOKIENAME, sensitivedata);
+c.setHttpOnly(false);  // Sensitive: this sensitive cookie is created with the httponly flag set to false and so it can be stolen easily in case of XSS vulnerability
+</pre>
+<p>By default the <a href="https://docs.oracle.com/javaee/6/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)"><code>HttpOnly</code></a> flag is
+set to <em>false:</em></p>
+<pre>
+Cookie c = new Cookie(COOKIENAME, sensitivedata);  // Sensitive: this sensitive cookie is created with the httponly flag not defined (by default set to false) and so it can be stolen easily in case of XSS vulnerability
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
-Cookie cookie = new Cookie("myCookieName", value);
-cookie.setHttpOnly(true); // Compliant
+Cookie c = new Cookie(COOKIENAME, sensitivedata);
+c.setHttpOnly(true); // Compliant: this sensitive cookie is protected against theft (HttpOnly=true)
 </pre>
 <h2>See</h2>
 <ul>

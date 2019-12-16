@@ -18,7 +18,8 @@
   "scope": "All",
   "securityStandards": {
     "CWE": [
-      459
+      459,
+      772
     ]
   }
 }
