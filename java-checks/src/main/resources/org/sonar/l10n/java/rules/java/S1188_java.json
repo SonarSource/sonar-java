@@ -1,5 +1,5 @@
 {
-  "title": "Lambdas and anonymous classes should not have too many lines of code",
+  "title": "Anonymous classes should not have too many lines",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -7,7 +7,7 @@
     "constantCost": "20min"
   },
   "tags": [
-    "java8"
+    
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-1188",

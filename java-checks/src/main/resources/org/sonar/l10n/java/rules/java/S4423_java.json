@@ -1,5 +1,5 @@
 {
-  "title": "Weak SSL protocols should not be used",
+  "title": "Weak SSL\/TLS protocols should not be used",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {

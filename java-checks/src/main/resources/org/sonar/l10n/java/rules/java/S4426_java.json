@@ -1,5 +1,5 @@
 {
-  "title": "Cryptographic keys should not be too short",
+  "title": "Cryptographic keys should be robust",
   "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
@@ -8,6 +8,8 @@
   },
   "tags": [
     "cwe",
+    "owasp-a9",
+    "rules",
     "owasp-a3"
   ],
   "defaultSeverity": "Blocker",
@@ -19,7 +21,8 @@
       326
     ],
     "OWASP": [
-      "A3"
+      "A3",
+      "A9"
     ]
   }
 }

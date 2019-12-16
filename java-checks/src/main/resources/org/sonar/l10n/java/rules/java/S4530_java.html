@@ -5,7 +5,6 @@
 <p>All classes extending <code>org.apache.struts.action.Action</code> are potentially remotely reachable. The <code>ActionForm</code> object provided
 as a parameter of the <code>execute</code> method is automatically instantiated and populated with the HTTP parameters. One should review the use of
 these parameters to be sure they are used safely. </p>
-<p>This rule is there to allow a security auditor to quickly find some potential hotspots to review.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
   <li> some parameters of the ActionForm might not have been validated properly. </li>

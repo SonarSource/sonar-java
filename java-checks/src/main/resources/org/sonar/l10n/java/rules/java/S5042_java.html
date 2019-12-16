@@ -47,7 +47,7 @@ java.util.zip.ZipFile zipFile = new ZipFile(zipFileName);
 
 Enumeration&lt;? extends ZipEntry&gt; entries = zipFile.entries();
 while (entries.hasMoreElements()) {
-  ZipEntry e = entries.nextElement(); // Questionable
+  ZipEntry e = entries.nextElement(); // Sensitive
   File f = new File(outputDir, e.getName());
   InputStream input = zipFile.getInputStream(e);
   extractFile(new ZipInputStream(input), outputDir, e.getName());
@@ -61,7 +61,7 @@ while (entries.hasMoreElements()) {
 </ul>
 <h2>See</h2>
 <ul>
-  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A1-Injection">OWASP Top 10 2017 Category A1</a> - Injection </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control">OWASP Top 10 2017 Category A5</a> - Broken Access Control </li>
   <li> <a href="http://cwe.mitre.org/data/definitions/409.html">MITRE, CWE-409</a> - Improper Handling of Highly Compressed Data (Data Amplification)
   </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/IDS04-J.+Safely+extract+files+from+ZipInputStream">CERT, IDS04-J.</a> - Safely

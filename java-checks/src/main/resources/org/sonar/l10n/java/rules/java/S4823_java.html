@@ -25,9 +25,9 @@ path to a file containing the information.</p>
 CLI.</p>
 <pre>
 public class Main {
-&nbsp;&nbsp;&nbsp; public static void main (String[] argv) {
-&nbsp; &nbsp; &nbsp; &nbsp; String option = argv[0]; &nbsp;// Questionable: check how the argument is used
-&nbsp;&nbsp;&nbsp; }
+  public static void main (String[] argv) {
+    String option = argv[0]; &nbsp;// Sensitive: check how the argument is used
+  }
 }
 </pre>
 <pre>
@@ -35,14 +35,14 @@ public class Main {
 import&nbsp;com.beust.jcommander.*;
 
 public class Main {
-&nbsp;&nbsp;&nbsp; public static void main (String[] argv) {
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Main main = new Main();
-&nbsp; &nbsp; &nbsp; &nbsp; JCommander.newBuilder()
-&nbsp; &nbsp; &nbsp; &nbsp; .addObject(main)
-&nbsp; &nbsp; &nbsp; &nbsp; .build()
-&nbsp; &nbsp; &nbsp; &nbsp; .parse(argv); // Questionable
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;main.run();
-&nbsp;&nbsp; &nbsp;}
+  public static void main (String[] argv) {
+    Main main = new Main();
+    JCommander.newBuilder()
+      .addObject(main)
+      .build()
+      .parse(argv); // Sensitive
+    main.run();
+  }
 }
 </pre>
 <pre>
@@ -50,9 +50,9 @@ public class Main {
 import gnu.getopt.Getopt;
 
 public class Main {
-&nbsp;&nbsp;&nbsp; public static void main (String[] argv) {
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;Getopt g = new Getopt("myprog", argv, "ab"); // Questionable
-&nbsp;&nbsp;&nbsp; }
+  public static void main (String[] argv) {
+    Getopt g = new Getopt("myprog", argv, "ab"); // Sensitive
+  }
 }
 </pre>
 <pre>
@@ -60,13 +60,13 @@ public class Main {
 import org.apache.commons.cli.*;
 
 public class Main {
-&nbsp;&nbsp;&nbsp; public static void main (String[] argv) {
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;Options options = new Options();
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; CommandLineParser parser = new DefaultParser();
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;try {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;  CommandLine line = parser.parse(options, argv); // Questionable
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; }
-&nbsp;&nbsp;&nbsp; }
+  public static void main (String[] argv) {
+    Options options = new Options();
+    CommandLineParser parser = new DefaultParser();
+    try {
+      CommandLine line = parser.parse(options, argv); // Sensitive
+    }
+  }
 }
 </pre>
 <p>In the case of Args4J, an issue is created on the <code>public void run</code> method of any class using <code>org.kohsuke.args4j.Option</code> or
@@ -80,29 +80,29 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.Argument;
 
 public class Main {
-    @Option(name="-myopt",usage="An option")
-    public String myopt;
+  @Option(name="-myopt",usage="An option")
+  public String myopt;
 
-    @Argument(usage = "An argument", metaVar = "&lt;myArg&gt;")
-    String myarg;
+  @Argument(usage = "An argument", metaVar = "&lt;myArg&gt;")
+  String myarg;
 
-    String file;
+  String file;
 
-    @Option(name="-file")
-    public void setFile(String file) {
-        this.file = file;
-    }
+  @Option(name="-file")
+  public void setFile(String file) {
+    this.file = file;
+  }
 
-    String arg2;
+  String arg2;
 
-    @Argument(index=1)
-    public void setArg2(String arg2) {
-        this.arg2 = arg2;
-    }
+  @Argument(index=1)
+  public void setArg2(String arg2) {
+    this.arg2 = arg2;
+  }
 
-&nbsp;&nbsp; &nbsp;public void run() { // Questionable: This function
-        myarg; // check how this argument is used
-&nbsp;&nbsp; &nbsp;}
+  public void run() { // Sensitive: This function
+     myarg.toString(); // check how this argument is used
+  }
 }
 </pre>
 <h2>Exceptions</h2>

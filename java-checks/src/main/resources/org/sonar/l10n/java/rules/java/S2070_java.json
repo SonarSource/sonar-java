@@ -10,7 +10,8 @@
     "cwe",
     "spring",
     "owasp-a6",
-    "sans-top25-porous"
+    "sans-top25-porous",
+    "owasp-a3"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2070",
@@ -22,6 +23,7 @@
       327
     ],
     "OWASP": [
+      "A3",
       "A6"
     ]
   }

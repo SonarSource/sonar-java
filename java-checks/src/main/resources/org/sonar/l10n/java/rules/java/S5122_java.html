@@ -28,15 +28,15 @@ information.</p>
 @Override
 protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
   resp.setHeader("Content-Type", "text/plain; charset=utf-8");
-  resp.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Questionable
-  resp.setHeader("Access-Control-Allow-Credentials", "true"); // Questionable
-  resp.setHeader("Access-Control-Allow-Methods", "GET"); // Questionable
+  resp.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Sensitive
+  resp.setHeader("Access-Control-Allow-Credentials", "true"); // Sensitive
+  resp.setHeader("Access-Control-Allow-Methods", "GET"); // Sensitive
   resp.getWriter().write("response");
 }
 </pre>
 <pre>
 // === Spring MVC Controller annotation ===
-@CrossOrigin(origins = "http://domain1.com") // Questionable
+@CrossOrigin(origins = "http://domain1.com") // Sensitive
 @RequestMapping("")
 public class TestController {
     public String home(ModelMap model) {
@@ -44,7 +44,7 @@ public class TestController {
         return "view";
     }
 
-    @CrossOrigin(origins = "http://domain2.com") // Questionable
+    @CrossOrigin(origins = "http://domain2.com") // Sensitive
     @RequestMapping(value = "/test1")
     public ResponseEntity&lt;String&gt; test1() {
         return ResponseEntity.ok().body("ok");

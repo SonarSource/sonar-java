@@ -5,16 +5,14 @@ regular expression.</p>
 <pre>
 class Foo {  // Noncompliant
   @Test
-  void check() {
-  }
+  void check() {  }
 }
 
 class Bar {  // Noncompliant
   @Nested
   class PositiveCase {
     @Test
-    void check() {
-    }
+    void check() {  }
   }
 }
 </pre>
@@ -22,16 +20,14 @@ class Bar {  // Noncompliant
 <pre>
 class FooTest {
   @Test
-  void check() {
-  }
+  void check() {  }
 }
 
 class BarIT {
   @Nested
   class PositiveCase {
     @Test
-    void check() {
-    }
+    void check() {  }
   }
 }
 </pre>

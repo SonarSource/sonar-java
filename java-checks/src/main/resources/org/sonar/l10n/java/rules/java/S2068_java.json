@@ -1,6 +1,6 @@
 {
-  "title": "Credentials should not be hard-coded",
-  "type": "VULNERABILITY",
+  "title": "Hard-coded credentials are security-sensitive",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",

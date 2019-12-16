@@ -1,6 +1,6 @@
 {
-  "title": "\"HttpOnly\" should be set on cookies",
-  "type": "VULNERABILITY",
+  "title": "Creating cookies without the \"HttpOnly\" flag is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -11,7 +11,7 @@
     "sans-top25-insecure",
     "owasp-a7"
   ],
-  "defaultSeverity": "Critical",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-3330",
   "sqKey": "S3330",
   "scope": "Main",

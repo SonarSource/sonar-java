@@ -3,8 +3,8 @@ this case, <code>else</code> is associated with the nearest&nbsp;<code>if</code>
 be misleading.</p>
 <p>This rules reports <code>else</code> statements that are difficult to understand, because they are inside nested <code>if</code> statements without
 curly braces.</p>
-<p>Adding curly braces can generally make the code clearer (RSPEC-121), and in this situation of dangling <code>else</code>, it really clarifies the
-intention of the code.</p>
+<p>Adding curly braces can generally make the code clearer (see rule {rule:squid:S121} ), and in this situation of dangling <code>else</code>, it
+really clarifies the intention of the code.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
  if (a)
@@ -24,5 +24,7 @@ intention of the code.</p>
  }
 </pre>
 <h2>See</h2>
-<p> * <a href="https://en.wikipedia.org/wiki/Dangling_else">https://en.wikipedia.org/wiki/Dangling_else</a></p>
+<ul>
+  <li> <a href="https://en.wikipedia.org/wiki/Dangling_else">https://en.wikipedia.org/wiki/Dangling_else</a> </li>
+</ul>
 

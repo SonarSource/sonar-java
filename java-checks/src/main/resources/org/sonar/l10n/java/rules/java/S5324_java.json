@@ -6,6 +6,7 @@
     "cwe",
     "owasp-a1",
     "sans-top25-risky",
+    "android",
     "sans-top25-porous",
     "owasp-a3"
   ],

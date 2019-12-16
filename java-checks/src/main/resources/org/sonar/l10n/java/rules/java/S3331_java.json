@@ -1,5 +1,5 @@
 {
-  "title": "Cookie domains should be as narrow as possible ",
+  "title": "Creating cookies with broadly defined \"domain\" flags is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
@@ -7,15 +7,17 @@
     "constantCost": "5min"
   },
   "tags": [
-    "owasp-a7"
+    "owasp-a7",
+    "owasp-a3"
   ],
-  "defaultSeverity": "Critical",
+  "defaultSeverity": "Info",
   "ruleSpecification": "RSPEC-3331",
   "sqKey": "S3331",
   "scope": "Main",
   "securityStandards": {
     "OWASP": [
-      "A7"
+      "A7",
+      "A3"
     ]
   }
 }

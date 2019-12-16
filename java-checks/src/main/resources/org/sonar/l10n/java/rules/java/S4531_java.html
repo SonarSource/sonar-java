@@ -6,7 +6,6 @@
 ActionSupport will receive all HTTP parameters sent and these parameters will be automatically mapped to the setters of the Struts 2 action class. One
 should review the use of the fields set by the setters, to be sure they are used safely. By default, they should be considered as untrusted
 inputs.</p>
-<p>This rule is there to allow a security auditor to quickly find some potential hotspots to review.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
   <li> the setter is needed. There is no need for it if the attribute's goal is not to map queries' parameter. </li>
