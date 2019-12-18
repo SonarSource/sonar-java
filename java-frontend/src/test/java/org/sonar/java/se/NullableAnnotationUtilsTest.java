@@ -60,7 +60,7 @@ public class NullableAnnotationUtilsTest {
   }
 
   @Test
-  @org.junit.Ignore
+  @org.junit.Ignore("flickering NPE")
   public void testEclipseIsGloballyAnnotatedNonNull() {
     List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
     classPath.add(new File("target/test-classes"));
@@ -85,7 +85,7 @@ public class NullableAnnotationUtilsTest {
   }
 
   @Test
-  @org.junit.Ignore
+  @org.junit.Ignore("flickering NPE")
   public void testSpringIsPackageAnnotatedNonNull() {
     List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
     classPath.add(new File("target/test-classes"));
