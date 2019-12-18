@@ -59,6 +59,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -67,6 +68,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
@@ -1429,14 +1431,19 @@ class JParserSemanticTest {
     Block block = (Block) s.statements().get(1);
     BreakStatement breakStatement = (BreakStatement) block.statements().get(0);
     assertThat(breakStatement.getLength())
-      .isZero();
+      .isEqualTo(2);
 
-    test(source);
+    CompilationUnitTree compilationUnit = test(source);
+    ClassTree cls = (ClassTree) compilationUnit.types().get(0);
+    MethodTree method = (MethodTree) cls.members().get(0);
+    SwitchStatementTree switchStatement = (SwitchStatementTree) Objects.requireNonNull(method.block()).body().get(0);
+    BlockTree blockStatement = (BlockTree) switchStatement.cases().get(0).body().get(0);
+    assertThat(blockStatement.body()).isEmpty();
   }
 
   private CompilationUnit createAST(String source) {
-    String version = "12";
-    ASTParser astParser = ASTParser.newParser(AST.JLS12);
+    String version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    ASTParser astParser = ASTParser.newParser(AST.JLS13);
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_COMPLIANCE, version);
     options.put(JavaCore.COMPILER_SOURCE, version);

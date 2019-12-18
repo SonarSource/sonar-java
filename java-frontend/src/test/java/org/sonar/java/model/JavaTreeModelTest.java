@@ -202,6 +202,44 @@ public class JavaTreeModelTest {
     assertThat(token.column()).isEqualTo(30);
   }
 
+  /**
+   * Text Blocks (Preview) http://openjdk.java.net/jeps/355
+   *
+   * @see org.eclipse.jdt.core.dom.TextBlock
+   */
+  @Test
+  public void expression_text_block() {
+    LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { Object m() { return \"\"\"\ntext block\"\"\"; } }");
+    assertThat(tree.kind()).isEqualTo(Tree.Kind.STRING_LITERAL);
+    assertThat(tree.value()).isEqualTo("\"\"\"\ntext block\"\"\"");
+    SyntaxToken token = tree.token();
+    assertThat(token).isNotNull();
+    assertThat(token.line()).isEqualTo(1);
+    assertThat(token.column()).isEqualTo(30);
+  }
+
+  /**
+   * Switch Expressions (Preview) http://openjdk.java.net/jeps/354
+   *
+   * @see org.eclipse.jdt.core.dom.SwitchExpression
+   * @see org.eclipse.jdt.core.dom.YieldStatement
+   */
+  @Test
+  public void expression_switch() {
+    SwitchExpressionTree tree = (SwitchExpressionTree) expressionOfReturnStatement("class T { Object m() { return switch (0) { default -> 0; case 0 -> 0; }; } }");
+    assertThat(tree.kind()).isEqualTo(Tree.Kind.SWITCH_EXPRESSION);
+    assertThat(tree.cases()).hasSize(2);
+    ExpressionStatementTree expressionStatement = (ExpressionStatementTree) tree.cases().get(0).body().get(0);
+    assertThat(expressionStatement.expression().kind()).isEqualTo(Tree.Kind.INT_LITERAL);
+
+    tree = (SwitchExpressionTree) expressionOfReturnStatement("class T { Object m() { return switch (0) { default: yield 0; case 0: yield 0; }; } }");
+    assertThat(tree.kind()).isEqualTo(Tree.Kind.SWITCH_EXPRESSION);
+    assertThat(tree.cases()).hasSize(2);
+    BreakStatementTree breakStatement = (BreakStatementTree) tree.cases().get(0).body().get(0);
+    assertThat(breakStatement.breakKeyword().text()).isEqualTo("yield");
+    assertThat(breakStatement.value().kind()).isEqualTo(Tree.Kind.INT_LITERAL);
+  }
+
   @Test
   public void compilation_unit() {
     CompilationUnitTree tree = compilationUnit("import foo; import bar; class Foo {} class Bar {}");
@@ -1411,14 +1449,6 @@ public class JavaTreeModelTest {
     assertThat(tree.breakKeyword().text()).isEqualTo("break");
     assertThat(tree.label().name()).isEqualTo("label");
     assertThat(((IdentifierTree)tree.value()).name()).isEqualTo("label");
-    assertThat(tree.semicolonToken().text()).isEqualTo(";");
-    assertThatChildrenIteratorHasSize(tree, 3);
-
-    tree = (BreakStatementTree) firstMethodFirstStatement("class T { void m() { break 1 + 1 ; } }");
-    assertThat(tree.is(Tree.Kind.BREAK_STATEMENT)).isTrue();
-    assertThat(tree.breakKeyword().text()).isEqualTo("break");
-    assertThat(tree.label()).isNull();
-    assertThat(tree.value()).isInstanceOf(BinaryExpressionTree.class);
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
     assertThatChildrenIteratorHasSize(tree, 3);
   }

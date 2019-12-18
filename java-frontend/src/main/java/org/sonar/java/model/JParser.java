@@ -112,6 +112,7 @@ import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchExpression;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
+import org.eclipse.jdt.core.dom.TextBlock;
 import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -129,6 +130,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
+import org.eclipse.jdt.core.dom.YieldStatement;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.parser.Scanner;
 import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
@@ -241,6 +243,8 @@ public class JParser {
 
   private static final Logger LOG = Loggers.get(JParser.class);
 
+  public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "13";
+
   public static CompilationUnitTree parse(String version, String unitName, String source, List<File> classpath) {
     return parse(version, unitName, source, true, classpath);
   }
@@ -256,11 +260,14 @@ public class JParser {
     boolean resolveBindings,
     List<File> classpath
   ) {
-    ASTParser astParser = ASTParser.newParser(AST.JLS12);
+    ASTParser astParser = ASTParser.newParser(AST.JLS13);
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_COMPLIANCE, version);
     options.put(JavaCore.COMPILER_SOURCE, version);
-    options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
+    if (MAXIMUM_SUPPORTED_JAVA_VERSION.equals(version)) {
+      options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
+    }
+
     astParser.setCompilerOptions(options);
 
     astParser.setEnvironment(
@@ -1300,7 +1307,7 @@ public class JParser {
         declaration(t.variableBinding, t);
         statements.add(t);
       }
-    } else if (node.getNodeType() == ASTNode.BREAK_STATEMENT && node.getLength() == 0) {
+    } else if (node.getNodeType() == ASTNode.BREAK_STATEMENT && node.getLength() < "break".length()) {
       // skip implicit break-statement
     } else {
       statements.add(convertStatement(node));
@@ -1417,24 +1424,11 @@ public class JParser {
       }
       case ASTNode.BREAK_STATEMENT: {
         BreakStatement e = (BreakStatement) node;
-        if (e.isImplicit()) {
-          return new ExpressionStatementTreeImpl(
-            convertExpression(e.getExpression()),
-            lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
-          );
-        }
-        ExpressionTree expression;
-        if (e.getExpression() == null) {
-          SimpleName label = e.getLabel();
-          IdentifierTreeImpl i = label == null ? null : convertSimpleName(label);
-          usageLabel(i);
-          expression = i;
-        } else {
-          expression = convertExpression(e.getExpression());
-        }
+        IdentifierTreeImpl identifier = e.getLabel() == null ? null : convertSimpleName(e.getLabel());
+        usageLabel(identifier);
         return new BreakStatementTreeImpl(
           firstTokenIn(e, TerminalTokens.TokenNamebreak),
-          expression,
+          identifier,
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
       }
@@ -1677,6 +1671,20 @@ public class JParser {
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );
       }
+      case ASTNode.YIELD_STATEMENT: {
+        YieldStatement e = (YieldStatement) node;
+        if (e.isImplicit()) {
+          return new ExpressionStatementTreeImpl(
+            convertExpression(e.getExpression()),
+            lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
+          );
+        }
+        return new BreakStatementTreeImpl(
+          firstTokenIn(e, ANY_TOKEN),
+          convertExpression(e.getExpression()),
+          lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
+        );
+      }
       default:
         throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
     }
@@ -1695,8 +1703,17 @@ public class JParser {
 
         SwitchCase c = (SwitchCase) o;
 
+        final List expressionsToConvert;
+        if (c.getAST().isPreviewEnabled()) {
+          expressionsToConvert = c.expressions();
+        } else if (c.isDefault()) {
+          expressionsToConvert = Collections.emptyList();
+        } else {
+          expressionsToConvert = Collections.singletonList(c.getExpression());
+        }
+
         List<ExpressionTree> expressions = new ArrayList<>();
-        for (Object oo : c.expressions()) {
+        for (Object oo : expressionsToConvert) {
           expressions.add(
             convertExpression((Expression) oo)
           );
@@ -2312,6 +2329,13 @@ public class JParser {
         return new LiteralTreeImpl(
           Tree.Kind.STRING_LITERAL,
           firstTokenIn(e, TerminalTokens.TokenNameStringLiteral)
+        );
+      }
+      case ASTNode.TEXT_BLOCK: {
+        TextBlock e = (TextBlock) node;
+        return new LiteralTreeImpl(
+          Tree.Kind.STRING_LITERAL,
+          firstTokenIn(e, TerminalTokens.TokenNameTextBlock)
         );
       }
       case ASTNode.NORMAL_ANNOTATION:

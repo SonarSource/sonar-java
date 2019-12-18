@@ -846,13 +846,13 @@ public class CFGTest {
       "      case 2:\n" +
       "      case 3:\n" +
       "      case 4:\n" +
-      "        break fun(bar1) + fun(bar2);\n" +
+      "        yield fun(bar1) + fun(bar2);\n" +
       "      case 5:\n" +
       "        throw new Exception(\"boom\");\n" +
       "      case 6:\n" +
-      "        break foo;\n" +
+      "        yield foo;\n" +
       "      default:\n" +
-      "        break fun(def);\n" +
+      "        yield fun(def);\n" +
       "    };\n" +
       "    return a;\n" +
       "  }");

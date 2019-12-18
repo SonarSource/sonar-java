@@ -62,11 +62,11 @@ public class JParserTestUtils {
   }
 
   private static CompilationUnitTree parse(String unitName, String source) {
-    return JParser.parse("12", unitName, source, DEFAULT_CLASSPATH);
+    return parse(unitName, source, DEFAULT_CLASSPATH);
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
-    return JParser.parse("12", unitName, source, classpath);
+    return JParser.parse(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, unitName, source, classpath);
   }
 
 }

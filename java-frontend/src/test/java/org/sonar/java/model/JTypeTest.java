@@ -273,7 +273,7 @@ class JTypeTest {
 
   @BeforeEach
   void setup() {
-    ASTParser astParser = ASTParser.newParser(AST.JLS12);
+    ASTParser astParser = ASTParser.newParser(AST.JLS13);
     astParser.setEnvironment(
       new String[]{},
       new String[]{},
