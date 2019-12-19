@@ -192,6 +192,16 @@ public class SyntaxHighlighterVisitorTest {
     assertThatHasNotBeenHighlighted(componentKey, 51, 12, 51, 15); // Object var;
   }
 
+  @Test
+  public void text_block() throws Exception {
+    this.eol = "\n";
+    InputFile inputFile = generateTestFile("src/test/files/highlighter/TextBlock.java");
+    scan(inputFile);
+
+    String componentKey = inputFile.key();
+    assertThatHasBeenHighlighted(componentKey, 3, 12, 5, 5, TypeOfText.STRING);
+  }
+
   private void scan(InputFile inputFile) {
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new JavaCheck[] {syntaxHighlighterVisitor});
     squid.scan(Collections.singletonList(inputFile), Collections.emptyList());
