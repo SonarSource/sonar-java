@@ -112,7 +112,20 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
   private void highlight(Tree from, Tree to, TypeOfText typeOfText) {
     SyntaxToken firstToken = from.firstToken();
     SyntaxToken lastToken = to.lastToken();
-    highlighting.highlight(firstToken.line(), firstToken.column(), lastToken.line(), lastToken.column() + lastToken.text().length(), typeOfText);
+
+    final int endLine;
+    final int endColumn;
+    if (lastToken.text().startsWith("\"\"\"")) {
+      // slow path for Text Blocks
+      String[] lines = lastToken.text().split("\\r\\n|\\n|\\r");
+      endLine = lastToken.line() + lines.length - 1;
+      endColumn = (lines.length == 1 ? lastToken.column() : 0) + lines[lines.length - 1].length();
+    } else {
+      endLine = lastToken.line();
+      endColumn = lastToken.column() + lastToken.text().length();
+    }
+
+    highlighting.highlight(firstToken.line(), firstToken.column(), endLine, endColumn, typeOfText);
   }
 
   @Override
