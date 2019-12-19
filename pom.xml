@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.sonarsource.parent</groupId>
     <artifactId>parent</artifactId>
-    <version>52</version>
+    <version>53</version>
   </parent>
 
   <groupId>org.sonarsource.java</groupId>
@@ -276,18 +276,6 @@
     </pluginManagement>
 
     <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <!-- TODO remove this custom configuration after upgrade of parent POM - see https://jira.sonarsource.com/browse/PARENTOSS-109 -->
-          <includedLicenses>apache_v2|bsd|epl_v1|epl_v2|lgpl_v3|mit</includedLicenses>
-          <licenseMerges combine.children="append">
-            <licenseMerge>epl_v2|Eclipse Public License - v 2.0</licenseMerge>
-          </licenseMerges>
-        </configuration>
-      </plugin>
-
       <plugin>
         <groupId>de.thetaphi</groupId>
         <artifactId>forbiddenapis</artifactId>
