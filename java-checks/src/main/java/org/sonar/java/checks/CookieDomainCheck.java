@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.net.InternetDomainName;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -42,8 +44,15 @@ public class CookieDomainCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree arg = mit.arguments().get(0);
-    String domain = ExpressionsHelper.getConstantValueAsString(arg).value();
-    if (domain != null && !domain.isEmpty() && !domain.substring(1).contains(".")) {
+    String cookieDomain = ExpressionsHelper.getConstantValueAsString(arg).value();
+    if (cookieDomain == null || cookieDomain.isEmpty()) {
+      return;
+    }
+
+    String domainName = cookieDomain.substring(1);
+    if (InternetDomainName.from(domainName).isPublicSuffix()) {
+      reportIssue(arg, MessageFormat.format("Do not set cookies for ''{0}'' as it is a public suffix.", domainName));
+    } else if (!domainName.contains(".")) {
       reportIssue(arg, "Specify at least a second-level cookie domain.");
     }
   }
