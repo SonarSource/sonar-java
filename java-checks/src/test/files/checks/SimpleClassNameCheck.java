@@ -12,6 +12,7 @@ class A {
   foo.bar.A field; // Noncompliant
   ;
   void notWildcardImport() {
+    var r = new java.util.ArrayList<String>(); // Noncompliant
     com.google.common.collect.ImmutableList list;      // Noncompliant
     com.google.common.collect.ImmutableList.Builder<Object> builder =  // Noncompliant [[startColumn=5;endColumn=44]]
       com.google.common.collect.ImmutableList.builder(); // Noncompliant {{Replace this fully qualified name with "ImmutableList"}}

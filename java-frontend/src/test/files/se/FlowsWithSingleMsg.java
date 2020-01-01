@@ -6,13 +6,13 @@ class A {
     return 1 / 0; // Noncompliant
   }
 
-  void ternary(Object r1, Object r2) {
+  void ternary1(Object r1, Object r2) {
     if (!false) { // Noncompliant
 
     }
   }
 
-  void ternary(Object r1, Object r2) {
+  void ternary2(Object r1, Object r2) {
     if (!true) { // Noncompliant
 
     }

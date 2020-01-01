@@ -156,7 +156,7 @@ import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 
 public final class CheckList {
 
-  public static final String REPOSITORY_KEY = "squid";
+  public static final String REPOSITORY_KEY = "java";
 
   private CheckList() {
   }
@@ -322,6 +322,7 @@ public final class CheckList {
       ImmediatelyReturnedVariableCheck.class,
       LambdaSingleExpressionCheck.class,
       LambdaOptionalParenthesisCheck.class,
+      LambdaTooBigCheck.class,
       LambdaTypeParameterCheck.class,
       AnonymousClassShouldBeLambdaCheck.class,
       AbstractClassNoFieldShouldBeInterfaceCheck.class,
@@ -517,7 +518,6 @@ public final class CheckList {
       AtLeastOneConstructorCheck.class,
       CatchExceptionCheck.class,
       VariableDeclarationScopeCheck.class,
-      AnnotationArgumentOrderCheck.class,
       AnnotationDefaultArgumentCheck.class,
       DeadStoreCheck.class,
       DiamondOperatorCheck.class,

@@ -1,6 +1,8 @@
 import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
 import java.io.Serializable;
+import java.util.List;
+import java.util.HashMap;
 
 class A {
   void myMethod(ObjectOutputStream out, Object x, byte[] array) {
@@ -33,11 +35,9 @@ class MyNonSerializable implements Runnable {
 class ParameterizedSerializable<T> implements Serializable {
   
   T t;
-  Unknown u;
-  
+
   private void writeObject(ObjectOutputStream s) throws java.io.IOException {
     s.writeObject(t);
-    s.writeObject(u);
   }
   
 }

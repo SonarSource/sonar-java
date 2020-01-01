@@ -22,6 +22,7 @@ package org.sonar.java.filters;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,6 +33,7 @@ import org.sonar.java.checks.CollectionInappropriateCallsCheck;
 import org.sonar.java.checks.ConstantsShouldBeStaticFinalCheck;
 import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
+import org.sonar.java.checks.FieldModifierCheck;
 import org.sonar.java.checks.PrivateFieldUsedLocallyCheck;
 import org.sonar.java.checks.SillyEqualsCheck;
 import org.sonar.java.checks.UselessImportCheck;
@@ -46,7 +48,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class LombokFilter extends BaseTreeVisitorIssueFilter {
@@ -62,7 +63,8 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     ConstantsShouldBeStaticFinalCheck.class,
     SillyEqualsCheck.class,
     CollectionInappropriateCallsCheck.class,
-    UselessImportCheck.class);
+    UselessImportCheck.class,
+    FieldModifierCheck.class);
 
   private static final String LOMBOK_VAL = "lombok.val";
 
@@ -115,6 +117,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     excludeLinesIfTrue(generatesEquals, tree, EqualsNotOverriddenInSubclassCheck.class, EqualsNotOverridenWithCompareToCheck.class);
     excludeLinesIfTrue(generatesPrivateConstructor(tree), tree, UtilityClassWithPublicConstructorCheck.class);
     excludeLinesIfTrue(usesAnnotation(tree, UTILITY_CLASS), tree, BadFieldNameCheck.class, ConstantsShouldBeStaticFinalCheck.class);
+    excludeLinesIfTrue(usesAnnotation(tree, Collections.singletonList("lombok.Value")), tree, FieldModifierCheck.class);
 
     super.visitClass(tree);
   }
@@ -156,15 +159,9 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
   @Nullable
   private static String getAccessLevelValue(Object value) {
-    if (value instanceof Tree) {
-      Tree tree = (Tree) value;
-      if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-        return ((MemberSelectExpressionTree) tree).identifier().name();
-      } else if (tree.is(Tree.Kind.IDENTIFIER)) {
-        return ((IdentifierTree) tree).name();
-      }
+    if (value instanceof Symbol) {
+      return ((Symbol) value).name();
     }
-    // can not be anything else than a Tree, because we start from the syntax tree
     return null;
   }
 

@@ -1,0 +1,22 @@
+{
+  "title": "Broadcasting intents is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "tags": [
+    "cwe",
+    "android",
+    "owasp-a3"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5320",
+  "sqKey": "S5320",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      927
+    ],
+    "OWASP": [
+      "A3"
+    ]
+  }
+}

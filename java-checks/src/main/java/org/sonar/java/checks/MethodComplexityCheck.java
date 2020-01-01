@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -30,9 +29,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "MethodCyclomaticComplexity")
-@RspecKey("S1541")
+@DeprecatedRuleKey(ruleKey = "MethodCyclomaticComplexity", repositoryKey = "squid")
+@Rule(key = "S1541")
 public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAX = 10;

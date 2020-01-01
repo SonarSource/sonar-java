@@ -20,13 +20,13 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "EmptyFile")
-@RspecKey("S2309")
+@DeprecatedRuleKey(ruleKey = "EmptyFile", repositoryKey = "squid")
+@Rule(key = "S2309")
 public final class EmptyFileCheck implements JavaFileScanner {
 
   @Override

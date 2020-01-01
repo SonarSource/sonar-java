@@ -19,16 +19,12 @@
  */
 package org.sonar.java.model;
 
-import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PackageUtilsTest {
-
-  private static final ActionParser PARSER = JavaParser.createParser();
 
   @Test
   public void no_package_empty_string() {
@@ -55,9 +51,8 @@ public class PackageUtilsTest {
   }
 
   private static String packageName(String code, String separator) {
-    CompilationUnitTree tree = (CompilationUnitTree) PARSER.parse(code);
+    CompilationUnitTree tree = JParserTestUtils.parse(code);
     return PackageUtils.packageName(tree.packageDeclaration(), separator);
   }
-
 
 }

@@ -58,7 +58,7 @@ public class UseSwitchExpressionCheck extends IssuableSubscriptionVisitor implem
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isJava12Compatible();
+    return version.asInt() == 13;
   }
 
   @Override

@@ -37,7 +37,7 @@ public class JavaSonarWayProfileTest {
   public void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
 
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(SonarVersion.SQ_73_RUNTIME);
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
@@ -50,9 +50,9 @@ public class JavaSonarWayProfileTest {
     for (BuiltInQualityProfilesDefinition.BuiltInActiveRule activeRule : activeRules) {
       keys.add(activeRule.ruleKey());
     }
-    //Check that we store active rule with legacy keys, not RSPEC keys
-    assertThat(keys.contains("S116")).isFalse();
-    assertThat(keys).contains("S00116");
+    //We no longer store active rules with legacy keys, only RSPEC keys are used.
+    assertThat(keys.contains("S00116")).isFalse();
+    assertThat(keys).contains("S116");
     assertThat(validation.hasErrors()).isFalse();
 
     // Check that we use severity from the read rule and not default one.
@@ -61,22 +61,12 @@ public class JavaSonarWayProfileTest {
 
   @Test
   public void should_activate_hotspots_when_supported() {
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(SonarVersion.SQ_73_RUNTIME);
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
-    BuiltInQualityProfilesDefinition.BuiltInActiveRule rule = profile.rule(RuleKey.of("squid", "S2092"));
+    BuiltInQualityProfilesDefinition.BuiltInActiveRule rule = profile.rule(RuleKey.of("java", "S2092"));
     assertThat(rule).isNotNull();
-  }
-
-  @Test
-  public void should_not_activate_hotspots_when_not_supported() {
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(SonarVersion.SQ_67_RUNTIME);
-    BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
-    profileDef.define(context);
-    BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
-    BuiltInQualityProfilesDefinition.BuiltInActiveRule rule = profile.rule(RuleKey.of("squid", "S2092"));
-    assertThat(rule).isNull();
   }
 
   @Test
@@ -87,7 +77,7 @@ public class JavaSonarWayProfileTest {
 
     // one security rule available
     JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S3649"));
-    assertThat(JavaSonarWayProfile.getSecurityRuleKeys(true)).containsOnly(RuleKey.of("squid", "S3649"));
+    assertThat(JavaSonarWayProfile.getSecurityRuleKeys(true)).containsOnly(RuleKey.of("java", "S3649"));
     assertThat(JavaSonarWayProfile.getSecurityRuleKeys(false)).containsOnly(RuleKey.of("security-repo-key", "S3649"));
   }
 

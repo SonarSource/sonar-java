@@ -20,6 +20,18 @@ class Child extends Parent {
   }
 }
 
+class Generic<X> {
+  interface E<Y> { }
+
+  static <T> T m() {
+    return null;
+  }
+
+  void test() {
+    M.E<Object> a;  // Compliant
+    Object b = Generic.m(); // Compliant
+  }
+}
 
 class GuavaFP {
   // method is incorrectly resolved as Set.of, specifically excluded in implementation to avoid

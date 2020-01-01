@@ -21,21 +21,34 @@ package org.eclipse.jdt.core.dom;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import javax.annotation.Nullable;
 
 public final class ASTUtils {
 
+  private static final Logger LOG = Loggers.get(ASTUtils.class);
+
   private ASTUtils() {
+  }
+
+  public static void mayTolerateMissingType(AST ast) {
+    ast.getBindingResolver().lookupEnvironment().mayTolerateMissingType = true;
   }
 
   @Nullable
   public static ITypeBinding resolveType(AST ast, String name) {
-    BindingResolver bindingResolver = ast.getBindingResolver();
-    ReferenceBinding referenceBinding = bindingResolver
-      .lookupEnvironment()
-      .getType(CharOperation.splitOn('.', name.toCharArray()));
-    return bindingResolver.getTypeBinding(referenceBinding);
+    try {
+      BindingResolver bindingResolver = ast.getBindingResolver();
+      ReferenceBinding referenceBinding = bindingResolver
+        .lookupEnvironment()
+        .getType(CharOperation.splitOn('.', name.toCharArray()));
+      return bindingResolver.getTypeBinding(referenceBinding);
+    } catch (Exception e) {
+      // exception on ECJ side when trying to resolve a Type, recover on null type
+      LOG.error(String.format("ECJ Unable to resolve type %s", name), e);
+      return null;
+    }
   }
 
 }

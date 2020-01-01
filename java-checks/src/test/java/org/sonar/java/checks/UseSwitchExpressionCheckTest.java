@@ -26,17 +26,18 @@ public class UseSwitchExpressionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UseSwitchExpressionCheck.java", new UseSwitchExpressionCheck(), 12);
+    JavaCheckVerifier.verify("src/test/files/checks/UseSwitchExpressionCheck.java", new UseSwitchExpressionCheck(), 13);
   }
 
   @Test
-  public void test_no_issue_on_java11() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UseSwitchExpressionCheck.java", new UseSwitchExpressionCheck(), 11);
+  public void test_no_issue_below_java_13() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UseSwitchExpressionCheck_java11.java", new UseSwitchExpressionCheck(), 11);
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UseSwitchExpressionCheck_java11.java", new UseSwitchExpressionCheck(), 12);
   }
 
   @Test
   public void test_no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UseSwitchExpressionCheck.java", new UseSwitchExpressionCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UseSwitchExpressionCheck.java", new UseSwitchExpressionCheck(), 13);
   }
 }
 

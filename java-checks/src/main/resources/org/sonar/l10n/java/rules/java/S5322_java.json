@@ -1,0 +1,23 @@
+{
+  "title": "Receiving intents is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "tags": [
+    "cwe",
+    "owasp-a1",
+    "sans-top25-insecure",
+    "android"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5322",
+  "sqKey": "S5322",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      925
+    ],
+    "OWASP": [
+      "A1"
+    ]
+  }
+}

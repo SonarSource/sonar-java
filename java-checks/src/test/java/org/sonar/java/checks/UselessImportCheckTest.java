@@ -26,6 +26,11 @@ public class UselessImportCheckTest {
 
   @Test
   public void detected_with_package() {
+    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/WithinPackage.java", new UselessImportCheck());
+  }
+
+  @Test
+  public void detected_within_package_info() {
     JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/package-info.java", new UselessImportCheck());
   }
 
@@ -41,7 +46,11 @@ public class UselessImportCheckTest {
 
   @Test
   public void with_module() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithModule.java", new UselessImportCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/module/module-info.java", new UselessImportCheck());
   }
 
+  @Test
+  public void intersection_type() {
+    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/IntersectionCase.java", new UselessImportCheck());
+  }
 }

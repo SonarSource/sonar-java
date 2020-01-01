@@ -20,12 +20,12 @@
 package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -51,8 +51,6 @@ import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.Types;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NoWayOutLoopCheck;
@@ -875,11 +873,11 @@ public class ExplodedGraphWalker {
   private void executeTypeCast(TypeCastTree typeCast) {
     Type type = typeCast.type().symbolType();
     if (type.isPrimitive()) {
-      JavaType expType = (JavaType) typeCast.expression().symbolType();
+      Type expType = typeCast.expression().symbolType();
       // create SV to consume factory if any
       SymbolicValue castSV = constraintManager.createSymbolicValue(typeCast);
       // if exp type is a primitive and subtype of cast type, we can reuse the same symbolic value
-      if (!expType.isPrimitive() || !new Types().isSubtype(expType, (JavaType) type)) {
+      if (!expType.isPrimitive() || !(expType == type || expType.isSubtypeOf(type))) {
         ProgramState.Pop unstack = programState.unstackValue(1);
         programState = unstack.state;
         programState = programState.stackValue(castSV);
@@ -1089,7 +1087,9 @@ public class ExplodedGraphWalker {
 
   private static void debugPrint(Object... toPrint) {
     if (DEBUG_MODE_ACTIVATED) {
-      LOG.error(Joiner.on(" - ").join(toPrint));
+      LOG.error(Arrays.stream(toPrint)
+        .map(Object::toString)
+        .collect(Collectors.joining(" - ")));
     }
   }
 

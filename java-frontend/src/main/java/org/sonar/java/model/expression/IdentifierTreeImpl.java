@@ -26,6 +26,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.model.AbstractTypedTree;
@@ -43,7 +44,6 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierTree, JavaTree.AnnotatedTypeTree {
 
   private final InternalSyntaxToken nameToken;
-  private Symbol symbol = Symbols.unknownSymbol;
   private List<AnnotationTree> annotations;
 
   public IBinding binding;
@@ -75,29 +75,24 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
     return identifierToken().text();
   }
 
-  public void setSymbol(Symbol symbol) {
-    this.symbol = symbol;
-  }
-
   @Override
   public Symbol symbol() {
-    if (/* TODO null-check only because some test constructs node without parser  */ root != null && root.useNewSema) {
-      if (binding != null) {
-        switch (binding.getKind()) {
-          case IBinding.TYPE:
-            return root.sema.typeSymbol((ITypeBinding) binding);
-          case IBinding.METHOD:
-            return root.sema.methodSymbol((IMethodBinding) binding);
-          case IBinding.VARIABLE:
-            return root.sema.variableSymbol((IVariableBinding) binding);
-        }
+    if (binding != null) {
+      switch (binding.getKind()) {
+        case IBinding.TYPE:
+          return root.sema.typeSymbol((ITypeBinding) binding);
+        case IBinding.METHOD:
+          return root.sema.methodSymbol((IMethodBinding) binding);
+        case IBinding.VARIABLE:
+          return root.sema.variableSymbol((IVariableBinding) binding);
+        case IBinding.PACKAGE:
+          return root.sema.packageSymbol((IPackageBinding) binding);
       }
-      if (labelSymbol != null) {
-        return labelSymbol;
-      }
-      return Symbols.unknownSymbol;
     }
-    return symbol;
+    if (labelSymbol != null) {
+      return labelSymbol;
+    }
+    return Symbols.unknownSymbol;
   }
 
   @Override

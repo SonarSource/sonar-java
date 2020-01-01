@@ -22,6 +22,7 @@ package org.sonar.java.checks.synchronization;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -32,7 +33,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.Collections;
 import java.util.List;
 
+import static org.sonar.plugins.java.api.tree.Tree.Kind.CLASS;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.ENUM;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD_INVOCATION;
@@ -64,12 +67,33 @@ public class SynchronizationOnGetClassCheck extends IssuableSubscriptionVisitor 
 
   private static boolean isEnclosingClassFinal(ExpressionTree expressionTree) {
     if (expressionTree.is(IDENTIFIER)) {
-      Tree parent = expressionTree.parent();
-      while (!parent.is(METHOD, CONSTRUCTOR)) {
-        parent = parent.parent();
+      MethodTree methodTree = findMethodTreeAncestor(expressionTree);
+      if (methodTree != null) {
+        return methodTree.symbol().owner().isFinal();
+      } else {
+        return findClassTreeAncestor(expressionTree).symbol().isFinal();
       }
-      return ((MethodTree) parent).symbol().owner().isFinal();
     }
     return ((MemberSelectExpressionTree) expressionTree).expression().symbolType().symbol().isFinal();
   }
+
+  private static ClassTree findClassTreeAncestor(ExpressionTree expressionTree) {
+    Tree parent = expressionTree.parent();
+    while (!parent.is(CLASS, ENUM)) {
+      parent = parent.parent();
+    }
+    return (ClassTree) parent;
+  }
+
+  private static MethodTree findMethodTreeAncestor(ExpressionTree expressionTree) {
+    Tree parent = expressionTree.parent();
+    while (parent != null) {
+      if (parent.is(METHOD, CONSTRUCTOR)) {
+        return (MethodTree) parent;
+      }
+      parent = parent.parent();
+    }
+    return null;
+  }
+
 }

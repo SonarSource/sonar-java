@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.sonar.api.SonarRuntime;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.api.utils.AnnotationUtils;
@@ -50,11 +49,6 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
 
   private static final Logger LOG = Loggers.get(JavaSonarWayProfile.class);
 
-  private final SonarRuntime sonarRuntime;
-
-  public JavaSonarWayProfile(SonarRuntime sonarRuntime) {
-    this.sonarRuntime = sonarRuntime;
-  }
 
   @Override
   public void define(Context context) {
@@ -63,27 +57,13 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
     Profile jsonProfile = readProfile();
     Map<String, String> keys = legacyKeys();
     for (String key : jsonProfile.ruleKeys) {
-      if (shouldActivateRule(key)) {
-        sonarWay.activateRule(CheckList.REPOSITORY_KEY, keys.get(key));
-      }
+      sonarWay.activateRule(CheckList.REPOSITORY_KEY, keys.get(key));
     }
 
     getSecurityRuleKeys(isSonarSecurityBefore78()).forEach(key -> sonarWay.activateRule(key.repository(), key.rule()));
 
     sonarWay.done();
   }
-
-  private boolean shouldActivateRule(String ruleKey) {
-    JavaRulesDefinition.RuleMetadata ruleMetadata = JavaRulesDefinition.readRuleMetadata(ruleKey);
-    if (ruleMetadata == null) {
-      return true;
-    }
-    if (!ruleMetadata.isSecurityHotspot()) {
-      return true;
-    }
-    return SecurityHotspots.securityHotspotsSupported(sonarRuntime);
-  }
-
 
   private static Map<String, String> legacyKeys() {
     Map<String, String> result = new HashMap<>();
@@ -101,7 +81,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
   }
 
   static Profile readProfile() {
-    URL resource = JavaSonarWayProfile.class.getResource("/org/sonar/l10n/java/rules/squid/Sonar_way_profile.json");
+    URL resource = JavaSonarWayProfile.class.getResource("/org/sonar/l10n/java/rules/java/Sonar_way_profile.json");
     return new Gson().fromJson(readResource(resource), Profile.class);
   }
 

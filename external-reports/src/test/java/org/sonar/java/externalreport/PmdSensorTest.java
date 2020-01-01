@@ -28,8 +28,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.api.SonarQubeSide;
-import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.fs.internal.DefaultTextPointer;
@@ -40,10 +38,8 @@ import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.ExternalIssue;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 
@@ -55,9 +51,6 @@ public class PmdSensorTest {
 
   private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "pmd");
   private static final String PROJECT_ID = "pmd-test";
-
-  private static final SonarRuntime SQ71 = SonarRuntimeImpl.forSonarQube(Version.create(7, 1), SonarQubeSide.SERVER);
-  private static final SonarRuntime SQ72 = SonarRuntimeImpl.forSonarQube(Version.create(7, 2), SonarQubeSide.SERVER);
 
   private static PmdSensor sensor = new PmdSensor();
 
@@ -99,14 +92,14 @@ public class PmdSensorTest {
 
   @Test
   public void no_report_path_set() throws IOException {
-    List<ExternalIssue> externalIssues = execute(SQ72, null);
+    List<ExternalIssue> externalIssues = execute(null);
     assertThat(externalIssues).isEmpty();
     assertThat(logTester.logs()).isEmpty();
   }
 
   @Test
   public void invalid_report_path() throws IOException {
-    List<ExternalIssue> externalIssues = execute(SQ72, "invalid-path.txt");
+    List<ExternalIssue> externalIssues = execute("invalid-path.txt");
     assertThat(externalIssues).isEmpty();
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.WARN)))
@@ -116,14 +109,14 @@ public class PmdSensorTest {
 
   @Test
   public void not_xml_report() throws IOException {
-    List<ExternalIssue> externalIssues = execute(SQ72, "hello.txt");
+    List<ExternalIssue> externalIssues = execute("hello.txt");
     assertThat(externalIssues).isEmpty();
     assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Failed to import external issues report:");
   }
 
   @Test
   public void skip_issue_on_invalid_priority() throws IOException {
-    List<ExternalIssue> externalIssues = execute(SQ72, "invalid-severity.xml");
+    List<ExternalIssue> externalIssues = execute("invalid-severity.xml");
     assertThat(externalIssues).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.WARN).get(0))
       .contains("Can't import issue at line 8")
@@ -135,7 +128,7 @@ public class PmdSensorTest {
 
   @Test
   public void invalid_text_range() throws IOException {
-    List<ExternalIssue> externalIssues = execute(SQ72, "invalid-text-range.xml");
+    List<ExternalIssue> externalIssues = execute("invalid-text-range.xml");
     assertThat(externalIssues).hasSize(2);
     TextRange secondIssueRange = externalIssues.get(1).primaryLocation().textRange();
     assertThat(secondIssueRange).isNotNull();
@@ -146,16 +139,10 @@ public class PmdSensorTest {
       .contains("invalid-text-range.xml");
   }
 
-  @Test
-  public void no_issues_with_sonarqube_71() throws IOException {
-    List<ExternalIssue> externalIssues = execute(SQ71, "pmd-report.xml");
-    assertThat(externalIssues).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.ERROR)).containsExactly("Import of external issues requires SonarQube 7.2 or greater.");
-  }
 
   @Test
   public void issues() throws IOException {
-    List<ExternalIssue> externalIssues = execute(SQ72, "pmd-report.xml");
+    List<ExternalIssue> externalIssues = execute("pmd-report.xml");
     assertThat(externalIssues).hasSize(3);
 
     ExternalIssue first = externalIssues.get(0);
@@ -193,8 +180,8 @@ public class PmdSensorTest {
     assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly("No input file found for unknown-file.java. No PMD issue will be imported on this file.");
   }
 
-  private List<ExternalIssue> execute(SonarRuntime sonarRuntime, @Nullable String fileName) throws IOException {
-    SensorContextTester context = createContext(PROJECT_DIR, sonarRuntime);
+  private List<ExternalIssue> execute(@Nullable String fileName) throws IOException {
+    SensorContextTester context = createContext(PROJECT_DIR);
     if (fileName != null) {
       String path = PROJECT_DIR.resolve(fileName).toAbsolutePath().toString();
       context.settings().setProperty(PmdSensor.REPORT_PROPERTY_KEY, path);
@@ -203,11 +190,11 @@ public class PmdSensorTest {
     return new ArrayList<>(context.allExternalIssues());
   }
 
-  public static SensorContextTester createContext(Path projectDir, SonarRuntime sonarRuntime) throws IOException {
+  public static SensorContextTester createContext(Path projectDir) throws IOException {
     SensorContextTester context = SensorContextTester.create(projectDir);
     Files.list(projectDir)
+      .filter(Files::isRegularFile)
       .forEach(file -> addFileToContext(context, projectDir, file));
-    context.setRuntime(sonarRuntime);
     return context;
   }
 

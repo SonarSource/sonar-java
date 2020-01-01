@@ -1,0 +1,29 @@
+{
+  "title": "Basic authentication should not be used",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2h"
+  },
+  "tags": [
+    "cwe",
+    "owasp-a6",
+    "sans-top25-porous",
+    "owasp-a3"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2647",
+  "sqKey": "S2647",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      522,
+      311
+    ],
+    "OWASP": [
+      "A6",
+      "A3"
+    ]
+  }
+}

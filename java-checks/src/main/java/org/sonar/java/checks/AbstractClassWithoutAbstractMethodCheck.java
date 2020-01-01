@@ -46,18 +46,18 @@ public class AbstractClassWithoutAbstractMethodCheck extends IssuableSubscriptio
       Collection<Symbol> members = typeSymbol.memberSymbols();
       int nbAbstractMethod = countAbstractMethods(members);
       // don't count this and super as members
-      int nbOfMembers = members.size() - 2;
+      int nbOfMembers = members.size();
       if (hasDefaultConstructor(members)) {
         //remove default constructor from members
         nbOfMembers -=1;
       }
       if (isExtendingObject(classTree) && nbAbstractMethod == nbOfMembers) {
         // emtpy abstract class or only abstract method
-        context.reportIssue(this, classTree.simpleName(), "Convert this \"" + typeSymbol + "\" class to an interface");
+        context.reportIssue(this, classTree.simpleName(), "Convert this \"" + typeSymbol.name() + "\" class to an interface");
       }
       if (nbOfMembers > 0 && nbAbstractMethod == 0 && !isPartialImplementation(classTree)) {
         // Not empty abstract class with no abstract method
-        context.reportIssue(this, classTree.simpleName(), "Convert this \"" + typeSymbol + "\" class to a concrete class with a private constructor");
+        context.reportIssue(this, classTree.simpleName(), "Convert this \"" + typeSymbol.name() + "\" class to a concrete class with a private constructor");
       }
     }
   }

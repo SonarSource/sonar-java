@@ -138,57 +138,6 @@ public class SonarComponents {
     this.context = context;
   }
 
-  /**
-   * DEPRECATED: Use {@link #addIssue(InputComponent, JavaCheck, int, String, Integer)} instead.
-   * As File-based API should not be used anymore, this is deprecated and will be dropped.
-   *
-   * @deprecated since SonarJava 5.12 - dropping usage of file to rely on InputComponent/InputFile
-   */
-  @Deprecated
-  public void addIssue(File file, JavaCheck check, int line, String message, @Nullable Integer cost) {
-    reportIssue(new AnalyzerMessage(check, inputFromIOFileOrDirectory(file), line, message, cost != null ? cost.intValue() : 0));
-  }
-
-  /**
-   * DEPRECATED: Method to retrieve the corresponding IssueComponent from a file.
-   * As File-based API should not be used anymore, this is deprecated and will be dropped.
-   *
-   * @deprecated since SonarJava 5.12 - dropping usage of file to rely on InputComponent/InputFile
-   */
-  @Deprecated
-  @Nullable
-  public InputComponent inputFromIOFileOrDirectory(File file) {
-    if (file.isDirectory()) {
-      // TODO context.module() is deprecated since SQ 7.6, but it can not yet be replaced by
-      // context.project() until the oldest "SQ supported version" is >= 7.6
-      return context != null && isInSubDirectory(fs.baseDir().getAbsoluteFile(), file.getAbsoluteFile()) ? project() : null;
-    }
-    return inputFromIOFile(file);
-  }
-
-  /**
-   * DEPRECATED: As file should not be used anymore, this is deprecated and will be dropped.
-   *
-   * @deprecated since SonarJava 5.12 - dropping usage of file to rely on InputComponent/InputFile
-   */
-  @Deprecated
-  private static boolean isInSubDirectory(File dir, @Nullable File file) {
-    return file != null && (file.equals(dir) || isInSubDirectory(dir, file.getParentFile()));
-  }
-
-  /**
-   * DEPRECATED: As file should not be used anymore, this is deprecated and will be dropped.
-   *
-   * InputFile/InputComponent should always be available in the context of a scan, and so no reason to still rely on File.
-   *
-   * @deprecated since SonarJava 5.12 - dropping usage of file to rely on InputComponent/InputFile
-   */
-  @Deprecated
-  @Nullable
-  public InputFile inputFromIOFile(File file) {
-    return fs.inputFile(fs.predicates().is(file));
-  }
-
   public FileLinesContext fileLinesContextFor(InputFile inputFile) {
     return fileLinesContextFactory.createFor(inputFile);
   }

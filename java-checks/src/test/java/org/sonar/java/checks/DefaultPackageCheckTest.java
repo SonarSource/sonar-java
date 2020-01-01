@@ -36,12 +36,7 @@ public class DefaultPackageCheckTest {
 
   @Test
   public void with_module() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithModule.java", new DefaultPackageCheck());
-  }
-
-  @Test
-  public void test_parsing_error_file() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ParsingError.java", new DefaultPackageCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/module/module-info.java", new DefaultPackageCheck());
   }
 
 }

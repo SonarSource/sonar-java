@@ -20,9 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Iterables;
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -37,12 +38,10 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-import java.util.Collections;
-import java.util.List;
-
-@Rule(key = "IndentationCheck")
-@RspecKey("S1120")
+@DeprecatedRuleKey(ruleKey = "IndentationCheck", repositoryKey = "squid")
+@Rule(key = "S1120")
 public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final int DEFAULT_INDENTATION_LEVEL = 2;

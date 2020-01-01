@@ -19,14 +19,21 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class HardCodedCredentialsCheckTest {
 
+  /**
+   * @see org.sonar.java.checks.eclipsebug.EclipseBugTest#javax_conflict()
+   */
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/HardCodedCredentialsCheck.java", new HardCodedCredentialsCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/HardCodedCredentialsCheck.java",
+      new HardCodedCredentialsCheck(),
+      // FIXME should not requires an empty classpath
+      Collections.emptyList());
   }
 
   @Test

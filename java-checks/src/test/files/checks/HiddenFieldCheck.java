@@ -146,3 +146,8 @@ class Foo {
 public @interface AnnotationType {
  String[] value();
 }
+
+class FieldWithLambda {
+  Object p;
+  java.util.function.Consumer<String> f = p -> { }; // Noncompliant {{Rename "p" which hides the field declared at line 151.}}
+}

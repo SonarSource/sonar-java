@@ -28,8 +28,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
-
-import static org.sonar.java.resolve.BytecodeCompleter.ASM_API_VERSION;
+import org.sonar.java.bytecode.BytecodeHelper;
 
 public class AsmExample {
   enum Flag {
@@ -56,7 +55,7 @@ public class AsmExample {
   }
 
   public static void main(String[] args) throws Exception {
-    ClassVisitor cv = new ClassVisitor(ASM_API_VERSION) {
+    ClassVisitor cv = new ClassVisitor(BytecodeHelper.ASM_API_VERSION) {
       @Override
       public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         System.out.println("CLASS");

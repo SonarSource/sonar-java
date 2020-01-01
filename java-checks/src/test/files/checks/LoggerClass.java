@@ -36,6 +36,10 @@ public class A {
 
 }
 
+class Generic<K, V> {
+  Logger logger = LoggerFactory.getLogger(Generic.class.getName()); // Compliant
+}
+
 class Wrong {
 
 }

@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.JUtils;
@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -44,9 +45,11 @@ import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "UselessImportCheck")
-@RspecKey("S1128")
+@DeprecatedRuleKey(ruleKey = "UselessImportCheck", repositoryKey = "squid")
+@Rule(key = "S1128")
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Map<String, ImportTree> lineByImportReference = new HashMap<>();
@@ -122,18 +125,34 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     } else if (importTree.qualifiedIdentifier().is(Tree.Kind.MEMBER_SELECT)) {
       id = ((MemberSelectExpressionTree) importTree.qualifiedIdentifier()).identifier();
     }
-    if (id != null) {
-      if (context.getSemanticModel() != null) {
-        Symbol symbol = JUtils.importTreeSymbol(importTree);
-        if (symbol != null) {
-          Symbol owner = symbol.owner();
-          // Exclude method symbols : they could be ambiguous or unresolved and lead to FP.
-          if (symbol.isVariableSymbol() && symbol.usages().stream().allMatch(identifierTree -> JUtils.enclosingClass(identifierTree) == owner)) {
-            context.reportIssue(this, importTree, "Remove this unused import '" + importName + "'.");
-          }
+    // 'id' would only be null if we allow empty statement ';' as being an importTree
+    if (id != null && context.getSemanticModel() != null) {
+      Symbol symbol = JUtils.importTreeSymbol(importTree);
+      if (symbol != null) {
+        Symbol owner = symbol.owner();
+        // Exclude method symbols : they could be ambiguous or unresolved and lead to FP.
+        if (symbol.isVariableSymbol() && symbol.usages().stream().allMatch(identifierTree -> enclosingClass(identifierTree) == owner)) {
+          context.reportIssue(this, importTree, "Remove this unused import '" + importName + "'.");
         }
       }
     }
+  }
+
+  @CheckForNull
+  private static Symbol enclosingClass(Tree t) {
+    do {
+      if (t == null || isClassAnnotation(t)) {
+        return null;
+      } else if (t.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
+        return ((ClassTree) t).symbol();
+      }
+      t = t.parent();
+    } while (true);
+  }
+
+  private static boolean isClassAnnotation(Tree t) {
+    return t.is(Tree.Kind.ANNOTATION)
+      && t.parent().parent().is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
   }
 
   private static ExpressionTree getPackageName(CompilationUnitTree cut) {
@@ -166,6 +185,12 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   }
 
   @Override
+  public void visitTypeCast(TypeCastTree tree) {
+    scan(tree.bounds());
+    super.visitTypeCast(tree);
+  }
+
+  @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
     scan(tree.annotations());
     scan(tree.identifier().annotations());
@@ -184,7 +209,9 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     }
     return !currentPackage.isEmpty()
       && (importName.equals(currentPackage)
-          || (reference.startsWith(currentPackage) && reference.charAt(currentPackage.length()) == '.') && reference.indexOf('.', currentPackage.length() + 1) == -1);
+        || (reference.startsWith(currentPackage)
+          && reference.charAt(currentPackage.length()) == '.'
+          && reference.indexOf('.', currentPackage.length() + 1) == -1));
   }
 
   private boolean isDuplicatedImport(String reference) {

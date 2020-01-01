@@ -27,7 +27,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -51,8 +50,10 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
     ExpressionTree expressionTree = mit.arguments().get(0);
     // For now ignore everything that is not a .class expression
     if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
-      Type symbolType = ((MemberSelectExpressionTree) expressionTree).expression().symbolType();
-      if (!symbolType.isUnknown() && isNotRuntimeAnnotation(symbolType)) {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expressionTree;
+      boolean isClassIdentifier = memberSelect.identifier().name().equals("class");
+      Type symbolType = memberSelect.expression().symbolType();
+      if (isClassIdentifier && !symbolType.isUnknown() && isNotRuntimeAnnotation(symbolType)) {
         reportIssue(expressionTree, "\"@" + symbolType.name() + "\" is not available at runtime and cannot be seen with reflection.");
       }
     }
@@ -70,17 +71,9 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
 
   @Nullable
   private static String getRetentionValue(Object value) {
-    String retentionValue = null;
-    if (value instanceof Tree) {
-      Tree tree = (Tree) value;
-      if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-        retentionValue = ((MemberSelectExpressionTree) tree).identifier().name();
-      } else if (tree.is(Tree.Kind.IDENTIFIER)) {
-        retentionValue = ((IdentifierTree) tree).name();
-      }
-    } else if (value instanceof Symbol.VariableSymbol) {
-      retentionValue = ((Symbol.VariableSymbol) value).name();
+    if (value instanceof Symbol.VariableSymbol) {
+      return ((Symbol.VariableSymbol) value).name();
     }
-    return retentionValue;
+    return null;
   }
 }

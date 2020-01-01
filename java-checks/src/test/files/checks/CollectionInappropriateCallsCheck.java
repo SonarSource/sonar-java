@@ -1,5 +1,4 @@
 import com.google.common.collect.Lists;
-
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,6 +7,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class A {
@@ -43,6 +44,12 @@ class A {
     mySetList.contains(unknownMethod()); // Compliant
 
     myUnknownCollection.stream().filter(s -> myASet.contains(s.toString())).collect(Collectors.toSet()); // Compliant
+  }
+
+  void streamLambdaWithRawtypeCollection(String myString, Collection<String> myCol) {
+    ((Collection) myCol).stream().filter(item -> {
+      return myCol.contains(item);
+    });
   }
 
   private static Integer returnOne() {
@@ -138,10 +145,8 @@ class mySet<E> extends AbstractSet<E> {
 class F<T> {
   java.util.Vector<F<String>> vectors;
   Set<Class> set;
-  void f() {
-    F f;
+  void f(F f, Class<?> clazz) {
     vectors.contains(f);
-    Class<?> clazz;
     set.contains(clazz);
   }
 
@@ -178,7 +183,7 @@ class J {
     gul(new J()).remove(new G()); // compliant
   }
 
-  static <K> set<K> gul(K k) {
+  static <K> Set<K> gul(K k) {
     return null;
   }
 }
@@ -188,7 +193,7 @@ class Test {
   public String testSplitArray() {
     badGrades = java.util.Arrays.asList("C", "D", "E");
 
-    List<String> myGrades = Arrays.asList("A,B,A", "A,C,A", "A,D,E");
+    List<String> myGrades = java.util.Arrays.asList("A,B,A", "A,C,A", "A,D,E");
     String test = myGrades.stream().
       map(grade -> unknownMethod()).
       filter(grade -> badGrades.contains(grade)). // compliant, type inference is unable to resolve type of grade because of unknownMethod
@@ -211,5 +216,56 @@ class LombokVal {
   boolean foo(List<String> words) {
     lombok.val y = "Hello World";
     return  words.contains(y); // Noncompliant - FP - handled by lombok filter
+  }
+}
+
+class ClassUsage {
+  boolean example(java.util.Set<? extends Class<?>> s, Class<? extends ClassUsage> c) {
+    return s.contains(c); // Compliant
+  }
+}
+
+class WildcardUsage {
+  static class InPredicate<T> implements Predicate<T> {
+    private Collection<?> target;
+
+    @Override
+    public boolean test(T t) {
+      return target.contains(t); // Compliant
+    }
+  }
+
+  abstract static class EntrySet<K, V> implements Set<Entry<K, V>> {
+    Set<Entry<K, V>> esDelegate;
+
+    @Override
+    public boolean remove(Object object) {
+      Entry<?, ?> entry = (Entry<?, ?>) object;
+      Entry<K, V> e2 = (Entry<K, V>) object;
+      return esDelegate.remove(entry); // Compliant
+    }
+  }
+}
+
+class FlatMapUsage {
+  public void test(Set<Integer> used, List<List<Integer>> allInts) {
+    allInts.stream()
+      .flatMap(List::stream)
+      .filter(i -> !used.contains(i)); // Compliant - list of lists is flattened into a list of integers
+  }
+}
+
+class Animal {}
+class Color {}
+abstract class ColorList implements java.util.List<Color> {}
+abstract class SpecificColorList extends ColorList {}
+
+class TestColorList {
+  void foo(ColorList colors, SpecificColorList specificColors, Color c, Animal a) {
+    colors.remove(c);
+    specificColors.remove(c);
+
+    colors.remove(a); // Noncompliant {{"ColorList" is a "Collection<Color>" which cannot contain a "Animal"}}
+    specificColors.remove(a); // Noncompliant {{"SpecificColorList" is a "Collection<Color>" which cannot contain a "Animal"}}
   }
 }

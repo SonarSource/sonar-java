@@ -1,0 +1,27 @@
+<p>Basic authentication's only means of obfuscation is Base64 encoding. Since Base64 encoding is easily recognized and reversed, it offers only the
+thinnest veil of protection to your users, and should not be used. </p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+// Using HttpPost from Apache HttpClient
+String encoding = Base64Encoder.encode ("login:passwd");
+org.apache.http.client.methods.HttpPost httppost = new HttpPost(url);
+httppost.setHeader("Authorization", "Basic " + encoding);  // Noncompliant
+
+or
+
+// Using HttpURLConnection
+String encoding = Base64.getEncoder().encodeToString(("login:passwd").getBytes(‌"UTF‌​-8"​));
+HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+conn.setRequestMethod("POST");
+conn.setDoOutput(true);
+conn.setRequestProperty("Authorization", "Basic " + encoding); // Noncompliant
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure
+  </li>
+  <li> <a href="https://www.owasp.org/index.php/Basic_Authentication">OWASP Basic Authentication</a> </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/522">MITRE, CWE-522</a> - Insufficiently Protected Credentials </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+</ul>
+

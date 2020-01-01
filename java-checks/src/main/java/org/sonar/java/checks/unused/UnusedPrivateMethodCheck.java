@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -40,9 +39,10 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "UnusedPrivateMethod")
-@RspecKey("S1144")
+@DeprecatedRuleKey(ruleKey = "UnusedPrivateMethod", repositoryKey = "squid")
+@Rule(key = "S1144")
 public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   private final List<MethodTree> unusedPrivateMethods = new ArrayList<>();

@@ -1,0 +1,29 @@
+{
+  "title": "Creating cookies without the \"secure\" flag is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "spring",
+    "sans-top25-porous",
+    "owasp-a3"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-2092",
+  "sqKey": "S2092",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      614,
+      311,
+      315
+    ],
+    "OWASP": [
+      "A3"
+    ]
+  }
+}

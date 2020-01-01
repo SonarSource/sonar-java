@@ -21,14 +21,14 @@ package org.sonar.java.checks.naming;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.java.checks.AbstractBadFieldNameChecker;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00116")
-@RspecKey("S116")
+@DeprecatedRuleKey(ruleKey = "S00116", repositoryKey = "squid")
+@Rule(key = "S116")
 public class BadFieldNameCheck extends AbstractBadFieldNameChecker {
 
   @RuleProperty(

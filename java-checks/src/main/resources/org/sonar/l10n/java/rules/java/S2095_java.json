@@ -1,0 +1,25 @@
+{
+  "title": "Resources should be closed",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "leak",
+    "denial-of-service",
+    "cert"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-2095",
+  "sqKey": "S2095",
+  "scope": "All",
+  "securityStandards": {
+    "CWE": [
+      459,
+      772
+    ]
+  }
+}

@@ -19,30 +19,22 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.sonar.sslr.api.typed.ActionParser;
+import java.util.List;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Collections;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClassTreeImplTest {
-  private final ActionParser p = JavaParser.createParser();
 
-  private CompilationUnitTree createTree(String code) {
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(code);
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
-    return compilationUnitTree;
+  private static CompilationUnitTree createTree(String code) {
+    return JParserTestUtils.parse(code);
   }
 
   @Test

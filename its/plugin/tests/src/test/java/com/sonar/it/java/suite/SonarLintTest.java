@@ -19,7 +19,6 @@
  */
 package com.sonar.it.java.suite;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +29,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -81,13 +79,16 @@ public class SonarLintTest {
       false);
 
     final List<Issue> issues = new ArrayList<>();
-    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of());
+    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
+      .setBaseDir(baseDir.toPath())
+      .addInputFile(inputFile)
+      .build();
     sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("squid:S106", 4, inputFile.getPath(), "MAJOR"),
-      tuple("squid:S1220", null, inputFile.getPath(), "MINOR"),
-      tuple("squid:S1481", 3, inputFile.getPath(), "MINOR"));
+      tuple("java:S106", 4, inputFile.getPath(), "MAJOR"),
+      tuple("java:S1220", null, inputFile.getPath(), "MINOR"),
+      tuple("java:S1481", 3, inputFile.getPath(), "MINOR"));
   }
 
   @Test
@@ -96,7 +97,7 @@ public class SonarLintTest {
       "public class FooTest {\n"
         + "  @org.junit.Test\n"
         + "  @org.junit.Ignore\n"
-        + "  public void testName() throws Exception {\n" // S1607(ignored test) - requires semantic
+        + "  public void testName() throws Exception {\n" // S1607(ignored test)
         + "    Foo foo = new Foo();\n"
         + "    org.assertj.core.api.Assertions.assertThat(foo.isFooActive());\n" // S2970(incomplete assertions) - requires semantic
         + "    java.lang.Thread.sleep(Long.MAX_VALUE);" // S2925(thread.sleep in test)
@@ -111,12 +112,16 @@ public class SonarLintTest {
       true);
 
     final List<Issue> issues = new ArrayList<>();
-    sonarlintEngine.analyze(new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add, null, null);
+    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
+      .setBaseDir(baseDir.toPath())
+      .addInputFile(inputFile)
+      .build();
+    sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      // tuple("squid:S1607", 4, inputFile.getPath(), "MAJOR"),
+      tuple("java:S1607", 4, inputFile.getPath(), "MAJOR"),
       // tuple("squid:S2970", 6, inputFile.getPath(), "BLOCKER"),
-      tuple("squid:S2925", 7, inputFile.getPath(), "MAJOR"));
+      tuple("java:S2925", 7, inputFile.getPath(), "MAJOR"));
   }
 
   @Test
@@ -136,17 +141,21 @@ public class SonarLintTest {
       false);
 
     final List<Issue> issues = new ArrayList<>();
-    sonarlintEngine.analyze(new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add, null, null);
+    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
+      .setBaseDir(baseDir.toPath())
+      .addInputFile(inputFile)
+      .build();
+    sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("squid:S3421", 7, inputFile.getPath(), "MINOR"));
+      tuple("java:S3421", 7, inputFile.getPath(), "MINOR"));
   }
 
   @Test
   public void supportJavaSuppressWarning() throws Exception {
     ClientInputFile inputFile = prepareInputFile("Foo.java",
       "public class Foo {\n"
-        + "  @SuppressWarnings(\"squid:S106\")\n"
+        + "  @SuppressWarnings(\"java:S106\")\n"
         + "  public void foo() {\n"
         + "    int x;\n"
         + "    System.out.println(\"Foo\");\n"
@@ -156,20 +165,26 @@ public class SonarLintTest {
       false);
 
     final List<Issue> issues = new ArrayList<>();
-    sonarlintEngine.analyze(
-      new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add, null, null);
+    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
+      .setBaseDir(baseDir.toPath())
+      .addInputFile(inputFile)
+      .build();
+    sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("squid:S1220", null, inputFile.getPath(), "MINOR"),
-      tuple("squid:S1481", 4, inputFile.getPath(), "MINOR"));
+      tuple("java:S1220", null, inputFile.getPath(), "MINOR"),
+      tuple("java:S1481", 4, inputFile.getPath(), "MINOR"));
   }
 
   @Test
   public void parse_error_should_report_analysis_error() throws Exception {
     ClientInputFile inputFile = prepareInputFile("ParseError.java", "class ParseError {", false);
     final List<Issue> issues = new ArrayList<>();
-    AnalysisResults analysisResults = sonarlintEngine.analyze(
-      new StandaloneAnalysisConfiguration(baseDir.toPath(), temp.newFolder().toPath(), Collections.singletonList(inputFile), ImmutableMap.<String, String>of()), issues::add, null, null);
+    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
+      .setBaseDir(baseDir.toPath())
+      .addInputFile(inputFile)
+      .build();
+    AnalysisResults analysisResults = sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
     assertThat(issues).isEmpty();
     assertThat(analysisResults.failedAnalysisFiles()).hasSize(1);
   }

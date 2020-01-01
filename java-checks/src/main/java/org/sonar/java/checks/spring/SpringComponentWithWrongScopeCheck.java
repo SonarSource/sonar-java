@@ -22,12 +22,10 @@ package org.sonar.java.checks.spring;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationValue;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3750")
@@ -66,8 +64,6 @@ public class SpringComponentWithWrongScopeCheck extends IssuableSubscriptionVisi
         String stringValue = null;
         if (value instanceof String) {
           stringValue = (String) value;
-        } else if (value instanceof LiteralTree) {
-          stringValue = LiteralUtils.trimQuotes(((LiteralTree) value).value());
         }
         if (stringValue != null && !"singleton".equals(stringValue)) {
           return false;

@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
@@ -63,12 +64,12 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
       shouldCheck.push(IS_SERVLET_DO_METHOD.matches((MethodTree) tree));
     } else if (shouldCheck()) {
       if (tree.is(Tree.Kind.TRY_STATEMENT)) {
-        tryCatches.add(getCatchedExceptions(((TryStatementTree) tree).catches()));
+        tryCatches.add(getCaughtExceptions(((TryStatementTree) tree).catches()));
       } else if (tree.is(Tree.Kind.CATCH)) {
         tryCatches.pop();
         tryCatches.add(Collections.emptyList());
       } else if (tree.is(Tree.Kind.THROW_STATEMENT)) {
-        addIssueIfNotCatched(Collections.singletonList(((ThrowStatementTree) tree).expression().symbolType()), tree, "Add a \"try/catch\" block.");
+        addIssueIfNotCaught(((ThrowStatementTree) tree).expression().symbolType(), tree);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         checkMethodInvocation((MethodInvocationTree) tree);
       }
@@ -91,7 +92,7 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
     }
   }
 
-  private static List<Type> getCatchedExceptions(List<CatchTree> catches) {
+  private static List<Type> getCaughtExceptions(List<CatchTree> catches) {
     List<Type> result = new ArrayList<>();
     for (CatchTree element : catches) {
       result.add(element.parameter().type().symbolType());
@@ -104,20 +105,39 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
     if (symbol.isMethodSymbol()) {
       List<Type> types = ((Symbol.MethodSymbol) symbol).thrownTypes();
       if (!types.isEmpty()) {
-        addIssueIfNotCatched(types, ExpressionUtils.methodName(node), "Add a \"try/catch\" block for \"" + symbol.name() + "\".");
+        addIssueIfNotCaught(types, ExpressionUtils.methodName(node), symbol.name());
       }
     }
   }
 
-  private void addIssueIfNotCatched(Iterable<Type> thrown, Tree node, String message) {
+  private void addIssueIfNotCaught(Type thrown, Tree node) {
+    if (isNotCaught(thrown)) {
+      String message = "Handle the " + "\"" + thrown.name() + "\"" + " thrown here in a \"try/catch\" block.";
+      reportIssue(node, message);
+    }
+  }
+
+  private void addIssueIfNotCaught(Iterable<Type> thrown, Tree node, String methodName) {
+    List<Type> uncaughtTypes = new ArrayList<>();
     for (Type type : thrown) {
-      if (isNotcatched(type)) {
-        reportIssue(node, message);
+      if (isNotCaught(type)) {
+        uncaughtTypes.add(type);
       }
+    }
+    if (!uncaughtTypes.isEmpty()) {
+      reportIssue(node, buildMessage(methodName, uncaughtTypes));
     }
   }
 
-  private boolean isNotcatched(Type type) {
+  private static String buildMessage(String methodName, List<Type> uncaughtTypes) {
+    String uncaught = uncaughtTypes.stream().map(Type::name).collect(Collectors.joining(", ")) + ".";
+    return String.format("Handle the following exception%s that could be thrown by \"%s\": %s",
+      (uncaughtTypes.size() == 1 ? "" : "s"),
+      methodName,
+      uncaught);
+  }
+
+  private boolean isNotCaught(Type type) {
     for (List<Type> tryCatch : tryCatches) {
       for (Type tryCatchType : tryCatch) {
         if (type.isSubtypeOf(tryCatchType)) {

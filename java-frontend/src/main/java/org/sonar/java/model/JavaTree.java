@@ -37,7 +37,6 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -168,9 +167,6 @@ public abstract class JavaTree implements Tree {
     private final ModuleDeclarationTree moduleDeclaration;
     private final SyntaxToken eofToken;
     public JSema sema;
-    public boolean useNewSema;
-    @Nullable
-    public SemanticModel oldSema;
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
@@ -181,11 +177,6 @@ public abstract class JavaTree implements Tree {
       this.types = types;
       this.moduleDeclaration = moduleDeclaration;
       this.eofToken = eofToken;
-    }
-
-    @Nullable
-    public Sema sema() {
-      return useNewSema ? sema : oldSema;
     }
 
     @Override
@@ -339,23 +330,17 @@ public abstract class JavaTree implements Tree {
 
     @Nullable
     public Symbol symbol() {
-      if (root.useNewSema) {
-        if (binding != null) {
-          switch (binding.getKind()) {
-            case IBinding.TYPE:
-              return root.sema.typeSymbol((ITypeBinding) binding);
-            case IBinding.METHOD:
-              return root.sema.methodSymbol((IMethodBinding) binding);
-            case IBinding.VARIABLE:
-              return root.sema.variableSymbol((IVariableBinding) binding);
-          }
+      if (binding != null) {
+        switch (binding.getKind()) {
+          case IBinding.TYPE:
+            return root.sema.typeSymbol((ITypeBinding) binding);
+          case IBinding.METHOD:
+            return root.sema.methodSymbol((IMethodBinding) binding);
+          case IBinding.VARIABLE:
+            return root.sema.variableSymbol((IVariableBinding) binding);
         }
-        return null;
       }
-      if (root.oldSema == null) {
-        return null;
-      }
-      return root.oldSema.getSymbol(this);
+      return null;
     }
 
     @Override

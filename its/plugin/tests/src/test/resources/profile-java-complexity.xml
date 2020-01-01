@@ -4,8 +4,8 @@
   <language>java</language>
   <rules>
     <rule>
-      <repositoryKey>squid</repositoryKey>
-      <key>MethodCyclomaticComplexity</key>
+      <repositoryKey>java</repositoryKey>
+      <key>S1541</key>
       <priority>MAJOR</priority>
       <parameters>
         <parameter>

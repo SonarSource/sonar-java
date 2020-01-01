@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -33,6 +34,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -49,12 +51,57 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final boolean equals(Object obj) {
-    return super.equals(obj);
+    if (!(obj instanceof JSymbol)) {
+      return false;
+    }
+    JSymbol other = (JSymbol) obj;
+    if (this.binding.getKind() != other.binding.getKind()) {
+      return false;
+    }
+    switch (this.binding.getKind()) {
+      case IBinding.TYPE:
+        return JType.areEqual(
+          (ITypeBinding) this.binding,
+          (ITypeBinding) other.binding
+        );
+      case IBinding.VARIABLE:
+        return areEqualVariables(
+          this,
+          other
+        );
+      case IBinding.METHOD:
+        return areEqualMethods(
+          this,
+          other
+        );
+      default:
+        return super.equals(obj);
+    }
+  }
+
+  private static boolean areEqualVariables(JSymbol thisVariableSymbol, JSymbol otherVariableSymbol) {
+    IVariableBinding thisBinding = (IVariableBinding) thisVariableSymbol.binding;
+    IVariableBinding otherBinding = (IVariableBinding) otherVariableSymbol.binding;
+    return thisBinding.getVariableId() == otherBinding.getVariableId()
+      && thisVariableSymbol.owner().equals(otherVariableSymbol.owner());
+  }
+
+  private static boolean areEqualMethods(JSymbol thisMethodSymbol, JSymbol otherMethodSymbol) {
+    IMethodBinding thisBinding = (IMethodBinding) thisMethodSymbol.binding;
+    IMethodBinding otherBinding = (IMethodBinding) otherMethodSymbol.binding;
+    return thisMethodSymbol.name().equals(otherMethodSymbol.name())
+      && thisMethodSymbol.owner().equals(otherMethodSymbol.owner())
+      && Arrays.equals(thisBinding.getParameterTypes(), otherBinding.getParameterTypes())
+      && Arrays.equals(thisBinding.getTypeParameters(), otherBinding.getTypeParameters())
+      && Arrays.equals(thisBinding.getTypeArguments(), otherBinding.getTypeArguments());
   }
 
   @Override
   public final int hashCode() {
-    return super.hashCode();
+    Symbol owner = owner();
+    int result = owner == null ? 0 : (owner.hashCode() * 31);
+    result += name().hashCode();
+    return result;
   }
 
   /**
@@ -78,56 +125,75 @@ abstract class JSymbol implements Symbol {
   @Override
   public final Symbol owner() {
     switch (binding.getKind()) {
-      case IBinding.TYPE: {
-        ITypeBinding typeBinding = (ITypeBinding) binding;
-        IMethodBinding declaringMethod = typeBinding.getDeclaringMethod();
-        if (declaringMethod != null) { // local type
-          return sema.methodSymbol(declaringMethod);
-        }
-        ITypeBinding declaringClass = typeBinding.getDeclaringClass();
-        if (declaringClass != null) { // member type
-          return sema.typeSymbol(declaringClass);
-        }
-        // top-level type
-        return sema.packageSymbol(typeBinding.getPackage());
-      }
-      case IBinding.METHOD: {
-        IMethodBinding methodBinding = (IMethodBinding) binding;
-        return sema.typeSymbol(methodBinding.getDeclaringClass());
-      }
-      case IBinding.VARIABLE: {
-        IVariableBinding variableBinding = (IVariableBinding) binding;
-        IMethodBinding declaringMethod = variableBinding.getDeclaringMethod();
-        if (declaringMethod != null) { // local variable
-          return sema.methodSymbol(declaringMethod);
-        }
-        ITypeBinding declaringClass = variableBinding.getDeclaringClass();
-        if (declaringClass != null) { // field
-          return sema.typeSymbol(declaringClass);
-        }
-        Tree node = sema.declarations.get(variableBinding);
-        if (node == null) {
-          // array.length
-          return Symbols.unknownSymbol;
-        }
-        do {
-          node = node.parent();
-          switch (node.kind()) {
-            case CLASS:
-            case ENUM:
-              // variable declaration in a static or instance initializer
-              return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
-            case METHOD:
-            case CONSTRUCTOR:
-              // local variable declaration in recovered method
-              // and recovered methods do not have bindings
-              return Symbols.unknownMethodSymbol;
-          }
-        } while (true);
-      }
+      case IBinding.PACKAGE:
+        return Symbols.rootPackage;
+      case IBinding.TYPE:
+        return typeOwner((ITypeBinding) binding);
+      case IBinding.METHOD:
+        return methodOwner((IMethodBinding) binding);
+      case IBinding.VARIABLE:
+        return variableOwner((IVariableBinding) binding);
       default:
-        throw new IllegalStateException("Kind: " + binding.getKind());
+        throw new IllegalStateException(unexpectedBinding());
     }
+  }
+
+  private String unexpectedBinding() {
+    return "Unexpected binding Kind: " + binding.getKind();
+  }
+
+  private Symbol typeOwner(ITypeBinding typeBinding) {
+    IMethodBinding declaringMethod = typeBinding.getDeclaringMethod();
+    if (declaringMethod != null) {
+      // local type
+      return sema.methodSymbol(declaringMethod);
+    }
+    ITypeBinding declaringClass = typeBinding.getDeclaringClass();
+    if (declaringClass != null) {
+      // member type
+      return sema.typeSymbol(declaringClass);
+    }
+    // top-level type
+    return sema.packageSymbol(typeBinding.getPackage());
+  }
+
+  private Symbol methodOwner(IMethodBinding methodBinding) {
+    return sema.typeSymbol(methodBinding.getDeclaringClass());
+  }
+
+  private Symbol variableOwner(IVariableBinding variableBinding) {
+    IMethodBinding declaringMethod = variableBinding.getDeclaringMethod();
+    if (declaringMethod != null) {
+      // local variable
+      return sema.methodSymbol(declaringMethod);
+    }
+    ITypeBinding declaringClass = variableBinding.getDeclaringClass();
+    if (declaringClass != null) {
+      // field
+      return sema.typeSymbol(declaringClass);
+    }
+    Tree node = sema.declarations.get(variableBinding);
+    if (node == null) {
+      // array.length
+      return Symbols.unknownSymbol;
+    }
+    do {
+      node = node.parent();
+      switch (node.kind()) {
+        case CLASS:
+        case ENUM:
+          // variable declaration in a static or instance initializer
+          return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
+        case METHOD:
+        case CONSTRUCTOR:
+          // local variable declaration in recovered method
+          // and recovered methods do not have bindings
+          return Symbols.unknownMethodSymbol;
+        default:
+          // continue exploring parent
+          break;
+      }
+    } while (true);
   }
 
   @Override
@@ -138,11 +204,12 @@ abstract class JSymbol implements Symbol {
       case IBinding.TYPE:
         return sema.type((ITypeBinding) binding);
       case IBinding.VARIABLE:
-        return sema.type(((IVariableBinding) binding).getType());
+        ITypeBinding variableType = ((IVariableBinding) binding).getType();
+        return variableType != null ? sema.type(variableType) : Symbols.unknownType;
       case IBinding.METHOD:
         return Symbols.unknownType;
       default:
-        throw new IllegalStateException("Kind: " + binding.getKind());
+        throw new IllegalStateException(unexpectedBinding());
     }
   }
 
@@ -153,7 +220,7 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final boolean isTypeSymbol() {
-    return binding.getKind() == IBinding.TYPE;
+    return !isUnknown() && binding.getKind() == IBinding.TYPE;
   }
 
   @Override
@@ -236,10 +303,23 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final SymbolMetadata metadata() {
-    if (binding.getKind() == IBinding.PACKAGE) {
-      return new JSymbolMetadata(sema, sema.resolvePackageAnnotations(binding.getName()));
-    } else {
-      return new JSymbolMetadata(sema, binding.getAnnotations());
+    switch (binding.getKind()) {
+      case IBinding.PACKAGE:
+        return new JSymbolMetadata(sema, sema.resolvePackageAnnotations(binding.getName()));
+      case IBinding.VARIABLE:
+        ITypeBinding type = ((IVariableBinding) binding).getType();
+        return new JSymbolMetadata(
+          sema,
+          type == null ? new IAnnotationBinding[0] : type.getTypeAnnotations(),
+          binding.getAnnotations());
+      case IBinding.METHOD:
+        ITypeBinding returnType = ((IMethodBinding) binding).getReturnType();
+        return new JSymbolMetadata(
+          sema,
+          returnType.getTypeAnnotations(),
+          binding.getAnnotations());
+      default:
+        return new JSymbolMetadata(sema, binding.getAnnotations());
     }
   }
 
@@ -252,60 +332,73 @@ abstract class JSymbol implements Symbol {
     switch (binding.getKind()) {
       case IBinding.PACKAGE:
         return null;
-      case IBinding.TYPE: {
-        ITypeBinding typeBinding = (ITypeBinding) binding;
-        ITypeBinding declaringClass = typeBinding.getDeclaringClass();
-        if (declaringClass != null) { // nested (member or local) type
-          return sema.typeSymbol(declaringClass);
-        }
-        // top-level type
-        return (TypeSymbol) this;
-      }
-      case IBinding.METHOD: {
-        ITypeBinding declaringClass = ((IMethodBinding) binding).getDeclaringClass();
-        return sema.typeSymbol(declaringClass);
-      }
-      case IBinding.VARIABLE: {
-        IVariableBinding variableBinding = (IVariableBinding) this.binding;
-        ITypeBinding declaringClass = variableBinding.getDeclaringClass();
-        if (declaringClass != null) { // field
-          return sema.typeSymbol(declaringClass);
-        }
-        IMethodBinding declaringMethod = variableBinding.getDeclaringMethod();
-        if (declaringMethod != null) { // local variable
-          return sema.typeSymbol(declaringMethod.getDeclaringClass());
-        }
-        Tree node = sema.declarations.get(variableBinding);
-        if (node == null) {
-          // array.length
-          return Symbols.unknownSymbol;
-        }
-        do {
-          node = node.parent();
-          switch (node.kind()) {
-            case CLASS:
-            case ENUM:
-              // variable declaration in a static or instance initializer
-              // or local variable declaration in recovered method
-              return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
-          }
-        } while (true);
-      }
+      case IBinding.TYPE:
+        return typeEnclosingClass((ITypeBinding) binding);
+      case IBinding.METHOD:
+        return methodEnclosingClass((IMethodBinding) binding);
+      case IBinding.VARIABLE:
+        return variableEnclosingClass((IVariableBinding) binding);
       default:
-        throw new IllegalStateException("Kind: " + binding.getKind());
+        throw new IllegalStateException(unexpectedBinding());
     }
+  }
+
+  private TypeSymbol typeEnclosingClass(ITypeBinding typeBinding) {
+    ITypeBinding declaringClass = typeBinding.getDeclaringClass();
+    if (declaringClass != null) {
+      // nested (member or local) type
+      return sema.typeSymbol(declaringClass);
+    }
+    // top-level type
+    return (TypeSymbol) this;
+  }
+
+  private TypeSymbol methodEnclosingClass(IMethodBinding methodBinding) {
+    ITypeBinding declaringClass = methodBinding.getDeclaringClass();
+    return sema.typeSymbol(declaringClass);
+  }
+
+  private TypeSymbol variableEnclosingClass(IVariableBinding variableBinding) {
+    ITypeBinding declaringClass = variableBinding.getDeclaringClass();
+    if (declaringClass != null) {
+      // field
+      return sema.typeSymbol(declaringClass);
+    }
+    IMethodBinding declaringMethod = variableBinding.getDeclaringMethod();
+    if (declaringMethod != null) {
+      // local variable
+      return sema.typeSymbol(declaringMethod.getDeclaringClass());
+    }
+    Tree node = sema.declarations.get(variableBinding);
+    if (node == null) {
+      // array.length
+      return Symbols.unknownTypeSymbol;
+    }
+    do {
+      node = node.parent();
+      switch (node.kind()) {
+        case CLASS:
+        case ENUM:
+          // variable declaration in a static or instance initializer
+          // or local variable declaration in recovered method
+          return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
+        default:
+          // continue exploring parent
+          break;
+      }
+    } while (true);
   }
 
   @Override
   public final List<IdentifierTree> usages() {
-    List<IdentifierTree> usages = sema.usages.get(sema.declarationBinding(binding));
+    List<IdentifierTree> usages = sema.usages.get(JSema.declarationBinding(binding));
     return usages != null ? usages : Collections.emptyList();
   }
 
   @Nullable
   @Override
   public Tree declaration() {
-    return sema.declarations.get(sema.declarationBinding(binding));
+    return sema.declarations.get(JSema.declarationBinding(binding));
   }
 
 }

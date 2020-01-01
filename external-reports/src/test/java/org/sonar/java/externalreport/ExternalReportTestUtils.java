@@ -26,14 +26,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.api.Plugin;
-import org.sonar.api.SonarQubeSide;
-import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.internal.SonarRuntimeImpl;
-import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 
@@ -46,10 +41,6 @@ public final class ExternalReportTestUtils {
     // utility class
   }
 
-  public static Plugin.Context sensorContext(int major, int minor) {
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(major, minor), SonarQubeSide.SERVER);
-    return new Plugin.Context(runtime);
-  }
 
   public static void assertNoErrorWarnDebugLogs(LogTester logTester) {
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
@@ -74,7 +65,7 @@ public final class ExternalReportTestUtils {
     return reportFile;
   }
 
-  public static SensorContextTester createContext(Path projectDir, int majorVersion, int minorVersion) throws IOException {
+  public static SensorContextTester createContext(Path projectDir) throws IOException {
     SensorContextTester context = SensorContextTester.create(projectDir);
 
     try (Stream<Path> pathStream = Files.walk(projectDir)) {
@@ -83,7 +74,6 @@ public final class ExternalReportTestUtils {
         .forEach(path -> addFileToContext(context, projectDir, path));
     }
 
-    context.setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(majorVersion, minorVersion), SonarQubeSide.SERVER));
     return context;
   }
 

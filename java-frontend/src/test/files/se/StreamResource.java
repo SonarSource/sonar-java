@@ -36,8 +36,8 @@ public class StreamResource {
     Arrays.stream(numbers).map(word -> sum + word);
     return sum;
   }
-  
-  private static constantStream(String[] words) {
+
+  private static void constantStream(String[] words) {
     Stream<String> str = Stream.of(words);
     str.count();
   }

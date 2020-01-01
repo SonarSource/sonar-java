@@ -38,7 +38,7 @@ public class App {
     .and()
       .antMatcher("/root2")
         .authorizeRequests()
-          .antMatchers("/level1").permitAll();
+          .antMatchers("/level1").permitAll(); // Noncompliant: TODO investigate
 
     http
       .antMatcher("/root1")

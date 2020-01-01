@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public class JdbcSample {
+class JdbcSample {
   
   public void directClose(String url) {
     DriverManager.getConnection(url).close();
@@ -88,7 +88,7 @@ public class JdbcSample {
   }
 }
 
-public class A {
+class A {
   void foo() {
     PreparedStatement var1 = null;
     PreparedStatement var2 = null;
@@ -134,12 +134,12 @@ class DataSourceTest {
     }
   }
 
-  Connection returnConn(DataSource dataSource) {
+  Connection returnConn1(DataSource dataSource) {
     Connection connection = dataSource.getConnection();
     return connection;
   }
 
-  Connection returnConn(DataSource dataSource) {
+  Connection returnConn2(DataSource dataSource) {
     Connection connection = dataSource.getConnection(); // Noncompliant
     connection.setAutoCommit(false); // throws exception
     return connection;

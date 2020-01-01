@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -28,8 +28,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.Collections;
 import java.util.List;
 
-@Rule(key = "EmptyStatementUsageCheck")
-@RspecKey("S1116")
+@DeprecatedRuleKey(ruleKey = "EmptyStatementUsageCheck", repositoryKey = "squid")
+@Rule(key = "S1116")
 public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {
 
   @Override

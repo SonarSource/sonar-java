@@ -33,7 +33,6 @@ import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.SonarRuntime;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.rules.RuleType;
@@ -42,13 +41,14 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.checks.CheckList;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 /**
  * Definition of rules.
  */
 public class JavaRulesDefinition implements RulesDefinition {
 
-  private static final String RESOURCE_BASE_PATH = "/org/sonar/l10n/java/rules/squid";
+  private static final String RESOURCE_BASE_PATH = "/org/sonar/l10n/java/rules/java";
   private static final Gson GSON = new Gson();
 
   /**
@@ -62,20 +62,17 @@ public class JavaRulesDefinition implements RulesDefinition {
     "S3546",
     "S4011");
   private final boolean isDebugEnabled;
-  private final boolean supportsSecurityHotspots;
 
   /**
    * 'Configuration' does exists yet in SonarLint context, consequently, in standalone mode, this constructor will be used.
    * See {@link https://jira.sonarsource.com/browse/SLCORE-159}
    */
-  public JavaRulesDefinition(SonarRuntime sonarRuntime) {
+  public JavaRulesDefinition() {
     this.isDebugEnabled = false;
-    this.supportsSecurityHotspots = SecurityHotspots.securityHotspotsSupported(sonarRuntime);
   }
 
-  public JavaRulesDefinition(Configuration settings, SonarRuntime sonarRuntime) {
+  public JavaRulesDefinition(Configuration settings) {
     this.isDebugEnabled = settings.getBoolean(Java.DEBUG_RULE_KEY).orElse(false);
-    this.supportsSecurityHotspots = SecurityHotspots.securityHotspotsSupported(sonarRuntime);
   }
 
   @Override
@@ -113,6 +110,13 @@ public class JavaRulesDefinition implements RulesDefinition {
     NewRule rule = repository.rule(ruleKey);
     if (rule == null) {
       throw new IllegalStateException("No rule was created for " + ruleClass + " in " + repository.key());
+    }
+    DeprecatedRuleKey deprecatedRuleKeyAnnotation = AnnotationUtils.getAnnotation(ruleClass, DeprecatedRuleKey.class);
+    if (deprecatedRuleKeyAnnotation != null) {
+      rule.addDeprecatedRuleKey(deprecatedRuleKeyAnnotation.repositoryKey(), deprecatedRuleKeyAnnotation.ruleKey());
+    } else {
+      // Keep link with legacy "squid" repository key
+      rule.addDeprecatedRuleKey("squid", ruleKey);
     }
     String rspecKey = rspecKey(ruleClass, rule);
     RuleMetadata ruleMetadata = readRuleMetadata(rspecKey);
@@ -153,26 +157,21 @@ public class JavaRulesDefinition implements RulesDefinition {
     return null;
   }
 
-  private void addMetadata(NewRule rule, @Nullable RuleMetadata metadata) {
+  private static void addMetadata(NewRule rule, @Nullable RuleMetadata metadata) {
     if (metadata == null) {
       return;
     }
     rule.setSeverity(metadata.defaultSeverity.toUpperCase(Locale.US));
     rule.setName(metadata.title);
     rule.addTags(metadata.tags);
-    if (metadata.isSecurityHotspot() && !supportsSecurityHotspots) {
-      rule.setType(RuleType.VULNERABILITY);
-    } else {
-      rule.setType(RuleType.valueOf(metadata.type));
-    }
+    rule.setType(RuleType.valueOf(metadata.type));
+
     rule.setStatus(RuleStatus.valueOf(metadata.status.toUpperCase(Locale.US)));
     if (metadata.remediation != null) {
       rule.setDebtRemediationFunction(metadata.remediation.remediationFunction(rule.debtRemediationFunctions()));
       rule.setGapDescription(metadata.remediation.linearDesc);
     }
-    if (supportsSecurityHotspots) {
-      addSecurityStandards(rule, metadata.securityStandards);
-    }
+    addSecurityStandards(rule, metadata.securityStandards);
   }
 
   private static void addSecurityStandards(NewRule rule, SecurityStandards securityStandards) {
@@ -221,10 +220,10 @@ public class JavaRulesDefinition implements RulesDefinition {
     String linearFactor;
 
     public DebtRemediationFunction remediationFunction(DebtRemediationFunctions drf) {
-      if(func.startsWith("Constant")) {
+      if (func.startsWith("Constant")) {
         return drf.constantPerIssue(constantCost.replace("mn", "min"));
       }
-      if("Linear".equals(func)) {
+      if ("Linear".equals(func)) {
         return drf.linear(linearFactor.replace("mn", "min"));
       }
       return drf.linearWithOffset(linearFactor.replace("mn", "min"), linearOffset.replace("mn", "min"));

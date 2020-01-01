@@ -77,7 +77,13 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
       && !collectionParameterType.isUnknown()
       && !isCallToParametrizedOrUnknownMethod
       && !isArgumentCompatible(argumentType, collectionParameterType)) {
-      reportIssue(ExpressionUtils.methodName(tree), MessageFormat.format("A \"{0}<{1}>\" cannot contain a \"{2}\"", collectionType, collectionParameterType, argumentType));
+      String message;
+      if (JUtils.isParametrized(collectionType)) {
+        message = "A \"{0}<{1}>\" cannot contain a \"{2}\"";
+      } else {
+        message = "\"{0}\" is a \"Collection<{1}>\" which cannot contain a \"{2}\"";
+      }
+      reportIssue(ExpressionUtils.methodName(tree), MessageFormat.format(message, collectionType, collectionParameterType, argumentType));
     }
   }
 
@@ -100,15 +106,13 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   private static Type getTypeArgument(Type collectionType) {
     if (collectionType.is("java.util.Collection") && JUtils.isParametrized(collectionType)) {
       return JUtils.typeArguments(collectionType).get(0);
-    } else if (JUtils.isParametrized(collectionType)) {
-      return JUtils.directSuperTypes(collectionType)
-        .stream()
-        .map(CollectionInappropriateCallsCheck::getTypeArgument)
-        .filter(Objects::nonNull)
-        .findFirst()
-        .orElse(null);
     }
-    return null;
+    return JUtils.directSuperTypes(collectionType)
+      .stream()
+      .map(CollectionInappropriateCallsCheck::getTypeArgument)
+      .filter(Objects::nonNull)
+      .findFirst()
+      .orElse(null);
   }
 
   private static boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
@@ -118,7 +122,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   }
 
   private static boolean isSubtypeOf(Type type, Type superType) {
-    return type.isSubtypeOf(superType);
+    return type.isSubtypeOf(superType.erasure());
   }
 
   private static boolean autoboxing(Type argumentType, Type collectionParameterType) {

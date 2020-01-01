@@ -19,17 +19,14 @@
  */
 package org.sonar.java.checks.serialization;
 
-import com.google.common.base.Joiner;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -82,7 +79,7 @@ public class SerialVersionUidCheck extends IssuableSubscriptionVisitor {
     }
     VariableTree variableTree = serialVersionUidSymbol.declaration();
     if (variableTree != null && !missingModifiers.isEmpty()) {
-      reportIssue(variableTree.simpleName(), "Make this \"serialVersionUID\" field \"" + Joiner.on(' ').join(missingModifiers) + "\".");
+      reportIssue(variableTree.simpleName(), "Make this \"serialVersionUID\" field \"" + String.join(" ", missingModifiers) + "\".");
     }
   }
 
@@ -129,10 +126,7 @@ public class SerialVersionUidCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isSuppressingEquals(Object object) {
-    if (object instanceof LiteralTree) {
-      LiteralTree literal = (LiteralTree) object;
-      return "serial".equals(LiteralUtils.trimQuotes(literal.value()));
-    } else if (object instanceof Object[]) {
+    if (object instanceof Object[]) {
       return Arrays.stream((Object[]) object)
         .filter(String.class::isInstance)
         .map(String.class::cast)

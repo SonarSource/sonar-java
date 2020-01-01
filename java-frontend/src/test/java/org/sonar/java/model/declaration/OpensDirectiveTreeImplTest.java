@@ -19,12 +19,8 @@
  */
 package org.sonar.java.model.declaration;
 
-import com.sonar.sslr.api.typed.ActionParser;
-
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExportsDirectiveTree;
@@ -38,26 +34,13 @@ import org.sonar.plugins.java.api.tree.RequiresDirectiveTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OpensDirectiveTreeImplTest {
 
-  private final ActionParser<Tree> p = JavaParser.createParser();
-
-  private CompilationUnitTree createTree(String... lines) {
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(Arrays.stream(lines).collect(Collectors.joining("\n")));
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
-    return compilationUnitTree;
-  }
-
-  private OpensDirectiveTree moduleDirective(String exportsDirective) {
-    CompilationUnitTree compilationUnitTree = createTree("module org.foo {\n  " + exportsDirective + "\n}");
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
+  private static OpensDirectiveTree moduleDirective(String exportsDirective) {
+    CompilationUnitTree compilationUnitTree = JParserTestUtils.parseModule("module org.foo {\n  " + exportsDirective + "\n}");
     return (OpensDirectiveTree) compilationUnitTree.moduleDeclaration().moduleDirectives().get(0);
   }
 
@@ -98,7 +81,7 @@ public class OpensDirectiveTreeImplTest {
 
   @Test
   public void test_BaseTreeVisitor() {
-    CompilationUnitTree cut = createTree(
+    CompilationUnitTree cut = JParserTestUtils.parseModule(
       "@org.foo.Bar",
       "open module com.greetings {",
       "  exports foo;",

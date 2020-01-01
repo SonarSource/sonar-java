@@ -20,15 +20,10 @@
 package org.sonar.java.checks;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.ParametrizedTypeJavaType;
-import org.sonar.java.resolve.WildCardType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -85,10 +80,7 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
     if (expressionType.isArray()) {
       return ((Type.ArrayType) expressionType).elementType();
     } else if(expressionType.isClass()) {
-      // FIXME when dropping old semantic, can be replaced by:
-      // return JUtils.superTypes(expressionType.symbol()).stream()...
-      return superTypes(expressionType)
-        .stream()
+      return JUtils.superTypes(expressionType.symbol()).stream()
         .filter(t -> t.is("java.lang.Iterable") && JUtils.isParametrized(t))
         .findFirst()
         .map(iter -> JUtils.typeArguments(iter).get(0))
@@ -97,23 +89,8 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
     return null;
   }
 
-  private static Set<Type> superTypes(Type type) {
-    Set<Type> types = new HashSet<>();
-    for (Type superType : JUtils.directSuperTypes(type)) {
-      types.add(superType);
-      types.addAll(superTypes(superType));
-    }
-    return types;
-  }
-
   private static boolean isMostPreciseType(Type variableType, Type collectionItemType) {
-    if (collectionItemType instanceof WildCardType) {
-      return ((WildCardType) collectionItemType).isSubtypeOfBound((JavaType) variableType);
-    } else if (collectionItemType instanceof ParametrizedTypeJavaType) {
-      return ((ParametrizedTypeJavaType) collectionItemType).erasure().equals(variableType.erasure());
-    } else {
-      return variableType.equals(collectionItemType);
-    }
+    return variableType.erasure().equals(collectionItemType.erasure());
   }
 
   private static class DownCastVisitor extends BaseTreeVisitor {

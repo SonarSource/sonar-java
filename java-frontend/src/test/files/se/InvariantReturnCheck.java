@@ -2,11 +2,11 @@ class A {
   private int foo(boolean a) { // Noncompliant [[flows=issue1]] {{Refactor this method to not always return the same value.}}
     int b = 12;
     if (a) {
-      return b; // flow@issue1 [[order=3]]
+      return b; // flow@issue1 [[order=1]]
     } else if (polop()) {
       return b;  // flow@issue1 [[order=2]]
     }
-    return b; // flow@issue1 [[order=1]]
+    return b; // flow@issue1 [[order=3]]
   }
 
   private int foo2(boolean a) {
@@ -70,8 +70,8 @@ class A {
     return new ArrayList<String>();
   }
 
-  java.util.Map<String> f() {
-    java.util.Map<String> foo = new java.util.HashMap<String>();
+  java.util.Map<String,String> g() {
+    java.util.Map<String,String> foo = new java.util.HashMap<String,String>();
     if (bool) {
       return foo;
     }

@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,8 +61,10 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    Set<Type> superTypes = JUtils.superTypes(classTree.symbol());
     List<Type> superInterfacesTypes = getTypes(superInterfaces);
+    List<Type> superTypes = new ArrayList<>(JUtils.superTypes(classTree.symbol()));
+    superTypes.sort(new SuperTypeComparator(superInterfacesTypes));
+
     Set<String> reportedNames = new HashSet<>();
     for (TypeTree superInterface : superInterfaces) {
       String superInterfaceName = extractInterfaceName(superInterface);
@@ -99,7 +102,7 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
     return types;
   }
 
-  private void checkRedundancy(TypeTree currentInterface, List<Type> superInterfacesTypes, Set<Type> superTypes) {
+  private void checkRedundancy(TypeTree currentInterface, List<Type> superInterfacesTypes, List<Type> superTypes) {
     Type interfaceType = currentInterface.symbolType();
     for (Type superType : superTypes) {
       TypeSymbol superTypeSymbol = superType.symbol();
@@ -122,6 +125,37 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
       return extractInterfaceName(mset.expression()) + "." + mset.identifier().name();
     } else {
       return extractInterfaceName(((ParameterizedTypeTree) interfaceTree).type());
+    }
+  }
+
+  /**
+   * Sort super types according to their declaration order in the list of interfaces
+   */
+  private static class SuperTypeComparator implements Comparator<Type> {
+
+    private final List<Type> declaredSuperInterfaces;
+
+    SuperTypeComparator(List<Type> declaredSuperInterfaces) {
+      this.declaredSuperInterfaces = declaredSuperInterfaces;
+    }
+
+    @Override
+    public int compare(Type t1, Type t2) {
+      int indexT1 = declaredSuperInterfaces.indexOf(t1);
+      int indexT2 = declaredSuperInterfaces.indexOf(t2);
+      if (indexT1 != -1 && indexT2 != -1) {
+        return Integer.compare(indexT1, indexT2);
+      }
+      if (indexT1 != -1) {
+        // t1 should be placed before
+        return -1;
+      }
+      if (indexT2 != -1) {
+        // t2 should be placed before
+        return +1;
+      }
+      // sort by name if none of t1 and t2 is present in declaration list
+      return t1.name().compareTo(t2.name());
     }
   }
 }

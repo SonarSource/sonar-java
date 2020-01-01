@@ -74,19 +74,6 @@ public interface JavaFileScannerContext {
   void addIssue(int line, JavaCheck check, String message, @Nullable Integer cost);
 
   /**
-   * Report an issue at a specific line of a given file.
-   * This method is used for one
-   * @param file File on which to report
-   * @param check The check raising the issue.
-   * @param line line on which to report the issue
-   * @param message Message to display to the user
-   * @deprecated since SonarJava 5.12: Adding issues using {@link File} is deprecated. Use corresponding
-   * '{@link #reportIssue(JavaCheck, Tree, String)}' methods, or add issues at project level {@link #addIssueOnProject(JavaCheck, String)}
-   */
-  @Deprecated
-  void addIssue(File file, JavaCheck check, int line, String message);
-
-  /**
    * Get semantic analysis.
    * @return SemanticModel if semantic analysis was successful, null otherwise.
    */
@@ -95,19 +82,12 @@ public interface JavaFileScannerContext {
 
   /**
    * FileKey of currently analyzed file.
+   *
    * @return the fileKey of the file currently analyzed.
-   * @deprecated since SonarJava 5.12: Rely on the InputFile key instead, using {@link #getInputFile()}
+   * @deprecated since SonarJava 5.12: Rely on the InputFile key instead, using {@link #getInputFile()}.
    */
   @Deprecated
   String getFileKey();
-
-  /**
-   * File under analysis.
-   * @return the currently analyzed file.
-   * @deprecated since SonarJava 5.12: Using {@link File} is deprecated. Use {@link #getInputFile()} or {@link #getProject()} instead
-   */
-  @Deprecated
-  File getFile();
 
   /**
    * InputFile under analysis.

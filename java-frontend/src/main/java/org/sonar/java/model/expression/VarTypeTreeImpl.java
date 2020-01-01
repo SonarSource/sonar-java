@@ -21,21 +21,26 @@ package org.sonar.java.model.expression;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VarTypeTree;
 
-public class VarTypeTreeImpl extends AbstractTypedTree implements VarTypeTree {
+public class VarTypeTreeImpl extends AbstractTypedTree implements VarTypeTree, JavaTree.AnnotatedTypeTree {
 
   private final InternalSyntaxToken varToken;
+
+  private List<AnnotationTree> annotations;
 
   public VarTypeTreeImpl(InternalSyntaxToken varToken) {
     super(Tree.Kind.VAR_TYPE);
     this.varToken = varToken;
+    this.annotations =  Collections.emptyList();
   }
 
   @Override
@@ -60,7 +65,12 @@ public class VarTypeTreeImpl extends AbstractTypedTree implements VarTypeTree {
 
   @Override
   public List<AnnotationTree> annotations() {
-    return Collections.emptyList();
+    return annotations;
+  }
+
+  @Override
+  public void complete(List<AnnotationTree> annotations) {
+    this.annotations =  Objects.requireNonNull(annotations);
   }
 
 }

@@ -19,25 +19,31 @@
  */
 package org.sonar.java.model;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
+import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.MethodReferenceTreeImpl;
@@ -49,8 +55,11 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -59,15 +68,9 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -104,6 +107,9 @@ class JParserSemanticTest {
     assertThat(leftOperand.typeBinding).isSameAs(e.typeBinding);
   }
 
+  /**
+   * @see org.eclipse.jdt.core.dom.SimpleName
+   */
   @Test
   void expression_simple_name() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { int f; Object m() { return f; } }");
@@ -113,6 +119,48 @@ class JParserSemanticTest {
     IdentifierTreeImpl i = (IdentifierTreeImpl) s.expression();
     assertThat(i.binding).isNotNull();
     assertThat(cu.sema.usages.get(i.binding)).containsOnly(i);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.QualifiedName
+   */
+  @Test
+  void expression_qualified_name() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return java.lang.System.out; } }");
+
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) m.block().body().get(0);
+    MemberSelectExpressionTreeImpl javaLangSystemOut = (MemberSelectExpressionTreeImpl) s.expression();
+
+    MemberSelectExpressionTreeImpl javaLangSystem = (MemberSelectExpressionTreeImpl) javaLangSystemOut.expression();
+    assertThat(javaLangSystem.typeBinding).isNotNull();
+    assertThat(cu.sema.type(javaLangSystem.typeBinding).is("java.lang.System"))
+      .isEqualTo(javaLangSystem.symbolType().is("java.lang.System"))
+      .isTrue();
+
+    MemberSelectExpressionTreeImpl javaLang = (MemberSelectExpressionTreeImpl) javaLangSystem.expression();
+    assertThat(javaLang.typeBinding).isNull();
+
+    IdentifierTreeImpl java = (IdentifierTreeImpl) javaLang.expression();
+    assertThat(java.typeBinding).isNull();
+    assertThat(java.binding).isNotNull();
+    assertThat(java.binding.getKind() == IBinding.PACKAGE).isTrue();
+    assertThat(java.symbol().isPackageSymbol()).isTrue();
+
+    IdentifierTreeImpl lang = (IdentifierTreeImpl) javaLang.identifier();
+    assertThat(lang.typeBinding).isNull();
+    assertThat(lang.binding).isNotNull();
+    assertThat(lang.binding.getKind() == IBinding.PACKAGE).isTrue();
+    assertThat(lang.symbol().isPackageSymbol()).isTrue();
+
+    IdentifierTreeImpl system = (IdentifierTreeImpl) javaLangSystem.identifier();
+    assertThat(system.binding).isNotNull();
+    assertThat(system.binding).isEqualTo(system.typeBinding);
+    assertThat(system.binding.getKind() == IBinding.TYPE).isTrue();
+    assertThat(cu.sema.type(system.typeBinding).is("java.lang.System"))
+      .isEqualTo(system.symbolType().is("java.lang.System"))
+      .isTrue();
   }
 
   /**
@@ -307,9 +355,10 @@ class JParserSemanticTest {
    */
   @Test
   void expression_anonymous_class_instance_creation() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return new Object() { }; } }");
-    ClassTree c = (ClassTree) cu.types().get(0);
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return new C() { }; } protected C(){} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTree m = (MethodTree) c.members().get(0);
+    MethodTreeImpl constructor = (MethodTreeImpl) c.members().get(1);
     ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
     NewClassTreeImpl e = (NewClassTreeImpl) s.expression();
     ClassTreeImpl b = (ClassTreeImpl) e.classBody();
@@ -317,6 +366,15 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(b.typeBinding))
       .isSameAs(b.symbol().declaration())
       .isSameAs(b);
+
+    IdentifierTreeImpl identifier = (IdentifierTreeImpl) e.getConstructorIdentifier();
+    assertThat(identifier.binding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) identifier.symbol().declaration()).methodBinding)
+      .isSameAs(constructor.methodBinding);
+    assertThat(cu.sema.usages.get(constructor.methodBinding))
+      .containsOnlyElementsOf(constructor.symbol().usages())
+      .containsOnly(identifier);
   }
 
   /**
@@ -441,6 +499,25 @@ class JParserSemanticTest {
   }
 
   /**
+   * @see org.eclipse.jdt.core.dom.MethodInvocation
+   */
+  @Test
+  void expression_method_invocation_recovery() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return m(42); } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl method = (MethodTreeImpl) c.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(method.block()).body().get(0);
+    MethodInvocationTreeImpl methodInvocation = Objects.requireNonNull((MethodInvocationTreeImpl) s.expression());
+    assertThat(methodInvocation.methodBinding)
+      .isNull();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) methodInvocation.methodSelect();
+    assertThat(i.binding)
+      .isNull();
+    assertThat(cu.sema.usages.get(Objects.requireNonNull(method.methodBinding)))
+      .isNull();
+  }
+
+  /**
    * @see org.eclipse.jdt.core.dom.SuperMethodInvocation
    */
   @Test
@@ -479,6 +556,29 @@ class JParserSemanticTest {
    * @see org.eclipse.jdt.core.dom.SuperMethodInvocation
    */
   @Test
+  void expression_super_method_invocation_recovery() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { Object m() { return super.m(42); } } class S { Object m() { return null; } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
+    MethodTreeImpl superClassMethod = (MethodTreeImpl) superClass.members().get(0);
+    ReturnStatementTree s = (ReturnStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+
+    MethodInvocationTreeImpl superMethodInvocation = (MethodInvocationTreeImpl) Objects.requireNonNull(s.expression());
+    assertThat(superMethodInvocation.methodBinding)
+      .isNull();
+    MemberSelectExpressionTreeImpl e = (MemberSelectExpressionTreeImpl) superMethodInvocation.methodSelect();
+    IdentifierTreeImpl i = (IdentifierTreeImpl) e.identifier();
+    assertThat(i.binding)
+      .isNull();
+    assertThat(cu.sema.usages.get(Objects.requireNonNull(superClassMethod.methodBinding)))
+      .isNull();
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.SuperMethodInvocation
+   */
+  @Test
   void expression_super_method_invocation_qualified() {
     JavaTree.CompilationUnitTreeImpl cu = test("class T extends S { class C { Object m() { return T.super.m(); } } } class S { Object m() { return null; } }");
     ClassTreeImpl t = (ClassTreeImpl) cu.types().get(0);
@@ -508,7 +608,7 @@ class JParserSemanticTest {
 
     KeywordSuper keywordSuper = (KeywordSuper) qualifiedSuper.identifier();
     assertThat(keywordSuper.resolveType().symbol().declaration())
-      .isSameAs((ClassTreeImpl) qualifiedSuper.symbolType().symbol().declaration())
+      .isSameAs(qualifiedSuper.symbolType().symbol().declaration())
       .isSameAs(superClass);
     assertThat(keywordSuper.resolveSymbol())
       .isSameAs(cu.sema.typeSymbol(t.typeBinding).superSymbol);
@@ -520,6 +620,113 @@ class JParserSemanticTest {
     assertThat(cu.sema.usages.get(identifier.binding))
       .containsOnlyElementsOf(superMethodInvocation.symbol().usages())
       .containsOnly(identifier);
+  }
+
+  @Test
+  void expression_super_method_invocation_interface() {
+    String source = "interface MyIterable<T> extends Iterable<T> {\n" +
+      "  @Override\n" +
+      "  default void forEach(java.util.function.Consumer<? super T> action) {\n" +
+      "    Iterable.super.forEach(action);\n" +
+      "  }\n" +
+      "}";
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl forEach = (MethodTreeImpl) c.members().get(0);
+    ExpressionStatementTreeImpl e = (ExpressionStatementTreeImpl) forEach.block().body().get(0);
+    MethodInvocationTreeImpl m = (MethodInvocationTreeImpl) e.expression();
+    MemberSelectExpressionTreeImpl iterable_super_forEach = (MemberSelectExpressionTreeImpl) m.methodSelect();
+    MemberSelectExpressionTreeImpl iterable_super = (MemberSelectExpressionTreeImpl) iterable_super_forEach.expression();
+    IdentifierTreeImpl super_keyword = (IdentifierTreeImpl) iterable_super.identifier();
+
+    assertThat(super_keyword.typeBinding).isNotNull();
+    assertThat(super_keyword.symbolType().fullyQualifiedName()).isEqualTo("java.lang.Iterable");
+  }
+
+  @Test
+  void expression_lambda() {
+    String source = "package org.foo;\n" +
+      "class A {\n" +
+      "  java.util.function.Consumer<String> f = p -> { };\n" +
+      "}";
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    VariableTreeImpl f = (VariableTreeImpl) c.members().get(0);
+    LambdaExpressionTreeImpl lambda = (LambdaExpressionTreeImpl) f.initializer();
+    VariableTreeImpl p = (VariableTreeImpl) lambda.parameters().get(0);
+
+    // owner of lambda parameter is the method which defines the functional interface
+    Symbol newSymbol = cu.sema.variableSymbol(p.variableBinding);
+    assertThat(newSymbol.declaration().firstToken().line()).isEqualTo(3);
+    Symbol newOwner = newSymbol.owner();
+    assertThat(newOwner).isNotNull();
+    assertThat(newOwner.isMethodSymbol()).isTrue();
+    assertThat(newOwner.isTypeSymbol()).isFalse();
+    assertThat(newOwner.name()).isEqualTo("accept");
+    assertThat(newOwner.owner().type().fullyQualifiedName()).isEqualTo("java.util.function.Consumer");
+  }
+
+  @Test
+  void expression_nested_lambda() {
+    String source = "class A {\n" +
+      "  void m() {\n" +
+      "    java.util.function.Function<Integer, java.util.function.Supplier<Integer>> v =\n" +
+      "      p1 -> {\n" +
+      "        return () -> 42;\n" +
+      "      };\n" +
+      "  }\n" +
+      "}";
+
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) m.block().body().get(0);
+    LambdaExpressionTreeImpl l1 = (LambdaExpressionTreeImpl) v.initializer();
+
+    BlockTreeImpl body = (BlockTreeImpl) l1.body();
+    ReturnStatementTreeImpl r = (ReturnStatementTreeImpl) body.body().get(0);
+    LambdaExpressionTreeImpl l2 = (LambdaExpressionTreeImpl) r.expression();
+
+    assertThat(l2.typeBinding).isNotNull();
+    assertThat(cu.sema.type(l2.typeBinding).is("java.util.function.Supplier")).isTrue();
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.ConditionalExpression
+   */
+  @Test
+  void conditional_expression() {
+    String source = "class A {\n" +
+      "  void foo(Class<? extends java.io.Serializable>[] arr1, Class<?>[] arr2, boolean b) {\n" +
+      "    Class<?>[] t = b ? arr1 : arr2;\n" +
+      "  }\n" +
+      "}";
+
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl a = (VariableTreeImpl) m.block().body().get(0);
+    ConditionalExpressionTreeImpl cond = (ConditionalExpressionTreeImpl) a.initializer();
+    IdentifierTreeImpl c1 = (IdentifierTreeImpl) cond.trueExpression();
+    IdentifierTreeImpl c2 = (IdentifierTreeImpl) cond.falseExpression();
+
+    assertThat(cond.typeBinding).isNotNull();
+    JType tcond = cu.sema.type(cond.typeBinding);
+    assertThat(tcond.is("java.lang.Class[]")).isTrue();
+
+    assertThat(c1.typeBinding).isNotNull();
+    JType tc1 = cu.sema.type(c1.typeBinding);
+    assertThat(tc1.is("java.lang.Class[]")).isTrue();
+
+    assertThat(c2.typeBinding).isNotNull();
+    JType tc2 = cu.sema.type(c2.typeBinding);
+    assertThat(tc2.is("java.lang.Class[]")).isTrue();
+
+    assertThat(tc2)
+      .isNotEqualTo(tc1)
+      .isEqualTo(tcond);
   }
 
   /**
@@ -552,6 +759,29 @@ class JParserSemanticTest {
   }
 
   /**
+   * @see org.eclipse.jdt.core.dom.ConstructorInvocation
+   */
+  @Test
+  void statement_constructor_invocation_recovery() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { C() { this(42); } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ExpressionStatementTree s = (ExpressionStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+
+    MethodInvocationTreeImpl constructorInvocation = (MethodInvocationTreeImpl) s.expression();
+    assertThat(constructorInvocation.methodBinding)
+      .isNull();
+    assertThat(constructorInvocation.typeBinding)
+      .isNotNull()
+      .isSameAs(c.typeBinding);
+    IdentifierTreeImpl i = (IdentifierTreeImpl) constructorInvocation.methodSelect();
+    assertThat(i.binding)
+      .isNull();
+    assertThat(cu.sema.usages.get(Objects.requireNonNull(m.methodBinding)))
+      .isNull();
+  }
+
+  /**
    * @see org.eclipse.jdt.core.dom.SuperConstructorInvocation
    */
   @Test
@@ -579,6 +809,31 @@ class JParserSemanticTest {
     assertThat(cu.sema.usages.get(i.binding))
       .containsOnlyElementsOf(superClassConstructor.symbol().usages())
       .containsOnly(i);
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.SuperConstructorInvocation
+   */
+  @Test
+  void statement_super_constructor_invocation_recovery() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { C() { super(42); } } class S { S() { } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ClassTreeImpl superClass = (ClassTreeImpl) cu.types().get(1);
+    MethodTreeImpl superClassConstructor = (MethodTreeImpl) superClass.members().get(0);
+    ExpressionStatementTree s = (ExpressionStatementTree) Objects.requireNonNull(m.block()).body().get(0);
+
+    MethodInvocationTreeImpl superConstructorInvocation = (MethodInvocationTreeImpl) s.expression();
+    assertThat(superConstructorInvocation.methodBinding)
+      .isNull();
+    assertThat(superConstructorInvocation.typeBinding)
+      .isNotNull()
+      .isSameAs(superClass.typeBinding);
+    IdentifierTreeImpl i = (IdentifierTreeImpl) superConstructorInvocation.methodSelect();
+    assertThat(i.binding)
+      .isNull();
+    assertThat(cu.sema.usages.get(Objects.requireNonNull(superClassConstructor.methodBinding)))
+      .isNull();
   }
 
   @Test
@@ -616,7 +871,6 @@ class JParserSemanticTest {
     assertThat(i.binding)
       .isNotNull();
     assertThat(cu.sema.typeSymbol((ITypeBinding) i.binding).usages())
-      .containsExactlyElementsOf(cu.oldSema.getSymbol(i).usages())
       .isEmpty();
   }
 
@@ -629,8 +883,6 @@ class JParserSemanticTest {
 
     TypeParameterTreeImpl typeParameter = (TypeParameterTreeImpl) c.typeParameters().get(0);
     assertThat(typeParameter.typeBinding)
-      .isNotNull();
-    assertThat(cu.oldSema.getSymbol(typeParameter))
       .isNotNull();
   }
 
@@ -685,8 +937,9 @@ class JParserSemanticTest {
    */
   @Test
   void declaration_enum_constant_anonymous() {
-    JavaTree.CompilationUnitTreeImpl cu = test("enum E { C { } }");
+    JavaTree.CompilationUnitTreeImpl cu = test("enum E { C { }; E(){} }");
     ClassTree e = (ClassTree) cu.types().get(0);
+    MethodTreeImpl constructor = (MethodTreeImpl) e.members().get(1);
     VariableTreeImpl c = (VariableTreeImpl) e.members().get(0);
     assertThat(c.variableBinding).isNotNull();
     assertThat(cu.sema.declarations.get(c.variableBinding))
@@ -699,6 +952,15 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(enumConstantBody.typeBinding))
       .isSameAs(enumConstantBody.symbol().declaration())
       .isSameAs(enumConstantBody);
+
+    IdentifierTreeImpl identifier = (IdentifierTreeImpl) initializer.getConstructorIdentifier();
+    assertThat(identifier.binding)
+      .isNotNull()
+      .isSameAs(Objects.requireNonNull((MethodTreeImpl) identifier.symbol().declaration()).methodBinding)
+      .isSameAs(constructor.methodBinding);
+    assertThat(cu.sema.usages.get(constructor.methodBinding))
+      .containsOnlyElementsOf(constructor.symbol().usages())
+      .containsOnly(identifier);
   }
 
   @Test
@@ -733,6 +995,56 @@ class JParserSemanticTest {
     assertThat(cu.sema.methodSymbol(methodInvocation.methodBinding).usages())
       .containsExactlyElementsOf(methodInvocation.symbol().usages())
       .containsOnly(i);
+  }
+
+  @Test
+  void declaration_method_parameterized_recovered() {
+    String source = "class D<E> {\n" +
+      "  private java.util.Collection<UnknownClass.Entry<E>> samples() {\n" +
+      "    return null;\n" +
+      "  }\n" +
+      "}";
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+
+    assertThat(m.methodBinding).isNull();
+    MethodSymbol recovered = m.symbol();
+    assertThat(recovered.isUnknown()).isTrue();
+
+    assertThat(recovered.isTypeSymbol()).isFalse();
+    assertThat(recovered.isVariableSymbol()).isFalse();
+    assertThat(recovered.isMethodSymbol()).isFalse();
+    assertThat(recovered.isPackageSymbol()).isFalse();
+
+    assertThat(recovered.isAbstract()).isFalse();
+    assertThat(recovered.isDeprecated()).isFalse();
+    assertThat(recovered.isEnum()).isFalse();
+    assertThat(recovered.isFinal()).isFalse();
+    assertThat(recovered.isInterface()).isFalse();
+    assertThat(recovered.isPackageVisibility()).isFalse();
+    assertThat(recovered.isPrivate()).isFalse();
+    assertThat(recovered.isProtected()).isFalse();
+    assertThat(recovered.isPublic()).isFalse();
+    assertThat(recovered.isStatic()).isFalse();
+    assertThat(recovered.isVolatile()).isFalse();
+
+    assertThat(recovered.owner()).isNotNull();
+    assertThat(recovered.owner().isUnknown()).isTrue();
+    assertThat(recovered.enclosingClass()).isNotNull();
+    assertThat(recovered.enclosingClass().isUnknown()).isTrue();
+    assertThat(recovered.returnType()).isNotNull();
+    assertThat(recovered.returnType().isUnknown()).isTrue();
+
+    assertThat(recovered.type().isUnknown()).isTrue();
+    assertThat(recovered.declaration()).isNull();
+    assertThat(recovered.overriddenSymbol()).isNull();
+    assertThat(recovered.parameterTypes()).isEmpty();
+    assertThat(recovered.thrownTypes()).isEmpty();
+
+    SymbolMetadata metadata = recovered.metadata();
+    assertThat(metadata).isNotNull();
+    assertThat(metadata.annotations()).isEmpty();
   }
 
   @Test
@@ -847,6 +1159,37 @@ class JParserSemanticTest {
   }
 
   @Test
+  void type_try_with_resource() {
+    {
+      // closeable is unknown but recognized as closeable
+      CompilationUnitTree cu = test("class C { void m(UnknownCloseable p) { try (UnknownCloseable f = p) { } } }");
+      ClassTree c = (ClassTree) cu.types().get(0);
+      MethodTree m = (MethodTree) c.members().get(0);
+      TryStatementTree s = (TryStatementTree) m.block().body().get(0);
+      VariableTreeImpl v = (VariableTreeImpl) s.resourceList().get(0);
+      AbstractTypedTree t = (AbstractTypedTree) v.type();
+      assertThat(t.typeBinding).isNotNull();
+      JType t2 = (JType) v.symbol().type();
+      assertThat(t2).isNotNull();
+      assertThat(t2.isUnknown()).isTrue();
+      assertThat(t2.typeBinding).isNotNull();
+    }
+    {
+      // C not recognized as closeable
+      CompilationUnitTree cu = test("class C { void m(C p) { try (C f = p) { } } }");
+      ClassTree c = (ClassTree) cu.types().get(0);
+      MethodTree m = (MethodTree) c.members().get(0);
+      TryStatementTree s = (TryStatementTree) m.block().body().get(0);
+      VariableTreeImpl v = (VariableTreeImpl) s.resourceList().get(0);
+      AbstractTypedTree t = (AbstractTypedTree) v.type();
+      assertThat(t.typeBinding).isNotNull();
+      Type type = v.symbol().type();
+      assertThat(type).isNotNull();
+      assertThat(type.isUnknown()).isTrue();
+    }
+  }
+
+  @Test
   void type_union() {
     CompilationUnitTree cu = test("class C { void m() { try { } catch (E1 | E2 v) { } } }");
     ClassTree c = (ClassTree) cu.types().get(0);
@@ -892,6 +1235,48 @@ class JParserSemanticTest {
     AbstractTypedTree t = (AbstractTypedTree) v.type();
     assertThat(t.typeBinding).isNotNull();
     assertThat(t.typeBinding.getDimensions()).isEqualTo(2);
+  }
+
+  @Test
+  void symbol_unknown() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class A implements UnknownInterface { }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    IdentifierTreeImpl i = (IdentifierTreeImpl) c.superInterfaces().get(0);
+    Symbol s = cu.sema.typeSymbol(Objects.requireNonNull((ITypeBinding) i.binding));
+    assertThat(s.isUnknown())
+      .isEqualTo(i.symbol().isUnknown())
+      .isTrue();
+    assertThat(s.isTypeSymbol())
+      .isEqualTo(i.symbol().isTypeSymbol())
+      .isFalse();
+  }
+
+  @Test
+  void annotation_on_type() {
+    JavaTree.CompilationUnitTreeImpl cu = test("interface I { void m(@Annotation Object p); }" +
+      " @java.lang.annotation.Target({java.lang.annotation.ElementType.TYPE_USE}) @interface Annotation { }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl parameter = (VariableTreeImpl) m.parameters().get(0);
+    assertThat(cu.sema.variableSymbol(parameter.variableBinding).metadata().annotations().size())
+      .isEqualTo(parameter.symbol().metadata().annotations().size())
+      .isEqualTo(1);
+    assertThat(JUtils.parameterAnnotations(cu.sema.methodSymbol(Objects.requireNonNull(m.methodBinding)), 0).annotations().size())
+      .isEqualTo(JUtils.parameterAnnotations(m.symbol(), 0).annotations().size())
+      .isEqualTo(1);
+  }
+
+  @Test
+  void annotation_on_var_type_local_variable() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() { @Annotation var v = 42; } }" +
+      " @java.lang.annotation.Target({java.lang.annotation.ElementType.LOCAL_VARIABLE}) @interface Annotation { }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl variable = (VariableTreeImpl) m.block().body().get(0);
+
+    List<SymbolMetadata.AnnotationInstance> annotations = variable.symbol().metadata().annotations();
+    assertThat(annotations).hasSize(1);
+    assertThat(annotations.get(0).symbol().name()).isEqualTo("Annotation");
   }
 
   /**
@@ -977,7 +1362,6 @@ class JParserSemanticTest {
         .isSameAs(i1.labelSymbol.declaration)
         .isSameAs(l1);
       assertThat(l1.labelSymbol.usages())
-        // .containsExactlyElementsOf(l1.symbol().usages()) // TODO Broken old implementation...
         .containsOnly(i1);
 
       ExpressionStatementTreeImpl e = (ExpressionStatementTreeImpl) block.body().get(0);
@@ -996,12 +1380,36 @@ class JParserSemanticTest {
         .isSameAs(i2.labelSymbol.declaration)
         .isSameAs(l2);
       assertThat(l2.labelSymbol.usages())
-        // .containsExactlyElementsOf(l2.symbol().usages()) // TODO Broken old implementation...
         .containsOnly(i2);
     }
   }
 
-  private ExpressionTree expression(String expression) {
+  @Test
+  public void constructor_with_type_arguments() {
+    String source =
+      "class MyClass {\n" +
+        "  <T extends I> MyClass(T t) {}\n" +
+        "  <T extends J & I> MyClass(T t) {}\n" +
+        "  void foo(B b, C c) {\n" +
+        "    new<B>MyClass((I) b);\n" +
+        "    new<C>MyClass(c);\n" +
+        "  }\n" +
+        "}\n" +
+        "interface I {}\n" +
+        "interface J {}\n" +
+        "class B implements I {}\n" +
+        "class C implements I, J {}\n";
+
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree firstConstructor = (MethodTree) c.members().get(0);
+    MethodTree secondConstructor = (MethodTree) c.members().get(1);
+
+    assertThat(firstConstructor.symbol().usages()).hasSize(1);
+    assertThat(secondConstructor.symbol().usages()).hasSize(1);
+  }
+
+  private static ExpressionTree expression(String expression) {
     CompilationUnitTree cu = test("class C { Object m() { return " + expression + " ; } }");
     ClassTree c = (ClassTree) cu.types().get(0);
     MethodTree m = (MethodTree) c.members().get(0);
@@ -1009,11 +1417,8 @@ class JParserSemanticTest {
     return Objects.requireNonNull(s.expression());
   }
 
-  private JavaTree.CompilationUnitTreeImpl test(String source) {
-    List<File> classpath = Collections.emptyList();
-    JavaTree.CompilationUnitTreeImpl t = (JavaTree.CompilationUnitTreeImpl) JParser.parse("12", "File.java", source, true, classpath);
-    t.oldSema = SemanticModel.createFor(t, new SquidClassLoader(classpath));
-    return t;
+  private static JavaTree.CompilationUnitTreeImpl test(String source) {
+    return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }
 
   @Test
@@ -1026,14 +1431,19 @@ class JParserSemanticTest {
     Block block = (Block) s.statements().get(1);
     BreakStatement breakStatement = (BreakStatement) block.statements().get(0);
     assertThat(breakStatement.getLength())
-      .isZero();
+      .isEqualTo(2);
 
-    test(source);
+    CompilationUnitTree compilationUnit = test(source);
+    ClassTree cls = (ClassTree) compilationUnit.types().get(0);
+    MethodTree method = (MethodTree) cls.members().get(0);
+    SwitchStatementTree switchStatement = (SwitchStatementTree) Objects.requireNonNull(method.block()).body().get(0);
+    BlockTree blockStatement = (BlockTree) switchStatement.cases().get(0).body().get(0);
+    assertThat(blockStatement.body()).isEmpty();
   }
 
   private CompilationUnit createAST(String source) {
-    String version = "12";
-    ASTParser astParser = ASTParser.newParser(AST.JLS12);
+    String version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    ASTParser astParser = ASTParser.newParser(AST.JLS13);
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_COMPLIANCE, version);
     options.put(JavaCore.COMPILER_SOURCE, version);
@@ -1052,4 +1462,52 @@ class JParserSemanticTest {
     return (CompilationUnit) astParser.createAST(null);
   }
 
+  @Test
+  void super_constructor_external_inner_class() {
+    final String source = "class C {\n" +
+      "    class InnerC {\n" +
+      "        InnerC(int i) {}\n" +
+      "    }\n" +
+      "}\n" +
+      "\n" +
+      "class B {\n" +
+      "    class InnerB extends C.InnerC {\n" +
+      "        InnerB(C c, int i) {\n" +
+      "            c.super(i);\n" +
+      "        }\n" +
+      "    }\n" +
+      "}";
+
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTree c = (ClassTree) cu.types().get(0);
+    ClassTree innerC = (ClassTree) c.members().get(0);
+    MethodTree innerConstructor = (MethodTree) innerC.members().get(0);
+    assertThat(innerConstructor.symbol().usages()).hasSize(1);
+  }
+
+  @Test
+  void inner_class_depending_on_outer_class_parametrized_type() {
+    final String source =
+      "class X<T> {\n" +
+      "  InnerClass innerClass;\n" +
+      "  class InnerClass {\n" +
+      "    T method() {\n" +
+      "      return null;\n" +
+      "    }\n" +
+      "  }\n" +
+      "  static void test() {\n" +
+      "    new X<Y>().innerClass.method().method1();\n" +
+      "  }\n" +
+      "}" +
+      "class Y {\n" +
+      "  void method1() {\n" +
+      "  }\n" +
+      "}";
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTree classX = (ClassTree) cu.types().get(0);
+    MethodTreeImpl method = (MethodTreeImpl) ((ClassTree) classX.members().get(1)).members().get(0);
+    MethodTreeImpl method1 = ((MethodTreeImpl) ((ClassTree) cu.types().get(1)).members().get(0));
+    assertThat(method1.symbol().usages()).hasSize(1);
+    assertThat(method.symbol().usages()).hasSize(1);
+  }
 }

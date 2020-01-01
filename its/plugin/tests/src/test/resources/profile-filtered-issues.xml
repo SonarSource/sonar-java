@@ -4,13 +4,13 @@
   <language>java</language>
   <rules>
     <rule>
-      <repositoryKey>squid</repositoryKey>
+      <repositoryKey>java</repositoryKey>
       <key>S1444</key>
       <priority>MAJOR</priority>
     </rule>
     <rule>
-      <repositoryKey>squid</repositoryKey>
-      <key>ClassVariableVisibilityCheck</key>
+      <repositoryKey>java</repositoryKey>
+      <key>S1104</key>
       <priority>MAJOR</priority>
     </rule>
   </rules>

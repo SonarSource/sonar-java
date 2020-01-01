@@ -24,7 +24,6 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SynchronizationOnGetClassCheckTest {
 
-
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/SynchronizationOnGetClassCheck.java", new SynchronizationOnGetClassCheck());

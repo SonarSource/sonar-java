@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -35,9 +34,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "MaximumInheritanceDepth")
-@RspecKey("S110")
+@DeprecatedRuleKey(ruleKey = "MaximumInheritanceDepth", repositoryKey = "squid")
+@Rule(key = "S110")
 public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final int DEFAULT_MAX = 5;

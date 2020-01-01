@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -55,7 +56,7 @@ public class ConstantTest {
           Object value = null;
           Symbol symbol = variableTree.symbol();
           if (symbol.isVariableSymbol()) {
-            value = ((JavaSymbol.VariableJavaSymbol) symbol).constantValue().orElse(null);
+            value = JUtils.constantValue((Symbol.VariableSymbol) symbol).orElse(null);
           }
           valuesByFieldName.put(variableTree.simpleName().name(), value);
         }
@@ -66,6 +67,24 @@ public class ConstantTest {
     assertThat(valuesByFieldName.get("nonFinal")).isNull();
     assertThat(valuesByFieldName.get("BOOLEAN_TRUE")).isEqualTo(true);
     assertThat(valuesByFieldName.get("BOOLEAN_FALSE")).isEqualTo(false);
+
+    // See Java 13 Virtual Machine Specification 4.7.2:
+    // constant values of short, char and byte types are stored in bytecode as CONSTANT_Integer
+    assertThat(valuesByFieldName.get("INT"))
+      .isInstanceOf(Integer.class);
+    assertThat(valuesByFieldName.get("SHORT"))
+      .isInstanceOf(Integer.class);
+    assertThat(valuesByFieldName.get("CHAR"))
+      .isInstanceOf(Integer.class);
+    assertThat(valuesByFieldName.get("BYTE"))
+      .isInstanceOf(Integer.class);
+
+    assertThat(valuesByFieldName.get("FLOAT"))
+      .isInstanceOf(Float.class);
+    assertThat(valuesByFieldName.get("LONG"))
+      .isInstanceOf(Long.class);
+    assertThat(valuesByFieldName.get("DOUBLE"))
+      .isInstanceOf(Double.class);
   }
 
 }

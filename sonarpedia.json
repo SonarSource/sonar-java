@@ -1,9 +1,9 @@
 {
-  "rules-metadata-path": "./java-checks/src/main/resources/org/sonar/l10n/java/rules/squid",
+  "rules-metadata-path": "./java-checks/src/main/resources/org/sonar/l10n/java/rules/java",
   "languages": [
     "JAVA"
   ],
-  "latest-update": "2019-07-31T16:20:35.128984Z",
+  "latest-update": "2019-12-19T16:47:35.128984Z",
   "options": {
     "no-language-in-filenames": false,
     "preserve-filenames": false

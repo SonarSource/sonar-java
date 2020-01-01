@@ -62,14 +62,16 @@ public final class JSema implements Sema {
   }
 
   public JType type(ITypeBinding typeBinding) {
+    typeBinding = JType.normalize(typeBinding);
     return types.computeIfAbsent(typeBinding, k -> new JType(this, k));
   }
 
-  JPackageSymbol packageSymbol(IPackageBinding packageBinding) {
+  public JPackageSymbol packageSymbol(IPackageBinding packageBinding) {
     return (JPackageSymbol) symbols.computeIfAbsent(packageBinding, k -> new JPackageSymbol(this, (IPackageBinding) k));
   }
 
   public JTypeSymbol typeSymbol(ITypeBinding typeBinding) {
+    typeBinding = JType.normalize(typeBinding);
     return (JTypeSymbol) symbols.computeIfAbsent(typeBinding, k -> new JTypeSymbol(this, (ITypeBinding) k));
   }
 
@@ -85,7 +87,7 @@ public final class JSema implements Sema {
     return annotations.computeIfAbsent(annotationBinding, k -> new JSymbolMetadata.JAnnotationInstance(this, k));
   }
 
-  IBinding declarationBinding(IBinding binding) {
+  static IBinding declarationBinding(IBinding binding) {
     switch (binding.getKind()) {
       case IBinding.TYPE:
         return ((ITypeBinding) binding).getTypeDeclaration();
@@ -146,6 +148,7 @@ public final class JSema implements Sema {
       }
 
       IBinaryType type = answer.getBinaryType();
+      // FIXME can be null in case of wrong package resolution?
       IBinaryAnnotation[] binaryAnnotations = type.getAnnotations();
       AnnotationBinding[] binaryInstances =
         BinaryTypeBinding.createAnnotations(binaryAnnotations, lookupEnvironment, type.getMissingTypeNames());

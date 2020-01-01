@@ -1,0 +1,71 @@
+<p>Expanding archive files is security-sensitive. For example, expanding archive files has led in the past to the following vulnerabilities:</p>
+<ul>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1263">CVE-2018-1263</a> </li>
+  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16131">CVE-2018-16131</a> </li>
+</ul>
+<p>Applications that expand archive files (zip, tar, jar, war, 7z, ...) should verify the path where the archive's files are expanded and not trust
+blindly the content of the archive. Archive's files should not be expanded outside of the root directory where the archive is supposed to be expanded.
+Also, applications should control the size of the expanded data to not be a victim of Zip Bomb attack. Failure to do so could allow an attacker to use
+a specially crafted archive that holds directory traversal paths (e.g. ../../attacker.sh) or the attacker could overload the file system, processors
+or memory of the operating system where the archive is expanded making the target OS completely unusable.</p>
+<p>This rule raises an issue when code handle archives. The goal is to guide security code reviews.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> there is no validation of the name of the archive entry </li>
+  <li> there is no validation of the effective path where the archive entry is going to be expanded </li>
+  <li> there is no validation of the size of the expanded archive entry </li>
+  <li> there is no validation of the ratio between the compressed and uncompressed archive entry </li>
+</ul>
+<p>You are at risk if you answered yes to any of those questions.</p>
+<p> </p>
+<h2>Recommended Secure Coding Practices</h2>
+<ul>
+  <li> Validate the full path of the extracted file against the full path of the directory where files are uncompressed.
+    <ul>
+      <li> the canonical path of the uncompressed file must start with the canonical path of the directory where files are extracted. </li>
+      <li> the name of the archive entry must not contain "..", i.e. reference to a parent directory. </li>
+    </ul> </li>
+</ul>
+<pre>
+String canonicalDirPath = outputDir.getCanonicalPath();
+String canonicalDestPath = targetFile.getCanonicalPath();
+
+if (!canonicalDestPath.startsWith(canonicalDirPath + File.separator)) { // Sanitizer
+  throw new ArchiverException("Entry is trying to leave the target dir: " + zipEntry.getName());
+}
+</pre>
+<ul>
+  <li> Stop extracting the archive if any of its entries has been tainted with a directory traversal path. </li>
+  <li> Define and control the ratio between compressed and uncompress bytes. </li>
+  <li> Define and control the maximum allowed uncompressed file size. </li>
+  <li> Count the number of file entries extracted from the archive and abort the extraction if their number is greater than a predefined threshold.
+  </li>
+</ul>
+<h2>Sensitive Code Example</h2>
+<pre>
+java.util.zip.ZipFile zipFile = new ZipFile(zipFileName);
+
+Enumeration&lt;? extends ZipEntry&gt; entries = zipFile.entries();
+while (entries.hasMoreElements()) {
+  ZipEntry e = entries.nextElement(); // Sensitive
+  File f = new File(outputDir, e.getName());
+  InputStream input = zipFile.getInputStream(e);
+  extractFile(new ZipInputStream(input), outputDir, e.getName());
+}
+</pre>
+<h2>Exceptions</h2>
+<p>This rule doesn't raise an issue when a ZipEntry or a ArchiveEntry:</p>
+<ul>
+  <li> is declared as a class field </li>
+  <li> is a parameter of an abstract method of an <code>interface</code> or <code>abstract</code> class </li>
+</ul>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control">OWASP Top 10 2017 Category A5</a> - Broken Access Control </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/409.html">MITRE, CWE-409</a> - Improper Handling of Highly Compressed Data (Data Amplification)
+  </li>
+  <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/IDS04-J.+Safely+extract+files+from+ZipInputStream">CERT, IDS04-J.</a> - Safely
+  extract files from ZipInputStream </li>
+  <li> Snyk Research Team: <a href="https://snyk.io/research/zip-slip-vulnerability">Zip Slip Vulnerability</a> </li>
+</ul>
+

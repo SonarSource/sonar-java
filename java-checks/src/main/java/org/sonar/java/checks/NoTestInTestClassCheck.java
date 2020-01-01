@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -34,9 +33,7 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -91,7 +88,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkTestNGmembers(IdentifierTree className, Stream<Symbol.MethodSymbol> members) {
-    if (members.noneMatch(member -> member.isPublic() && !member.isStatic() && member.returnType() != null)) {
+    if (members.noneMatch(member -> member.isPublic() && !member.isStatic() && !"<init>".equals(member.name()))) {
       reportClass(className);
     }
   }
@@ -122,20 +119,15 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbol.metadata().valuesForAnnotation("org.junit.runner.RunWith");
     if (annotationValues != null && annotationValues.size() == 1) {
       Object value = annotationValues.get(0).value();
-      if (value instanceof Symbol.TypeSymbol) {
-        Symbol.TypeSymbol runnerParam = (Symbol.TypeSymbol) value;
-        for (String runnerClass : runnerClasses) {
-          if (runnerClass.equals(runnerParam.name())) {
-            return true;
-          }
-        }
-      } else if (value instanceof MemberSelectExpressionTree) {
-        String runnerParam = ExpressionsHelper.concatenate((ExpressionTree) value);
-        for (String runnerClass : runnerClasses) {
-          if (runnerParam.endsWith(runnerClass + ".class")) {
-            return true;
-          }
-        }
+      return value instanceof Symbol.TypeSymbol && checkRunWithType((Symbol.TypeSymbol) value, runnerClasses);
+    }
+    return false;
+  }
+
+  private static boolean checkRunWithType(Symbol.TypeSymbol value, String... runnerClasses) {
+    for (String runnerClass : runnerClasses) {
+      if (runnerClass.equals(value.name())) {
+        return true;
       }
     }
     return false;

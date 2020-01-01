@@ -33,7 +33,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -97,6 +96,10 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
       if(symbol.isUnknown()) {
         unknownInvocations.put(ExpressionUtils.methodName(tree).name(), tree);
       } else if (isPrivateMethodOfOuterClass(symbol)) {
+        if (JUtils.isParametrizedMethod((Symbol.MethodSymbol) symbol) && symbol.declaration() != null) {
+          // generic methods requires to use their declaration symbol rather than the parameterized one
+          symbol = ((Symbol.MethodSymbol) symbol).declaration().symbol();
+        }
         usages.add(symbol);
       }
       super.visitMethodInvocation(tree);
@@ -113,6 +116,7 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
           boolean matchArity = unknownInvocations.get(methodUsed.name())
             .stream()
             .anyMatch(mit -> hasSameArity((Symbol.MethodSymbol) methodUsed, mit));
+
           // if an unknown method has same name and same arity, do not report, likely a FP.
           if (!matchArity && methodUsed.usages().size() == innerClassUsages.count(methodUsed)) {
             reportIssueOnMethod((MethodTree) methodUsed.declaration(), usageByInnerClassEntry.getKey());

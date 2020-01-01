@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="3.1.12" sequence="0" timestamp="1574157431759" analysisTimestamp="1574157431824" release="unspecified">
+  <Project projectName="root project &apos;jj&apos; (main)">
+    <SrcDir>${PROJECT_DIR}src/main/java</SrcDir>
+    <SrcDir>${PROJECT_DIR}src/main/java/org/myapp/App.java</SrcDir>
+    <Plugin id="com.h3xstream.findsecbugs" enabled="true"/>
+    <Plugin id="com.mebigfatguy.fbcontrib" enabled="true"/>
+  </Project>
+  <BugInstance type="ABC_ARRAY_BASED_COLLECTIONS" priority="2" rank="7" abbrev="ABC" category="CORRECTNESS">
+    <ShortMessage>Method uses array as basis of collection</ShortMessage>
+    <LongMessage>Method org.myapp.App.getGreeting(int[]) uses array as basis of collection</LongMessage>
+    <Class classname="org.myapp.App">
+      <SourceLine classname="org.myapp.App" start="9" end="15" sourcefile="App.java" sourcepath="org/myapp/App.java"/>
+    </Class>
+    <Method classname="org.myapp.App" name="getGreeting" signature="([I)Ljava/lang/String;" isStatic="false">
+      <SourceLine classname="org.myapp.App" start="14" end="15" startBytecode="0" endBytecode="69" sourcefile="App.java" sourcepath="org/myapp/App.java"/>
+    </Method>
+    <SourceLine classname="org.myapp.App" start="14" end="14" startBytecode="5" endBytecode="5" sourcefile="App.java" sourcepath="org/myapp/App.java"/>
+  </BugInstance>
+</BugCollection>

@@ -19,18 +19,13 @@
  */
 package org.sonar.java.model;
 
-import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -47,14 +42,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LiteralUtilsTest {
 
-  private final ActionParser<Tree> p = JavaParser.createParser();
-
   static List<VariableTree> variables;
 
   @BeforeClass
   public static void setUp() {
     File file = new File("src/test/java/org/sonar/java/model/LiteralUtilsTest.java");
-    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser().parse(file);
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
     ClassTree classTree = (ClassTree) tree.types().get(0);
     variables = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.VARIABLE))
@@ -259,8 +252,7 @@ public class LiteralUtilsTest {
   }
 
   private ClassTree getClassTree(String code) {
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse("class A { " + code + "}");
-    SemanticModel.createFor(compilationUnitTree, new SquidClassLoader(Collections.emptyList()));
+    CompilationUnitTree compilationUnitTree = JParserTestUtils.parse("class A { " + code + "}");
     return (ClassTree) compilationUnitTree.types().get(0);
   }
 }

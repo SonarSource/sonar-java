@@ -24,15 +24,15 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 import org.sonarsource.analyzer.recognizers.CodeRecognizer;
 
-@Rule(key = "CommentedOutCodeLine")
-@RspecKey("S125")
+@DeprecatedRuleKey(ruleKey = "CommentedOutCodeLine", repositoryKey = "squid")
+@Rule(key = "S125")
 public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 
   private static final double THRESHOLD = 0.9;

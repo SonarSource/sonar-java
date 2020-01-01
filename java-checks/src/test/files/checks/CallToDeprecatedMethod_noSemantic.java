@@ -1,4 +1,3 @@
-package java.lang;
 class CallToDeprecatedMethod {
 
   public CallToDeprecatedMethod() {

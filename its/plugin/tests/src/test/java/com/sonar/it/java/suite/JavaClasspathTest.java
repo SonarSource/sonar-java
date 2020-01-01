@@ -101,6 +101,7 @@ public class JavaClasspathTest {
     assertThat(getNumberOfViolations(projectKey)).isEqualTo(1);
   }
 
+  @org.junit.Ignore("new semantic analysis does not use aar files")
   @Test
   public void should_use_aar_library() {
     SonarScanner scanner = aarProjectSonarScanner();

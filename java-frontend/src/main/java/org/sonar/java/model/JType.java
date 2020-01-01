@@ -20,10 +20,11 @@
 package org.sonar.java.model;
 
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
+import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Objects;
 
 final class JType implements Type, Type.ArrayType {
@@ -55,6 +56,9 @@ final class JType implements Type, Type.ArrayType {
   }
 
   private static boolean isSubtype(ITypeBinding left, ITypeBinding right) {
+    if (left.isRecovered()) {
+      return false;
+    }
     if (left.isNullType()) {
       return !right.isPrimitive();
     }
@@ -123,10 +127,17 @@ final class JType implements Type, Type.ArrayType {
       return typeBinding.getName();
     } else if (typeBinding.isArray()) {
       return fullyQualifiedName(typeBinding.getComponentType()) + "[]";
+    } else if (typeBinding.isCapture()) {
+      return "!capture!";
     } else if (typeBinding.isTypeVariable()) {
       return typeBinding.getName();
     } else {
-      return typeBinding.getBinaryName();
+      String binaryName = typeBinding.getBinaryName();
+      if (binaryName == null) {
+        // e.g. anonymous class in unreachable code
+        return typeBinding.getKey();
+      }
+      return binaryName;
     }
   }
 
@@ -162,6 +173,51 @@ final class JType implements Type, Type.ArrayType {
   @Override
   public Type elementType() {
     return sema.type(typeBinding.getComponentType());
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof JType) {
+      JType other = (JType) obj;
+      return areEqual(this.typeBinding, other.typeBinding);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return fullyQualifiedName().hashCode();
+  }
+
+  static boolean areEqual(@Nullable ITypeBinding binding1, @Nullable ITypeBinding binding2) {
+    if (binding1 == null || binding2 == null) {
+      return binding1 == binding2;
+    }
+    if (binding1.isWildcardType()) {
+      return binding2.isWildcardType()
+        && binding1.isUpperbound() == binding2.isUpperbound()
+        && areEqual(binding1.getBound(), binding2.getBound());
+    }
+    // TODO compare declaring class, method, member
+    return binding1.getTypeDeclaration().equals(binding2.getTypeDeclaration())
+      && isParameterizedOrGeneric(binding1) == isParameterizedOrGeneric(binding2)
+      && binding1.isRawType() == binding2.isRawType()
+      && Arrays.equals(binding1.getTypeParameters(), binding2.getTypeParameters())
+      && Arrays.equals(binding1.getTypeArguments(), binding2.getTypeArguments());
+  }
+
+  static ITypeBinding normalize(ITypeBinding typeBinding) {
+    ITypeBinding typeDeclaration = typeBinding.getTypeDeclaration();
+    if (typeBinding.isLocal()) {
+      return typeDeclaration;
+    }
+    return typeBinding.isParameterizedType() && Arrays.equals(typeDeclaration.getTypeParameters(), typeBinding.getTypeArguments())
+      ? typeDeclaration
+      : typeBinding;
+  }
+
+  private static boolean isParameterizedOrGeneric(ITypeBinding typeBinding) {
+    return typeBinding.isParameterizedType() || typeBinding.isGenericType();
   }
 
 }

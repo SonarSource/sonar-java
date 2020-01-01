@@ -28,7 +28,6 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.model.PackageUtils;
@@ -45,9 +44,10 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "UndocumentedApi")
-@RspecKey("S1176")
+@DeprecatedRuleKey(ruleKey = "UndocumentedApi", repositoryKey = "squid")
+@Rule(key = "S1176")
 public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();

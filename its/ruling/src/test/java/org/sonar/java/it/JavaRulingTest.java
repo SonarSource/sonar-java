@@ -88,7 +88,7 @@ public class JavaRulingTest {
   public static void prepare_quality_profiles() {
     ImmutableMap<String, ImmutableMap<String, String>> rulesParameters = ImmutableMap.<String, ImmutableMap<String, String>>builder()
       .put(
-        "IndentationCheck",
+        "S1120",
         ImmutableMap.of("indentationLevel", "4"))
       .put(
         "S1451",
@@ -99,10 +99,10 @@ public class JavaRulingTest {
           " * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."))
       .build();
     ImmutableSet<String> disabledRules = ImmutableSet.of(
-      "CallToDeprecatedMethod",
+      "S1874",
       "CycleBetweenPackages",
       // disable because it generates too many issues, performance reasons
-      "LeftCurlyBraceStartLineCheck"
+      "S1106"
       );
     Set<String> activatedRuleKeys = new HashSet<>();
     ProfileGenerator.generate(orchestrator, rulesParameters, disabledRules, SUBSET_OF_ENABLED_RULES, activatedRuleKeys);
@@ -138,7 +138,7 @@ public class JavaRulingTest {
   private static void copyDumpSubset(Path srcProjectDir, Path dstProjectDir) {
     Try.of(() -> Files.createDirectory(dstProjectDir)).orElseThrow(Throwables::propagate);
     SUBSET_OF_ENABLED_RULES.stream()
-      .map(ruleKey -> srcProjectDir.resolve("squid-" + ruleKey + ".json"))
+      .map(ruleKey -> srcProjectDir.resolve("java-" + ruleKey + ".json"))
       .filter(p -> p.toFile().exists())
       .forEach(srcJsonFile -> Try.of(() -> Files.copy(srcJsonFile, dstProjectDir.resolve(srcJsonFile.getFileName()), StandardCopyOption.REPLACE_EXISTING))
         .orElseThrow(Throwables::propagate));
@@ -187,6 +187,7 @@ public class JavaRulingTest {
   /**
    * Relevant to test lack of semantic, because we don't construct semantic for files in java/lang package.
    */
+  @org.junit.Ignore
   @Test
   public void jdk_1_6_source() throws Exception {
     String projectName = "jdk6";
@@ -299,7 +300,7 @@ public class JavaRulingTest {
       .setParam("markdown_description", instantiationKey)
       .setParam("severity", "INFO")
       .setParam("status", "READY")
-      .setParam("template_key", "squid:" + ruleTemplateKey)
+      .setParam("template_key", "java:" + ruleTemplateKey)
       .setParam("custom_key", instantiationKey)
       .setParam("prevent_reactivation", "true")
       .setParam("params", "name=\"" + instantiationKey + "\";key=\"" + instantiationKey + "\";markdown_description=\"" + instantiationKey + "\";" + params)
@@ -322,7 +323,7 @@ public class JavaRulingTest {
     if (StringUtils.isEmpty(profileKey)) {
       LOG.error("Could not retrieve profile key : Template rule " + ruleTemplateKey + " has not been activated");
     } else {
-      String ruleKey = "squid:" + instantiationKey;
+      String ruleKey = "java:" + instantiationKey;
       HttpResponse activateRuleResponse = orchestrator.getServer()
         .newHttpCall("api/qualityprofiles/activate_rule")
         .setAdminCredentials()

@@ -40,7 +40,7 @@ import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ReassignmentFinderTest extends JavaParserHelper {
+public class ReassignmentFinderTest extends JParserTestUtils {
 
   @Test
   public void private_constructor() throws Exception {

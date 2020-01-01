@@ -49,6 +49,9 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
       .collect(Collectors.toList());
   }
 
+  /**
+   * @since 6.0 returns void type for constructors instead of {@code null}
+   */
   @Override
   public TypeSymbol returnType() {
     return sema.typeSymbol(methodBinding().getReturnType());

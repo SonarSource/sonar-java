@@ -33,14 +33,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.bytecode.se.testdata.BytecodeTestClass;
 import org.sonar.java.bytecode.se.testdata.ExceptionEnqueue;
 import org.sonar.java.bytecode.se.testdata.FinalBytecodeTestClass;
 import org.sonar.java.bytecode.se.testdata.MaxRelationBytecode;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.Sema;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -53,7 +53,6 @@ import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -70,7 +69,7 @@ public class BytecodeEGWalkerTest {
     List<File> files = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
     files.addAll(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar"}, false));
     squidClassLoader = new SquidClassLoader(files);
-    semanticModel = SemanticModel.createFor((CompilationUnitTree) JavaParser.createParser().parse("class A {}"), squidClassLoader);
+    semanticModel = ((CompilationUnitTreeImpl) JParserTestUtils.parse("class A {}")).sema;
   }
 
   @Test

@@ -22,6 +22,7 @@ package org.sonar.java.filters;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,12 +33,18 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Fail;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
+import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.CheckTestUtils;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridgeForTests;
@@ -66,8 +73,8 @@ public class FilterVerifier {
     List<File> projectClasspath = Lists.newArrayList(classpath);
     projectClasspath.add(new File("target/test-classes"));
 
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, null);
     InputFile inputFile = CheckTestUtils.inputFile(filename);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, projectClasspath, sonarComponents(inputFile));
     JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
 
@@ -141,6 +148,25 @@ public class FilterVerifier {
         }
       }
     }
+  }
+
+  private static SonarComponents sonarComponents(InputFile inputFile) {
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    context.setSettings(new MapSettings().setProperty("sonar.java.failOnException", true));
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
+      @Override
+      public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
+        return false;
+      }
+
+      @Override
+      public void addAnalysisError(AnalysisError analysisError) {
+        Fail.fail(String.format("Should not fail analysis (%s)", analysisError.getKind().name()));
+      }
+    };
+    sonarComponents.setSensorContext(context);
+    context.fileSystem().add(inputFile);
+    return sonarComponents;
   }
 
 }

@@ -25,7 +25,6 @@ import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FormalParametersListTreeImpl extends ListTreeImpl<VariableTreeImpl> {

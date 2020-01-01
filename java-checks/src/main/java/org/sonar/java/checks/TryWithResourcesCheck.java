@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.cfg.CFG;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -30,6 +31,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,10 +57,66 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.TRY_STATEMENT)) {
       withinTry.push((TryStatementTree) tree);
-      toReport.push(new ArrayList<>());
-    } else if (withinStandardTryWithFinally() && ((NewClassTree) tree).symbolType().isSubtypeOf("java.lang.AutoCloseable")) {
-      toReport.peek().add(tree);
+      if (withinTry.size() != toReport.size()) {
+        toReport.push(new ArrayList<>());
+      }
+    } else if (((NewClassTree) tree).symbolType().isSubtypeOf("java.lang.AutoCloseable")) {
+      if (withinStandardTryWithFinally()) {
+        toReport.peek().add(tree);
+      } else if (isFollowedByTryWithFinally(tree)) {
+        if (toReport.isEmpty() || withinTry.size() == toReport.size()) {
+          // This newClass will be reported with the following tryStatement
+          toReport.push(new ArrayList<>());
+        }
+        toReport.peek().add(tree);
+      }
     }
+  }
+
+  private static boolean isFollowedByTryWithFinally(Tree tree) {
+    Tree blockParent = tree.parent();
+    while (blockParent != null && !blockParent.is(Tree.Kind.BLOCK)) {
+      blockParent = blockParent.parent();
+    }
+
+    if (blockParent != null) {
+      CFG cfg = CFG.buildCFG(Collections.singletonList(blockParent), true);
+      if (!cfg.blocks().isEmpty()) {
+        return newFollowedByTryStatement(cfg.blocks().get(0));
+      }
+    }
+
+    // Unreachable by construction because the CFG has been built on top of a NewClass element
+    return false;
+  }
+
+  private static boolean newFollowedByTryStatement(CFG.Block cfgBlock) {
+    boolean foundNewAutoCloseable = false;
+    for (Tree element : cfgBlock.elements()) {
+      switch (element.kind()) {
+        case NEW_CLASS:
+          boolean isAutoCloseable = ((NewClassTree) element).symbolType().isSubtypeOf("java.lang.AutoCloseable");
+          if (!isAutoCloseable && foundNewAutoCloseable) {
+            return false;
+          }
+          foundNewAutoCloseable = isAutoCloseable;
+          break;
+        case TRY_STATEMENT:
+          if (((TryStatementTree) element).resourceList().isEmpty() && ((TryStatementTree) element).finallyBlock() != null) {
+            return foundNewAutoCloseable;
+          }
+          return false;
+        case VARIABLE:
+          break;
+        default:
+          if (foundNewAutoCloseable) {
+            return false;
+          }
+          break;
+      }
+    }
+    // Unreachable: by construction at least one element of the CFG.Block is a NewClass of type "java.lang.AutoCloseable"
+    return false;
   }
 
   @Override

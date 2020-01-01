@@ -18,18 +18,21 @@ class Outer {
     Object o1 = (List<String>) foo(); // Noncompliant [[sc=18;ec=30]] {{Remove this unnecessary cast to "List".}}
     Object o2 = (List<? extends String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}}
     Object o3 = (List<? super String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}}
-    String s1 = (String) obj; //Compliant
+    String s1 = (String) obj; // Compliant
     String s2 = (String) s1; // Noncompliant {{Remove this unnecessary cast to "String".}}
     A a = (A) new B(); // Noncompliant {{Remove this unnecessary cast to "A".}}
     A[][] as = (A[][]) new B[1][1]; // Noncompliant {{Remove this unnecessary cast to "A[][]".}}
     B b;
     fun(b);
-    fun((A) b);
+    fun((B) b); // Noncompliant
+    fun((A) b); // Compliant - exception to distinguish the method to call
+    funBParameter((A) b); // Noncompliant
     List<B> bees = new java.util.ArrayList<B>();
     java.util.List<A> aaas = (java.util.List) bees;
-    C c = new C((A)null);
+    C c = new C((A) null); // Compliant - exception to distinguish the constructor to call
+    C c2 = new C((B) b); // Noncompliant
     foo((List<List<A>>) (List<?>) foo2()); // compliant
-    obj = (Plop<String>) bar;
+    obj = (Unknown<String>) unknown;
     String[] stringList = (String[]) list.toArray(new String[0]); // Compliant
   }
   List<String> foo2() {
@@ -39,6 +42,11 @@ class Outer {
     double d = (double) a / (double) b;
     int c = (int)a; // Noncompliant {{Remove this unnecessary cast to "int".}}
     int e = (int) d;
+    return null;
+  }
+
+  private static int charConversion(char c) {
+    return (char) ((c | 0x20) - 'a'); // Compliant
   }
 
   void foo(List<List<A>> a) {}
@@ -47,10 +55,10 @@ class Outer {
     Collection<String> v1 = Collections.emptyList();
     List<String> v2 = Collections.emptyList();
     castInArguments((List<String>) v1); // Compliant - cast needed
-    castInArguments((List<String>) v2); // Compliant - FN case not properly handled - would be the same with NEW_CLASS_TREE
+    castInArguments((List<String>) v2); // Noncompliant
   }
 
-  List<List<B>> foo2() {
+  List<List<B>> foo3() {
     return null;
   }
   void fun(A a) {
@@ -59,14 +67,17 @@ class Outer {
   void fun(B b) {
   }
 
+  void funBParameter(B b) {
+  }
+
   class C {
     C(A a) {}
-    C(B a) {
+    C(B a) throws Exception {
       Object o = (Object) fun().newInstance(); // Noncompliant {{Remove this unnecessary cast to "Object".}}
     }
     Class fun() { return null;}
     public <T> T[] toArray(T[] a) {
-      Object[] elementData;
+      Object[] elementData = new Object[0];
       // Make a new array of a's runtime type, but my contents:
       return (T[]) Arrays.copyOf(elementData, 12, a.getClass()); // Compliant - The cast is mandatory!
     }
@@ -82,7 +93,7 @@ class Outer {
 
 class D {
   <T> List<T> genericCast() {
-    List<Object> objectList;
+    List<Object> objectList = null;
     return (List<T>) objectList;
   }
 }
@@ -95,23 +106,24 @@ class E<T> {
     return (E<List<Object>>) (E<?>) list; // Compliant
   }
 }
-public interface Index<DOMAIN, DTO extends Dto<KEY>, KEY extends Serializable> {}
+interface Dto<T> {}
+interface Index<DOMAIN, DTO extends Dto<KEY>, KEY extends java.io.Serializable> {}
 class CastToRawType {
   void fun() {
     Object o1  = (Object) Object[].class; // Noncompliant
     Class o2  = (Class) Object[].class; // Noncompliant
   }
-  private final Map<Class<?>, Index<?,?,?>> indexComponents;
+  private final Map<Class<?>, Index<?,?,?>> indexComponents = null;
   public <K extends Index> K get(Class<K> clazz){
     return (K) this.indexComponents.get(clazz);
   }
 
 }
 
-class F<T> {
-  class Inner<K> {
-    K fun(T t) {
-      return (K) t;
+class F<T, K, V> {
+  class Inner<J> {
+    J fun(T t) {
+      return (J) t;
     }
   }
   public <T> T[] toArray(T[] a) {
@@ -119,12 +131,18 @@ class F<T> {
     if (a.length < size)
       a = (T[])java.lang.reflect.Array
         .newInstance(a.getClass().getComponentType(), size);
-    Iterator<Map.Entry<K,V>> it = iterator();
+    java.util.Iterator<Map.Entry<K,V>> it = iterator();
     for (int i = 0; i < size; i++)
       a[i] = (T) new java.util.AbstractMap.SimpleEntry<K,V>(it.next());
     if (a.length > size)
       a[size] = null;
     return a;
+  }
+  public int size() {
+    return 42;
+  }
+  public java.util.Iterator<Map.Entry<K,V>> iterator() {
+    return null;
   }
 }
 class G<T> {
@@ -150,7 +168,7 @@ class G<T> {
     return a == null ? (String) null : a.toString(); // Noncompliant
   }
 
-  class H {
+  static class H {
     java.util.concurrent.Callable<H> c0 = () -> {
       return (H) getValue();
     };
@@ -159,9 +177,10 @@ class G<T> {
       return null;
     }
 
-    public <T> T getInstance(Ruby runtime, Object o, Class<T> clazz) {
+    public <T> T getInstance(Runtime runtime, Object o, Class<T> clazz) throws Exception {
       String name = clazz.getName();
       Class<T> c = (Class<T>) Class.forName(name, true, o.getClass().getClassLoader());
+      return null;
     }
     public static Number choose(Integer i, Float f, boolean takeFirst) {
       return takeFirst ? (Number) i : f;
@@ -240,7 +259,7 @@ interface R {
   void bar();
 
   interface S extends R {
-    default void foo();
+    default void foo() { }
   }
 
   static void test() {
@@ -321,10 +340,57 @@ class AWT {
 
   void foo() {
     byte a = 42;
-    a = (byte) -a; // FP, cast is required
+    a = (byte) -a; // Compliant - cast is required
   }
 }
 
 class CastIntersectionType {
   public static final Comparator<Object> UNIQUE_ID_COMPARATOR =  (Comparator<Object> & java.io.Serializable) (o1, o2) -> o1.toString().compareTo(o2.toString());
+}
+
+abstract class Discuss {
+
+  abstract <M> M getMeta();
+
+  void foo() {
+    int  i = ((String) getMeta()).length(); // Compliant - generic method correctly handled
+  }
+}
+
+class ClassWithAnnotation {
+  @MyAnnotation((int) (0L + 42))
+  Object field;
+
+  @interface MyAnnotation {
+    int value() default 42;
+  }
+}
+
+class ClassWithVariadicFunction {
+  void variadicFunction(int ... p) {}
+  void fun() {
+    variadicFunction(1, 2, (int) 3.4);
+    variadicFunction(1, 2, ((int) 3.4));
+    variadicFunction((int) 1, 2, 3); // Noncompliant
+    variadicFunction(((int) 1), 2, 3); // Noncompliant
+    variadicFunction(1, 2, 3, (int) 4); // Noncompliant
+
+    ClassWithVariadicFunction c = new ClassWithVariadicFunction((int) 3.4); // recovered constructor
+  }
+}
+
+class GenericClass<T> {
+  private GenericClass<?> type() {
+    return null;
+  }
+
+  void foo() {
+    GenericClass<? super T> g = (GenericClass<? super T>) type(); // type of the method invocation is well-handled
+  }
+}
+
+class CastRawType {
+  public static void paramsErrorMessage(Class clazz) {
+    Outer.A r = (Outer.A) clazz.getAnnotation(Outer.A.class); // Handle cast of raw types
+  }
 }

@@ -113,13 +113,13 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
     }
 
     private boolean isMethodDefinedOnConstructedType(Symbol symbol) {
-      Symbol.TypeSymbol methodEnclosingClass = symbol.enclosingClass();
+      Type typeDefiningMethod = symbol.enclosingClass().type().erasure();
       for (Type superType : JUtils.superTypes(constructorType)) {
-        if (superType.symbol().equals(methodEnclosingClass)) {
+        if (superType.erasure().equals(typeDefiningMethod)) {
           return true;
         }
       }
-      return constructorType.equals(methodEnclosingClass);
+      return constructorType.type().erasure().equals(typeDefiningMethod);
     }
   }
 

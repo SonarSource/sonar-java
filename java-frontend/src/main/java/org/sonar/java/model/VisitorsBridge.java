@@ -50,7 +50,6 @@ import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.xproc.BehaviorCache;
@@ -121,38 +120,21 @@ public class VisitorsBridge {
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
-    SemanticModel oldSemanticModel = null;
     JavaTree.CompilationUnitTreeImpl tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
     boolean fileParsed = parsedTree != null;
     if (fileParsed && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
       tree = (JavaTree.CompilationUnitTreeImpl) parsedTree;
-
-      try {
-        oldSemanticModel = SemanticModel.createFor(currentFile.filename(), tree, classLoader);
-      } catch (Exception e) {
-        LOG.error(String.format("Unable to create symbol table for : '%s'", currentFile), e);
-        addAnalysisError(e, currentFile, AnalysisError.Kind.SEMANTIC_ERROR);
-        sonarComponents.reportAnalysisError(currentFile, e.getMessage());
-        return;
-      }
-    }
-
-    if (tree.sema() != null) {
       createSonarSymbolTable(tree);
     }
 
-    JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.sema(), sonarComponents, fileParsed);
+    JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.sema, sonarComponents, fileParsed);
     // Symbolic execution checks
-    if (symbolicExecutionEnabled && tree.sema() != null) {
+    if (symbolicExecutionEnabled) {
       runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache), AnalysisError.Kind.SE_ERROR);
       behaviorCache.cleanup();
     }
     executableScanners.forEach(scanner -> runScanner(javaFileScannerContext, scanner, AnalysisError.Kind.CHECK_ERROR));
     scannerRunner.run(javaFileScannerContext);
-
-    if (oldSemanticModel != null) {
-      classesNotFound.addAll(oldSemanticModel.classesNotFound());
-    }
   }
 
   private void runScanner(JavaFileScannerContext javaFileScannerContext, JavaFileScanner scanner, AnalysisError.Kind kind) {

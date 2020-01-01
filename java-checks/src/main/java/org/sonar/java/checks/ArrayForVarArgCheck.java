@@ -23,22 +23,16 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.CheckForNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,71 +50,20 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     Symbol sym;
     Arguments args;
-    Tree methodName;
     if (tree.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree nct = (NewClassTree) tree;
       sym = nct.constructorSymbol();
       args = nct.arguments();
-      methodName = nct.identifier();
     } else {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       sym = mit.symbol();
       args = mit.arguments();
-      methodName = mit.methodSelect();
     }
 
     if (sym.isMethodSymbol() && !args.isEmpty()) {
       ExpressionTree lastArg = args.get(args.size() - 1);
-      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) sym;
-      Type methodType = getMethodType(methodSymbol, methodName);
-      if (methodType instanceof MethodJavaType) {
-        checkInvokedMethod(methodSymbol, (MethodJavaType) methodType, lastArg);
-      } else {
-        checkInvokedMethod(methodSymbol, lastArg);
-      }
+      checkInvokedMethod((Symbol.MethodSymbol) sym, lastArg);
     }
-  }
-
-  @CheckForNull
-  private static Type getMethodType(Symbol.MethodSymbol methodSymbol, Tree methodName) {
-    if (!JUtils.isParametrizedMethod(methodSymbol)) {
-      return null;
-    }
-    if (methodName.is(Tree.Kind.MEMBER_SELECT)) {
-      return ((MemberSelectExpressionTree) methodName).identifier().symbolType();
-    } else if (methodName.is(Tree.Kind.IDENTIFIER)) {
-      return ((IdentifierTree) methodName).symbolType();
-    } else if (methodName.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      return ((ParameterizedTypeTree) methodName).symbolType();
-    }
-    return null;
-  }
-
-  private void checkInvokedMethod(Symbol.MethodSymbol methodSymbol, MethodJavaType methodType, ExpressionTree lastArg) {
-    if (JUtils.isVarArgsMethod(methodSymbol) && lastArg.is(Tree.Kind.NEW_ARRAY)) {
-      if (lastParamHasSameType(methodType, lastArg.symbolType())) {
-        String message = "Remove this array creation";
-        NewArrayTree newArrayTree = (NewArrayTree) lastArg;
-        if (newArrayTree.openBraceToken() == null) {
-          ExpressionTree expression = newArrayTree.dimensions().get(0).expression();
-          Integer literalValue = LiteralUtils.intLiteralValue(expression);
-          if (literalValue == null || literalValue != 0 || isCallingOverload(methodSymbol, lastArg)) {
-            return;
-          }
-        } else if (!newArrayTree.initializers().isEmpty()) {
-          message += " and simply pass the elements";
-        }
-        reportIssue(lastArg, message + ".");
-      } else {
-        String type = ((Type.ArrayType) getLastParameterType(methodSymbol.parameterTypes())).elementType().name();
-        reportIssue(lastArg, "Disambiguate this call by either casting as \"" + type + "\" or \"" + type + "[]\".");
-      }
-    }
-  }
-
-  private static boolean lastParamHasSameType(MethodJavaType methodType, Type lastArgType) {
-    Type lastParamType = getLastParameterType(methodType.argTypes());
-    return lastArgType.equals(lastParamType);
   }
 
   private void checkInvokedMethod(Symbol.MethodSymbol methodSymbol, ExpressionTree lastArg) {

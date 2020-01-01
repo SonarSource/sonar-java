@@ -95,3 +95,9 @@ class O extends A {
 class P extends O { // Compliant - O.equals() is final
   String s;
 }
+
+class Q extends A {
+  private String name;
+  @Override
+  public final boolean equals(Object o) { return false; }
+}

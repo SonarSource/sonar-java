@@ -1,4 +1,3 @@
-@ParametersAreNonnullByDefault
 package checks.UselessImportCheck;
 import a.b.c.Foo;
 import a.b.c.Bar;
@@ -13,7 +12,7 @@ import a.b.c.MyException2;
 import a.b.c.MyAnnotation1;
 import a.b.c.MyAnnotation2;
 import a.b.c.MyAnnotation3;
-;
+
 import checks.UselessImportCheckClose.*;
 import static checks.UselessImportCheck.Foo.*;
 import checks.UselessImportCheck.foo.*;
@@ -24,7 +23,6 @@ import pkg.CompliantClass3;
 import pkg.CompliantClass4;
 import java.lang.reflect.Array;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.annotation.*;
 import java.util.ArrayList;
 import java.util.Map;

@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.sonarsource.parent</groupId>
     <artifactId>parent</artifactId>
-    <version>52</version>
+    <version>53</version>
   </parent>
 
   <groupId>org.sonarsource.java</groupId>
   <artifactId>java</artifactId>
-  <version>6.0.0-SNAPSHOT</version>
+  <version>6.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>SonarJava</name>
   <description>Code Analyzer for Java</description>
@@ -59,8 +59,6 @@
     <module>external-reports</module>
     <module>sonar-java-plugin</module>
     <module>java-surefire</module>
-    <module>java-jacoco</module>
-    <module>sonar-jacoco-listeners</module>
     <module>its</module>
   </modules>
 
@@ -84,11 +82,10 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>7.4-alpha2</sonar.version>
-    <analyzer.commons.version>1.10.2.456</analyzer.commons.version>
+    <sonar.version>7.9</sonar.version>
+    <analyzer.commons.version>1.11.0.541</analyzer.commons.version>
     <orchestrator.version>3.27.0.2172</orchestrator.version>
     <sslr.version>1.23</sslr.version>
-    <jacoco.version>0.8.3</jacoco.version>
     <asm.version>7.1</asm.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
@@ -129,6 +126,11 @@
         <version>${analyzer.commons.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.sonarsource.analyzer-commons</groupId>
+        <artifactId>sonar-analyzer-test-commons</artifactId>
+        <version>${analyzer.commons.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.sonarsource.sslr</groupId>
         <artifactId>sslr-core</artifactId>
         <version>${sslr.version}</version>
@@ -164,23 +166,6 @@
             <groupId>org.hamcrest</groupId>
           </exclusion>
         </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jacoco</groupId>
-        <artifactId>org.jacoco.core</artifactId>
-        <version>${jacoco.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jacoco</groupId>
-        <artifactId>org.jacoco.agent</artifactId>
-        <version>${jacoco.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jacoco</groupId>
-        <artifactId>org.jacoco.agent</artifactId>
-        <version>${jacoco.version}</version>
-        <classifier>runtime</classifier>
       </dependency>
 
       <dependency>
@@ -255,6 +240,11 @@
         <version>2.6</version>
       </dependency>
       <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.4</version>
+      </dependency>
+      <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>2.6.2</version>
@@ -278,11 +268,6 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${jacoco.version}</version>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration />
@@ -291,18 +276,6 @@
     </pluginManagement>
 
     <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <!-- TODO remove this custom configuration after upgrade of parent POM - see https://jira.sonarsource.com/browse/PARENTOSS-109 -->
-          <includedLicenses>apache_v2|bsd|epl_v1|epl_v2|lgpl_v3|mit</includedLicenses>
-          <licenseMerges combine.children="append">
-            <licenseMerge>epl_v2|Eclipse Public License - v 2.0</licenseMerge>
-          </licenseMerges>
-        </configuration>
-      </plugin>
-
       <plugin>
         <groupId>de.thetaphi</groupId>
         <artifactId>forbiddenapis</artifactId>

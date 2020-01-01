@@ -28,15 +28,15 @@ import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
-import org.sonar.java.resolve.MethodJavaType;
-import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -53,17 +53,17 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
+    if (!hasSemantic()) {
       return;
     }
     TypeCastTree typeCastTree = (TypeCastTree) tree;
-    Type cast = typeCastTree.type().symbolType();
-    Type target = targetType(typeCastTree);
     Type expressionType = typeCastTree.expression().symbolType();
     if (isPrimitiveWrapperInConditional(expressionType, typeCastTree) || requiredForMemberAccess(typeCastTree)) {
       // Primitive wrappers excluded because covered by S2154
       return;
     }
+    Type cast = typeCastTree.type().symbolType();
+    Type target = targetType(typeCastTree);
     if (target != null && (isRedundantNumericalCast(cast, expressionType) || isUnnecessarySubtypeCast(expressionType, typeCastTree, target))) {
       reportIssue(typeCastTree.type(), "Remove this unnecessary cast to \"" + cast.erasure() + "\".");
     }
@@ -77,10 +77,6 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     }
     Symbol symbol = ((MethodInvocationTree) expression).symbol();
     if (!symbol.isMethodSymbol()) {
-      return false;
-    }
-    Type returnType = ((Symbol.MethodSymbol) symbol).returnType().type();
-    if ((returnType instanceof TypeVariableJavaType) && ((TypeVariableJavaType) returnType).bounds().get(0).is("java.lang.Object")) {
       return false;
     }
     // consider REQUIRED as soon as the parent expression is a member access (killing the noise), without checking if cast could have been avoided
@@ -104,25 +100,21 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
           method = method.parent();
         }
         if (method.is(Tree.Kind.METHOD)) {
-          MethodTree methodTree = (MethodTree) method;
-          Type type = methodTree.symbol().type();
-          if (type instanceof MethodJavaType) {
-            return ((MethodJavaType) type).resultType();
-          }
-          return methodTree.symbol().returnType().type();
+          return ((MethodTree) method).symbol().returnType().type();
         }
         return null;
       case VARIABLE:
         return ((VariableTree) parent).symbol().type();
-      case METHOD_INVOCATION:
-        // FIXME(SONARJAVA-3191) dead code
-        // If placed in invocation arguments, parent of typecast will be ARGUMENTS, not METHOD_INVOCATION
-        MethodInvocationTree mit = (MethodInvocationTree) parent;
-        if (mit.symbol().isMethodSymbol()) {
-          Symbol.MethodSymbol sym = (Symbol.MethodSymbol) mit.symbol();
-          int castArgIndex = mit.arguments().indexOf(typeCastTree);
-          return sym.parameterTypes().get(castArgIndex);
+      case ARGUMENTS:
+        Arguments arguments = (Arguments) parent;
+        Tree invocation = arguments.parent();
+        if (invocation.is(Tree.Kind.METHOD_INVOCATION)) {
+          return targetTypeFromMethodSymbol(((MethodInvocationTree) invocation).symbol(), arguments, typeCastTree);
         }
+        if (invocation.is(Tree.Kind.NEW_CLASS)) {
+          return targetTypeFromMethodSymbol(((NewClassTree) invocation).constructorSymbol(), arguments, typeCastTree);
+        }
+        // Last possible case is AnnotationTree which we do not consider
         return null;
       case MEMBER_SELECT:
       case CONDITIONAL_EXPRESSION:
@@ -137,6 +129,31 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  @CheckForNull
+  private static Type targetTypeFromMethodSymbol(Symbol symbol, Arguments arguments, TypeCastTree typeCastTree) {
+    if (symbol.isMethodSymbol()) {
+      Symbol.MethodSymbol sym = (Symbol.MethodSymbol) symbol;
+      int castArgIndex = indexOfTypeCast(arguments, typeCastTree);
+      List<Type> parameterTypes = sym.parameterTypes();
+      int nbParameters = parameterTypes.size();
+      // Handle varargs
+      return nbParameters > castArgIndex ? parameterTypes.get(castArgIndex) : parameterTypes.get(nbParameters - 1);
+    }
+    return null;
+  }
+
+  private static int indexOfTypeCast(Arguments arguments, TypeCastTree typeCastTree) {
+    int i = 0;
+    do {
+      // typeCastTree is necessarily within the arguments
+      Tree arg = ExpressionUtils.skipParentheses(arguments.get(i));
+      if (typeCastTree.equals(arg)) {
+        return i;
+      }
+      i++;
+    } while (true);
+  }
+
   private static Tree skipParentheses(Tree parent) {
     Tree skip = parent;
     while (skip.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
@@ -146,7 +163,11 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isUnnecessarySubtypeCast(Type childType, TypeCastTree typeCastTree, Type parentType) {
-    return childType.isSubtypeOf(parentType)
+    boolean isArgument = skipParentheses(typeCastTree.parent()).is(Tree.Kind.ARGUMENTS);
+    return !childType.isPrimitive()
+      // Exception: subtype cast are tolerated in method or constructor call arguments
+      && (typeCastTree.type().symbolType().equals(childType)
+        || (isArgument && childType.equals(parentType)) || (!isArgument && childType.isSubtypeOf(parentType)))
       && (!ExpressionUtils.skipParentheses(typeCastTree.expression()).is(Tree.Kind.LAMBDA_EXPRESSION)
         || isUnnecessaryLambdaCast(childType, parentType));
   }

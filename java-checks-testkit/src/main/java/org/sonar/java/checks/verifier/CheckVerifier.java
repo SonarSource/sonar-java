@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.verifier;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultiset;
@@ -35,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -56,6 +56,7 @@ import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
+import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
 import org.sonar.java.SonarComponents;
@@ -195,6 +196,11 @@ public abstract class CheckVerifier {
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         return false;
       }
+
+      @Override
+      public void addAnalysisError(AnalysisError analysisError) {
+        Fail.fail(String.format("Should not fail analysis (%s)", analysisError.getKind().name()));
+      }
     };
     sonarComponents.setSensorContext(context);
     context.fileSystem().add(inputFile);
@@ -202,7 +208,9 @@ public abstract class CheckVerifier {
   }
 
   private void assertMultipleIssue(Set<AnalyzerMessage> issues) throws AssertionError {
-    Preconditions.checkState(!issues.isEmpty(), "At least one issue expected");
+    if (issues.isEmpty()) {
+      Fail.fail("No issues has been raised, at least one issue expected.");
+    }
     List<Integer> unexpectedLines = new LinkedList<>();
     RemediationFunction remediationFunction = remediationFunction(issues.iterator().next());
     for (AnalyzerMessage issue : issues) {
@@ -262,13 +270,13 @@ public abstract class CheckVerifier {
   }
 
   private static RuleJSON getRuleJSON(String ruleKey) throws IOException {
-    String ruleJson = "/org/sonar/l10n/java/rules/squid/" + ruleKey + "_java.json";
+    String ruleJson = "/org/sonar/l10n/java/rules/java/" + ruleKey + "_java.json";
     URL resource = CheckVerifier.class.getResource(ruleJson);
     if(resource == null) {
       throw new IOException(ruleJson + " not found");
     }
     Gson gson = new Gson();
-    return gson.fromJson(new InputStreamReader(resource.openStream(), "UTF-8"), RuleJSON.class);
+    return gson.fromJson(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8), RuleJSON.class);
   }
 
   private static String ruleKey(AnalyzerMessage issue) {
@@ -297,7 +305,7 @@ public abstract class CheckVerifier {
       assertEquals(line, issue.getMessage(), attrs, IssueAttribute.MESSAGE);
       Double cost = issue.getCost();
       if (cost != null) {
-        Preconditions.checkState(remediationFunction != RemediationFunction.CONST, "Rule with constant remediation function shall not provide cost");
+        assertThat(remediationFunction).as("\"Rule with constant remediation function shall not provide cost\"").isNotEqualTo(RemediationFunction.CONST);
         assertEquals(line, Integer.toString(cost.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
       } else if(remediationFunction == RemediationFunction.LINEAR){
         Fail.fail("A cost should be provided for a rule with linear remediation function");
@@ -356,7 +364,9 @@ public abstract class CheckVerifier {
   }
 
   private static void assertSingleIssue(Set<AnalyzerMessage> issues, boolean issueOnFile, String expectedMessage) {
-    Preconditions.checkState(issues.size() == 1, "A single issue is expected on the file");
+    if (issues.size() != 1) {
+      Fail.fail("A single issue is expected on the file");
+    }
     AnalyzerMessage issue = Iterables.getFirst(issues, null);
     assertThat(issue.getInputComponent().isFile()).isEqualTo(issueOnFile);
     assertThat(issue.getLine()).isNull();

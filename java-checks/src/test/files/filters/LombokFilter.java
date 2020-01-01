@@ -97,26 +97,26 @@ class Fields {
 
 class EqualsNotOverriddenInSubclass {
   class A {
-    String s1;
+    public String s1;
   }
 
   class B extends A { // NoIssue
-    String s2;
+    String s2; // WithIssue
   }
 
   @lombok.EqualsAndHashCode
   class B1 extends A { // NoIssue
-    String s2;
+    public String s2;
   }
 
   @lombok.Data
   class B2 extends A { // NoIssue
-    String s2;
+    public String s2;
   }
 
   @lombok.Value
   class B3 extends A { // NoIssue
-    String s2;
+    String s2; // NoIssue
   }
 }
 
@@ -339,4 +339,10 @@ class PrivateFieldOnlyUsedLocally {
       System.out.println(foo1 + foo2);
     }
   }
+}
+
+@lombok.Value
+class IgnoreModifier {
+  String id; // NoIssue
+  String name; // NoIssue
 }

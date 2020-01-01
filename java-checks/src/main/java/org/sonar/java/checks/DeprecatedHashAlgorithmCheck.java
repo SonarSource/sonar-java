@@ -77,7 +77,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     };
 
     boolean match(String algorithm) {
-      String normalizedName = algorithm.replaceAll("-", "").toLowerCase(Locale.ENGLISH);
+      String normalizedName = algorithm.replace("-", "").toLowerCase(Locale.ENGLISH);
       return normalizedName.contains(name().toLowerCase(Locale.ENGLISH));
     }
   }

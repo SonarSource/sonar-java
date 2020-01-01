@@ -1,16 +1,12 @@
-SonarJava [![Build Status](https://travis-ci.org/SonarSource/sonar-java.svg?branch=master)](https://travis-ci.org/SonarSource/sonar-java) [![Quality Gate](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=alert_status)](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava) [![Coverage](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=coverage)](https://next.sonarqube.com/sonarqube/component_measures/domain/Coverage?id=org.sonarsource.java%3Ajava)
+SonarJava [![Build Status](https://api.cirrus-ci.com/github/SonarSource/sonar-java.svg)](https://cirrus-ci.com/github/SonarSource/sonar-java) [![Quality Gate](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=alert_status)](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava) [![Coverage](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=coverage)](https://next.sonarqube.com/sonarqube/component_measures/domain/Coverage?id=org.sonarsource.java%3Ajava)
 ==========
 
 SonarJava is a code analyzer for Java projects. Information about the SonarJava features is available [here](https://redirect.sonarsource.com/plugins/java.html).
 
-**Build status (all branches)**
-
-[![Build Status](https://api.travis-ci.org/SonarSource/sonar-java.svg)](https://travis-ci.org/SonarSource/sonar-java)
-
 Features
 --------
 
-* 430+ rules (including 140+ bug detection)
+* 500+ rules (including 100+ bug detection rules and 300+ code smells)
 * Metrics (complexity, number of lines etc.)
 * Import of [test coverage reports](https://docs.sonarqube.org/display/PLUG/Code+Coverage+by+Unit+Tests+for+Java+Project)
 * [Custom rules](https://docs.sonarqube.org/latest/analysis/languages/java/)
@@ -40,11 +36,15 @@ To request a new feature, please create a new thread in [SonarQube Community For
 
 ### Pull Request (PR)
 
-To submit a contribution, create a pull request for this repository. Please make sure that you follow our [code style](https://github.com/SonarSource/sonar-developer-toolset#code-style) and all [tests](#testing) are passing (Travis build is created for each PR).
+To submit a contribution, create a pull request for this repository. Please make sure that you follow our [code style](https://github.com/SonarSource/sonar-developer-toolset#code-style) and all [tests](#testing) are passing (all checks must be green).
 
 ### Custom Rules
 
 If you have an idea for a rule but you are not sure that everyone needs it you can implement a [custom rule](https://docs.sonarqube.org/latest/analysis/languages/java/) available only for you. Note that in order to help you, we highly recommend to first follow the [Custom Rules 101 tutorial](https://redirect.sonarsource.com/doc/java-custom-rules-guide.html) before diving directly into implementing rules from scratch.
+
+### Work with us
+Would you like to work on this project full-time? We are hiring! Check out https://www.sonarsource.com/hiring 
+
 
 <a name="testing"></a>
 Testing

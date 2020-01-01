@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -34,9 +33,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "ForLoopCounterChangedCheck")
-@RspecKey("S127")
+@DeprecatedRuleKey(ruleKey = "ForLoopCounterChangedCheck", repositoryKey = "squid")
+@Rule(key = "S127")
 public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Set<String> loopCounters = new HashSet<>();

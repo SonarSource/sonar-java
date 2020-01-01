@@ -19,14 +19,14 @@ class A {
     r = 1 / '4'; // Compliant
   }
 
-  void chaloo(char c, int r) {
+  int chaloo(char c, int r) {
     if (c != '0') {
       return r / c; // Compliant - code of char '0' is 48
     }
     return r / c; // Compliant - we know nothing about zero-ness of c
   }
 
-  void goo(int r) {
+  void too(int r) {
     r = 1 / (int) '\u0000'; // Noncompliant [[sc=13;ec=27]] {{Make sure this expression can't be zero before doing this division.}}
   }
 
@@ -117,6 +117,7 @@ class A {
     if(s > 0 ) {
       int x = 14 / s;  // Compliant
     }
+    return 0;
   }
 
   int mar(int s) {
@@ -128,6 +129,7 @@ class A {
     } else {
       int x = 14 / s; // Compliant
     }
+    return 0;
   }
 
   int par(int s) {
@@ -350,7 +352,7 @@ class A {
     return count == 0 ? Double.NaN : (sum / count); // Compliant
   }
 
-  void fdsf(double x, double y, double a) {
+  double fdsf(double x, double y, double a) {
     if (x * 0.0 + y * 0.0 == a) {
       return 14 / a; // Noncompliant
     }
@@ -412,7 +414,7 @@ class ConstraintCopy {
   }
 }
 
-public class TwoCompoundAssignments {
+class TwoCompoundAssignments {
 
   double sSum;
   double mSum;

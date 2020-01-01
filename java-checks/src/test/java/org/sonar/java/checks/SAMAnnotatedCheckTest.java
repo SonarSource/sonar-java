@@ -45,6 +45,6 @@ public class SAMAnnotatedCheckTest {
 
   @Test
   public void no_issue_with_java_7() {
-    JavaCheckVerifier.verifyNoIssue(FILE, new SAMAnnotatedCheck(), 7);
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/SAMAnnotatedCheck_java7.java", new SAMAnnotatedCheck(), 7);
   }
 }

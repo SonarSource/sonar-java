@@ -118,9 +118,15 @@ public class MapComputeIfAbsentOrPresentCheck extends SECheck implements JavaVer
   }
 
   private static boolean isMethodInvocationThrowingCheckedException(ExpressionTree expr) {
-    return expr.is(Tree.Kind.METHOD_INVOCATION)
-      && ((MethodInvocationTree) expr).symbol().isMethodSymbol()
-      && ((Symbol.MethodSymbol) ((MethodInvocationTree) expr).symbol()).thrownTypes().stream().anyMatch(t-> !t.isSubtypeOf("java.lang.RuntimeException"));
+    if (!expr.is(Tree.Kind.METHOD_INVOCATION)) {
+      return false;
+    }
+    Symbol symbol = ((MethodInvocationTree) expr).symbol();
+    if (!symbol.isMethodSymbol()) {
+      // assume a checked exception could be returned
+      return true;
+    }
+    return ((Symbol.MethodSymbol) symbol).thrownTypes().stream().anyMatch(t -> !t.isSubtypeOf("java.lang.RuntimeException"));
   }
 
   private static boolean isInsideIfStatementWithNullCheckWithoutElse(MethodInvocationTree mit) {

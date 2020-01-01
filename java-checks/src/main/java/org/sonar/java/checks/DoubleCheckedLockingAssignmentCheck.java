@@ -102,7 +102,7 @@ public class DoubleCheckedLockingAssignmentCheck extends IssuableSubscriptionVis
   }
 
   @CheckForNull
-  private AssignmentExpressionTree isAssignmentToSymbol(StatementTree statementTree, Symbol symbol) {
+  private static AssignmentExpressionTree isAssignmentToSymbol(StatementTree statementTree, Symbol symbol) {
     if (!statementTree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
       return null;
     }

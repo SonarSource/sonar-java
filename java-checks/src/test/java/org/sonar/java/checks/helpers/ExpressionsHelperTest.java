@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExpressionsHelperTest extends JavaParserHelper {
+public class ExpressionsHelperTest extends JParserTestUtils {
 
   @Test
   public void private_constructor() throws Exception {

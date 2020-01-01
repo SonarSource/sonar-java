@@ -1,0 +1,24 @@
+{
+  "title": "Validating SSL\/TLS connections is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "tags": [
+    "cwe",
+    "owasp-a6",
+    "sans-top25-porous",
+    "owasp-a3"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5326",
+  "sqKey": "S5326",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      295
+    ],
+    "OWASP": [
+      "A6",
+      "A3"
+    ]
+  }
+}

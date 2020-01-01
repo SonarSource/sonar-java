@@ -3,26 +3,26 @@ import org.apache.commons.lang.Validate;
 import java.util.List;
 
 class CommonsLangValidate {
-  void fun() {
+  void foo() {
     List<Object> objects = null;
     Validate.notEmpty(objects); // throw on null collection
     objects.size();
   }
 
-  void fun() {
+  void bar() {
     List<Object> objects = null;
     org.apache.commons.lang3.Validate.notEmpty(objects); // throw on null collection
     objects.size();
   }
-  void checkNotNull(@javax.annotation.Nullable Object param) {
+  void checkNotNull1(@javax.annotation.Nullable Object param) {
     Validate.notNull(param);
     param.toString();
   }
-  void checkNotNull(@javax.annotation.Nullable Object param) {
+  void checkNotNull2(@javax.annotation.Nullable Object param) {
     org.apache.commons.lang3.Validate.notNull(param);
     param.toString();
   }
-  void checkNotNull(@javax.annotation.Nullable Object param) {
+  void checkNotNull3(@javax.annotation.Nullable Object param) {
     org.apache.commons.lang3.Validate.notNull(param, "some message %s", "format");
     param.toString();
   }

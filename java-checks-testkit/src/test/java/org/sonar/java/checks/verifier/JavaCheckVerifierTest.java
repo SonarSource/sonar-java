@@ -54,6 +54,7 @@ public class JavaCheckVerifierTest {
 
   private static final String FILENAME_ISSUES = "src/test/files/JavaCheckVerifier.java";
   private static final String FILENAME_NO_ISSUE = "src/test/files/JavaCheckVerifierNoIssue.java";
+  private static final String FILENAME_PARSING_ISSUE = "src/test/files/JavaCheckVerifierParsingIssue.java";
   private static final IssuableSubscriptionVisitor NO_EFFECT_VISITOR = new IssuableSubscriptionVisitor() {
     @Override
     public List<Tree.Kind> nodesToVisit() {
@@ -138,9 +139,14 @@ public class JavaCheckVerifierTest {
     JavaCheckVerifier.verifyIssueOnProject(FILENAME_ISSUES, expectedMessage, visitor);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void verify_issue_on_file_incorrect() {
-    JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", new FakeVisitor().withDefaultIssues());
+    try {
+      JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", new FakeVisitor().withDefaultIssues());
+      Fail.fail("");
+    } catch (AssertionError e) {
+      assertThat(e).hasMessage("A single issue is expected on the file");
+    }
   }
 
   @Test
@@ -329,9 +335,8 @@ public class JavaCheckVerifierTest {
     FakeVisitor fakeVisitor = new FakeVisitor();
     fakeVisitor.withPreciseIssue(new AnalyzerMessage(fakeVisitor, emptyInputFile(), new AnalyzerMessage.TextSpan(1), "message", 1));
     Throwable throwable = catchThrowable(() -> JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierNoCost.java", fakeVisitor));
-    assertThat(throwable)
-      .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Rule with constant remediation function shall not provide cost");
+    assertThat(throwable).isInstanceOf(AssertionError.class);
+    assertThat(throwable.getMessage()).contains("Rule with constant remediation function shall not provide cost");
   }
 
   @Test
@@ -388,6 +393,28 @@ public class JavaCheckVerifierTest {
     assertThat(throwable)
       .isInstanceOf(AssertionError.class)
       .hasMessage("Rules should be annotated with '@Rule(key = \"...\")' annotation (org.sonar.check.Rule).");
+  }
+
+  @Test
+  public void verify_should_fail_if_files_does_not_parse() {
+    try {
+      JavaCheckVerifier.verify(FILENAME_PARSING_ISSUE, NO_EFFECT_VISITOR);
+      Fail.fail("Should have never reached this step");
+    } catch (Error e) {
+      assertThat(e).isInstanceOf(AssertionError.class);
+      assertThat(e.getMessage()).isEqualTo("Should not fail analysis (PARSE_ERROR)");
+    }
+  }
+
+  @Test
+  public void verifyNoIssue_should_fail_if_files_does_not_parse() {
+    try {
+      JavaCheckVerifier.verifyNoIssue(FILENAME_PARSING_ISSUE, NO_EFFECT_VISITOR);
+      Fail.fail("Should have never reached this step");
+    } catch (Error e) {
+      assertThat(e).isInstanceOf(AssertionError.class);
+      assertThat(e.getMessage()).isEqualTo("Should not fail analysis (PARSE_ERROR)");
+    }
   }
 
   private static DefaultInputFile emptyInputFile() {

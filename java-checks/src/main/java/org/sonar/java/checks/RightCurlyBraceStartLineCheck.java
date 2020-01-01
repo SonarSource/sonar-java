@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -30,9 +29,10 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.Arrays;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "RightCurlyBraceStartLineCheck")
-@RspecKey("S1109")
+@DeprecatedRuleKey(ruleKey = "RightCurlyBraceStartLineCheck", repositoryKey = "squid")
+@Rule(key = "S1109")
 public class RightCurlyBraceStartLineCheck extends IssuableSubscriptionVisitor {
 
   @Override

@@ -1,0 +1,23 @@
+{
+  "title": "Creating cookies with broadly defined \"domain\" flags is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "owasp-a7",
+    "owasp-a3"
+  ],
+  "defaultSeverity": "Info",
+  "ruleSpecification": "RSPEC-3331",
+  "sqKey": "S3331",
+  "scope": "Main",
+  "securityStandards": {
+    "OWASP": [
+      "A7",
+      "A3"
+    ]
+  }
+}

@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
@@ -29,9 +28,10 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import java.util.Collections;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "UselessParenthesesCheck")
-@RspecKey("S1110")
+@DeprecatedRuleKey(ruleKey = "UselessParenthesesCheck", repositoryKey = "squid")
+@Rule(key = "S1110")
 public class UselessParenthesesCheck extends IssuableSubscriptionVisitor {
 
   @Override

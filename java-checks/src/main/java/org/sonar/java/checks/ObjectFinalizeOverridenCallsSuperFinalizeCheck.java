@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.collect.Iterables;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -42,9 +41,10 @@ import javax.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck")
-@RspecKey("S1114")
+@DeprecatedRuleKey(ruleKey = "ObjectFinalizeOverridenCallsSuperFinalizeCheck", repositoryKey = "squid")
+@Rule(key = "S1114")
 public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubscriptionVisitor {
 
   private static final String FINALIZE = "finalize";

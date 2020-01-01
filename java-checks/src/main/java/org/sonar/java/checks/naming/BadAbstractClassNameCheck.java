@@ -21,7 +21,6 @@ package org.sonar.java.checks.naming;
 
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.RspecKey;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -32,9 +31,10 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.regex.Pattern;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "S00118")
-@RspecKey("S118")
+@DeprecatedRuleKey(ruleKey = "S00118", repositoryKey = "squid")
+@Rule(key = "S118")
 public class BadAbstractClassNameCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String DEFAULT_FORMAT = "^Abstract[A-Z][a-zA-Z0-9]*$";

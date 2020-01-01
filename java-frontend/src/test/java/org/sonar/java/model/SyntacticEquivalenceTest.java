@@ -21,10 +21,8 @@ package org.sonar.java.model;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.typed.ActionParser;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -35,8 +33,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SyntacticEquivalenceTest {
-
-  private final ActionParser p = JavaParser.createParser();
 
   @Test
   public void null_equivalence() throws Exception {
@@ -49,7 +45,7 @@ public class SyntacticEquivalenceTest {
   @Test
   public void statement_list_equivalence() {
     assertAreEquivalent(Lists.newArrayList("foo()", "bar()"), Lists.newArrayList("foo()", "bar()"));
-    assertAreNotEquivalent(Lists.newArrayList("foo()", "bar"), Lists.newArrayList("foo()", "foo()"));
+    assertAreNotEquivalent(Lists.newArrayList("foo()", "bar()"), Lists.newArrayList("foo()", "foo()"));
     assertAreNotEquivalent(Lists.newArrayList("foo()"), Lists.newArrayList("foo()", "foo()"));
   }
 
@@ -102,6 +98,6 @@ public class SyntacticEquivalenceTest {
   }
 
   private CompilationUnitTree compilationUnitTree(String code) {
-    return (CompilationUnitTree) p.parse(code);
+    return JParserTestUtils.parse(code);
   }
 }

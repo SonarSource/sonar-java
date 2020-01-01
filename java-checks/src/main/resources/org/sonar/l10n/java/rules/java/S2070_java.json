@@ -1,0 +1,30 @@
+{
+  "title": "SHA-1 and Message-Digest hash algorithms should not be used in secure contexts",
+  "type": "VULNERABILITY",
+  "status": "deprecated",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "cwe",
+    "spring",
+    "owasp-a6",
+    "sans-top25-porous",
+    "owasp-a3"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2070",
+  "sqKey": "S2070",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      328,
+      327
+    ],
+    "OWASP": [
+      "A3",
+      "A6"
+    ]
+  }
+}

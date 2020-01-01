@@ -27,4 +27,13 @@ public class ClassWithConstants {
   static final boolean BOOLEAN_TRUE = true;
   static final boolean BOOLEAN_FALSE = false;
 
+  static final int INT = 42;
+  static final short SHORT = 42;
+  static final char CHAR = 42;
+  static final byte BYTE = 42;
+
+  static final float FLOAT = 42;
+  static final long LONG = 42;
+  static final double DOUBLE = 42;
+
 }

@@ -19,20 +19,17 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -48,35 +45,31 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1612")
-public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
-
-  private JavaFileScannerContext context;
+public class ReplaceLambdaByMethodRefCheck extends SubscriptionVisitor {
 
   @Override
-  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isJava8Compatible();
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    if (context.getSemanticModel() != null) {
-      scan(context.getTree());
+  public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
     }
+    visitLambdaExpression((LambdaExpressionTree) tree);
   }
 
-  @Override
-  public void visitLambdaExpression(LambdaExpressionTree tree) {
+  private void visitLambdaExpression(LambdaExpressionTree tree) {
     if (isReplaceableSingleMethodInvocation(tree) || isBodyBlockInvokingMethod(tree)) {
       context.reportIssue(this, tree.arrowToken(), "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
     } else {
       getNullCheck(tree)
-        .ifPresent(nullMethod -> 
+        .ifPresent(nullMethod ->
           context.reportIssue(this, tree.arrowToken(),
             "Replace this lambda with method reference 'Objects::" + nullMethod + "'." + context.getJavaVersion().java8CompatibilityMessage())
-      );
+        );
     }
-    super.visitLambdaExpression(tree);
   }
 
   private static Optional<String> getNullCheck(LambdaExpressionTree lambda) {
@@ -149,8 +142,8 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   private static boolean isMethodInvocation(@Nullable Tree tree, LambdaExpressionTree lambdaTree) {
     if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
       Arguments arguments;
-      if(tree.is(Tree.Kind.NEW_CLASS)) {
-        if(((NewClassTree) tree).classBody() != null) {
+      if (tree.is(Tree.Kind.NEW_CLASS)) {
+        if (((NewClassTree) tree).classBody() != null) {
           return false;
         }
         arguments = ((NewClassTree) tree).arguments();
@@ -229,8 +222,32 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
     ExpressionTree methodSelect = ((MethodInvocationTree) tree).methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-      return expression.is(Tree.Kind.IDENTIFIER) && parameters.get(0).symbol().equals(((IdentifierTree) expression).symbol());
+      Symbol parameterSymbol = parameters.get(0).symbol();
+      return expression.is(Tree.Kind.IDENTIFIER) &&
+        !parameterSymbol.isUnknown() &&
+        !isAmbiguous((MethodInvocationTree) tree, parameterSymbol) &&
+        parameterSymbol.equals(((IdentifierTree) expression).symbol());
     }
     return false;
+  }
+
+  /**
+   * This is a crude way to shutdown the FPs when method reference is ambiguous in case of lambda like x -> x.foo()
+   * Full resolution algorithm is described in JLS 15.13.1
+   */
+  private static boolean isAmbiguous(MethodInvocationTree tree, Symbol parameterSymbol) {
+    Symbol method = tree.symbol();
+    Symbol.TypeSymbol methodOwner = (Symbol.TypeSymbol) method.owner();
+    if (methodOwner.isUnknown() || method.isUnknown()) {
+      return true;
+    }
+    // suitable method is instance method with no parameters, or static method with single parameter of the same type as lambda argument
+    return methodOwner.lookupSymbols(method.name())
+      .stream()
+      .filter(Symbol::isMethodSymbol)
+      .map(s -> (Symbol.MethodSymbol) s)
+      .filter(m -> (!m.isStatic() && m.parameterTypes().isEmpty())
+        ||  (m.isStatic() && m.parameterTypes().size() == 1 && m.parameterTypes().get(0).equals(parameterSymbol.type())))
+      .count() > 1;
   }
 }

@@ -174,14 +174,6 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
         if (value instanceof Symbol.VariableSymbol) {
           // expected values are constant from a Enum, translated into variable symbol
           return ((Symbol.VariableSymbol) value).name();
-        } else if (value instanceof Tree) {
-          Tree tree = (Tree) value;
-          if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-            tree = ((MemberSelectExpressionTree) tree).identifier();
-          }
-          if (tree.is(Tree.Kind.IDENTIFIER)) {
-            return ((IdentifierTree) tree).name();
-          }
         }
       }
     }

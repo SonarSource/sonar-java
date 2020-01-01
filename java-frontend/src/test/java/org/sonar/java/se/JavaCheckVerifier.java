@@ -20,7 +20,6 @@
 package org.sonar.java.se;
 
 import com.google.common.annotations.Beta;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -408,7 +407,9 @@ public class JavaCheckVerifier {
   }
 
   private static void assertSingleIssue(Integer expectFileIssueOnline, String expectFileIssue, Set<AnalyzerMessage> issues) {
-    Preconditions.checkState(issues.size() == 1, "A single issue is expected with line " + expectFileIssueOnline);
+    if (issues.size() != 1) {
+      Fail.fail("A single issue is expected with line " + expectFileIssueOnline);
+    }
     AnalyzerMessage issue = Iterables.getFirst(issues, null);
     assertThat(issue.getLine()).isEqualTo(expectFileIssueOnline);
     assertThat(issue.getMessage()).isEqualTo(expectFileIssue);

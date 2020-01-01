@@ -1,0 +1,116 @@
+<p>Most of cryptographic systems require a sufficient key size to be robust against brute-force attacks.</p>
+<p><a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-131Ar1.pdf">NIST recommendations</a> will be checked:</p>
+<table>
+  <tbody>
+    <tr>
+      <th>Use / Algorithm</th>
+      <th>DSA</th>
+      <th>RSA</th>
+      <th>ECDSA</th>
+      <th>DH</th>
+      <th>MQV</th>
+      <th>ECDH</th>
+      <th>ECMQV</th>
+      <th>Block Cipher</th>
+    </tr>
+    <tr>
+      <td>Digital Signature Generation </td>
+      <td> p ≥ 2048 AND q ≥ 224</td>
+      <td>n ≥ 2048</td>
+      <td>See table below </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x <br></td>
+      <td>Digital Signature Verification </td>
+      <td> p ≥ 2048 AND q ≥ 224</td>
+      <td>n ≥ 2048</td>
+      <td>See table below </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x <br></td>
+      <td>Key Agreement </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x </td>
+      <td> p ≥ 2048 AND q ≥ 224 </td>
+      <td> p ≥ 2048 AND q ≥ 224 </td>
+      <td> See table below </td>
+      <td> See table below </td>
+      <td> x <br></td>
+      <td> Encryption and Decryption </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x </td>
+      <td> x </td>
+      <td> AES-128, 192, 256<br><br>This rule will not raise issues for ciphers that are considered weak (no matter the key size) like
+      <code>DES</code>, <code>Blowfish</code>.<br><br>h3. Notation<br>* DSA ([Digital Signature Algorithm</td>
+      <td>https://en.wikipedia.org/wiki/Digital_Signature_Algorithm]): <code>p</code> is key length and <code>q</code> the modulus length<br>* EC
+      ([Elliptic-curve</td>
+      <td>https://en.wikipedia.org/wiki/Elliptic-curve_cryptography])<br></td>
+      <td></td>
+      <td>EC parameters</td>
+      <td></td>
+      <td>EB</td>
+      <td></td>
+      <td>EC</td>
+      <td></td>
+      <td>ED</td>
+      <td></td>
+      <td>EE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td> Length of n </td>
+      <td> 224-255 </td>
+      <td> 256-383 </td>
+      <td> 384-511 </td>
+      <td> 512+<br></td>
+      <td> Maximum bit length of cofactor h </td>
+      <td> 14 </td>
+      <td> 16 </td>
+      <td> 24 </td>
+    </tr>
+  </tbody>
+</table>
+<h2>Noncompliant Code Example</h2>
+<pre>
+KeyPairGenerator keyPairGen1 = KeyPairGenerator.getInstance("RSA");
+keyPairGen1.initialize(1024); // Noncompliant
+
+KeyPairGenerator keyPairGen5 = KeyPairGenerator.getInstance("EC");
+ECGenParameterSpec ecSpec1 = new ECGenParameterSpec("secp112r1"); // Noncompliant
+keyPairGen5.initialize(ecSpec1);
+
+KeyGenerator keyGen1 = KeyGenerator.getInstance("AES");
+keyGen1.init(64); // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+KeyPairGenerator keyPairGen6 = KeyPairGenerator.getInstance("RSA");
+keyPairGen6.initialize(2048); // Compliant
+
+KeyPairGenerator keyPairGen5 = KeyPairGenerator.getInstance("EC");
+ECGenParameterSpec ecSpec10 = new ECGenParameterSpec("secp224k1"); // compliant
+keyPairGen5.initialize(ecSpec10);
+
+KeyGenerator keyGen2 = KeyGenerator.getInstance("AES");
+keyGen2.init(128); // Compliant
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure
+  </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A9</a> - Security
+  Misconfiguration </li>
+  <li> <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-131Ar1.pdf">NIST 800-131A</a> - Recommendation for Transitioning the
+  Use of Cryptographic Algorithms and Key Lengths </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/326.html">MITRE, CWE-326</a> - Inadequate Encryption Strength </li>
+</ul>
+

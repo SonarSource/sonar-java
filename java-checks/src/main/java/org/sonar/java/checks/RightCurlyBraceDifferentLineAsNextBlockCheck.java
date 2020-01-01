@@ -20,12 +20,12 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@Rule(key = "RightCurlyBraceDifferentLineAsNextBlockCheck")
-@RspecKey("S1108")
+@DeprecatedRuleKey(ruleKey = "RightCurlyBraceDifferentLineAsNextBlockCheck", repositoryKey = "squid")
+@Rule(key = "S1108")
 public class RightCurlyBraceDifferentLineAsNextBlockCheck extends RightCurlyBraceToNextBlockAbstractVisitor {
 
   @Override

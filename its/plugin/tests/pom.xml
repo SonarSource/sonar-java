@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>it-java-plugin</artifactId>
-    <version>6.0.0-SNAPSHOT</version>
+    <version>6.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>it-java-plugin-tests</artifactId>
@@ -13,7 +13,7 @@
 
   <properties>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-    <sonarlint-core.version>4.2.0.2266</sonarlint-core.version>
+    <sonarlint-core.version>4.6.0.2652</sonarlint-core.version>
   </properties>
 
   <dependencies>

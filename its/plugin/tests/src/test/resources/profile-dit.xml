@@ -4,8 +4,8 @@
   <language>java</language>
   <rules>
     <rule>
-      <repositoryKey>squid</repositoryKey>
-      <key>MaximumInheritanceDepth</key>
+      <repositoryKey>java</repositoryKey>
+      <key>S110</key>
       <priority>MAJOR</priority>
     </rule>
   </rules>

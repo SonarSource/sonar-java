@@ -4,18 +4,18 @@
   <language>java</language>
   <rules>
     <rule>
-      <repositoryKey>squid</repositoryKey>
+      <repositoryKey>java</repositoryKey>
       <key>CycleBetweenPackages</key>
       <priority>MAJOR</priority>
     </rule>
     <rule>
-      <repositoryKey>squid</repositoryKey>
+      <repositoryKey>java</repositoryKey>
       <key>S1228</key>
       <priority>MAJOR</priority>
     </rule>
     <rule>
-      <repositoryKey>squid</repositoryKey>
-      <key>UnusedPrivateMethod</key>
+      <repositoryKey>java</repositoryKey>
+      <key>S1144</key>
       <priority>MAJOR</priority>
     </rule>
   </rules>

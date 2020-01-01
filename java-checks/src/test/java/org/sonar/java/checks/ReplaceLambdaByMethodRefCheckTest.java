@@ -33,11 +33,6 @@ public class ReplaceLambdaByMethodRefCheckTest {
   }
 
   @Test
-  public void java7() {
-    JavaCheckVerifier.verifyNoIssue(FILENAME, new ReplaceLambdaByMethodRefCheck(), 7);
-  }
-
-  @Test
   public void no_version() {
     JavaCheckVerifier.verify("src/test/files/checks/ReplaceLambdaByMethodRefCheck_no_version.java", new ReplaceLambdaByMethodRefCheck());
   }

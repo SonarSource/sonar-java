@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -27,16 +28,21 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S1610")
 public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+
+  private static final List<String> CLASS_ANNOTATIONS = Arrays.asList(
+    "com.google.auto.value.AutoValue",
+    "com.google.auto.value.AutoValue$Builder",
+    "com.google.auto.value.AutoOneOf",
+    "org.immutables.value.Value$Immutable");
 
   private int javaVersionAsInt;
 
@@ -99,9 +105,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
   }
 
   private static boolean classHasNoAutoValueOrImmutableAnnotation(ClassTree tree) {
-    return tree.modifiers().annotations().stream()
-      .map(AnnotationTree::annotationType)
-      .map(TypeTree::symbolType)
-      .noneMatch(type -> type.is("com.google.auto.value.AutoValue") || type.is("org.immutables.value.Value$Immutable"));
+    SymbolMetadata classMetadata = tree.symbol().metadata();
+    return CLASS_ANNOTATIONS.stream().noneMatch(classMetadata::isAnnotatedWith);
   }
 }

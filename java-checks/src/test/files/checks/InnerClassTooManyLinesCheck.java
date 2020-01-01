@@ -3,7 +3,7 @@ import java.lang.Object;
 public class A {
 
 
-  class B { // Noncompliant {{Reduce this class from 35 to the maximum allowed 25 or externalize it in a public class.}}
+  class B { // Noncompliant {{Reduce this class from 35 lines to the maximum allowed 25 or externalize it in a public class.}}
     void foo() {
       System.out.println("");
       System.out.println("");
@@ -40,7 +40,7 @@ public class A {
 
     }
   }
-  static class D { // Noncompliant {{Reduce this class from 30 to the maximum allowed 25 or externalize it in a public class.}}
+  static class D { // Noncompliant {{Reduce this class from 30 lines to the maximum allowed 25 or externalize it in a public class.}}
 
     class E {
       void bar () {

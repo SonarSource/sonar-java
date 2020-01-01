@@ -22,9 +22,8 @@ package org.sonar.java.model;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.sonar.java.resolve.SymbolMetadataResolve;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -50,6 +49,11 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
     @Override
     public Type type() {
+      if (typeBinding().isInterface()) {
+        // JLS § 15.12.1:
+        // for "T.super.foo()", if T is an interface, 'super' keyword is used to access method of the interface itself
+        return sema.type(typeBinding());
+      }
       return sema.type(typeBinding().getSuperclass());
     }
   };
@@ -121,7 +125,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     return (ClassTree) super.declaration();
   }
 
-  abstract class SpecialField implements VariableSymbol {
+  abstract class SpecialField extends Symbols.DefaultSymbol implements Symbol.VariableSymbol {
     @Override
     public final Symbol owner() {
       return JTypeSymbol.this;
@@ -133,83 +137,13 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     }
 
     @Override
-    public final boolean isTypeSymbol() {
-      return false;
-    }
-
-    @Override
-    public final boolean isMethodSymbol() {
-      return false;
-    }
-
-    @Override
-    public final boolean isPackageSymbol() {
-      return false;
-    }
-
-    @Override
-    public final boolean isStatic() {
-      return false;
-    }
-
-    @Override
     public final boolean isFinal() {
       return true;
     }
 
     @Override
-    public final boolean isEnum() {
-      return false;
-    }
-
-    @Override
-    public final boolean isInterface() {
-      return false;
-    }
-
-    @Override
-    public final boolean isAbstract() {
-      return false;
-    }
-
-    @Override
-    public final boolean isPublic() {
-      return false;
-    }
-
-    @Override
-    public final boolean isPrivate() {
-      return false;
-    }
-
-    @Override
-    public final boolean isProtected() {
-      return false;
-    }
-
-    @Override
-    public final boolean isPackageVisibility() {
-      return false;
-    }
-
-    @Override
-    public final boolean isDeprecated() {
-      return false;
-    }
-
-    @Override
-    public final boolean isVolatile() {
-      return false;
-    }
-
-    @Override
     public final boolean isUnknown() {
       return false;
-    }
-
-    @Override
-    public final SymbolMetadata metadata() {
-      return new SymbolMetadataResolve();
     }
 
     @Override

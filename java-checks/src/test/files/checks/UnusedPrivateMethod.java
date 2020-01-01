@@ -1,10 +1,20 @@
 package org.sonar.java.checks.targets;
 
+import java.util.ArrayList;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
+import java.util.List;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import static java.util.Collections.emptySet;
+import java.io.Serializable;
 
-public class UnusedPrivateMethod {
+class UnusedPrivateMethod {
 
   private UnusedPrivateMethod() {}
   private UnusedPrivateMethod(int a) {} // Noncompliant
@@ -134,7 +144,7 @@ class Lambdas {
 class ReturnTypeInference {
   private void foo(java.util.List<String> l) {}
   void test() {
-    java.util.List<String> l;
+    java.util.List<String> l = new ArrayList<>();
     foo(l.stream().sorted().collect(Collectors.toList()));
   }
 }
@@ -146,10 +156,10 @@ class KillTheNoiseUnresolvedMethodCall {
   }
 
   void foo(Object o, java.util.List<Object> objects) {
-    unresolvedMethod(o); // unresolved
+    unresolvedMethod(unknown); // unresolved
 
     A a;
-    a = new A(o); // unresolved
+    a = new A(unknown); // unresolved
     a = new org.sonar.java.checks.targets.KillTheNoiseUnresolvedMethodCall.A(o); // unresolved
     A[] as = new A[0];
 
@@ -182,7 +192,7 @@ class KillTheNoiseUnresolvedMethodCall {
     }
   }
 }
-public class Bar {
+class Bar {
   public void print() {
     java.util.List<String> list = java.util.Arrays.asList("x", "y", "z");
     java.util.List<Foo> foos = list.stream().map(Foo::new).collect(Collectors.toList());
@@ -193,6 +203,57 @@ public class Bar {
     private String foo;
     private Foo(String foo) {
       this.foo = foo;
+    }
+  }
+}
+
+class NestedTypeInference1 {
+  public <D, L extends List<D>> void foo(Callback2<L> cb2) {
+    qix(rs -> bar(cb2.doStuff(rs)));
+  }
+
+  private void qix(Callback1 cb1) {}
+
+  private <D, L extends List<D>> void bar(L data) {}
+
+  @FunctionalInterface
+  private interface Callback1 {
+    void doStuff(String rs);
+  }
+
+  @FunctionalInterface
+  private interface Callback2<T> {
+    T doStuff(String rs);
+  }
+}
+
+class NestedTypeInference2 {
+  public Supplier<Map<Boolean, BigDecimal>> branch() {
+    return turnover(calculateTurnover(this::extractSourceBranches));
+  }
+
+  private Supplier<Map<Boolean, BigDecimal>> turnover(Function<Double, BigDecimal> param1) {
+    return Collections::emptyMap;
+  }
+
+  private <A, S> Function<A, BigDecimal> calculateTurnover(Function<A, Set<S>> param1) {
+    return x -> BigDecimal.ZERO;
+  }
+
+  private Set<Integer> extractSourceBranches(Double param) {
+    return emptySet();
+  }
+}
+
+class MyClass<A extends Serializable> {
+
+  private MyClass(MyClassBuilder<A> builder) { // Compliant: used in MyClassBuilder
+    builder.build();
+  }
+
+  public static final class MyClassBuilder<B extends Serializable> {
+    public MyClass<B> build() {
+      return new MyClass<>(this); // constructor is correctly resolved when using diamond
     }
   }
 }

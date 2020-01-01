@@ -77,7 +77,7 @@ public class FlowComputation {
   private static final String IMPLIES_SAME_VALUE = "Implies '%s' has the same value as '%s'.";
 
   private static final int MAX_FLOW_STEPS = 3_000_000;
-  private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
+  private static final Logger LOG = Loggers.get(FlowComputation.class);
   private final Predicate<Constraint> addToFlow;
   private final Predicate<Constraint> terminateTraversal;
   private final Set<SymbolicValue> symbolicValues;

@@ -86,7 +86,7 @@ public class JavaAstScanner {
       String fileContent = inputFile.contents();
       final String version;
       if (visitor.getJavaVersion() == null || visitor.getJavaVersion().asInt() < 0) {
-        version = /* default */ "12";
+        version = /* default */ JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
       } else {
         version = Integer.toString(visitor.getJavaVersion().asInt());
       }
