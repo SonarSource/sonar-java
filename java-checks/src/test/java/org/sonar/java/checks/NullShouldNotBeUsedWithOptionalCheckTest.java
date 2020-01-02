@@ -26,7 +26,8 @@ public class NullShouldNotBeUsedWithOptionalCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NullShouldNotBeUsedWithOptionalCheck.java", new NullShouldNotBeUsedWithOptionalCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/NullShouldNotBeUsedWithOptionalCheck_jdk.java", NullShouldNotBeUsedWithOptionalCheck.createJdkCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/NullShouldNotBeUsedWithOptionalCheck_guava.java", NullShouldNotBeUsedWithOptionalCheck.createGuavaCheck());
   }
 
 }
