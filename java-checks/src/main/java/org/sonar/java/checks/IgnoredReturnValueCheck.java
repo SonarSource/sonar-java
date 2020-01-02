@@ -70,6 +70,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
       .add("java.math.BigInteger")
       .add("java.math.BigDecimal")
       .add("java.util.Optional")
+      .add("com.google.common.base.Optional")
       .build();
 
   private static final Set<String> EXCLUDED_PREFIX = ImmutableSet.of("parse", "format", "decode", "valueOf");

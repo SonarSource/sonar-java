@@ -53,8 +53,11 @@ class A {
     ZonedDateTime.now(); // Noncompliant
     BigInteger.valueOf(12L).add(BigInteger.valueOf(12563159)); // Noncompliant
     BigDecimal.valueOf(12L).add(BigDecimal.valueOf(12563159)); // Noncompliant
+
     Optional<String> o = Optional.empty();
-    o.map(o -> o.toString()); // Noncompliant
+    o.map(s -> s.toString()); // Noncompliant
+    com.google.common.base.Optional<String> o2 = Optional.absent();
+    o2.transform(s -> s.toString()); // Noncompliant
 
     String s = "s";
     s.intern(); // Compliant
@@ -77,7 +80,7 @@ class A {
       Integer.parseInt(textToCheck, 10); // Noncompliant
       textToCheck.getBytes(java.nio.charset.Charset.forName("UTF-8")); // Noncompliant
       return true;
-    }finally {
+    } finally {
       // do something
     }
   }
