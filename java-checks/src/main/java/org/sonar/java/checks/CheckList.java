@@ -74,6 +74,7 @@ import org.sonar.java.checks.security.SocketUsageCheck;
 import org.sonar.java.checks.security.StandardInputReadCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
 import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
+import org.sonar.java.checks.security.XxeActiveMQCheck;
 import org.sonar.java.checks.security.ZipEntryCheck;
 import org.sonar.java.checks.serialization.BlindSerialVersionUidCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
@@ -398,6 +399,7 @@ public final class CheckList {
       ConstructorCallingOverridableCheck.class,
       EqualsOnAtomicClassCheck.class,
       XmlExternalEntityProcessingCheck.class,
+      XxeActiveMQCheck.class,
       LDAPAuthenticatedConnectionCheck.class,
       LDAPDeserializationCheck.class,
       SecureXmlTransformerCheck.class,
