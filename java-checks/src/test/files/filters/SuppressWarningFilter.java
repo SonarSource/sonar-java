@@ -78,6 +78,40 @@ class Test {
     @SuppressWarnings(someUnresolvedConstant) // WithIssue
     private static final int bad_constant_name3 = 42; // WithIssue
   }
+
+  @SuppressWarnings("squid:S1068") // WithIssue
+  class WithDeprecatedRuleKey {
+
+    @SuppressWarnings("squid:S00115") // WithIssue
+    private static final int bad_constant_name = 42; // NoIssue
+    @SuppressWarnings("squid:S115") // WithIssue
+    private static final int bad_constant_name2 = 42; // NoIssue
+    @SuppressWarning("S115") // WithIssue
+    private static final int bad_constant_name3 = 42; // WithIssue
+
+    @SuppressWarnings("squid:ObjectFinalizeCheck") // WithIssue
+    void a() {
+      Object object = new Object();
+      object.finalize(); // NoIssue
+    }
+
+    @SuppressWarnings("squid:S1111") // WithIssue
+    void b() {
+      Object object = new Object();
+      object.finalize(); // NoIssue
+    }
+
+    @SuppressWarnings("repo:S1111") // WithIssue
+    void c() {
+      Object object = new Object();
+      object.finalize(); // NoIssue
+    }
+
+    void d() {
+      Object object = new Object();
+      object.finalize(); // WithIssue
+    }
+  }
 }
 
 /**

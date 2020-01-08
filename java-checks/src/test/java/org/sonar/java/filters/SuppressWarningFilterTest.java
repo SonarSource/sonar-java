@@ -20,6 +20,7 @@
 package org.sonar.java.filters;
 
 import org.junit.Test;
+import org.sonar.java.checks.ObjectFinalizeCheck;
 import org.sonar.java.checks.SuppressWarningsCheck;
 import org.sonar.java.checks.TodoTagPresenceCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -37,7 +38,8 @@ public class SuppressWarningFilterTest {
       new UnusedPrivateFieldCheck(),
       new BadConstantNameCheck(),
       new SuppressWarningsCheck(),
-      new TodoTagPresenceCheck()
+      new TodoTagPresenceCheck(),
+      new ObjectFinalizeCheck()
     );
   }
 
