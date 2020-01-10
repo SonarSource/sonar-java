@@ -936,6 +936,20 @@ class JParserSemanticTest {
    * @see org.eclipse.jdt.core.dom.EnumConstantDeclaration
    */
   @Test
+  void declaration_enum_constant_recovered_constructor() {
+    JavaTree.CompilationUnitTreeImpl cu = test("@GenerateConstructor enum E { A(0), B(1) ; @GenerateGetter Integer value;  }");
+    ClassTree e = (ClassTree) cu.types().get(0);
+    VariableTreeImpl c = (VariableTreeImpl) e.members().get(0);
+    NewClassTreeImpl initializer = Objects.requireNonNull((NewClassTreeImpl) c.initializer());
+    IdentifierTreeImpl i = (IdentifierTreeImpl) initializer.getConstructorIdentifier();
+    assertThat(i.binding).isNull();
+    assertThat(i.symbol().isUnknown()).isTrue();
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.EnumConstantDeclaration
+   */
+  @Test
   void declaration_enum_constant_anonymous() {
     JavaTree.CompilationUnitTreeImpl cu = test("enum E { C { }; E(){} }");
     ClassTree e = (ClassTree) cu.types().get(0);

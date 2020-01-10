@@ -882,7 +882,7 @@ public class JParser {
 
     IdentifierTreeImpl identifier = convertSimpleName(e.getName());
     if (e.getAnonymousClassDeclaration() == null) {
-      identifier.binding = e.resolveConstructorBinding();
+      identifier.binding = excludeRecovery(e.resolveConstructorBinding(), arguments.size());
     } else {
       identifier.binding = findConstructorForAnonymousClass(e.getAST(), identifier.typeBinding, e.resolveConstructorBinding());
     }
