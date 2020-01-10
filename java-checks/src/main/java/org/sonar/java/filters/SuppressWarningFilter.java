@@ -36,6 +36,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.SuppressWarningsCheck;
 import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -48,12 +49,15 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   private final Map<String, Multimap<String, Integer>> excludedLinesByComponent = new HashMap<>();
 
   private static final String SUPPRESS_WARNING_RULE_KEY = getSuppressWarningRuleKey();
+
+  private static final Map<String, RuleKey> DEPRRECATED_RULE_KEYS = getDeprecatedRuleKeys();
 
   private static String getSuppressWarningRuleKey() {
     return AnnotationUtils.getAnnotation(SuppressWarningsCheck.class, Rule.class).key();
@@ -68,6 +72,18 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
   public void scanFile(JavaFileScannerContext context) {
     super.scanFile(context);
     excludedLinesByComponent.put(getComponentKey(), HashMultimap.create(excludedLinesByRule()));
+  }
+
+  private static Map<String, RuleKey> getDeprecatedRuleKeys() {
+    Map<String, RuleKey> deprecatedRuleKeys = new HashMap<>();
+    CheckList.getChecks().forEach(c -> {
+      String key = AnnotationUtils.getAnnotation(c, Rule.class).key();
+      DeprecatedRuleKey deprecatedRuleKeyAnnotation = AnnotationUtils.getAnnotation(c, DeprecatedRuleKey.class);
+      if (deprecatedRuleKeyAnnotation != null) {
+        deprecatedRuleKeys.put(key, RuleKey.of(deprecatedRuleKeyAnnotation.repositoryKey(), deprecatedRuleKeyAnnotation.ruleKey()));
+      }
+    });
+    return deprecatedRuleKeys;
   }
 
   @Override
@@ -95,7 +111,10 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
   private static boolean isRuleKey(String rule, RuleKey ruleKey) {
     try {
       // format of the rules requires a repository: "repo:key"
-      return ruleKey.equals(RuleKey.parse(rule));
+      RuleKey parsed = RuleKey.parse(rule);
+      RuleKey deprecatedRuleKey = DEPRRECATED_RULE_KEYS.get(ruleKey.rule());
+      RuleKey squidRuleKey = RuleKey.of("squid", ruleKey.rule());
+      return ruleKey.equals(parsed) || squidRuleKey.equals(parsed) || parsed.equals(deprecatedRuleKey);
     } catch (IllegalArgumentException e) {
       return false;
     }
