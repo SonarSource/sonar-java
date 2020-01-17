@@ -1,3 +1,5 @@
+// To help keep "guava" and "jdk" tests in sync, this file is identical to its counterpart except for the import of class "Optional"
+
 import com.google.common.base.Optional;
 import java.util.List;
 import javax.annotation.Nullable;
