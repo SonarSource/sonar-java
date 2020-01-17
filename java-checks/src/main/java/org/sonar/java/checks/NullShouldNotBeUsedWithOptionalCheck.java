@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -34,29 +36,16 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2789")
 public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final List<String> OPTIONAL_CLASSES = Arrays.asList("java.util.Optional", "com.google.common.base.Optional");
   private static final String NULLABLE = "javax.annotation.Nullable";
-  private static final String JDK_OPTIONAL = "java.util.Optional";
-  private static final String GUAVA_OPTIONAL = "com.google.common.base.Optional";
-
-  public static NullShouldNotBeUsedWithOptionalCheck createJdkCheck() {
-    return new NullShouldNotBeUsedWithOptionalCheck(JDK_OPTIONAL);
-  }
-
-  public static NullShouldNotBeUsedWithOptionalCheck createGuavaCheck() {
-    return new NullShouldNotBeUsedWithOptionalCheck(GUAVA_OPTIONAL);
-  }
 
   private JavaFileScannerContext context;
-  private final String optionalClass;
-
-  private NullShouldNotBeUsedWithOptionalCheck(String optionalClass) {
-    this.optionalClass = optionalClass;
-  }
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
@@ -94,7 +83,7 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
 
   @Override
   public void visitVariable(VariableTree variable) {
-    if (variable.type().symbolType().is(optionalClass)) {
+    if (isOptionalType(variable.type())) {
       checkNullableAnnotation(variable.modifiers(), "\"Optional\" variables should not be \"@Nullable\".");
     }
 
@@ -112,7 +101,7 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
 
     @Override
     public void visitConditionalExpression(ConditionalExpressionTree conditionalExpression) {
-      if (conditionalExpression.symbolType().is(optionalClass)) {
+      if (isOptionalType(conditionalExpression)) {
         checkNull(conditionalExpression.trueExpression());
         checkNull(conditionalExpression.falseExpression());
       }
@@ -136,14 +125,26 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
       // don't visit inner class tree, as methods in there will be visited by outer class
     }
 
+
+  }
+  private static boolean returnsOptional(MethodTree method) {
+    return isOptionalType(method.returnType());
   }
 
-  private boolean returnsOptional(MethodTree method) {
-    return method.returnType().symbolType().is(optionalClass);
+  private static boolean isOptional(ExpressionTree expression) {
+    return isOptionalType(expression) && !isNull(expression);
   }
 
-  private boolean isOptional(ExpressionTree expression) {
-    return expression.symbolType().is(optionalClass) && !isNull(expression);
+  private static boolean isOptionalType(TypeTree type) {
+    return isOptionalType(type.symbolType());
+  }
+
+  private static boolean isOptionalType(ExpressionTree expression) {
+    return isOptionalType(expression.symbolType());
+  }
+
+  private static boolean isOptionalType(Type type) {
+    return OPTIONAL_CLASSES.contains(type.fullyQualifiedName());
   }
 
   private static boolean isNull(ExpressionTree expression) {
@@ -152,11 +153,13 @@ public class NullShouldNotBeUsedWithOptionalCheck extends BaseTreeVisitor implem
 
   private void checkNullableAnnotation(ModifiersTree modifiers, String message) {
     for (AnnotationTree annotation : modifiers.annotations()) {
-      Type type = annotation.annotationType().symbolType();
-      if (type.is(NULLABLE)) {
+      if (hasNullableAnnotation(annotation)) {
         context.reportIssue(this, annotation, message);
       }
     }
   }
 
+  private static boolean hasNullableAnnotation(AnnotationTree annotation) {
+    return annotation.annotationType().symbolType().is(NULLABLE);
+  }
 }
