@@ -1,3 +1,4 @@
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,6 +11,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Scanner;
 
 class A {
   private Charset charset;
@@ -72,8 +74,12 @@ class A {
     new String(bytes, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
     new String(bytes, offset, length, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
 
+    (new ByteArrayOutputStream()).toString("UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=44;ec=51]]
     new InputStreamReader(inputStream, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
     new OutputStreamWriter(outputStream, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
+
+    new Scanner(inputStream, "UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=30;ec=37]]
+    new Scanner(file, "UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=23;ec=30]]
 
     new org.apache.commons.codec.binary.Hex("UTF-8"); // Noncompliant
     new org.apache.commons.codec.net.QuotedPrintableCodec("UTF-8"); // Noncompliant
