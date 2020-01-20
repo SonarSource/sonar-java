@@ -57,15 +57,19 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   private static final String JAVA_IO_OUTPUTSTREAM = "java.io.OutputStream";
   private static final String JAVA_IO_OUTPUTSTREAMWRITER = "java.io.OutputStreamWriter";
   private static final String JAVA_IO_INPUTSTREAMREADER = "java.io.InputStreamReader";
+  private static final String JAVA_IO_BYTEARRAYOUTPUTSTREAM = "java.io.ByteArrayOutputStream";
   private static final String JAVA_IO_WRITER = "java.io.Writer";
   private static final String JAVA_IO_READER = "java.io.Reader";
   private static final String JAVA_NIO_CHARSET = "java.nio.charset.Charset";
+  private static final String JAVA_NIO_FILE_PATH = "java.nio.file.Path";
+  private static final String JAVA_NIO_CHANNELS_READABLEBYTECHANNEL = "java.nio.channels.ReadableByteChannel";
   private static final String JAVA_NET_URI = "java.net.URI";
   private static final String JAVA_NET_URL = "java.net.URL";
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_LANG_STRINGBUFFER = "java.lang.StringBuffer";
   private static final String JAVA_LANG_CHARSEQUENCE = "java.lang.CharSequence";
   private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";
+  private static final String JAVA_UTIL_SCANNER = "java.util.Scanner";
 
   private static final String COMMONS_CODEC_CHARSETS = "org.apache.commons.codec.Charsets";
   private static final String COMMONS_CODEC_HEX = "org.apache.commons.codec.binary.Hex";
@@ -121,8 +125,8 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     Symbol symbol = identifierTree.symbol();
     if (symbol.isVariableSymbol() && symbol.owner().type().is("com.google.common.base.Charsets")) {
       String identifier = identifierTree.name();
-      String aliasedIdentigier = identifier.replace("_", "-");
-      if (STANDARD_CHARSETS.stream().anyMatch(c -> c.name().equals(aliasedIdentigier))) {
+      String aliasedIdentifier = identifier.replace("_", "-");
+      if (STANDARD_CHARSETS.stream().anyMatch(c -> c.name().equals(aliasedIdentifier))) {
         reportIssue(identifierTree, "Replace \"com.google.common.base.Charsets." + identifier + "\" with \"StandardCharsets." + identifier + "\".");
       }
     }
@@ -134,6 +138,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       method(JAVA_NIO_CHARSET, "forName").parameters(JAVA_LANG_STRING),
       method(JAVA_LANG_STRING, "getBytes").parameters(JAVA_LANG_STRING),
       method(JAVA_LANG_STRING, "getBytes").parameters(JAVA_NIO_CHARSET),
+      method(JAVA_IO_BYTEARRAYOUTPUTSTREAM, TO_STRING).parameters(JAVA_LANG_STRING),
       method(COMMONS_CODEC_CHARSETS, "toCharset").parameters(JAVA_LANG_STRING),
       method(COMMONS_IO_CHARSETS, "toCharset").parameters(JAVA_LANG_STRING),
       method(COMMONS_IO_FILEUTILS, "readFileToString").parameters(JAVA_IO_FILE, JAVA_LANG_STRING),
@@ -164,6 +169,10 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       constructor(JAVA_LANG_STRING).parameters(BYTE_ARRAY, INT, INT, JAVA_LANG_STRING),
       constructor(JAVA_IO_INPUTSTREAMREADER).parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
       constructor(JAVA_IO_OUTPUTSTREAMWRITER).parameters(JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
+      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
+      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_FILE, JAVA_LANG_STRING),
+      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_NIO_FILE_PATH, JAVA_LANG_STRING),
+      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_NIO_CHANNELS_READABLEBYTECHANNEL, JAVA_LANG_STRING),
       constructor(COMMONS_IO_CHARSEQUENCEINPUTSTREAM).parameters(JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING),
       constructor(COMMONS_IO_CHARSEQUENCEINPUTSTREAM).parameters(JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING, INT),
       constructor(COMMONS_IO_READERINPUTSTREAM).parameters(JAVA_IO_READER, JAVA_LANG_STRING),

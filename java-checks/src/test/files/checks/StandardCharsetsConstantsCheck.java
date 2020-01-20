@@ -1,3 +1,4 @@
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -7,9 +8,12 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Scanner;
 
 class A {
   private Charset charset;
@@ -34,8 +38,10 @@ class A {
   private CharSequence charSequence;
   private Collection<?> collection;
   private File file;
+  private Path path;
   private URI uri;
   private URL url;
+  private ReadableByteChannel readableByteChannel;
 
   void myMethod() throws Exception {
     charset = com.google.common.base.Charsets.ISO_8859_1; // Noncompliant {{Replace "com.google.common.base.Charsets.ISO_8859_1" with "StandardCharsets.ISO_8859_1".}} [[sc=47;ec=57]]
@@ -72,8 +78,19 @@ class A {
     new String(bytes, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
     new String(bytes, offset, length, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
 
+    (new ByteArrayOutputStream()).toString("UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=44;ec=51]]
+    (new ByteArrayOutputStream()).toString(StandardCharsets.UTF_8);
     new InputStreamReader(inputStream, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
     new OutputStreamWriter(outputStream, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
+
+    new Scanner(inputStream, "UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=30;ec=37]]
+    new Scanner(inputStream, StandardCharsets.UTF_8);
+    new Scanner(file, "UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=23;ec=30]]
+    new Scanner(file, StandardCharsets.UTF_8);
+    new Scanner(path, "UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=23;ec=30]]
+    new Scanner(path, StandardCharsets.UTF_8);
+    new Scanner(readableByteChannel, "UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=38;ec=45]]
+    new Scanner(readableByteChannel, StandardCharsets.UTF_8);
 
     new org.apache.commons.codec.binary.Hex("UTF-8"); // Noncompliant
     new org.apache.commons.codec.net.QuotedPrintableCodec("UTF-8"); // Noncompliant
