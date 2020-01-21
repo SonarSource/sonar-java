@@ -26,6 +26,7 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -41,6 +42,8 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisError;
+import org.sonar.java.AnalysisException;
+import org.sonar.java.CheckFailureException;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.IllegalRuleParameterException;
@@ -60,6 +63,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 public class VisitorsBridge {
 
@@ -75,8 +79,8 @@ public class VisitorsBridge {
   private final List<File> classpath;
   private Set<String> classesNotFound = new TreeSet<>();
   private final SquidClassLoader classLoader;
-  private ScannerRunner scannerRunner;
-  private static Predicate<JavaFileScanner> isIssuableSubscriptionVisitor = s -> s instanceof IssuableSubscriptionVisitor;
+  private IssuableSubsciptionVisitorsRunner issuableSubscriptionVisitorsRunner;
+  private static final Predicate<JavaFileScanner> IS_ISSUABLE_SUBSCRIPTION_VISITOR = IssuableSubscriptionVisitor.class::isInstance;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -96,8 +100,8 @@ public class VisitorsBridge {
       }
     }
     this.classpath = projectClasspath;
-    this.executableScanners = allScanners.stream().filter(isIssuableSubscriptionVisitor.negate()).collect(Collectors.toList());
-    this.scannerRunner = new ScannerRunner(allScanners);
+    this.executableScanners = allScanners.stream().filter(IS_ISSUABLE_SUBSCRIPTION_VISITOR.negate()).collect(Collectors.toList());
+    this.issuableSubscriptionVisitorsRunner = new IssuableSubsciptionVisitorsRunner(allScanners);
     this.sonarComponents = sonarComponents;
     this.classLoader = ClassLoaderBuilder.create(projectClasspath);
     this.symbolicExecutionEnabled = symbolicExecutionMode.isEnabled();
@@ -115,8 +119,8 @@ public class VisitorsBridge {
   public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
     List<JavaFileScanner> scannersForJavaVersion = executableScanners(allScanners, javaVersion);
-    this.executableScanners = scannersForJavaVersion.stream().filter(isIssuableSubscriptionVisitor.negate()).collect(Collectors.toList());
-    this.scannerRunner = new ScannerRunner(scannersForJavaVersion);
+    this.executableScanners = scannersForJavaVersion.stream().filter(IS_ISSUABLE_SUBSCRIPTION_VISITOR.negate()).collect(Collectors.toList());
+    this.issuableSubscriptionVisitorsRunner = new IssuableSubsciptionVisitorsRunner(scannersForJavaVersion);
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
@@ -128,40 +132,71 @@ public class VisitorsBridge {
     }
 
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.sema, sonarComponents, fileParsed);
+
     // Symbolic execution checks
     if (symbolicExecutionEnabled) {
-      runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache), AnalysisError.Kind.SE_ERROR);
-      behaviorCache.cleanup();
+      try {
+        runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache), AnalysisError.Kind.SE_ERROR);
+        behaviorCache.cleanup();
+      } catch (CheckFailureException e) {
+        interruptIfFailFast(e);
+      }
     }
-    executableScanners.forEach(scanner -> runScanner(javaFileScannerContext, scanner, AnalysisError.Kind.CHECK_ERROR));
-    scannerRunner.run(javaFileScannerContext);
+
+    for (JavaFileScanner scanner : executableScanners) {
+      try {
+        runScanner(javaFileScannerContext, scanner, AnalysisError.Kind.CHECK_ERROR);
+      } catch (CheckFailureException e) {
+        interruptIfFailFast(e);
+      }
+    }
+
+    try {
+      issuableSubscriptionVisitorsRunner.run(javaFileScannerContext);
+    } catch (CheckFailureException e) {
+      interruptIfFailFast(e);
+    }
   }
 
-  private void runScanner(JavaFileScannerContext javaFileScannerContext, JavaFileScanner scanner, AnalysisError.Kind kind) {
+  private void interruptIfFailFast(CheckFailureException e) {
+    if (sonarComponents != null && sonarComponents.shouldFailAnalysisOnException()) {
+      throw new AnalysisException("Failing check", e);
+    }
+  }
+
+  private void runScanner(JavaFileScannerContext javaFileScannerContext, JavaFileScanner scanner, AnalysisError.Kind kind) throws CheckFailureException {
+    runScanner(() -> scanner.scanFile(javaFileScannerContext), scanner, kind);
+  }
+
+  private void runScanner(Runnable action, JavaFileScanner scanner, AnalysisError.Kind kind) throws CheckFailureException {
     try {
-      scanner.scanFile(javaFileScannerContext);
+      action.run();
     } catch (IllegalRuleParameterException e) {
       // bad configuration of a rule parameter, we want to fail analysis fast.
-      throw e;
+      throw new AnalysisException("Bad configuration of rule parameter", e);
     } catch (Exception e) {
-      if (sonarComponents != null && sonarComponents.shouldFailAnalysisOnException()) {
-        throw e;
-      }
       Throwable rootCause = Throwables.getRootCause(e);
       if (rootCause instanceof InterruptedIOException || rootCause instanceof InterruptedException) {
         throw e;
       }
-      Rule annotation = AnnotationUtils.getAnnotation(scanner.getClass(), Rule.class);
-      String key = "";
-      if (annotation != null) {
-        key = annotation.key();
-      }
-      LOG.error(
-        String.format("Unable to run check %s - %s on file '%s', To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/",
-          scanner.getClass(), key, currentFile),
-        e);
+
+      String message = String.format(
+        "Unable to run check %s - %s on file '%s', To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/",
+        scanner.getClass(), ruleKey(scanner), currentFile);
+
+      LOG.error(message, e);
       addAnalysisError(e, currentFile, kind);
+
+      throw new CheckFailureException(message, e);
     }
+  }
+
+  private static String ruleKey(JavaFileScanner scanner) {
+    Rule annotation = AnnotationUtils.getAnnotation(scanner.getClass(), Rule.class);
+    if (annotation != null) {
+      return annotation.key();
+    }
+    return "";
   }
 
   private void addAnalysisError(Exception e, InputFile inputFile, AnalysisError.Kind checkError) {
@@ -228,27 +263,29 @@ public class VisitorsBridge {
     classLoader.close();
   }
 
-  private static class ScannerRunner {
+  private class IssuableSubsciptionVisitorsRunner {
     private EnumMap<Tree.Kind, List<SubscriptionVisitor>> checks;
     private List<SubscriptionVisitor> subscriptionVisitors;
 
-    ScannerRunner(List<JavaFileScanner> executableScanners) {
+    IssuableSubsciptionVisitorsRunner(List<JavaFileScanner> executableScanners) {
       checks = new EnumMap<>(Tree.Kind.class);
       subscriptionVisitors = executableScanners.stream()
-        .filter(isIssuableSubscriptionVisitor)
-        .map(s -> (SubscriptionVisitor) s)
+        .filter(IS_ISSUABLE_SUBSCRIPTION_VISITOR)
+        .map(SubscriptionVisitor.class::cast)
         .collect(Collectors.toList());
-      subscriptionVisitors.forEach(s -> s.nodesToVisit().forEach(k -> checks.computeIfAbsent(k, key -> new ArrayList<>()).add(s))
-      );
+
+      subscriptionVisitors
+        .forEach(s -> s.nodesToVisit()
+          .forEach(k -> checks.computeIfAbsent(k, key -> new ArrayList<>()).add(s)));
     }
 
-    public void run(JavaFileScannerContext javaFileScannerContext) {
-      subscriptionVisitors.forEach(s -> s.setContext(javaFileScannerContext));
+    public void run(JavaFileScannerContext javaFileScannerContext) throws CheckFailureException {
+      forEach(subscriptionVisitors, s -> s.setContext(javaFileScannerContext));
       visit(javaFileScannerContext.getTree());
-      subscriptionVisitors.forEach(s -> s.leaveFile(javaFileScannerContext));
+      forEach(subscriptionVisitors, s -> s.leaveFile(javaFileScannerContext));
     }
 
-    private void visitChildren(Tree tree) {
+    private void visitChildren(Tree tree) throws CheckFailureException {
       JavaTree javaTree = (JavaTree) tree;
       if (!javaTree.isLeaf()) {
         for (Tree next : javaTree.getChildren()) {
@@ -259,26 +296,30 @@ public class VisitorsBridge {
       }
     }
 
-    private void visit(Tree tree) {
+    private void visit(Tree tree) throws CheckFailureException {
+      Kind kind = tree.kind();
+      List<SubscriptionVisitor> subscribed = checks.getOrDefault(kind, Collections.emptyList());
       Consumer<SubscriptionVisitor> callback;
-      boolean isToken = tree.kind() == Tree.Kind.TOKEN;
+      boolean isToken = (kind == Tree.Kind.TOKEN);
       if (isToken) {
-        callback = s -> {
-          SyntaxToken syntaxToken = (SyntaxToken) tree;
-          s.visitToken(syntaxToken);
-        };
+        callback = s -> s.visitToken((SyntaxToken) tree);
       } else {
         callback = s -> s.visitNode(tree);
       }
-      List<SubscriptionVisitor> subscribed = checks.getOrDefault(tree.kind(), Collections.emptyList());
-      subscribed.forEach(callback);
+      forEach(subscribed, callback);
       if (isToken) {
-        checks.getOrDefault(Tree.Kind.TRIVIA, Collections.emptyList()).forEach(s -> ((SyntaxToken) tree).trivias().forEach(s::visitTrivia));
+        forEach(checks.getOrDefault(Tree.Kind.TRIVIA, Collections.emptyList()), s -> ((SyntaxToken) tree).trivias().forEach(s::visitTrivia));
       } else {
         visitChildren(tree);
       }
       if(!isToken) {
-        subscribed.forEach(s -> s.leaveNode(tree));
+        forEach(subscribed, s -> s.leaveNode(tree));
+      }
+    }
+
+    private final void forEach(Collection<SubscriptionVisitor> visitors, Consumer<SubscriptionVisitor> callback) throws CheckFailureException {
+      for (SubscriptionVisitor visitor : visitors) {
+        runScanner(() -> callback.accept(visitor), visitor, AnalysisError.Kind.CHECK_ERROR);
       }
     }
   }

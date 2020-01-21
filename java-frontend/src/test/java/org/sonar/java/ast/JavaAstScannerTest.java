@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.Version;
@@ -47,6 +48,7 @@ import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.java.se.checks.SECheck;
@@ -97,11 +99,23 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void scan_single_file_with_dumb_file_should_fail() throws Exception {
+  public void scan_single_file_with_dumb_file_should_not_fail() throws Exception {
+    String filename = "!!dummy";
+    JavaAstScanner.scanSingleFileForTests(TestUtils.emptyInputFile(filename), new VisitorsBridge(null));
+  }
+
+  @Test
+  public void scan_single_file_with_dumb_file_should_not_fail_when_not_fail_fast() {
+    String filename = "!!dummy";
+    scanSingleFile(TestUtils.emptyInputFile(filename), false);
+  }
+
+  @Test
+  public void scan_single_file_with_dumb_file_should_fail_when_fail_fast() throws Exception {
     thrown.expect(AnalysisException.class);
     String filename = "!!dummy";
-    thrown.expectMessage(filename);
-    JavaAstScanner.scanSingleFileForTests(TestUtils.emptyInputFile(filename), new VisitorsBridge(null));
+    thrown.expectMessage("SonarQube is unable to analyze file : '!!dummy'");
+    scanSingleFile(TestUtils.emptyInputFile(filename), true);
   }
 
   @Test
@@ -219,6 +233,18 @@ public class JavaAstScannerTest {
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
     verify(sonarComponents).reportAnalysisError(any(RecognitionException.class), any(InputFile.class));
     verifyZeroInteractions(listener);
+  }
+
+  private final void scanSingleFile(InputFile file, boolean failOnException) {
+    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
+    sensorContextTester.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failOnException));
+
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents.setSensorContext(sensorContextTester);
+
+    VisitorsBridge visitorsBridge = new VisitorsBridge(new ArrayList(), new ArrayList<>(), sonarComponents);
+
+    JavaAstScanner.scanSingleFileForTests(file, visitorsBridge, new JavaVersionImpl(), sonarComponents);
   }
 
   private static class CheckThrowingSOError implements JavaFileScanner {
