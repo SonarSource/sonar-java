@@ -278,7 +278,7 @@ public class JavaCheckVerifier extends CheckVerifier {
     } else {
       visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), sonarComponents);
     }
-    JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge, javaCheckVerifier.javaVersion);
+    JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge, javaCheckVerifier.javaVersion, null);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     if (testJavaFileScannerContext == null) {
       Fail.fail("Semantic was required but it was not possible to create it. Please checks the logs to find out the reason.");

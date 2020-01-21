@@ -103,12 +103,20 @@ public class JavaAstScanner {
       LOG.error(e.getMessage());
 
       parseErrorWalkAndVisit(e, inputFile);
+    } catch (AnalysisException e) {
+      throw e;
     } catch (Exception e) {
       checkInterrupted(e);
-      throw new AnalysisException(getAnalysisExceptionMessage(inputFile), e);
+      interruptIfFailFast(e, inputFile);
     } catch (StackOverflowError error) {
       LOG.error(String.format("A stack overflow error occurred while analyzing file: '%s'", inputFile), error);
       throw error;
+    }
+  }
+
+  private void interruptIfFailFast(Exception e, InputFile inputFile) {
+    if (sonarComponents != null && sonarComponents.shouldFailAnalysisOnException()) {
+      throw new AnalysisException(getAnalysisExceptionMessage(inputFile), e);
     }
   }
 
@@ -137,12 +145,12 @@ public class JavaAstScanner {
 
   @VisibleForTesting
   public static void scanSingleFileForTests(InputFile file, VisitorsBridge visitorsBridge) {
-    scanSingleFileForTests(file, visitorsBridge, new JavaVersionImpl());
+    scanSingleFileForTests(file, visitorsBridge, new JavaVersionImpl(), null);
   }
 
   @VisibleForTesting
-  public static void scanSingleFileForTests(InputFile inputFile, VisitorsBridge visitorsBridge, JavaVersion javaVersion) {
-    JavaAstScanner astScanner = new JavaAstScanner(null);
+  public static void scanSingleFileForTests(InputFile inputFile, VisitorsBridge visitorsBridge, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents) {
+    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
     visitorsBridge.setJavaVersion(javaVersion);
     astScanner.setVisitorBridge(visitorsBridge);
     astScanner.scan(Collections.singleton(inputFile));
