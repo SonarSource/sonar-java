@@ -60,7 +60,7 @@ public class SonarComponents {
    */
   public static final Metric<String> FEEDBACK_METRIC = new Metric.Builder("sonarjava_feedback", "SonarJava feedback", Metric.ValueType.DATA).setHidden(true).create();
   public static final String COLLECT_ANALYSIS_ERRORS_KEY = "sonar.java.collectAnalysisErrors";
-  public static final String FAIL_ON_EXCEPTION_KEY = "sonar.java.failOnException";
+  public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
   /**
    * Approximate limit of feedback of 200ko to roughly 100_000 characters of useful feedback.
    * This does not take into account eventual overhead of serialization.

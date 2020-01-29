@@ -190,7 +190,7 @@ public abstract class CheckVerifier {
 
   static SonarComponents sonarComponents(InputFile inputFile) {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    context.setSettings(new MapSettings().setProperty("sonar.java.failOnException", true));
+    context.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
