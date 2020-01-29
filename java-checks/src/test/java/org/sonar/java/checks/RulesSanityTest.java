@@ -249,7 +249,7 @@ public class RulesSanityTest {
 
   private static SonarComponents sonarComponents(List<InputFile> inputFiles) {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    context.setSettings(new MapSettings().setProperty("sonar.java.failOnException", true));
+    context.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
     DefaultFileSystem fileSystem = context.fileSystem();
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null) {
       @Override

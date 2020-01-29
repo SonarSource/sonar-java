@@ -239,7 +239,7 @@ public class JavaRulingTest {
       .setProperty("dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
       .setProperty("lits.differences", litsDifferencesPath(projectName))
       .setProperty("sonar.java.xfile", "true")
-      .setProperty("sonar.java.failOnException", "true");
+      .setProperty("sonar.internal.analysis.failFast", "true");
     BuildResult buildResult;
     if (buildQuietly) {
       // if build fail, ruling job is not violently interrupted, allowing time to dump SQ logs
