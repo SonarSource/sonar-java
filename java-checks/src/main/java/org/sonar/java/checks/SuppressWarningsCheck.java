@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -39,6 +40,9 @@ import java.util.stream.Collectors;
 
 @Rule(key = "S1309")
 public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
+
+  private static final Pattern FORMER_REPOSITORY_PREFIX = Pattern.compile("^squid:");
+  private static final String NEW_REPOSITORY_PREFIX = "java:";
 
   @RuleProperty(
     key = "listOfWarnings",
@@ -87,6 +91,7 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
     allowedWarnings = new ArrayList<>();
     Arrays.stream(warningsCommaSeparated.split(","))
       .filter(StringUtils::isNotBlank)
+      .map(SuppressWarningsCheck::replaceFormerRepositoryPrefix)
       .forEach(allowedWarnings::add);
 
     return allowedWarnings;
@@ -95,16 +100,24 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
   private static List<String> getSuppressedWarnings(ExpressionTree argument) {
     List<String> result = new ArrayList<>();
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
-      result.add(LiteralUtils.trimQuotes(((LiteralTree) argument).value()));
+      result.add(getAnnotationArgument((LiteralTree) argument));
     } else if (argument.is(Tree.Kind.NEW_ARRAY)) {
       NewArrayTree array = (NewArrayTree) argument;
       for (ExpressionTree expressionTree : array.initializers()) {
         if (expressionTree.is(Kind.STRING_LITERAL)) {
-          result.add(LiteralUtils.trimQuotes(((LiteralTree) expressionTree).value()));
+          result.add(getAnnotationArgument((LiteralTree) expressionTree));
         }
       }
     }
     return result;
+  }
+
+  private static String getAnnotationArgument(LiteralTree argument) {
+    return replaceFormerRepositoryPrefix(LiteralUtils.trimQuotes(argument.value()));
+  }
+
+  private static String replaceFormerRepositoryPrefix(String value) {
+    return FORMER_REPOSITORY_PREFIX.matcher(value.trim()).replaceFirst(NEW_REPOSITORY_PREFIX);
   }
 
 }
