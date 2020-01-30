@@ -49,6 +49,11 @@ public class SuppressWarningsCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/SuppressWarningsCheck/two_warnings_from_different_lines_are_not_allowed.java", getCheck("unused, cast"));
   }
 
+  @Test
+  public void former_squid_repository_keys_are_still_supported() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/checks/SuppressWarningsCheck/former_squid_rule_keys.java", getCheck("squid:S1068, java:S115"));
+  }
+
   private static SuppressWarningsCheck getCheck(String parameter) {
     SuppressWarningsCheck check = new SuppressWarningsCheck();
     check.warningsCommaSeparated = parameter;
