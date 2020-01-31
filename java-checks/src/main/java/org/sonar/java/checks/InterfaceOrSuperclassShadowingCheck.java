@@ -53,10 +53,18 @@ public class InterfaceOrSuperclassShadowingCheck extends IssuableSubscriptionVis
   }
 
   private void checkSuperType(ClassTree tree, @Nullable Type superType) {
-    if (superType != null && superType.symbol().name().equals(tree.symbol().name())) {
+    if (superType != null && hasSameName(tree, superType) && !isInnerClass(tree)) {
       String classOrInterface = tree.is(Tree.Kind.CLASS) ? "class" : "interface";
       reportIssue(tree.simpleName(), "Rename this " + classOrInterface + ".");
     }
   }
 
+  private static boolean hasSameName(ClassTree tree, Type superType) {
+    return superType.symbol().name().equals(tree.symbol().name());
+  }
+
+  private static boolean isInnerClass(ClassTree tree) {
+    Symbol owner = tree.symbol().owner();
+    return owner != null && !owner.isUnknown() && owner.isTypeSymbol();
+  }
 }

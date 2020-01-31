@@ -1,3 +1,5 @@
+import java.util.Map;
+
 interface MyCloseable extends java.io.Closeable {}
 interface Closeable extends java.io.Closeable {} // Noncompliant {{Rename this interface.}}
 
@@ -9,3 +11,11 @@ abstract class Serializable implements java.io.Serializable {} // Noncompliant [
 
 abstract class MyFlushable implements java.io.Flushable {}
 abstract class Flushable extends MyFlushable {}
+
+abstract class Entry implements Map.Entry {} // Noncompliant
+class MyMap {
+  interface Entry extends Map.Entry {} // Compliant
+  interface Unkonwn extends Unknown {} // Compliant
+}
+
+interface Object {} // Noncompliant
