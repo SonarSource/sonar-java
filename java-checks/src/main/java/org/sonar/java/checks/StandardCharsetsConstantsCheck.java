@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +94,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
           StandardCharsets.UTF_8);
 
   private static final Map<String, String> ALIAS_TO_CONSTANT = createAliasToConstantNameMap();
+  private static final int JAVA_10 = 10;
 
   private static Map<String, String> createAliasToConstantNameMap() {
     ImmutableMap.Builder<String, String> constantNames = ImmutableMap.builder();
@@ -134,11 +136,10 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
+    List<MethodMatcher> matchers = new ArrayList<>(Arrays.asList(
       method(JAVA_NIO_CHARSET, "forName").parameters(JAVA_LANG_STRING),
       method(JAVA_LANG_STRING, "getBytes").parameters(JAVA_LANG_STRING),
       method(JAVA_LANG_STRING, "getBytes").parameters(JAVA_NIO_CHARSET),
-      method(JAVA_IO_BYTEARRAYOUTPUTSTREAM, TO_STRING).parameters(JAVA_LANG_STRING),
       method(COMMONS_CODEC_CHARSETS, "toCharset").parameters(JAVA_LANG_STRING),
       method(COMMONS_IO_CHARSETS, "toCharset").parameters(JAVA_LANG_STRING),
       method(COMMONS_IO_FILEUTILS, "readFileToString").parameters(JAVA_IO_FILE, JAVA_LANG_STRING),
@@ -169,10 +170,6 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       constructor(JAVA_LANG_STRING).parameters(BYTE_ARRAY, INT, INT, JAVA_LANG_STRING),
       constructor(JAVA_IO_INPUTSTREAMREADER).parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
       constructor(JAVA_IO_OUTPUTSTREAMWRITER).parameters(JAVA_IO_OUTPUTSTREAM, JAVA_LANG_STRING),
-      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING),
-      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_FILE, JAVA_LANG_STRING),
-      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_NIO_FILE_PATH, JAVA_LANG_STRING),
-      constructor(JAVA_UTIL_SCANNER).parameters(JAVA_NIO_CHANNELS_READABLEBYTECHANNEL, JAVA_LANG_STRING),
       constructor(COMMONS_IO_CHARSEQUENCEINPUTSTREAM).parameters(JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING),
       constructor(COMMONS_IO_CHARSEQUENCEINPUTSTREAM).parameters(JAVA_LANG_CHARSEQUENCE, JAVA_LANG_STRING, INT),
       constructor(COMMONS_IO_READERINPUTSTREAM).parameters(JAVA_IO_READER, JAVA_LANG_STRING),
@@ -183,7 +180,15 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       constructor(COMMONS_IO_WRITEROUTPUTSTREAM).parameters(JAVA_IO_WRITER, JAVA_LANG_STRING),
       constructor(COMMONS_IO_WRITEROUTPUTSTREAM).parameters(JAVA_IO_WRITER, JAVA_LANG_STRING, INT, BOOLEAN),
       constructor(COMMONS_CODEC_HEX).parameters(JAVA_LANG_STRING),
-      constructor(COMMONS_CODEC_QUOTEDPRINTABLECODEC).parameters(JAVA_LANG_STRING));
+      constructor(COMMONS_CODEC_QUOTEDPRINTABLECODEC).parameters(JAVA_LANG_STRING)));
+    if (context.getJavaVersion().asInt() >= JAVA_10) {
+      matchers.add(method(JAVA_IO_BYTEARRAYOUTPUTSTREAM, TO_STRING).parameters(JAVA_LANG_STRING));
+      matchers.add(constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_INPUTSTREAM, JAVA_LANG_STRING));
+      matchers.add(constructor(JAVA_UTIL_SCANNER).parameters(JAVA_IO_FILE, JAVA_LANG_STRING));
+      matchers.add(constructor(JAVA_UTIL_SCANNER).parameters(JAVA_NIO_FILE_PATH, JAVA_LANG_STRING));
+      matchers.add(constructor(JAVA_UTIL_SCANNER).parameters(JAVA_NIO_CHANNELS_READABLEBYTECHANNEL, JAVA_LANG_STRING));
+    }
+    return matchers;
   }
 
   private static MethodMatcher method(String type, String name) {
