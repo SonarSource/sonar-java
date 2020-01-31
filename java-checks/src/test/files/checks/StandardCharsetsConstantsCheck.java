@@ -78,19 +78,8 @@ class A {
     new String(bytes, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
     new String(bytes, offset, length, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
 
-    (new ByteArrayOutputStream()).toString("UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=44;ec=51]]
-    (new ByteArrayOutputStream()).toString(StandardCharsets.UTF_8);
     new InputStreamReader(inputStream, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
     new OutputStreamWriter(outputStream, org.apache.commons.lang.CharEncoding.UTF_8); // Noncompliant
-
-    new Scanner(inputStream, "UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=30;ec=37]]
-    new Scanner(inputStream, StandardCharsets.UTF_8);
-    new Scanner(file, "UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=23;ec=30]]
-    new Scanner(file, StandardCharsets.UTF_8);
-    new Scanner(path, "UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=23;ec=30]]
-    new Scanner(path, StandardCharsets.UTF_8);
-    new Scanner(readableByteChannel, "UTF-8"); // Noncompliant {{Replace charset name argument with StandardCharsets.UTF_8}} [[sc=38;ec=45]]
-    new Scanner(readableByteChannel, StandardCharsets.UTF_8);
 
     new org.apache.commons.codec.binary.Hex("UTF-8"); // Noncompliant
     new org.apache.commons.codec.net.QuotedPrintableCodec("UTF-8"); // Noncompliant

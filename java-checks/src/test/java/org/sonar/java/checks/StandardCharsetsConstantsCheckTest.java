@@ -28,6 +28,8 @@ public class StandardCharsetsConstantsCheckTest {
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck());
     JavaCheckVerifier.verify("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck(), 7);
+    JavaCheckVerifier.verify("src/test/files/checks/StandardCharsetsConstantsCheck_java8.java", new StandardCharsetsConstantsCheck(), 8);
+    JavaCheckVerifier.verify("src/test/files/checks/StandardCharsetsConstantsCheck_java10.java", new StandardCharsetsConstantsCheck(), 10);
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck(), 6);
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck());
   }
