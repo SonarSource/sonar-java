@@ -58,6 +58,7 @@ import org.sonar.java.checks.security.DataHashingCheck;
 import org.sonar.java.checks.security.DebugFeatureEnabledCheck;
 import org.sonar.java.checks.security.EmailHotspotCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
+import org.sonar.java.checks.security.EncryptionAlgorithmCheck;
 import org.sonar.java.checks.security.EnvVariablesHotspotCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
@@ -396,6 +397,7 @@ public final class CheckList {
       AvoidDESCheck.class,
       RSAUsesOAEPCheck.class,
       AESAlgorithmCheck.class,
+      EncryptionAlgorithmCheck.class,
       ConstructorCallingOverridableCheck.class,
       EqualsOnAtomicClassCheck.class,
       XmlExternalEntityProcessingCheck.class,
