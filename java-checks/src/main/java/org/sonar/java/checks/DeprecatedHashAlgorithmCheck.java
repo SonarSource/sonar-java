@@ -117,7 +117,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
   /**
    * These APIs have static getInstance method to get an implementation of some crypto algorithm.
-   * javax.crypto.Cipher is missing from this list, because it is covered by rule S2278 {@link AvoidDESCheck}
+   * javax.crypto.Cipher is missing from this list, because it is covered by rule S5547 {@link StrongCipherAlgorithmCheck}
    * Details can be found here <a href="http://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html">Security Standard Names</a>
    */
   private static final List<String> CRYPTO_APIS = Arrays.asList(

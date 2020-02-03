@@ -1,0 +1,56 @@
+<p><a href="https://en.wikipedia.org/wiki/Strong_cryptography">Strong cipher algorithms</a> are cryptographic systems resistant to cryptanalysis, they
+are not vulnerable to well-known attacks like brute force attacks for example. </p>
+<p>It is recommended to use only cipher algorithms intensively tested and promoted by the cryptographic community.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+import javax.crypto.Cipher;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.NoSuchPaddingException;
+
+public class test {
+
+    public static void main(String[] args) {
+      try
+      {
+        Cipher c1 = Cipher.getInstance("DES"); // Noncompliant: DES works with 56-bit keys allow attacks via exhaustive search
+        Cipher c7 = Cipher.getInstance("DESede"); // Noncompliant: Triple DES is vulnerable to meet-in-the-middle attack
+        Cipher c13 = Cipher.getInstance("RC2"); // Noncompliant: RC2 is vulnerable to a related-key attack
+        Cipher c19 = Cipher.getInstance("RC4"); // Noncompliant: vulnerable to several attacks (see https://en.wikipedia.org/wiki/RC4#Security)
+        Cipher c25 = Cipher.getInstance("Blowfish"); // Noncompliant: Blowfish use a 64-bit block size makes it vulnerable to birthday attacks
+
+        NullCipher nc = new NullCipher(); // Noncompliant: the NullCipher class provides an "identity cipher" one that does not transform or encrypt the plaintext in any way.
+      }
+      catch(NoSuchAlgorithmException|NoSuchPaddingException e)
+      {
+      }
+    }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+import javax.crypto.Cipher;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.NoSuchPaddingException;
+
+public class test {
+
+    public static void main(String[] args) {
+      try
+      {
+        Cipher c31 = Cipher.getInstance("AES/GCM/NoPadding"); // Compliant
+      }
+      catch(NoSuchAlgorithmException|NoSuchPaddingException e)
+      {
+      }
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10 2017 Category A3</a> - Sensitive Data Exposure
+  </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/327.html">MITRE, CWE-327</a> - Use of a Broken or Risky Cryptographic Algorithm </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/VwAZAg">CERT, MSC61-J.</a> - Do not use insecure or weak cryptographic algorithms </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+</ul>
+
