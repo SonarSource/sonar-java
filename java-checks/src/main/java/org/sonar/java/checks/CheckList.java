@@ -666,6 +666,7 @@ public final class CheckList {
       BasicAuthCheck.class,
       SynchronizedOverrideCheck.class,
       MissingBeanValidationCheck.class,
+      StrongCipherAlgorithmCheck.class,
       UseSwitchExpressionCheck.class,
       EnvVariablesHotspotCheck.class,
       PasswordEncoderCheck.class,

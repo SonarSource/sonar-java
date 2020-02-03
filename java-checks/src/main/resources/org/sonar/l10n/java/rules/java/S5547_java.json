@@ -1,0 +1,27 @@
+{
+  "title": "Cipher algorithms should be robust",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "tags": [
+    "cwe",
+    "privacy",
+    "cert",
+    "owasp-a6",
+    "sans-top25-porous",
+    "owasp-a3"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5547",
+  "sqKey": "S5547",
+  "scope": "All",
+  "securityStandards": {
+    "CWE": [
+      327,
+      326
+    ],
+    "OWASP": [
+      "A3",
+      "A6"
+    ]
+  }
+}
