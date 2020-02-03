@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks.security;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
@@ -32,15 +31,13 @@ public class VerifiedServerHostnamesCheckTest {
     JavaCheckVerifier.verify(TEST_FOLDER + "HostnameVerifier.java", new VerifiedServerHostnamesCheck());
   }
 
-  @Ignore
   @Test
-  public void java_mail() {
-    JavaCheckVerifier.verify(TEST_FOLDER + "JavaMail.java", new VerifiedServerHostnamesCheck());
+  public void java_mail_session() {
+    JavaCheckVerifier.verify(TEST_FOLDER + "JavaMailSession.java", new VerifiedServerHostnamesCheck());
   }
 
-  @Ignore
   @Test
-  public void ApacheCommonEmail() {
+  public void apache_common_email() {
     JavaCheckVerifier.verify(TEST_FOLDER + "ApacheCommonEmail.java", new VerifiedServerHostnamesCheck());
   }
 
