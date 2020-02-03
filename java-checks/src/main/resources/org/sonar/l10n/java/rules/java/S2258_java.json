@@ -1,26 +1,16 @@
 {
   "title": "\"javax.crypto.NullCipher\" should not be used for anything other than testing",
   "type": "VULNERABILITY",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
   "tags": [
-    "cwe",
-    "owasp-a6",
-    "sans-top25-porous"
+    
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2258",
   "sqKey": "S2258",
-  "scope": "Main",
-  "securityStandards": {
-    "CWE": [
-      327
-    ],
-    "OWASP": [
-      "A6"
-    ]
-  }
+  "scope": "Main"
 }
