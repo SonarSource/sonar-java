@@ -1,0 +1,102 @@
+<p>To establish a SSL/TLS connection not vulnerable to man-in-the-middle attacks, it's essential to make sure the server presents the right
+certificate.</p>
+<p>The certificate's hostname-specific data should match the server hostname.</p>
+<p>It's not recommended to re-invent the wheel by implementing custom hostname verification.</p>
+<p>TLS/SSL libraries provide built-in hostname verification functions that should be used.</p>
+<p>This rule raises an issue when:</p>
+<p>- <code>HostnameVerifier.verify()</code> method always <code>return true</code></p>
+<p>- a JavaMail's <code>javax.mail.Session</code> is created with a <code>Properties</code> object having no
+<code>mail.smtp.ssl.checkserveridentity</code> or <code>mail.smtps.ssl.checkserveridentity</code> not configured to <code>true</code></p>
+<p>- a Apache Common Emails's <code>org.apache.commons.mail.SimpleEmail</code> is used with <code>setSSLOnConnect(true)</code> or
+<code>setStartTLSEnabled(true)</code> or <code>setStartTLSRequired(true)</code> without a call to <code>setSSLCheckServerIdentity(true)</code></p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+SSLContext sslcontext = SSLContext.getInstance( "TLS" );
+sslcontext.init(null, new TrustManager[]{new X509TrustManager() {
+  public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+  public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+  public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+
+}}, new java.security.SecureRandom());
+
+Client client = ClientBuilder.newBuilder().sslContext(sslcontext).hostnameVerifier(new HostnameVerifier() {
+  @Override
+  public boolean verify(String requestedHost, SSLSession remoteServerSession) {
+    return true;  // Noncompliant
+  }
+}).build();
+</pre>
+<p>SimpleEmail example:</p>
+<pre>
+Email email = new SimpleEmail();
+email.setSmtpPort(465);
+email.setAuthenticator(new DefaultAuthenticator(username, password));
+email.setSSLOnConnect(true); // Noncompliant; setSSLCheckServerIdentity(true) should also be called before sending the email
+email.send();
+</pre>
+<p>JavaMail's example:</p>
+<pre>
+Properties props = new Properties();
+props.put("mail.smtp.host", "smtp.gmail.com");
+props.put("mail.smtp.socketFactory.port", "465");
+props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); // Noncompliant; Session is created without having "mail.smtp.ssl.checkserveridentity" set to true
+props.put("mail.smtp.auth", "true");
+props.put("mail.smtp.port", "465");
+Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+  protected PasswordAuthentication getPasswordAuthentication() {
+    return new PasswordAuthentication("username@gmail.com", "password");
+  }
+});
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+SSLContext sslcontext = SSLContext.getInstance( "TLSv1.2" );
+sslcontext.init(null, new TrustManager[]{new X509TrustManager() {
+  @Override
+  public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+  @Override
+  public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+  @Override
+  public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+
+}}, new java.security.SecureRandom());
+
+Client client = ClientBuilder.newBuilder().sslContext(sslcontext).hostnameVerifier(new HostnameVerifier() {
+  @Override
+  public boolean verify(String requestedHost, SSLSession remoteServerSession) {
+    return requestedHost.equalsIgnoreCase(remoteServerSession.getPeerHost()); // Compliant
+  }
+}).build();
+</pre>
+<p>SimpleEmail example:</p>
+<pre>
+Email email = new SimpleEmail();
+email.setSmtpPort(465);
+email.setAuthenticator(new DefaultAuthenticator(username, password));
+email.setSSLOnConnect(true);
+email.setSSLCheckServerIdentity(true); // Compliant
+email.send();
+</pre>
+<p>JavaMail's example:</p>
+<pre>
+Properties props = new Properties();
+props.put("mail.smtp.host", "smtp.gmail.com");
+props.put("mail.smtp.socketFactory.port", "465");
+props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+props.put("mail.smtp.auth", "true");
+props.put("mail.smtp.port", "465");
+props.put("mail.smtp.ssl.checkserveridentity", true); // Compliant
+Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+  protected PasswordAuthentication getPasswordAuthentication() {
+    return new PasswordAuthentication("username@gmail.com", "password");
+  }
+});
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">OWASP Top 10 2017 Category A6</a> - Security
+  Misconfiguration </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/295.html">MITRE, CWE-295</a> - Improper Certificate Validation </li>
+  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#WEAK_HOSTNAME_VERIFIER">WEAK_HOSTNAME_VERIFIER</a> </li>
+</ul>
+

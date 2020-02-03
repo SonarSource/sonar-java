@@ -74,6 +74,7 @@ import org.sonar.java.checks.security.SecureXmlTransformerCheck;
 import org.sonar.java.checks.security.SocketUsageCheck;
 import org.sonar.java.checks.security.StandardInputReadCheck;
 import org.sonar.java.checks.security.TrustManagerCertificateCheck;
+import org.sonar.java.checks.security.VerifiedServerHostnamesCheck;
 import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
 import org.sonar.java.checks.security.XxeActiveMQCheck;
 import org.sonar.java.checks.security.ZipEntryCheck;
@@ -685,7 +686,8 @@ public final class CheckList {
       SillyStringOperationsCheck.class,
       StringReplaceCheck.class,
       BoxedBooleanExpressionsCheck.class,
-      DoubleCheckedLockingAssignmentCheck.class
+      DoubleCheckedLockingAssignmentCheck.class,
+      VerifiedServerHostnamesCheck.class
     );
   }
 
