@@ -22,7 +22,10 @@ package org.sonar.java.checks.security;
 import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -32,20 +35,37 @@ import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(key = "S4426")
 public class CryptographicKeySizeCheck extends AbstractMethodDetection {
 
   private static final String KEY_PAIR_GENERATOR = "java.security.KeyPairGenerator";
   private static final String KEY_GENERATOR = "javax.crypto.KeyGenerator";
+  private static final String EC_GEN_PARAMETER_SPEC = "java.security.spec.ECGenParameterSpec";
   private static final String GET_INSTANCE_METHOD = "getInstance";
   private static final String STRING = "java.lang.String";
+
+  private static final int EC_MIN_KEY = 224;
+  private static final Pattern EC_KEY_PATTERN = Pattern.compile("^(secp|prime|sect|c2tnb)(\\d+)");
+
+  private static final Map<String, Integer> ALGORITHM_KEY_SIZE_MAP = ImmutableMap.of(
+    "RSA", 2048,
+    "DH", 2048,
+    "DIFFIEHELLMAN", 2048,
+    "DSA", 2048,
+    "AES", 128);
+
+  private static final MethodMatcher KEY_GEN_INIT = MethodMatcher.create().typeDefinition(KEY_GENERATOR).name("init").addParameter("int");
+  private static final MethodMatcher KEY_PAIR_GEN_INITIALIZE = MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name("initialize").addParameter("int");
+  private static final MethodMatcher KEY_PAIR_GEN_INITIALIZE_WITH_SOURCE = KEY_PAIR_GEN_INITIALIZE.copy().addParameter("java.security.SecureRandom");
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Arrays.asList(
       MethodMatcher.create().typeDefinition(KEY_GENERATOR).name(GET_INSTANCE_METHOD).addParameter(STRING),
-      MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name(GET_INSTANCE_METHOD).addParameter(STRING));
+      MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name(GET_INSTANCE_METHOD).addParameter(STRING),
+      MethodMatcher.create().typeDefinition(EC_GEN_PARAMETER_SPEC).name("<init>").addParameter(STRING));
   }
 
   @Override
@@ -58,28 +78,33 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
     }
   }
 
+  @Override
+  protected void onConstructorFound(NewClassTree newClassTree) {
+    String firstArgument = ExpressionsHelper.getConstantValueAsString(newClassTree.arguments().get(0)).value();
+    if (firstArgument != null) {
+      Matcher matcher = EC_KEY_PATTERN.matcher(firstArgument);
+      if (matcher.find() && Integer.valueOf(matcher.group(2)) < EC_MIN_KEY) {
+        reportIssue(newClassTree, "Use a key length of at least " + EC_MIN_KEY + " bits for EC cipher algorithm.");
+      }
+    }
+  }
+
   private class MethodVisitor extends BaseTreeVisitor {
 
     private final String algorithm;
+    private final Integer minKeySize;
 
     public MethodVisitor(String getInstanceArg) {
       this.algorithm = getInstanceArg;
+      this.minKeySize = ALGORITHM_KEY_SIZE_MAP.get(this.algorithm.toUpperCase(Locale.ENGLISH));
     }
-
-    private final Map<String, Integer> algorithmKeySizeMap = ImmutableMap.of("Blowfish", 128, "RSA", 2048);
-
-    private final MethodMatcher keyGenInit = MethodMatcher.create().typeDefinition(KEY_GENERATOR).name("init").addParameter("int");
-    private final MethodMatcher keyPairGenInitialize = MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name("initialize").addParameter("int");
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (keyGenInit.matches(mit) || keyPairGenInitialize.matches(mit)) {
-        Integer minKeySize = algorithmKeySizeMap.get(this.algorithm);
-        if (minKeySize != null) {
-          Integer keySize = LiteralUtils.intLiteralValue(mit.arguments().get(0));
-          if (keySize != null && keySize < minKeySize) {
-            reportIssue(mit, "Use a key length of at least " + minKeySize + " bits.");
-          }
+      if (minKeySize != null && (KEY_GEN_INIT.matches(mit) || KEY_PAIR_GEN_INITIALIZE.matches(mit) || KEY_PAIR_GEN_INITIALIZE_WITH_SOURCE.matches(mit))) {
+        Integer keySize = LiteralUtils.intLiteralValue(mit.arguments().get(0));
+        if (keySize != null && keySize < minKeySize) {
+          reportIssue(mit, "Use a key length of at least " + minKeySize + " bits for " + algorithm + " cipher algorithm.");
         }
       }
     }
