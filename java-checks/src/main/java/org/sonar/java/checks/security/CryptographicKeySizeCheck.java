@@ -49,16 +49,16 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
   private static final int EC_MIN_KEY = 224;
   private static final Pattern EC_KEY_PATTERN = Pattern.compile("^(secp|prime|sect|c2tnb)(\\d+)");
 
-  private static final Map<String, Integer> algorithmKeySizeMap = ImmutableMap.of(
+  private static final Map<String, Integer> ALGORITHM_KEY_SIZE_MAP = ImmutableMap.of(
     "RSA", 2048,
     "DH", 2048,
     "DIFFIEHELLMAN", 2048,
     "DSA", 2048,
     "AES", 128);
 
-  private static final MethodMatcher keyGenInit = MethodMatcher.create().typeDefinition(KEY_GENERATOR).name("init").addParameter("int");
-  private static final MethodMatcher keyPairGenInitialize = MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name("initialize").addParameter("int");
-  private static final MethodMatcher keyPairGenInitializeWithSource = keyPairGenInitialize.copy().addParameter("java.security.SecureRandom");
+  private static final MethodMatcher KEY_GEN_INIT = MethodMatcher.create().typeDefinition(KEY_GENERATOR).name("init").addParameter("int");
+  private static final MethodMatcher KEY_PAIR_GEN_INITIALIZE = MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name("initialize").addParameter("int");
+  private static final MethodMatcher KEY_PAIR_GEN_INITIALIZE_WITH_SOURCE = KEY_PAIR_GEN_INITIALIZE.copy().addParameter("java.security.SecureRandom");
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -96,12 +96,12 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
 
     public MethodVisitor(String getInstanceArg) {
       this.algorithm = getInstanceArg;
-      this.minKeySize = algorithmKeySizeMap.get(this.algorithm.toUpperCase(Locale.ENGLISH));
+      this.minKeySize = ALGORITHM_KEY_SIZE_MAP.get(this.algorithm.toUpperCase(Locale.ENGLISH));
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (minKeySize != null && (keyGenInit.matches(mit) || keyPairGenInitialize.matches(mit) || keyPairGenInitializeWithSource.matches(mit))) {
+      if (minKeySize != null && (KEY_GEN_INIT.matches(mit) || KEY_PAIR_GEN_INITIALIZE.matches(mit) || KEY_PAIR_GEN_INITIALIZE_WITH_SOURCE.matches(mit))) {
         Integer keySize = LiteralUtils.intLiteralValue(mit.arguments().get(0));
         if (keySize != null && keySize < minKeySize) {
           reportIssue(mit, "Use a key length of at least " + minKeySize + " bits for " + algorithm + " cipher algorithm.");
