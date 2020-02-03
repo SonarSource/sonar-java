@@ -11,6 +11,11 @@ class RSA {
     keyGen.initialize(1024); // Noncompliant [[sc=5;ec=28]]  {{Use a key length of at least 2048 bits for RSA cipher algorithm.}}
   }
 
+  public void key_variable_lowercase() throws NoSuchAlgorithmException {
+    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("rsa");
+    keyGen.initialize(1024); // Noncompliant
+  }
+
   public void key_variable_compliant() throws NoSuchAlgorithmException {
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
     keyGen.initialize(2048); // Compliant
@@ -25,7 +30,10 @@ class RSA {
 
 interface I {
   Runnable r = () -> {
-    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+    try {
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+    } catch (NoSuchAlgorithmException e) {
+    }
   };
 }
 
