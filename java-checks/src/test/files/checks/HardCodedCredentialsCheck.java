@@ -17,6 +17,12 @@ class A {
     String variable5 = "login=a&password=";
     String variable6 = "login=a&password= ";
 
+    String query1 = "password=?"; // Compliant
+    String query4 = "password='" + pwd + "'"; // Compliant
+    String query2 = "password=:password"; // Compliant
+    String query3 = "password=:param"; // Compliant
+    String query5 = "password=%s"; // Compliant
+
     String variableNameWithPasswordInIt = "xxx"; // Noncompliant [[sc=12;ec=40]]
     String variableNameWithPasswordInItEmpty = "";
     String variableNameWithPassphraseInIt = "xxx"; // Noncompliant
@@ -52,14 +58,7 @@ class A {
     if(equals(password)) {
     }
 
-    // coverage
-    new String() {
-      public String() {
-        char[] passphrase = toCharArray();
-      }
-    };
-
-    Connection conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", var);
+    java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", var);
     conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", "whateverpassword"); // Noncompliant
     conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", PASSED); // Noncompliant
     conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root");
@@ -90,11 +89,11 @@ class A {
     OtherPasswordAuthentication opa;
     opa = new OtherPasswordAuthentication("userName", "1234".toCharArray()); // Compliant
 
-    Properties props = new Properties();
+    java.util.Properties props = new java.util.Properties();
     props.put(Context.SECURITY_CREDENTIALS, "whateverpassword"); // Noncompliant
     props.put("java.naming.security.credentials", "whateverpassword"); // Noncompliant
 
-    Hashtable<String, String> env = new Hashtable<String, String>();
+    java.util.Hashtable<String, String> env = new java.util.Hashtable<>();
     env.put(Context.SECURITY_CREDENTIALS, "whateverpassword"); // Noncompliant
     env.put("", "whateverpassword");
     env.put(Context.SECURITY_CREDENTIALS, "");
