@@ -22,11 +22,13 @@ package org.sonar.java.checks.security;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -34,9 +36,17 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.java.checks.helpers.ReassignmentFinder.getReassignments;
 
 @Rule(key = "S3329")
 public class CipherBlockChainingCheck extends AbstractMethodDetection {
+
+  private static final MethodMatcher SECURE_RANDOM_GENERATE_SEED = MethodMatcher.create()
+    .typeDefinition("java.security.SecureRandom")
+    .name("generateSeed")
+    .withAnyParameters();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -46,6 +56,10 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
+    if (newClassTree.arguments().isEmpty() || isDynamicallyGenerated(newClassTree.arguments().get(0))) {
+      return;
+    }
+
     Tree mTree = ExpressionUtils.getEnclosingMethod(newClassTree);
     if (mTree != null) {
       MethodInvocationVisitor mitVisit = new MethodInvocationVisitor(newClassTree);
@@ -54,6 +68,24 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
         reportIssue(newClassTree, "Use a dynamically-generated, random IV.");
       }
     }
+  }
+
+  private static boolean isDynamicallyGenerated(ExpressionTree tree) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) tree).symbol();
+      VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
+      return declaration != null &&
+        (isSecureRandomGenerateSeed(declaration.initializer()) ||
+          getReassignments(symbol.declaration(), symbol.usages()).stream()
+            .map(AssignmentExpressionTree::expression)
+            .anyMatch(CipherBlockChainingCheck::isSecureRandomGenerateSeed));
+    } else {
+      return isSecureRandomGenerateSeed(tree);
+    }
+  }
+
+  private static boolean isSecureRandomGenerateSeed(@Nullable ExpressionTree tree) {
+    return tree != null && tree.is(Tree.Kind.METHOD_INVOCATION) && SECURE_RANDOM_GENERATE_SEED.matches((MethodInvocationTree) tree);
   }
 
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
