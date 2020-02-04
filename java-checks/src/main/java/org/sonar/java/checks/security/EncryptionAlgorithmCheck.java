@@ -28,7 +28,6 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
@@ -41,7 +40,7 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Collections.singletonList(
       MethodMatcher.create()
-        .typeDefinition(TypeCriteria.is("javax.crypto.Cipher"))
+        .typeDefinition("javax.crypto.Cipher")
         .name("getInstance")
         .withAnyParameters());
   }
@@ -62,19 +61,19 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
 
   private static boolean isInsecureAlgorithm(String algorithmName) {
     Matcher matcher = ALGORITHM_PATTERN.matcher(algorithmName);
-    if (matcher.find()) {
+    if (matcher.matches()) {
       String algorithm = matcher.group(1);
       String mode = matcher.group(2);
       String padding = matcher.group(3);
 
-      if (mode.equals("ECB")) {
+      if ("ECB".equals(mode)) {
         return true;
-      } else if (mode.equals("CBC")) {
-        return padding.equals("PKCS5Padding") || padding.equals("PKCS7Padding");
+      } else if ("CBC".equals(mode)) {
+        return "PKCS5Padding".equals(padding) || "PKCS7Padding".equals(padding);
       }
 
-      if (algorithm.equals("RSA")) {
-        return !(padding.equals("OAEPWITHSHA-256ANDMGF1PADDING") || padding.equals("OAEPWithSHA-1AndMGF1Padding"));
+      if ("RSA".equals(algorithm)) {
+        return !("OAEPWITHSHA-256ANDMGF1PADDING".equals(padding) || "OAEPWithSHA-1AndMGF1Padding".equals(padding));
       }
       return false;
     }
