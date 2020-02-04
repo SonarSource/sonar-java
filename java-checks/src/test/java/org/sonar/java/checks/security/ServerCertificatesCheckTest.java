@@ -22,18 +22,18 @@ package org.sonar.java.checks.security;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class TrustManagerCertificateCheckTest {
+public class ServerCertificatesCheckTest {
 
-  public static final String TEST_FILE = "src/test/files/checks/security/TrustManagerCertificateCheck.java";
+  public static final String TEST_FILE = "src/test/files/checks/security/ServerCertificatesCheck.java";
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(TEST_FILE, new TrustManagerCertificateCheck());
+    JavaCheckVerifier.verify(TEST_FILE, new ServerCertificatesCheck());
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(TEST_FILE, new TrustManagerCertificateCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(TEST_FILE, new ServerCertificatesCheck());
   }
 
 }

@@ -1,7 +1,11 @@
-<p>Empty implementations of the <code>X509TrustManager</code> interface are often created to allow connection to a host that is not signed by a root
-certificate authority. Such an implementation will accept any certificate, which leaves the application vulnerable to Man-in-the-middle attacks. The
-correct solution is to provide an appropriate trust store.</p>
-<p>This rule raises an issue when an implementation of <code>X509TrustManager</code> never throws exception.</p>
+<p>Validation of X.509 certificates is essential to create secure SSL/TLS sessions not vulnerable to man-in-the-middle attacks. </p>
+<p>The certificate chain validation includes these steps:</p>
+<p> * The certificate is issued by its parent Certificate Authority or the root CA trusted by the system.</p>
+<p> * Each CA is allowed to issue certificates.</p>
+<p> * Each certificate in the chain is not expired.</p>
+<p>This rule raises an issue when an implementation of X509TrustManager is not controlling the validity of the certificate (ie: no exception is
+raised). Empty implementations of the <code>X509TrustManager</code> interface are often created to disable certificate validation. The correct
+solution is to provide an appropriate trust store.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 class TrustAllManager implements X509TrustManager {

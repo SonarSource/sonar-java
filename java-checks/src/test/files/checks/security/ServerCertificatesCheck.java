@@ -4,12 +4,12 @@ import java.security.cert.CertificateException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class TrustAllManager implements X509TrustManager {
+class TrustAllManager implements X509TrustManager {
 
   private static Logger LOG = Logger.getLogger("TrustAllManager");
 
   @Override
-  public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException { // Noncompliant {{Change this method so it throws exceptions.}}
+  public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException { // Noncompliant {{Enable server certificate validation on this SSL/TLS connection.}}
   }
 
   @Override
@@ -66,13 +66,17 @@ class Main {
 
     trustManager = new X509TrustManager() {
       @Override
-      public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+      public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException { // Compliant, FN, it throws another kind of Exception
         java.lang.Integer.parseInt("error");
       }
 
       @Override
-      public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-        new java.io.FileInputStream(null);
+      public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException { // Compliant, FN, Exception is catched
+        try {
+          throw new CertificateException();
+        } catch (CertificateException e) {
+          e.printStackTrace();
+        }
       }
 
       @Override
@@ -83,7 +87,7 @@ class Main {
 
     trustManager = new X509TrustManager() {
       @Override
-      public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+      public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException { // Compliant, to avoid FP, assumes it throws exceptions
         unResolvedMethod();
       }
 
