@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -198,9 +199,23 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private void checkConditionalOperand(ExpressionTree tree) {
-    if(!(tree.is(CONDITIONAL_EXCLUSIONS) || tree instanceof LiteralTree || tree instanceof UnaryExpressionTree)) {
-      raiseIssue(tree.firstToken().line(), tree);
+    if (tree.is(CONDITIONAL_EXCLUSIONS)
+      || tree instanceof LiteralTree
+      || tree instanceof UnaryExpressionTree
+      || isSimpleLambda(tree)) {
+      return;
     }
+    raiseIssue(tree.firstToken().line(), tree);
+  }
+
+  private static boolean isSimpleLambda(ExpressionTree tree) {
+    if (!tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      return false;
+    }
+    Tree body = ((LambdaExpressionTree) tree).body();
+    return body instanceof LiteralTree
+      || body instanceof UnaryExpressionTree
+      || body.is(Tree.Kind.IDENTIFIER);
   }
 
   private void raiseIssue(int line, Tree tree) {

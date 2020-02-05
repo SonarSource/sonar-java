@@ -1,3 +1,6 @@
+import java.util.function.Predicate;
+import java.util.function.IntFunction;
+
 abstract class Class {
 
   int a, i;
@@ -38,7 +41,7 @@ abstract class Class {
     o = t ? t ? b : c : c; // Noncompliant
     o = t ? foo() : bar(); // Compliant
     o = t ? foo() : new Object(); // Compliant
-    o = t ? foo() : (A) o; // Compliant
+    o = t ? foo() : (Class) o; // Compliant
     o = t ? array[1] : b; // Compliant
     o = t ? -1 : b; // Compliant
     o = t ? +1 : b; // Compliant
@@ -105,6 +108,17 @@ abstract class Class {
     }
     String[] strings = (value > 0) ? getValue() : new String[0]; // Compliant
     java.util.concurrent.Executor executor = (ex() == null) ? Runnable::run : ex(); // compliant
+
+    Predicate<Boolean> p0 = (value > 0) ? null : y -> y; // Compliant
+    Predicate<Object> p1 = (value > 0) ? null : x -> true; // Compliant
+    Predicate<Object> p2 = (value > 0) ? x -> false : y -> true; // Compliant
+    IntFunction<Integer> p3 = (value > 0) ? x -> x++ : y -> 42; // Compliant
+
+    Predicate<Object> p4 = (value > 0) ? null : x -> { return true; }; // Noncompliant [[sc=49;ec=70]] {{Add parentheses to make the operator precedence explicit.}}
+    Predicate<Object> p5 = (value > 0) ? null : (x -> { return true; }); // Compliant;
+
+    Predicate<Object> p6 = (value > 0) ? null : x -> x == null ? true : false; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    Predicate<Object> p7 = (value > 0) ? null : (x -> x == null ? true : false); // Compliant
   }
 
   @interface Annotation1 {
