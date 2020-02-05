@@ -1,8 +1,10 @@
 <p>Validation of X.509 certificates is essential to create secure SSL/TLS sessions not vulnerable to man-in-the-middle attacks. </p>
 <p>The certificate chain validation includes these steps:</p>
-<p> * The certificate is issued by its parent Certificate Authority or the root CA trusted by the system.</p>
-<p> * Each CA is allowed to issue certificates.</p>
-<p> * Each certificate in the chain is not expired.</p>
+<ul>
+  <li> The certificate is issued by its parent Certificate Authority or the root CA trusted by the system. </li>
+  <li> Each CA is allowed to issue certificates. </li>
+  <li> Each certificate in the chain is not expired. </li>
+</ul>
 <p>This rule raises an issue when an implementation of X509TrustManager is not controlling the validity of the certificate (ie: no exception is
 raised). Empty implementations of the <code>X509TrustManager</code> interface are often created to disable certificate validation. The correct
 solution is to provide an appropriate trust store.</p>
