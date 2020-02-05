@@ -169,6 +169,9 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleStringLiteral(LiteralTree tree) {
+    if (isPartOfConstantPasswordDeclaration(tree)) {
+      return;
+    }
     String cleanedLiteral = LiteralUtils.trimQuotes(tree.value());
     literalPatterns().map(pattern -> pattern.matcher(cleanedLiteral))
       // contains "pwd=" or similar
@@ -177,6 +180,11 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
       .filter(match -> !isQuery(cleanedLiteral, match))
       .findAny()
       .ifPresent(credential -> report(tree, credential));
+  }
+
+  private boolean isPartOfConstantPasswordDeclaration(LiteralTree tree) {
+    Tree parent = tree.parent();
+    return parent != null && parent.is(Kind.VARIABLE) && isPasswordVariableName(((VariableTree) parent).simpleName()).isPresent();
   }
 
   private static boolean isQuery(String cleanedLiteral, String match) {
@@ -189,7 +197,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   private void handleVariable(VariableTree tree) {
     IdentifierTree variable = tree.simpleName();
     isPasswordVariableName(variable)
-      .filter(passwordVariableName -> isNotEmptyStringOrCharArrayFromString(tree.initializer()))
+      .filter(passwordVariableName -> isNotEmptyStringOrCharArrayFromString(tree.initializer()) && isNotPasswordConst(tree.initializer()))
       .ifPresent(passwordVariableName -> report(variable, passwordVariableName));
   }
 
@@ -203,6 +211,15 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   private static boolean isArgumentsSuperTypeOfString(List<ExpressionTree> arguments) {
     return arguments.stream().allMatch(arg -> arg.symbolType().is(JAVA_LANG_STRING) ||
       arg.symbolType().is(JAVA_LANG_OBJECT));
+  }
+
+  private boolean isNotPasswordConst(@Nullable ExpressionTree expression) {
+    if (expression == null || !expression.is(Kind.STRING_LITERAL)) {
+      return true;
+    }
+    String literal = ExpressionsHelper.getConstantValueAsString(expression).value();
+    return literal == null || variablePatterns().map(pattern -> pattern.matcher(literal))
+      .noneMatch(Matcher::find);
   }
 
   private static boolean isNotEmptyStringOrCharArrayFromString(@Nullable ExpressionTree expression) {

@@ -23,6 +23,20 @@ class A {
     String query3 = "password=:param"; // Compliant
     String query5 = "password=%s"; // Compliant
 
+    // Constant used to avoid duplicated string
+    String passwordConst = "Password"; // Compliant
+    String pwds = "pwd"; // Compliant
+    final String PASSWORD = "Password"; // Compliant
+    final String PASSWORD_INPUT = "[id='password']"; // Compliant
+    final String PASSWORD_PROPERTY = "custom.password"; // Compliant
+    final String TRUSTSTORE_PASSWORD = "trustStorePassword"; // Compliant
+    final String CONNECTION_PASSWORD = "connection.password"; // Compliant
+    final String RESET_PASSWORD = "/users/resetUserPassword"; // Compliant
+
+    final String MY_PASSWORD = "1234"; // Noncompliant
+    String params = "user=admin&password=Password123"; // Noncompliant
+    String sqlserver = "pgsql:host=localhost port=5432 dbname=test user=postgres password=postgres"; // Noncompliant
+
     String variableNameWithPasswordInIt = "xxx"; // Noncompliant [[sc=12;ec=40]]
     String variableNameWithPasswordInItEmpty = "";
     String variableNameWithPassphraseInIt = "xxx"; // Noncompliant
