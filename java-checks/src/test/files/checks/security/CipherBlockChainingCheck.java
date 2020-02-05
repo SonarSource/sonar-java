@@ -91,10 +91,48 @@ class A {
     byte[] bytes2 = "111222".getBytes("UTF-8");
     IvParameterSpec iv = new IvParameterSpec(bytes2); // Noncompliant Coverage reasons
   }
+
+  void foo14() throws UnsupportedEncodingException {
+    byte[] iv = random.generateSeed(16); // "iv" is random thanks to SecureRandom
+    IvParameterSpec ivParameterSpec = new IvParameterSpec(iv); // Compliant
+  }
+
+  void foo15() throws UnsupportedEncodingException {
+    IvParameterSpec ivParameterSpec = new IvParameterSpec(random.generateSeed(16)); // Compliant
+  }
+
+  void foo16() throws UnsupportedEncodingException {
+    byte[] iv = random.generateSeed(16);
+    iv = "111".getBytes("UTF-8");
+    IvParameterSpec ivParameterSpec = new IvParameterSpec(iv); // Compliant, FN, to avoid FP, we don't report when at least one asignment
+  }
+
+  void foo17() throws UnsupportedEncodingException {
+    byte[] iv = "111".getBytes("UTF-8");
+    iv = random.generateSeed(16);
+    IvParameterSpec ivParameterSpec = new IvParameterSpec(iv); // Compliant
+  }
+
+  void foo18() throws UnsupportedEncodingException {
+    byte[] iv;
+    iv = random.generateSeed(16);
+    IvParameterSpec ivParameterSpec = new IvParameterSpec(iv); // Compliant
+  }
+
+  void foo19() throws UnsupportedEncodingException {
+    byte[] iv1 = "111".getBytes("UTF-8");
+    byte[] iv2 = random.generateSeed(16);
+    IvParameterSpec ivParameterSpec = new IvParameterSpec(iv1); // Noncompliant
+  }
 }
+
 interface I {
   Runnable r = () -> {
-    byte[] bytes = "111".getBytes("UTF-8");
+    byte[] bytes = new byte[0];
+    try {
+      bytes = "111".getBytes("UTF-8");
+    } catch (UnsupportedEncodingException e) {
+    }
     IvParameterSpec iv = new IvParameterSpec(bytes);
   };
 }
