@@ -32,6 +32,7 @@ class A {
     final String TRUSTSTORE_PASSWORD = "trustStorePassword"; // Compliant
     final String CONNECTION_PASSWORD = "connection.password"; // Compliant
     final String RESET_PASSWORD = "/users/resetUserPassword"; // Compliant
+    final String RESET_PWD = "/users/resetUserPassword"; // Compliant
 
     final String MY_PASSWORD = "1234"; // Noncompliant
     String params = "user=admin&password=Password123"; // Noncompliant
@@ -75,7 +76,6 @@ class A {
     java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", var);
     conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", "whateverpassword"); // Noncompliant
     conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root", PASSED); // Noncompliant
-    conn = DriverManager.getConnection("jdbc:mysql://xxx/", "root");
     conn = DriverManager.getConnection("jdbc:mysql://xxx/");
     conn = DriverManager.getConnection("jdbc:db2://myhost:5021/mydb:user=dbadm;password=foo"); // Noncompliant
 
@@ -90,6 +90,8 @@ class A {
     myA.setProperty("xxxxx", "password");
     myA.setProperty(12, "xxxxx");
     myA.setProperty(new Object(), new Object());
+    myA.setProperty("password", "password"); // Compliant
+    myA.setProperty("password", "pwd"); // Compliant
 
     MyUnknownClass.myUnknownMethod("password", "xxxxx"); // Noncompliant
 
@@ -104,13 +106,15 @@ class A {
     opa = new OtherPasswordAuthentication("userName", "1234".toCharArray()); // Compliant
 
     java.util.Properties props = new java.util.Properties();
-    props.put(Context.SECURITY_CREDENTIALS, "whateverpassword"); // Noncompliant
-    props.put("java.naming.security.credentials", "whateverpassword"); // Noncompliant
+    props.put(Context.SECURITY_CREDENTIALS, "1234"); // Noncompliant
+    props.put("java.naming.security.credentials", "1234"); // Noncompliant
+    props.put("password", "whateverpassword"); // Compliant
 
     java.util.Hashtable<String, String> env = new java.util.Hashtable<>();
-    env.put(Context.SECURITY_CREDENTIALS, "whateverpassword"); // Noncompliant
-    env.put("", "whateverpassword");
+    env.put(Context.SECURITY_CREDENTIALS, "1234"); // Noncompliant
+    env.put("", "1234");
     env.put(Context.SECURITY_CREDENTIALS, "");
+    env.put("password", "whateverpassword"); // Compliant
   }
 
   private char[] getPwd(String s) {

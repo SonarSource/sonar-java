@@ -125,7 +125,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
 
   private Optional<String> isSettingPassword(MethodInvocationTree tree) {
     List<ExpressionTree> arguments = tree.arguments();
-    if (arguments.size() == 2 && isArgumentsSuperTypeOfString(arguments) && isNotEmptyString(arguments.get(1))) {
+    if (arguments.size() == 2 && isArgumentsSuperTypeOfString(arguments) && !isPasswordLikeName(arguments.get(1)) && isNotEmptyString(arguments.get(1))) {
       return isPassword(arguments.get(0));
     }
     return Optional.empty();
@@ -145,9 +145,19 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   }
 
   private Optional<String> isPasswordVariableName(IdentifierTree identifierTree) {
-    String identifierName = identifierTree.name();
+    return isPasswordLikeName(identifierTree.name());
+  }
+
+  private boolean isPasswordLikeName(ExpressionTree expression) {
+    if (expression.is(Kind.STRING_LITERAL)) {
+      return isPasswordLikeName(LiteralUtils.trimQuotes(((LiteralTree)expression).value())).isPresent();
+    }
+    return false;
+  }
+
+  private Optional<String> isPasswordLikeName(String name) {
     return variablePatterns()
-      .map(pattern -> pattern.matcher(identifierName))
+      .map(pattern -> pattern.matcher(name))
       // contains "pwd" or similar
       .filter(Matcher::find)
       .map(matcher -> matcher.group(1))
