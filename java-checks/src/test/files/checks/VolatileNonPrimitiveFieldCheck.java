@@ -34,8 +34,8 @@ class A {
   private volatile int [] vInts;  // Noncompliant [[sc=11;ec=26]] {{Use an "AtomicIntegerArray" instead.}}
   private volatile long [] vLongs;  // Noncompliant [[sc=11;ec=27]] {{Use an "AtomicLongArray" instead.}}
   private volatile Object [] vObjects;  // Noncompliant [[sc=11;ec=29]] {{Use an "AtomicReferenceArray" instead.}}
-  private volatile MyObj myObj;  // Noncompliant [[sc=11;ec=25]] {{Remove the "volatile" keyword from this field.}}
-  private volatile Date myDate;  // Noncompliant [[sc=11;ec=24]] {{Remove the "volatile" keyword from this field.}}
+  private volatile MyObj myObj;  // Noncompliant [[sc=11;ec=25]] {{Use a thread-safe type; adding "volatile" is not enough to make this field thread-safe.}}
+  private volatile Date myDate;  // Noncompliant [[sc=11;ec=24]] {{Use a thread-safe type; adding "volatile" is not enough to make this field thread-safe.}}
   private AtomicIntegerArray vInts2;
   private MyObj myObj2;
   // Following variable declarations are compliant: standard immutable types
@@ -84,7 +84,7 @@ enum MyEnum {
   FOO;
   private volatile int vInts0;
   private volatile int [] vInts;  // Noncompliant [[sc=11;ec=26]] {{Use an "AtomicIntegerArray" instead.}}
-  private volatile MyObj myObj;  // Noncompliant [[sc=11;ec=25]] {{Remove the "volatile" keyword from this field.}}
+  private volatile MyObj myObj;  // Noncompliant [[sc=11;ec=25]] {{Use a thread-safe type; adding "volatile" is not enough to make this field thread-safe.}}
   private AtomicIntegerArray vInts2;
   private MyObj myObj2;
 
