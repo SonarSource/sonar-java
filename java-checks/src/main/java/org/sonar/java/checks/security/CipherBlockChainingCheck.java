@@ -73,10 +73,13 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   private static boolean isDynamicallyGenerated(ExpressionTree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) tree).symbol();
+      if (!symbol.isVariableSymbol()) {
+        return false;
+      }
       VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
       return declaration != null &&
         (isSecureRandomGenerateSeed(declaration.initializer()) ||
-          getReassignments(symbol.declaration(), symbol.usages()).stream()
+          getReassignments(declaration, symbol.usages()).stream()
             .map(AssignmentExpressionTree::expression)
             .anyMatch(CipherBlockChainingCheck::isSecureRandomGenerateSeed));
     } else {
