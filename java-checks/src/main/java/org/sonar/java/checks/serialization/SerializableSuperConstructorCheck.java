@@ -20,6 +20,8 @@
 package org.sonar.java.checks.serialization;
 
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -35,6 +37,11 @@ import java.util.List;
 @Rule(key = "S2055")
 public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisitor {
 
+  private static final MethodMatcher WRITE_REPLACE = MethodMatcher.create()
+    .typeDefinition(TypeCriteria.anyType())
+    .name("writeReplace")
+    .withoutParameter();
+
   @Override
   public List<Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
@@ -45,7 +52,7 @@ public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisit
     if (hasSemantic()) {
       Symbol.TypeSymbol classSymbol = ((ClassTree) tree).symbol();
       Type superclass = classSymbol.superClass();
-      if (isSerializable(classSymbol.type()) && isNotSerializableMissingNoArgConstructor(superclass)) {
+      if (isSerializable(classSymbol.type()) && isNotSerializableMissingNoArgConstructor(superclass) && !implementsSerializableMethods(classSymbol)) {
         reportIssue(tree, "Add a no-arg constructor to \"" + superclass + "\".");
       }
     }
@@ -70,6 +77,10 @@ public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisit
       }
     }
     return constructors.isEmpty();
+  }
+
+  private static boolean implementsSerializableMethods(Symbol.TypeSymbol classSymbol) {
+    return classSymbol.memberSymbols().stream().anyMatch(WRITE_REPLACE::matches);
   }
 
 }
