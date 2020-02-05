@@ -2,6 +2,9 @@ import java.net.PasswordAuthentication;
 
 class A {
 
+  String fieldNameWithPasswordInIt;
+  String fieldNameWithBazookaInIt;
+
   private void a(char[] pwd, String var) {
     String variable2 = "login=a&password=xxx"; // Compliant
     String variable3 = "login=a&passwd=xxx"; // Compliant
@@ -31,8 +34,8 @@ class A {
     new OtherPasswordAuthentication("userName", "1234".toCharArray()); // Compliant
   }
 
-  private void setProperty(Object property, Object Value) {
-  }
+  private void setProperty(Object property, Object Value) { }
+  private static char[] getPwd(String var) { return null; }
 
   private static class OtherPasswordAuthentication {
     OtherPasswordAuthentication(String username, char[] pwd) {}

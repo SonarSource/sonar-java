@@ -174,8 +174,16 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
       // contains "pwd=" or similar
       .filter(Matcher::find)
       .map(matcher -> matcher.group(1))
+      .filter(match -> !isQuery(cleanedLiteral, match))
       .findAny()
       .ifPresent(credential -> report(tree, credential));
+  }
+
+  private static boolean isQuery(String cleanedLiteral, String match) {
+    String followingString = cleanedLiteral.substring(cleanedLiteral.indexOf(match) + match.length());
+    return followingString.startsWith("=?")
+      || followingString.startsWith("=%s")
+      || followingString.startsWith("=:");
   }
 
   private void handleVariable(VariableTree tree) {
