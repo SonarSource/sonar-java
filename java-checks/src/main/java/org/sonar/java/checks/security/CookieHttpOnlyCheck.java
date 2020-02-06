@@ -339,11 +339,8 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
       // ignore XSRF-TOKEN cookies
       return;
     }
-    if (setterArgumentHasCompliantValue(mit.arguments())) {
-      variablesToReport.remove(reference);
-    } else if (compliantConstructorInitializations.contains(reference)) {
-      variablesToReport.add(reference);
-    } else if (!variablesToReport.contains(reference)) {
+    variablesToReport.remove(reference);
+    if (!setterArgumentHasCompliantValue(mit.arguments())) {
       settersToReport.add(mit);
     }
   }
