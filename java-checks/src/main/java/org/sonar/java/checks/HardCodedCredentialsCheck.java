@@ -19,6 +19,8 @@
  */
 package org.sonar.java.checks;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +53,8 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   private static final String DEFAULT_CREDENTIAL_WORDS = "password,passwd,pwd,passphrase,java.naming.security.credentials";
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
+  private static final Pattern URL_PREFIX = Pattern.compile("^\\w{1,8}://");
+  private static final Pattern NON_EMPTY_URL_CREDENTIAL = Pattern.compile("(?<user>[^\\s:]*+):(?<password>\\S++)");
 
   private static final MethodMatcher PASSWORD_AUTHENTICATION_CONSTRUCTOR = MethodMatcher.create()
     .typeDefinition("java.net.PasswordAuthentication")
@@ -179,17 +183,33 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleStringLiteral(LiteralTree tree) {
-    if (isPartOfConstantPasswordDeclaration(tree)) {
-      return;
-    }
     String cleanedLiteral = LiteralUtils.trimQuotes(tree.value());
-    literalPatterns().map(pattern -> pattern.matcher(cleanedLiteral))
-      // contains "pwd=" or similar
-      .filter(Matcher::find)
-      .map(matcher -> matcher.group(1))
-      .filter(match -> !isQuery(cleanedLiteral, match))
-      .findAny()
-      .ifPresent(credential -> report(tree, credential));
+    if (isURLWithCredentials(cleanedLiteral)) {
+      reportIssue(tree, "Review this hard-coded URL, which may contain a credential.");
+    } else if (!isPartOfConstantPasswordDeclaration(tree)) {
+      literalPatterns().map(pattern -> pattern.matcher(cleanedLiteral))
+        // contains "pwd=" or similar
+        .filter(Matcher::find)
+        .map(matcher -> matcher.group(1))
+        .filter(match -> !isQuery(cleanedLiteral, match))
+        .findAny()
+        .ifPresent(credential -> report(tree, credential));
+    }
+  }
+
+  private static boolean isURLWithCredentials(String stringLiteral) {
+    if (URL_PREFIX.matcher(stringLiteral).find()) {
+      try {
+        String userInfo = new URL(stringLiteral).getUserInfo();
+        if (userInfo != null) {
+          Matcher matcher = NON_EMPTY_URL_CREDENTIAL.matcher(userInfo);
+          return matcher.matches() && !matcher.group("user").equals(matcher.group("password"));
+        }
+      } catch (MalformedURLException e) {
+        // ignore, stringLiteral is not a valid URL
+      }
+    }
+    return false;
   }
 
   private boolean isPartOfConstantPasswordDeclaration(LiteralTree tree) {

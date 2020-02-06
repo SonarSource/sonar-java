@@ -115,6 +115,20 @@ class A {
     env.put("", "1234");
     env.put(Context.SECURITY_CREDENTIALS, "");
     env.put("password", "whateverpassword"); // Compliant
+
+    String[] urls = {
+      "http://user:123456@server.com/path",     // Noncompliant {{Review this hard-coded URL, which may contain a credential.}}
+      "ftp://anonymous:anonymous@wustl.edu",    // OK, user == password
+      "http://admin:admin@server.com/path",     // OK, user == password
+      "http://user:@server.com/path",           // OK, password is empty
+      "http://user@server.com/path",            // OK, no password
+      "https://server:80/path",                 // OK, no user and password
+      "http://server.com/path",                 // OK, no user and password
+      "http://:123456@server.com/path",         // Noncompliant
+      "HTTPS://:token0932448209@server.com",    // Noncompliant
+      "https://invalid::url::format",
+      "too-long-url-scheme://user:123456@server.com",
+    };
   }
 
   private char[] getPwd(String s) {
