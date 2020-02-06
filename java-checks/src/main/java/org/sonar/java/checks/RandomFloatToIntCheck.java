@@ -35,10 +35,21 @@ import java.util.List;
 @Rule(key = "S2140")
 public class RandomFloatToIntCheck extends IssuableSubscriptionVisitor {
 
-  private final MethodMatcherCollection methodMatchers  = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.util.Random").name("nextDouble").withoutParameter(),
-    MethodMatcher.create().typeDefinition("java.util.Random").name("nextFloat").withoutParameter(),
-    MethodMatcher.create().typeDefinition("java.lang.Math").name("random").withoutParameter()
+  private static final String NEXT_FLOAT = "nextFloat";
+  private static final String NEXT_DOUBLE = "nextDouble";
+
+  private final MethodMatcher mathRandomMethodMatcher = MethodMatcher.create().typeDefinition("java.lang.Math").name("random").withoutParameter();
+
+  private final MethodMatcherCollection methodMatchers = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition("java.util.Random").name(NEXT_DOUBLE).withoutParameter(),
+    MethodMatcher.create().typeDefinition("java.util.Random").name(NEXT_FLOAT).withoutParameter(),
+    MethodMatcher.create().typeDefinition("java.util.concurrent.ThreadLocalRandom").name(NEXT_DOUBLE).withAnyParameters(),
+    MethodMatcher.create().typeDefinition("org.apache.commons.lang.math.JVMRandom").name(NEXT_DOUBLE).withoutParameter(),
+    MethodMatcher.create().typeDefinition("org.apache.commons.lang.math.JVMRandom").name(NEXT_FLOAT).withoutParameter(),
+    MethodMatcher.create().typeDefinition("org.apache.commons.lang.math.RandomUtils").name(NEXT_DOUBLE).withoutParameter(),
+    MethodMatcher.create().typeDefinition("org.apache.commons.lang.math.RandomUtils").name(NEXT_FLOAT).withoutParameter(),
+    MethodMatcher.create().typeDefinition("org.apache.commons.lang3.RandomUtils").name(NEXT_DOUBLE).withoutParameter(),
+    MethodMatcher.create().typeDefinition("org.apache.commons.lang3.RandomUtils").name(NEXT_FLOAT).withoutParameter()
   );
 
   @Override
@@ -58,8 +69,10 @@ public class RandomFloatToIntCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if(methodMatchers.anyMatch(tree)) {
+      if (mathRandomMethodMatcher.matches(tree)) {
         reportIssue(tree.methodSelect(), "Use \"java.util.Random.nextInt()\" instead.");
+      } else if (methodMatchers.anyMatch(tree)) {
+        reportIssue(tree.methodSelect(), "Use \"nextInt()\" instead.");
       }
       super.visitMethodInvocation(tree);
     }
