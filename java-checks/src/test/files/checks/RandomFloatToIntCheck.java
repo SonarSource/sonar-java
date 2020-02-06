@@ -38,20 +38,18 @@ class A {
 
   // org.apache.commons.lang.math.RandomUtils
 
-  RandomUtils randomUtils = new RandomUtils();
-  int rand16 = (int) randomUtils.nextDouble() * 50;  // Noncompliant {{Use "nextInt()" instead.}}
-  int rand17 = (int) randomUtils.nextFloat() * 50;  // Noncompliant
-  float rand18 = (float)randomUtils.nextFloat();
-  int rand19 = (int) randomUtils.nextInt() * 50;
-  int rand20 = (int)randomUtils.nextFloat(); // Noncompliant; will always be 0;
+  int rand16 = (int) RandomUtils.nextDouble() * 50;  // Noncompliant {{Use "nextInt()" instead.}}
+  int rand17 = (int) RandomUtils.nextFloat() * 50;  // Noncompliant
+  float rand18 = (float) RandomUtils.nextFloat();
+  int rand19 = (int) RandomUtils.nextInt() * 50;
+  int rand20 = (int) RandomUtils.nextFloat(); // Noncompliant; will always be 0;
 
   // org.apache.commons.lang3.RandomUtils
-  org.apache.commons.lang3.RandomUtils randomUtils2 = new org.apache.commons.lang3.RandomUtils();
-  int rand21 = (int) randomUtils2.nextDouble() * 50;  // Noncompliant {{Use "nextInt()" instead.}}
-  int rand22 = (int) randomUtils2.nextFloat() * 50;  // Noncompliant
-  float rand23 = (float)randomUtils2.nextFloat();
-  int rand24 = (int) randomUtils2.nextInt() * 50;
-  int rand25 = (int)randomUtils2.nextFloat(); // Noncompliant; will always be 0;
+  int rand21 = (int) org.apache.commons.lang3.RandomUtils.nextDouble() * 50;  // Noncompliant {{Use "nextInt()" instead.}}
+  int rand22 = (int) org.apache.commons.lang3.RandomUtils.nextFloat() * 50;  // Noncompliant
+  float rand23 = (float) org.apache.commons.lang3.RandomUtils.nextFloat();
+  int rand24 = (int) org.apache.commons.lang3.RandomUtils.nextInt() * 50;
+  int rand25 = (int)org.apache.commons.lang3.RandomUtils.nextFloat(); // Noncompliant; will always be 0;
 }
 
 class Foo {
