@@ -41,13 +41,17 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   private static final String MESSAGE = "Make sure that using this pseudorandom number generator is safe here.";
   private static final MethodMatcher MATH_RANDOM_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Math").name("random").withoutParameter();
 
-  private static final Set<String> RANDOM_TYPES = ImmutableSet.of(
+  private static final Set<String> RANDOM_STATIC_TYPES = ImmutableSet.of(
     "java.util.concurrent.ThreadLocalRandom",
-    "org.apache.commons.lang.math.JVMRandom",
     "org.apache.commons.lang.math.RandomUtils",
     "org.apache.commons.lang3.RandomUtils",
     "org.apache.commons.lang.RandomStringUtils",
     "org.apache.commons.lang3.RandomStringUtils"
+  );
+
+  private static final Set<String> RANDOM_CONSTRUCTOR_TYPES = ImmutableSet.of(
+    "java.util.Random",
+    "org.apache.commons.lang.math.JVMRandom"
   );
 
   @Override
@@ -60,21 +64,19 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       IdentifierTree reportLocation = ExpressionUtils.methodName(mit);
+
       if (MATH_RANDOM_MATCHER.matches(mit)) {
         reportIssue(reportLocation, MESSAGE);
-      } else {
-        if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT) && !isChainedMethodInvocation(mit)) {
-          Type expressionType = ((MemberSelectExpressionTree) mit.methodSelect()).expression().symbolType();
-          checkSymbolType(expressionType.fullyQualifiedName(), reportLocation);
+      } else if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT) && !isChainedMethodInvocation(mit)) {
+        Type expressionType = ((MemberSelectExpressionTree) mit.methodSelect()).expression().symbolType();
+        if (RANDOM_STATIC_TYPES.contains(expressionType.fullyQualifiedName())) {
+          reportIssue(reportLocation, MESSAGE);
         }
       }
     } else {
       NewClassTree newClass = (NewClassTree) tree;
-      Type symbolType = newClass.symbolType();
-      if (symbolType.is("java.util.Random")) {
+      if (RANDOM_CONSTRUCTOR_TYPES.contains(newClass.symbolType().fullyQualifiedName())) {
         reportIssue(newClass.identifier(), MESSAGE);
-      } else {
-        checkSymbolType(newClass.symbolType().fullyQualifiedName(), newClass.identifier());
       }
     }
   }
@@ -82,12 +84,6 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   private static boolean isChainedMethodInvocation(MethodInvocationTree mit) {
     Tree parent = mit.parent();
     return parent != null && parent.is(Tree.Kind.MEMBER_SELECT);
-  }
-
-  private void checkSymbolType(String fullyQualifiedName, Tree reportLocation) {
-    if (RANDOM_TYPES.stream().anyMatch(ty -> ty.equals(fullyQualifiedName))) {
-      reportIssue(reportLocation, MESSAGE);
-    }
   }
 
 }
