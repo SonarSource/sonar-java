@@ -30,7 +30,7 @@ class S3330 {
 
     Cookie c1 = new Cookie("name", "value");
     if (param) {
-      c1.setHttpOnly(false); // FN
+      c1.setHttpOnly(false); // Noncompliant
     }
     else {
       c1.setHttpOnly(true);
@@ -38,15 +38,15 @@ class S3330 {
 
     Cookie c2 = new Cookie("name", "value"); // Noncompliant [[sc=12;ec=14]]
 
-    Cookie c3 = new Cookie("name", "value"); // Noncompliant
-    c3.setHttpOnly(false);
+    Cookie c3 = new Cookie("name", "value");
+    c3.setHttpOnly(false); // Noncompliant
 
-    Cookie c4 = new Cookie("name", "value"); // Noncompliant
-    c4.setHttpOnly(FALSE_CONSTANT);
+    Cookie c4 = new Cookie("name", "value");
+    c4.setHttpOnly(FALSE_CONSTANT); // Noncompliant
 
-    Cookie c5 = new Cookie("name", "value"); // Noncompliant
+    Cookie c5 = new Cookie("name", "value");
     boolean b = false;
-    c5.setHttpOnly(b);
+    c5.setHttpOnly(b); // Noncompliant
 
     Cookie c6 = new Cookie("name", "value");
     c6.setHttpOnly(param);
@@ -54,9 +54,9 @@ class S3330 {
     Cookie c7 = new UnknownCookie("name", "value"); // Noncompliant
     Object c8 = new Cookie("name", "value"); // Noncompliant
 
-    Cookie c9; // Noncompliant
+    Cookie c9;
     c9 = new Cookie("name", "value");
-    c9.setHttpOnly(false);
+    c9.setHttpOnly(false); // Noncompliant
 
     Cookie c10;  // Noncompliant
     c10 = new Cookie("name", "value");
@@ -73,7 +73,7 @@ class S3330 {
 
     Cookie c14 = new Cookie("name", "value");
     boolean bValue = true;
-    c14.setHttpOnly(!bValue);
+    c14.setHttpOnly(!bValue); // FN
 
     field4 = new Cookie("name, value"); // FN
 
@@ -95,15 +95,15 @@ class S3330 {
 
     HttpCookie c2 = new HttpCookie("name", "value"); // Noncompliant
 
-    HttpCookie c3 = new HttpCookie("name", "value"); // Noncompliant
-    c3.setHttpOnly(false);
+    HttpCookie c3 = new HttpCookie("name", "value");
+    c3.setHttpOnly(false); // Noncompliant
 
-    HttpCookie c4 = new HttpCookie("name", "value"); // Noncompliant
-    c4.setHttpOnly(FALSE_CONSTANT);
+    HttpCookie c4 = new HttpCookie("name", "value");
+    c4.setHttpOnly(FALSE_CONSTANT); // Noncompliant
 
-    HttpCookie c5; // Noncompliant
+    HttpCookie c5;
     c5 = new HttpCookie("name", "value");
-    c3.setHttpOnly(false);
+    c5.setHttpOnly(false); // Noncompliant
 
     field5 = new HttpCookie("name, value"); // FN
   }
@@ -134,8 +134,8 @@ class S3330 {
 
   void apacheShiro(SimpleCookie unknownCookie) {
     SimpleCookie c1 = new SimpleCookie(unknownCookie); // Noncompliant
-    SimpleCookie c2 = new SimpleCookie(); // Noncompliant
-    c2.setHttpOnly(false);
+    SimpleCookie c2 = new SimpleCookie();
+    c2.setHttpOnly(false); // Noncompliant
     SimpleCookie c3 = new SimpleCookie(); // Apache Shiro cookies have HttpOnly 'true' value by default
     SimpleCookie c4 = new SimpleCookie("name");
   }

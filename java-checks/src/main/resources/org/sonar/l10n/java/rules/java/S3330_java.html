@@ -5,15 +5,14 @@ the theft of session-cookies, the <code>HttpOnly</code> attribute can help to re
 vulnerability to steal session-cookies.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> the cookie is a <em>session-cookie</em> and the <code>HttpOnly</code> flag is not set to <em>true</em> </li>
-  <li> the content of the cookie is sensitive and the <code>HttpOnly</code> flag is not set to <em>true</em> </li>
+  <li> the cookie is sensitive, used to authenticate the user, for instance a <em>session-cookie</em> </li>
   <li> the <code>HttpOnly</code> attribute offer an additional protection (not the case for an <em>XSRF-TOKEN cookie</em> / CSRF token for example)
-  but it is not set to <em>true</em> </li>
+  </li>
 </ul>
 <p>You are at risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> You should by default set the <code>HttpOnly</code> flag to <em>true</em> for most of your cookies and it's mandatory for session /
+  <li> By default the <code>HttpOnly</code> flag should be set to <em>true</em> for most of the cookies and it's mandatory for session /
   sensitive-security cookies. </li>
 </ul>
 <h2>Sensitive Code Examples</h2>

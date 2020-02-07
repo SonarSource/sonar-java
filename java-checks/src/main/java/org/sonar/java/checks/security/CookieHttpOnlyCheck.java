@@ -48,7 +48,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3330")
 public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
-  private final List<Symbol.VariableSymbol> compliantConstructorInitializations = new ArrayList<>();
   private final List<Symbol.VariableSymbol> ignoredVariables = new ArrayList<>();
   private final List<Symbol.VariableSymbol> variablesToReport = new ArrayList<>();
   private final List<MethodInvocationTree> settersToReport = new ArrayList<>();
@@ -109,7 +108,6 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void setContext(JavaFileScannerContext context) {
-    compliantConstructorInitializations.clear();
     ignoredVariables.clear();
     variablesToReport.clear();
     settersToReport.clear();
@@ -233,9 +231,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   private void categorizeBasedOnConstructor(NewClassTree newClassTree, VariableSymbol variableSymbol) {
     if (isIgnoredCookieName(newClassTree.arguments())) {
       ignoredVariables.add(variableSymbol);
-    } else if (isCompliantConstructorCall(newClassTree)) {
-      compliantConstructorInitializations.add(variableSymbol);
-    } else {
+    } else if (!isCompliantConstructorCall(newClassTree)) {
       variablesToReport.add(variableSymbol);
     }
   }
@@ -339,11 +335,8 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
       // ignore XSRF-TOKEN cookies
       return;
     }
-    if (setterArgumentHasCompliantValue(mit.arguments())) {
-      variablesToReport.remove(reference);
-    } else if (compliantConstructorInitializations.contains(reference)) {
-      variablesToReport.add(reference);
-    } else if (!variablesToReport.contains(reference)) {
+    variablesToReport.remove(reference);
+    if (!setterArgumentHasCompliantValue(mit.arguments())) {
       settersToReport.add(mit);
     }
   }
