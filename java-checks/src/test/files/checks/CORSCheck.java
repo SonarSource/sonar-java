@@ -22,6 +22,14 @@ class A {
     resp.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Noncompliant [[sc=5;ec=19]]
     resp.setHeader("Access-Control-Allow-Credentials", "true"); // Noncompliant [[sc=5;ec=19]]
     resp.setHeader("Access-Control-Allow-Methods", "GET"); // Noncompliant
+    // header names are case insensitive. see https://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive/5259004#5259004
+    resp.setHeader("access-control-allow-Methods", "GET"); // Noncompliant
+
+    resp.addHeader("Content-Type", "text/plain; charset=utf-8");
+    resp.addHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Noncompliant [[sc=5;ec=19]]
+    resp.addHeader("Access-Control-Allow-Credentials", "true"); // Noncompliant
+    resp.addHeader("Access-Control-Allow-Methods", "GET"); // Noncompliant
+
     resp.getWriter().write("response");
   }
   // === Spring MVC Controller annotation ===
@@ -63,18 +71,18 @@ class A {
     class Local {
       public CorsFilter corsFilter3() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=67,68]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=75,76]]
         config.applyPermitDefaultValues();
         config.applyPermitDefaultValues();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=67,68]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=75,76]]
         return new CorsFilter(source);
       }
     }
     CorsConfiguration config = new CorsConfiguration();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=75,76]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=83,84]]
     config.applyPermitDefaultValues();
     config.applyPermitDefaultValues();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=75,76]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=83,84]]
     return new CorsFilter(source);
   }
 
