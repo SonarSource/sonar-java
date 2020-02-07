@@ -125,7 +125,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
 
   private Optional<String> isSettingPassword(MethodInvocationTree tree) {
     List<ExpressionTree> arguments = tree.arguments();
-    if (arguments.size() == 2 && isArgumentsSuperTypeOfString(arguments) && isNotEmptyString(arguments.get(1))) {
+    if (arguments.size() == 2 && isArgumentsSuperTypeOfString(arguments) && !isPasswordLikeName(arguments.get(1)) && isNotEmptyString(arguments.get(1))) {
       return isPassword(arguments.get(0));
     }
     return Optional.empty();
@@ -145,9 +145,19 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   }
 
   private Optional<String> isPasswordVariableName(IdentifierTree identifierTree) {
-    String identifierName = identifierTree.name();
+    return isPasswordLikeName(identifierTree.name());
+  }
+
+  private boolean isPasswordLikeName(ExpressionTree expression) {
+    if (expression.is(Kind.STRING_LITERAL)) {
+      return isPasswordLikeName(LiteralUtils.trimQuotes(((LiteralTree)expression).value())).isPresent();
+    }
+    return false;
+  }
+
+  private Optional<String> isPasswordLikeName(String name) {
     return variablePatterns()
-      .map(pattern -> pattern.matcher(identifierName))
+      .map(pattern -> pattern.matcher(name))
       // contains "pwd" or similar
       .filter(Matcher::find)
       .map(matcher -> matcher.group(1))
@@ -169,6 +179,9 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleStringLiteral(LiteralTree tree) {
+    if (isPartOfConstantPasswordDeclaration(tree)) {
+      return;
+    }
     String cleanedLiteral = LiteralUtils.trimQuotes(tree.value());
     literalPatterns().map(pattern -> pattern.matcher(cleanedLiteral))
       // contains "pwd=" or similar
@@ -177,6 +190,11 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
       .filter(match -> !isQuery(cleanedLiteral, match))
       .findAny()
       .ifPresent(credential -> report(tree, credential));
+  }
+
+  private boolean isPartOfConstantPasswordDeclaration(LiteralTree tree) {
+    Tree parent = tree.parent();
+    return parent != null && parent.is(Kind.VARIABLE) && isPasswordVariableName(((VariableTree) parent).simpleName()).isPresent();
   }
 
   private static boolean isQuery(String cleanedLiteral, String match) {
@@ -189,7 +207,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   private void handleVariable(VariableTree tree) {
     IdentifierTree variable = tree.simpleName();
     isPasswordVariableName(variable)
-      .filter(passwordVariableName -> isNotEmptyStringOrCharArrayFromString(tree.initializer()))
+      .filter(passwordVariableName -> isNotEmptyStringOrCharArrayFromString(tree.initializer()) && isNotPasswordConst(tree.initializer()))
       .ifPresent(passwordVariableName -> report(variable, passwordVariableName));
   }
 
@@ -203,6 +221,15 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   private static boolean isArgumentsSuperTypeOfString(List<ExpressionTree> arguments) {
     return arguments.stream().allMatch(arg -> arg.symbolType().is(JAVA_LANG_STRING) ||
       arg.symbolType().is(JAVA_LANG_OBJECT));
+  }
+
+  private boolean isNotPasswordConst(@Nullable ExpressionTree expression) {
+    if (expression == null || !expression.is(Kind.STRING_LITERAL)) {
+      return true;
+    }
+    String literal = ExpressionsHelper.getConstantValueAsString(expression).value();
+    return literal == null || variablePatterns().map(pattern -> pattern.matcher(literal))
+      .noneMatch(Matcher::find);
   }
 
   private static boolean isNotEmptyStringOrCharArrayFromString(@Nullable ExpressionTree expression) {
