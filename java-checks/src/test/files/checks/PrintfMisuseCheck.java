@@ -172,7 +172,6 @@ class A {
     slf4jLog.debug(marker, "message ", new Exception());
     slf4jLog.debug(marker, "message {}", new Exception());
 
-
     slf4jLog.debug("message {}");
     slf4jLog.debug("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.debug("message {}", 1);
@@ -188,18 +187,32 @@ class A {
     slf4jLog.error("message {}");
     slf4jLog.error("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.error("message {}", 1);
+    slf4jLog.error("message ", new Exception());
+    slf4jLog.error("message {}", new Exception());
+
+    try {
+    } catch (Exception e) {
+      org.slf4j.LoggerFactory.getLogger(A.class).error("there is an error", e);
+    }
+
     slf4jLog.info("message {} - {}", 1, 2);
     slf4jLog.info("message {}", 1, 2);// Noncompliant {{2nd argument is not used.}}
     slf4jLog.info("message {} {} {}", 1, 2, 3);
+    slf4jLog.info("message ", new Exception());
+    slf4jLog.info("message {}", new Exception());
+
     slf4jLog.trace("message {} {}", 1, 2, 3); // Noncompliant
     slf4jLog.trace("message {} {}", new Object[]{1, 2, 3}); // Noncompliant
     slf4jLog.trace("message {} {} {}", new Object[]{1, 2, 3}); // compliant
     slf4jLog.trace("message ", new Exception());
     slf4jLog.trace("message {}", new Exception());
+
     slf4jLog.warn("message {}");
     slf4jLog.warn("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.warn("message {}", 1);
     slf4jLog.warn("message");
+    slf4jLog.warn("message ", new Exception());
+    slf4jLog.warn("message {}", new Exception());
 
     java.util.logging.Logger logger2 = java.util.logging.Logger.getLogger("som.foo", "som.foo.resources.i18n.LogMessages");
     logger2.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
