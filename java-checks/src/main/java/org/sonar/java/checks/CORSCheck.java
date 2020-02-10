@@ -23,11 +23,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -39,14 +41,18 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S5122")
 public class CORSCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher SET_HEADER_MATCHER = MethodMatcher.create().typeDefinition("javax.servlet.http.HttpServletResponse").name("setHeader").withAnyParameters();
+  private static final MethodMatcherCollection SET_ADD_HEADER_MATCHER = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition("javax.servlet.http.HttpServletResponse").name("setHeader").withAnyParameters(),
+    MethodMatcher.create().typeDefinition("javax.servlet.http.HttpServletResponse").name("addHeader").withAnyParameters()
+  );
+
   private static final Set<String> HTTP_HEADERS = new HashSet<>(Arrays.asList(
-    "Access-Control-Allow-Origin",
-    "Access-Control-Allow-Credentials",
-    "Access-Control-Expose-Headers",
-    "Access-Control-Max-Age",
-    "Access-Control-Allow-Methods",
-    "Access-Control-Allow-Headers"));
+    "access-control-allow-origin",
+    "access-control-allow-credentials",
+    "access-control-expose-headers",
+    "access-control-max-age",
+    "access-control-allow-methods",
+    "access-control-allow-headers"));
 
   private static final MethodMatcher ADD_ALLOWED_ORIGIN = MethodMatcher.create().typeDefinition("org.springframework.web.cors.CorsConfiguration")
     .name("addAllowedOrigin").withAnyParameters();
@@ -94,9 +100,9 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (SET_HEADER_MATCHER.matches(mit)) {
+      if (SET_ADD_HEADER_MATCHER.anyMatch(mit)) {
         String constantCORS = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
-        if (HTTP_HEADERS.contains(constantCORS)) {
+        if (constantCORS != null && HTTP_HEADERS.contains(constantCORS.toLowerCase(Locale.ENGLISH))) {
           reportTree(mit.methodSelect());
         }
       } else if (APPLY_PERMIT_DEFAULT_VALUES.matches(mit)) {
