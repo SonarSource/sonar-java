@@ -29,6 +29,8 @@ class A {
     resp.addHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Noncompliant [[sc=5;ec=19]]
     resp.addHeader("Access-Control-Allow-Credentials", "true"); // Noncompliant
     resp.addHeader("Access-Control-Allow-Methods", "GET"); // Noncompliant
+    resp.addHeader("Access-Control-Allow-Methods", null); // Noncompliant
+    resp.addHeader(null, "GET");
 
     resp.getWriter().write("response");
   }
@@ -71,18 +73,18 @@ class A {
     class Local {
       public CorsFilter corsFilter3() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=75,76]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=77,78]]
         config.applyPermitDefaultValues();
         config.applyPermitDefaultValues();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=75,76]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=77,78]]
         return new CorsFilter(source);
       }
     }
     CorsConfiguration config = new CorsConfiguration();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=83,84]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=85,86]]
     config.applyPermitDefaultValues();
     config.applyPermitDefaultValues();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=83,84]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=85,86]]
     return new CorsFilter(source);
   }
 
