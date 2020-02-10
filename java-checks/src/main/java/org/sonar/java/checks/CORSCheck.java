@@ -21,10 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -33,8 +30,11 @@ import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -46,13 +46,7 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
     MethodMatcher.create().typeDefinition("javax.servlet.http.HttpServletResponse").name("addHeader").withAnyParameters()
   );
 
-  private static final Set<String> HTTP_HEADERS = new HashSet<>(Arrays.asList(
-    "access-control-allow-origin",
-    "access-control-allow-credentials",
-    "access-control-expose-headers",
-    "access-control-max-age",
-    "access-control-allow-methods",
-    "access-control-allow-headers"));
+  private static final String ACCESS_CONTROL_ALLOW_ORIGIN = "access-control-allow-origin";
 
   private static final MethodMatcher ADD_ALLOWED_ORIGIN = MethodMatcher.create().typeDefinition("org.springframework.web.cors.CorsConfiguration")
     .name("addAllowedOrigin").withAnyParameters();
@@ -70,7 +64,7 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Tree.Kind.METHOD)) {
       checkMethod(tree);
     } else if (tree.is(Tree.Kind.ANNOTATION) && ((AnnotationTree) tree).symbolType().is("org.springframework.web.bind.annotation.CrossOrigin")) {
-      reportTree(((AnnotationTree) tree).annotationType());
+      checkAnnotation((AnnotationTree) tree);
     }
   }
 
@@ -90,8 +84,30 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  private void checkAnnotation(AnnotationTree tree) {
+    if (tree.arguments().stream().noneMatch(CORSCheck::isAssignSpecificOrigin)) {
+      reportTree(tree.annotationType());
+    }
+  }
+
+  private static boolean isAssignSpecificOrigin(Tree tree) {
+    if (tree.is(Tree.Kind.ASSIGNMENT)) {
+      AssignmentExpressionTree assignment = (AssignmentExpressionTree) tree;
+      ExpressionTree variable = assignment.variable();
+      return variable.is(Tree.Kind.IDENTIFIER) &&
+        "origins".equals(((IdentifierTree) variable).name()) &&
+        !isStar(assignment.expression());
+    }
+    return false;
+  }
+
   private void reportTree(Tree tree) {
     reportIssue(tree, MESSAGE);
+  }
+
+  private static boolean isStar(ExpressionTree expressionTree) {
+    String value = ExpressionsHelper.getConstantValueAsString(expressionTree).value();
+    return value != null && value.equals("*");
   }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
@@ -101,13 +117,13 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       if (SET_ADD_HEADER_MATCHER.anyMatch(mit)) {
-        String constantCORS = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
-        if (constantCORS != null && HTTP_HEADERS.contains(constantCORS.toLowerCase(Locale.ENGLISH))) {
+        String headerName = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
+        if (ACCESS_CONTROL_ALLOW_ORIGIN.equalsIgnoreCase(headerName) && isStar(mit.arguments().get(1))) {
           reportTree(mit.methodSelect());
         }
       } else if (APPLY_PERMIT_DEFAULT_VALUES.matches(mit)) {
         applyPermit.add(mit);
-      } else if (ADD_ALLOWED_ORIGIN.matches(mit)) {
+      } else if (ADD_ALLOWED_ORIGIN.matches(mit) && isStar(mit.arguments().get(0))) {
         addAllowedOrigin.add(mit);
       }
     }
