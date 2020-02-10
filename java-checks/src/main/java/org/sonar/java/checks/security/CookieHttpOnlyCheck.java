@@ -22,10 +22,13 @@ package org.sonar.java.checks.security;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
@@ -44,14 +47,15 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3330")
 public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   private final List<Symbol.VariableSymbol> ignoredVariables = new ArrayList<>();
-  private final List<Symbol.VariableSymbol> variablesToReport = new ArrayList<>();
+  private final Map<VariableSymbol, TypeTree> symbolConstructorMapToReport = new LinkedHashMap<>();
   private final List<MethodInvocationTree> settersToReport = new ArrayList<>();
-  private final List<NewClassTree> newClassToReport = new ArrayList<>();
+  private final List<TypeTree> newClassToReport = new ArrayList<>();
 
   private static final List<String> IGNORED_COOKIE_NAMES = ImmutableList.of("csrf", "xsrf");
 
@@ -109,7 +113,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   @Override
   public void setContext(JavaFileScannerContext context) {
     ignoredVariables.clear();
-    variablesToReport.clear();
+    symbolConstructorMapToReport.clear();
     settersToReport.clear();
     newClassToReport.clear();
     super.setContext(context);
@@ -117,17 +121,14 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    for (VariableSymbol var : variablesToReport) {
-      VariableTree declaration = var.declaration();
-      if (declaration != null) {
-        reportIssue(declaration.simpleName(), MESSAGE);
-      }
+    for (TypeTree typeTree : symbolConstructorMapToReport.values()) {
+      reportIssue(typeTree, MESSAGE);
     }
     for (MethodInvocationTree mit : settersToReport) {
       reportIssue(mit.arguments(), MESSAGE);
     }
-    for (NewClassTree newClassTree : newClassToReport) {
-      reportIssue(newClassTree, MESSAGE);
+    for (TypeTree typeTree : newClassToReport) {
+      reportIssue(typeTree, MESSAGE);
     }
   }
 
@@ -148,9 +149,11 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
       } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
         checkAssignment((AssignmentExpressionTree) tree);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        checkSetterInvocation((MethodInvocationTree) tree);
+        MethodInvocationTree invocationTree = (MethodInvocationTree) tree;
+        checkSetterInvocation(invocationTree);
+        invocationTree.arguments().forEach(this::categorizeBasedOnConstructor);
       } else {
-        categorizeBasedOnConstructor((ReturnStatementTree) tree);
+        categorizeBasedOnConstructor(((ReturnStatementTree) tree).expression());
       }
     }
   }
@@ -218,12 +221,11 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void categorizeBasedOnConstructor(ReturnStatementTree returnStatement) {
-    ExpressionTree returnedExpression = returnStatement.expression();
-    if (returnedExpression != null && returnedExpression.is(Tree.Kind.NEW_CLASS)) {
-      NewClassTree newClass = (NewClassTree) returnedExpression;
+  private void categorizeBasedOnConstructor(@Nullable ExpressionTree expressionTree) {
+    if (expressionTree != null && expressionTree.is(Tree.Kind.NEW_CLASS)) {
+      NewClassTree newClass = (NewClassTree) expressionTree;
       if (!isIgnoredCookieName(newClass.arguments()) && !isCompliantConstructorCall(newClass) && CLASSES.stream().anyMatch(newClass.symbolType()::isSubtypeOf)) {
-        newClassToReport.add(newClass);
+        newClassToReport.add(newClass.identifier());
       }
     }
   }
@@ -232,7 +234,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     if (isIgnoredCookieName(newClassTree.arguments())) {
       ignoredVariables.add(variableSymbol);
     } else if (!isCompliantConstructorCall(newClassTree)) {
-      variablesToReport.add(variableSymbol);
+      symbolConstructorMapToReport.put(variableSymbol, newClassTree.identifier());
     }
   }
 
@@ -335,7 +337,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
       // ignore XSRF-TOKEN cookies
       return;
     }
-    variablesToReport.remove(reference);
+    symbolConstructorMapToReport.remove(reference);
     if (!setterArgumentHasCompliantValue(mit.arguments())) {
       settersToReport.add(mit);
     }

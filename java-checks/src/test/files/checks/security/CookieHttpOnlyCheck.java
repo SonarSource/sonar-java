@@ -36,7 +36,7 @@ class S3330 {
       c1.setHttpOnly(true);
     }
 
-    Cookie c2 = new Cookie("name", "value"); // Noncompliant [[sc=12;ec=14]]
+    Cookie c2 = new Cookie("name", "value"); // Noncompliant [[sc=21;ec=27]]
 
     Cookie c3 = new Cookie("name", "value");
     c3.setHttpOnly(false); // Noncompliant
@@ -58,18 +58,18 @@ class S3330 {
     c9 = new Cookie("name", "value");
     c9.setHttpOnly(false); // Noncompliant
 
-    Cookie c10;  // Noncompliant
-    c10 = new Cookie("name", "value");
+    Cookie c10;
+    c10 = new Cookie("name", "value");  // Noncompliant
 
     Cookie c11;
     c11 = new Cookie("name", "value");
     c11.setHttpOnly(true);
 
-    Object c12; // Noncompliant
-    c12 = new Cookie("name", "value");
+    Object c12;
+    c12 = new Cookie("name", "value"); // Noncompliant
 
-    Cookie c13; // Noncompliant
-    c13 = new UnknownCookie("name", "value");
+    Cookie c13;
+    c13 = new UnknownCookie("name", "value"); // Noncompliant
 
     Cookie c14 = new Cookie("name", "value");
     boolean bValue = true;
@@ -86,10 +86,25 @@ class S3330 {
   }
 
   Cookie getC1() {
-    return new Cookie("name", "value"); // Noncompliant [[sc=12;ec=39]]
+    return new Cookie("name", "value"); // Noncompliant [[sc=16;ec=22]]
+  }
+
+  Cookie returnHttpCookie(HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", "value"); // Noncompliant
+    response.addCookie(new Cookie("name", "value")); // Noncompliant
+    return new Cookie("name", "value"); // Noncompliant
+  }
+
+  public HttpCookie getCookie() {
+    return null;
   }
 
   void httpCookie() {
+    HttpCookie cookie = getCookie();
+    if (cookie == null) {
+      cookie = new HttpCookie("name", "value"); // Noncompliant
+    }
+
     HttpCookie c1 = new HttpCookie("name", "value");
     c1.setHttpOnly(true);
 
