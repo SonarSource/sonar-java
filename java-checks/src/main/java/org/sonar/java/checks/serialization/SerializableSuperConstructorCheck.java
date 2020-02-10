@@ -19,6 +19,10 @@
  */
 package org.sonar.java.checks.serialization;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -28,11 +32,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S2055")
 public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisitor {
@@ -49,12 +48,18 @@ public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisit
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      Symbol.TypeSymbol classSymbol = ((ClassTree) tree).symbol();
-      Type superclass = classSymbol.superClass();
-      if (isSerializable(classSymbol.type()) && isNotSerializableMissingNoArgConstructor(superclass) && !implementsSerializableMethods(classSymbol)) {
-        reportIssue(tree, "Add a no-arg constructor to \"" + superclass + "\".");
-      }
+    if (!hasSemantic()) {
+      return;
+    }
+    ClassTree classTree = (ClassTree) tree;
+    if (classTree.simpleName() == null) {
+      // do not cover anonymous classes
+      return;
+    }
+    Symbol.TypeSymbol classSymbol = classTree.symbol();
+    Type superclass = classSymbol.superClass();
+    if (isSerializable(classSymbol.type()) && isNotSerializableMissingNoArgConstructor(superclass) && !implementsSerializableMethods(classSymbol)) {
+      reportIssue(classTree.superClass(), "Add a no-arg constructor to \"" + superclass.name() + "\".");
     }
   }
 
@@ -82,5 +87,4 @@ public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisit
   private static boolean implementsSerializableMethods(Symbol.TypeSymbol classSymbol) {
     return classSymbol.memberSymbols().stream().anyMatch(WRITE_REPLACE::matches);
   }
-
 }

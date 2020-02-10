@@ -9,16 +9,25 @@ class NonSerializableWithAccessibleNoArgConstructor {
 }
 
 class NonSerializableWithoutAccessibleNoArgConstructor {
+  int field;
+
   public NonSerializableWithoutAccessibleNoArgConstructor(String arg1) {}
   private NonSerializableWithoutAccessibleNoArgConstructor() {}
 }
 
 class A extends NonSerializableWithoutConstructor implements Serializable {}
 class B extends NonSerializableWithAccessibleNoArgConstructor implements Serializable {}
-class C1 extends NonSerializableWithoutAccessibleNoArgConstructor implements Serializable {} // Noncompliant {{Add a no-arg constructor to "NonSerializableWithoutAccessibleNoArgConstructor".}}
+class C1 extends NonSerializableWithoutAccessibleNoArgConstructor implements Serializable {} // Noncompliant [[sc=18;ec=66]] {{Add a no-arg constructor to "NonSerializableWithoutAccessibleNoArgConstructor".}}
 class C2 extends NonSerializableWithoutAccessibleNoArgConstructor implements Serializable { // Compliant
   Object writeReplace() throws ObjectStreamException { return null; }
 }
 class D implements Serializable {}
 class E extends NonSerializableWithoutAccessibleNoArgConstructor {}
 class F extends A {}
+class G {
+  C1 c1 = new C1() {
+    @Override
+    public String toString() { return ""; }
+    Object writeReplace() throws ObjectStreamException { return null; }
+  };
+}
