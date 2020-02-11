@@ -44,18 +44,6 @@ public class ConstantUtils {
   }
 
   @CheckForNull
-  public static Long resolveAsLongConstant(ExpressionTree tree) {
-    Object constant = tree.asConstant().orElse(null);
-    if (constant instanceof Long) {
-      return (Long) constant;
-    }
-    if (constant instanceof Integer) {
-      return ((Integer) constant).longValue();
-    }
-    return null;
-  }
-
-  @CheckForNull
   public static Boolean resolveAsBooleanConstant(ExpressionTree tree) {
     return tree.asConstant(Boolean.class).orElse(null);
   }
