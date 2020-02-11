@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.ArrayDimensionTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
@@ -36,7 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
-public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
+public class NewArrayTreeImpl extends AssessableExpressionTree implements NewArrayTree {
 
   @Nullable
   private TypeTree type;

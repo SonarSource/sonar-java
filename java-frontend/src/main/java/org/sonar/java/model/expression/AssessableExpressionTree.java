@@ -17,22 +17,31 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.java.model.expression;
 
-import com.google.common.annotations.Beta;
 import java.util.Optional;
-import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
 /**
- * Common interface for all types of expressions.
- *
- * JLS 15
+ * Parent class for all ExpressionTrees, which allows to express them as their constant value
  */
-@Beta
-public interface ExpressionTree extends Tree {
-  Type symbolType();
+public abstract class AssessableExpressionTree extends AbstractTypedTree implements ExpressionTree {
 
-  Optional<Object> asConstant();
+  public AssessableExpressionTree(GrammarRuleKey grammarRuleKey) {
+    super(grammarRuleKey);
+  }
 
-  <T> Optional<T> asConstant(Class<T> type);
+  @Override
+  public Optional<Object> asConstant() {
+    return Optional.ofNullable(ExpressionUtils.resolveAsConstant(this));
+  }
+
+  @Override
+  public <T> Optional<T> asConstant(Class<T> type) {
+    return asConstant().filter(type::isInstance).map(type::cast);
+  }
+
 }

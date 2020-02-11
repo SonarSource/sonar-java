@@ -25,9 +25,8 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.expression.AssessableExpressionTree;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -37,7 +36,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-public class SwitchExpressionTreeImpl extends JavaTree implements SwitchExpressionTree {
+public class SwitchExpressionTreeImpl extends AssessableExpressionTree implements SwitchExpressionTree {
 
   private final ExpressionTree expression;
   private final List<CaseGroupTree> cases;

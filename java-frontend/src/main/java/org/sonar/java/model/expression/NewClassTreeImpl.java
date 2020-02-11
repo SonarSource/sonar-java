@@ -20,7 +20,6 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -39,7 +38,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
 
-public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree {
+public class NewClassTreeImpl extends AssessableExpressionTree implements NewClassTree {
 
   @Nullable
   private ExpressionTree enclosingExpression;

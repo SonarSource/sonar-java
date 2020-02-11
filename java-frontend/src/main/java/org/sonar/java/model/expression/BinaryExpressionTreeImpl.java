@@ -20,7 +20,7 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.Lists;
-import org.sonar.java.model.AbstractTypedTree;
+import java.util.Objects;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -28,9 +28,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Objects;
-
-public class BinaryExpressionTreeImpl extends AbstractTypedTree implements BinaryExpressionTree {
+public class BinaryExpressionTreeImpl extends AssessableExpressionTree implements BinaryExpressionTree {
 
   private final Kind kind;
 

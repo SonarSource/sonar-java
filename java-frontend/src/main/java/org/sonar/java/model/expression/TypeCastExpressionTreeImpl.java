@@ -23,7 +23,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
@@ -37,7 +36,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Objects;
 
-public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements TypeCastTree {
+public class TypeCastExpressionTreeImpl extends AssessableExpressionTree implements TypeCastTree {
 
   private InternalSyntaxToken openParenToken;
   private final TypeTree type;

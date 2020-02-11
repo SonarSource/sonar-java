@@ -22,7 +22,6 @@ package org.sonar.java.model.expression;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.JavaLexer;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
@@ -34,7 +33,7 @@ import org.sonar.plugins.java.api.tree.TypeArguments;
 import javax.annotation.Nullable;
 import java.util.Collections;
 
-public class MethodReferenceTreeImpl extends AbstractTypedTree implements MethodReferenceTree {
+public class MethodReferenceTreeImpl extends AssessableExpressionTree implements MethodReferenceTree {
 
   private Tree expression;
   private SyntaxToken doubleColon;
