@@ -220,8 +220,8 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   private static boolean isQuery(String cleanedLiteral, String match) {
     String followingString = cleanedLiteral.substring(cleanedLiteral.indexOf(match) + match.length());
     return followingString.startsWith("=?")
-      || followingString.startsWith("=%s")
-      || followingString.startsWith("=:");
+      || followingString.startsWith("=:")
+      || followingString.contains("%s");
   }
 
   private void handleVariable(VariableTree tree) {
