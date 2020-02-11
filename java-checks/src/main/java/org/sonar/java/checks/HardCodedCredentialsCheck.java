@@ -234,7 +234,10 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   private void handleVariable(VariableTree tree) {
     IdentifierTree variable = tree.simpleName();
     isPasswordVariableName(variable)
-      .filter(passwordVariableName -> isNotExcluded(tree.initializer()) && isNotPasswordConst(tree.initializer()))
+      .filter(passwordVariableName -> {
+        ExpressionTree initializer = tree.initializer();
+        return initializer != null && isNotExcluded(initializer) && isNotPasswordConst(initializer);
+      })
       .ifPresent(passwordVariableName -> report(variable, passwordVariableName));
   }
 
@@ -250,11 +253,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
       arg.symbolType().is(JAVA_LANG_OBJECT));
   }
 
-  private boolean isNotPasswordConst(@Nullable ExpressionTree expression) {
-    if (expression == null) {
-      return true;
-    }
-
+  private boolean isNotPasswordConst(ExpressionTree expression) {
     if (expression.is(Kind.METHOD_INVOCATION)) {
       ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
       return methodSelect.is(Kind.MEMBER_SELECT) && isNotPasswordConst(((MemberSelectExpressionTree) methodSelect).expression());
@@ -264,8 +263,8 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
       .noneMatch(Matcher::find);
   }
 
-  private static boolean isNotExcluded(@Nullable ExpressionTree expression) {
-    if (expression != null && expression.is(Tree.Kind.METHOD_INVOCATION)) {
+  private static boolean isNotExcluded(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) expression;
       return STRING_TO_CHAR_ARRAY.matches(mit) && isCallOnStringLiteral(mit.methodSelect());
     } else {
@@ -273,10 +272,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean isNotExcludedString(@Nullable ExpressionTree expression) {
-    if (expression == null) {
-      return false;
-    }
+  private static boolean isNotExcludedString(ExpressionTree expression) {
     return isNotExcludedString(ExpressionsHelper.getConstantValueAsString(expression).value());
   }
 
