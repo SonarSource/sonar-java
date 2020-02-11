@@ -266,7 +266,7 @@
         <repository>
             <id>apache.snapshots</id>
             <name>Apache Maven Repository (Snapshots and Test Builds)</name>
-            <url>http://people.apache.org/maven-snapshot-repository</url>
+            <url>https://people.apache.org/maven-snapshot-repository</url>
             <releases><enabled>false</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </repository>
