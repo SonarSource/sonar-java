@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -53,8 +54,11 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
   private static final String ACCESS_CONTROL_ALLOW_ORIGIN = "access-control-allow-origin";
   private static final Set<String> ANNOTATION_ORIGINS_KEY_ALIAS = ImmutableSet.of("origins", "value");
 
-  private static final MethodMatcher ADD_ALLOWED_ORIGIN = MethodMatcher.create().typeDefinition("org.springframework.web.cors.CorsConfiguration")
-    .name("addAllowedOrigin").withAnyParameters();
+  private static final MethodMatcherCollection ADD_ALLOWED_ORIGIN_MATCHER = MethodMatcherCollection.create(
+    MethodMatcher.create().typeDefinition("org.springframework.web.cors.CorsConfiguration").name("addAllowedOrigin").withAnyParameters(),
+    MethodMatcher.create().typeDefinition("org.springframework.web.servlet.config.annotation.CorsRegistration").name("allowedOrigins").withAnyParameters()
+  );
+
   private static final MethodMatcher APPLY_PERMIT_DEFAULT_VALUES = MethodMatcher.create().typeDefinition("org.springframework.web.cors.CorsConfiguration")
     .name("applyPermitDefaultValues").withAnyParameters();
   public static final String MESSAGE = "Make sure that enabling CORS is safe here.";
@@ -106,6 +110,15 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
     return !isStar((LiteralTree) tree);
   }
 
+  private void reportTree(MethodInvocationTree mit) {
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      reportTree(((MemberSelectExpressionTree) methodSelect).identifier());
+    } else {
+      reportTree(methodSelect);
+    }
+  }
+
   private void reportTree(Tree tree) {
     reportIssue(tree, MESSAGE);
   }
@@ -128,13 +141,14 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
       if (SET_ADD_HEADER_MATCHER.anyMatch(mit)) {
         String headerName = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
         if (ACCESS_CONTROL_ALLOW_ORIGIN.equalsIgnoreCase(headerName) && isStar(mit.arguments().get(1))) {
-          reportTree(mit.methodSelect());
+          reportTree(mit);
         }
       } else if (APPLY_PERMIT_DEFAULT_VALUES.matches(mit)) {
         applyPermit.add(mit);
-      } else if (ADD_ALLOWED_ORIGIN.matches(mit) && isStar(mit.arguments().get(0))) {
+      } else if (ADD_ALLOWED_ORIGIN_MATCHER.anyMatch(mit) && isStar(mit.arguments().get(0))) {
         addAllowedOrigin.add(mit);
       }
+      super.visitMethodInvocation(mit);
     }
 
     @Override
