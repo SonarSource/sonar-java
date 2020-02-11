@@ -58,15 +58,21 @@ class A {
       return ResponseEntity.ok().body("ok");
     }
 
-    @CrossOrigin("http://domain2.com") // Noncompliant
+    @CrossOrigin(allowedHeaders = "http://domain2.com") // Noncompliant
+    @RequestMapping(value = "/test4")
+    public ResponseEntity<String> test4() {
+      return ResponseEntity.ok().body("ok");
+    }
+
+    @CrossOrigin("http://domain2.com") // Compliant, value is an alias for origins
     @RequestMapping(value = "/test3")
     public ResponseEntity<String> test3() {
       return ResponseEntity.ok().body("ok");
     }
 
-    @CrossOrigin(allowedHeaders = "http://domain2.com") // Noncompliant
-    @RequestMapping(value = "/test4")
-    public ResponseEntity<String> test4() {
+    @CrossOrigin(value = "http://domain2.com") // Compliant, value is an alias for origins
+    @RequestMapping(value = "/test5")
+    public ResponseEntity<String> test5() {
       return ResponseEntity.ok().body("ok");
     }
 
@@ -77,6 +83,18 @@ class A {
     }
 
     @CrossOrigin(origins = {"http://localhost:7777", "http://someserver:8080"}) // Compliant
+    @RequestMapping(value = "/test6")
+    public ResponseEntity<String> test6() {
+      return ResponseEntity.ok().body("ok");
+    }
+
+    @CrossOrigin(origins = {"*"}) // Noncompliant
+    @RequestMapping(value = "/test6")
+    public ResponseEntity<String> test6() {
+      return ResponseEntity.ok().body("ok");
+    }
+
+    @CrossOrigin(origins = {"http://localhost:7777", "*"}) // Noncompliant
     @RequestMapping(value = "/test6")
     public ResponseEntity<String> test6() {
       return ResponseEntity.ok().body("ok");
@@ -115,19 +133,19 @@ class A {
       public CorsFilter corsFilter4() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=119,120]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=137,138]]
         config.applyPermitDefaultValues();
         config.applyPermitDefaultValues();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=119,120]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=137,138]]
         return new CorsFilter(source);
       }
     }
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     CorsConfiguration config = new CorsConfiguration();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=128,129]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=146,147]]
     config.applyPermitDefaultValues();
     config.applyPermitDefaultValues();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=128,129]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=146,147]]
     return new CorsFilter(source);
   }
 
