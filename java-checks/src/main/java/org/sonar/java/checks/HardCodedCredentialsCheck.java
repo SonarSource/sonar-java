@@ -320,7 +320,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
       .ifPresent(passwordVariableName -> report(leftExpression, passwordVariableName));
 
     isPasswordVariable(rightExpression)
-      .filter(passwordVariableName -> isNotExcludedString(leftExpression) && !isPasswordLikeName(rightExpression))
+      .filter(passwordVariableName -> isNotExcludedString(leftExpression) && !isPasswordLikeName(leftExpression))
       .ifPresent(passwordVariableName -> report(rightExpression, passwordVariableName));
   }
 

@@ -18,6 +18,7 @@ class A {
     String variable6 = "login=a&password= ";
 
     String query1 = "password=?"; // Compliant
+    String query1 = "password=???"; // Compliant
     String query1_2 = "password=X"; // Compliant
     String query1_3 = "password=anonymous"; // Compliant
     String query4 = "password='" + pwd + "'"; // Compliant
@@ -84,6 +85,8 @@ class A {
     if(password.equals("anonymous")) {
     }
     if(password.equals("password")) {
+    }
+    if("password".equals(password)) {
     }
     if(password.equals("password-1234")) {
     }
