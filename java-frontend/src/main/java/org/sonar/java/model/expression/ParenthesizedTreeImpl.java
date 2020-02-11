@@ -20,7 +20,6 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.Lists;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
@@ -30,7 +29,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import java.util.Objects;
 
-public class ParenthesizedTreeImpl extends AbstractTypedTree implements ParenthesizedTree {
+public class ParenthesizedTreeImpl extends AssessableExpressionTree implements ParenthesizedTree {
   private final InternalSyntaxToken openParenToken;
   private final ExpressionTree expression;
   private final InternalSyntaxToken closeParenToken;

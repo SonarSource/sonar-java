@@ -21,8 +21,8 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.expression.AssessableExpressionTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
-public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationTree {
+public class AnnotationTreeImpl extends AssessableExpressionTree implements AnnotationTree {
 
   private final SyntaxToken atToken;
   private final TypeTree annotationType;

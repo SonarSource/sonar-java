@@ -22,7 +22,6 @@ package org.sonar.java.model.expression;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.JavaLexer;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -34,7 +33,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class LambdaExpressionTreeImpl extends AbstractTypedTree implements LambdaExpressionTree {
+public class LambdaExpressionTreeImpl extends AssessableExpressionTree implements LambdaExpressionTree {
 
   @Nullable
   private final InternalSyntaxToken openParenToken;

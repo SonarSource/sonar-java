@@ -36,6 +36,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
+import org.sonar.java.model.expression.AssessableExpressionTree;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -507,7 +508,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class NotImplementedTreeImpl extends AbstractTypedTree implements ExpressionTree {
+  public static class NotImplementedTreeImpl extends AssessableExpressionTree {
 
     public NotImplementedTreeImpl() {
       super(Kind.OTHER);
@@ -534,7 +535,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class PrimitiveTypeTreeImpl extends AbstractTypedTree implements PrimitiveTypeTree, AnnotatedTypeTree {
+  public static class PrimitiveTypeTreeImpl extends AssessableExpressionTree implements PrimitiveTypeTree, AnnotatedTypeTree {
 
     private final InternalSyntaxToken token;
     private List<AnnotationTree> annotations;
@@ -576,7 +577,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class ParameterizedTypeTreeImpl extends AbstractTypedTree implements ParameterizedTypeTree, ExpressionTree, AnnotatedTypeTree {
+  public static class ParameterizedTypeTreeImpl extends AssessableExpressionTree implements ParameterizedTypeTree, AnnotatedTypeTree {
 
     private final TypeTree type;
     private final TypeArguments typeArguments;
@@ -625,7 +626,7 @@ public abstract class JavaTree implements Tree {
     }
   }
 
-  public static class ArrayTypeTreeImpl extends AbstractTypedTree implements ArrayTypeTree, AnnotatedTypeTree {
+  public static class ArrayTypeTreeImpl extends AssessableExpressionTree implements ArrayTypeTree, AnnotatedTypeTree {
     private TypeTree type;
     private List<AnnotationTree> annotations;
     private final InternalSyntaxToken openBracketToken;

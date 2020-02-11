@@ -470,8 +470,9 @@ class JParserSemanticTest {
 
   @Test
   void expression_switch() {
-    assertThat(expression("switch (0) { default -> 0; case 0 -> 0; }"))
-      .isNotInstanceOf(AbstractTypedTree.class);
+    ExpressionTree expression = expression("switch (0) { default -> 0; case 0 -> 0; }");
+    assertThat(expression).isInstanceOf(AbstractTypedTree.class);
+    assertThat(expression.symbolType().isUnknown()).isTrue();
   }
 
   /**

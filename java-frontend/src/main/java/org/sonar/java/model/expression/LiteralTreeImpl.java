@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -29,7 +28,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Collections;
 import java.util.Objects;
 
-public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
+public class LiteralTreeImpl extends AssessableExpressionTree implements LiteralTree {
 
   private final Kind kind;
   private final InternalSyntaxToken token;

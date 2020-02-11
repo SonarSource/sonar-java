@@ -20,7 +20,6 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.Lists;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -30,7 +29,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import java.util.Objects;
 
-public class InternalPostfixUnaryExpression extends AbstractTypedTree implements UnaryExpressionTree {
+public class InternalPostfixUnaryExpression extends AssessableExpressionTree implements UnaryExpressionTree {
 
   private final Kind kind;
   private final ExpressionTree expression;

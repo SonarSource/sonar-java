@@ -23,7 +23,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -39,7 +38,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Objects;
 
-public class MethodInvocationTreeImpl extends AbstractTypedTree implements MethodInvocationTree {
+public class MethodInvocationTreeImpl extends AssessableExpressionTree implements MethodInvocationTree {
 
   private final ExpressionTree methodSelect;
   private final Arguments arguments;
