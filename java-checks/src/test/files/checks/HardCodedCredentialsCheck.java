@@ -33,6 +33,13 @@ class A {
     final String CONNECTION_PASSWORD = "connection.password"; // Compliant
     final String RESET_PASSWORD = "/users/resetUserPassword"; // Compliant
     final String RESET_PWD = "/users/resetUserPassword"; // Compliant
+    char[] passwordToChar = "password".toCharArray(); // Compliant
+    char[] passwordToChar2 = "http-password".toCharArray(); // Compliant
+    String passwordToString = "http-password".toString(); // Compliant
+    char[] passwordFromGetPwd = getPwd(""); // Compliant
+
+    String CA_PASSWORD = "ca-password"; // Compliant
+    String caPassword = CA_PASSWORD; // Compliant
 
     final String MY_PASSWORD = "1234"; // Noncompliant
     String params = "user=admin&password=Password123"; // Noncompliant
@@ -61,6 +68,10 @@ class A {
     if("whatever".equals(password)) { // Noncompliant
     }
     if(PASSED.equals(password)) { // Noncompliant
+    }
+    if(password.equals("password")) {
+    }
+    if(password.equals("password-1234")) {
     }
     if(password.equals("")) {
     }

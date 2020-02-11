@@ -154,7 +154,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
 
   private boolean isPasswordLikeName(ExpressionTree expression) {
     if (expression.is(Kind.STRING_LITERAL)) {
-      return isPasswordLikeName(LiteralUtils.trimQuotes(((LiteralTree)expression).value())).isPresent();
+      return isPasswordLikeName(LiteralUtils.trimQuotes(((LiteralTree) expression).value())).isPresent();
     }
     return false;
   }
@@ -244,8 +244,13 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isNotPasswordConst(@Nullable ExpressionTree expression) {
-    if (expression == null || !expression.is(Kind.STRING_LITERAL)) {
+    if (expression == null) {
       return true;
+    }
+
+    if (expression.is(Kind.METHOD_INVOCATION)) {
+      ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
+      return methodSelect.is(Kind.MEMBER_SELECT) && isNotPasswordConst(((MemberSelectExpressionTree) methodSelect).expression());
     }
     String literal = ExpressionsHelper.getConstantValueAsString(expression).value();
     return literal == null || variablePatterns().map(pattern -> pattern.matcher(literal))
@@ -298,11 +303,11 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
     ExpressionTree rightExpression = mit.arguments().get(0);
 
     isPasswordVariable(leftExpression)
-      .filter(passwordVariableName -> isNotEmptyString(rightExpression))
+      .filter(passwordVariableName -> isNotEmptyString(rightExpression) && !isPasswordLikeName(rightExpression))
       .ifPresent(passwordVariableName -> report(leftExpression, passwordVariableName));
 
     isPasswordVariable(rightExpression)
-      .filter(passwordVariableName -> isNotEmptyString(leftExpression))
+      .filter(passwordVariableName -> isNotEmptyString(leftExpression) && !isPasswordLikeName(rightExpression))
       .ifPresent(passwordVariableName -> report(rightExpression, passwordVariableName));
   }
 
