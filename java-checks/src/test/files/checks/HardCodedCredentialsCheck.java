@@ -18,6 +18,8 @@ class A {
     String variable6 = "login=a&password= ";
 
     String query1 = "password=?"; // Compliant
+    String query1_2 = "password=X"; // Compliant
+    String query1_3 = "password=anonymous"; // Compliant
     String query4 = "password='" + pwd + "'"; // Compliant
     String query2 = "password=:password"; // Compliant
     String query3 = "password=:param"; // Compliant
@@ -48,11 +50,15 @@ class A {
 
     String variableNameWithPasswordInIt = "xxx"; // Noncompliant [[sc=12;ec=40]]
     String variableNameWithPasswordInItEmpty = "";
+    String variableNameWithPasswordInItOneChar = "X";
+    String variableNameWithPasswordInItAnonymous = "anonymous";
     String variableNameWithPassphraseInIt = "xxx"; // Noncompliant
     String variableNameWithPasswdInIt = "xxx"; // Noncompliant [[sc=12;ec=38]]
     String variableNameWithPwdInIt = "xxx"; // Noncompliant [[sc=12;ec=35]]
     String otherVariableNameWithPasswordInIt;
     fieldNameWithPasswordInIt = "xx"; // Noncompliant
+    fieldNameWithPasswordInIt = "X";
+    fieldNameWithPasswordInIt = "anonymous";
     fieldNameWithPasswordInIt = retrievePassword();
     this.fieldNameWithPasswordInIt = "xx"; // Noncompliant
     this.fieldNameWithPasswordInIt = retrievePassword();
@@ -62,6 +68,8 @@ class A {
     passphrase = "whatever".toCharArray(); // Noncompliant
     passphrase = PASSED.toCharArray(); // Noncompliant
     passphrase = "".toCharArray();
+    passphrase = "X".toCharArray();
+    passphrase = "anonymous".toCharArray();
 
     String password = "123"; // Noncompliant
     if(password.equals("whatever")) { // Noncompliant
@@ -69,6 +77,10 @@ class A {
     if("whatever".equals(password)) { // Noncompliant
     }
     if(PASSED.equals(password)) { // Noncompliant
+    }
+    if(password.equals("X")) {
+    }
+    if(password.equals("anonymous")) {
     }
     if(password.equals("password")) {
     }
@@ -98,6 +110,8 @@ class A {
     myA.setProperty("password", "xxxxx"); // Noncompliant
     myA.setProperty("passwd", "xxxxx"); // Noncompliant
     myA.setProperty("pwd", "xxxxx"); // Noncompliant
+    myA.setProperty("pwd", "X");
+    myA.setProperty("pwd", "anonymous");
     myA.setProperty("password", new Object());
     myA.setProperty("xxxxx", "password");
     myA.setProperty(12, "xxxxx");

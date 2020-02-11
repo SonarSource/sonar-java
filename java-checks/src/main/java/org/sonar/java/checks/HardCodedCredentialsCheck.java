@@ -22,8 +22,10 @@ package org.sonar.java.checks;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -51,10 +53,13 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_CREDENTIAL_WORDS = "password,passwd,pwd,passphrase,java.naming.security.credentials";
+  private static final Set<String> WHITE_LIST = Collections.singleton("anonymous");
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
   private static final Pattern URL_PREFIX = Pattern.compile("^\\w{1,8}://");
   private static final Pattern NON_EMPTY_URL_CREDENTIAL = Pattern.compile("(?<user>[^\\s:]*+):(?<password>\\S++)");
+
+  private static final int MINIMUM_PASSWORD_LENGTH = 1;
 
   private static final MethodMatcher PASSWORD_AUTHENTICATION_CONSTRUCTOR = MethodMatcher.create()
     .typeDefinition("java.net.PasswordAuthentication")
@@ -129,7 +134,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
 
   private Optional<String> isSettingPassword(MethodInvocationTree tree) {
     List<ExpressionTree> arguments = tree.arguments();
-    if (arguments.size() == 2 && isArgumentsSuperTypeOfString(arguments) && !isPasswordLikeName(arguments.get(1)) && isNotEmptyString(arguments.get(1))) {
+    if (arguments.size() == 2 && isArgumentsSuperTypeOfString(arguments) && !isPasswordLikeName(arguments.get(1)) && isNotExcludedString(arguments.get(1))) {
       return isPassword(arguments.get(0));
     }
     return Optional.empty();
@@ -179,7 +184,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isCallOnStringLiteral(ExpressionTree expr) {
     return expr.is(Tree.Kind.MEMBER_SELECT) &&
-      isNotEmptyString(((MemberSelectExpressionTree) expr).expression());
+      isNotExcludedString(((MemberSelectExpressionTree) expr).expression());
   }
 
   private void handleStringLiteral(LiteralTree tree) {
@@ -191,7 +196,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
         // contains "pwd=" or similar
         .filter(Matcher::find)
         .map(matcher -> matcher.group(1))
-        .filter(match -> !isQuery(cleanedLiteral, match))
+        .filter(match -> !isExcludedLiteral(cleanedLiteral, match))
         .findAny()
         .ifPresent(credential -> report(tree, credential));
     }
@@ -217,24 +222,25 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
     return parent != null && parent.is(Kind.VARIABLE) && isPasswordVariableName(((VariableTree) parent).simpleName()).isPresent();
   }
 
-  private static boolean isQuery(String cleanedLiteral, String match) {
-    String followingString = cleanedLiteral.substring(cleanedLiteral.indexOf(match) + match.length());
-    return followingString.startsWith("=?")
-      || followingString.startsWith("=:")
+  private static boolean isExcludedLiteral(String cleanedLiteral, String match) {
+    String followingString = cleanedLiteral.substring(cleanedLiteral.indexOf(match) + match.length() + 1);
+    return !isNotExcludedString(followingString)
+      || followingString.startsWith("?")
+      || followingString.startsWith(":")
       || followingString.contains("%s");
   }
 
   private void handleVariable(VariableTree tree) {
     IdentifierTree variable = tree.simpleName();
     isPasswordVariableName(variable)
-      .filter(passwordVariableName -> isNotEmptyStringOrCharArrayFromString(tree.initializer()) && isNotPasswordConst(tree.initializer()))
+      .filter(passwordVariableName -> isNotExcluded(tree.initializer()) && isNotPasswordConst(tree.initializer()))
       .ifPresent(passwordVariableName -> report(variable, passwordVariableName));
   }
 
   private void handleAssignment(AssignmentExpressionTree tree) {
     ExpressionTree variable = tree.variable();
     isPasswordVariable(variable)
-      .filter(passwordVariableName -> isNotEmptyStringOrCharArrayFromString(tree.expression()))
+      .filter(passwordVariableName -> isNotExcluded(tree.expression()))
       .ifPresent(passwordVariableName -> report(variable, passwordVariableName));
   }
 
@@ -257,21 +263,27 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
       .noneMatch(Matcher::find);
   }
 
-  private static boolean isNotEmptyStringOrCharArrayFromString(@Nullable ExpressionTree expression) {
+  private static boolean isNotExcluded(@Nullable ExpressionTree expression) {
     if (expression != null && expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) expression;
       return STRING_TO_CHAR_ARRAY.matches(mit) && isCallOnStringLiteral(mit.methodSelect());
     } else {
-      return isNotEmptyString(expression);
+      return isNotExcludedString(expression);
     }
   }
 
-  private static boolean isNotEmptyString(@Nullable ExpressionTree expression) {
+  private static boolean isNotExcludedString(@Nullable ExpressionTree expression) {
     if (expression == null) {
       return false;
     }
-    String literal = ExpressionsHelper.getConstantValueAsString(expression).value();
-    return literal != null && !literal.trim().isEmpty();
+    return isNotExcludedString(ExpressionsHelper.getConstantValueAsString(expression).value());
+  }
+
+  private static boolean isNotExcludedString(@Nullable String literal) {
+    return literal != null &&
+      !literal.trim().isEmpty() &&
+      literal.length() > MINIMUM_PASSWORD_LENGTH &&
+      !WHITE_LIST.contains(literal);
   }
 
   private void handleConstructor(NewClassTree tree) {
@@ -303,18 +315,18 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
     ExpressionTree rightExpression = mit.arguments().get(0);
 
     isPasswordVariable(leftExpression)
-      .filter(passwordVariableName -> isNotEmptyString(rightExpression) && !isPasswordLikeName(rightExpression))
+      .filter(passwordVariableName -> isNotExcludedString(rightExpression) && !isPasswordLikeName(rightExpression))
       .ifPresent(passwordVariableName -> report(leftExpression, passwordVariableName));
 
     isPasswordVariable(rightExpression)
-      .filter(passwordVariableName -> isNotEmptyString(leftExpression) && !isPasswordLikeName(rightExpression))
+      .filter(passwordVariableName -> isNotExcludedString(leftExpression) && !isPasswordLikeName(rightExpression))
       .ifPresent(passwordVariableName -> report(rightExpression, passwordVariableName));
   }
 
   private void handleGetConnectionMethod(MethodInvocationTree mit) {
     if (mit.arguments().size() > GET_CONNECTION_PASSWORD_ARGUMENT) {
       ExpressionTree expression = mit.arguments().get(GET_CONNECTION_PASSWORD_ARGUMENT);
-      if (isNotEmptyString(expression)) {
+      if (isNotExcludedString(expression)) {
         reportIssue(expression, "Remove this hard-coded password.");
       }
     }
