@@ -17,11 +17,11 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.helpers;
+package org.sonar.java.model.expression;
 
 import static java.lang.Boolean.TRUE;
 
-// used by ConstantUtilsTest
+// used by AssessableExpressionTreeTest
 public class ClassWithConstants {
 
   public static final String CONSTANT1 = "abc";

@@ -17,13 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.helpers;
+package org.sonar.java.model.expression;
 
 import java.io.File;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.junit.Test;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -34,9 +35,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.checks.helpers.ConstantUtils.resolveAsIntConstant;
 
-public class ConstantUtilsTest {
+public class AssessableExpressionTreeTest {
 
   private final ClassTree classTree = parse();
 
@@ -44,7 +44,6 @@ public class ConstantUtilsTest {
   public void literals() {
     assertThat(resolveAsStrings("literals")).containsExactly("hello", null, null, null, null, null, null, null, null, null, null);
     assertThat(resolveAsInts("literals")).containsExactly(null, null, 43, +43, -43, null, null, null, null, 1000, null);
-    assertThat(resolveAsLongs("literals")).containsExactly(null, null, 43L, +43L, -43L, 77L, null, null, null, 1000L, 0x99567L);
     assertThat(resolveAsBooleans("literals")).containsExactly(null, true, null, null, null, null, null, null, null, null, null);
   }
 
@@ -52,7 +51,6 @@ public class ConstantUtilsTest {
   public void identifiers() {
     assertThat(resolveAsStrings("identifiers")).containsExactly("abc", "abcdef", null, null, null, null);
     assertThat(resolveAsInts("identifiers")).containsExactly(null, null, 42, null, null, null);
-    assertThat(resolveAsLongs("identifiers")).containsExactly(null, null, 42L, 99L, null, null);
     assertThat(resolveAsBooleans("identifiers")).containsExactly(null, null, null, null, true, false);
   }
 
@@ -72,7 +70,6 @@ public class ConstantUtilsTest {
   public void plus() {
     assertThat(resolveAsStrings("plus")).containsExactly("hello abc", null, null, "hello42", "42hello", null, null, null, null);
     assertThat(resolveAsInts("plus")).containsExactly(null, null, null, null, null, 43, null, null, null);
-    assertThat(resolveAsLongs("plus")).containsExactly(null, null, null, null, null, 43L, 100L, 101L, 102L);
   }
 
   @Test
@@ -82,11 +79,11 @@ public class ConstantUtilsTest {
 
   @Test
   public void uncompilable_expressions() {
-    assertThat(resolveAsIntConstant(expression("42 + 1"))).isEqualTo(43);
-    assertThat(resolveAsIntConstant(expression("42 + true"))).isNull();
-    assertThat(resolveAsIntConstant(expression("42L + true"))).isNull();
-    assertThat(resolveAsIntConstant(expression("true + 42"))).isNull();
-    assertThat(resolveAsIntConstant(expression("unknownVar"))).isNull();
+    assertThat(expression("42 + 1").asConstant(Integer.class)).isPresent().contains(43);
+    assertThat(expression("42 + true").asConstant()).isEmpty();
+    assertThat(expression("42L + true").asConstant()).isEmpty();
+    assertThat(expression("true + 42").asConstant()).isEmpty();
+    assertThat(expression("unknownVar").asConstant()).isEmpty();
   }
 
   private ExpressionTree expression(String expressionAsString) {
@@ -97,28 +94,24 @@ public class ConstantUtilsTest {
   }
 
   private ClassTree parse() {
-    File file = new File("src/test/java/org/sonar/java/checks/helpers/ClassWithConstants.java");
+    File file = new File("src/test/java/org/sonar/java/model/expression/ClassWithConstants.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     return (ClassTree) tree.types().get(0);
   }
 
   private List<String> resolveAsStrings(String methodName) {
-    return constantValuesInMethod(methodName, ConstantUtils::resolveAsStringConstant);
+    return constantValuesInMethod(methodName, expr -> expr.asConstant(String.class).orElse(null));
   }
 
   private List<Integer> resolveAsInts(String methodName) {
-    return constantValuesInMethod(methodName, ConstantUtils::resolveAsIntConstant);
-  }
-
-  private List<Long> resolveAsLongs(String methodName) {
-    return constantValuesInMethod(methodName, ConstantUtils::resolveAsLongConstant);
+    return constantValuesInMethod(methodName, expr -> expr.asConstant(Integer.class).orElse(null));
   }
 
   private List<Boolean> resolveAsBooleans(String methodName) {
-    return constantValuesInMethod(methodName, ConstantUtils::resolveAsBooleanConstant);
+    return constantValuesInMethod(methodName, expr -> expr.asConstant(Boolean.class).orElse(null));
   }
 
-  private <T> List<T> constantValuesInMethod(String methodName, Function<ExpressionTree,T> resolver) {
+  private <T> List<T> constantValuesInMethod(String methodName, Function<ExpressionTree, T> resolver) {
     MethodTree method = classTree.members().stream()
       .filter(m -> m.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
@@ -133,4 +126,5 @@ public class ConstantUtilsTest {
       .map(resolver)
       .collect(Collectors.toList());
   }
+
 }
