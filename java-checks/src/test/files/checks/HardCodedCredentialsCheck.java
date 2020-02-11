@@ -18,10 +18,15 @@ class A {
     String variable6 = "login=a&password= ";
 
     String query1 = "password=?"; // Compliant
+    String query1 = "password=???"; // Compliant
+    String query1_2 = "password=X"; // Compliant
+    String query1_3 = "password=anonymous"; // Compliant
     String query4 = "password='" + pwd + "'"; // Compliant
     String query2 = "password=:password"; // Compliant
     String query3 = "password=:param"; // Compliant
     String query5 = "password=%s"; // Compliant
+    String query6 = "password=\"%s\""; // Compliant
+    String query7 = "\"password=\""; // Compliant
 
     // Constant used to avoid duplicated string
     String passwordConst = "Password"; // Compliant
@@ -33,6 +38,13 @@ class A {
     final String CONNECTION_PASSWORD = "connection.password"; // Compliant
     final String RESET_PASSWORD = "/users/resetUserPassword"; // Compliant
     final String RESET_PWD = "/users/resetUserPassword"; // Compliant
+    char[] passwordToChar = "password".toCharArray(); // Compliant
+    char[] passwordToChar2 = "http-password".toCharArray(); // Compliant
+    String passwordToString = "http-password".toString(); // Compliant
+    char[] passwordFromGetPwd = getPwd(""); // Compliant
+
+    String CA_PASSWORD = "ca-password"; // Compliant
+    String caPassword = CA_PASSWORD; // Compliant
 
     final String MY_PASSWORD = "1234"; // Noncompliant
     String params = "user=admin&password=Password123"; // Noncompliant
@@ -40,11 +52,15 @@ class A {
 
     String variableNameWithPasswordInIt = "xxx"; // Noncompliant [[sc=12;ec=40]]
     String variableNameWithPasswordInItEmpty = "";
+    String variableNameWithPasswordInItOneChar = "X";
+    String variableNameWithPasswordInItAnonymous = "anonymous";
     String variableNameWithPassphraseInIt = "xxx"; // Noncompliant
     String variableNameWithPasswdInIt = "xxx"; // Noncompliant [[sc=12;ec=38]]
     String variableNameWithPwdInIt = "xxx"; // Noncompliant [[sc=12;ec=35]]
     String otherVariableNameWithPasswordInIt;
     fieldNameWithPasswordInIt = "xx"; // Noncompliant
+    fieldNameWithPasswordInIt = "X";
+    fieldNameWithPasswordInIt = "anonymous";
     fieldNameWithPasswordInIt = retrievePassword();
     this.fieldNameWithPasswordInIt = "xx"; // Noncompliant
     this.fieldNameWithPasswordInIt = retrievePassword();
@@ -54,6 +70,8 @@ class A {
     passphrase = "whatever".toCharArray(); // Noncompliant
     passphrase = PASSED.toCharArray(); // Noncompliant
     passphrase = "".toCharArray();
+    passphrase = "X".toCharArray();
+    passphrase = "anonymous".toCharArray();
 
     String password = "123"; // Noncompliant
     if(password.equals("whatever")) { // Noncompliant
@@ -61,6 +79,16 @@ class A {
     if("whatever".equals(password)) { // Noncompliant
     }
     if(PASSED.equals(password)) { // Noncompliant
+    }
+    if(password.equals("X")) {
+    }
+    if(password.equals("anonymous")) {
+    }
+    if(password.equals("password")) {
+    }
+    if("password".equals(password)) {
+    }
+    if(password.equals("password-1234")) {
     }
     if(password.equals("")) {
     }
@@ -86,6 +114,8 @@ class A {
     myA.setProperty("password", "xxxxx"); // Noncompliant
     myA.setProperty("passwd", "xxxxx"); // Noncompliant
     myA.setProperty("pwd", "xxxxx"); // Noncompliant
+    myA.setProperty("pwd", "X");
+    myA.setProperty("pwd", "anonymous");
     myA.setProperty("password", new Object());
     myA.setProperty("xxxxx", "password");
     myA.setProperty(12, "xxxxx");
