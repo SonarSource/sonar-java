@@ -71,6 +71,22 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **6.1**
+
+* The `ExpressionTree` interface, from the AST API, is now enriched by two new methods `Optional<Object> asConstant()` and `<T> Optional<T> asConstant(Class<T> type)`. These methods allow to try retrieving the equivalent constant value of an expression (from a variable, for instance). An example of usage would be:
+
+```
+class A {
+  public static final String CONSTANT1 = "abc";
+  public static final String CONSTANT2 = CONSTANT1 + "def";
+
+  void foo() {
+    System.out.println(CONSTANT2);
+                    // ^^^^^^^^^ calling 'identifier.asConstant(String.class)' will return 'Optional.of("abcdef")'
+  }
+}
+```
+
 #### **6.0**
 
 * Deprecated method `org.sonar.plugins.java.api.JavaFileScannerContext.addIssue(File, JavaCheck, int, String)` has been **removed**. Custom rules relying on it should report issues on a given `Tree` from now on.
