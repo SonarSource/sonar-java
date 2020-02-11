@@ -25,6 +25,7 @@ class A {
     String query3 = "password=:param"; // Compliant
     String query5 = "password=%s"; // Compliant
     String query6 = "password=\"%s\""; // Compliant
+    String query7 = "\"password=\""; // Compliant
 
     // Constant used to avoid duplicated string
     String passwordConst = "Password"; // Compliant

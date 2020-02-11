@@ -227,6 +227,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
     return !isNotExcludedString(followingString)
       || followingString.startsWith("?")
       || followingString.startsWith(":")
+      || followingString.startsWith("\\\"")
       || followingString.contains("%s");
   }
 
