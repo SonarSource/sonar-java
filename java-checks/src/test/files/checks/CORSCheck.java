@@ -11,14 +11,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 class A {
 
   // === Java Servlet ===
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     resp.setHeader("Content-Type", "text/plain; charset=utf-8");
-    resp.setHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=5;ec=19]]
+    resp.setHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
     // header names are case insensitive. see https://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive/5259004#5259004
-    resp.setHeader("Access-control-allow-Origin", "*"); // Noncompliant [[sc=5;ec=19]]
+    resp.setHeader("Access-control-allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
     resp.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Compliant
 
     resp.setHeader("Access-Control-Allow-Credentials", "true"); // Compliant
@@ -27,7 +30,7 @@ class A {
     resp.setHeader("Access-Control-Allow-Methods", "*"); // Compliant
 
     resp.addHeader("Content-Type", "text/plain; charset=utf-8");
-    resp.addHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=5;ec=19]]
+    resp.addHeader("Access-Control-Allow-Origin", "*"); // Noncompliant [[sc=10;ec=19]]
     resp.addHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // // Compliant
     resp.addHeader("Access-Control-Allow-Credentials", "true"); // Compliant
     resp.addHeader("Access-Control-Allow-Methods", "GET"); // Compliant
@@ -59,14 +62,14 @@ class A {
     }
 
     @CrossOrigin(allowedHeaders = "http://domain2.com") // Noncompliant
-    @RequestMapping(value = "/test4")
-    public ResponseEntity<String> test4() {
+    @RequestMapping(value = "/test3")
+    public ResponseEntity<String> test3() {
       return ResponseEntity.ok().body("ok");
     }
 
     @CrossOrigin("http://domain2.com") // Compliant, value is an alias for origins
-    @RequestMapping(value = "/test3")
-    public ResponseEntity<String> test3() {
+    @RequestMapping(value = "/test4")
+    public ResponseEntity<String> test4() {
       return ResponseEntity.ok().body("ok");
     }
 
@@ -77,26 +80,26 @@ class A {
     }
 
     @CrossOrigin(origins = "http://domain2.com") // Compliant
-    @RequestMapping(value = "/test5")
-    public ResponseEntity<String> test5() {
+    @RequestMapping(value = "/test6")
+    public ResponseEntity<String> test6() {
       return ResponseEntity.ok().body("ok");
     }
 
     @CrossOrigin(origins = {"http://localhost:7777", "http://someserver:8080"}) // Compliant
-    @RequestMapping(value = "/test6")
-    public ResponseEntity<String> test6() {
+    @RequestMapping(value = "/test7")
+    public ResponseEntity<String> test7() {
       return ResponseEntity.ok().body("ok");
     }
 
     @CrossOrigin(origins = {"*"}) // Noncompliant
-    @RequestMapping(value = "/test6")
-    public ResponseEntity<String> test6() {
+    @RequestMapping(value = "/test8")
+    public ResponseEntity<String> test8() {
       return ResponseEntity.ok().body("ok");
     }
 
     @CrossOrigin(origins = {"http://localhost:7777", "*"}) // Noncompliant
-    @RequestMapping(value = "/test6")
-    public ResponseEntity<String> test6() {
+    @RequestMapping(value = "/test9")
+    public ResponseEntity<String> test9() {
       return ResponseEntity.ok().body("ok");
     }
   }
@@ -133,20 +136,36 @@ class A {
       public CorsFilter corsFilter4() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=137,138]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=140,141]]
         config.applyPermitDefaultValues();
         config.applyPermitDefaultValues();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=137,138]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=140,141]]
         return new CorsFilter(source);
       }
     }
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     CorsConfiguration config = new CorsConfiguration();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=146,147]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=149,150]]
     config.applyPermitDefaultValues();
     config.applyPermitDefaultValues();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=146,147]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=149,150]]
     return new CorsFilter(source);
+  }
+
+  class S5122_Insecure implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+      registry.addMapping("/**")
+        .allowedOrigins("*"); // Noncompliant [[sc=10;ec=24]]
+    }
+  }
+
+  class S5122_Safe implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+      registry.addMapping("/**")
+        .allowedOrigins("safe.com"); // Compliant
+    }
   }
 
 }
