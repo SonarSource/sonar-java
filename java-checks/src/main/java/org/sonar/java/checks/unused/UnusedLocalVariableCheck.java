@@ -23,6 +23,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -78,6 +79,8 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.COMPILATION_UNIT);
   }
 
+  private static final UnresolvedIdentifiersVisitor UNRESOLVED_IDENTIFIERS_VISITOR = new UnresolvedIdentifiersVisitor();
+
   @Override
   public void leaveNode(Tree tree) {
     if (hasSemantic()) {
@@ -113,16 +116,19 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     for (VariableTree variableTree : variables) {
       Symbol symbol = variableTree.symbol();
       if (symbol.usages().size() == assignments.get(symbol).size()) {
-        IdentifierTree simpleName = variableTree.simpleName();
-        reportIssue(simpleName, "Remove this unused \"" + simpleName + "\" local variable.");
+        reportIssue(variableTree.simpleName(), "Remove this unused \"" + symbol.name() + "\" local variable.");
       }
     }
   }
 
   public void addVariables(List<StatementTree> statementTrees) {
+    UNRESOLVED_IDENTIFIERS_VISITOR.check(statementTrees);
     for (StatementTree statementTree : statementTrees) {
       if (statementTree.is(Tree.Kind.VARIABLE)) {
-        addVariable((VariableTree) statementTree);
+        VariableTree variableTree = (VariableTree) statementTree;
+        if (!UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(variableTree.simpleName().name())) {
+          addVariable(variableTree);
+        }
       }
     }
   }

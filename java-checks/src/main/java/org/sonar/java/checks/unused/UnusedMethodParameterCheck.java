@@ -23,13 +23,13 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.JUtils;
@@ -39,13 +39,9 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -65,6 +61,8 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   private static final String STRUTS_ACTION_SUPERCLASS = "org.apache.struts.action.Action";
   private static final Collection<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = ImmutableList.of("org.apache.struts.action.ActionMapping",
     "org.apache.struts.action.ActionForm", "javax.servlet.http.HttpServletRequest", "javax.servlet.http.HttpServletResponse");
+
+  private static final UnresolvedIdentifiersVisitor UNRESOLVED_IDENTIFIERS_VISITOR = new UnresolvedIdentifiersVisitor();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -92,7 +90,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
         unused.add(var.simpleName());
       }
     }
-    Set<String> unresolvedIdentifierNames = unresolvedIdentifierNames(methodTree.block());
+    Set<String> unresolvedIdentifierNames = UNRESOLVED_IDENTIFIERS_VISITOR.check(methodTree.block());
     // kill the noise regarding unresolved identifiers, and remove the one with matching names from the list of unused
     unused = unused.stream()
       .filter(id -> !unresolvedIdentifierNames.contains(id.name()))
@@ -179,41 +177,5 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     return tree.symbol().usages().stream()
       // no need to check which side of method reference, from an identifierTree, it's the only possibility as direct parent
       .anyMatch(identifier -> identifier.parent().is(Tree.Kind.METHOD_REFERENCE));
-  }
-
-  private static Set<String> unresolvedIdentifierNames(Tree tree) {
-    UnresolvedIdentifierVisitor visitor = new UnresolvedIdentifierVisitor();
-    tree.accept(visitor);
-    return visitor.unresolvedIdentifierNames;
-  }
-
-  private static class UnresolvedIdentifierVisitor extends BaseTreeVisitor {
-
-    private Set<String> unresolvedIdentifierNames = new HashSet<>();
-
-    @Override
-    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      // skip annotations and identifier, a method parameter will only be used in expression side (before the dot)
-      scan(tree.expression());
-    }
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree tree) {
-      ExpressionTree methodSelect = tree.methodSelect();
-      if (!methodSelect.is(Tree.Kind.IDENTIFIER)) {
-        // not interested in simple method invocations, we are targeting usage of method parameters
-        scan(methodSelect);
-      }
-      scan(tree.typeArguments());
-      scan(tree.arguments());
-    }
-
-    @Override
-    public void visitIdentifier(IdentifierTree tree) {
-      if (tree.symbol().isUnknown()) {
-        unresolvedIdentifierNames.add(tree.name());
-      }
-      super.visitIdentifier(tree);
-    }
   }
 }

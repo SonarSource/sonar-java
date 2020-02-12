@@ -20,11 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.cfg.VariableReadExtractor;
+import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -46,16 +51,10 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 @Rule(key = "S1854")
 public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
-  private static final UnresolvedIdentifierVisitor UNRESOLVED_IDENTIFIERS_VISITOR = new UnresolvedIdentifierVisitor();
+  private static final UnresolvedIdentifiersVisitor UNRESOLVED_IDENTIFIERS_VISITOR = new UnresolvedIdentifiersVisitor();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -185,7 +184,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     if (initializer != null
       && !isUsualDefaultValue(initializer)
       && !out.contains(symbol)
-      && !hasUnresolvedSymbol(symbol.name())) {
+      && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(symbol.name())) {
       createIssue(localVar.equalToken(), initializer, symbol);
     }
     out.remove(symbol);
@@ -313,27 +312,5 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isLocalVariable(Symbol symbol) {
     return symbol.owner().isMethodSymbol();
-  }
-
-  private static boolean hasUnresolvedSymbol(String candidate) {
-    return UNRESOLVED_IDENTIFIERS_VISITOR.unresolvedIdentifierNames.contains(candidate);
-  }
-
-  private static class UnresolvedIdentifierVisitor extends BaseTreeVisitor {
-
-    private Set<String> unresolvedIdentifierNames = new HashSet<>();
-
-    @Override
-    public void visitIdentifier(IdentifierTree tree) {
-      if (tree.symbol().isUnknown()) {
-        unresolvedIdentifierNames.add(tree.name());
-      }
-      super.visitIdentifier(tree);
-    }
-
-    public void check(Tree tree) {
-      unresolvedIdentifierNames.clear();
-      tree.accept(this);
-    }
   }
 }
