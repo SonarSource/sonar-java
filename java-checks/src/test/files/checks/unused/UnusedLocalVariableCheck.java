@@ -57,6 +57,21 @@ class Foo {
     return false;
   }
 
+  void lambdas_not_resolved(UnknnownFunction lambda) {
+    int a = 42; // Compliant
+    lambdas_not_resolved(y -> a + y);
+    lambdas_not_resolved(y -> {
+      int x = 1; // Compliant
+      return y + x;
+    });
+    int b = 42; // Noncompliant
+    lambdas_not_resolved(y -> b() + y);
+    int c = 42; // Noncompliant
+    lambdas_not_resolved(y -> Foo.c + y);
+  }
+  int b() { return 0; }
+  int c;
+
   public BinaryOperator<UnaryOperator<Object>> foo() {
     return (a, b) -> input -> {
       Object o = a.apply(input); // Compliant, lambda expression correctly handled
