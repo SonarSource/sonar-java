@@ -76,7 +76,7 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (!inWhileLoop.peek()) {
+    if (!Boolean.TRUE.equals(inWhileLoop.peek())) {
       IdentifierTree identifierTree = ExpressionUtils.methodName(mit);
       reportIssue(identifierTree, "Remove this call to \"" + identifierTree.name() + "\" or move it into a \"while\" loop.");
     }

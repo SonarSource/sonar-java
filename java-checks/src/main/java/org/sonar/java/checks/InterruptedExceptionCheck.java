@@ -96,12 +96,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isWithinInterruptingFinally() {
-    for (Boolean aBoolean : withinInterruptingFinally) {
-      if(aBoolean) {
-        return true;
-      }
-    }
-    return false;
+    return withinInterruptingFinally.stream().anyMatch(Boolean.TRUE::equals);
   }
 
   @Override
