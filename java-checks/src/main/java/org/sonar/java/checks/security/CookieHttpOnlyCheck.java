@@ -65,7 +65,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   private static final String INT = "int";
   private static final String BOOLEAN = "boolean";
 
-  private static final String MESSAGE = "Add the \"HttpOnly\" cookie attribute.";
+  private static final String MESSAGE = "Make sure creating this cookie without the \"HttpOnly\" flag is safe.";
 
   private static final int COOKIE_NAME_ARGUMENT = 0;
 
