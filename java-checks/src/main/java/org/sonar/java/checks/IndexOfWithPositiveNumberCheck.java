@@ -37,17 +37,18 @@ import java.util.List;
 @Rule(key = "S2692")
 public class IndexOfWithPositiveNumberCheck extends IssuableSubscriptionVisitor {
 
+  private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String INDEXOF = "indexOf";
 
   private static final MethodMatcherCollection CHECKED_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create()
-      .typeDefinition(String.class.getName())
+      .typeDefinition(JAVA_LANG_STRING)
       .name(INDEXOF)
       .addParameter("int"),
     MethodMatcher.create()
-      .typeDefinition(String.class.getName())
+      .typeDefinition(JAVA_LANG_STRING)
       .name(INDEXOF)
-      .addParameter(String.class.getName()),
+      .addParameter(JAVA_LANG_STRING),
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.util.List"))
       .name(INDEXOF)

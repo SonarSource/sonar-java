@@ -21,8 +21,6 @@ package org.sonar.java.checks.security;
 
 import java.util.Collections;
 import java.util.List;
-import javax.xml.XMLConstants;
-import javax.xml.transform.TransformerFactory;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -39,7 +37,7 @@ import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
 @Rule(key = "S4435")
 public class SecureXmlTransformerCheck extends AbstractMethodDetection {
 
-  private static final String TRANSFORMER_FACTORY_CLASS_NAME = TransformerFactory.class.getName();
+  private static final String TRANSFORMER_FACTORY_CLASS_NAME = "javax.xml.transform.TransformerFactory";
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -64,6 +62,10 @@ public class SecureXmlTransformerCheck extends AbstractMethodDetection {
   }
 
   private static class MethodBodyVisitor extends BaseTreeVisitor {
+
+    private static final String FEATURE_SECURE_PROCESSING_PROPERTY = "http://javax.xml.XMLConstants/feature/secure-processing";
+    private static final String ACCESS_EXTERNAL_DTD_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalDTD";
+    private static final String ACCESS_EXTERNAL_STYLESHEET_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalStylesheet";
 
     private static final MethodMatcher SET_FEATURE =
       MethodMatcher.create()
@@ -90,7 +92,7 @@ public class SecureXmlTransformerCheck extends AbstractMethodDetection {
       Arguments arguments = methodInvocation.arguments();
 
       if (SET_FEATURE.matches(methodInvocation)
-        && XMLConstants.FEATURE_SECURE_PROCESSING.equals(ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value())
+        && FEATURE_SECURE_PROCESSING_PROPERTY.equals(ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value())
         && LiteralUtils.isTrue(arguments.get(1))) {
 
         hasSecureProcessingFeature = true;
@@ -100,9 +102,9 @@ public class SecureXmlTransformerCheck extends AbstractMethodDetection {
         String attributeName = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
         String attributeValue = ExpressionsHelper.getConstantValueAsString(arguments.get(1)).value();
         if ("".equals(attributeValue)) {
-          if (XMLConstants.ACCESS_EXTERNAL_DTD.equals(attributeName)) {
+          if (ACCESS_EXTERNAL_DTD_PROPERTY.equals(attributeName)) {
             hasSecuredExternalDtd = true;
-          } else if (XMLConstants.ACCESS_EXTERNAL_STYLESHEET.equals(attributeName)) {
+          } else if (ACCESS_EXTERNAL_STYLESHEET_PROPERTY.equals(attributeName)) {
             hasSecuredExternalStylesheet = true;
           }
         }

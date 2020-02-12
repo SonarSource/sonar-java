@@ -23,14 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.validation.Schema;
-import javax.xml.validation.Validator;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -41,22 +34,21 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
+import static org.sonar.java.checks.helpers.ExpressionsHelper.getConstantValueAsBoolean;
+import static org.sonar.java.checks.helpers.ExpressionsHelper.getConstantValueAsString;
 import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
 
 @Rule(key = "S2755")
 public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisitor {
 
-  private static final String XML_INPUT_FACTORY_CLASS_NAME = XMLInputFactory.class.getName();
-  private static final String SAX_PARSER_FACTORY_CLASS_NAME = SAXParserFactory.class.getName();
-  private static final String XML_READER_FACTORY_CLASS_NAME = XMLReaderFactory.class.getName();
-  private static final String XML_READER_CLASS_NAME = XMLReader.class.getName();
-  private static final String DOCUMENT_BUILDER_FACTORY_CLASS_NAME = DocumentBuilderFactory.class.getName();
-  private static final String VALIDATOR_CLASS_NAME = Validator.class.getName();
-  private static final String SCHEMA_CLASS_NAME = Schema.class.getName();
-
+  private static final String XML_INPUT_FACTORY_CLASS_NAME = "javax.xml.stream.XMLInputFactory";
+  private static final String SAX_PARSER_FACTORY_CLASS_NAME = "javax.xml.parsers.SAXParserFactory";
+  private static final String XML_READER_FACTORY_CLASS_NAME = "org.xml.sax.helpers.XMLReaderFactory";
+  private static final String XML_READER_CLASS_NAME = "org.xml.sax.XMLReader";
+  private static final String DOCUMENT_BUILDER_FACTORY_CLASS_NAME = "javax.xml.parsers.DocumentBuilderFactory";
+  private static final String VALIDATOR_CLASS_NAME = "javax.xml.validation.Validator";
+  private static final String SCHEMA_CLASS_NAME = "javax.xml.validation.Schema";
 
   private static final MethodMatcher CREATE_XML_READER_MATCHER = MethodMatcher.create()
     .typeDefinition(XML_READER_FACTORY_CLASS_NAME)
@@ -143,6 +135,9 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
 
   private static class XMLInputFactorySecuringPredicate implements Predicate<MethodInvocationTree> {
 
+    private static final String IS_SUPPORTING_EXTERNAL_ENTITIES_PROPERTY = "javax.xml.stream.isSupportingExternalEntities";
+    private static final String SUPPORT_DTD_PROPERTY = "javax.xml.stream.supportDTD";
+
     private static final MethodMatcher SET_PROPERTY =
       MethodMatcher.create()
         .typeDefinition(subtypeOf(XML_INPUT_FACTORY_CLASS_NAME))
@@ -153,11 +148,11 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     public boolean test(MethodInvocationTree methodInvocation) {
       Arguments arguments = methodInvocation.arguments();
       if (SET_PROPERTY.matches(methodInvocation)) {
-        String propertyName = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
-        if (XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES.equals(propertyName) || XMLInputFactory.SUPPORT_DTD.equals(propertyName)) {
+        String propertyName = getConstantValueAsString(arguments.get(0)).value();
+        if (IS_SUPPORTING_EXTERNAL_ENTITIES_PROPERTY.equals(propertyName) || SUPPORT_DTD_PROPERTY.equals(propertyName)) {
           ExpressionTree propertyValue = arguments.get(1);
-          return Boolean.FALSE.equals(ExpressionsHelper.getConstantValueAsBoolean(propertyValue).value())
-            || "false".equalsIgnoreCase(ExpressionsHelper.getConstantValueAsString(propertyValue).value());
+          return Boolean.FALSE.equals(getConstantValueAsBoolean(propertyValue).value())
+            || "false".equalsIgnoreCase(getConstantValueAsString(propertyValue).value());
         }
       }
       return false;
@@ -165,6 +160,9 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
   }
 
   private static class SecureProcessingFeaturePredicate implements Predicate<MethodInvocationTree> {
+
+    private static final String FEATURE_SECURE_PROCESSING_PROPERTY = "http://javax.xml.XMLConstants/feature/secure-processing";
+    private static final String FEATURE_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
 
     private final MethodMatcher methodMatcher;
 
@@ -176,10 +174,10 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     public boolean test(MethodInvocationTree methodInvocation) {
       if (methodMatcher.matches(methodInvocation)) {
         Arguments arguments = methodInvocation.arguments();
-        String featureName = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
-        return Boolean.TRUE.equals(ExpressionsHelper.getConstantValueAsBoolean(arguments.get(1)).value())
-          && (XMLConstants.FEATURE_SECURE_PROCESSING.equals(featureName)
-          || "http://apache.org/xml/features/disallow-doctype-decl".equals(featureName));
+        String featureName = getConstantValueAsString(arguments.get(0)).value();
+        return Boolean.TRUE.equals(getConstantValueAsBoolean(arguments.get(1)).value())
+          && (FEATURE_SECURE_PROCESSING_PROPERTY.equals(featureName)
+            || FEATURE_DISALLOW_DOCTYPE_DECL.equals(featureName));
       }
       return false;
     }
@@ -194,6 +192,9 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
 
   private static class AccessExternalDTDOrSchemaPredicate implements Predicate<MethodInvocationTree> {
 
+    private static final String ACCESS_EXTERNAL_DTD_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalDTD";
+    private static final String ACCESS_EXTERNAL_SCHEMA_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalSchema";
+
     private final MethodMatcher methodMatcher;
     private boolean externalDTDDisabled = false;
     private boolean externalSchemaDisabled = false;
@@ -206,12 +207,12 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     public boolean test(MethodInvocationTree methodInvocation) {
       if (methodMatcher.matches(methodInvocation)) {
         Arguments arguments = methodInvocation.arguments();
-        String propertyName = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
-        String propertyValue = ExpressionsHelper.getConstantValueAsString(arguments.get(1)).value();
-        if ("".equals(propertyValue) && XMLConstants.ACCESS_EXTERNAL_DTD.equals(propertyName)) {
+        String propertyName = getConstantValueAsString(arguments.get(0)).value();
+        String propertyValue = getConstantValueAsString(arguments.get(1)).value();
+        if ("".equals(propertyValue) && ACCESS_EXTERNAL_DTD_PROPERTY.equals(propertyName)) {
           externalDTDDisabled = true;
         }
-        if ("".equals(propertyValue) && XMLConstants.ACCESS_EXTERNAL_SCHEMA.equals(propertyName)) {
+        if ("".equals(propertyValue) && ACCESS_EXTERNAL_SCHEMA_PROPERTY.equals(propertyName)) {
           externalSchemaDisabled = true;
         }
         return externalDTDDisabled && externalSchemaDisabled;

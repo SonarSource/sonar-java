@@ -34,15 +34,15 @@ import java.util.List;
 public class SynchronizationOnStringOrBoxedCheck extends IssuableSubscriptionVisitor {
 
   private static final List<String> FORBIDDEN_TYPES = ImmutableList.of(
-    Boolean.class.getName(),
-    Byte.class.getName(),
-    Character.class.getName(),
-    Double.class.getName(),
-    Float.class.getName(),
-    Integer.class.getName(),
-    Long.class.getName(),
-    Short.class.getName(),
-    String.class.getName());
+    "java.lang.Boolean",
+    "java.lang.Byte",
+    "java.lang.Character",
+    "java.lang.Double",
+    "java.lang.Float",
+    "java.lang.Integer",
+    "java.lang.Long",
+    "java.lang.Short",
+    "java.lang.String");
 
   @Override
   public List<Kind> nodesToVisit() {
