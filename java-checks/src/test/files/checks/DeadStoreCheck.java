@@ -21,6 +21,7 @@ class A {
     Object a = new Object();
     System.out.println(a);
     a = null; // Noncompliant [[sc=7;ec=13]]
+    return 0;
   }
 
   void fields() {
@@ -44,7 +45,7 @@ class A {
     }
     return new Object() {
       @Override
-      public String toString() {
+      public int hashCode() {
         b = 14; // Noncompliant
         return a;
       }
@@ -128,12 +129,12 @@ class A {
 
   Object inner_class() {
     int a = 12;
-    class A {
+    class B {
       int fun() {
         return a;
       }
     }
-    return new A();
+    return new B();
   }
 
   int increment_operator() {
@@ -180,28 +181,32 @@ class A {
     return foo;
   }
 
-  Object try_with_resource() {
+  private static int raisingExceptionMethod() throws Exception { 
+    return 0;
+  }
+
+  void try_with_resource(File storageFile) throws Exception {
     String path = ""; // compliant
     try (BufferedReader br = new BufferedReader(new FileReader(path))) {
       br.readLine();
     }
 
     try ( FileInputStream in = new FileInputStream( storageFile );
-          FileLock lock = in.getChannel().lock(0, Long.MAX_VALUE, true) ) // compliant, this will be closed in the implicit finally
+          java.nio.channels.FileLock lock = in.getChannel().lock(0, Long.MAX_VALUE, true) ) // compliant, this will be closed in the implicit finally
     {
       in.read();
     }
 
   }
 
-  void try_with_resource_java9() {
+  void try_with_resource_java9() throws Exception {
     final FileInputStream fis = new FileInputStream("..."); // compliant
     try (fis) {
 
     }
   }
 
-  public class MyClass {
+  public static class MyClass {
     private static class Foo {
       void bar(int p){
       }
@@ -209,11 +214,12 @@ class A {
 
     public static void main(String... args) {
       Foo x = new Foo(); // compliant
-      List<Integer> list = new ArrayList<>();
+      java.util.List<Integer> list = new java.util.ArrayList<>();
       list.forEach(x::bar);
     }
     int foo() {
-      int i,j;
+      int i = 0;
+      int j = 0;
       i = i + 1; // Noncompliant
       j += 1; // Noncompliant
       int k = 0;
@@ -227,7 +233,7 @@ class A {
     }
   }
 
-  private void foo(int y) {
+  private void foo3(int y) {
     final int x = 1;
     switch (y) {
       case x:
@@ -319,7 +325,7 @@ class NoIssueOnInitializers {
     return 0;
   }
 }
-public class B {
+class B {
   void foo() {
     int attemptNumber = 0;
     while (true) {
@@ -349,6 +355,7 @@ abstract class C {
         }
       }
     }
+    // unreachable
     throw e;
   }
 
@@ -397,7 +404,7 @@ abstract class C {
     int retriesLeft = 10;
     while (true) {
       try {
-        return bar();
+        bar();
       } catch (FooException e) {
         if (retriesLeft == 0) {
           throw e;
@@ -406,8 +413,7 @@ abstract class C {
     }
   }
 
-  abstract void bar() throws UnknownSymbol;
+  abstract void bar() throws UnknownException;
 
-  public class FooException extends Exception {
-  }
+  public class FooException extends Exception { }
 }
