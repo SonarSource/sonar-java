@@ -24,7 +24,7 @@ class S3330 {
 
   void servletCookie(boolean param, Cookie c0) {
 
-    c0.setHttpOnly(false); // Noncompliant [[sc=19;ec=26]] {{Add the "HttpOnly" cookie attribute.}}
+    c0.setHttpOnly(false); // Noncompliant [[sc=19;ec=26]] {{Make sure creating this cookie without the "HttpOnly" flag is safe.}}
     field6.setHttpOnly(false); // Noncompliant
     field7.setHttpOnly(false);
 
