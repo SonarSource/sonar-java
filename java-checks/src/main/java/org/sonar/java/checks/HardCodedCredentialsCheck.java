@@ -36,6 +36,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -303,7 +304,7 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
     } else if (GET_CONNECTION_MATCHER.matches(mit)) {
       handleGetConnectionMethod(mit);
     } else {
-      isSettingPassword(mit).ifPresent(settingPassword -> report(methodSelect, settingPassword));
+      isSettingPassword(mit).ifPresent(settingPassword -> report(ExpressionUtils.methodName(mit), settingPassword));
     }
   }
 

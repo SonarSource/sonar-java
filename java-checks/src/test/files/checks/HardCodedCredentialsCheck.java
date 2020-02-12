@@ -18,7 +18,7 @@ class A {
     String variable6 = "login=a&password= ";
 
     String query1 = "password=?"; // Compliant
-    String query1 = "password=???"; // Compliant
+    String query1_1 = "password=???"; // Compliant
     String query1_2 = "password=X"; // Compliant
     String query1_3 = "password=anonymous"; // Compliant
     String query4 = "password='" + pwd + "'"; // Compliant
@@ -122,6 +122,7 @@ class A {
     myA.setProperty(new Object(), new Object());
     myA.setProperty("password", "password"); // Compliant
     myA.setProperty("password", "pwd"); // Compliant
+    myA.setProperty("something", "else").setProperty("password", "xxxxx"); // Noncompliant [[sc=42;ec=53]]
 
     MyUnknownClass.myUnknownMethod("password", "xxxxx"); // Noncompliant
 
@@ -169,7 +170,8 @@ class A {
     return null;
   }
 
-  private void setProperty(Object property, Object Value) {
+  private A setProperty(Object property, Object Value) {
+    return this;
   }
 
   private static class OtherPasswordAuthentication {
