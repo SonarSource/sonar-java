@@ -11,6 +11,12 @@ class RSA {
     keyGen.initialize(1024); // Noncompliant [[sc=5;ec=28]]  {{Use a key length of at least 2048 bits for RSA cipher algorithm.}}
   }
 
+  public void key_variable_assign_after_decl() throws NoSuchAlgorithmException {
+    KeyPairGenerator keyGen;
+    keyGen = KeyPairGenerator.getInstance("RSA");
+    keyGen.initialize(1024); // Noncompliant
+  }
+
   public void key_variable_lowercase() throws NoSuchAlgorithmException {
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("rsa");
     keyGen.initialize(1024); // Noncompliant
@@ -26,7 +32,50 @@ class RSA {
     keyGen.initialize(1024); // Noncompliant
     keyGen.initialize(1023); // Noncompliant
   }
+
+  public void report_only_once(int size) throws NoSuchAlgorithmException {
+    if (size == 1) {
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DH");
+      keyGen.initialize(1); // Noncompliant {{Use a key length of at least 2048 bits for DH cipher algorithm.}}
+    } else if(size == 2) {
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+      keyGen.initialize(2); // Noncompliant {{Use a key length of at least 2048 bits for RSA cipher algorithm.}}
+    } else if(size == 3) {
+      KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+      keyGen.init(3); // Noncompliant {{Use a key length of at least 128 bits for AES cipher algorithm.}}
+    } else {
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DH");
+      keyGen.initialize(2048); // Compliant
+    }
+  }
+
+  public void not_assigned() throws NoSuchAlgorithmException {
+    KeyPairGenerator.getInstance("RSA"); // Not assigned, nothing to do
+  }
 }
+
+class RSA2 {
+  KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+
+  RSA2() throws NoSuchAlgorithmException {}
+
+  public void key_variable_this() throws NoSuchAlgorithmException {
+    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+    this.keyGen.initialize(1024); // Compliant, only support when declared in the same method
+  }
+
+  public void key_variable_instance() throws NoSuchAlgorithmException {
+    RSA2 rsa2 = new RSA2();
+    rsa2.keyGen = KeyPairGenerator.getInstance("RSA");
+    rsa2.setKeyGen();
+    rsa2.keyGen.initialize(1024); // Compliant, only support when declared in the same method
+  }
+
+  private void setKeyGen() throws NoSuchAlgorithmException {
+    this.keyGen = KeyPairGenerator.getInstance("DH");
+  }
+}
+
 
 interface I {
   Runnable r = () -> {
