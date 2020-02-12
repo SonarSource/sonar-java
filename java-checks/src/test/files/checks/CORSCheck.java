@@ -156,9 +156,7 @@ class A {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
       registry.addMapping("/**")
-        .allowedOrigins("*") // Noncompliant [[sc=10;ec=24]]
-        .allowedMethods("GET","POST","PUT","DELETE")
-        .allowCredentials(true).maxAge(3600);
+        .allowedOrigins("*"); // Noncompliant [[sc=10;ec=24]]
     }
   }
 
@@ -166,9 +164,7 @@ class A {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
       registry.addMapping("/**")
-        .allowedOrigins("safe.com") // Compliant
-        .allowedMethods("GET","POST","PUT","DELETE")
-        .allowCredentials(true).maxAge(3600);
+        .allowedOrigins("safe.com"); // Compliant
     }
   }
 

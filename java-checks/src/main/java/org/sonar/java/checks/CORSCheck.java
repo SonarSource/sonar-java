@@ -29,6 +29,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -38,7 +39,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -111,12 +111,7 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
   }
 
   private void reportTree(MethodInvocationTree mit) {
-    ExpressionTree methodSelect = mit.methodSelect();
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      reportTree(((MemberSelectExpressionTree) methodSelect).identifier());
-    } else {
-      reportTree(methodSelect);
-    }
+    reportTree(ExpressionUtils.methodName(mit));
   }
 
   private void reportTree(Tree tree) {
