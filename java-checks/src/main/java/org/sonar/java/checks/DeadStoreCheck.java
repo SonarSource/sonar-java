@@ -55,6 +55,8 @@ import java.util.Set;
 @Rule(key = "S1854")
 public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
+  private static final UnresolvedIdentifierVisitor UNRESOLVED_IDENTIFIERS_VISITOR = new UnresolvedIdentifierVisitor();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.METHOD);
@@ -74,6 +76,8 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     if (hasTryFinallyWithLocalVar(methodTree.block(), methodTree.symbol())) {
       return;
     }
+
+    UNRESOLVED_IDENTIFIERS_VISITOR.check(methodTree);
 
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     CFG cfg = CFG.build(methodTree);
@@ -178,7 +182,10 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
   private void handleVariable(Set<Symbol> out, VariableTree localVar) {
     Symbol symbol = localVar.symbol();
     ExpressionTree initializer = localVar.initializer();
-    if (initializer != null && !isUsualDefaultValue(initializer) && !out.contains(symbol)) {
+    if (initializer != null
+      && !isUsualDefaultValue(initializer)
+      && !out.contains(symbol)
+      && !hasUnresolvedSymbol(symbol.name())) {
       createIssue(localVar.equalToken(), initializer, symbol);
     }
     out.remove(symbol);
@@ -306,5 +313,27 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isLocalVariable(Symbol symbol) {
     return symbol.owner().isMethodSymbol();
+  }
+
+  private static boolean hasUnresolvedSymbol(String candidate) {
+    return UNRESOLVED_IDENTIFIERS_VISITOR.unresolvedIdentifierNames.contains(candidate);
+  }
+
+  private static class UnresolvedIdentifierVisitor extends BaseTreeVisitor {
+
+    private Set<String> unresolvedIdentifierNames = new HashSet<>();
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      if (tree.symbol().isUnknown()) {
+        unresolvedIdentifierNames.add(tree.name());
+      }
+      super.visitIdentifier(tree);
+    }
+
+    public void check(Tree tree) {
+      unresolvedIdentifierNames.clear();
+      tree.accept(this);
+    }
   }
 }
