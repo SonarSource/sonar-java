@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -126,11 +125,9 @@ public class SpringScanDefaultPackageCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Optional<ExpressionTree> findEmptyString(ExpressionTree expression) {
-    String stringValue = ConstantUtils.resolveAsStringConstant(expression);
-    if (stringValue != null && stringValue.isEmpty()) {
-      return Optional.of(expression);
-    }
-    return Optional.empty();
+    return expression.asConstant(String.class)
+      .filter(String::isEmpty)
+      .map(s -> expression);
   }
 
   private static Optional<IdentifierTree> findClassInDefaultPackage(ExpressionTree expression) {

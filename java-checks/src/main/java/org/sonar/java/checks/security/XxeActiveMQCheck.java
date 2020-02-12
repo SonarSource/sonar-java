@@ -22,7 +22,6 @@ package org.sonar.java.checks.security;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -91,7 +90,7 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
         hasTrustedPackages |= !arguments.get(0).is(Kind.NULL_LITERAL);
         callArgumentsOfSetTrustedPackages = true;
       } else if (SET_TRUST_ALL_PACKAGES.matches(methodInvocation)) {
-        hasTrustAllPackages |= Boolean.TRUE.equals(ConstantUtils.resolveAsBooleanConstant(arguments.get(0)));
+        hasTrustAllPackages |= Boolean.TRUE.equals(arguments.get(0).asConstant(Boolean.class).orElse(null));
       }
       super.visitMethodInvocation(methodInvocation);
       callArgumentsOfSetTrustedPackages = false;

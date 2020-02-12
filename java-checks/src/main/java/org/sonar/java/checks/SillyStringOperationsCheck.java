@@ -26,7 +26,6 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -153,8 +152,7 @@ public class SillyStringOperationsCheck extends AbstractMethodDetection {
   }
 
   private static boolean isZero(ExpressionTree tree) {
-    Integer n = ConstantUtils.resolveAsIntConstant(tree);
-    return n != null && n == 0;
+    return tree.asConstant(Integer.class).filter(n -> n == 0).isPresent();
   }
 
   private static boolean isStringLength(ExpressionTree str, ExpressionTree tree) {
@@ -177,6 +175,6 @@ public class SillyStringOperationsCheck extends AbstractMethodDetection {
 
   @CheckForNull
   private static String string(ExpressionTree tree) {
-    return ConstantUtils.resolveAsStringConstant(tree);
+    return tree.asConstant(String.class).orElse(null);
   }
 }

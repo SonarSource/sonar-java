@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
@@ -131,7 +130,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isDynamicString(ExpressionTree arg) {
     if (arg.is(Tree.Kind.PLUS_ASSIGNMENT)) {
-      return ConstantUtils.resolveAsConstant(((AssignmentExpressionTree)arg).expression()) == null;
+      return !((AssignmentExpressionTree) arg).expression().asConstant().isPresent();
     }
     if (arg.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) arg).symbol();
@@ -139,6 +138,6 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       return (initializerOrExpression != null && isDynamicString(initializerOrExpression)) || getReassignments(symbol.owner().declaration(), symbol.usages()).stream()
         .anyMatch(SQLInjectionCheck::isDynamicString);
     }
-    return arg.is(Tree.Kind.PLUS) && ConstantUtils.resolveAsConstant(arg) == null;
+    return arg.is(Tree.Kind.PLUS) && !arg.asConstant().isPresent();
   }
 }

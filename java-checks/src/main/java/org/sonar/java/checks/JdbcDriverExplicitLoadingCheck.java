@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
@@ -63,9 +62,10 @@ public class JdbcDriverExplicitLoadingCheck extends AbstractMethodDetection impl
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    String driverClassName = ConstantUtils.resolveAsStringConstant(mit.arguments().get(0));
-    if (JDBC_4_DRIVERS.contains(driverClassName)) {
-      reportIssue(ExpressionUtils.methodName(mit), "Remove this \"Class.forName()\", it is useless." + context.getJavaVersion().java6CompatibilityMessage());
-    }
+    mit.arguments().get(0).asConstant(String.class).ifPresent(driverClassName -> {
+      if (JDBC_4_DRIVERS.contains(driverClassName)) {
+        reportIssue(ExpressionUtils.methodName(mit), "Remove this \"Class.forName()\", it is useless." + context.getJavaVersion().java6CompatibilityMessage());
+      }
+    });
   }
 }

@@ -21,8 +21,8 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -79,7 +79,7 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean hasConstantOppositeArg(MethodInvocationTree mit) {
-    Boolean result = ConstantUtils.resolveAsBooleanConstant(mit.arguments().get(0));
-    return result != null && !result.equals(mit.symbol().name().contains("True"));
+    Optional<Boolean> result = mit.arguments().get(0).asConstant(Boolean.class);
+    return result.isPresent() && !result.get().equals(mit.symbol().name().contains("True"));
   }
 }

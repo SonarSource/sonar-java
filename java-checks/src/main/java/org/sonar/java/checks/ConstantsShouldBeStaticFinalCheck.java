@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
@@ -71,7 +70,7 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
     if (nestedClassesLevel > 1) {
       ExpressionTree initializer = variableTree.initializer();
       return !((variableTree.type().is(Tree.Kind.PRIMITIVE_TYPE) || variableTree.symbol().type().is("java.lang.String"))
-        && initializer != null && ConstantUtils.resolveAsConstant(initializer) != null);
+        && initializer != null && initializer.asConstant().isPresent());
     }
     return false;
   }
