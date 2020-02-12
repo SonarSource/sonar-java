@@ -57,6 +57,15 @@ class A {
     lambdas_using_local_vars(y -> a + y);
   }
 
+  void lambdas_not_resolved(UnknnownFunction lambda) {
+    int a = 42; // Compliant
+    lambdas_not_resolved(y -> a + y);
+    lambdas_not_resolved(y -> {
+      int x = 1; // Compliant
+      return y + x;
+    });
+  }
+
   void ignore_try_finally() {
     int a;
     a = 12; //false negative excluded by try finally
