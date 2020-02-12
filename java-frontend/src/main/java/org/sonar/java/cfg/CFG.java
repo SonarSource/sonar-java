@@ -1037,7 +1037,7 @@ public class CFG implements ControlFlowGraph {
     TryStatement pop = enclosingTry.pop();
     TryStatement tryStatement;
     Block exceptionPredecessor = currentBlock;
-    if (enclosedByCatch.peek()) {
+    if (Boolean.TRUE.equals(enclosedByCatch.peek())) {
       tryStatement = enclosingTry.peek();
     } else {
       tryStatement = pop;
@@ -1046,7 +1046,7 @@ public class CFG implements ControlFlowGraph {
     if(pop != outerTry) {
       currentBlock = createBlock(currentBlock);
       currentBlock.exceptions.add(exitBlocks.peek());
-      if(!enclosedByCatch.peek()) {
+      if (!Boolean.TRUE.equals(enclosedByCatch.peek())) {
         exceptionPredecessor = currentBlock;
       }
     }
