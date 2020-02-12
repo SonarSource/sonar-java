@@ -38,7 +38,6 @@ import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.SuppressWarningsCheck;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -186,10 +185,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
         args.addAll(getRulesFromExpression(initializer));
       }
     } else {
-      String constant = ConstantUtils.resolveAsStringConstant(expression);
-      if (constant != null) {
-        args.add(constant);
-      }
+      expression.asConstant(String.class).ifPresent(args::add);
     }
     return args;
   }

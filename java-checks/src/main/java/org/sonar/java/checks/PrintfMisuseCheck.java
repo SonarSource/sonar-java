@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
@@ -254,7 +253,6 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private static boolean isIncorrectConcatenation(ExpressionTree formatStringTree) {
-    return formatStringTree.is(Tree.Kind.PLUS)
-      && ConstantUtils.resolveAsConstant(formatStringTree) == null;
+    return formatStringTree.is(Tree.Kind.PLUS) && !formatStringTree.asConstant().isPresent();
   }
 }

@@ -21,13 +21,11 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiPredicate;
 
 import javax.annotation.CheckForNull;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -214,16 +212,11 @@ public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
 
   @CheckForNull
   private static Integer constant(ExpressionTree tree) {
-    return ConstantUtils.resolveAsIntConstant(tree);
-  }
-
-  @CheckForNull
-  private static String string(ExpressionTree tree) {
-    return ConstantUtils.resolveAsStringConstant(tree);
+    return tree.asConstant(Integer.class).orElse(null);
   }
 
   @CheckForNull
   private static Integer length(ExpressionTree tree) {
-    return Optional.ofNullable(string(tree)).map(String::length).orElse(null);
+    return tree.asConstant(String.class).map(String::length).orElse(null);
   }
 }

@@ -24,6 +24,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.CheckForNull;
@@ -84,25 +85,17 @@ public class ExpressionsHelper {
   }
 
 
-  public static ValueResolution getConstantValue(ExpressionTree expression) {
-    return valueResolution(expression, ConstantUtils::resolveAsConstant, new ValueResolution<>());
-  }
-
   public static ValueResolution<String> getConstantValueAsString(ExpressionTree expression) {
-    return valueResolution(expression, ConstantUtils::resolveAsStringConstant, new ValueResolution<>());
+    return valueResolution(expression, expr -> expr.asConstant(String.class), new ValueResolution<>());
   }
 
   public static ValueResolution<Boolean> getConstantValueAsBoolean(ExpressionTree expression) {
-    return valueResolution(expression, ConstantUtils::resolveAsBooleanConstant, new ValueResolution<>());
+    return valueResolution(expression, expr -> expr.asConstant(Boolean.class), new ValueResolution<>());
   }
 
-  public static ValueResolution<Integer> getConstantValueAsInteger(ExpressionTree expression) {
-    return valueResolution(expression, ConstantUtils::resolveAsIntConstant, new ValueResolution<>());
-  }
-
-  private static <T> ValueResolution<T> valueResolution(ExpressionTree expression, Function<ExpressionTree,T> resolver, ValueResolution<T> valueResolution) {
-    T value = resolver.apply(expression);
-    if (value == null && expression.is(Tree.Kind.IDENTIFIER)) {
+  private static <T> ValueResolution<T> valueResolution(ExpressionTree expression, Function<ExpressionTree, Optional<T>> resolver, ValueResolution<T> valueResolution) {
+    Optional<T> value = resolver.apply(expression);
+    if (!value.isPresent() && expression.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) expression).symbol();
       ExpressionTree singleWriteUsage = getSingleWriteUsage(symbol);
       if (singleWriteUsage != null && !valueResolution.evaluatedSymbols.contains(symbol)) {
@@ -110,7 +103,7 @@ public class ExpressionsHelper {
         return valueResolution(singleWriteUsage, resolver, valueResolution);
       }
     }
-    valueResolution.value = value;
+    valueResolution.value = value.orElse(null);
     return valueResolution;
   }
 

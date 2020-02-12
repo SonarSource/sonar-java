@@ -31,7 +31,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.ConstantUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -263,8 +262,9 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   }
 
   private static Optional<String> getConstantName(ExpressionTree argument) {
-    String constantValue = ConstantUtils.resolveAsStringConstant(argument);
-    return Optional.ofNullable(ALIAS_TO_CONSTANT.get(constantValue));
+    return argument.asConstant(String.class)
+      .map(ALIAS_TO_CONSTANT::get)
+      .flatMap(Optional::ofNullable);
   }
 
   @Override
