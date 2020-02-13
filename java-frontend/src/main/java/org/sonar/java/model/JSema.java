@@ -148,7 +148,11 @@ public final class JSema implements Sema {
       }
 
       IBinaryType type = answer.getBinaryType();
-      // FIXME can be null in case of wrong package resolution?
+      if (type == null) {
+        // Can happen for instance with ant, as ant only generates 'package-info.class'
+        // when there is annotations in the package-info.java file.
+        return new IAnnotationBinding[0];
+      }
       IBinaryAnnotation[] binaryAnnotations = type.getAnnotations();
       AnnotationBinding[] binaryInstances =
         BinaryTypeBinding.createAnnotations(binaryAnnotations, lookupEnvironment, type.getMissingTypeNames());
