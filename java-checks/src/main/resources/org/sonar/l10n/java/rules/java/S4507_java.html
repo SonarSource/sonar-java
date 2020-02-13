@@ -4,9 +4,8 @@
   <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-5306">CVE-2015-5306</a> </li>
   <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-2006">CVE-2013-2006</a> </li>
 </ul>
-<p>An application's debug features enable developers to find bugs more easily. It often gives access to detailed information on both the system
-running the application and users. Sometime it even enables the execution of custom commands. Thus deploying on production servers an application
-which has debug features activated is extremely dangerous.</p>
+<p>An application's debug features enable developers to find bugs more easily and thus facilitate also the work of attackers. It often gives access to
+detailed information on both the system running the application and users. </p>
 <h2>Ask Yourself Whether</h2>
 <ul>
   <li> the code or configuration enabling the application debug features is deployed on production servers. </li>
@@ -14,10 +13,6 @@ which has debug features activated is extremely dangerous.</p>
 </ul>
 <p>You are at risk if you answered yes to any of these questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
-<p>The application should run by default in the most secure mode, i.e. as on production servers. This is to prevent any mistake. Enabling debug
-features should be explicitly asked via a command line argument, an environment variable or a configuration file.</p>
-<p>Check that every debug feature is controlled by only very few configuration variables: logging, exception/error handling, access control, etc... It
-is otherwise very easy to forget one of them.</p>
 <p>Do not enable debug features on production servers.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>

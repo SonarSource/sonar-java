@@ -1,18 +1,58 @@
-<p>Spring Security is coming out of the box with a protection against CSRF attacks. With 4.0, this protection is even enabled by default. Spring's
-recommendation is to "use CSRF protection for any request that could be processed by a browser by normal users". So there is no reason to disable it
-for standard web applications.</p>
+<p>CSRF vulnerabilities occur when attackers can trick an user to perform sensitive authenticated operations on a web application without his
+consent.</p>
+<pre>
+&lt;body onload="document.forms[0].submit()"&gt;
+&lt;form&gt;
+&lt;form action="http://mybank.com/account/transfer_money" method="POST"&gt;
+    &lt;input type="hidden" name="accountNo" value="attacker_account_123456"/&gt;
+    &lt;input type="hidden" name="amount" value="10000"/&gt;
+    &lt;input type="submit" value="Steal money"/&gt;
+&lt;/form&gt;
+</pre>
+<p>If an user visits the attacker's website which contains the above malicious code, his bank account will be debited without his consent and
+notice.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> There exist sensitive operations on the web application that can be performed when the user is authenticated. </li>
+  <li> The state / resources of the web application could be modified by doing HTTP POST or HTTP DELETE requests for example. </li>
+  <li> The web application is not only a public API designed to be requested by external websites. </li>
+</ul>
+<p>You are at risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> activate Spring Security's CSRF protection. </li>
+  <li> Protection against CSRF attacks is strongly recommended:
+    <ul>
+      <li> to be activated by default for all <a href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Safe_methods">unsafe HTTP
+      methods</a>. </li>
+      <li> implemented, for example, with an unguessable CSRF token </li>
+    </ul> </li>
+  <li> Of course all sensitive operations should not be performed with <a
+  href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Safe_methods">safe HTTP</a> methods like <code>GET</code> which are designed to be
+  used only for information retrieval. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h2>Sensitive Code Example</h2>
+<p><a href="https://docs.spring.io/spring-security/site/docs/3.2.0.CI-SNAPSHOT/reference/html/csrf.html">Spring Security</a> provides by default a
+protection against CSRF attacks.</p>
 <pre>
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable(); // Noncompliant
+    http.csrf().disable(); // Sensitive
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<p>With <a href="https://docs.spring.io/spring-security/site/docs/3.2.0.CI-SNAPSHOT/reference/html/csrf.html">Spring Security CSRF protection</a> is
+enabled by default, do not disable it.</p>
+<pre>
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    // http.csrf().disable(); // Compliant
   }
 }
 </pre>
@@ -23,9 +63,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   Misconfiguration </li>
   <li> <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29">OWASP: Cross-Site Request Forgery</a> </li>
   <li> <a href="https://www.sans.org/top25-software-errors/#cat1">SANS Top 25</a> - Insecure Interaction Between Components </li>
-  <li> Derived from FindSecBugs rule <a
-  href="https://find-sec-bugs.github.io/bugs.htm#SPRING_CSRF_PROTECTION_DISABLED">SPRING_CSRF_PROTECTION_DISABLED</a> </li>
-  <li> <a href="https://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html#when-to-use-csrf-protection">Spring Security
-  Official Documentation: When to use CSRF protection</a> </li>
 </ul>
 

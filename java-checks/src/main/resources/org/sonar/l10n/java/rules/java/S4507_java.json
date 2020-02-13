@@ -9,9 +9,10 @@
   "tags": [
     "cwe",
     "spring",
+    "user-experience",
     "owasp-a3"
   ],
-  "defaultSeverity": "Critical",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-4507",
   "sqKey": "S4507",
   "scope": "Main",
