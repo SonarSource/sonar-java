@@ -38,6 +38,7 @@ class A {
     String.format("value is " + NON_COMPILE_TIME_CONSTANT); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     String.format("value is " + COMPILE_TIME_CONSTANT);
     String.format("string without arguments"); // Noncompliant {{String contains no format specifiers.}}
+    String.format("%s", new Exception());
 
     PrintWriter pr;
     PrintStream ps;
@@ -124,13 +125,13 @@ class A {
     MessageFormat.format("Result {0}!", myObject.toString()); // Noncompliant {{No need to call "toString()" method as formatting and string conversion is done by the Formatter.}}
     MessageFormat.format("Result {0}!", myObject.hashCode()); // Compliant
     MessageFormat.format("Result yeah!", 14); // Noncompliant {{String contains no format specifiers.}}
-    MessageFormat.format("Result {1}!", 14);
-    MessageFormat.format("Result {0} and {1}!", 14);
+    MessageFormat.format("Result {1}!", 14); // Noncompliant {{Missing argument for the 2nd parameter.}}
+    MessageFormat.format("Result {0} and {1}!", 14); // Noncompliant {{Missing argument for the 2nd parameter.}}
     MessageFormat.format("Result {0} and {0}!", 14, 42); // Noncompliant {{2nd argument is not used.}}
     MessageFormat.format("Result {0, number, integer} and {1, number, integer}!", 14, 42); // compliant
     MessageFormat.format("Result {0} and {1}!", 14, 42, 128); // Noncompliant {{3rd argument is not used.}}
     MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07, "$"}); // Compliant
-    MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07});
+    MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07}); // Noncompliant {{Missing argument for the 2nd parameter.}}
     MessageFormat.format("{0,number,#.#}{1}", objs); // Compliant - skipped as the array is not initialized in the method invocation
     MessageFormat.format("{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
     MessageFormat.format("value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
@@ -146,21 +147,22 @@ class A {
     logger.log(java.util.logging.Level.SEVERE, "Result {0}!", myObject.hashCode()); // Compliant
     logger.log(java.util.logging.Level.SEVERE, "Result yeah!", 14); // Noncompliant {{String contains no format specifiers.}}
     logger.log(java.util.logging.Level.SEVERE, "Result yeah!", new Exception()); // compliant, throwable parameter
-    logger.log(java.util.logging.Level.SEVERE, "Result {1}!", 14);
-    logger.log(java.util.logging.Level.SEVERE, "Result {0} and {1}!", 14);
+    logger.log(java.util.logging.Level.SEVERE, "Result {1}!", 14); // Noncompliant {{Missing argument for the 2nd parameter.}}
+    logger.log(java.util.logging.Level.SEVERE, "Result {0} and {1}!", 14); // Noncompliant {{Missing argument for the 2nd parameter.}}
     logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[] {0.07, "$"}); // Compliant
-    logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[] {0.07});
+    logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[] {0.07}); // Noncompliant {{Missing argument for the 2nd parameter.}}
     logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", objs); // Compliant - skipped as the array is not initialized in the method invocation
     logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
     logger.log(java.util.logging.Level.SEVERE, "value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
     logger.log(java.util.logging.Level.SEVERE, "value=\"{0}'{'{1}'}'\"", new Object[] {"value 1", "value 2"});
     logger.log(java.util.logging.Level.SEVERE, "Result {0}!", new Object[] {myObject.toString()}); // Noncompliant {{No need to call "toString()" method as formatting and string conversion is done by the Formatter.}}
     logger.log(java.util.logging.Level.SEVERE, "Result {0}!", new String[] {myObject.toString()}); // Noncompliant {{No need to call "toString()" method since an array of Objects can be used here.}}
+    logger.log(java.util.logging.Level.SEVERE, "Result {0} {1}!", new String[] {myObject.toString(), myObject}); // Noncompliant {{No need to call "toString()" method since an array of Objects can be used here.}}
 
     org.slf4j.Logger slf4jLog;
     org.slf4j.Marker marker;
 
-    slf4jLog.debug(marker, "message {}");
+    slf4jLog.debug(marker, "message {}"); // Noncompliant {{Missing argument for the first parameter.}}
     slf4jLog.debug(marker, "message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.debug(marker, "message {}", 1);
     slf4jLog.debug(marker, "message {} - {}", 1, 2);
@@ -170,9 +172,10 @@ class A {
     slf4jLog.debug(marker, "message {} {}", new Object[]{1, 2, 3}); // Noncompliant
     slf4jLog.debug(marker, "message {} {} {}", new Object[]{1, 2, 3}); // compliant
     slf4jLog.debug(marker, "message ", new Exception());
-    slf4jLog.debug(marker, "message {}", new Exception());
+    slf4jLog.debug(marker, "message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.debug(marker, "message {}", new Exception().toString());
 
-    slf4jLog.debug("message {}");
+    slf4jLog.debug("message {}"); // Noncompliant {{Missing argument for the first parameter.}}
     slf4jLog.debug("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.debug("message {}", 1);
     slf4jLog.debug("message {} - {}", 1, 2);
@@ -182,13 +185,18 @@ class A {
     slf4jLog.debug("message {} {}", new Object[]{1, 2, 3}); // Noncompliant
     slf4jLog.debug("message {} {} {}", new Object[]{1, 2, 3}); // compliant
     slf4jLog.debug("message ", new Exception());
-    slf4jLog.debug("message {}", new Exception());
+    slf4jLog.debug("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
 
-    slf4jLog.error("message {}");
+    slf4jLog.error("message {}"); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.error("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
     slf4jLog.error("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.error("message {}", 1);
     slf4jLog.error("message ", new Exception());
-    slf4jLog.error("message {}", new Exception());
+    slf4jLog.error("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.error("message {}", new Exception().toString());
+    slf4jLog.error("message {} {}", 1); // Noncompliant {{Missing argument for the 2nd parameter.}}
+    slf4jLog.error("message {} {}", 1, new Exception()); // Noncompliant {{Missing argument for the 2nd parameter.}}
+    slf4jLog.error("message {} {}", 1, new Exception().toString());
 
     try {
     } catch (Exception e) {
@@ -199,20 +207,20 @@ class A {
     slf4jLog.info("message {}", 1, 2);// Noncompliant {{2nd argument is not used.}}
     slf4jLog.info("message {} {} {}", 1, 2, 3);
     slf4jLog.info("message ", new Exception());
-    slf4jLog.info("message {}", new Exception());
+    slf4jLog.info("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
 
     slf4jLog.trace("message {} {}", 1, 2, 3); // Noncompliant
     slf4jLog.trace("message {} {}", new Object[]{1, 2, 3}); // Noncompliant
     slf4jLog.trace("message {} {} {}", new Object[]{1, 2, 3}); // compliant
     slf4jLog.trace("message ", new Exception());
-    slf4jLog.trace("message {}", new Exception());
+    slf4jLog.trace("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
 
-    slf4jLog.warn("message {}");
+    slf4jLog.warn("message {}"); // Noncompliant {{Missing argument for the first parameter.}}
     slf4jLog.warn("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.warn("message {}", 1);
     slf4jLog.warn("message");
     slf4jLog.warn("message ", new Exception());
-    slf4jLog.warn("message {}", new Exception());
+    slf4jLog.warn("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
 
     java.util.logging.Logger logger2 = java.util.logging.Logger.getLogger("som.foo", "som.foo.resources.i18n.LogMessages");
     logger2.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
@@ -224,6 +232,9 @@ class A {
     java.util.logging.Logger logger4 = getLog();
     logger4.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
     this.loggerField.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
+    String additionalMessage = "...";
+    logger4.log(java.util.logging.Level.WARNING, "message " + additionalMessage, new Exception());  // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    logger4.log(java.util.logging.Level.WARNING, "message " + "...", new Exception());
 
     org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message");  // Compliant

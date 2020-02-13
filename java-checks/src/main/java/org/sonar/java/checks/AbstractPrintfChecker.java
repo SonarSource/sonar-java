@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -225,6 +226,21 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
   private static boolean firstArgumentIsLT(List<String> params, @Nullable String group) {
     return params.isEmpty() && group != null && group.length() > 0 && group.charAt(0) == '<';
+  }
+
+  protected static List<ExpressionTree> transposeArrayIntoList(List<ExpressionTree> args) {
+    if (args.size() == 1) {
+      ExpressionTree firstArg = args.get(0);
+      if (firstArg.symbolType().isArray()) {
+        if (isNewArrayWithInitializers(firstArg)) {
+          return ((NewArrayTree) firstArg).initializers();
+        } else {
+          // size is unknown
+          return Collections.emptyList();
+        }
+      }
+    }
+    return args;
   }
 
 }

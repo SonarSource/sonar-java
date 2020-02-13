@@ -27,7 +27,6 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
 
 @Rule(key = "S2275")
 public class PrintfFailCheck extends AbstractPrintfChecker {
@@ -78,19 +77,9 @@ public class PrintfFailCheck extends AbstractPrintfChecker {
   protected void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
     String newFormatString = cleanupDoubleQuote(formatString);
     Set<Integer> indexes = getMessageFormatIndexes(newFormatString, mit);
-    List<ExpressionTree> newArgs = args;
-    if (newArgs.size() == 1) {
-      ExpressionTree firstArg = newArgs.get(0);
-      if (firstArg.symbolType().isArray()) {
-        if (isNewArrayWithInitializers(firstArg)) {
-          newArgs = ((NewArrayTree) firstArg).initializers();
-        } else {
-          // size is unknown
-          return;
-        }
-      }
-    }
-    if (checkArgumentNumber(mit, indexes.size(), newArgs.size())
+    List<ExpressionTree> newArgs = transposeArrayIntoList(args);
+    if (newArgs.size() < args.size()
+      || checkArgumentNumber(mit, indexes.size(), newArgs.size())
       || checkUnbalancedQuotes(mit, newFormatString)
       || checkUnbalancedBraces(mit, newFormatString)) {
       return;
