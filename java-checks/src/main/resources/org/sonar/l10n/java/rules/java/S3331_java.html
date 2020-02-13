@@ -6,15 +6,15 @@ front of the cookie's domain, like so: <em>.dream.com</em>. But cookie domains s
 level, as in <em>.com</em>. </p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-<li>the <code>domain</code> attribute has only one level as domain naming.</li>
+  <li> the <code>domain</code> attribute has only one level as domain naming. </li>
 </ul>
 <p>You are at risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-<li> You should check the <code>domain</code> attribute has been set and its value has more than one level of domain nanimg, like:
-<em>sonarsource.com</em></li>
+  <li> You should check the <code>domain</code> attribute has been set and its value has more than one level of domain nanimg, like:
+  <em>sonarsource.com</em> </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h2>Sensitive Code Example</h2>
 <pre>
 Cookie myCookie = new Cookie("name", "val");
 myCookie.setDomain(".com"); // Noncompliant
