@@ -668,7 +668,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.basedir}/../java-checks/target/test-jars</outputDirectory>
+              <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
               <includeScope>test</includeScope>
             </configuration>
           </execution>

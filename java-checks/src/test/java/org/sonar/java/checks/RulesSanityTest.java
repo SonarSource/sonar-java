@@ -54,6 +54,7 @@ import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -70,7 +71,6 @@ public class RulesSanityTest {
 
   private static final String TARGET_CLASSES = "target/test-classes";
   private static final String TEST_FILES_DIRECTORY = "src/test/files";
-  private static final String DEFAULT_TEST_JARS_DIRECTORY = "target/test-jars";
   private static final String TEST_FILES_EXTRA_CLASSES = "src/test/resources/";
 
   /**
@@ -168,7 +168,7 @@ public class RulesSanityTest {
 
   private static List<File> getClassPath() {
     List<File> classpath = new ArrayList<>();
-    classpath = getFilesRecursively(new File(DEFAULT_TEST_JARS_DIRECTORY).toPath(), "jar", "zip");
+    classpath = getFilesRecursively(new File(JavaCheckVerifier.DEFAULT_TEST_JARS_DIRECTORY).toPath(), "jar", "zip");
     classpath.add(new File(TARGET_CLASSES));
     classpath.add(new File(TEST_FILES_EXTRA_CLASSES));
     return classpath;

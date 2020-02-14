@@ -10,7 +10,7 @@
 
   <artifactId>java-checks-testkit</artifactId>
 
-  <name>SonarQube Java :: Check Test tool kit</name>
+  <name>SonarQube Java :: Checks Test tool kit</name>
 
   <dependencies>
     <dependency>
