@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 
@@ -30,15 +29,14 @@ import static org.junit.Assert.assertTrue;
 
 public final class CheckTestUtils {
   
-  public static final File TEST_SOURCES_DIR = Paths.get("..", "java-checks-test-sources", "src", "main", "java").toFile();
+  private static final String TEST_SOURCES_DIR = "../java-checks-test-sources/src/test/java/";
 
   private CheckTestUtils() {
     // Utility class
   }
 
   public static String testSourcesPath(String path) {
-    String normalizedPath = path.replace('/', File.separatorChar);
-    File file = new File(TEST_SOURCES_DIR, normalizedPath);
+    File file = new File((TEST_SOURCES_DIR + path).replace('/', File.separatorChar));
     assertTrue("Path '" + path + "' should exist.", file.exists());
     return file.getAbsolutePath();
   }
