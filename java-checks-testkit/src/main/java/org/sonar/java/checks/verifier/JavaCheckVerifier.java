@@ -271,7 +271,9 @@ public class JavaCheckVerifier extends CheckVerifier {
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath, boolean withSemantic) {
     JavaFileScanner expectedIssueCollector = new ExpectedIssueCollector(javaCheckVerifier);
     VisitorsBridgeForTests visitorsBridge;
-    DefaultInputFile inputFile = new TestInputFileBuilder("", new File(filename).getPath()).setCharset(StandardCharsets.UTF_8).build();
+    File filePath = new File(filename).getAbsoluteFile();
+    File moduleBaseDir = filePath.getParentFile();
+    DefaultInputFile inputFile = new TestInputFileBuilder("", moduleBaseDir, filePath).setCharset(StandardCharsets.UTF_8).build();
     SonarComponents sonarComponents = CheckVerifier.sonarComponents(inputFile);
     if (withSemantic) {
       visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), Lists.newArrayList(classpath), sonarComponents);

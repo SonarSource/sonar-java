@@ -55,6 +55,7 @@
     <module>jdt</module>
     <module>java-frontend</module>
     <module>java-checks-testkit</module>
+    <module>java-checks-test-sources</module>
     <module>java-checks</module>
     <module>external-reports</module>
     <module>sonar-java-plugin</module>

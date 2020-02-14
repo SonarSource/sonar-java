@@ -295,6 +295,7 @@ public class JParser {
       if (!problem.isError()) {
         continue;
       }
+      System.err.println(problem.getSourceLineNumber() + " : " + problem.getMessage());
       if ((problem.getID() & IProblem.Syntax) == 0) {
         // TODO logging semantic error?
         continue;
