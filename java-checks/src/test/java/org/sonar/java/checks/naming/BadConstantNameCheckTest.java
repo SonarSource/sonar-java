@@ -22,6 +22,8 @@ package org.sonar.java.checks.naming;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class BadConstantNameCheckTest {
 
   @Test
@@ -31,7 +33,7 @@ public class BadConstantNameCheckTest {
 
   @Test
   public void no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/naming/BadConstantNameNoIssueWithoutSemantic.java", new BadConstantNameCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/naming/BadConstantNameNoIssueWithoutSemantic.java"), new BadConstantNameCheck());
   }
 
   @Test

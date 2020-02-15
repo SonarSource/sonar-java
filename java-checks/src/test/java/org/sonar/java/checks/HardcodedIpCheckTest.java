@@ -22,11 +22,13 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class HardcodedIpCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/HardcodedIpCheck.java", new HardcodedIpCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/HardcodedIpCheck.java"), new HardcodedIpCheck());
   }
 
 }

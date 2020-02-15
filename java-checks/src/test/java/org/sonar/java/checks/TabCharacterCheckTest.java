@@ -22,16 +22,18 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class TabCharacterCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/TabCharacter.java", "Replace all tab characters in this file by sequences of white-spaces.", new TabCharacterCheck());
+    JavaCheckVerifier.verifyIssueOnFile(testSourcesPath("checks/TabCharacter.java"), "Replace all tab characters in this file by sequences of white-spaces.", new TabCharacterCheck());
   }
 
   @Test
   public void test2() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/NonEmptyFile.java", new TabCharacterCheck());
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/NonEmptyFile.java"), new TabCharacterCheck());
   }
 
 }

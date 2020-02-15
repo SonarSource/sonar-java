@@ -22,10 +22,12 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class InappropriateRegexpCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/InappropriateRegexpCheck.java", new InappropriateRegexpCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/InappropriateRegexpCheck.java"), new InappropriateRegexpCheck());
   }
 }

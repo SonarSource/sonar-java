@@ -22,6 +22,8 @@ package org.sonar.java.checks.naming;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class BadLocalConstantNameCheckTest {
 
   @Test
@@ -33,7 +35,7 @@ public class BadLocalConstantNameCheckTest {
   public void otherPattern() {
     BadLocalConstantNameCheck check = new BadLocalConstantNameCheck();
     check.format = "^[A-Z][A-Z0-9]*$";
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheckOtherPattern.java", check);
+    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheckOtherPattern.java"), check);
   }
 
   @Test

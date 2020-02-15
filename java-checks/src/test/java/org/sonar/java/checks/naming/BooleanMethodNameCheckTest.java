@@ -22,15 +22,17 @@ package org.sonar.java.checks.naming;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class BooleanMethodNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BooleanMethodNameCheck.java", new BooleanMethodNameCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BooleanMethodNameCheck.java"), new BooleanMethodNameCheck());
   }
 
   @Test
   public void test_no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/naming/BooleanMethodNameCheck.java", new BooleanMethodNameCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/naming/BooleanMethodNameCheck.java"), new BooleanMethodNameCheck());
   }
 }

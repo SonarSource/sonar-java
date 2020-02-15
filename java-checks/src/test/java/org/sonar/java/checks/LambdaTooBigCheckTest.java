@@ -22,17 +22,19 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class LambdaTooBigCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/LambdaTooBigCheck.java", new LambdaTooBigCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/LambdaTooBigCheck.java"), new LambdaTooBigCheck());
   }
 
   @Test
   public void custom() {
     LambdaTooBigCheck check = new LambdaTooBigCheck();
     check.max = 6;
-    JavaCheckVerifier.verify("src/test/files/checks/LambdaTooBigCheckCustom.java", check);
+    JavaCheckVerifier.verify(testSourcesPath("checks/LambdaTooBigCheckCustom.java"), check);
   }
 }

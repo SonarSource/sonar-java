@@ -22,10 +22,12 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class RedundantAbstractMethodCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/RedundantAbstractMethodCheck.java", new RedundantAbstractMethodCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/RedundantAbstractMethodCheck.java", new RedundantAbstractMethodCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/RedundantAbstractMethodCheck.java"), new RedundantAbstractMethodCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/RedundantAbstractMethodCheck.java"), new RedundantAbstractMethodCheck());
   }
 }

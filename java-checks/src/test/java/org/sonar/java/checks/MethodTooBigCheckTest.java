@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 public class MethodTooBigCheckTest {
 
@@ -35,14 +36,14 @@ public class MethodTooBigCheckTest {
   public void custom_at_4() {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 4;
-    JavaCheckVerifier.verify("src/test/files/checks/MethodTooBigCheckCustom4.java", check);
+    JavaCheckVerifier.verify(testSourcesPath("checks/MethodTooBigCheckCustom4.java"), check);
   }
 
   @Test
   public void custom_at_5() {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 5;
-    JavaCheckVerifier.verify("src/test/files/checks/MethodTooBigCheckCustom5.java", check);
+    JavaCheckVerifier.verify(testSourcesPath("checks/MethodTooBigCheckCustom5.java"), check);
   }
 
 }

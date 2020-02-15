@@ -22,9 +22,11 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class PrimitiveWrappersInTernaryOperatorCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PrimitiveWrappersInTernaryOperatorCheck.java", new PrimitiveWrappersInTernaryOperatorCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/PrimitiveWrappersInTernaryOperatorCheck.java"), new PrimitiveWrappersInTernaryOperatorCheck());
   }
 }

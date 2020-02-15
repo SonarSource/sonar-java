@@ -38,9 +38,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class AnyRuleIssueFilterTest {
 
-  private static final InputFile INPUT_FILE = CheckTestUtils.inputFile("src/test/files/filters/AnyRuleIssueFilter.java");
+  private static final InputFile INPUT_FILE = CheckTestUtils.inputFile(testSourcesPath("filters/AnyRuleIssueFilter.java"));
   private static final String REPOSITORY_KEY = "walrus";
   private static final String RULE_KEY = "S42";
   private AnyRuleIssueFilter filter;

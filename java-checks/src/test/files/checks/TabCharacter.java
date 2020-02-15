@@ -1,4 +1,0 @@
-class TabCharacter {
-	void method() {
-	}
-}

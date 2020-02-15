@@ -22,16 +22,18 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class StandardCharsetsConstantsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck());
-    JavaCheckVerifier.verify("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck(), 7);
-    JavaCheckVerifier.verify("src/test/files/checks/StandardCharsetsConstantsCheck_java8.java", new StandardCharsetsConstantsCheck(), 8);
+    JavaCheckVerifier.verify(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"), new StandardCharsetsConstantsCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"), new StandardCharsetsConstantsCheck(), 7);
+    JavaCheckVerifier.verify(testSourcesPath("checks/StandardCharsetsConstantsCheck_java8.java"), new StandardCharsetsConstantsCheck(), 8);
     JavaCheckVerifier.verify("src/test/files/checks/StandardCharsetsConstantsCheck_java10.java", new StandardCharsetsConstantsCheck(), 10);
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck(), 6);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/StandardCharsetsConstantsCheck.java", new StandardCharsetsConstantsCheck());
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"), new StandardCharsetsConstantsCheck(), 6);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"), new StandardCharsetsConstantsCheck());
   }
 
 }

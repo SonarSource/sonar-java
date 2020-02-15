@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class TooManyMethodsCheckTest {
 
   @Test
@@ -37,7 +39,7 @@ public class TooManyMethodsCheckTest {
     TooManyMethodsCheck check = new TooManyMethodsCheck();
     check.maximumMethodThreshold = 4;
     check.countNonPublic = false;
-    JavaCheckVerifier.verify("src/test/files/checks/TooManyMethodsCheckOnlyPublic.java", check);
+    JavaCheckVerifier.verify(testSourcesPath("checks/TooManyMethodsCheckOnlyPublic.java"), check);
     JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/TooManyMethodsCheck.java", check);
 
   }

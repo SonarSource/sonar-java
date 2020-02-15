@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>java</artifactId>
-    <version>6.1.0-SNAPSHOT</version>
+    <version>6.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>java-checks-test-sources</artifactId>
@@ -614,12 +614,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-      <version>2.0.1.Final</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
       <version>7.7</version>
@@ -670,6 +664,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
               <includeScope>test</includeScope>
+              <silent>true</silent>
             </configuration>
           </execution>
         </executions>

@@ -22,10 +22,12 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class NotifyCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NotifyCheck.java", new NotifyCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/NotifyCheck.java"), new NotifyCheck());
   }
 }

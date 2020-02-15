@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
@@ -38,7 +39,11 @@ public final class CheckTestUtils {
   public static String testSourcesPath(String path) {
     File file = new File((TEST_SOURCES_DIR + path).replace('/', File.separatorChar));
     assertTrue("Path '" + path + "' should exist.", file.exists());
-    return file.getAbsolutePath();
+    try {
+      return file.getCanonicalPath();
+    } catch (IOException e) {
+      throw new IllegalStateException("Invalid canonical path for '" + path + "'.", e);
+    }
   }
 
   public static DefaultInputFile inputFile(String filename) {

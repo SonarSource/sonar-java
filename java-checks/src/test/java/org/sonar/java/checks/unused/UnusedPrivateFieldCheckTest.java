@@ -22,6 +22,8 @@ package org.sonar.java.checks.unused;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class UnusedPrivateFieldCheckTest {
 
   @Test
@@ -31,7 +33,7 @@ public class UnusedPrivateFieldCheckTest {
 
   @Test
   public void testNative() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/unused/UnusedPrivateFieldCheckWithNative.java", new UnusedPrivateFieldCheck());
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/unused/UnusedPrivateFieldCheckWithNative.java"), new UnusedPrivateFieldCheck());
   }
 
   @Test

@@ -22,9 +22,11 @@ package org.sonar.java.checks.security;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class IntegerToHexStringCheckTest {
 
-  public static final String TEST_FILE = "src/test/files/checks/security/IntegerToHexStringCheck.java";
+  public static final String TEST_FILE = testSourcesPath("checks/security/IntegerToHexStringCheck.java");
 
   @Test
   public void test() {

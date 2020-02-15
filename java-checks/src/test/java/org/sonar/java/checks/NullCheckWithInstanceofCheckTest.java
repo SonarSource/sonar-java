@@ -22,15 +22,17 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class NullCheckWithInstanceofCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NullCheckWithInstanceofCheck.java", new NullCheckWithInstanceofCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/NullCheckWithInstanceofCheck.java"), new NullCheckWithInstanceofCheck());
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/NullCheckWithInstanceofCheck.java", new NullCheckWithInstanceofCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/NullCheckWithInstanceofCheck.java"), new NullCheckWithInstanceofCheck());
   }
 
 }

@@ -22,15 +22,17 @@ package org.sonar.java.checks.security;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class CipherBlockChainingCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/CipherBlockChainingCheck.java", new CipherBlockChainingCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/security/CipherBlockChainingCheck.java"), new CipherBlockChainingCheck());
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/CipherBlockChainingCheck.java", new CipherBlockChainingCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/security/CipherBlockChainingCheck.java"), new CipherBlockChainingCheck());
   }
 }

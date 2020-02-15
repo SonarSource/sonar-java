@@ -22,11 +22,13 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class MismatchPackageDirectoryCheckTest {
 
   @Test
   public void correctMatch() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/mismatchPackage/Matching.java", new MismatchPackageDirectoryCheck());
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/mismatchPackage/Matching.java"), new MismatchPackageDirectoryCheck());
   }
 
   @Test
@@ -41,7 +43,7 @@ public class MismatchPackageDirectoryCheckTest {
 
   @Test
   public void mismatchWithDots() {
-    JavaCheckVerifier.verify("src/test/files/checks/mismatchPackage/with.dots/PackageWithDots.java", new MismatchPackageDirectoryCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/mismatchPackage/with.dots/PackageWithDots.java"), new MismatchPackageDirectoryCheck());
   }
 
 }

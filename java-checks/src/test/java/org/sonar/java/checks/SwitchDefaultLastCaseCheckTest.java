@@ -22,9 +22,11 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class SwitchDefaultLastCaseCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SwitchDefaultLastCaseCheck.java", new SwitchDefaultLastCaseCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/SwitchDefaultLastCaseCheck.java"), new SwitchDefaultLastCaseCheck());
   }
 }

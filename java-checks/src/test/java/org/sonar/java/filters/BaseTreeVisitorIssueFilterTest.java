@@ -43,9 +43,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class BaseTreeVisitorIssueFilterTest {
 
-  private static final InputFile INPUT_FILE = CheckTestUtils.inputFile("src/test/files/filters/BaseTreeVisitorIssueFilter.java");
+  private static final InputFile INPUT_FILE = CheckTestUtils.inputFile(testSourcesPath("filters/BaseTreeVisitorIssueFilter.java"));
   private static final String REPOSITORY_KEY = "octopus";
   private static final String RULE_KEY = "S42";
   private BaseTreeVisitorIssueFilter filter;

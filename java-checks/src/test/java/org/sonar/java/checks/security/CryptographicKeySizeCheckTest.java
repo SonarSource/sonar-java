@@ -22,15 +22,17 @@ package org.sonar.java.checks.security;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class CryptographicKeySizeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/CryptographicKeySizeCheck.java", new CryptographicKeySizeCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/security/CryptographicKeySizeCheck.java"), new CryptographicKeySizeCheck());
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/CryptographicKeySizeCheck.java", new CryptographicKeySizeCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/security/CryptographicKeySizeCheck.java"), new CryptographicKeySizeCheck());
   }
 }
