@@ -40,7 +40,7 @@ public class PackageInfoCheckTest {
   @Test
   public void no_package_info() {
     PackageInfoCheck check = new PackageInfoCheck();
-    String expectedMessage = "Add a 'package-info.java' file to document the '../java-checks-test-sources/src/test/java/checks/packageInfo/nopackageinfo' package"
+    String expectedMessage = "Add a 'package-info.java' file to document the '../java-checks-test-sources/src/main/java/checks/packageInfo/nopackageinfo' package"
       .replace('/', File.separatorChar);
     JavaCheckVerifier.verifyIssueOnProject(testSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java"), expectedMessage, check);
 

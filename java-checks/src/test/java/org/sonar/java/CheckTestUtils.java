@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class CheckTestUtils {
   
-  private static final String TEST_SOURCES_DIR = "../java-checks-test-sources/src/test/java/";
+  private static final String TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/java/";
 
   private CheckTestUtils() {
     // Utility class
