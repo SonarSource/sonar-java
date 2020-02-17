@@ -56,7 +56,7 @@ Example: `sonar.java.source=1.6`
 
 If the property is provided, the analysis will take the source version into account, and execute related rules accordingly. At run time, each of these rules will be executed – or not – depending of the Java version used by sources within the project. For instance, on a correctly configured project built with Java 6, rules targeting Java 7 and Java 8 will never raise issues, even though they are enabled in the associated rule profile.
 
-<!-- /sonarqube -->
+<!-- sonarqube -->
 ## Related Pages
 
 * [Test Coverage & Execution](/analysis/coverage/) (JaCoCo, Surefire)
@@ -64,7 +64,7 @@ If the property is provided, the analysis will take the source version into acco
 * [Adding Coding Rules](/extend/adding-coding-rules/)
 
 
-<!-- sonarqube -->
+<!-- /sonarqube -->
 ## Custom Rules
 
 The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/doc/java-custom-rules-guide.html) will help to quickly start writing custom rules for Java.
