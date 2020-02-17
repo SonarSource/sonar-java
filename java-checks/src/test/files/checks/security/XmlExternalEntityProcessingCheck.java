@@ -75,7 +75,75 @@ class StaxTest {
     return factory;
   }
 
+  XMLInputFactory two_factory(boolean b) {
+    if (b) {
+      XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
+      return factory;
+    } else {
+      XMLInputFactory factory = XMLInputFactory.newInstance();
+      factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
+      return factory;
+    }
+  }
+
+  XMLInputFactory two_factory_assign(boolean b) {
+    if (b) {
+      XMLInputFactory factory;
+      factory = XMLInputFactory.newInstance(); // Noncompliant
+      return factory;
+    } else {
+      XMLInputFactory factory;
+      factory = XMLInputFactory.newInstance();
+      factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
+      return factory;
+    }
+  }
 }
+
+class StaxTest2 {
+  XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant, reported only when declared inside method
+
+  XMLInputFactory factory_instance(){
+    StaxTest2 staxTest = new StaxTest2();
+    staxTest.factory = XMLInputFactory.newInstance(); // Compliant
+    staxTest.setFactoryProperty();
+    return staxTest.factory;
+  }
+
+  XMLInputFactory factory_field() {
+    factory = XMLInputFactory.newInstance(); // Noncompliant
+    return staxTest.factory;
+  }
+
+  XMLInputFactory factory_field2(){
+    factory = XMLInputFactory.newInstance(); // Compliant
+    this.factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
+    return staxTest.factory;
+  }
+
+  XMLInputFactory factory_field3(){
+    this.factory = XMLInputFactory.newInstance(); // Compliant
+    this.factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
+    return staxTest.factory;
+  }
+
+  XMLInputFactory factory_field4(){
+    this.factory = XMLInputFactory.newInstance(); // Compliant
+    factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
+    return staxTest.factory;
+  }
+
+  XMLInputFactory factory_field5(){
+    factory = XMLInputFactory.newInstance(); // Noncompliant
+    setFactoryProperty(); // FP, property is correctly set here
+    return staxTest.factory;
+  }
+
+  private void setFactoryProperty() {
+    factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
+  }
+}
+
 
 class SAXParserTest {
 
@@ -114,6 +182,17 @@ class SAXParserTest {
     return factory;
   }
 
+  SAXParserFactory two_factory(boolean b) {
+    if (b) {
+      SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant
+      return factory;
+    } else {
+      SAXParserFactory factory = SAXParserFactory.newInstance();
+      factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      return factory;
+    }
+  }
+
 }
 
 class XMLReaderTest {
@@ -133,6 +212,17 @@ class XMLReaderTest {
     XMLReader xmlReader = factory.createXMLReader(); // Noncompliant
     xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
     return xmlReader;
+  }
+
+  XMLReader two_reader(XMLReaderFactory factory, boolean b) {
+    if (b) {
+      XMLReader xmlReader = factory.createXMLReader(); // Noncompliant
+      return xmlReader;
+    } else {
+      XMLReader xmlReader = factory.createXMLReader();
+      xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      return xmlReader;
+    }
   }
 
 }
@@ -155,6 +245,18 @@ class DocumentBuilderFactoryTest {
     factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
     return factory;
   }
+
+  DocumentBuilderFactory two_factory(boolean b) {
+    if (b) {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant
+      return factory;
+    } else {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      return factory;
+    }
+  }
+
 
 }
 
@@ -219,6 +321,20 @@ class Validator {
     javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
     validator.setProperty(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, ""); // Coverage: Setting other property other than ACCESS_EXTERNAL_DTD or ACCESS_EXTERNAL_SCHEMA
 
+  }
+
+  void twoFactory(boolean b) {
+    if (b) {
+      javax.xml.validation.SchemaFactory factory;
+      javax.xml.validation.Schema schema = factory.newSchema();
+      javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
+    } else {
+      javax.xml.validation.SchemaFactory factory;
+      javax.xml.validation.Schema schema = factory.newSchema();
+      javax.xml.validation.Validator validator = schema.newValidator();
+      validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    }
   }
 
 }
