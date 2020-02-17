@@ -34,16 +34,16 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.java.model.ExpressionUtils.extractIdentifierSymbol;
+import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
 
 @Rule(key = "S4426")
 public class CryptographicKeySizeCheck extends AbstractMethodDetection {
@@ -100,26 +100,6 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
     }
   }
 
-  private static Optional<Symbol> getAssignedSymbol(MethodInvocationTree mit) {
-    Tree parent = mit.parent();
-    if (parent != null) {
-      if (parent.is(Tree.Kind.ASSIGNMENT)) {
-        return extractIdentifierSymbol(((AssignmentExpressionTree) parent).variable());
-      } else if (parent.is(Tree.Kind.VARIABLE)) {
-        return Optional.of(((VariableTree) parent).simpleName().symbol());
-      }
-    }
-    return Optional.empty();
-  }
-
-  private static Optional<Symbol> extractIdentifierSymbol(ExpressionTree tree) {
-    ExpressionTree cleanedExpression = ExpressionUtils.skipParentheses(tree);
-    if (cleanedExpression.is(Tree.Kind.IDENTIFIER)) {
-      return Optional.of(((IdentifierTree) cleanedExpression).symbol());
-    }
-    return Optional.empty();
-  }
-
   private class MethodVisitor extends BaseTreeVisitor {
 
     private final String algorithm;
@@ -143,12 +123,9 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
     }
 
     private boolean isSameVariableSymbol(MethodInvocationTree mit) {
-      Tree methodSelect = mit.methodSelect();
+      ExpressionTree methodSelect = mit.methodSelect();
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        Tree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-        if (expression.is(Tree.Kind.IDENTIFIER)) {
-          return ((IdentifierTree) expression).symbol().equals(variable);
-        }
+        return extractIdentifierSymbol(((MemberSelectExpressionTree)methodSelect).expression()).filter(s -> s.equals(variable)).isPresent();
       }
       return false;
     }

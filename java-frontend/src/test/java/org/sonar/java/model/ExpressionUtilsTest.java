@@ -117,7 +117,7 @@ public class ExpressionUtilsTest {
     List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);
 
     // This should reflect method 'mixedReference'.
-    assertThat(assignments).hasSize(4);
+    assertThat(assignments).hasSize(5);
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(0))).isTrue();
     assertThat(ExpressionUtils.isSimpleAssignment(assignments.get(1))).isTrue();
     // Contains method invocation.
@@ -128,6 +128,41 @@ public class ExpressionUtilsTest {
     // The returned identifier should have the same symbol regardless of the explicit usage of this.
     assertThat(ExpressionUtils.extractIdentifier(assignments.get(0)).symbol())
       .isEqualTo(ExpressionUtils.extractIdentifier(assignments.get(1)).symbol());
+
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void test_cannot_extract_identifier() throws Exception {
+    File file = new File("src/test/files/model/ExpressionUtilsTest.java");
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
+    MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
+    List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);
+    ExpressionUtils.extractIdentifier(assignments.get(4));
+  }
+
+  @Test
+  public void test_get_assigned_symbol() throws Exception {
+    File file = new File("src/test/files/model/ExpressionUtilsTest.java");
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
+    MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
+    List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);
+
+    // This should reflect method 'mixedReference'.
+    assertThat(assignments).hasSize(5);
+
+    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(0).expression())).isPresent();
+    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(1).expression())).isPresent();
+
+    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(0).expression()).get()).
+    isEqualTo(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(1).expression()).get());
+
+    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(2).expression())).isNotPresent();
+    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(3).expression())).isNotPresent();
+    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(4).expression())).isNotPresent();
+
+    List<VariableTree> variables = findVariableTrees(methodTree);
+    assertThat(variables).hasSize(2);
+    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) variables.get(1).initializer())).isPresent();
 
   }
 
@@ -163,6 +198,13 @@ public class ExpressionUtilsTest {
           .filter(e -> e instanceof AssignmentExpressionTree)
           .map(AssignmentExpressionTree.class::cast)
           .collect(Collectors.toList());
+  }
+
+  private List<VariableTree> findVariableTrees(MethodTree methodTree) {
+    return methodTree.block().body().stream()
+      .filter(s -> s.is(Tree.Kind.VARIABLE))
+      .map(VariableTree.class::cast)
+      .collect(Collectors.toList());
   }
 
   @Test

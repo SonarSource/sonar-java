@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public final class ExpressionUtils {
 
@@ -84,20 +86,32 @@ public final class ExpressionUtils {
   }
 
   public static IdentifierTree extractIdentifier(AssignmentExpressionTree tree) {
-    ExpressionTree variable = skipParentheses(tree.variable());
-    if (variable.is(Tree.Kind.IDENTIFIER)) {
-      return (IdentifierTree) variable;
-    }
+    Optional<IdentifierTree> identifier = extractIdentifier(tree.variable());
 
-    if (variable.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree selectTree = (MemberSelectExpressionTree) variable;
-      if (isSelectOnThisOrSuper(selectTree)) {
-        return selectTree.identifier();
-      }
+    if (identifier.isPresent()) {
+      return identifier.get();
     }
 
     // This should not be possible.
+    // If it happens anyway, you should make sure the assignment is simple (by calling isSimpleAssignment) before.
     throw new IllegalArgumentException("Can not extract identifier.");
+  }
+
+  private static Optional<IdentifierTree> extractIdentifier(ExpressionTree tree) {
+    ExpressionTree cleanedExpression = ExpressionUtils.skipParentheses(tree);
+    if (cleanedExpression.is(Tree.Kind.IDENTIFIER)) {
+      return Optional.of(((IdentifierTree) cleanedExpression));
+    } else if (cleanedExpression.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree selectTree = (MemberSelectExpressionTree) cleanedExpression;
+      if (isSelectOnThisOrSuper(selectTree)) {
+        return Optional.of(selectTree.identifier());
+      }
+    }
+    return Optional.empty();
+  }
+
+  public static Optional<Symbol> extractIdentifierSymbol(ExpressionTree tree) {
+    return extractIdentifier(tree).map(IdentifierTree::symbol);
   }
 
   public static ExpressionTree skipParentheses(ExpressionTree tree) {
@@ -141,6 +155,18 @@ public final class ExpressionUtils {
       result = result.parent();
     }
     return (MethodTree) result;
+  }
+
+  public static Optional<Symbol> getAssignedSymbol(MethodInvocationTree mit) {
+    Tree parent = mit.parent();
+    if (parent != null) {
+      if (parent.is(Tree.Kind.ASSIGNMENT)) {
+        return extractIdentifierSymbol(((AssignmentExpressionTree) parent).variable());
+      } else if (parent.is(Tree.Kind.VARIABLE)) {
+        return Optional.of(((VariableTree) parent).simpleName().symbol());
+      }
+    }
+    return Optional.empty();
   }
 
   /**

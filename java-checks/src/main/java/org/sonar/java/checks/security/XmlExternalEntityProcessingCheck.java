@@ -30,21 +30,19 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.checks.helpers.ExpressionsHelper.getConstantValueAsBoolean;
 import static org.sonar.java.checks.helpers.ExpressionsHelper.getConstantValueAsString;
 import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
-import static org.sonar.java.model.ExpressionUtils.isSelectOnThisOrSuper;
+import static org.sonar.java.model.ExpressionUtils.extractIdentifierSymbol;
+import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
 
 @Rule(key = "S2755")
 public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisitor {
@@ -124,31 +122,6 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
       }
       return false;
     }
-
-    private static Optional<Symbol> getAssignedSymbol(MethodInvocationTree mit) {
-      Tree parent = mit.parent();
-      if (parent != null) {
-        if (parent.is(Tree.Kind.ASSIGNMENT)) {
-          return extractIdentifierSymbol(((AssignmentExpressionTree) parent).variable());
-        } else if (parent.is(Tree.Kind.VARIABLE)) {
-          return Optional.of(((VariableTree) parent).simpleName().symbol());
-        }
-      }
-      return Optional.empty();
-    }
-  }
-
-  private static Optional<Symbol> extractIdentifierSymbol(ExpressionTree tree) {
-    ExpressionTree cleanedExpression = ExpressionUtils.skipParentheses(tree);
-    if (cleanedExpression.is(Tree.Kind.IDENTIFIER)) {
-      return Optional.of(((IdentifierTree) cleanedExpression).symbol());
-    } else if (cleanedExpression.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree selectTree = (MemberSelectExpressionTree) cleanedExpression;
-      if (isSelectOnThisOrSuper(selectTree)) {
-        return Optional.of(selectTree.identifier().symbol());
-      }
-    }
-    return Optional.empty();
   }
 
   private static class MethodVisitor extends BaseTreeVisitor {
@@ -181,7 +154,6 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
       return false;
     }
   }
-
 
   private static class XMLInputFactorySecuringPredicate implements SecuringInvocationPredicate {
 
