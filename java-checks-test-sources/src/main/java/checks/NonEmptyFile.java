@@ -1,1 +1,4 @@
-class NonEmptyFile {}
+package checks;
+
+class NonEmptyFile {
+}

@@ -1,3 +1,5 @@
+package checks;
+
 class test{
   class A implements Comparable<A> {
     

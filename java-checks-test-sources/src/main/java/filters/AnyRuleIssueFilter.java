@@ -1,4 +1,6 @@
-class A {
+package filters;
+
+class AnyRuleIssueFilter {
   private
   static
   Object FieLd;

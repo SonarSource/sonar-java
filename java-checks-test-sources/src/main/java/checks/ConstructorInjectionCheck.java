@@ -1,21 +1,21 @@
-package javax.inject;
+package checks;
 
-@interface Inject {} 
+import javax.inject.Inject;
 
-class A {
+class ConstructorInjectionCheckA {
    @Inject
    Object injectedfield; // Noncompliant
 }
 
-class B {
+class ConstructorInjectionCheckB {
   @Inject
   Object injectedField; // Compliant - private constructor 
   
-  private B() {}
+  private ConstructorInjectionCheckB() {}
   
 }
 
-class C {
+class ConstructorInjectionCheckC {
   @Inject
   Object injectedfield; // Noncompliant
   
@@ -23,13 +23,13 @@ class C {
   
   void foo() {}
   
-  public C() {}
+  public ConstructorInjectionCheckC() {}
 }
 
-class D {
+class ConstructorInjectionCheckD {
   Object field; // compliant
   
   void foo() {}
   
-  public D() {}
+  public ConstructorInjectionCheckD() {}
 }

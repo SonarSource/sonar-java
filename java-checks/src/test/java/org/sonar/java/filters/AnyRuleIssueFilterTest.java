@@ -105,26 +105,26 @@ public class AnyRuleIssueFilterTest {
 
     // issue on field called 'field' rejected
     when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule2"));
-    assertThatIssueWillBeAccepted(2).isFalse();
+    assertThatIssueWillBeAccepted(4).isFalse();
 
     when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule3"));
-    assertThatIssueWillBeAccepted(3).isFalse();
+    assertThatIssueWillBeAccepted(5).isFalse();
 
     when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule4"));
-    assertThatIssueWillBeAccepted(4).isFalse();
+    assertThatIssueWillBeAccepted(6).isFalse();
 
     // issue on other variables are accepted
     when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule5"));
-    assertThatIssueWillBeAccepted(6).isTrue();
+    assertThatIssueWillBeAccepted(8).isTrue();
 
     when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule6"));
-    assertThatIssueWillBeAccepted(7).isTrue();
+    assertThatIssueWillBeAccepted(9).isTrue();
 
     when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, "OtherRule7"));
     // issue on trivia from the field
-    assertThatIssueWillBeAccepted(10).isFalse();
-    // issue on field
     assertThatIssueWillBeAccepted(12).isFalse();
+    // issue on field
+    assertThatIssueWillBeAccepted(14).isFalse();
   }
 
   private AbstractBooleanAssert<?> assertThatIssueWillBeAccepted(@Nullable Integer line) {

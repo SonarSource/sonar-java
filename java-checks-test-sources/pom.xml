@@ -18,6 +18,14 @@
     <sonar.skip>true</sonar.skip>
   </properties>
 
+  <!--
+   Dependencies in this project are used to check its compilation and as binaries for 'java-checks' unit tests.
+   Some of the dependency licenses are not compatible to be packaged with SonarJava and should never be.
+   There are several redundant safety nets to ensure that SonarJava never embed them:
+   1) Dependencies have the 'provided' scope
+   2) No module depends on 'java-checks-test-sources', not even 'java-checks'
+   3) 'maven-deploy-plugin' is skipped for this module
+   -->
   <dependencies>
     <dependency>
       <groupId>io.netty</groupId>
@@ -649,6 +657,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
         <configuration>
+            <!-- why? see above comment before '<dependencies>'-->
             <skip>true</skip>
         </configuration>
       </plugin>
@@ -673,8 +682,6 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
-              <!-- we don't want to produce an artifact containing licenses not compatible with SonarSource requirements -->
-              <!-- (license-maven-plugin would failed). That why all dependencies are with the 'provided' scope. -->
               <includeScope>provided</includeScope>
               <silent>true</silent>
             </configuration>

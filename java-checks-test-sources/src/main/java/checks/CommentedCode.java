@@ -3,6 +3,7 @@
  *   continue;
  * }
  */
+package checks;
 
 /**
  * No detection of commented-out code in Javadoc for class

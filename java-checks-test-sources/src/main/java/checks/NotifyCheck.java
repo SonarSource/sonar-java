@@ -1,3 +1,5 @@
+package checks;
+
 class MyThread extends Thread{
 
   @Override

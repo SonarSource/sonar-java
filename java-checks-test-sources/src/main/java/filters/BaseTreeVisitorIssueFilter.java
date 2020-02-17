@@ -1,6 +1,6 @@
-package org.foo;
+package filters;
 
-class A {
+class BaseTreeVisitorIssueFilter {
   Integer i;
   Integer j;
   I anonymous = new I() {
