@@ -25,13 +25,10 @@ import java.util.List;
 import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -68,13 +65,13 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
       .withAnyParameters();
   }
 
-  private final List<XxeCheck> xxeChecks = Arrays.asList(
-    new XxeCheck(newInstanceMethod(XML_INPUT_FACTORY_CLASS_NAME), new XMLInputFactorySecuringPredicate()),
-    new XxeCheck(MethodMatcher.create().typeDefinition(XML_INPUT_FACTORY_CLASS_NAME).name("newFactory").withAnyParameters(), new XMLInputFactorySecuringPredicate()),
-    new XxeCheck(newInstanceMethod(SAX_PARSER_FACTORY_CLASS_NAME), new SecureProcessingFeaturePredicate(SAX_PARSER_FACTORY_CLASS_NAME)),
-    new XxeCheck(newInstanceMethod(DOCUMENT_BUILDER_FACTORY_CLASS_NAME), new SecureProcessingFeaturePredicate(DOCUMENT_BUILDER_FACTORY_CLASS_NAME)),
-    new XxeCheck(CREATE_XML_READER_MATCHER, new SecureProcessingFeaturePredicate(XML_READER_CLASS_NAME)),
-    new XxeCheck(CREATE_VALIDATOR, new AccessExternalDTDOrSchemaPredicate(VALIDATOR_CLASS_NAME))
+  private final List<Predicate<MethodInvocationTree>> triggeringSecuringHelpers = Arrays.asList(
+    new XMLInputFactorySecuringPredicate(newInstanceMethod(XML_INPUT_FACTORY_CLASS_NAME)),
+    new XMLInputFactorySecuringPredicate(MethodMatcher.create().typeDefinition(XML_INPUT_FACTORY_CLASS_NAME).name("newFactory").withAnyParameters()),
+    new SecureProcessingFeaturePredicate(newInstanceMethod(SAX_PARSER_FACTORY_CLASS_NAME), SAX_PARSER_FACTORY_CLASS_NAME),
+    new SecureProcessingFeaturePredicate(newInstanceMethod(DOCUMENT_BUILDER_FACTORY_CLASS_NAME), DOCUMENT_BUILDER_FACTORY_CLASS_NAME),
+    new SecureProcessingFeaturePredicate(CREATE_XML_READER_MATCHER, XML_READER_CLASS_NAME),
+    new AccessExternalDTDOrSchemaPredicate(CREATE_VALIDATOR, VALIDATOR_CLASS_NAME)
   );
 
   @Override
@@ -84,56 +81,15 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
 
   @Override
   public void visitNode(Tree tree) {
-    xxeChecks.forEach(check -> check.checkMethodInvocation((MethodInvocationTree) tree));
-  }
-
-  private class XxeCheck {
-
-    private final MethodMatcher triggeringInvocationMatcher;
-    private final Predicate<MethodInvocationTree> securingInvocationPredicate;
-
-    private XxeCheck(MethodMatcher triggeringInvocationMatcher, Predicate<MethodInvocationTree> securingInvocationPredicate) {
-      this.triggeringInvocationMatcher = triggeringInvocationMatcher;
-      this.securingInvocationPredicate = securingInvocationPredicate;
-    }
-
-    private void checkMethodInvocation(MethodInvocationTree methodInvocation) {
-      if (triggeringInvocationMatcher.matches(methodInvocation)) {
-        MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(methodInvocation);
-        if (enclosingMethod != null) {
-          if (securingInvocationPredicate instanceof AccessExternalDTDOrSchemaPredicate) {
-            ((AccessExternalDTDOrSchemaPredicate) securingInvocationPredicate).externalDTDDisabled = false;
-            ((AccessExternalDTDOrSchemaPredicate) securingInvocationPredicate).externalSchemaDisabled = false;
-          }
-          MethodVisitor methodVisitor = new MethodVisitor(securingInvocationPredicate);
-          enclosingMethod.accept(methodVisitor);
-          if (!methodVisitor.isExternalEntityProcessingDisabled) {
-            reportIssue(methodInvocation.methodSelect(), "Disable XML external entity (XXE) processing.");
-          }
-        }
+    MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
+    triggeringSecuringHelpers.forEach(check -> {
+      if (check.test(methodInvocationTree)) {
+        reportIssue(methodInvocationTree.methodSelect(), "Disable XML external entity (XXE) processing.");
       }
-    }
+    });
   }
 
-  private static class MethodVisitor extends BaseTreeVisitor {
-
-    private final Predicate<MethodInvocationTree> securingInvocationPredicate;
-    private boolean isExternalEntityProcessingDisabled = false;
-
-    private MethodVisitor(Predicate<MethodInvocationTree> securingInvocationPredicate) {
-      this.securingInvocationPredicate = securingInvocationPredicate;
-    }
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-      if (securingInvocationPredicate.test(methodInvocation)) {
-        isExternalEntityProcessingDisabled = true;
-      }
-      super.visitMethodInvocation(methodInvocation);
-    }
-  }
-
-  private static class XMLInputFactorySecuringPredicate implements Predicate<MethodInvocationTree> {
+  private static class XMLInputFactorySecuringPredicate extends TriggeringSecuringHelper {
 
     private static final String IS_SUPPORTING_EXTERNAL_ENTITIES_PROPERTY = "javax.xml.stream.isSupportingExternalEntities";
     private static final String SUPPORT_DTD_PROPERTY = "javax.xml.stream.supportDTD";
@@ -144,42 +100,73 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
         .name("setProperty")
         .parameters(JAVA_LANG_STRING, "java.lang.Object");
 
+    private boolean foundSecuringCall = false;
+
+    private XMLInputFactorySecuringPredicate(MethodMatcher triggeringInvocationMatcher) {
+      super(triggeringInvocationMatcher);
+    }
+
     @Override
-    public boolean test(MethodInvocationTree methodInvocation) {
+    public void processSecuringMethodInvocation(MethodInvocationTree methodInvocation) {
       Arguments arguments = methodInvocation.arguments();
       if (SET_PROPERTY.matches(methodInvocation)) {
         String propertyName = getConstantValueAsString(arguments.get(0)).value();
         if (IS_SUPPORTING_EXTERNAL_ENTITIES_PROPERTY.equals(propertyName) || SUPPORT_DTD_PROPERTY.equals(propertyName)) {
           ExpressionTree propertyValue = arguments.get(1);
-          return Boolean.FALSE.equals(getConstantValueAsBoolean(propertyValue).value())
-            || "false".equalsIgnoreCase(getConstantValueAsString(propertyValue).value());
+          if (Boolean.FALSE.equals(getConstantValueAsBoolean(propertyValue).value())
+            || "false".equalsIgnoreCase(getConstantValueAsString(propertyValue).value())) {
+            foundSecuringCall = true;
+          }
         }
       }
-      return false;
+    }
+
+    @Override
+    public void resetState() {
+      foundSecuringCall = false;
+    }
+
+    @Override
+    public boolean isSecured() {
+      return foundSecuringCall;
     }
   }
 
-  private static class SecureProcessingFeaturePredicate implements Predicate<MethodInvocationTree> {
+  private static class SecureProcessingFeaturePredicate extends TriggeringSecuringHelper {
 
     private static final String FEATURE_SECURE_PROCESSING_PROPERTY = "http://javax.xml.XMLConstants/feature/secure-processing";
     private static final String FEATURE_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
 
     private final MethodMatcher methodMatcher;
 
-    private SecureProcessingFeaturePredicate(String className) {
-      this.methodMatcher = setFeatureMethodMatcher(className);
+    private boolean foundSecuringCall = false;
+
+    private SecureProcessingFeaturePredicate(MethodMatcher triggeringInvocationMatcher, String securingClassName) {
+      super(triggeringInvocationMatcher);
+      this.methodMatcher = setFeatureMethodMatcher(securingClassName);
     }
 
     @Override
-    public boolean test(MethodInvocationTree methodInvocation) {
+    public void processSecuringMethodInvocation(MethodInvocationTree methodInvocation) {
       if (methodMatcher.matches(methodInvocation)) {
         Arguments arguments = methodInvocation.arguments();
         String featureName = getConstantValueAsString(arguments.get(0)).value();
-        return Boolean.TRUE.equals(getConstantValueAsBoolean(arguments.get(1)).value())
+        if (Boolean.TRUE.equals(getConstantValueAsBoolean(arguments.get(1)).value())
           && (FEATURE_SECURE_PROCESSING_PROPERTY.equals(featureName)
-            || FEATURE_DISALLOW_DOCTYPE_DECL.equals(featureName));
+          || FEATURE_DISALLOW_DOCTYPE_DECL.equals(featureName))) {
+          foundSecuringCall = true;
+        }
       }
-      return false;
+    }
+
+    @Override
+    public void resetState() {
+      foundSecuringCall = false;
+    }
+
+    @Override
+    public boolean isSecured() {
+      return foundSecuringCall;
     }
 
     private static MethodMatcher setFeatureMethodMatcher(String className) {
@@ -190,7 +177,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     }
   }
 
-  private static class AccessExternalDTDOrSchemaPredicate implements Predicate<MethodInvocationTree> {
+  private static class AccessExternalDTDOrSchemaPredicate extends TriggeringSecuringHelper {
 
     private static final String ACCESS_EXTERNAL_DTD_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalDTD";
     private static final String ACCESS_EXTERNAL_SCHEMA_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalSchema";
@@ -199,12 +186,13 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     private boolean externalDTDDisabled = false;
     private boolean externalSchemaDisabled = false;
 
-    private AccessExternalDTDOrSchemaPredicate(String className) {
-      this.methodMatcher = setPropertyMethodMatcher(className);
+    private AccessExternalDTDOrSchemaPredicate(MethodMatcher triggeringInvocationMatcher, String securingClassName) {
+      super(triggeringInvocationMatcher);
+      this.methodMatcher = setPropertyMethodMatcher(securingClassName);
     }
 
     @Override
-    public boolean test(MethodInvocationTree methodInvocation) {
+    public void processSecuringMethodInvocation(MethodInvocationTree methodInvocation) {
       if (methodMatcher.matches(methodInvocation)) {
         Arguments arguments = methodInvocation.arguments();
         String propertyName = getConstantValueAsString(arguments.get(0)).value();
@@ -215,9 +203,18 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
         if ("".equals(propertyValue) && ACCESS_EXTERNAL_SCHEMA_PROPERTY.equals(propertyName)) {
           externalSchemaDisabled = true;
         }
-        return externalDTDDisabled && externalSchemaDisabled;
       }
-      return false;
+    }
+
+    @Override
+    public boolean isSecured() {
+      return externalDTDDisabled && externalSchemaDisabled;
+    }
+
+    @Override
+    public void resetState() {
+      externalDTDDisabled = false;
+      externalSchemaDisabled = false;
     }
 
     private static MethodMatcher setPropertyMethodMatcher(String className) {
