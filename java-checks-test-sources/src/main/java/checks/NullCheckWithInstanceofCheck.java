@@ -52,6 +52,7 @@ class NullCheckWithInstanceofCheck {
 
   void foo3(NullCheckWithInstanceofCheck a) {
     new Thread() {
+      @Override
       public void run() {
         if (a != null && a instanceof NullCheckWithInstanceofCheck) { // Noncompliant
           System.out.println("blah");
@@ -69,4 +70,6 @@ class NullCheckWithInstanceofCheck {
     }
     return false;
   }
+
+  private static class A { }
 }

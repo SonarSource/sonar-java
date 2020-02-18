@@ -1,6 +1,6 @@
 package checks;
 
-class A {
+class WrongAssignmentOperatorCheck {
   int target = -5;
   boolean a, b, c;
   int num = 3;
