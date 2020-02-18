@@ -1,0 +1,67 @@
+<p>In 2018, Duo Security found a new vulnerability class that affects SAML-based single sign-on (SSO) systems and this led to the following
+vulnerabilities being disclosed: <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11427">CVE-2017-11427</a>, <a
+href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11428">CVE-2017-11428</a>, <a
+href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11429">CVE-2017-11429</a>, <a
+href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-11430">CVE-2017-11430</a>, <a
+href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0489">CVE-2018-0489</a>, <a
+href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-7340">CVE-2018-7340</a>.</p>
+<p>From a specially crafted <code>&lt;SAMLResponse&gt;</code> file, an attacker having already access to the SAML system with his own account can
+bypass the authentication mechanism and be authenticated as another user.</p>
+<p>This is due to the fact that SAML protocol rely on XML format and how the underlying XML parser interprets XML comments.</p>
+<p>If an attacker manage to change the <code>&lt;NameID&gt;</code> field identifying the authenticated user with XML comments, he can exploit the
+vulnerability.</p>
+<p>Here is an example of a potential payload:</p>
+<pre>
+&lt;SAMLResponse&gt;
+  [...]
+  &lt;Subject&gt;
+    &lt;NameID&gt;admin@domain.com&lt;!----&gt;.evil.com&lt;/NameID&gt;
+  &lt;/Subject&gt;
+  [...]
+&lt;/SAMLResponse&gt;
+</pre>
+<p>The attacker will manage to generate a valid &lt;SAMLResponse&gt; content with the account "admin@domain.com.evil.com". He will modify it with XML
+comments to finally be authenticated as "admin@domain.com". To prevent this vulnerability on application using Spring Security SAML relying on
+OpenSAML2, XML comments should be ignored thanks to the property <code>ignoreComments</code> set to <code>true</code>.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+import org.opensaml.xml.parse.BasicParserPool;
+import org.opensaml.xml.parse.ParserPool;
+import org.opensaml.xml.parse.StaticBasicParserPool;
+
+public ParserPool parserPool() {
+  StaticBasicParserPool staticBasicParserPool = new StaticBasicParserPool();
+  staticBasicParserPool.setIgnoreComments(false); // Noncompliant: comments are not ignored during parsing opening the door to exploit the vulnerability
+  return staticBasicParserPool;
+}
+</pre>
+<pre>
+public ParserPool parserPool() {
+  BasicParserPool basicParserPool = new BasicParserPool();
+  basicParserPool.setIgnoreComments(false); // Noncompliant
+  return basicParserPool;
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+public ParserPool parserPool() {
+  return new StaticBasicParserPool(); // Compliant: "ignoreComments" is set to "true" in StaticBasicParserPool constructor
+}
+</pre>
+<pre>
+public ParserPool parserPool() {
+  return new BasicParserPool();  // Compliant: "ignoreComments" is set to "true" in BasicParserPool constructor
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A2-Broken_Authentication">OWASP Top 10 2017 Category A2</a> - Broken Authentication </li>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A9-Using_Components_with_Known_Vulnerabilities">OWASP Top 10 2017 Category A9</a> - Using
+  Components with Known Vulnerabilities </li>
+  <li> <a href="https://duo.com/blog/duo-finds-saml-vulnerabilities-affecting-multiple-implementations">Duo Finds SAML Vulnerabilities Affecting
+  Multiple Implementations</a> </li>
+  <li> <a href="https://spring.io/blog/2018/03/01/spring-security-saml-and-this-week-s-saml-vulnerability">Spring Security SAML and this week's SAML
+  Vulnerability</a> </li>
+  <li> <a href="https://github.com/spring-projects/spring-security-saml/issues/228">Spring Security SAML: Issue #228</a> </li>
+</ul>
+

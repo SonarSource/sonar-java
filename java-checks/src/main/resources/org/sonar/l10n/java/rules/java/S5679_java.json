@@ -1,0 +1,24 @@
+{
+  "title": "OpenSAML2 should be configured to prevent authentication bypass",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "spring",
+    "owasp-a9",
+    "owasp-a2"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5679",
+  "sqKey": "S5679",
+  "scope": "Main",
+  "securityStandards": {
+    "OWASP": [
+      "A9",
+      "A2"
+    ]
+  }
+}

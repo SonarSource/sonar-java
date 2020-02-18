@@ -65,6 +65,7 @@ import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
 import org.sonar.java.checks.security.LDAPDeserializationCheck;
 import org.sonar.java.checks.security.LogConfigurationCheck;
+import org.sonar.java.checks.security.OpenSAML2AuthenticationBypassCheck;
 import org.sonar.java.checks.security.PasswordEncoderCheck;
 import org.sonar.java.checks.security.ReceivingIntentsCheck;
 import org.sonar.java.checks.security.RegexHotspotCheck;
@@ -473,6 +474,7 @@ public final class CheckList {
       OctalValuesCheck.class,
       OneClassInterfacePerFileCheck.class,
       OneDeclarationPerLineCheck.class,
+      OpenSAML2AuthenticationBypassCheck.class,
       OperatorPrecedenceCheck.class,
       OptionalAsParameterCheck.class,
       OptionalGetBeforeIsPresentCheck.class,
