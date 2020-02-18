@@ -49,6 +49,10 @@ public abstract class TriggeringSecuringHelper implements Predicate<MethodInvoca
 
   private final MethodMatcher triggeringInvocationMatcher;
 
+  /**
+   * Called before each visit of the enclosing method body, in {@link #test(MethodInvocationTree)}.
+   * Typically used to reset the different variable used during {@link #processSecuringMethodInvocation(MethodInvocationTree)}.
+   */
   public abstract void resetState();
 
   /**
@@ -83,6 +87,12 @@ public abstract class TriggeringSecuringHelper implements Predicate<MethodInvoca
     return false;
   }
 
+  static boolean isInvocationOnVariable(MethodInvocationTree mit, Symbol variable) {
+    ExpressionTree methodSelect = mit.methodSelect();
+    return methodSelect.is(Tree.Kind.MEMBER_SELECT)
+      && extractIdentifierSymbol(((MemberSelectExpressionTree) methodSelect).expression()).filter(s -> s.equals(variable)).isPresent();
+  }
+
   private class MethodVisitor extends BaseTreeVisitor {
 
     private Symbol variable;
@@ -93,18 +103,10 @@ public abstract class TriggeringSecuringHelper implements Predicate<MethodInvoca
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-      if (isSameVariableSymbol(methodInvocation)) {
+      if (isInvocationOnVariable(methodInvocation, variable)) {
         processSecuringMethodInvocation(methodInvocation);
       }
       super.visitMethodInvocation(methodInvocation);
-    }
-
-    private boolean isSameVariableSymbol(MethodInvocationTree mit) {
-      ExpressionTree methodSelect = mit.methodSelect();
-      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        return extractIdentifierSymbol(((MemberSelectExpressionTree)methodSelect).expression()).filter(s -> s.equals(variable)).isPresent();
-      }
-      return false;
     }
   }
 }

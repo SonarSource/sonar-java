@@ -35,14 +35,11 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.model.ExpressionUtils.extractIdentifierSymbol;
+import static org.sonar.java.checks.security.TriggeringSecuringHelper.isInvocationOnVariable;
 import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
 
 @Rule(key = "S4426")
@@ -116,18 +113,10 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
     public void visitMethodInvocation(MethodInvocationTree mit) {
       if (minKeySize != null && (KEY_GEN_INIT.matches(mit) || KEY_PAIR_GEN_INITIALIZE.matches(mit) || KEY_PAIR_GEN_INITIALIZE_WITH_SOURCE.matches(mit))) {
         Integer keySize = LiteralUtils.intLiteralValue(mit.arguments().get(0));
-        if (keySize != null && keySize < minKeySize && isSameVariableSymbol(mit)) {
+        if (keySize != null && keySize < minKeySize && isInvocationOnVariable(mit, variable)) {
           reportIssue(mit, "Use a key length of at least " + minKeySize + " bits for " + algorithm + " cipher algorithm.");
         }
       }
-    }
-
-    private boolean isSameVariableSymbol(MethodInvocationTree mit) {
-      ExpressionTree methodSelect = mit.methodSelect();
-      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        return extractIdentifierSymbol(((MemberSelectExpressionTree)methodSelect).expression()).filter(s -> s.equals(variable)).isPresent();
-      }
-      return false;
     }
   }
 }
