@@ -24,7 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -57,6 +59,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     .name("newValidator")
     .withAnyParameters();
   private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
   private static MethodMatcher newInstanceMethod(String className) {
     return MethodMatcher.create()
@@ -71,7 +74,8 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     new SecureProcessingFeaturePredicate(newInstanceMethod(SAX_PARSER_FACTORY_CLASS_NAME), SAX_PARSER_FACTORY_CLASS_NAME),
     new SecureProcessingFeaturePredicate(newInstanceMethod(DOCUMENT_BUILDER_FACTORY_CLASS_NAME), DOCUMENT_BUILDER_FACTORY_CLASS_NAME),
     new SecureProcessingFeaturePredicate(CREATE_XML_READER_MATCHER, XML_READER_CLASS_NAME),
-    new AccessExternalDTDOrSchemaPredicate(CREATE_VALIDATOR, VALIDATOR_CLASS_NAME)
+    new AccessExternalDTDOrSchemaPredicate(CREATE_VALIDATOR, VALIDATOR_CLASS_NAME),
+    new SecureXmlTransformerPredicate()
   );
 
   @Override
@@ -98,7 +102,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
       MethodMatcher.create()
         .typeDefinition(subtypeOf(XML_INPUT_FACTORY_CLASS_NAME))
         .name("setProperty")
-        .parameters(JAVA_LANG_STRING, "java.lang.Object");
+        .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT);
 
     private boolean foundSecuringCall = false;
 
@@ -221,7 +225,74 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
       return MethodMatcher.create()
         .typeDefinition(subtypeOf(className))
         .name("setProperty")
-        .parameters(JAVA_LANG_STRING, "java.lang.Object");
+        .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT);
+    }
+  }
+
+  private static class SecureXmlTransformerPredicate extends TriggeringSecuringHelper {
+
+    private static final String TRANSFORMER_FACTORY_CLASS_NAME = "javax.xml.transform.TransformerFactory";
+
+    private static final String FEATURE_SECURE_PROCESSING_PROPERTY = "http://javax.xml.XMLConstants/feature/secure-processing";
+    private static final String ACCESS_EXTERNAL_DTD_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalDTD";
+    private static final String ACCESS_EXTERNAL_STYLESHEET_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalStylesheet";
+
+    private static final MethodMatcher SET_FEATURE =
+      MethodMatcher.create()
+        .typeDefinition(subtypeOf(TRANSFORMER_FACTORY_CLASS_NAME))
+        .name("setFeature")
+        .parameters(JAVA_LANG_STRING, "boolean");
+
+    private static final MethodMatcher SET_ATTRIBUTE =
+      MethodMatcher.create()
+        .typeDefinition(subtypeOf(TRANSFORMER_FACTORY_CLASS_NAME))
+        .name("setAttribute")
+        .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT);
+
+    private boolean hasSecureProcessingFeature = false;
+    private boolean hasSecuredExternalDtd = false;
+    private boolean hasSecuredExternalStylesheet = false;
+
+    SecureXmlTransformerPredicate() {
+      super(MethodMatcher.create()
+        .typeDefinition(subtypeOf(TRANSFORMER_FACTORY_CLASS_NAME))
+        .name("newInstance")
+        .withAnyParameters());
+    }
+
+    @Override
+    public void processSecuringMethodInvocation(MethodInvocationTree methodInvocation) {
+      Arguments arguments = methodInvocation.arguments();
+
+      if (SET_FEATURE.matches(methodInvocation)
+        && FEATURE_SECURE_PROCESSING_PROPERTY.equals(ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value())
+        && LiteralUtils.isTrue(arguments.get(1))) {
+        hasSecureProcessingFeature = true;
+      }
+
+      if (SET_ATTRIBUTE.matches(methodInvocation)) {
+        String attributeName = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
+        String attributeValue = ExpressionsHelper.getConstantValueAsString(arguments.get(1)).value();
+        if ("".equals(attributeValue)) {
+          if (ACCESS_EXTERNAL_DTD_PROPERTY.equals(attributeName)) {
+            hasSecuredExternalDtd = true;
+          } else if (ACCESS_EXTERNAL_STYLESHEET_PROPERTY.equals(attributeName)) {
+            hasSecuredExternalStylesheet = true;
+          }
+        }
+      }
+    }
+
+    @Override
+    public boolean isSecured() {
+      return hasSecureProcessingFeature || (hasSecuredExternalDtd && hasSecuredExternalStylesheet);
+    }
+
+    @Override
+    public void resetState() {
+      hasSecureProcessingFeature = false;
+      hasSecuredExternalDtd = false;
+      hasSecuredExternalStylesheet = false;
     }
   }
 
