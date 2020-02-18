@@ -22,10 +22,12 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class NestedTernaryOperatorsCheckTest {
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/NestedTernaryOperatorsCheck.java", new NestedTernaryOperatorsCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/NestedTernaryOperatorsCheck.java"), new NestedTernaryOperatorsCheck());
   }
 
 }

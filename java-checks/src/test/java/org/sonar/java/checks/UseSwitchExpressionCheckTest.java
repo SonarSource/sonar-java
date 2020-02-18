@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class UseSwitchExpressionCheckTest {
 
   @Test
@@ -31,8 +33,8 @@ public class UseSwitchExpressionCheckTest {
 
   @Test
   public void test_no_issue_below_java_13() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UseSwitchExpressionCheck_java11.java", new UseSwitchExpressionCheck(), 11);
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UseSwitchExpressionCheck_java11.java", new UseSwitchExpressionCheck(), 12);
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/UseSwitchExpressionCheck_java11.java"), new UseSwitchExpressionCheck(), 11);
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/UseSwitchExpressionCheck_java11.java"), new UseSwitchExpressionCheck(), 12);
   }
 
   @Test

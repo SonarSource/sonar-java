@@ -22,16 +22,18 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class ReplaceGuavaWithJava8CheckTest {
 
   private static final String FILENAME = "src/test/files/checks/ReplaceGuavaWithJava8Check.java";
 
   @Test
   public void java8() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ReplaceGuavaWithJava8Check_java7.java", new ReplaceGuavaWithJava8Check(), 7);
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/ReplaceGuavaWithJava8Check_java7.java"), new ReplaceGuavaWithJava8Check(), 7);
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME, new ReplaceGuavaWithJava8Check(), 8);
     JavaCheckVerifier.verify(FILENAME, new ReplaceGuavaWithJava8Check(), 8);
-    JavaCheckVerifier.verify("src/test/files/checks/ReplaceGuavaWithJava8Check_no_version.java", new ReplaceGuavaWithJava8Check());
+    JavaCheckVerifier.verify(testSourcesPath("checks/ReplaceGuavaWithJava8Check_no_version.java"), new ReplaceGuavaWithJava8Check());
   }
 
 }

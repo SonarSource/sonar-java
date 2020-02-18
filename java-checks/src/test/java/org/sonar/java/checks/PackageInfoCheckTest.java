@@ -26,28 +26,30 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class PackageInfoCheckTest {
 
   @Test
   public void with_package_info() {
     PackageInfoCheck check = new PackageInfoCheck();
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/packageInfo/HelloWorld.java", check);
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/packageInfo/HelloWorld.java"), check);
     assertThat(check.directoriesWithoutPackageFile).isEmpty();
   }
 
   @Test
   public void no_package_info() {
     PackageInfoCheck check = new PackageInfoCheck();
-    String expectedMessage = "Add a 'package-info.java' file to document the 'src/test/files/checks/packageInfo/nopackageinfo' package"
+    String expectedMessage = "Add a 'package-info.java' file to document the '../java-checks-test-sources/src/main/java/checks/packageInfo/nopackageinfo' package"
       .replace('/', File.separatorChar);
-    JavaCheckVerifier.verifyIssueOnProject("src/test/files/checks/packageInfo/nopackageinfo/nopackageinfo.java", expectedMessage, check);
+    JavaCheckVerifier.verifyIssueOnProject(testSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java"), expectedMessage, check);
 
     Set<File> set = check.directoriesWithoutPackageFile;
     assertThat(set).hasSize(1);
     assertThat(set.iterator().next().getName()).isEqualTo("nopackageinfo");
 
     // only one issue per package
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/packageInfo/nopackageinfo/HelloWorld.java", check);
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"), check);
   }
 
 }

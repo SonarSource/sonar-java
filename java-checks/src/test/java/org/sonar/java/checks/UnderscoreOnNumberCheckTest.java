@@ -22,15 +22,17 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class UnderscoreOnNumberCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UnderscoreOnNumberCheck.java", new UnderscoreOnNumberCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/UnderscoreOnNumberCheck.java"), new UnderscoreOnNumberCheck());
   }
 
   @Test
   public void test_java_6() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UnderscoreOnNumberCheck_java6.java", new UnderscoreOnNumberCheck(), 6);
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/UnderscoreOnNumberCheck_java6.java"), new UnderscoreOnNumberCheck(), 6);
   }
 }

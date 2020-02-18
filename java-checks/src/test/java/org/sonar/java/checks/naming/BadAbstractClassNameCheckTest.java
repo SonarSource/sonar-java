@@ -22,13 +22,15 @@ package org.sonar.java.checks.naming;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class BadAbstractClassNameCheckTest {
 
   @Test
   public void test() {
     BadAbstractClassNameCheck check = new BadAbstractClassNameCheck();
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadAbstractClassName.java", check);
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadAbstractClassName.java", check);
+    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BadAbstractClassName.java"), check);
+    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BadAbstractClassName.java"), check);
   }
 
 }

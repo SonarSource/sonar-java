@@ -23,11 +23,13 @@ import org.junit.Test;
 
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class AllBranchesAreIdenticalCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AllBranchesAreIdentical.java", new AllBranchesAreIdenticalCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/AllBranchesAreIdentical.java"), new AllBranchesAreIdenticalCheck());
   }
 
 }

@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class SAMAnnotatedCheckTest {
 
   private static final String FILE = "src/test/files/checks/SAMAnnotatedCheck.java";
@@ -45,6 +47,6 @@ public class SAMAnnotatedCheckTest {
 
   @Test
   public void no_issue_with_java_7() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/SAMAnnotatedCheck_java7.java", new SAMAnnotatedCheck(), 7);
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/SAMAnnotatedCheck_java7.java"), new SAMAnnotatedCheck(), 7);
   }
 }

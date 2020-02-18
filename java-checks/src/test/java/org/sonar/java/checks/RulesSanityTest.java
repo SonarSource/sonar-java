@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Rule;
@@ -52,8 +53,10 @@ import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.java.CheckTestUtils;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -70,7 +73,6 @@ public class RulesSanityTest {
 
   private static final String TARGET_CLASSES = "target/test-classes";
   private static final String TEST_FILES_DIRECTORY = "src/test/files";
-  private static final String DEFAULT_TEST_JARS_DIRECTORY = "target/test-jars";
   private static final String TEST_FILES_EXTRA_CLASSES = "src/test/resources/";
 
   /**
@@ -102,13 +104,14 @@ public class RulesSanityTest {
     List<JavaCheck> checks = getJavaCheckInstances();
     assertThat(checks).isNotEmpty();
 
-    List<InputFile> inputFiles = getJavaInputFiles();
+    File moduleBaseDir = new File(".").getCanonicalFile().getParentFile();
+    List<InputFile> inputFiles = getJavaInputFiles(moduleBaseDir);
     assertThat(inputFiles.size()).isGreaterThanOrEqualTo(checks.size());
 
     List<File> classpath = getClassPath();
     assertThat(classpath).isNotEmpty();
 
-    List<SanityCheckException> exceptions = scanFiles(inputFiles, checks, classpath);
+    List<SanityCheckException> exceptions = scanFiles(moduleBaseDir, inputFiles, checks, classpath);
     if (!exceptions.isEmpty()) {
       LOG.error(processExceptions(exceptions));
       fail(String.format("Should have been able to execute all the rules on all the test files. %d file(s) made at least 1 rule fail.", exceptions.size()));
@@ -154,11 +157,14 @@ public class RulesSanityTest {
     return javaChecks;
   }
 
-  private static List<InputFile> getJavaInputFiles() {
-    return getFilesRecursively(new File(TEST_FILES_DIRECTORY).toPath(), "java").stream()
+  private static List<InputFile> getJavaInputFiles(File moduleBaseDir) {
+    return Stream.concat(
+      getFilesRecursively(new File(CheckTestUtils.testSourcesPath("")).toPath(), "java").stream(),
+      getFilesRecursively(new File(TEST_FILES_DIRECTORY).toPath(), "java").stream()
+    )
       .map(File::getAbsolutePath)
       .filter(RulesSanityTest::isNotParsingErrorFile)
-      .map(RulesSanityTest::inputFile)
+      .map(path -> inputFile(moduleBaseDir, path))
       .collect(Collectors.toList());
   }
 
@@ -168,7 +174,7 @@ public class RulesSanityTest {
 
   private static List<File> getClassPath() {
     List<File> classpath = new ArrayList<>();
-    classpath = getFilesRecursively(new File(DEFAULT_TEST_JARS_DIRECTORY).toPath(), "jar", "zip");
+    classpath = getFilesRecursively(new File(JavaCheckVerifier.DEFAULT_TEST_JARS_DIRECTORY).toPath(), "jar", "zip");
     classpath.add(new File(TARGET_CLASSES));
     classpath.add(new File(TEST_FILES_EXTRA_CLASSES));
     return classpath;
@@ -204,9 +210,9 @@ public class RulesSanityTest {
     return files;
   }
 
-  private static List<SanityCheckException> scanFiles(List<InputFile> inputFiles, List<JavaCheck> checks, List<File> classpath) {
+  private static List<SanityCheckException> scanFiles(File moduleBaseDir, List<InputFile> inputFiles, List<JavaCheck> checks, List<File> classpath) {
     List<SanityCheckException> exceptions = new ArrayList<>();
-    SonarComponents sonarComponents = sonarComponents(inputFiles);
+    SonarComponents sonarComponents = sonarComponents(moduleBaseDir, inputFiles);
     for (InputFile inputFile : inputFiles) {
       try {
         VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(checks, classpath, sonarComponents);
@@ -247,8 +253,8 @@ public class RulesSanityTest {
     }
   }
 
-  private static SonarComponents sonarComponents(List<InputFile> inputFiles) {
-    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+  private static SonarComponents sonarComponents(File moduleBaseDir, List<InputFile> inputFiles) {
+    SensorContextTester context = SensorContextTester.create(moduleBaseDir).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     context.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
     DefaultFileSystem fileSystem = context.fileSystem();
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null) {
@@ -262,10 +268,10 @@ public class RulesSanityTest {
     return sonarComponents;
   }
 
-  private static DefaultInputFile inputFile(String filename) {
+  private static DefaultInputFile inputFile(File moduleBaseDir, String filename) {
     File file = new File(filename);
     try {
-      return new TestInputFileBuilder("", file.getPath())
+      return new TestInputFileBuilder("", moduleBaseDir, file)
         .setContents(new String(Files.readAllBytes(file.toPath()), UTF_8))
         .setCharset(UTF_8)
         .setLanguage("java")

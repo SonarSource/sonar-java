@@ -22,10 +22,12 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class StringMethodsWithLocaleCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StringMethodsWithLocaleCheck.java", new StringMethodsWithLocaleCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/StringMethodsWithLocaleCheck.java"), new StringMethodsWithLocaleCheck());
   }
 
 }

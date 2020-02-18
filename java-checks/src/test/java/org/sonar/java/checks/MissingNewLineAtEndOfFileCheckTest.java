@@ -22,22 +22,24 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class MissingNewLineAtEndOfFileCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/MissingNewLineAtEndOfFile.java", "Add a new line at the end of this file.", new MissingNewLineAtEndOfFileCheck());
+    JavaCheckVerifier.verifyIssueOnFile(testSourcesPath("checks/MissingNewLineAtEndOfFile.java"), "Add a new line at the end of this file.", new MissingNewLineAtEndOfFileCheck());
   }
 
   @Test
   public void test2() {
-    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/EmptyFile.java", "Add a new line at the end of this file.", new MissingNewLineAtEndOfFileCheck());
-    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/CompletelyEmptyFile.java", "Add a new line at the end of this file.", new MissingNewLineAtEndOfFileCheck());
+    JavaCheckVerifier.verifyIssueOnFile(testSourcesPath("checks/EmptyFile.java"), "Add a new line at the end of this file.", new MissingNewLineAtEndOfFileCheck());
+    JavaCheckVerifier.verifyIssueOnFile(testSourcesPath("checks/CompletelyEmptyFile.java"), "Add a new line at the end of this file.", new MissingNewLineAtEndOfFileCheck());
   }
 
   @Test
   public void test3() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/NonEmptyFile.java", new MissingNewLineAtEndOfFileCheck());
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/NonEmptyFile.java"), new MissingNewLineAtEndOfFileCheck());
   }
 
 }

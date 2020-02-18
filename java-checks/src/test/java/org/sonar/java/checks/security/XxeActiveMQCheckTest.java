@@ -22,11 +22,13 @@ package org.sonar.java.checks.security;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class XxeActiveMQCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/XxeActiveMQCheck.java", new XxeActiveMQCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/security/XxeActiveMQCheck.java"), new XxeActiveMQCheck());
   }
 
 }

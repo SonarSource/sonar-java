@@ -22,12 +22,14 @@ package org.sonar.java.checks.security;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class PasswordEncoderCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/PasswordEncoder.java", new PasswordEncoderCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/PasswordEncoder.java", new PasswordEncoderCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/security/PasswordEncoder.java"), new PasswordEncoderCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/security/PasswordEncoder.java"), new PasswordEncoderCheck());
   }
 
 }

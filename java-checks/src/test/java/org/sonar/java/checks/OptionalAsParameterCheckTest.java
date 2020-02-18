@@ -22,10 +22,12 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class OptionalAsParameterCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/OptionalAsParameterCheck.java", new OptionalAsParameterCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/OptionalAsParameterCheck.java", new OptionalAsParameterCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/OptionalAsParameterCheck.java"), new OptionalAsParameterCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/OptionalAsParameterCheck.java"), new OptionalAsParameterCheck());
   }
 }

@@ -22,9 +22,11 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class DateUtilsTruncateCheckTest {
 
-  private static final String FILENAME = "src/test/files/checks/DateUtilsTruncateCheck.java";
+  private static final String FILENAME = testSourcesPath("checks/DateUtilsTruncateCheck.java");
 
   @Test
   public void java8() {
@@ -38,6 +40,6 @@ public class DateUtilsTruncateCheckTest {
 
   @Test
   public void unknown_version() {
-    JavaCheckVerifier.verify("src/test/files/checks/DateUtilsTruncateCheck_no_version.java", new DateUtilsTruncateCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/DateUtilsTruncateCheck_no_version.java"), new DateUtilsTruncateCheck());
   }
 }

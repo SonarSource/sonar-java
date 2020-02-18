@@ -22,39 +22,41 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class TooLongLineCheckTest {
 
-  private static final String BASEDIR = "src/test/files/checks/TooLongLine_S103_Check";
+  private static final String BASEDIR = "checks/TooLongLine_S103_Check";
 
   TooLongLineCheck check = new TooLongLineCheck();
 
   @Test
   public void test() {
-    check.maximumLineLength = 20;
-    JavaCheckVerifier.verify(BASEDIR + "/LineLength.java", check);
+    check.maximumLineLength = 40;
+    JavaCheckVerifier.verify(testSourcesPath(BASEDIR + "/LineLength.java"), check);
   }
 
   @Test
   public void test_with_empty_import_on_first_line() {
-    check.maximumLineLength = 20;
-    JavaCheckVerifier.verify(BASEDIR + "/LineLengthEmptyStatementInImport.java", check);
+    check.maximumLineLength = 40;
+    JavaCheckVerifier.verify(testSourcesPath(BASEDIR + "/LineLengthEmptyStatementInImport.java"), check);
   }
 
   @Test
   public void test_with_no_import() {
-    check.maximumLineLength = 20;
-    JavaCheckVerifier.verify(BASEDIR + "/LineLengthNoImport.java", check);
+    check.maximumLineLength = 40;
+    JavaCheckVerifier.verify(testSourcesPath(BASEDIR + "/LineLengthNoImport.java"), check);
   }
 
   @Test
   public void test_with_noncompliant_link_or_see() {
     check.maximumLineLength = 100;
-    JavaCheckVerifier.verify(BASEDIR + "/LineLengthLinkOrSee.java", check);
+    JavaCheckVerifier.verify(testSourcesPath(BASEDIR + "/LineLengthLinkOrSee.java"), check);
   }
 
   @Test
   public void test_with_false_positive_link_or_see() {
-    check.maximumLineLength = 20;
-    JavaCheckVerifier.verifyNoIssue(BASEDIR + "/LineLengthLinkOrSeeFalsePositive.java", check);
+    check.maximumLineLength = 42;
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath(BASEDIR + "/LineLengthLinkOrSeeFalsePositive.java"), check);
   }
 }

@@ -23,6 +23,8 @@ import java.util.Collections;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class HardCodedCredentialsCheckTest {
 
   /**
@@ -40,7 +42,7 @@ public class HardCodedCredentialsCheckTest {
   public void custom() {
     HardCodedCredentialsCheck check = new HardCodedCredentialsCheck();
     check.credentialWords = "marmalade,bazooka";
-    JavaCheckVerifier.verify("src/test/files/checks/HardCodedCredentialsCheckCustom.java", check);
+    JavaCheckVerifier.verify(testSourcesPath("checks/HardCodedCredentialsCheckCustom.java"), check);
   }
 
 }

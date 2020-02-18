@@ -22,10 +22,12 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class SillyStringOperationsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SillyStringOperationsCheck.java", new SillyStringOperationsCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/SillyStringOperationsCheck.java"), new SillyStringOperationsCheck());
   }
 }

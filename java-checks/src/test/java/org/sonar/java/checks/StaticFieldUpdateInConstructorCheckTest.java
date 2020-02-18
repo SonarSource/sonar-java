@@ -22,14 +22,16 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class StaticFieldUpdateInConstructorCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StaticFieldUpdateInConstructorCheck.java", new StaticFieldUpdateInConstructorCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/StaticFieldUpdateInConstructorCheck.java"), new StaticFieldUpdateInConstructorCheck());
   }
 
   @Test
   public void no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/StaticFieldUpdateInConstructorCheck.java", new StaticFieldUpdateInConstructorCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/StaticFieldUpdateInConstructorCheck.java"), new StaticFieldUpdateInConstructorCheck());
   }
 }

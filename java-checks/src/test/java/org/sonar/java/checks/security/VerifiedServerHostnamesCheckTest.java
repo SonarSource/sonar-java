@@ -22,23 +22,25 @@ package org.sonar.java.checks.security;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class VerifiedServerHostnamesCheckTest {
 
-  public static final String TEST_FOLDER = "src/test/files/checks/security/VerifiedServerHostnamesCheck/";
+  public static final String TEST_FOLDER = "checks/security/VerifiedServerHostnamesCheck/";
 
   @Test
   public void hostname_verifier() {
-    JavaCheckVerifier.verify(TEST_FOLDER + "HostnameVerifier.java", new VerifiedServerHostnamesCheck());
+    JavaCheckVerifier.verify(testSourcesPath(TEST_FOLDER + "HostnameVerifier.java"), new VerifiedServerHostnamesCheck());
   }
 
   @Test
   public void java_mail_session() {
-    JavaCheckVerifier.verify(TEST_FOLDER + "JavaMailSession.java", new VerifiedServerHostnamesCheck());
+    JavaCheckVerifier.verify(testSourcesPath(TEST_FOLDER + "JavaMailSession.java"), new VerifiedServerHostnamesCheck());
   }
 
   @Test
   public void apache_common_email() {
-    JavaCheckVerifier.verify(TEST_FOLDER + "ApacheCommonEmail.java", new VerifiedServerHostnamesCheck());
+    JavaCheckVerifier.verify(testSourcesPath(TEST_FOLDER + "ApacheCommonEmail.java"), new VerifiedServerHostnamesCheck());
   }
 
 }

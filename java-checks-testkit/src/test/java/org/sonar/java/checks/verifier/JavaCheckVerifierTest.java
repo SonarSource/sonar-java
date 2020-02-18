@@ -267,7 +267,7 @@ public class JavaCheckVerifierTest {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java", visitor);
       Fail.fail("");
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Secondary locations: expected: [] unexpected:[3]. In src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java:10");
+      assertThat(e).hasMessage("Secondary locations: expected: [] unexpected:[3]. In JavaCheckVerifierIncorrectSecondaryLocation.java:10");
     }
   }
 
@@ -278,7 +278,7 @@ public class JavaCheckVerifierTest {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java", visitor);
       Fail.fail("");
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Secondary locations: expected: [5] unexpected:[]. In src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java:10");
+      assertThat(e).hasMessage("Secondary locations: expected: [5] unexpected:[]. In JavaCheckVerifierIncorrectSecondaryLocation2.java:10");
     }
   }
 

@@ -22,12 +22,14 @@ package org.sonar.java.checks.unused;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class UnusedPrivateClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UnusedPrivateClass.java", new UnusedPrivateClassCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UnusedPrivateClass.java", new UnusedPrivateClassCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/UnusedPrivateClass.java"), new UnusedPrivateClassCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/UnusedPrivateClass.java"), new UnusedPrivateClassCheck());
   }
 
 

@@ -25,6 +25,8 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class CommentRegularExpressionCheckTest {
 
   @Test
@@ -39,7 +41,7 @@ public class CommentRegularExpressionCheckTest {
   public void should_not_fail_with_empty_regular_expression() {
     CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
     check.regularExpression = "";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/CommentRegularExpressionCheck2.java", check);
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/CommentRegularExpressionCheck2.java"), check);
   }
 
   @Test

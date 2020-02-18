@@ -22,18 +22,20 @@ package org.sonar.java.checks.naming;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class BadFieldNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadFieldName.java", new BadFieldNameCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BadFieldName.java"), new BadFieldNameCheck());
   }
 
   @Test
   public void test2() {
     BadFieldNameCheck check = new BadFieldNameCheck();
     check.format = "^[a-zA-Z0-9_]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadFieldName2.java", check);
+    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/naming/BadFieldName2.java"), check);
   }
 
 }

@@ -22,10 +22,12 @@ package org.sonar.java.checks.unused;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class UnusedTypeParameterCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedTypeParameterCheck.java", new UnusedTypeParameterCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/unused/UnusedTypeParameterCheck.java"), new UnusedTypeParameterCheck());
   }
 }

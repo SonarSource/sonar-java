@@ -22,14 +22,16 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class ClassFieldCountCheckTest {
 
   private static final String TEST_FILES_DIR = "src/test/files/checks/ClassFieldCountCheck/";
 
   @Test
   public void simple_case() {
-    JavaCheckVerifier.verify(TEST_FILES_DIR + "SimpleDefaultCase.java", new ClassFieldCountCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(TEST_FILES_DIR + "SimpleDefaultCase.java", new ClassFieldCountCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/ClassFieldCountCheck/SimpleDefaultCase.java"), new ClassFieldCountCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/ClassFieldCountCheck/SimpleDefaultCase.java"), new ClassFieldCountCheck());
   }
 
   @Test

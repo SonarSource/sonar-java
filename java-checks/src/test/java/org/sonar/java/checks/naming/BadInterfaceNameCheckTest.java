@@ -22,11 +22,13 @@ package org.sonar.java.checks.naming;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class BadInterfaceNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadInterfaceNameNoncompliant.java", new BadInterfaceNameCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BadInterfaceNameNoncompliant.java"), new BadInterfaceNameCheck());
   }
 
   @Test
