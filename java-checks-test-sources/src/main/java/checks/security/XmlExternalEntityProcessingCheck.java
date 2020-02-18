@@ -396,29 +396,11 @@ class TransformerFactoryTest {
     return factory;
   }
 
-  // setFeature
+  // setFeature has no effect to protect against XXE
 
   TransformerFactory secure_processing_true() throws TransformerConfigurationException {
-    TransformerFactory factory = TransformerFactory.newInstance();
+    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant
     factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-    return factory;
-  }
-
-  TransformerFactory secure_processing_false() throws TransformerConfigurationException {
-    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant
-    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
-    return factory;
-  }
-
-  TransformerFactory secure_processing_true_with_literal() throws TransformerConfigurationException {
-    TransformerFactory factory = TransformerFactory.newInstance();
-    factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-    return factory;
-  }
-
-  TransformerFactory setfeature_with_other_than_secure_processing() throws TransformerConfigurationException {
-    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant
-    factory.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, true);
     return factory;
   }
 
@@ -476,7 +458,8 @@ class TransformerFactoryLimitations {
 
   TransformerFactory multiple_instances() throws TransformerConfigurationException {
     TransformerFactory factory = TransformerFactory.newInstance();
-    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
     factory = TransformerFactory.newInstance(); // FN
     return factory;
   }
