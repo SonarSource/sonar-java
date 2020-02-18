@@ -26,7 +26,6 @@ import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -233,15 +232,8 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
 
     private static final String TRANSFORMER_FACTORY_CLASS_NAME = "javax.xml.transform.TransformerFactory";
 
-    private static final String FEATURE_SECURE_PROCESSING_PROPERTY = "http://javax.xml.XMLConstants/feature/secure-processing";
     private static final String ACCESS_EXTERNAL_DTD_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalDTD";
     private static final String ACCESS_EXTERNAL_STYLESHEET_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalStylesheet";
-
-    private static final MethodMatcher SET_FEATURE =
-      MethodMatcher.create()
-        .typeDefinition(subtypeOf(TRANSFORMER_FACTORY_CLASS_NAME))
-        .name("setFeature")
-        .parameters(JAVA_LANG_STRING, "boolean");
 
     private static final MethodMatcher SET_ATTRIBUTE =
       MethodMatcher.create()
@@ -249,7 +241,6 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
         .name("setAttribute")
         .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT);
 
-    private boolean hasSecureProcessingFeature = false;
     private boolean hasSecuredExternalDtd = false;
     private boolean hasSecuredExternalStylesheet = false;
 
@@ -263,12 +254,6 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     @Override
     public void processSecuringMethodInvocation(MethodInvocationTree methodInvocation) {
       Arguments arguments = methodInvocation.arguments();
-
-      if (SET_FEATURE.matches(methodInvocation)
-        && FEATURE_SECURE_PROCESSING_PROPERTY.equals(ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value())
-        && LiteralUtils.isTrue(arguments.get(1))) {
-        hasSecureProcessingFeature = true;
-      }
 
       if (SET_ATTRIBUTE.matches(methodInvocation)) {
         String attributeName = ExpressionsHelper.getConstantValueAsString(arguments.get(0)).value();
@@ -285,12 +270,11 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
 
     @Override
     public boolean isSecured() {
-      return hasSecureProcessingFeature || (hasSecuredExternalDtd && hasSecuredExternalStylesheet);
+      return hasSecuredExternalDtd && hasSecuredExternalStylesheet;
     }
 
     @Override
     public void resetState() {
-      hasSecureProcessingFeature = false;
       hasSecuredExternalDtd = false;
       hasSecuredExternalStylesheet = false;
     }
