@@ -23,6 +23,8 @@ import java.util.Collections;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class XmlExternalEntityProcessingCheckTest {
 
   /**
@@ -30,7 +32,7 @@ public class XmlExternalEntityProcessingCheckTest {
    */
   @Test
   public void test() {
-      JavaCheckVerifier.verify("src/test/files/checks/security/XmlExternalEntityProcessingCheck.java",
+      JavaCheckVerifier.verify(testSourcesPath("checks/security/XmlExternalEntityProcessingCheck.java"),
       new XmlExternalEntityProcessingCheck(),
       // FIXME should not requires an empty classpath
       Collections.emptyList());

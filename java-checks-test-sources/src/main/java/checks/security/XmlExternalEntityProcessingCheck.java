@@ -1,3 +1,5 @@
+package checks.security;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.parsers.SAXParserFactory;
@@ -122,31 +124,31 @@ class StaxTest2 {
 
   XMLInputFactory factory_field() {
     factory = XMLInputFactory.newInstance(); // Noncompliant
-    return staxTest.factory;
+    return factory;
   }
 
   XMLInputFactory factory_field2(){
     factory = XMLInputFactory.newInstance(); // Compliant
     this.factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
-    return staxTest.factory;
+    return this.factory;
   }
 
   XMLInputFactory factory_field3(){
     this.factory = XMLInputFactory.newInstance(); // Compliant
     this.factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
-    return staxTest.factory;
+    return this.factory;
   }
 
   XMLInputFactory factory_field4(){
     this.factory = XMLInputFactory.newInstance(); // Compliant
     factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
-    return staxTest.factory;
+    return factory;
   }
 
   XMLInputFactory factory_field5(){
     factory = XMLInputFactory.newInstance(); // Noncompliant
     setFactoryProperty(); // FP, property is correctly set here
-    return staxTest.factory;
+    return factory;
   }
 
   private void setFactoryProperty() {
@@ -281,78 +283,78 @@ class Foo {
 }
 
 class Validator {
-  void no_property () {
-    javax.xml.validation.SchemaFactory factory;
+  void no_property () throws SAXException  {
+    javax.xml.validation.SchemaFactory factory = null;
     javax.xml.validation.Schema schema = factory.newSchema();
     javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
   }
 
-  void withAccessExternalDtdAndExternalSchema() {
-    javax.xml.validation.SchemaFactory factory;
+  void withAccessExternalDtdAndExternalSchema() throws SAXException  {
+    javax.xml.validation.SchemaFactory factory = null;
     javax.xml.validation.Schema schema = factory.newSchema();
     javax.xml.validation.Validator validator = schema.newValidator();
     validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
   }
 
-  void withAccessExternalDtd() {
-    javax.xml.validation.SchemaFactory factory;
+  void withAccessExternalDtd() throws SAXException {
+    javax.xml.validation.SchemaFactory factory = null;
     javax.xml.validation.Schema schema = factory.newSchema();
     javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
     validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
   }
 
-  void withAccessExternalSchema() {
-    javax.xml.validation.SchemaFactory factory;
+  void withAccessExternalSchema() throws SAXException {
+    javax.xml.validation.SchemaFactory factory = null;
     javax.xml.validation.Schema schema = factory.newSchema();
     javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
     validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
   }
 
-  void withAccessExternalDtdDifferentThatEmptyString() {
-    javax.xml.validation.SchemaFactory factory;
+  void withAccessExternalDtdDifferentThatEmptyString() throws SAXException {
+    javax.xml.validation.SchemaFactory factory = null;
     javax.xml.validation.Schema schema = factory.newSchema();
     javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
     validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "all");
   }
 
-  void inlined_value () {
-    javax.xml.validation.SchemaFactory factory;
+  void inlined_value () throws SAXException {
+    javax.xml.validation.SchemaFactory factory = null;
     javax.xml.validation.Schema schema = factory.newSchema();
     javax.xml.validation.Validator validator = schema.newValidator();
     validator.setProperty("http://javax.xml.XMLConstants/property/accessExternalDTD", "");
     validator.setProperty("http://javax.xml.XMLConstants/property/accessExternalSchema", "");
   }
 
-  void noValidator() {
+  void noValidator() throws SAXException {
     javax.xml.validation.SchemaFactory factory = javax.xml.validation.SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
     factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
     javax.xml.validation.Schema schema = factory.newSchema();
   }
 
-  void otherProperty() {
-    javax.xml.validation.SchemaFactory factory;
+  void otherProperty() throws SAXException {
+    javax.xml.validation.SchemaFactory factory = null;
     javax.xml.validation.Schema schema = factory.newSchema();
     javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
     validator.setProperty(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, ""); // Coverage: Setting other property other than ACCESS_EXTERNAL_DTD or ACCESS_EXTERNAL_SCHEMA
 
   }
 
-  void otherMethodCall() throws SAXNotRecognizedException, SAXNotSupportedException {
-    javax.xml.validation.SchemaFactory factory;
+  void otherMethodCall() throws SAXException  {
+    javax.xml.validation.SchemaFactory factory = null;
     javax.xml.validation.Schema schema = factory.newSchema();
     javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
     validator.getFeature("something");
   }
 
-  void twoFactory(boolean b) {
+  void twoFactory(boolean b) throws SAXException {
     if (b) {
-      javax.xml.validation.SchemaFactory factory;
+      javax.xml.validation.SchemaFactory factory = null;
       javax.xml.validation.Schema schema = factory.newSchema();
       javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
     } else {
-      javax.xml.validation.SchemaFactory factory;
+      javax.xml.validation.SchemaFactory factory = null;
       javax.xml.validation.Schema schema = factory.newSchema();
       javax.xml.validation.Validator validator = schema.newValidator();
       validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
@@ -363,8 +365,13 @@ class Validator {
 }
 interface I {
   Runnable r = () -> {
-    javax.xml.validation.SchemaFactory factory;
-    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.SchemaFactory factory = null;
+    javax.xml.validation.Schema schema = null;
+    try {
+      schema = factory.newSchema();
+    } catch (SAXException e) {
+      e.printStackTrace();
+    }
     javax.xml.validation.Validator validator = schema.newValidator();
   };
 }
