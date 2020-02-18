@@ -1,3 +1,5 @@
+package checks;
+
 import java.io.File;
 
 public class CallToFileDeleteOnExitMethod {

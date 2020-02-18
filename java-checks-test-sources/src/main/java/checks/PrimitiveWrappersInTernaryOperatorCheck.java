@@ -17,4 +17,6 @@ class PrimitiveWrappersInTernaryOperatorCheck {
     l = (long) (true ? i2 : f2); // Compliant
     n = true ? Long.valueOf(i1) : (Long) l; // Compliant
   }
+
+  private static class A { }
 }
