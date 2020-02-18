@@ -269,7 +269,7 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
-      <version>4.2.6.RELEASE</version>
+      <version>4.2.14.RELEASE</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
