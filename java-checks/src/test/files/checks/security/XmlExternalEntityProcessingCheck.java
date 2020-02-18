@@ -1,5 +1,9 @@
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.parsers.SAXParserFactory;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,13 +22,13 @@ class StaxTest {
     return factory;
   }
 
-  XMLInputFactory unrelated_property() {
+  XMLInputFactory unrelated_property1() {
     XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "false");
     return factory;
   }
 
-  XMLInputFactory unrelated_property() {
+  XMLInputFactory unrelated_property2() {
     XMLInputFactory factory = XMLInputFactory.newInstance();// Noncompliant
     factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, "true");
     return factory;
@@ -72,6 +76,12 @@ class StaxTest {
   XMLInputFactory dtd_with_unknown_value(Object value) {
     XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
     factory.setProperty(XMLInputFactory.SUPPORT_DTD, value);
+    return factory;
+  }
+
+  XMLInputFactory other_call(Object value) {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
+    factory.setXMLReporter(null);
     return factory;
   }
 
@@ -152,37 +162,43 @@ class SAXParserTest {
     return factory;
   }
 
-  SAXParserFactory secure_processing_set_to_true() {
+  SAXParserFactory secure_processing_set_to_true() throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     return factory;
   }
 
-  SAXParserFactory secure_processing_set_to_false() {
+  SAXParserFactory secure_processing_set_to_false() throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException {
     SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant
     factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
     return factory;
   }
 
-  SAXParserFactory secure_processing_with_literal_string_set_to_true() {
+  SAXParserFactory secure_processing_with_literal_string_set_to_true() throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
     return factory;
   }
 
-  SAXParserFactory apache_feature_set_to_true() {
+  SAXParserFactory apache_feature_set_to_true() throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     return factory;
   }
 
-  SAXParserFactory other_feature_set_to_true() {
+  SAXParserFactory other_feature_set_to_true() throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException {
     SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant
     factory.setFeature("xxx", true);
     return factory;
   }
 
-  SAXParserFactory two_factory(boolean b) {
+  SAXParserFactory other_call() throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException {
+    SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant
+    factory.setValidating(true);
+    return factory;
+  }
+
+  SAXParserFactory two_factory(boolean b) throws SAXNotSupportedException, SAXNotRecognizedException, ParserConfigurationException {
     if (b) {
       SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant
       return factory;
@@ -197,24 +213,24 @@ class SAXParserTest {
 
 class XMLReaderTest {
 
-  XMLReader no_property(XMLReaderFactory factory) {
+  XMLReader no_property(XMLReaderFactory factory) throws SAXException {
     XMLReader xmlReader = factory.createXMLReader(); // Noncompliant
     return xmlReader;
   }
 
-  XMLReader no_property(XMLReaderFactory factory) {
+  XMLReader no_property2(XMLReaderFactory factory) throws SAXException {
     XMLReader xmlReader = factory.createXMLReader();
     xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     return xmlReader;
   }
 
-  XMLReader no_property(XMLReaderFactory factory) {
+  XMLReader no_property3(XMLReaderFactory factory) throws SAXException {
     XMLReader xmlReader = factory.createXMLReader(); // Noncompliant
     xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
     return xmlReader;
   }
 
-  XMLReader two_reader(XMLReaderFactory factory, boolean b) {
+  XMLReader two_reader(XMLReaderFactory factory, boolean b) throws SAXException {
     if (b) {
       XMLReader xmlReader = factory.createXMLReader(); // Noncompliant
       return xmlReader;
@@ -234,19 +250,19 @@ class DocumentBuilderFactoryTest {
     return factory;
   }
 
-  DocumentBuilderFactory no_property() {
+  DocumentBuilderFactory no_property2() throws ParserConfigurationException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     return factory;
   }
 
-  DocumentBuilderFactory no_property() {
+  DocumentBuilderFactory no_property3() throws ParserConfigurationException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant
     factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
     return factory;
   }
 
-  DocumentBuilderFactory two_factory(boolean b) {
+  DocumentBuilderFactory two_factory4(boolean b) throws ParserConfigurationException {
     if (b) {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant
       return factory;
@@ -321,6 +337,13 @@ class Validator {
     javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
     validator.setProperty(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, ""); // Coverage: Setting other property other than ACCESS_EXTERNAL_DTD or ACCESS_EXTERNAL_SCHEMA
 
+  }
+
+  void otherMethodCall() throws SAXNotRecognizedException, SAXNotSupportedException {
+    javax.xml.validation.SchemaFactory factory;
+    javax.xml.validation.Schema schema = factory.newSchema();
+    javax.xml.validation.Validator validator = schema.newValidator(); // Noncompliant
+    validator.getFeature("something");
   }
 
   void twoFactory(boolean b) {

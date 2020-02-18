@@ -22,27 +22,19 @@ package org.sonar.java.checks.security;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Predicate;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.SecuringInvocationPredicate;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.sonar.java.checks.helpers.ExpressionsHelper.getConstantValueAsBoolean;
 import static org.sonar.java.checks.helpers.ExpressionsHelper.getConstantValueAsString;
 import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
-import static org.sonar.java.model.ExpressionUtils.extractIdentifierSymbol;
-import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
 
 @Rule(key = "S2755")
 public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisitor {
@@ -73,13 +65,13 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
       .withAnyParameters();
   }
 
-  private final List<TriggeringSecuringCheck> triggeringSecuringChecks = Arrays.asList(
-    new TriggeringSecuringCheck(newInstanceMethod(XML_INPUT_FACTORY_CLASS_NAME), new XMLInputFactorySecuringPredicate()),
-    new TriggeringSecuringCheck(MethodMatcher.create().typeDefinition(XML_INPUT_FACTORY_CLASS_NAME).name("newFactory").withAnyParameters(), new XMLInputFactorySecuringPredicate()),
-    new TriggeringSecuringCheck(newInstanceMethod(SAX_PARSER_FACTORY_CLASS_NAME), new SecureProcessingFeaturePredicate(SAX_PARSER_FACTORY_CLASS_NAME)),
-    new TriggeringSecuringCheck(newInstanceMethod(DOCUMENT_BUILDER_FACTORY_CLASS_NAME), new SecureProcessingFeaturePredicate(DOCUMENT_BUILDER_FACTORY_CLASS_NAME)),
-    new TriggeringSecuringCheck(CREATE_XML_READER_MATCHER, new SecureProcessingFeaturePredicate(XML_READER_CLASS_NAME)),
-    new TriggeringSecuringCheck(CREATE_VALIDATOR, new AccessExternalDTDOrSchemaPredicate(VALIDATOR_CLASS_NAME))
+  private final List<Predicate<MethodInvocationTree>> triggeringSecuringHelpers = Arrays.asList(
+    new XMLInputFactorySecuringPredicate(newInstanceMethod(XML_INPUT_FACTORY_CLASS_NAME)),
+    new XMLInputFactorySecuringPredicate(MethodMatcher.create().typeDefinition(XML_INPUT_FACTORY_CLASS_NAME).name("newFactory").withAnyParameters()),
+    new SecureProcessingFeaturePredicate(newInstanceMethod(SAX_PARSER_FACTORY_CLASS_NAME), SAX_PARSER_FACTORY_CLASS_NAME),
+    new SecureProcessingFeaturePredicate(newInstanceMethod(DOCUMENT_BUILDER_FACTORY_CLASS_NAME), DOCUMENT_BUILDER_FACTORY_CLASS_NAME),
+    new SecureProcessingFeaturePredicate(CREATE_XML_READER_MATCHER, XML_READER_CLASS_NAME),
+    new AccessExternalDTDOrSchemaPredicate(CREATE_VALIDATOR, VALIDATOR_CLASS_NAME)
   );
 
   @Override
@@ -90,72 +82,14 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-    triggeringSecuringChecks.forEach(check -> {
-      if (check.shouldReportMethodInvocation(methodInvocationTree)) {
+    triggeringSecuringHelpers.forEach(check -> {
+      if (check.test(methodInvocationTree)) {
         reportIssue(methodInvocationTree.methodSelect(), "Disable XML external entity (XXE) processing.");
       }
     });
   }
 
-  private static class TriggeringSecuringCheck {
-
-    private final MethodMatcher triggeringInvocationMatcher;
-    private final SecuringInvocationPredicate securingInvocationPredicate;
-
-    private TriggeringSecuringCheck(MethodMatcher triggeringInvocationMatcher, SecuringInvocationPredicate securingInvocationPredicate) {
-      this.triggeringInvocationMatcher = triggeringInvocationMatcher;
-      this.securingInvocationPredicate = securingInvocationPredicate;
-    }
-
-    private boolean shouldReportMethodInvocation(MethodInvocationTree methodInvocation) {
-      if (triggeringInvocationMatcher.matches(methodInvocation)) {
-        MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(methodInvocation);
-        if (enclosingMethod != null) {
-          securingInvocationPredicate.resetState();
-          Optional<Symbol> assignedSymbol = getAssignedSymbol(methodInvocation);
-          if (assignedSymbol.isPresent()) {
-            MethodVisitor methodVisitor = new MethodVisitor(securingInvocationPredicate, assignedSymbol.get());
-            enclosingMethod.accept(methodVisitor);
-            return !methodVisitor.isExternalEntityProcessingDisabled();
-          }
-        }
-      }
-      return false;
-    }
-  }
-
-  private static class MethodVisitor extends BaseTreeVisitor {
-
-    private final SecuringInvocationPredicate securingInvocationPredicate;
-    private Symbol variable;
-
-    private MethodVisitor(SecuringInvocationPredicate securingInvocationPredicate, Symbol variable) {
-      this.securingInvocationPredicate = securingInvocationPredicate;
-      this.variable = variable;
-    }
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-      if (isSameVariableSymbol(methodInvocation)) {
-        securingInvocationPredicate.processInvocation(methodInvocation);
-      }
-      super.visitMethodInvocation(methodInvocation);
-    }
-
-    boolean isExternalEntityProcessingDisabled() {
-      return securingInvocationPredicate.satisfy();
-    }
-
-    private boolean isSameVariableSymbol(MethodInvocationTree mit) {
-      ExpressionTree methodSelect = mit.methodSelect();
-      if (methodSelect.is(Kind.MEMBER_SELECT)) {
-        return extractIdentifierSymbol(((MemberSelectExpressionTree)methodSelect).expression()).filter(s -> s.equals(variable)).isPresent();
-      }
-      return false;
-    }
-  }
-
-  private static class XMLInputFactorySecuringPredicate implements SecuringInvocationPredicate {
+  private static class XMLInputFactorySecuringPredicate extends TriggeringSecuringHelper {
 
     private static final String IS_SUPPORTING_EXTERNAL_ENTITIES_PROPERTY = "javax.xml.stream.isSupportingExternalEntities";
     private static final String SUPPORT_DTD_PROPERTY = "javax.xml.stream.supportDTD";
@@ -168,8 +102,12 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
 
     private boolean foundSecuringCall = false;
 
+    private XMLInputFactorySecuringPredicate(MethodMatcher triggeringInvocationMatcher) {
+      super(triggeringInvocationMatcher);
+    }
+
     @Override
-    public void processInvocation(MethodInvocationTree methodInvocation) {
+    public void processSecuringMethodInvocation(MethodInvocationTree methodInvocation) {
       Arguments arguments = methodInvocation.arguments();
       if (SET_PROPERTY.matches(methodInvocation)) {
         String propertyName = getConstantValueAsString(arguments.get(0)).value();
@@ -189,12 +127,12 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     }
 
     @Override
-    public boolean satisfy() {
+    public boolean isSecured() {
       return foundSecuringCall;
     }
   }
 
-  private static class SecureProcessingFeaturePredicate implements SecuringInvocationPredicate {
+  private static class SecureProcessingFeaturePredicate extends TriggeringSecuringHelper {
 
     private static final String FEATURE_SECURE_PROCESSING_PROPERTY = "http://javax.xml.XMLConstants/feature/secure-processing";
     private static final String FEATURE_DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl";
@@ -203,12 +141,13 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
 
     private boolean foundSecuringCall = false;
 
-    private SecureProcessingFeaturePredicate(String className) {
-      this.methodMatcher = setFeatureMethodMatcher(className);
+    private SecureProcessingFeaturePredicate(MethodMatcher triggeringInvocationMatcher, String securingClassName) {
+      super(triggeringInvocationMatcher);
+      this.methodMatcher = setFeatureMethodMatcher(securingClassName);
     }
 
     @Override
-    public void processInvocation(MethodInvocationTree methodInvocation) {
+    public void processSecuringMethodInvocation(MethodInvocationTree methodInvocation) {
       if (methodMatcher.matches(methodInvocation)) {
         Arguments arguments = methodInvocation.arguments();
         String featureName = getConstantValueAsString(arguments.get(0)).value();
@@ -226,7 +165,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     }
 
     @Override
-    public boolean satisfy() {
+    public boolean isSecured() {
       return foundSecuringCall;
     }
 
@@ -238,7 +177,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     }
   }
 
-  private static class AccessExternalDTDOrSchemaPredicate implements SecuringInvocationPredicate {
+  private static class AccessExternalDTDOrSchemaPredicate extends TriggeringSecuringHelper {
 
     private static final String ACCESS_EXTERNAL_DTD_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalDTD";
     private static final String ACCESS_EXTERNAL_SCHEMA_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalSchema";
@@ -247,12 +186,13 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     private boolean externalDTDDisabled = false;
     private boolean externalSchemaDisabled = false;
 
-    private AccessExternalDTDOrSchemaPredicate(String className) {
-      this.methodMatcher = setPropertyMethodMatcher(className);
+    private AccessExternalDTDOrSchemaPredicate(MethodMatcher triggeringInvocationMatcher, String securingClassName) {
+      super(triggeringInvocationMatcher);
+      this.methodMatcher = setPropertyMethodMatcher(securingClassName);
     }
 
     @Override
-    public void processInvocation(MethodInvocationTree methodInvocation) {
+    public void processSecuringMethodInvocation(MethodInvocationTree methodInvocation) {
       if (methodMatcher.matches(methodInvocation)) {
         Arguments arguments = methodInvocation.arguments();
         String propertyName = getConstantValueAsString(arguments.get(0)).value();
@@ -267,7 +207,7 @@ public class XmlExternalEntityProcessingCheck extends IssuableSubscriptionVisito
     }
 
     @Override
-    public boolean satisfy() {
+    public boolean isSecured() {
       return externalDTDDisabled && externalSchemaDisabled;
     }
 
