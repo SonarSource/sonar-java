@@ -1,0 +1,13 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CallToDeprecatedMethod.java':[
+107,
+113,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StaticMembersAccessCheck.java':[
+12,
+14,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/naming/FieldNameMatchingTypeNameCheck.java':[
+18,
+],
+}

@@ -1,0 +1,9 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StaticFieldUpdateInConstructorCheck.java':[
+30,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/SynchronizedLockCheck.java':[
+12,
+14,
+],
+}

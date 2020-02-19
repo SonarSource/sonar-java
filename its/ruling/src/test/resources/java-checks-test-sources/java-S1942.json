@@ -1,0 +1,16 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/PrimitivesMarkedNullableCheck.java':[
+22,
+25,
+30,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StrongCipherAlgorithmCheck.java':[
+23,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/TooManyParametersCustom.java':[
+14,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/security/LDAPAuthenticatedConnectionCheck.java':[
+13,
+],
+}

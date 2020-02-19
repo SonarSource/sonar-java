@@ -1,0 +1,14 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/ClassFieldCountCheck/SimpleDefaultCase.java':[
+3,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/HardcodedIpCheck.java':[
+3,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/RandomFloatToIntCheck.java':[
+9,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StandardCharsetsConstantsCheck.java':[
+18,
+],
+}

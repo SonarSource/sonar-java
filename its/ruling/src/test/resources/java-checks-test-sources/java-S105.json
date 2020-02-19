@@ -1,0 +1,11 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/IndentationCheck_tab.java':[
+0,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/TabCharacter.java':[
+0,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/security/XxeActiveMQCheck.java':[
+0,
+],
+}

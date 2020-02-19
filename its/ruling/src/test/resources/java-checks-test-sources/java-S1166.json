@@ -1,0 +1,17 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/DynamicClassLoadCheck.java':[
+18,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/security/CipherBlockChainingCheck.java':[
+136,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/security/CryptographicKeySizeCheck.java':[
+86,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/security/EncryptionAlgorithmCheck.java':[
+55,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/security/XmlExternalEntityProcessingCheck.java':[
+376,
+],
+}

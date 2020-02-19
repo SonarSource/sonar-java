@@ -1,0 +1,16 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/ReplaceLambdaByMethodRefCheck_no_version.java':[
+11,
+12,
+17,
+18,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StaticMembersAccessCheck.java':[
+62,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StreamPeekCheck.java':[
+14,
+16,
+18,
+],
+}

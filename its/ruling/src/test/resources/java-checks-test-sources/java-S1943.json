@@ -1,0 +1,13 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CallToDeprecatedMethod.java':[
+9,
+67,
+81,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/InputStreamReadCheck.java':[
+28,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/security/CipherBlockChainingCheck.java':[
+10,
+],
+}

@@ -1,0 +1,15 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/AllBranchesAreIdentical.java':[
+31,
+43,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/SwitchDefaultLastCaseCheck.java':[
+14,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/SwitchLastCaseIsDefaultCheck.java':[
+7,
+10,
+18,
+40,
+],
+}

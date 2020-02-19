@@ -1,0 +1,14 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/AssertionArgumentOrderCheck_JUnit5.java':[
+106,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/AssignmentInSubExpressionCheck.java':[
+83,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/HardCodedCredentialsCheckCustom.java':[
+40,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StaticFieldUpdateInConstructorCheck.java':[
+40,
+],
+}

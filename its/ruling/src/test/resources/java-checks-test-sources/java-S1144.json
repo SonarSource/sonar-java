@@ -1,0 +1,17 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CollectionIsEmptyCheck.java':[
+10,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/HardCodedCredentialsCheckCustom.java':[
+10,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/LambdaTooBigCheckCustom.java':[
+10,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/SillyBitOperationCheck.java':[
+4,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/unused/UnusedPrivateFieldCheckWithNative.java':[
+7,
+],
+}

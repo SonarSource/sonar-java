@@ -1,0 +1,8 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CloneableImplementingCloneCheck.java':[
+19,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/ToStringReturningNullCheck.java':[
+28,
+],
+}

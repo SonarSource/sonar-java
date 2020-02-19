@@ -1,0 +1,9 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/UnderscoreOnNumberCheck.java':[
+20,
+21,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/UnderscoreOnNumberCheck_java6.java':[
+9,
+],
+}

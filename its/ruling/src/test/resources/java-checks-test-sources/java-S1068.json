@@ -1,0 +1,12 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CloneableImplementingCloneCheck.java':[
+5,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StandardCharsetsConstantsCheck.java':[
+41,
+44,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/filters/AnyRuleIssueFilter.java':[
+6,
+],
+}

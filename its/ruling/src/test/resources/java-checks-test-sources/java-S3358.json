@@ -1,0 +1,12 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/AllBranchesAreIdentical.java':[
+12,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/NestedTernaryOperatorsCheck.java':[
+7,
+8,
+9,
+10,
+16,
+],
+}

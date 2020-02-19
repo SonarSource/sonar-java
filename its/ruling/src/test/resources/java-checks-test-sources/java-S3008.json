@@ -1,0 +1,14 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/AssertionArgumentOrderCheck_JUnit5.java':[
+20,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/naming/BadFieldName.java':[
+6,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/naming/BadFieldName2.java':[
+6,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/filters/AnyRuleIssueFilter.java':[
+6,
+],
+}

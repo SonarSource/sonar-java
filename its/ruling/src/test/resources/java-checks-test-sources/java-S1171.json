@@ -1,0 +1,17 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/DoubleBraceInitializationCheck.java':[
+7,
+13,
+14,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/NonStaticClassInitializerCheck.java':[
+7,
+16,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/ThreadRunCheck.java':[
+7,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/security/CipherBlockChainingCheck.java':[
+11,
+],
+}

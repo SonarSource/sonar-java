@@ -1,0 +1,14 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/NullShouldNotBeUsedWithOptionalCheck_guava.java':[
+8,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/NullShouldNotBeUsedWithOptionalCheck_jdk.java':[
+8,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/SAMAnnotatedCheck_java7.java':[
+3,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/naming/BadInterfaceNameNoncompliant.java':[
+3,
+],
+}

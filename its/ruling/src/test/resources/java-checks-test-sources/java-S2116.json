@@ -1,0 +1,9 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/ArrayHashCodeAndToStringCheck.java':[
+6,
+7,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/ModulusEqualityCheck.java':[
+32,
+],
+}

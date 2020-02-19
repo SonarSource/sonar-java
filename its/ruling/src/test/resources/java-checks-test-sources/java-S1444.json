@@ -1,0 +1,16 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StaticMembersAccessCheck.java':[
+4,
+13,
+15,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/UselessIncrementCheck.java':[
+4,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/naming/BadFieldName.java':[
+6,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/naming/BadFieldName2.java':[
+6,
+],
+}

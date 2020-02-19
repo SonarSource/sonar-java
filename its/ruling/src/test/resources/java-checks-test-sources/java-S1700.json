@@ -1,0 +1,10 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CallToDeprecatedMethod.java':[
+74,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/naming/FieldNameMatchingTypeNameCheck.java':[
+4,
+12,
+13,
+],
+}

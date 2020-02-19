@@ -1,0 +1,17 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/RandomFloatToIntCheck.java':[
+14,
+15,
+20,
+37,
+38,
+45,
+46,
+52,
+53,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/ToArrayCheck.java':[
+13,
+15,
+],
+}

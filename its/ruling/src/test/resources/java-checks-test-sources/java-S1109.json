@@ -1,0 +1,8 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/DoubleBraceInitializationCheck.java':[
+10,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/UnusedPrivateClass.java':[
+21,
+],
+}

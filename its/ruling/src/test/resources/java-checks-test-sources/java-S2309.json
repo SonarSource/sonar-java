@@ -1,0 +1,14 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CompletelyEmptyFile.java':[
+0,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/EmptyFile.java':[
+0,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/NoCheckstyleTagPresenceCheck.java':[
+0,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/NoPmdTagPresenceCheck.java':[
+0,
+],
+}

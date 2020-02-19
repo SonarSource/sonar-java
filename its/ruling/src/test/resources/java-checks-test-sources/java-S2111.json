@@ -1,0 +1,11 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/BigDecimalDoubleConstructorCheck.java':[
+9,
+10,
+11,
+12,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StringPrimitiveConstructorCheck.java':[
+28,
+],
+}

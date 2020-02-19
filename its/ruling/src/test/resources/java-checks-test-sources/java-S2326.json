@@ -1,0 +1,11 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/RedundantAbstractMethodCheck.java':[
+35,
+74,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/unused/UnusedTypeParameterCheck.java':[
+3,
+5,
+7,
+],
+}

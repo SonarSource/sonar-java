@@ -1,0 +1,14 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/InappropriateRegexpCheck.java':[
+7,
+8,
+9,
+14,
+15,
+16,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StringReplace.java':[
+11,
+13,
+],
+}

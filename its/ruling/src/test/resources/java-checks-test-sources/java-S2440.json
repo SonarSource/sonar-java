@@ -1,0 +1,16 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CallToDeprecatedMethod.java':[
+11,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/PseudoRandomCheck.java':[
+32,
+37,
+42,
+47,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StaticMembersAccessCheck.java':[
+7,
+10,
+29,
+],
+}

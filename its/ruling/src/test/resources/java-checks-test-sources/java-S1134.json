@@ -1,0 +1,13 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CommentedCode.java':[
+102,
+105,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/FixmeTagPresenceCheck.java':[
+5,
+11,
+12,
+16,
+19,
+],
+}

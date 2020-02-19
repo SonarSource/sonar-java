@@ -1,0 +1,15 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/InputStreamReadCheck.java':[
+28,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/UselessIncrementCheck.java':[
+14,
+15,
+16,
+24,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/WrongAssignmentOperatorCheck.java':[
+13,
+22,
+],
+}

@@ -1,0 +1,11 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/security/CryptographicKeySizeCheck.java':[
+115,
+120,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/security/PasswordEncoder.java':[
+24,
+26,
+66,
+],
+}

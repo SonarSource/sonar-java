@@ -1,0 +1,15 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CommentedCode.java':[
+54,
+64,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/TodoTagPresenceCheck.java':[
+4,
+5,
+11,
+12,
+16,
+19,
+22,
+],
+}

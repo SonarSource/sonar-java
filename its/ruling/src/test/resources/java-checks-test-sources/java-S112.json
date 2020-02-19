@@ -1,0 +1,14 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/AssertionArgumentOrderCheck.java':[
+50,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StandardCharsetsConstantsCheck.java':[
+46,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StandardCharsetsConstantsCheck_java8.java':[
+17,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/security/CipherBlockChainingCheck.java':[
+17,
+],
+}

@@ -1,0 +1,17 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CORSCheck.java':[
+55,
+61,
+67,
+73,
+79,
+85,
+91,
+97,
+103,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/TooManyParametersCustom.java':[
+14,
+17,
+],
+}

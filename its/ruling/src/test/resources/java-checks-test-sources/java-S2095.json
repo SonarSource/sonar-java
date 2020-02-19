@@ -1,0 +1,13 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StandardCharsetsConstantsCheck.java':[
+107,
+108,
+111,
+112,
+113,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/StandardCharsetsConstantsCheck_java8.java':[
+23,
+24,
+],
+}

@@ -1,0 +1,16 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/CollectionIsEmptyCheck.java':[
+32,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/NullCheckWithInstanceofCheck.java':[
+25,
+27,
+32,
+34,
+36,
+44,
+45,
+48,
+57,
+],
+}

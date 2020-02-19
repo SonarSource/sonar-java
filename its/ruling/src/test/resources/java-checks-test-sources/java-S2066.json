@@ -1,0 +1,11 @@
+{
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/InnerClassOfNonSerializableCheck.java':[
+16,
+20,
+25,
+],
+'org.sonarsource.java:java-checks-test-sources:src/main/java/checks/InnerClassOfSerializableCheck.java':[
+7,
+10,
+],
+}
