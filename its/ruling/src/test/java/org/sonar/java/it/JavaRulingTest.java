@@ -152,6 +152,14 @@ public class JavaRulingTest {
   }
 
   @Test
+  public void java_checks_test_sources() throws Exception {
+    String projectName = "java-checks-test-sources";
+    MavenBuild build = test_project("org.sonarsource.java:java-checks-test-sources", "../..", projectName);
+    build.addArgument("-P ruling");
+    executeBuildWithCommonProperties(build, projectName);
+  }
+
+  @Test
   public void apache_commons_beanutils() throws Exception {
     String projectName = "commons-beanutils";
     MavenBuild build = test_project("commons-beanutils:commons-beanutils", projectName);

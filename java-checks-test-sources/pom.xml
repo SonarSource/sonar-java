@@ -666,6 +666,15 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>ruling</id>
+      <properties>
+        <sonar.skip>false</sonar.skip>
+      </properties>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
       <plugin>
