@@ -1,0 +1,75 @@
+<p>Setting files (or directories) permissions should be done with an abundance of caution, to limit as far as possible who can execute, write to and
+read each file. An unexpected user having access to the server where these files are stored could intentionally or not:</p>
+<ul>
+  <li> get access to sensitive data (read or <code>r--</code> permission) </li>
+  <li> override files content that will be then read or executed by the application (write or <code>-w-</code> permission) </li>
+  <li> execute binaries or scripts (execution or <code>--x</code> permission) </li>
+</ul>
+<p>This rule is triggered when read, write or execute permissions are given to "others" class according to the POSIX standard.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> if permissions are given to the "others" class while it's not required to run the application </li>
+</ul>
+<h2>Recommended Secure Coding Practices</h2>
+<p>The most restrictive possible permissions should be assigned to files or directories.</p>
+<h2>Sensitive Code Examples</h2>
+<pre>
+    public void setPermissions(String filePath) {
+        Set&lt;PosixFilePermission&gt; perms = new HashSet&lt;PosixFilePermission&gt;();
+        // user permission
+        perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        perms.add(PosixFilePermission.OWNER_EXECUTE);
+        // group permissions
+        perms.add(PosixFilePermission.GROUP_READ);
+        perms.add(PosixFilePermission.GROUP_EXECUTE);
+        // others permissions
+        perms.add(PosixFilePermission.OTHERS_READ); // Sensitive
+        perms.add(PosixFilePermission.OTHERS_WRITE); // Sensitive
+        perms.add(PosixFilePermission.OTHERS_EXECUTE); // Sensitive
+
+        Files.setPosixFilePermissions(Paths.get(filePath), perms);
+    }
+</pre>
+<pre>
+    public void setPermissionsUsingRuntimeExec(String filePath) {
+        Runtime.getRuntime().exec("chmod 777 file.json"); // Sensitive
+    }
+</pre>
+<pre>
+    public void setOthersPermissionsHardCoded(String filePath ) {
+        Files.setPosixFilePermissions(Paths.get(filePath), PosixFilePermissions.fromString("rwxrwxrwx")); // Sensitive
+    }
+</pre>
+<h2>Compliant Solution</h2>
+<p>On operating systems that implement POSIX standard. This will throw a <code>UnsupportedOperationException</code> on Windows.</p>
+<pre>
+    public void setPermissionsSafe(String filePath) throws IOException {
+        Set&lt;PosixFilePermission&gt; perms = new HashSet&lt;PosixFilePermission&gt;();
+        // user permission
+        perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        perms.add(PosixFilePermission.OWNER_EXECUTE);
+        // group permissions
+        perms.add(PosixFilePermission.GROUP_READ);
+        perms.add(PosixFilePermission.GROUP_EXECUTE);
+        // others permissions removed
+        perms.remove(PosixFilePermission.OTHERS_READ); // Compliant
+        perms.remove(PosixFilePermission.OTHERS_WRITE); // Compliant
+        perms.remove(PosixFilePermission.OTHERS_EXECUTE); // Compliant
+
+        Files.setPosixFilePermissions(Paths.get(filePath), perms);
+    }
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control">OWASP Top 10 2017 Category A5</a> - Broken Access Control </li>
+  <li> <a href="https://www.owasp.org/index.php/Test_File_Permission_(OTG-CONFIG-009)">OWASP File Permission</a> </li>
+  <li> <a href="http://cwe.mitre.org/data/definitions/732">MITRE, CWE-732</a> - Incorrect Permission Assignment for Critical Resource </li>
+  <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/FIO01-J.+Create+files+with+appropriate+access+permissions">CERT, FIO01-J.</a> -
+  Create files with appropriate access permissions </li>
+  <li> <a href="https://wiki.sei.cmu.edu/confluence/display/c/FIO06-C.+Create+files+with+appropriate+access+permissions">CERT, FIO06-C.</a> - Create
+  files with appropriate access permissions </li>
+  <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+</ul>
+

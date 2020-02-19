@@ -1,0 +1,27 @@
+{
+  "title": "Setting loose file permissions is security-sensitive",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cwe",
+    "cert",
+    "sans-top25-porous",
+    "owasp-a5"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-2612",
+  "sqKey": "S2612",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      732
+    ],
+    "OWASP": [
+      "A5"
+    ]
+  }
+}

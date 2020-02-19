@@ -60,6 +60,7 @@ import org.sonar.java.checks.security.EmailHotspotCheck;
 import org.sonar.java.checks.security.EmptyDatabasePasswordCheck;
 import org.sonar.java.checks.security.EncryptionAlgorithmCheck;
 import org.sonar.java.checks.security.EnvVariablesHotspotCheck;
+import org.sonar.java.checks.security.FilePermissionsCheck;
 import org.sonar.java.checks.security.HostnameVerifierImplementationCheck;
 import org.sonar.java.checks.security.IntegerToHexStringCheck;
 import org.sonar.java.checks.security.LDAPAuthenticatedConnectionCheck;
@@ -337,6 +338,7 @@ public final class CheckList {
       FieldNameMatchingTypeNameCheck.class,
       FileCreateTempFileCheck.class,
       FileHeaderCheck.class,
+      FilePermissionsCheck.class,
       FilesExistsJDK8Check.class,
       FinalClassCheck.class,
       FinalizeFieldsSetCheck.class,
