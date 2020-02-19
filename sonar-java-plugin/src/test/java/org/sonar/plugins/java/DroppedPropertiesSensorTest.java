@@ -56,6 +56,36 @@ public class DroppedPropertiesSensorTest {
   }
 
   @Test
+  public void test_two_reportPaths_property() throws Exception {
+    SensorContextTester contextTester = SensorContextTester.create(tmp.newFolder());
+    MapSettings mapSettings = new MapSettings().setProperty("sonar.jacoco.reportPaths", "/path")
+      .setProperty("sonar.jacoco.reportPath", "/path");
+    contextTester.setSettings(mapSettings);
+    List<String> analysisWarnings = new ArrayList<>();
+    DroppedPropertiesSensor sensor = new DroppedPropertiesSensor(analysisWarnings::add);
+    sensor.execute(contextTester);
+
+    assertThat(logTester.logs(LoggerLevel.WARN)).isEmpty();
+    assertThat(analysisWarnings).isEmpty();
+  }
+
+  @Test
+  public void test_two_reportPaths_property_plus_another() throws Exception {
+    SensorContextTester contextTester = SensorContextTester.create(tmp.newFolder());
+    MapSettings mapSettings = new MapSettings().setProperty("sonar.jacoco.reportPaths", "/path")
+      .setProperty("sonar.jacoco.reportPath", "/path")
+      .setProperty("sonar.jacoco.itReportPath", "/path");
+    contextTester.setSettings(mapSettings);
+    List<String> analysisWarnings = new ArrayList<>();
+    DroppedPropertiesSensor sensor = new DroppedPropertiesSensor(analysisWarnings::add);
+    sensor.execute(contextTester);
+
+    String msg = "Property 'sonar.jacoco.itReportPath' is no longer supported. Use JaCoCo's xml report and sonar-jacoco plugin.";
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(msg);
+    assertThat(analysisWarnings).containsExactly(msg);
+  }
+
+  @Test
   public void test_empty() throws Exception {
     SensorContextTester contextTester = SensorContextTester.create(tmp.newFolder());
     List<String> analysisWarnings = new ArrayList<>();
