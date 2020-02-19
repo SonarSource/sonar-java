@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -220,6 +221,23 @@ public class ExpressionUtilsTest {
         assertThat(enclosingMethod).isNull();
       } else {
         assertThat(enclosingMethod.simpleName().name()).isEqualTo(expectedName);
+      }
+    });
+  }
+
+  @Test
+  public void enclosing_method_or_initializer_block_test() {
+    File file = new File("src/test/files/model/ExpressionEnclosingMethodInitializerBlockTest.java");
+    CompilationUnitTree tree = JParserTestUtils.parse(file);
+    FindAssignment findVariable = new FindAssignment();
+    tree.accept(findVariable);
+    findVariable.assignments.forEach(a -> {
+      String expectedName = a.firstToken().trivias().get(0).comment().substring(3);
+      BlockTree enclosingBlock = ExpressionUtils.getEnclosingMethodOrInitializerBlock(a);
+      if ("null".equals(expectedName)) {
+        assertThat(enclosingBlock).isNull();
+      } else {
+        assertThat(enclosingBlock.body().size()).isEqualTo(2);
       }
     });
   }

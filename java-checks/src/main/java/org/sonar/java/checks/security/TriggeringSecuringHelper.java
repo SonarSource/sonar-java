@@ -25,6 +25,7 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -74,7 +75,7 @@ public abstract class TriggeringSecuringHelper implements Predicate<MethodInvoca
   @Override
   public boolean test(MethodInvocationTree mit) {
     if (triggeringInvocationMatcher.matches(mit)) {
-      MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(mit);
+      BlockTree enclosingMethod = ExpressionUtils.getEnclosingMethodOrInitializerBlock(mit);
       if (enclosingMethod != null) {
         Optional<Symbol> assignedSymbol = getAssignedSymbol(mit);
         if (assignedSymbol.isPresent()) {

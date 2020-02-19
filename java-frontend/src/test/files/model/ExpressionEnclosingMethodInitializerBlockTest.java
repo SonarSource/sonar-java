@@ -1,13 +1,15 @@
-class EnclosingMethod {
+class EnclosingBlock {
 
   {
-    // null
+    // block
     myField = null;
+    somethingElse();
   }
 
   static {
-    // null
+    // block
     myField = null;
+    somethingElse();
   }
 
   String myField;
@@ -18,12 +20,25 @@ class EnclosingMethod {
   };
 
   public void fun() {
-    // fun
+    // block
     myField = null;
+    somethingElse();
+  }
+
+  public void fun2() {
+    {
+      // block
+      String myField = null;
+    }
+    somethingElse();
+  }
+
+  private void somethingElse() {
+
   }
 }
 
-interface EnclosingMethodInterface {
+interface EnclosingMethodBlock {
   static final String myField;
 
   static final java.util.function.Supplier<Object> s = () -> {
@@ -32,7 +47,9 @@ interface EnclosingMethodInterface {
   };
 
   default void fun() {
-    // fun
+    // block
     I1.myField = null;
+    somethingElse();
   }
 }
+

@@ -24,6 +24,7 @@ import javax.annotation.CheckForNull;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -149,12 +150,28 @@ public final class ExpressionUtils {
   }
 
   @CheckForNull
-  public static MethodTree getEnclosingMethod(ExpressionTree expr) {
+  private static Tree findFirstMatchingAncestor(Tree expr, Tree.Kind... kinds) {
     Tree result = expr.parent();
-    while (result != null && !result.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
+    while (result != null && !result.is(kinds)) {
       result = result.parent();
     }
-    return (MethodTree) result;
+    return result;
+  }
+
+  @CheckForNull
+  public static MethodTree getEnclosingMethod(ExpressionTree expr) {
+    return (MethodTree) findFirstMatchingAncestor(expr, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+  }
+
+  @CheckForNull
+  public static BlockTree getEnclosingMethodOrInitializerBlock(Tree expr) {
+    Tree enclosingMethod = findFirstMatchingAncestor(expr, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    if (enclosingMethod != null) {
+      return ((MethodTree) enclosingMethod).block();
+    }
+
+    Tree enclosingInitializer = findFirstMatchingAncestor(expr, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER);
+    return (BlockTree) enclosingInitializer;
   }
 
   public static Optional<Symbol> getAssignedSymbol(MethodInvocationTree mit) {

@@ -16,6 +16,30 @@ import javax.xml.XMLConstants;
 
 class StaxTest {
 
+  static XMLInputFactory factoryInitializer;
+
+  {
+    factoryInitializer = XMLInputFactory.newInstance(); // Noncompliant
+  }
+
+  {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
+  }
+
+  static {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
+  }
+
+  static {
+    factoryInitializer = XMLInputFactory.newInstance(); // Noncompliant
+  }
+
+
+  static {
+    factoryInitializer = XMLInputFactory.newInstance(); // Compliant
+    factoryInitializer.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+  }
+
   XMLInputFactory no_property() {
     XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
     return factory;
