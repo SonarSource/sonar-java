@@ -39,7 +39,7 @@ public class NioFileDeleteCheck extends AbstractMethodDetection implements JavaV
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(ExpressionUtils.methodName(mit), "Use \"java.nio.Files#delete\" here for better messages on error conditions.");
+    reportIssue(ExpressionUtils.methodName(mit), "Use \"java.nio.file.Files#delete\" here for better messages on error conditions.");
   }
 
   @Override
