@@ -49,6 +49,7 @@ import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
+import org.sonar.api.utils.log.LogAndArguments;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.LoggerLevel;
@@ -116,6 +117,21 @@ public class RulesSanityTest {
       LOG.error(processExceptions(exceptions));
       fail(String.format("Should have been able to execute all the rules on all the test files. %d file(s) made at least 1 rule fail.", exceptions.size()));
     }
+
+    // only 4 errors, all related to parsing issues
+    List<LogAndArguments> errorLogs = logTester.getLogs(LoggerLevel.ERROR);
+    List<String> parsingErrorFiles = errorLogs.stream()
+      .map(LogAndArguments::getFormattedMsg)
+      .filter(log -> log.startsWith("Unable to parse source file : '"))
+      .collect(Collectors.toList());
+
+    assertThat(errorLogs)
+      .hasSize(4)
+      .allMatch(log -> log.getFormattedMsg().toLowerCase().contains("parse"));
+    assertThat(parsingErrorFiles)
+      .hasSize(2)
+      .allMatch(log -> log.contains("KeywordAsIdentifierCheck"));
+
   }
 
   private static String processExceptions(List<SanityCheckException> exceptions) {
