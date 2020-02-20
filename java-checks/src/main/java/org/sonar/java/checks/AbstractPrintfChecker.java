@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +34,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -50,18 +50,29 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   protected static final String JAVA_LANG_STRING = "java.lang.String";
   protected static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
   protected static final String ORG_APACHE_LOGGING_LOG4J_LOGGER = "org.apache.logging.log4j.Logger";
+  protected static final String ORG_SLF4J_LOGGER = "org.slf4j.Logger";
+  protected static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
 
   private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
 
   private static final String PRINTF_METHOD_NAME = "printf";
+  private static final MethodMatcher ORG_APACHE_LOGGING_LOG4J_LOGGER_PRINTF = MethodMatcher.create()
+    .typeDefinition(ORG_APACHE_LOGGING_LOG4J_LOGGER).name(PRINTF_METHOD_NAME).withAnyParameters();
   private static final String FORMAT_METHOD_NAME = "format";
   protected static final List<String> LEVELS = Arrays.asList("debug", "error", "info", "trace", "warn", "fatal");
 
   protected static final MethodMatcher MESSAGE_FORMAT = MethodMatcher.create().typeDefinition("java.text.MessageFormat").name(FORMAT_METHOD_NAME).withAnyParameters();
-  protected static final MethodMatcher JAVA_UTIL_LOGGER = MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("log")
+  protected static final MethodMatcher JAVA_UTIL_LOGGER_LOG_LEVEL_STRING = MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("log")
+    .addParameter("java.util.logging.Level")
+    .addParameter(JAVA_LANG_STRING);
+  protected static final MethodMatcher JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY = MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("log")
     .addParameter("java.util.logging.Level")
     .addParameter(JAVA_LANG_STRING)
     .addParameter(TypeCriteria.anyType());
+  protected static final MethodMatcherCollection JAVA_UTIL_LOGGER_LOG_MATCHER = MethodMatcherCollection.create(
+    JAVA_UTIL_LOGGER_LOG_LEVEL_STRING,
+    JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY);
+    
   protected static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(?<index>\\d+)(?<type>,\\w+)?(?<style>,[^}]*)?\\}");
 
 
@@ -77,20 +88,21 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
       MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withAnyParameters(),
       MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(PRINTF_METHOD_NAME).withAnyParameters(),
       MESSAGE_FORMAT,
-      JAVA_UTIL_LOGGER
+      JAVA_UTIL_LOGGER_LOG_LEVEL_STRING,
+      JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY
       ));
     return matchers;
   }
 
   private static Collection<MethodMatcher> slf4jMethods() {
     return LEVELS.stream()
-      .map(l -> MethodMatcher.create().typeDefinition("org.slf4j.Logger").name(l).withAnyParameters())
+      .map(l -> MethodMatcher.create().typeDefinition(ORG_SLF4J_LOGGER).name(l).withAnyParameters())
       .collect(Collectors.toList());
   }
 
   private static Collection<MethodMatcher> log4jMethods() {
     List<MethodMatcher> matchers = new ArrayList<>();
-    matchers.add(MethodMatcher.create().typeDefinition(ORG_APACHE_LOGGING_LOG4J_LOGGER).name(PRINTF_METHOD_NAME).withAnyParameters());
+    matchers.add(ORG_APACHE_LOGGING_LOG4J_LOGGER_PRINTF);
     matchers.add(MethodMatcher.create().typeDefinition(ORG_APACHE_LOGGING_LOG4J_LOGGER).name("log").withAnyParameters());
     matchers.addAll(LEVELS.stream()
       .map(l -> MethodMatcher.create().typeDefinition(ORG_APACHE_LOGGING_LOG4J_LOGGER).name(l).withAnyParameters())
@@ -121,9 +133,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     }
     if (formatTree.is(Tree.Kind.STRING_LITERAL)) {
       String formatString = LiteralUtils.trimQuotes(((LiteralTree) formatTree).value());
-      if (mit.symbol().owner().type().is(ORG_APACHE_LOGGING_LOG4J_LOGGER)) {
-        // Log4J supports both approaches
-        isMessageFormat = formatString.contains("{}");
+      if (isMessageFormat && isProbablyLog4jFormatterLogger(mit, formatString)) {
+        isMessageFormat = false;
       }
       if (isMessageFormat) {
         handleMessageFormat(mit, formatString, args);
@@ -131,15 +142,20 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
         handlePrintfFormat(mit, formatString, args);
       }
     } else {
-      handleOtherFormatTree(mit, formatTree);
+      handleOtherFormatTree(mit, formatTree, args);
     }
+  }
+
+  private static boolean isProbablyLog4jFormatterLogger(MethodInvocationTree mit, String formatString) {
+    return mit.symbol().owner().type().is(ORG_APACHE_LOGGING_LOG4J_LOGGER) &&
+          (!formatString.contains("{}") && formatString.contains("%"));
   }
 
   protected abstract void handlePrintfFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args);
 
   protected abstract void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args);
 
-  protected abstract void handleOtherFormatTree(MethodInvocationTree mit, ExpressionTree formatTree);
+  protected abstract void handleOtherFormatTree(MethodInvocationTree mit, ExpressionTree formatTree, List<ExpressionTree> args);
 
   protected static boolean isNewArrayWithInitializers(ExpressionTree expression) {
     return expression.is(Tree.Kind.NEW_ARRAY) && ((NewArrayTree) expression).openBraceToken() != null;
@@ -228,19 +244,45 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     return params.isEmpty() && group != null && group.length() > 0 && group.charAt(0) == '<';
   }
 
-  protected static List<ExpressionTree> transposeArrayIntoList(List<ExpressionTree> args) {
+  @Nullable
+  protected static List<ExpressionTree> transposeArgumentArrayAndRemoveThrowable(MethodInvocationTree mit, List<ExpressionTree> args) {
+    List<ExpressionTree> transposedArgs = args;
     if (args.size() == 1) {
       ExpressionTree firstArg = args.get(0);
       if (firstArg.symbolType().isArray()) {
         if (isNewArrayWithInitializers(firstArg)) {
-          return ((NewArrayTree) firstArg).initializers();
+          transposedArgs = ((NewArrayTree) firstArg).initializers();
         } else {
           // size is unknown
-          return Collections.emptyList();
+          return null;
         }
       }
     }
-    return args;
+    if (lastArgumentShouldBeIgnored(mit, args, transposedArgs)) {
+      transposedArgs = transposedArgs.subList(0, transposedArgs.size() - 1);
+    }
+    return transposedArgs;
+  }
+
+  private static boolean lastArgumentShouldBeIgnored(MethodInvocationTree mit, List<ExpressionTree> args, List<ExpressionTree> transposedArgs) {
+    if (mit.symbol().owner().type().is(JAVA_UTIL_LOGGING_LOGGER)) {
+      return args.size() == 1 && isLastArgumentThrowable(args);
+    }
+    // org.apache.logging.log4j.Logger and org.slf4j.Logger
+    return isLastArgumentThrowable(transposedArgs);
+  }
+
+  protected static boolean isLastArgumentThrowable(List<ExpressionTree> arguments) {
+    if (!arguments.isEmpty()) {
+      ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
+      return lastArgument.symbolType().isSubtypeOf(JAVA_LANG_THROWABLE);
+    }
+    return false;
+  }
+
+  protected static boolean isLoggingMethod(MethodInvocationTree mit) {
+    String methodName = mit.symbol().name();
+    return "log".equals(methodName) || LEVELS.contains(methodName);
   }
 
 }

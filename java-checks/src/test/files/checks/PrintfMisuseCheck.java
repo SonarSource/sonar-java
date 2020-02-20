@@ -125,13 +125,13 @@ class A {
     MessageFormat.format("Result {0}!", myObject.toString()); // Noncompliant {{No need to call "toString()" method as formatting and string conversion is done by the Formatter.}}
     MessageFormat.format("Result {0}!", myObject.hashCode()); // Compliant
     MessageFormat.format("Result yeah!", 14); // Noncompliant {{String contains no format specifiers.}}
-    MessageFormat.format("Result {1}!", 14); // Noncompliant {{Missing argument for the 2nd parameter.}}
-    MessageFormat.format("Result {0} and {1}!", 14); // Noncompliant {{Missing argument for the 2nd parameter.}}
+    MessageFormat.format("Result {1}!", 14); // Compliant, detected by S2275 "Not enough arguments."
+    MessageFormat.format("Result {0} and {1}!", 14); // Compliant, detected by S2275 "Not enough arguments."
     MessageFormat.format("Result {0} and {0}!", 14, 42); // Noncompliant {{2nd argument is not used.}}
     MessageFormat.format("Result {0, number, integer} and {1, number, integer}!", 14, 42); // compliant
     MessageFormat.format("Result {0} and {1}!", 14, 42, 128); // Noncompliant {{3rd argument is not used.}}
     MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07, "$"}); // Compliant
-    MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07}); // Noncompliant {{Missing argument for the 2nd parameter.}}
+    MessageFormat.format("{0,number,#.#}{1}", new Object[] {0.07});  // Compliant, detected by S2275 "Not enough arguments."
     MessageFormat.format("{0,number,#.#}{1}", objs); // Compliant - skipped as the array is not initialized in the method invocation
     MessageFormat.format("{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
     MessageFormat.format("value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
@@ -147,10 +147,10 @@ class A {
     logger.log(java.util.logging.Level.SEVERE, "Result {0}!", myObject.hashCode()); // Compliant
     logger.log(java.util.logging.Level.SEVERE, "Result yeah!", 14); // Noncompliant {{String contains no format specifiers.}}
     logger.log(java.util.logging.Level.SEVERE, "Result yeah!", new Exception()); // compliant, throwable parameter
-    logger.log(java.util.logging.Level.SEVERE, "Result {1}!", 14); // Noncompliant {{Missing argument for the 2nd parameter.}}
-    logger.log(java.util.logging.Level.SEVERE, "Result {0} and {1}!", 14); // Noncompliant {{Missing argument for the 2nd parameter.}}
+    logger.log(java.util.logging.Level.SEVERE, "Result {1}!", 14);  // Compliant, detected by S2275 "Not enough arguments."
+    logger.log(java.util.logging.Level.SEVERE, "Result {0} and {1}!", 14);  // Compliant, detected by S2275 "Not enough arguments."
     logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[] {0.07, "$"}); // Compliant
-    logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[] {0.07}); // Noncompliant {{Missing argument for the 2nd parameter.}}
+    logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[] {0.07});  // Compliant, detected by S2275 "Not enough arguments."
     logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", objs); // Compliant - skipped as the array is not initialized in the method invocation
     logger.log(java.util.logging.Level.SEVERE, "{0,number,#.#}{1}", new Object[42]); // Compliant - Not considered
     logger.log(java.util.logging.Level.SEVERE, "value=\"'{'{0}'}'{1}\"", new Object[] {"value 1", "value 2"});
@@ -162,7 +162,7 @@ class A {
     org.slf4j.Logger slf4jLog;
     org.slf4j.Marker marker;
 
-    slf4jLog.debug(marker, "message {}"); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.debug(marker, "message {}");  // Compliant, detected by S2275 "Not enough arguments."
     slf4jLog.debug(marker, "message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.debug(marker, "message {}", 1);
     slf4jLog.debug(marker, "message {} - {}", 1, 2);
@@ -172,10 +172,10 @@ class A {
     slf4jLog.debug(marker, "message {} {}", new Object[]{1, 2, 3}); // Noncompliant
     slf4jLog.debug(marker, "message {} {} {}", new Object[]{1, 2, 3}); // compliant
     slf4jLog.debug(marker, "message ", new Exception());
-    slf4jLog.debug(marker, "message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.debug(marker, "message {}", new Exception());  // Compliant, detected by S2275 "Not enough arguments."
     slf4jLog.debug(marker, "message {}", new Exception().toString());
 
-    slf4jLog.debug("message {}"); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.debug("message {}");  // Compliant, detected by S2275 "Not enough arguments."
     slf4jLog.debug("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.debug("message {}", 1);
     slf4jLog.debug("message {} - {}", 1, 2);
@@ -185,18 +185,20 @@ class A {
     slf4jLog.debug("message {} {}", new Object[]{1, 2, 3}); // Noncompliant
     slf4jLog.debug("message {} {} {}", new Object[]{1, 2, 3}); // compliant
     slf4jLog.debug("message ", new Exception());
-    slf4jLog.debug("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.debug("message {}", new Exception()); // Compliant, detected by S2275 "Not enough arguments."
 
-    slf4jLog.error("message {}"); // Noncompliant {{Missing argument for the first parameter.}}
-    slf4jLog.error("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.error("message {}");  // Compliant, detected by S2275 "Not enough arguments."
+    slf4jLog.error("message {}", new Exception());  // Compliant, detected by S2275 "Not enough arguments."
+    slf4jLog.error("message {}", new Exception().toString());
     slf4jLog.error("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.error("message {}", 1);
+    slf4jLog.error("message {}", 1, 2); // Noncompliant {{2nd argument is not used.}}
     slf4jLog.error("message ", new Exception());
-    slf4jLog.error("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
-    slf4jLog.error("message {}", new Exception().toString());
-    slf4jLog.error("message {} {}", 1); // Noncompliant {{Missing argument for the 2nd parameter.}}
-    slf4jLog.error("message {} {}", 1, new Exception()); // Noncompliant {{Missing argument for the 2nd parameter.}}
+    slf4jLog.error("message {} {}", 1); // Compliant, detected by S2275 "Not enough arguments."
+    slf4jLog.error("message {} {}", 1, new Exception()); // Compliant, detected by S2275 "Not enough arguments."
     slf4jLog.error("message {} {}", 1, new Exception().toString());
+    slf4jLog.error("message {} {}", 1, 2, 3); // Noncompliant {{3rd argument is not used.}}
+    slf4jLog.error("message {} {}", 1, 2, new Exception().toString()); // Noncompliant {{3rd argument is not used.}}
 
     try {
     } catch (Exception e) {
@@ -207,20 +209,20 @@ class A {
     slf4jLog.info("message {}", 1, 2);// Noncompliant {{2nd argument is not used.}}
     slf4jLog.info("message {} {} {}", 1, 2, 3);
     slf4jLog.info("message ", new Exception());
-    slf4jLog.info("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.info("message {}", new Exception()); // Compliant, detected by S2275 "Not enough arguments."
 
     slf4jLog.trace("message {} {}", 1, 2, 3); // Noncompliant
     slf4jLog.trace("message {} {}", new Object[]{1, 2, 3}); // Noncompliant
     slf4jLog.trace("message {} {} {}", new Object[]{1, 2, 3}); // compliant
     slf4jLog.trace("message ", new Exception());
-    slf4jLog.trace("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.trace("message {}", new Exception()); // Compliant, detected by S2275 "Not enough arguments."
 
-    slf4jLog.warn("message {}"); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.warn("message {}"); // Compliant, detected by S2275 "Not enough arguments."
     slf4jLog.warn("message ", 1); // Noncompliant {{String contains no format specifiers.}}
     slf4jLog.warn("message {}", 1);
     slf4jLog.warn("message");
     slf4jLog.warn("message ", new Exception());
-    slf4jLog.warn("message {}", new Exception()); // Noncompliant {{Missing argument for the first parameter.}}
+    slf4jLog.warn("message {}", new Exception()); // Compliant, detected by S2275 "Not enough arguments."
 
     java.util.logging.Logger logger2 = java.util.logging.Logger.getLogger("som.foo", "som.foo.resources.i18n.LogMessages");
     logger2.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
@@ -232,17 +234,38 @@ class A {
     java.util.logging.Logger logger4 = getLog();
     logger4.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404); // Noncompliant
     this.loggerField.log(java.util.logging.Level.WARNING, "som.foo.errorcode", 404);
-    String additionalMessage = "...";
-    logger4.log(java.util.logging.Level.WARNING, "message " + additionalMessage, new Exception());  // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
-    logger4.log(java.util.logging.Level.WARNING, "message " + "...", new Exception());
+    String param1 = "p1";
+    String param2 = "p2";
+    String param3 = "p3";
+    java.util.logging.Level level = java.util.logging.Level.WARNING;
+    logger4.log(level, () -> "message 01 " + param);
+    logger4.log(level, new Exception(), () -> "message 02 " + param);
+    logger4.log(level, "message ");
+    logger4.log(level, "message ", new Exception());
+    logger4.log(level, "message {0}");  // Compliant, detected by S2275 "Not enough arguments."
+    logger4.log(level, "message {1}");  // Compliant, detected by S2275 "Not enough arguments."
+    logger4.log(level, "message {0}", param1);
+    logger4.log(level, "message {1}", param1);  // Compliant, detected by S2275 "Not enough arguments."
+    logger4.log(level, "message {0}", new Exception());  // Compliant, detected by S2275 "Not enough arguments."
+    logger4.log(level, "message {0}", new Object[] {param1});
+    logger4.log(level, "message {0}", new Object[] {new Exception()}); // Compliant, exceptions are not removed from argument list
+    logger4.log(level, "message {1}", new Object[] {param1});  // Compliant, detected by S2275 "Not enough arguments."
+    logger4.log(level, "message {0}", new Object[] {param1, new Exception()}); // Noncompliant {{2nd argument is not used.}}
+    logger4.log(level, "message {0} {1}", new Object[] {param1, param2});
+    logger4.log(level, "message {0} {1}", new Object[] {param1, param2, param3}); // Noncompliant {{3rd argument is not used.}}
+    logger4.log(level, "message " + param1); // Noncompliant {{Format specifiers or lambda should be used instead of string concatenation.}}
+    logger4.log(level, "message " + "...");
+    logger4.log(level, "message " + param1, new Exception()); // Noncompliant {{Lambda should be used to differ string concatenation.}}
 
     org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
+    org.apache.logging.log4j.Logger formatterLogger = LogManager.getFormatterLogger();
+
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message");  // Compliant
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message", 1);  // Noncompliant {{String contains no format specifiers.}}
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", 1);  // Compliant
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", 1, "hello");  // Noncompliant
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1);  // Compliant
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1, "hello");  // Noncompliant
+    formatterLogger.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1);  // Compliant
+    formatterLogger.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1, "hello");  // Noncompliant
 
     log4j.debug("message"); // Compliant
     log4j.debug("message", 1); // Noncompliant
@@ -257,13 +280,39 @@ class A {
 
     log4j.debug(() -> "hello"); // Compliant
     log4j.debug("message {}", 1); // Compliant
+    log4j.debug("message %s", 1); // false-negative, the rule assumes it's a "FormatterLogger"
     log4j.debug("message {}", () -> 1); // Compliant
-    log4j.debug("message %s message %d", "hello", 42); // Compliant
-    log4j.debug("message %s message", "hello", 42); // Noncompliant {{2nd argument is not used.}}
+    formatterLogger.debug("message %s message %d", "hello", 42); // Compliant
+    formatterLogger.debug("message %s message", "hello", 42); // Noncompliant {{2nd argument is not used.}}
+    formatterLogger.debug("message %s {} message", "hello", 42); // Noncompliant {{2nd argument is not used.}}
+    formatterLogger.debug("message %s {} %s message", "hello", 42); // Noncompliant - false-positive, the rule doesn't know it's a "FormatterLogger"
+    formatterLogger.printf(org.apache.logging.log4j.Level.DEBUG, "message %s {} %s message", "hello", 42);
+    formatterLogger.debug("message %s {} {} message", "hello", 42); // false-negative, the rule doesn't know it's a "FormatterLogger"
+    formatterLogger.printf(org.apache.logging.log4j.Level.DEBUG, "message %s {} {} message", "hello", 42); // Noncompliant {{2nd argument is not used.}}
 
     log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message"); // Noncompliant {{String contains no format specifiers.}} 
     log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s %d", "hello", 42); // Compliant - Java formatters
     log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s", "hello", 42); // Noncompliant {{2nd argument is not used.}}
+    formatterLogger.printf(org.apache.logging.log4j.Level.DEBUG, "message %s", "hello", 42); // Noncompliant {{2nd argument is not used.}}
+
+    log4j.error("message {}"); // Compliant, detected by S2275 "Not enough arguments."
+    log4j.error("message {}", new Exception()); // Compliant, detected by S2275 "Not enough arguments."
+    log4j.error("message ", 1); // Noncompliant {{String contains no format specifiers.}}
+    log4j.error("message {}", 1);
+    log4j.error("message {}", 1, 2); // Noncompliant {{2nd argument is not used.}}
+    log4j.error("message ", new Exception());
+    log4j.error("message {}", new Exception()); // Compliant, detected by S2275 "Not enough arguments."
+    log4j.error("message {}", new Exception().toString());
+    log4j.error("message {} {}", 1); // Compliant, detected by S2275 "Not enough arguments."
+    log4j.error("message {} {}", 1, new Exception());  // Compliant, detected by S2275 "Not enough arguments."
+    log4j.error("message {} {}", 1, new Exception().toString());
+    log4j.error("message {} {}", 1, 2, 3); // Noncompliant {{3rd argument is not used.}}
+    log4j.error("message {} {}", 1, 2, new Exception().toString()); // Noncompliant {{3rd argument is not used.}}
+    log4j.error("message ", () -> 1); // Noncompliant {{String contains no format specifiers.}}
+    log4j.error("message {}", () -> 1);
+    log4j.error("message {} {}", () -> 1); // Compliant, detected by S2275 "Not enough arguments."
+    log4j.error(() -> "message " + param1);
+    log4j.error(() -> "message " + param1, new Exception());
   }
 
   private java.util.logging.Logger getLog() {

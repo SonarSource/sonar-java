@@ -54,7 +54,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       return;
     }
     if (!isMessageFormat) {
-      isMessageFormat = JAVA_UTIL_LOGGER.matches(mit);
+      isMessageFormat = JAVA_UTIL_LOGGER_LOG_MATCHER.anyMatch(mit);
       if (isMessageFormat && hasResourceBundle(mit)) {
         return;
       }
@@ -107,11 +107,6 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     }
   }
 
-  private static boolean isLoggingMethod(MethodInvocationTree mit) {
-    String methodName = mit.symbol().name();
-    return "log".equals(methodName) || LEVELS.contains(methodName);
-  }
-
   private void verifyParameters(MethodInvocationTree mit, List<ExpressionTree> args, List<String> params) {
     int index = 0;
     List<ExpressionTree> unusedArgs = new ArrayList<>(args);
@@ -146,19 +141,16 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   protected void handleMessageFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args) {
     String newFormatString = cleanupDoubleQuote(formatString);
     Set<Integer> indexes = getMessageFormatIndexes(newFormatString, mit);
-    List<ExpressionTree> newArgs = transposeArrayIntoList(args);
-    if (newArgs.size() < args.size()) {
+    List<ExpressionTree> transposedArgs = transposeArgumentArrayAndRemoveThrowable(mit, args);
+    if (transposedArgs == null) {
       return;
     }
-    if (isLastArgumentThrowable(newArgs)) {
-      newArgs = newArgs.subList(0, newArgs.size() - 1);
-    }
-    if (indexes.isEmpty() && !newArgs.isEmpty()) {
+    if (indexes.isEmpty() && !transposedArgs.isEmpty()) {
       reportIssue(mit, "String contains no format specifiers.");
       return;
     }
-    checkToStringInvocation(newArgs);
-    verifyParameters(mit, newArgs, indexes);
+    checkToStringInvocation(transposedArgs);
+    verifyParameters(mit, transposedArgs, indexes);
   }
 
   private void checkToStringInvocation(List<ExpressionTree> args) {
@@ -172,15 +164,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
   private static boolean isMethodOfThrowable(MethodInvocationTree argument) {
     Symbol owner = argument.symbol().owner();
-    return owner != null && owner.type().isSubtypeOf("java.lang.Throwable");
-  }
-
-  private static boolean isLastArgumentThrowable(List<ExpressionTree> arguments) {
-    if (!arguments.isEmpty()) {
-      ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
-      return lastArgument.symbolType().isSubtypeOf("java.lang.Throwable");
-    }
-    return false;
+    return owner != null && owner.type().isSubtypeOf(JAVA_LANG_THROWABLE);
   }
 
   private static String getToStringMessage(ExpressionTree arg) {
@@ -209,7 +193,6 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     List<ExpressionTree> unusedArgs = new ArrayList<>(args);
     for (int index : indexes) {
       if (index >= args.size()) {
-        reportIssue(mit, "Missing argument for the " + postFixedIndex(index) + " parameter.");
         return;
       }
       unusedArgs.remove(args.get(index));
@@ -253,9 +236,17 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   @Override
-  protected void handleOtherFormatTree(MethodInvocationTree mit, ExpressionTree formatTree) {
+  protected void handleOtherFormatTree(MethodInvocationTree mit, ExpressionTree formatTree, List<ExpressionTree> args) {
     if (isIncorrectConcatenation(formatTree)) {
-      reportIssue(mit, "Format specifiers should be used instead of string concatenation.");
+      if (JAVA_UTIL_LOGGER_LOG_MATCHER.anyMatch(mit)) {
+        if (isLastArgumentThrowable(args)) {
+          reportIssue(mit, "Lambda should be used to differ string concatenation.");
+        } else {
+          reportIssue(mit, "Format specifiers or lambda should be used instead of string concatenation.");
+        }
+      } else {
+        reportIssue(mit, "Format specifiers should be used instead of string concatenation.");
+      }
     }
   }
 

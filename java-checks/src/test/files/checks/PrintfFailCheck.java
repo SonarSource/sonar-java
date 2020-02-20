@@ -117,6 +117,8 @@ class A {
     MessageFormat.format("value=\"{0}'{'{1}'}'\"", new Object[] {"value 1", "value 2"});
 
     java.util.logging.Logger logger;
+    logger.log(java.util.logging.Level.SEVERE, "Result {0}"); // Noncompliant {{Not enough arguments.}}
+    logger.log(java.util.logging.Level.SEVERE, "Result {1}"); // Noncompliant {{Not enough arguments.}}
     logger.log(java.util.logging.Level.SEVERE, "{0,number,$'#',##}", value); // Compliant
     logger.log(java.util.logging.Level.SEVERE, "Result ''{0}''.", 14); // Compliant
     logger.log(java.util.logging.Level.SEVERE, "Result '{0}'", 14);
@@ -127,6 +129,9 @@ class A {
     logger.log(java.util.logging.Level.SEVERE, "Result yeah!", 14);
     logger.log(java.util.logging.Level.SEVERE, "Result yeah!", new Exception()); // compliant, throwable parameter
     logger.log(java.util.logging.Level.SEVERE, "Result {1}!", 14); // Noncompliant {{Not enough arguments.}}
+    logger.log(java.util.logging.Level.SEVERE, "Result {0}", new Exception()); // Noncompliant {{Not enough arguments.}}
+    logger.log(level, "message {0}", new Object[] {new Exception()}); // Compliant, exceptions are not removed from argument list
+    logger.log(java.util.logging.Level.SEVERE, "Result {1}", new String[]{14}); // Noncompliant {{Not enough arguments.}}
     logger.log(java.util.logging.Level.SEVERE, "Result {0} and {1}!", 14); // Noncompliant {{Not enough arguments.}}
     logger.log(java.util.logging.Level.SEVERE, "Result {0} and {1}!", new String[]{14,18}); // compliant
     logger.log(java.util.logging.Level.SEVERE, "Result {0} and {1}!", new String[]{14,18, 12}); // compliant
@@ -151,7 +156,8 @@ class A {
     slf4jLog.debug(marker, "message {} {} {}", new Object[]{1, 2, 3});
     slf4jLog.debug(marker, "message {} {} {}", new Object[]{1, 2}); // Noncompliant {{Not enough arguments.}}
     slf4jLog.debug(marker, "message ", new Exception());
-    slf4jLog.debug(marker, "message {}", new Exception());
+    slf4jLog.debug(marker, "message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.debug(marker, "message {}", new Exception().toString());
 
 
     slf4jLog.debug("message {}"); // Noncompliant {{Not enough arguments.}}
@@ -164,23 +170,31 @@ class A {
     slf4jLog.debug("message {} {}", new Object[]{1, 2, 3});
     slf4jLog.debug("message {} {} {}", new Object[]{1, 2, 3});
     slf4jLog.debug("message ", new Exception());
-    slf4jLog.debug("message {}", new Exception());
+    slf4jLog.debug("message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.debug("message {}", new Exception().toString());
 
     slf4jLog.error("message {}"); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.error("message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.error("message {}", new Exception().toString());
     slf4jLog.error("message ", 1);
     slf4jLog.error("message {}", 1);
+    slf4jLog.error("message {} {}", 1); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.error("message {} {}", 1, new Exception()); // Noncompliant {{Not enough arguments.}}
+    slf4jLog.error("message {} {}", 1, new Exception().toString());
     slf4jLog.info("message {} - {}", 1, 2);
     slf4jLog.info("message {}", 1, 2);
     slf4jLog.info("message {} {} {}", 1, 2, 3);
+    slf4jLog.info("message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
     slf4jLog.trace("message {} {}", 1, 2, 3);
     slf4jLog.trace("message {} {}", new Object[]{1, 2, 3});
     slf4jLog.trace("message {} {} {}", new Object[]{1, 2, 3});
     slf4jLog.trace("message ", new Exception());
-    slf4jLog.trace("message {}", new Exception());
+    slf4jLog.trace("message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
     slf4jLog.warn("message {}"); // Noncompliant {{Not enough arguments.}}
     slf4jLog.warn("message ", 1);
     slf4jLog.warn("message {}", 1);
     slf4jLog.warn("Output on the error channel detected: this is probably due to a problem on pylint's side.");
+    slf4jLog.warn("message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
     String fileKey;
     slf4jLog.warn("The resource for '{}' is not found, drilling down to the details of this test won't be possible", fileKey);
     slf4jLog.warn("The resource for is not found, drilling down to the details of this test won't be possible");
@@ -188,14 +202,27 @@ class A {
     org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message");  // Compliant
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}");  // Noncompliant {{Not enough arguments.}}
+    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", new Exception());  // Noncompliant {{Not enough arguments.}}
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", 1);  // Compliant
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {} {}", 1);  // Noncompliant
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1);  // Compliant
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message %d %s", 1, "hello");  // Compliant
 
     log4j.debug("message"); // Compliant
-    log4j.debug("message {} {}", 1); // Noncompliant
-    log4j.error("message {} {}", 1); // Noncompliant
+    log4j.debug("message {} {}", 1); // Noncompliant {{Not enough arguments.}}
+    log4j.error("message {}", new Exception()); // Noncompliant {{Not enough arguments.}}
+    log4j.error("message {} {}", 1, new Exception()); // Noncompliant {{Not enough arguments.}}
+    log4j.error("message {} {}", 1, new Exception().toString());
+    log4j.error("message {} {}", 1, 2, 3); // Compliant, detected by S3457 "3rd argument is not used."
+    log4j.error("message {} {}", 1, 2, new Exception().toString()); // Compliant, detected by S3457 "3rd argument is not used."
+    log4j.error("message ", () -> 1); // Compliant, detected by S3457 "String contains no format specifiers."
+    log4j.error("message {}", () -> 1);
+    log4j.error("message {} {}", () -> 1); // Noncompliant {{Not enough arguments.}}
+    log4j.error(() -> "message " + param1);
+    log4j.error(() -> "message " + param1, new Exception());
+
+
+
     log4j.fatal("message {} {}", 1); // Noncompliant
     log4j.info("message {} {}", 1); // Noncompliant
     log4j.trace("message {} {}", 1); // Noncompliant
