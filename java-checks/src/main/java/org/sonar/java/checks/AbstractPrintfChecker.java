@@ -148,7 +148,8 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
   private static boolean isProbablyLog4jFormatterLogger(MethodInvocationTree mit, String formatString) {
     return mit.symbol().owner().type().is(ORG_APACHE_LOGGING_LOG4J_LOGGER) &&
-          (!formatString.contains("{}") && formatString.contains("%"));
+      !formatString.contains("{}") &&
+      formatString.contains("%");
   }
 
   protected abstract void handlePrintfFormat(MethodInvocationTree mit, String formatString, List<ExpressionTree> args);
