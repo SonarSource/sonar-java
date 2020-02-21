@@ -19,18 +19,20 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Random;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class PrintfMisuseCheckTest {
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-  // used inside the tested file
-  public static final String COMPILE_TIME_CONSTANT = "message";
-  public static final String NON_COMPILE_TIME_CONSTANT = "" + new Random().nextInt();
+public class PrintfMisuseCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PrintfMisuseCheck.java", new PrintfMisuseCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/PrintfMisuseCheck.java"), new PrintfMisuseCheck());
+  }
+
+  @Test
+  public void test_lambda_in_unknown_method_invocation() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/PrintfMisuseCheckLambda.java", new PrintfMisuseCheck());
   }
 }
