@@ -11,9 +11,12 @@ import java.util.function.DoublePredicate;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
+import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SpecializedFunctionalInterfacesCheck {
 
@@ -55,7 +58,7 @@ public class SpecializedFunctionalInterfacesCheck {
       BiConsumer<A, A> compl1 = (a, aa) -> {}; // Compliant
       Function<A, Integer> a15 = (aaa) -> 1; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ToIntFunction<A>'}}
       Function<A, Long> a16 = (aaa) -> new Long(1); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ToLongFunction<A>'}}
-      Function<A, Double> a17 = new Function<A, Double>() { // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ToDoubleFunction<A>'}}
+      Function<A, Double> a17 = new Function<A, Double>() { // Compliant, a17 is referenced bellow
         @Override
         public Double apply(A aaa) {
           return 1.0;
@@ -313,4 +316,55 @@ public class SpecializedFunctionalInterfacesCheck {
     }
   }
 
+  static int noIssueWhenUsedAsMethodReference(Stream<Object> objectStream, Object object) {
+    // The usage of "keyMapperFunction1" it does not allow to replace its type with ToIntFunction<Object>,
+    // it would not be assignable to "keyMapperFunction2"
+    Function<Object, Integer> keyMapperFunction1 = Object::hashCode;
+
+    // The usage of "keyMapperFunction2" it does not allow to replace its type with ToIntFunction<Object>,
+    // it would not be compatible with the bellow "Collectors.toMap"
+    Function<Object, Integer> keyMapperFunction2 = keyMapperFunction1;
+    objectStream.collect(Collectors.toMap(keyMapperFunction2, Function.identity()));
+
+    // "keyMapperFunction3" is not used as a reference, so it's OK to replace it with ToIntFunction<Object>
+    Function<Object, Integer> keyMapperFunction3 = Object::hashCode;  // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ToIntFunction<Object>'}}
+    int value = keyMapperFunction3.apply(object);
+    value = value + keyMapperFunction3.apply(value) + Math.abs(keyMapperFunction3.apply(value));
+    value += keyMapperFunction3.apply(value);
+    if (value > 0) {
+      return keyMapperFunction3.apply(value);
+    }
+
+    BiConsumer<String, Integer> m1_1 = (a, b) -> System.setProperty(a, String.valueOf(b)); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'ObjIntConsumer<String>'}}
+    m1_1.accept("", 2);
+    m1_1.accept("", 3);
+    BiConsumer<String, Integer> m1_2 = (a, b) -> System.setProperty(a, String.valueOf(b));
+    m1_2.accept("", 2);
+    foo(m1_2);
+    Consumer<Integer> m2_1 = (a) -> System.setProperty("x", String.valueOf(a)); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntConsumer'}}
+    m2_1.accept(2);
+    Consumer<Integer> m2_2 = (a) -> System.setProperty("x", String.valueOf(a));
+    foo(m2_2);
+    Supplier<Integer> m3_1 = () -> 42; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntSupplier'}}
+    foo(m3_1.get());
+    Supplier<Integer> m3_2 = () -> 42;
+    foo(m3_2);
+    Function<Integer, Integer> m4_1 = (a) -> a + 1; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntUnaryOperator'}}
+    int x4_1 = m4_1.apply(3) + 2;
+    Function<Integer, Integer> m4_2 = (a) -> a + 1; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'UnaryOperator<Integer>'}}
+    Stream.of(1, 2, 3).map(m4_2).forEach(x -> foo(x));
+    Function<String, Boolean> m5_1 = (a) -> "true".equals(a); // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'Predicate<String>'}}
+    foo(m5_1.apply("") ? 1 : 2);
+    Function<String, Boolean> m5_2 = (a) -> "true".equals(a);
+    foo(m5_2);
+    Function<Integer, Long> m6_1 = Long::valueOf; // Noncompliant {{Refactor this code to use the more specialised Functional Interface 'IntToLongFunction'}}
+    LongSupplier s = () -> m6_1.apply(12);
+    Function<Integer, Long> m6_2 = Long::valueOf;
+    foo(m6_2);
+    return m4_1.apply(7);
+  }
+
+  static void foo(Object object) {
+
+  }
 }
