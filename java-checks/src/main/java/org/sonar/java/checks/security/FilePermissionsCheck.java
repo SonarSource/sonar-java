@@ -22,14 +22,17 @@ package org.sonar.java.checks.security;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2612")
@@ -49,9 +52,9 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
     .withAnyParameters();
 
   // 'other' group not being 0
-  private static final Pattern CHMOD_OCTAL_PATTERN = Pattern.compile("[0-7]{2}[1-7]");
+  private static final Pattern CHMOD_OCTAL_PATTERN = Pattern.compile("(^|\\s)[0-7]{2,3}[1-7](\\s|$)");
   // simplification of all the possible combinations of adding perms to 'other'
-  private static final Pattern SIMPLIFIED_CHMOD_OTHER_PATTERN = Pattern.compile("o[+=](r?w?x?)+");
+  private static final Pattern SIMPLIFIED_CHMOD_OTHER_PATTERN = Pattern.compile("(^|\\s|,)([ug]*+[ao][ugao]*+)?[+=][sStT]*+[rwxX][rwxXsStT]*+(\\s|,|$)");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -61,14 +64,14 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
-      check((IdentifierTree) tree);
+      checkIdentifier((IdentifierTree) tree);
     } else {
-      check((MethodInvocationTree) tree);
+      checkMethodInvocation((MethodInvocationTree) tree);
     }
   }
 
-  private void check(IdentifierTree identifier) {
-    if (isPosixPermission(identifier) && !isBeingRemoved(identifier)) {
+  private void checkIdentifier(IdentifierTree identifier) {
+    if (isPosixPermission(identifier) && isBeingAdded(identifier)) {
       reportIssue(identifier, ISSUE_MESSAGE);
     }
   }
@@ -78,20 +81,23 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
       && identifier.symbolType().isSubtypeOf("java.nio.file.attribute.PosixFilePermission");
   }
 
-  private static boolean isBeingRemoved(IdentifierTree identifier) {
+  private static boolean isBeingAdded(IdentifierTree identifier) {
     Tree parent = identifier.parent();
     while (parent != null) {
-      // Whatever the owner of "remove", we assume the property is dropped if calling a method "remove"
-      // (implemented by all classes extending Collection)
-      if (parent.is(Tree.Kind.METHOD_INVOCATION) && ((MethodInvocationTree) parent).symbol().name().contains("remove")) {
-        return true;
+      // Whatever the owner of "add" (or "addAll") we assume the property is added to be included
+      // ("add" and "addAll" are implemented by all classes extending "java.util.Collection")
+      if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
+        String methodName = ((MethodInvocationTree) parent).symbol().name();
+        if (methodName.contains("add")) {
+          return true;
+        }
       }
       parent = parent.parent();
     }
     return false;
   }
 
-  private void check(MethodInvocationTree mit) {
+  private void checkMethodInvocation(MethodInvocationTree mit) {
     if (POSIX_FILE_PERMISSIONS_FROM_STRING.matches(mit)) {
       ExpressionTree arg0 = mit.arguments().get(0);
       if (sensitivePermissionsAsString(arg0)) {
@@ -99,8 +105,12 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
       }
     } else if (RUNTIME_EXEC.matches(mit)) {
       ExpressionTree arg0 = mit.arguments().get(0);
-      if (arg0.symbolType().is(JAVA_LANG_STRING) && sensitiveChmodCommand(arg0)) {
-        reportIssue(arg0, ISSUE_MESSAGE);
+      Type arg0Type = arg0.symbolType();
+      if (arg0Type.is(JAVA_LANG_STRING)) {
+        checkExecSingleStringArgument(arg0);
+      } else if (arg0Type.is(JAVA_LANG_STRING + "[]") && arg0.is(Tree.Kind.NEW_ARRAY)) {
+        // only consider explicit array declaration
+        checkExecStringArrayArgument((NewArrayTree) arg0);
       }
     }
   }
@@ -112,10 +122,43 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
       .isPresent();
   }
 
-  private static boolean sensitiveChmodCommand(ExpressionTree arg0) {
-    return arg0.asConstant(String.class)
-      .filter(cmd -> cmd.trim().startsWith("chmod"))
-      .filter(cmd -> CHMOD_OCTAL_PATTERN.matcher(cmd).find() || SIMPLIFIED_CHMOD_OTHER_PATTERN.matcher(cmd).find())
+  private void checkExecSingleStringArgument(ExpressionTree arg0) {
+    if (chmodCommand(arg0).filter(FilePermissionsCheck::isSensisitiveChmodMode).isPresent()) {
+      reportIssue(arg0, ISSUE_MESSAGE);
+    }
+  }
+
+  private void checkExecStringArrayArgument(NewArrayTree newArrayTree) {
+    List<ExpressionTree> initializers = newArrayTree.initializers();
+    if (initializers.size() < 3) {
+      // malformed
+      return;
+    }
+    if (!chmodCommand(initializers.get(0)).isPresent()) {
+      return;
+    }
+    ExpressionTree modeArg = initializers.get(1);
+    if (initializers.size() > 3 && isRecursiveArgument(modeArg)) {
+      // mode is going to be next argument
+      modeArg = initializers.get(2);
+    }
+    if (modeArg.asConstant(String.class).filter(FilePermissionsCheck::isSensisitiveChmodMode).isPresent()) {
+      reportIssue(modeArg, ISSUE_MESSAGE);
+    }
+  }
+
+  private static boolean isRecursiveArgument(ExpressionTree arg) {
+    return arg.asConstant(String.class)
+      .map(String::trim)
+      .filter(cmd -> "--recursive".equals(cmd) || "-R".equals(cmd))
       .isPresent();
+  }
+
+  private static Optional<String> chmodCommand(ExpressionTree expr) {
+    return expr.asConstant(String.class).filter(cmd -> cmd.contains("chmod"));
+  }
+
+  private static boolean isSensisitiveChmodMode(String mode) {
+    return CHMOD_OCTAL_PATTERN.matcher(mode).find() || SIMPLIFIED_CHMOD_OTHER_PATTERN.matcher(mode).find();
   }
 }
