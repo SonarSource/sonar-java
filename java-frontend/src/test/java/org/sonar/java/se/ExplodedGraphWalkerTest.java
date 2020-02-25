@@ -50,6 +50,7 @@ import org.sonar.java.se.checks.RedundantAssignmentsCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
+import org.sonar.java.se.checks.XxeProcessingCheck;
 import org.sonar.java.se.checks.debug.DebugMethodYieldsCheck;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -499,7 +500,8 @@ public class ExplodedGraphWalkerTest {
       ObjectOutputStreamCheck.class,
       DebugMethodYieldsCheck.class,
       MinMaxRangeCheck.class,
-      ParameterNullnessCheck.class
+      ParameterNullnessCheck.class,
+      XxeProcessingCheck.class
       )
       .map(Class::getSimpleName)
       .collect(Collectors.toList());
