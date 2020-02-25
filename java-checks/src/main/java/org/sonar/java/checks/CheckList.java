@@ -76,7 +76,6 @@ import org.sonar.java.checks.security.ServerCertificatesCheck;
 import org.sonar.java.checks.security.SocketUsageCheck;
 import org.sonar.java.checks.security.StandardInputReadCheck;
 import org.sonar.java.checks.security.VerifiedServerHostnamesCheck;
-import org.sonar.java.checks.security.XmlExternalEntityProcessingCheck;
 import org.sonar.java.checks.security.XxeActiveMQCheck;
 import org.sonar.java.checks.security.ZipEntryCheck;
 import org.sonar.java.checks.serialization.BlindSerialVersionUidCheck;
@@ -151,6 +150,7 @@ import org.sonar.java.se.checks.RedundantAssignmentsCheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;
 import org.sonar.java.se.checks.StreamNotConsumedCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
+import org.sonar.java.se.checks.XxeProcessingCheck;
 import org.sonar.java.se.checks.debug.DebugInterruptedExecutionCheck;
 import org.sonar.java.se.checks.debug.DebugMethodYieldsCheck;
 import org.sonar.java.se.checks.debug.DebugMethodYieldsOnInvocationsCheck;
@@ -688,8 +688,8 @@ public final class CheckList {
       WriteObjectTheOnlySynchronizedMethodCheck.class,
       WrongAssignmentOperatorCheck.class,
       XmlDeserializationCheck.class,
-      XmlExternalEntityProcessingCheck.class,
       XxeActiveMQCheck.class,
+      XxeProcessingCheck.class,
       ZipEntryCheck.class
     );
   }

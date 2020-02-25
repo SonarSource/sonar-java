@@ -54,7 +54,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-@Rule(key = "S2755-experiment")
+@Rule(key = "S2755")
 public class XxeProcessingCheck extends SECheck {
 
   private static final String BOOLEAN = "boolean";
