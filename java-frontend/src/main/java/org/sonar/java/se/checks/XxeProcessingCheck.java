@@ -189,6 +189,10 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatcher.create()
       .typeDefinition("javax.xml.validation.Schema")
       .name("newValidator")
+      .withAnyParameters(),
+    MethodMatcher.create()
+      .typeDefinition(SAX_PARSER)
+      .name("getXMLReader")
       .withAnyParameters()
   );
 

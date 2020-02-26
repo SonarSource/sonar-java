@@ -5,6 +5,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import javax.xml.XMLConstants;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,6 +107,32 @@ class SAXParserTest {
     return factory;
   }
 
+  // XMLReader from SAXParser
+
+  XMLReader xml_reader_from_sax_parser() throws ParserConfigurationException, SAXException, IOException {
+    SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant
+    SAXParser parser = factory.newSAXParser();
+    XMLReader xmlReader = parser.getXMLReader();
+    return xmlReader;
+  }
+
+  XMLReader xml_reader_from_sax_parser_secured() throws ParserConfigurationException, SAXException, IOException {
+    SAXParserFactory factory = SAXParserFactory.newInstance(); // Compliant
+    SAXParser parser = factory.newSAXParser();
+    XMLReader xmlReader = parser.getXMLReader();
+    xmlReader.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    xmlReader.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    return xmlReader;
+  }
+
+  XMLReader xml_reader_from_sax_parser_secured_2() throws ParserConfigurationException, SAXException, IOException {
+    SAXParserFactory factory = SAXParserFactory.newInstance(); // Compliant
+    SAXParser parser = factory.newSAXParser();
+    XMLReader xmlReader = parser.getXMLReader();
+    xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    return xmlReader;
+  }
+
   // Not returned but used
 
   void used_not_returned() throws ParserConfigurationException, SAXException, IOException {
@@ -121,6 +148,13 @@ class SAXParserTest {
     SAXParser parser = factory.newSAXParser();
     parser.parse("xxe.xml", handler);
     parser.parse(inputStream, handler, "a");
+  }
+
+  void xml_reader_from_sax_parser_used() throws ParserConfigurationException, SAXException, IOException {
+    SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant
+    SAXParser parser = factory.newSAXParser();
+    XMLReader xmlReader = parser.getXMLReader();
+    xmlReader.parse("xxe.xml");
   }
 
   // Detect issues depending on the symbol
