@@ -130,28 +130,17 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
 
   private void checkExecStringArrayArgument(NewArrayTree newArrayTree) {
     List<ExpressionTree> initializers = newArrayTree.initializers();
-    if (initializers.size() < 3) {
-      // malformed
+    if (initializers.size() < 3 || !chmodCommand(initializers.get(0)).isPresent()) {
+      // malformed or not chmod
       return;
     }
-    if (!chmodCommand(initializers.get(0)).isPresent()) {
-      return;
+    // check all other arguments against sensitive configuration
+    for (int i = 1; i < initializers.size(); i++) {
+      ExpressionTree arg = initializers.get(i);
+      if (arg.asConstant(String.class).filter(FilePermissionsCheck::isSensisitiveChmodMode).isPresent()) {
+        reportIssue(arg, ISSUE_MESSAGE);
+      }
     }
-    ExpressionTree modeArg = initializers.get(1);
-    if (initializers.size() > 3 && isRecursiveArgument(modeArg)) {
-      // mode is going to be next argument
-      modeArg = initializers.get(2);
-    }
-    if (modeArg.asConstant(String.class).filter(FilePermissionsCheck::isSensisitiveChmodMode).isPresent()) {
-      reportIssue(modeArg, ISSUE_MESSAGE);
-    }
-  }
-
-  private static boolean isRecursiveArgument(ExpressionTree arg) {
-    return arg.asConstant(String.class)
-      .map(String::trim)
-      .filter(cmd -> "--recursive".equals(cmd) || "-R".equals(cmd))
-      .isPresent();
   }
 
   private static Optional<String> chmodCommand(ExpressionTree expr) {
