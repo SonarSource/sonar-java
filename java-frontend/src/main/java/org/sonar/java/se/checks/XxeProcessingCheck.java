@@ -60,6 +60,7 @@ public class XxeProcessingCheck extends SECheck {
   private static final String BOOLEAN = "boolean";
   private static final String NEW_INSTANCE = "newInstance";
   private static final String SET_PROPERTY = "setProperty";
+  private static final String SET_FEATURE = "setFeature";
 
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
   private static final String JAVA_LANG_STRING = "java.lang.String";
@@ -101,24 +102,38 @@ public class XxeProcessingCheck extends SECheck {
     .name(NEW_INSTANCE)
     .withAnyParameters();
 
-  private static final Map<MethodMatcher, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE = ImmutableMap.of(
-    XML_INPUT_FACTORY_NEW_INSTANCE,
-    c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
-      || c.hasConstraint(FeatureSupportDtd.SECURED)
-      || c.hasConstraint(FeatureIsSupportingExternalEntities.SECURED),
-    DOCUMENT_BUILDER_FACTORY_NEW_INSTANCE,
-    c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
-      || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
-      || c.hasConstraint(FeatureLoadExternalDtd.SECURED)
-      || c.hasConstraint(FeatureExternalGeneralEntities.SECURED),
-    SAX_PARSER_FACTORY_NEW_INSTANCE,
-    c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
-      || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
-      || c.hasConstraint(FeatureExternalGeneralEntities.SECURED),
-    SCHEMA_FACTORY_NEW_INSTANCE,
-    c -> c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED),
-    TRANSFORMER_FACTORY_NEW_INSTANCE,
-    c -> c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeStyleSheet.SECURED));
+  // TransformerFactory
+  private static final String XML_READER = "org.xml.sax.XMLReader";
+  private static final MethodMatcher CREATE_XML_READER = MethodMatcher.create()
+    .typeDefinition("org.xml.sax.helpers.XMLReaderFactory")
+    .name("createXMLReader")
+    .withAnyParameters();
+
+  private static final Map<MethodMatcher, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE =
+    ImmutableMap.<MethodMatcher, Predicate<ConstraintsByDomain>>builder()
+      .put(XML_INPUT_FACTORY_NEW_INSTANCE,
+        c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
+          || c.hasConstraint(FeatureSupportDtd.SECURED)
+          || c.hasConstraint(FeatureIsSupportingExternalEntities.SECURED))
+      .put(DOCUMENT_BUILDER_FACTORY_NEW_INSTANCE,
+        c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
+          || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
+          || c.hasConstraint(FeatureLoadExternalDtd.SECURED)
+          || c.hasConstraint(FeatureExternalGeneralEntities.SECURED))
+      .put(SAX_PARSER_FACTORY_NEW_INSTANCE,
+        c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
+          || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
+          || c.hasConstraint(FeatureExternalGeneralEntities.SECURED))
+      .put(SCHEMA_FACTORY_NEW_INSTANCE,
+        c -> c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
+      .put(TRANSFORMER_FACTORY_NEW_INSTANCE,
+        c -> c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeStyleSheet.SECURED))
+      .put(CREATE_XML_READER,
+        c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
+          || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
+          || c.hasConstraint(FeatureExternalGeneralEntities.SECURED))
+      .build();
+
 
   private static final MethodMatcherCollection FEATURES_AND_PROPERTIES_SETTERS = MethodMatcherCollection.create(
     MethodMatcher.create()
@@ -127,7 +142,7 @@ public class XxeProcessingCheck extends SECheck {
       .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(DOCUMENT_BUILDER_FACTORY))
-      .name("setFeature")
+      .name(SET_FEATURE)
       .parameters(JAVA_LANG_STRING, BOOLEAN),
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(DOCUMENT_BUILDER_FACTORY))
@@ -135,7 +150,7 @@ public class XxeProcessingCheck extends SECheck {
       .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(SAX_PARSER_FACTORY))
-      .name("setFeature")
+      .name(SET_FEATURE)
       .parameters(JAVA_LANG_STRING, BOOLEAN),
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(SAX_PARSER))
@@ -152,6 +167,14 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(TRANSFORMER_FACTORY))
       .name("setAttribute")
+      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(XML_READER))
+      .name(SET_FEATURE)
+      .parameters(JAVA_LANG_STRING, BOOLEAN),
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(XML_READER))
+      .name(SET_PROPERTY)
       .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT));
 
   private static final MethodMatcherCollection TRANSFERRING_METHOD_CALLS = MethodMatcherCollection.create(
@@ -188,6 +211,10 @@ public class XxeProcessingCheck extends SECheck {
       .withAnyParameters(),
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(SAX_PARSER))
+      .name("parse")
+      .withAnyParameters(),
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(XML_READER))
       .name("parse")
       .withAnyParameters()
   );

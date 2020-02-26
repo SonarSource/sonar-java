@@ -49,4 +49,9 @@ public class XxeProcessingCheckTest {
     JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_TransformerFactory.java", new XxeProcessingCheck());
   }
 
+  @Test
+  public void xml_reader() {
+    JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_XmlReader.java", new XxeProcessingCheck());
+  }
+
 }
