@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-abstract class JParserTestUtils {
+public abstract class JParserTestUtils {
 
   static IdentifierTree variableFromLastReturnStatement(List<StatementTree> statements) {
     return (IdentifierTree) ((ReturnStatementTree) statements.get(statements.size() - 1)).expression();
