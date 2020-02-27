@@ -25,6 +25,7 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.hamcrest.BaseMatcher;
@@ -33,6 +34,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
@@ -62,6 +64,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -133,15 +136,21 @@ public class JavaAstScannerTest {
     JavaFileScanner visitor = spy(new JavaFileScanner() {
       @Override
       public void scanFile(JavaFileScannerContext context) {
-        // do nothing
+        JavaAstScannerTest.this.context.setCancelled(true);
       }
     });
-    SonarComponents sonarComponents = mock(SonarComponents.class);
-    when(sonarComponents.analysisCancelled()).thenReturn(true);
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
+    sonarComponents.setSensorContext(context);
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
     scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), new ArrayList<>(), sonarComponents));
-    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java")));
-    verifyZeroInteractions(visitor);
+    scanner.scan(Arrays.asList(
+      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
+      TestUtils.inputFile("src/test/files/metrics/Methods.java")
+    ));
+
+    verify(visitor, Mockito.times(1))
+      .scanFile(any());
+    verifyNoMoreInteractions(visitor);
   }
 
   @Test
