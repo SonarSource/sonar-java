@@ -1,12 +1,14 @@
-class A {
-  A(com.google.common.base.Predicate p) {} // Noncompliant [[sc=5;ec=37]] {{Use "java.util.function.Predicate" instead.}}
-  A(com.google.common.base.Function f) {} // Noncompliant {{Use "java.util.function.Function" instead.}}
-  A(com.google.common.base.Supplier s) {} // Noncompliant {{Use "java.util.function.Supplier" instead.}}
-  A(com.google.common.base.Optional o) {} // Noncompliant {{Use "java.util.Optional" instead.}}
-  A(java.util.function.Predicate p) {}
-  A(java.util.function.Function f) {}
-  A(java.util.function.Supplier s) {}
-  A(java.util.Optional o) {}
+package checks;
+
+class ReplaceGuavaWithJava8Check {
+  ReplaceGuavaWithJava8Check(com.google.common.base.Predicate p) {} // Noncompliant [[sc=30;ec=62]] {{Use "java.util.function.Predicate" instead.}}
+  ReplaceGuavaWithJava8Check(com.google.common.base.Function f) {} // Noncompliant {{Use "java.util.function.Function" instead.}}
+  ReplaceGuavaWithJava8Check(com.google.common.base.Supplier s) {} // Noncompliant {{Use "java.util.function.Supplier" instead.}}
+  ReplaceGuavaWithJava8Check(com.google.common.base.Optional o) {} // Noncompliant {{Use "java.util.Optional" instead.}}
+  ReplaceGuavaWithJava8Check(java.util.function.Predicate p) {}
+  ReplaceGuavaWithJava8Check(java.util.function.Function f) {}
+  ReplaceGuavaWithJava8Check(java.util.function.Supplier s) {}
+  ReplaceGuavaWithJava8Check(java.util.Optional o) {}
   void doX() {
     com.google.common.base.Predicate p; // Noncompliant {{Use "java.util.function.Predicate" instead.}}
     com.google.common.base.Function f; // Noncompliant {{Use "java.util.function.Function" instead.}}
@@ -31,7 +33,7 @@ class A {
   }
 
   void doWithLambda(B<com.google.common.base.Optional<String>> b) {
-    b.foo(o -> System.out.println(o)); // Noncompliant [[sc=11;ec=12]] {{Use "java.util.Optional" instead.}}
+    b.foo(o -> o.isPresent()); // Noncompliant [[sc=11;ec=12]] {{Use "java.util.Optional" instead.}}
   }
 
   static class B<T> {
