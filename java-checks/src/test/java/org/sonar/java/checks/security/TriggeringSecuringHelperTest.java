@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class TriggeringSecuringHelperTest extends JParserTestUtils {
+public class TriggeringSecuringHelperTest {
 
   private final static MethodMatcher triggeringMethod = new MethodMatcher().typeDefinition("A").name("newInstance").withAnyParameters();
 
@@ -63,7 +63,7 @@ public class TriggeringSecuringHelperTest extends JParserTestUtils {
 
   @Test
   public void test() {
-    CompilationUnitTree cut = parse(new File("src/test/resources/checks/security/TriggeringSecuringHelperTest.java"));
+    CompilationUnitTree cut = JParserTestUtils.parse(new File("src/test/resources/checks/security/TriggeringSecuringHelperTest.java"));
     List<Tree> members = ((ClassTreeImpl) cut.types().get(1)).members();
 
     // Field doesn't have enclosing method
