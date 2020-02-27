@@ -52,6 +52,7 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2755")
@@ -109,6 +110,13 @@ public class XxeProcessingCheck extends SECheck {
     .name("createXMLReader")
     .withAnyParameters();
 
+  // SAXBuilder
+  private static final String SAX_BUILDER = "org.jdom2.input.SAXBuilder";
+  private static final MethodMatcher SAX_BUILDER_CONSTRUCTOR = MethodMatcher.create()
+    .typeDefinition(SAX_BUILDER)
+    .name("<init>")
+    .withAnyParameters();
+
   private static final Map<MethodMatcher, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE =
     ImmutableMap.<MethodMatcher, Predicate<ConstraintsByDomain>>builder()
       .put(XML_INPUT_FACTORY_NEW_INSTANCE,
@@ -134,6 +142,10 @@ public class XxeProcessingCheck extends SECheck {
           || c.hasConstraint(FeatureExternalGeneralEntities.SECURED))
       .build();
 
+  private static final Map<MethodMatcher, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE_NEW_CLASS = ImmutableMap.of(
+    SAX_BUILDER_CONSTRUCTOR,
+    c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
+      || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED));
 
   private static final MethodMatcherCollection FEATURES_AND_PROPERTIES_SETTERS = MethodMatcherCollection.create(
     MethodMatcher.create()
@@ -174,6 +186,14 @@ public class XxeProcessingCheck extends SECheck {
       .parameters(JAVA_LANG_STRING, BOOLEAN),
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(XML_READER))
+      .name(SET_PROPERTY)
+      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(SAX_BUILDER))
+      .name(SET_FEATURE)
+      .parameters(JAVA_LANG_STRING, BOOLEAN),
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(SAX_BUILDER))
       .name(SET_PROPERTY)
       .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT));
 
@@ -220,6 +240,10 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(XML_READER))
       .name("parse")
+      .withAnyParameters(),
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(SAX_BUILDER))
+      .name("build")
       .withAnyParameters()
   );
 
@@ -253,13 +277,24 @@ public class XxeProcessingCheck extends SECheck {
     }
 
     @Override
+    public void visitNewClass(NewClassTree newClass) {
+      for (Map.Entry<MethodMatcher, Predicate<ConstraintsByDomain>> entry : CONDITIONS_FOR_SECURED_BY_TYPE_NEW_CLASS.entrySet()) {
+        if (entry.getKey().matches(newClass)) {
+          constraintManager
+            .setValueFactory(() -> new XxeSymbolicValue(null, newClass.identifier(), entry.getValue()));
+          break;
+        }
+      }
+    }
+
+    @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
 
       // Test initialisation of XML processing API
       for (Map.Entry<MethodMatcher, Predicate<ConstraintsByDomain>> entry : CONDITIONS_FOR_SECURED_BY_TYPE.entrySet()) {
         if (entry.getKey().matches(mit)) {
           constraintManager
-            .setValueFactory(() -> new XxeSymbolicValue(programState.peekValue(), mit, entry.getValue()));
+            .setValueFactory(() -> new XxeSymbolicValue(programState.peekValue(), ExpressionUtils.methodName(mit), entry.getValue()));
           break;
         }
       }
@@ -318,6 +353,14 @@ public class XxeProcessingCheck extends SECheck {
     }
 
     @Override
+    public void visitNewClass(NewClassTree newClass) {
+      SymbolicValue peek = programState.peekValue();
+      if (peek != null && CONDITIONS_FOR_SECURED_BY_TYPE_NEW_CLASS.keySet().stream().anyMatch(mm -> mm.matches(newClass))) {
+        programState = programState.addConstraint(peek, XxeSensitive.SENSITIVE);
+      }
+    }
+
+    @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       SymbolicValue peek = programState.peekValue();
       if (peek != null && CONDITIONS_FOR_SECURED_BY_TYPE.keySet().stream().anyMatch(mm -> mm.matches(mit))) {
@@ -355,7 +398,7 @@ public class XxeProcessingCheck extends SECheck {
 
   private void reportIfNotSecured(CheckerContext context, XxeSymbolicValue xxeSV, @Nullable ConstraintsByDomain constraintsByDomain) {
     if (!xxeSV.isField && !isSecuredByProperty(xxeSV, constraintsByDomain)) {
-      context.reportIssue(ExpressionUtils.methodName(xxeSV.init),
+      context.reportIssue(xxeSV.init,
         this,
         "Disable XML external entity (XXE) processing.");
     }
@@ -371,11 +414,11 @@ public class XxeProcessingCheck extends SECheck {
 
   private static class XxeSymbolicValue extends SymbolicValue {
     private final SymbolicValue wrappedValue;
-    private final MethodInvocationTree init;
+    private final Tree init;
     private final Predicate<ConstraintsByDomain> conditionForSecured;
     private boolean isField;
 
-    private XxeSymbolicValue(SymbolicValue wrappedValue, MethodInvocationTree init, Predicate<ConstraintsByDomain> conditionForSecured) {
+    private XxeSymbolicValue(@Nullable SymbolicValue wrappedValue, Tree init, Predicate<ConstraintsByDomain> conditionForSecured) {
       this.wrappedValue = wrappedValue;
       this.init = init;
       this.isField = false;
@@ -384,7 +427,7 @@ public class XxeProcessingCheck extends SECheck {
 
     @Override
     public boolean references(SymbolicValue other) {
-      return wrappedValue.equals(other) || wrappedValue.references(other);
+      return wrappedValue != null && (wrappedValue.equals(other) || wrappedValue.references(other));
     }
 
     @Override
@@ -397,7 +440,7 @@ public class XxeProcessingCheck extends SECheck {
       }
       XxeSymbolicValue that = (XxeSymbolicValue) o;
       return isField == that.isField &&
-        wrappedValue.equals(that.wrappedValue) &&
+        Objects.equals(wrappedValue, that.wrappedValue) &&
         init.equals(that.init) &&
         conditionForSecured.equals(that.conditionForSecured);
     }
