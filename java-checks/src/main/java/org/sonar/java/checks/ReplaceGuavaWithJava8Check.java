@@ -41,7 +41,6 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
 
   private static final String GUAVA_BASE_ENCODING = "com.google.common.io.BaseEncoding";
   private static final String GUAVA_OPTIONAL = "com.google.common.base.Optional";
-  private static final String GUAVA_JOINER = "com.google.common.base.Joiner";
 
   private static final Map<String, String> GUAVA_TO_JAVA_UTIL_TYPES = ImmutableMap.<String, String>builder()
     .put("com.google.common.base.Predicate", "java.util.function.Predicate")
@@ -68,8 +67,7 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
       MethodMatcher.create().typeDefinition(GUAVA_BASE_ENCODING).name("base64Url").withoutParameter(),
       MethodMatcher.create().typeDefinition(GUAVA_OPTIONAL).name("absent").withoutParameter(),
       MethodMatcher.create().typeDefinition(GUAVA_OPTIONAL).name("fromNullable").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(GUAVA_OPTIONAL).name("of").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(GUAVA_JOINER).name("on").withAnyParameters()
+      MethodMatcher.create().typeDefinition(GUAVA_OPTIONAL).name("of").withAnyParameters()
     );
   }
 
@@ -108,9 +106,6 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
         break;
       case GUAVA_OPTIONAL:
         reportIssue(mit, replacementMessage("java.util.Optional." + GUAVA_OPTIONAL_TO_JAVA_UTIL_METHODS.get(mit.symbol().name())));
-        break;
-      case GUAVA_JOINER:
-        reportIssue(mit, replacementMessage("String.join\" or \"java.util.stream.Collectors.joining"));
         break;
       default:
         break;

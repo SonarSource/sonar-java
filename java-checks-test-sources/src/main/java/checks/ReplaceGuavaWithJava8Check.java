@@ -28,8 +28,9 @@ class ReplaceGuavaWithJava8Check {
     com.google.common.base.Optional.of(new Object()); // Noncompliant {{Use "java.util.Optional.of" instead.}}
     com.google.common.base.Optional.fromNullable(null); // Noncompliant {{Use "java.util.Optional.ofNullable" instead.}}
 
-    com.google.common.base.Joiner.on(","); // Noncompliant {{Use "String.join" or "java.util.stream.Collectors.joining" instead.}}
-    com.google.common.base.Joiner.on(','); // Noncompliant {{Use "String.join" or "java.util.stream.Collectors.joining" instead.}}
+    // Joiner can not always be replaced by Java 8 features, see SONARJAVA-3301
+    com.google.common.base.Joiner.on(","); //Compliant
+    com.google.common.base.Joiner.on(','); // Compliant
   }
 
   void doWithLambda(B<com.google.common.base.Optional<String>> b) {
