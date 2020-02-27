@@ -281,7 +281,7 @@ public class XxeProcessingCheck extends SECheck {
       for (Map.Entry<MethodMatcher, Predicate<ConstraintsByDomain>> entry : CONDITIONS_FOR_SECURED_BY_TYPE_NEW_CLASS.entrySet()) {
         if (entry.getKey().matches(newClass)) {
           constraintManager
-            .setValueFactory(() -> new XxeSymbolicValue(null, newClass.identifier(), entry.getValue()));
+            .setValueFactory(() -> new XxeSymbolicValue(newClass.identifier(), entry.getValue()));
           break;
         }
       }
@@ -294,7 +294,7 @@ public class XxeProcessingCheck extends SECheck {
       for (Map.Entry<MethodMatcher, Predicate<ConstraintsByDomain>> entry : CONDITIONS_FOR_SECURED_BY_TYPE.entrySet()) {
         if (entry.getKey().matches(mit)) {
           constraintManager
-            .setValueFactory(() -> new XxeSymbolicValue(programState.peekValue(), ExpressionUtils.methodName(mit), entry.getValue()));
+            .setValueFactory(() -> new XxeSymbolicValue(ExpressionUtils.methodName(mit), entry.getValue()));
           break;
         }
       }
@@ -413,21 +413,14 @@ public class XxeProcessingCheck extends SECheck {
   }
 
   private static class XxeSymbolicValue extends SymbolicValue {
-    private final SymbolicValue wrappedValue;
     private final Tree init;
     private final Predicate<ConstraintsByDomain> conditionForSecured;
     private boolean isField;
 
-    private XxeSymbolicValue(@Nullable SymbolicValue wrappedValue, Tree init, Predicate<ConstraintsByDomain> conditionForSecured) {
-      this.wrappedValue = wrappedValue;
+    private XxeSymbolicValue(Tree init, Predicate<ConstraintsByDomain> conditionForSecured) {
       this.init = init;
       this.isField = false;
       this.conditionForSecured = conditionForSecured;
-    }
-
-    @Override
-    public boolean references(SymbolicValue other) {
-      return wrappedValue != null && (wrappedValue.equals(other) || wrappedValue.references(other));
     }
 
     @Override
@@ -440,14 +433,13 @@ public class XxeProcessingCheck extends SECheck {
       }
       XxeSymbolicValue that = (XxeSymbolicValue) o;
       return isField == that.isField &&
-        Objects.equals(wrappedValue, that.wrappedValue) &&
         init.equals(that.init) &&
         conditionForSecured.equals(that.conditionForSecured);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(super.hashCode(), wrappedValue, init, conditionForSecured, isField);
+      return Objects.hash(super.hashCode(), init, conditionForSecured, isField);
     }
 
     public void setField(boolean isField) {
