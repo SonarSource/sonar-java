@@ -405,7 +405,7 @@ public class XxeProcessingCheck extends SECheck {
     if (!xxeSV.isField && !isSecuredByProperty(xxeSV, constraintsByDomain)) {
       context.reportIssue(xxeSV.init,
         this,
-        "Disable XML external entity (XXE) processing.",
+        "Disable access to external entities in XML parsing.",
         FlowComputation.flowWithoutExceptions(context.getNode(), xxeSV,
           c -> c == AttributeDTD.UNSECURED
           || c == AttributeSchema.UNSECURED

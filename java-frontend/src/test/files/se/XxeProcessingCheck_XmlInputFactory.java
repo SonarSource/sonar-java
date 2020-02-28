@@ -6,7 +6,7 @@ import javax.xml.stream.XMLEventReader;
 class XMLInputFactoryTest {
   // Vulnerable when nothing is made to protect against xxe
   XMLInputFactory no_property_new_instance() {
-    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant [[sc=47;ec=58]] {{Disable XML external entity (XXE) processing.}}
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant [[sc=47;ec=58]] {{Disable access to external entities in XML parsing.}}
     return factory;
   }
 

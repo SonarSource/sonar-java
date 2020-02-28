@@ -12,7 +12,7 @@ class TransformerFactoryTest {
   TransformerFactory classField = TransformerFactory.newInstance();
 
   TransformerFactory no_call_to_securing_method() {
-    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant {{Disable XML external entity (XXE) processing.}}
+    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant {{Disable access to external entities in XML parsing.}}
     return factory;
   }
 

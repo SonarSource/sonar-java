@@ -11,7 +11,7 @@ class SAXReaderTest {
 
   // Vulnerable when nothing is made to protect against xxe
   SAXReader no_property() {
-    SAXReader xmlReader = new SAXReader();  // Noncompliant [[sc=31;ec=40]] {{Disable XML external entity (XXE) processing.}}
+    SAXReader xmlReader = new SAXReader();  // Noncompliant [[sc=31;ec=40]] {{Disable access to external entities in XML parsing.}}
     return xmlReader;
   }
 
