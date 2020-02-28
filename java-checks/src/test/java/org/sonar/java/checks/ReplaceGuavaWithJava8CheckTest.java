@@ -26,7 +26,7 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
 public class ReplaceGuavaWithJava8CheckTest {
 
-  private static final String FILENAME = "src/test/files/checks/ReplaceGuavaWithJava8Check.java";
+  private static final String FILENAME = testSourcesPath("checks/ReplaceGuavaWithJava8Check.java");
 
   @Test
   public void java8() {
