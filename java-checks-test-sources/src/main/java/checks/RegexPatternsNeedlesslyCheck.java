@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 class RegexPatternsNeedlesslyCheck {
 
   private static final String STRCONST = "constant";
+  private static final String ONE_CHAR_STRCONST = "a";
   private final String finalField = "";
   private static String staticNotFinal = "";
 
@@ -61,6 +62,7 @@ class RegexPatternsNeedlesslyCheck {
     param.split("*"); // Noncompliant
     param.split("."); // Noncompliant
     param.split("a"); // Compliant not included in meta characters
+    param.split(ONE_CHAR_STRCONST); // Compliant not included in meta characters
 
     param.split("\2"); // Compliant  -- this is 1 char string
     param.split("\\"); // Noncompliant

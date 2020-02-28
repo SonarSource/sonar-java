@@ -21,17 +21,16 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -58,9 +57,9 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree firstArgument = ExpressionUtils.skipParentheses(mit.arguments().get(0));
-    if (SPLIT_MATCHER.matches(mit) && firstArgument.is(Tree.Kind.STRING_LITERAL)) {
-      String argValue = LiteralUtils.trimQuotes(((LiteralTree) firstArgument).value());
-      if (exceptionSplitMethod(argValue)) {
+    if (SPLIT_MATCHER.matches(mit)) {
+      Optional<String> constantValue = firstArgument.asConstant(String.class);
+      if (constantValue.filter(RegexPatternsNeedlesslyCheck::exceptionSplitMethod).isPresent()) {
         return;
       }
     }
