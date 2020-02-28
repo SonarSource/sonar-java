@@ -41,7 +41,12 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2187")
 public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
-  private final Set<String> testAnnotations = new HashSet<>();
+  public static final String ARCH_UNIT_RUNNER = "ArchUnitRunner";
+  public static final String ARCH_UNIT_ANALYZE_CLASSES = "com.tngtech.archunit.junit.AnalyzeClasses";
+  public static final String ARCH_UNIT_TEST = "com.tngtech.archunit.junit.ArchTest";
+
+  private final Set<String> testMethodAnnotations = new HashSet<>();
+  private final Set<String> testFieldAnnotations = new HashSet<>();
   private final Set<String> seenAnnotations = new HashSet<>();
 
   @Override
@@ -59,17 +64,18 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void resetAnnotationCache() {
-    testAnnotations.clear();
+    testMethodAnnotations.clear();
+    testFieldAnnotations.clear();
     seenAnnotations.clear();
-    testAnnotations.add("org.junit.Test");
-    testAnnotations.add("org.testng.annotations.Test");
-    testAnnotations.add("org.junit.jupiter.api.Test");
+    testMethodAnnotations.add("org.junit.Test");
+    testMethodAnnotations.add("org.testng.annotations.Test");
+    testMethodAnnotations.add("org.junit.jupiter.api.Test");
   }
 
   private void checkClass(ClassTree classTree) {
     if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
       Symbol.TypeSymbol classSymbol = classTree.symbol();
-      Stream<Symbol.MethodSymbol> members = getAllMembers(classSymbol, checkRunWith(classSymbol, "Enclosed"));
+      Stream<Symbol> members = getAllMembers(classSymbol, checkRunWith(classSymbol, "Enclosed"));
       IdentifierTree simpleName = classTree.simpleName();
       if (classSymbol.metadata().isAnnotatedWith("org.testng.annotations.Test")) {
         checkTestNGmembers(simpleName, members);
@@ -79,7 +85,10 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
           checkJunit3TestClass(simpleName, members);
         } else {
           if (runWitZohhak(classSymbol)) {
-            testAnnotations.add("com.googlecode.zohhak.api.TestWith");
+            testMethodAnnotations.add("com.googlecode.zohhak.api.TestWith");
+          } else if (isArchUnitTestClass(classSymbol)) {
+            testMethodAnnotations.add(ARCH_UNIT_TEST);
+            testFieldAnnotations.add(ARCH_UNIT_TEST);
           }
           checkJunit4AndAboveTestClass(simpleName, classSymbol, members);
         }
@@ -87,22 +96,27 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkTestNGmembers(IdentifierTree className, Stream<Symbol.MethodSymbol> members) {
-    if (members.noneMatch(member -> member.isPublic() && !member.isStatic() && !"<init>".equals(member.name()))) {
+  private static boolean isArchUnitTestClass(Symbol.TypeSymbol classSymbol) {
+    return checkRunWith(classSymbol, ARCH_UNIT_RUNNER) ||
+      classSymbol.metadata().isAnnotatedWith(ARCH_UNIT_ANALYZE_CLASSES);
+  }
+
+  private void checkTestNGmembers(IdentifierTree className, Stream<Symbol> members) {
+    if (members.noneMatch(member -> member.isMethodSymbol() && member.isPublic() && !member.isStatic() && !"<init>".equals(member.name()))) {
       reportClass(className);
     }
   }
 
-  private void checkJunit3TestClass(IdentifierTree className, Stream<Symbol.MethodSymbol> members) {
-    if (members.noneMatch(m -> m.name().startsWith("test"))) {
+  private void checkJunit3TestClass(IdentifierTree className, Stream<Symbol> members) {
+    if (members.noneMatch(m -> m.isMethodSymbol() && m.name().startsWith("test"))) {
       reportClass(className);
     }
   }
 
-  private void checkJunit4AndAboveTestClass(IdentifierTree className, Symbol.TypeSymbol symbol, Stream<Symbol.MethodSymbol> members) {
+  private void checkJunit4AndAboveTestClass(IdentifierTree className, Symbol.TypeSymbol symbol, Stream<Symbol> members) {
     if (symbol.name().endsWith("Test")
       && !runWithCucumberOrSuiteOrTheoriesRunner(symbol)
-      && members.noneMatch(this::isTestMethod)) {
+      && members.noneMatch(this::isTestFieldOrMethod)) {
       reportClass(className);
     }
   }
@@ -133,15 +147,17 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private boolean isTestMethod(Symbol method) {
-    return method.metadata().annotations().stream().anyMatch(input -> {
+  private boolean isTestFieldOrMethod(Symbol member) {
+    return member.metadata().annotations().stream().anyMatch(input -> {
       Type type = input.symbol().type();
-      return type.isUnknown() || isTestAnnotation(type);
+      return type.isUnknown() ||
+        (member.isMethodSymbol() && isTestMethodAnnotation(type)) ||
+        (member.isVariableSymbol() && testFieldAnnotations.contains(type.fullyQualifiedName()));
     });
   }
 
-  private boolean isTestAnnotation(Type type) {
-    return testAnnotations.contains(type.fullyQualifiedName()) || isJUnitTestableMetaAnnotated(type);
+  private boolean isTestMethodAnnotation(Type type) {
+    return  testMethodAnnotations.contains(type.fullyQualifiedName()) || isJUnitTestableMetaAnnotated(type);
   }
 
   private boolean isJUnitTestableMetaAnnotated(Type type) {
@@ -151,37 +167,37 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     seenAnnotations.add(type.fullyQualifiedName());
     SymbolMetadata metadata = type.symbol().metadata();
     if (metadata.isAnnotatedWith("org.junit.platform.commons.annotation.Testable")) {
-      testAnnotations.add(type.fullyQualifiedName());
+      testMethodAnnotations.add(type.fullyQualifiedName());
       return true;
     }
     for (SymbolMetadata.AnnotationInstance annotation : metadata.annotations()) {
       if (isJUnitTestableMetaAnnotated(annotation.symbol().type())) {
-        testAnnotations.add(type.fullyQualifiedName());
+        testMethodAnnotations.add(type.fullyQualifiedName());
         return true;
       }
     }
     return false;
   }
 
-  private static Stream<Symbol.MethodSymbol> getAllMembers(Symbol.TypeSymbol symbol, boolean isEnclosed) {
+  private static Stream<Symbol> getAllMembers(Symbol.TypeSymbol symbol, boolean isEnclosed) {
     return getAllMembers(symbol, isEnclosed, new HashSet<>());
   }
 
-  private static Stream<Symbol.MethodSymbol> getAllMembers(Symbol.TypeSymbol symbol, boolean isEnclosed, Set<Symbol> visitedSymbols) {
+  private static Stream<Symbol> getAllMembers(Symbol.TypeSymbol symbol, boolean isEnclosed, Set<Symbol> visitedSymbols) {
     if (!visitedSymbols.add(symbol) || symbol.type().is("java.lang.Object")) {
       return Stream.empty();
     }
-    Stream<Symbol.MethodSymbol> members = Stream.empty();
+    Stream<Symbol> members = Stream.empty();
     if (!isEnclosed) {
-      members = symbol.memberSymbols().stream().filter(Symbol::isMethodSymbol).map(Symbol.MethodSymbol.class::cast);
+      members = symbol.memberSymbols().stream().filter(m -> m.isMethodSymbol() || m.isVariableSymbol());
     }
     Type superClass = symbol.superClass();
     if (superClass != null) {
       members = Stream.concat(members, getAllMembers(superClass.symbol(), isEnclosed, visitedSymbols));
     }
-    Stream<Symbol.MethodSymbol> defaultMethodsFromInterfaces = symbol.interfaces().stream()
+    Stream<Symbol> defaultMethodsFromInterfaces = symbol.interfaces().stream()
       .flatMap(i -> getAllMembers(i.symbol(), false, visitedSymbols))
-      .filter(JUtils::isDefaultMethod);
+      .filter(m -> m.isMethodSymbol() && JUtils.isDefaultMethod((Symbol.MethodSymbol)m));
     members = Stream.concat(members, defaultMethodsFromInterfaces);
     for (Symbol s : symbol.memberSymbols()) {
       if (isNested(s) || isPublicStaticConcrete(s)) {

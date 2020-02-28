@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class NoTestInTestClassCheckTest {
 
   @Test
@@ -42,4 +44,10 @@ public class NoTestInTestClassCheckTest {
   public void noClasspath() {
     JavaCheckVerifier.verify("src/test/files/checks/NoTestInTestClassCheckNoClasspath.java", new NoTestInTestClassCheck(), new ArrayList<File>());
   }
+
+  @Test
+  public void archUnit() {
+    JavaCheckVerifier.verify(testSourcesPath("checks/NoTestInTestClassCheckArchUnitTest.java"), new NoTestInTestClassCheck());
+  }
+
 }
