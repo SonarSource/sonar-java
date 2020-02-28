@@ -59,4 +59,9 @@ public class XxeProcessingCheckTest {
     JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_SaxBuilder.java", new XxeProcessingCheck());
   }
 
+  @Test
+  public void sax_reader() {
+    JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_SaxReader.java", new XxeProcessingCheck());
+  }
+
 }

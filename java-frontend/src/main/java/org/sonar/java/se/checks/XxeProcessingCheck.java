@@ -60,8 +60,6 @@ public class XxeProcessingCheck extends SECheck {
 
   private static final String BOOLEAN = "boolean";
   private static final String NEW_INSTANCE = "newInstance";
-  private static final String SET_PROPERTY = "setProperty";
-  private static final String SET_FEATURE = "setFeature";
 
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
   private static final String JAVA_LANG_STRING = "java.lang.String";
@@ -117,6 +115,13 @@ public class XxeProcessingCheck extends SECheck {
     .name("<init>")
     .withAnyParameters();
 
+  // SAXReader
+  private static final String SAX_READER = "org.dom4j.io.SAXReader";
+  private static final MethodMatcher SAX_READER_CONSTRUCTOR = MethodMatcher.create()
+    .typeDefinition(SAX_READER)
+    .name("<init>")
+    .withAnyParameters();
+
   private static final Map<MethodMatcher, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE =
     ImmutableMap.<MethodMatcher, Predicate<ConstraintsByDomain>>builder()
       .put(XML_INPUT_FACTORY_NEW_INSTANCE,
@@ -145,57 +150,46 @@ public class XxeProcessingCheck extends SECheck {
   private static final Map<MethodMatcher, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE_NEW_CLASS = ImmutableMap.of(
     SAX_BUILDER_CONSTRUCTOR,
     c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
-      || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED));
+      || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED),
+    SAX_READER_CONSTRUCTOR,
+    c -> c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
+      || c.hasConstraint(FeatureExternalGeneralEntities.SECURED));
 
   private static final MethodMatcherCollection FEATURES_AND_PROPERTIES_SETTERS = MethodMatcherCollection.create(
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(XML_INPUT_FACTORY))
-      .name(SET_PROPERTY)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(DOCUMENT_BUILDER_FACTORY))
-      .name(SET_FEATURE)
-      .parameters(JAVA_LANG_STRING, BOOLEAN),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(DOCUMENT_BUILDER_FACTORY))
+    setPropertyMatcher(XML_INPUT_FACTORY),
+    setFeatureMatcher(DOCUMENT_BUILDER_FACTORY),
+    setAttributeMatcher(DOCUMENT_BUILDER_FACTORY),
+    setFeatureMatcher(SAX_PARSER_FACTORY),
+    setPropertyMatcher(SAX_PARSER),
+    setPropertyMatcher(SCHEMA_FACTORY),
+    setPropertyMatcher(VALIDATOR),
+    setAttributeMatcher(TRANSFORMER_FACTORY),
+    setFeatureMatcher(XML_READER),
+    setPropertyMatcher(XML_READER),
+    setFeatureMatcher(SAX_BUILDER),
+    setPropertyMatcher(SAX_BUILDER),
+    setFeatureMatcher(SAX_READER));
+
+  private static MethodMatcher setFeatureMatcher(String type) {
+    return MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(type))
+      .name("setFeature")
+      .parameters(JAVA_LANG_STRING, BOOLEAN);
+  }
+
+  private static MethodMatcher setPropertyMatcher(String type) {
+    return MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(type))
+      .name("setProperty")
+      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT);
+  }
+
+  private static MethodMatcher setAttributeMatcher(String type) {
+    return MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(type))
       .name("setAttribute")
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(SAX_PARSER_FACTORY))
-      .name(SET_FEATURE)
-      .parameters(JAVA_LANG_STRING, BOOLEAN),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(SAX_PARSER))
-      .name(SET_PROPERTY)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(SCHEMA_FACTORY))
-      .name(SET_PROPERTY)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(VALIDATOR))
-      .name(SET_PROPERTY)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(TRANSFORMER_FACTORY))
-      .name("setAttribute")
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(XML_READER))
-      .name(SET_FEATURE)
-      .parameters(JAVA_LANG_STRING, BOOLEAN),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(XML_READER))
-      .name(SET_PROPERTY)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(SAX_BUILDER))
-      .name(SET_FEATURE)
-      .parameters(JAVA_LANG_STRING, BOOLEAN),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(SAX_BUILDER))
-      .name(SET_PROPERTY)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT));
+      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT);
+  }
 
   private static final MethodMatcherCollection TRANSFERRING_METHOD_CALLS = MethodMatcherCollection.create(
     MethodMatcher.create()
@@ -244,6 +238,10 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(SAX_BUILDER))
       .name("build")
+      .withAnyParameters(),
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(SAX_READER))
+      .name("read")
       .withAnyParameters()
   );
 
