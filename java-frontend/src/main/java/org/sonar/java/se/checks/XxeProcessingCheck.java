@@ -32,6 +32,7 @@ import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.ProgramState.SymbolicValueSymbol;
 import org.sonar.java.se.checks.XxeProperty.AttributeDTD;
@@ -256,6 +257,12 @@ public class XxeProcessingCheck extends SECheck {
     .add(AttributeStyleSheet.values())
     .build();
 
+  private static final List<Class<? extends Constraint>> FLOW_CONSTRAINT_DOMAIN = ImmutableList.<Class<? extends Constraint>>builder()
+    .add(AttributeDTD.class)
+    .add(AttributeSchema.class)
+    .add(AttributeStyleSheet.class)
+    .build();
+
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
     PreStatementVisitor visitor = new PreStatementVisitor(context);
@@ -398,7 +405,12 @@ public class XxeProcessingCheck extends SECheck {
     if (!xxeSV.isField && !isSecuredByProperty(xxeSV, constraintsByDomain)) {
       context.reportIssue(xxeSV.init,
         this,
-        "Disable XML external entity (XXE) processing.");
+        "Disable XML external entity (XXE) processing.",
+        FlowComputation.flowWithoutExceptions(context.getNode(), xxeSV,
+          c -> c == AttributeDTD.UNSECURED
+          || c == AttributeSchema.UNSECURED
+          || c == AttributeStyleSheet.UNSECURED
+          , FLOW_CONSTRAINT_DOMAIN));
     }
   }
 

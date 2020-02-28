@@ -30,6 +30,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
  */
 public interface XxeProperty {
 
+  String UNSECURED_USE_EMPTY_STRING_TO_PROTECT_AGAINST_XXE = "unsecured. Set to \"\" (empty string) to protect against XXE";
+
   XxePropertyHolder properties();
 
   default String propertyName() {
@@ -102,6 +104,11 @@ public interface XxeProperty {
     public XxePropertyHolder properties() {
       return PROPERTIES;
     }
+
+    @Override
+    public String valueAsString() {
+      return UNSECURED_USE_EMPTY_STRING_TO_PROTECT_AGAINST_XXE;
+    }
   }
 
   enum AttributeSchema implements Constraint, XxeProperty {
@@ -116,6 +123,11 @@ public interface XxeProperty {
     public XxePropertyHolder properties() {
       return PROPERTIES;
     }
+
+    @Override
+    public String valueAsString() {
+      return UNSECURED_USE_EMPTY_STRING_TO_PROTECT_AGAINST_XXE;
+    }
   }
 
   enum AttributeStyleSheet implements Constraint, XxeProperty {
@@ -129,6 +141,11 @@ public interface XxeProperty {
     @Override
     public XxePropertyHolder properties() {
       return PROPERTIES;
+    }
+
+    @Override
+    public String valueAsString() {
+      return UNSECURED_USE_EMPTY_STRING_TO_PROTECT_AGAINST_XXE;
     }
   }
 
