@@ -60,8 +60,6 @@ public class XxeProcessingCheck extends SECheck {
 
   private static final String BOOLEAN = "boolean";
   private static final String NEW_INSTANCE = "newInstance";
-  private static final String SET_PROPERTY = "setProperty";
-  private static final String SET_FEATURE = "setFeature";
 
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
   private static final String JAVA_LANG_STRING = "java.lang.String";
@@ -160,18 +158,12 @@ public class XxeProcessingCheck extends SECheck {
   private static final MethodMatcherCollection FEATURES_AND_PROPERTIES_SETTERS = MethodMatcherCollection.create(
     setPropertyMatcher(XML_INPUT_FACTORY),
     setFeatureMatcher(DOCUMENT_BUILDER_FACTORY),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(DOCUMENT_BUILDER_FACTORY))
-      .name("setAttribute")
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
+    setAttributeMatcher(DOCUMENT_BUILDER_FACTORY),
     setFeatureMatcher(SAX_PARSER_FACTORY),
     setPropertyMatcher(SAX_PARSER),
     setPropertyMatcher(SCHEMA_FACTORY),
     setPropertyMatcher(VALIDATOR),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(TRANSFORMER_FACTORY))
-      .name("setAttribute")
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
+    setAttributeMatcher(TRANSFORMER_FACTORY),
     setFeatureMatcher(XML_READER),
     setPropertyMatcher(XML_READER),
     setFeatureMatcher(SAX_BUILDER),
@@ -181,14 +173,21 @@ public class XxeProcessingCheck extends SECheck {
   private static MethodMatcher setFeatureMatcher(String type) {
     return MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(type))
-      .name(SET_FEATURE)
+      .name("setFeature")
       .parameters(JAVA_LANG_STRING, BOOLEAN);
   }
 
   private static MethodMatcher setPropertyMatcher(String type) {
     return MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(type))
-      .name(SET_PROPERTY)
+      .name("setProperty")
+      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT);
+  }
+
+  private static MethodMatcher setAttributeMatcher(String type) {
+    return MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(type))
+      .name("setAttribute")
       .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT);
   }
 
