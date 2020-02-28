@@ -117,6 +117,13 @@ public class XxeProcessingCheck extends SECheck {
     .name("<init>")
     .withAnyParameters();
 
+  // SAXReader
+  private static final String SAX_READER = "org.dom4j.io.SAXReader";
+  private static final MethodMatcher SAX_READER_CONSTRUCTOR = MethodMatcher.create()
+    .typeDefinition(SAX_READER)
+    .name("<init>")
+    .withAnyParameters();
+
   private static final Map<MethodMatcher, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE =
     ImmutableMap.<MethodMatcher, Predicate<ConstraintsByDomain>>builder()
       .put(XML_INPUT_FACTORY_NEW_INSTANCE,
@@ -145,7 +152,10 @@ public class XxeProcessingCheck extends SECheck {
   private static final Map<MethodMatcher, Predicate<ConstraintsByDomain>> CONDITIONS_FOR_SECURED_BY_TYPE_NEW_CLASS = ImmutableMap.of(
     SAX_BUILDER_CONSTRUCTOR,
     c -> (c.hasConstraint(AttributeDTD.SECURED) && c.hasConstraint(AttributeSchema.SECURED))
-      || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED));
+      || c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED),
+    SAX_READER_CONSTRUCTOR,
+    c -> c.hasConstraint(FeatureDisallowDoctypeDecl.SECURED)
+      || c.hasConstraint(FeatureExternalGeneralEntities.SECURED));
 
   private static final MethodMatcherCollection FEATURES_AND_PROPERTIES_SETTERS = MethodMatcherCollection.create(
     MethodMatcher.create()
@@ -195,7 +205,11 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(SAX_BUILDER))
       .name(SET_PROPERTY)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT));
+      .parameters(JAVA_LANG_STRING, JAVA_LANG_OBJECT),
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(SAX_READER))
+      .name(SET_FEATURE)
+      .parameters(JAVA_LANG_STRING, BOOLEAN));
 
   private static final MethodMatcherCollection TRANSFERRING_METHOD_CALLS = MethodMatcherCollection.create(
     MethodMatcher.create()
@@ -244,6 +258,10 @@ public class XxeProcessingCheck extends SECheck {
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(SAX_BUILDER))
       .name("build")
+      .withAnyParameters(),
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(SAX_READER))
+      .name("read")
       .withAnyParameters()
   );
 
