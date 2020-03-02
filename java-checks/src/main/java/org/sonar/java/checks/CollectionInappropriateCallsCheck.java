@@ -24,12 +24,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -42,9 +42,12 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2175")
 public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisitor {
 
+  private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";
+
   private static final List<TypeChecker> TYPE_CHECKERS = new TypeCheckerListBuilder()
-    .on("java.util.Collection")
+    .on(JAVA_UTIL_COLLECTION)
       .method("remove").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+      .method("removeAll").argument(1).outOf(1).shouldMatchCollectionOfParametrizedType(1).add()
       .method("contains").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
     .on("java.util.List")
       .method("indexOf").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
@@ -77,32 +80,28 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
 
   private void checkMethodInvocation(MethodInvocationTree tree, TypeChecker typeChecker) {
     ExpressionTree argument = tree.arguments().get(typeChecker.argumentIndex);
-    if (argument.symbolType().isUnknown()) {
+    Type argumentTypeToCheck = argument.symbolType();
+    if (typeChecker.argumentIsACollection) {
+      argumentTypeToCheck = getTypeArgumentAt(findSuperTypeMatching(argumentTypeToCheck, JAVA_UTIL_COLLECTION), 0);
+    }
+    if (argumentTypeToCheck.isUnknown()) {
       // could happen with type inference.
       return;
     }
 
     Type actualMethodType = getMethodOwnerType(tree);
     Type checkedMethodType = findSuperTypeMatching(actualMethodType, typeChecker.methodOwnerType);
-    if (checkedMethodType == null || !JUtils.isParametrized(checkedMethodType)) {
-      return;
-    }
-
-    List<Type> parameters = JUtils.typeArguments(checkedMethodType);
-    if (parameters.size() <= typeChecker.parametrizedTypeIndex) {
-      return;
-    }
+    Type parameterType = getTypeArgumentAt(checkedMethodType, typeChecker.parametrizedTypeIndex);
 
     boolean isCallToParametrizedOrUnknownMethod = isCallToParametrizedOrUnknownMethod(argument);
     if (!isCallToParametrizedOrUnknownMethod && tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       isCallToParametrizedOrUnknownMethod = isCallToParametrizedOrUnknownMethod(((MemberSelectExpressionTree) tree.methodSelect()).expression());
     }
-
-    Type parameterType = parameters.get(typeChecker.parametrizedTypeIndex);
-    if (!parameterType.isUnknown()
+    if (!checkedMethodType.isUnknown()
+      && !parameterType.isUnknown()
       && !isCallToParametrizedOrUnknownMethod
-      && !isArgumentCompatible(argument.symbolType(), parameterType)) {
-      reportIssue(ExpressionUtils.methodName(tree), message(actualMethodType, checkedMethodType, parameterType, argument.symbolType()));
+      && !isArgumentCompatible(argumentTypeToCheck, parameterType)) {
+      reportIssue(ExpressionUtils.methodName(tree), message(actualMethodType, checkedMethodType, parameterType, argumentTypeToCheck));
     }
   }
 
@@ -144,7 +143,16 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     return mit.symbol().owner().type();
   }
 
-  @Nullable
+  private static Type getTypeArgumentAt(Type parametrizedType, int parametrizedTypeIndex) {
+    if (JUtils.isParametrized(parametrizedType)) {
+      List<Type> parameters = JUtils.typeArguments(parametrizedType);
+      if (parametrizedTypeIndex < parameters.size()) {
+        return parameters.get(parametrizedTypeIndex);
+      }
+    }
+    return Symbols.unknownType;
+  }
+
   private static Type findSuperTypeMatching(Type type, String genericTypeName) {
     if (type.is(genericTypeName)) {
       return type;
@@ -153,7 +161,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
       .stream()
       .filter(superType -> superType.is(genericTypeName))
       .findFirst()
-      .orElse(null);
+      .orElse(Symbols.unknownType);
   }
 
   private static boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
@@ -176,12 +184,14 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     private final String methodOwnerType;
     private final MethodMatcher methodMatcher;
     private final int argumentIndex;
+    private boolean argumentIsACollection;
     private final int parametrizedTypeIndex;
 
-    private TypeChecker(String methodOwnerType, MethodMatcher methodMatcher, int argumentIndex, int parametrizedTypeIndex) {
+    private TypeChecker(String methodOwnerType, MethodMatcher methodMatcher, int argumentIndex, boolean argumentIsACollection, int parametrizedTypeIndex) {
       this.methodOwnerType = methodOwnerType;
       this.methodMatcher = methodMatcher;
       this.argumentIndex = argumentIndex;
+      this.argumentIsACollection = argumentIsACollection;
       this.parametrizedTypeIndex = parametrizedTypeIndex;
     }
   }
@@ -193,6 +203,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     private String methodOwnerType;
     private String methodName;
     private int argumentPosition;
+    private boolean argumentIsACollection;
     private int argumentCount;
     private int parametrizedTypePosition;
 
@@ -218,6 +229,13 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
 
     private TypeCheckerListBuilder shouldMatchParametrizedType(int parametrizedTypePosition) {
       this.parametrizedTypePosition = parametrizedTypePosition;
+      this.argumentIsACollection = false;
+      return this;
+    }
+
+    private TypeCheckerListBuilder shouldMatchCollectionOfParametrizedType(int parametrizedTypePosition) {
+      this.parametrizedTypePosition = parametrizedTypePosition;
+      this.argumentIsACollection = true;
       return this;
     }
 
@@ -226,9 +244,13 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
       int parametrizedTypeIndex = parametrizedTypePosition - 1;
       MethodMatcher methodMatcher = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(methodOwnerType)).name(methodName);
       for (int i = 0; i < argumentCount; i++) {
-        methodMatcher.addParameter(i == argumentIndex ? TypeCriteria.is("java.lang.Object") : TypeCriteria.anyType());
+        TypeCriteria parameterType = TypeCriteria.anyType();
+        if (i == argumentIndex) {
+          parameterType = argumentIsACollection ? TypeCriteria.is(JAVA_UTIL_COLLECTION) : TypeCriteria.is("java.lang.Object");
+        }
+        methodMatcher.addParameter(parameterType);
       }
-      typeCheckers.add(new TypeChecker(methodOwnerType, methodMatcher, argumentIndex, parametrizedTypeIndex));
+      typeCheckers.add(new TypeChecker(methodOwnerType, methodMatcher, argumentIndex, argumentIsACollection, parametrizedTypeIndex));
       return this;
     }
 

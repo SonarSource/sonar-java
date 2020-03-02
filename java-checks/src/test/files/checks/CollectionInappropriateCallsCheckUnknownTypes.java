@@ -28,6 +28,7 @@ class CollectionInappropriateCallsCheck {
     myMap.containsKey(1L);
     myMap.containsValue("");
     myMap.containsValue(new Unknown());
+    mySetList.removeAll(unknownList);
 
     Map notParametrizedMap = new HashMap<String, Unknown>();
     notParametrizedMap.containsKey(1L);

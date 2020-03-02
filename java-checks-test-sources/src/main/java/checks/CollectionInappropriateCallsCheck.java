@@ -3,6 +3,7 @@ package checks;
 import com.google.common.collect.Lists;
 import java.util.AbstractSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,6 +22,7 @@ public class CollectionInappropriateCallsCheck {
     ArrayList<B> myBList = new ArrayList<B>();
     List<Set<Integer>> mySetList = new ArrayList<Set<Integer>>();
     List<Number> myNumberList = new ArrayList<Number>();
+    List notTypedList = new ArrayList();
 
     Integer myInteger = Integer.valueOf(1);
     String myString = "";
@@ -29,6 +31,12 @@ public class CollectionInappropriateCallsCheck {
 
     myList.contains(myInteger); // Noncompliant [[sc=12;ec=20]] {{A "List<String>" cannot contain a "Integer".}}
     myList.remove(myInteger); // Noncompliant {{A "List<String>" cannot contain a "Integer".}}
+    myList.removeAll(myNumberList); // Noncompliant {{A "List<String>" cannot contain a "Number".}}
+    myList.removeAll(Arrays.asList("a", "b"));
+    mySetList.removeAll(mySetList);
+    mySetList.removeAll(mySetList.get(0)); // Noncompliant {{A "List<Set>" cannot contain a "Integer".}}
+    mySetList.removeAll(null);
+    mySetList.removeAll(notTypedList);
     myList.contains(myString); // Compliant
     myBList.contains(myInteger); // Noncompliant {{A "ArrayList<B>" cannot contain a "Integer".}}
     mySetList.contains(myString); // Noncompliant {{A "List<Set>" cannot contain a "String".}}
