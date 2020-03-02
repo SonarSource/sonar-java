@@ -42,22 +42,22 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2175")
 public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<TypeChecker> TYPE_CHECKERS = new TypeCheckerBuilder()
+  private static final List<TypeChecker> TYPE_CHECKERS = new TypeCheckerListBuilder()
     .on("java.util.Collection")
-      .method("remove").argument(1).outOf(1).shouldMatchParametrizedType(1)
-      .method("contains").argument(1).outOf(1).shouldMatchParametrizedType(1)
+      .method("remove").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+      .method("contains").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
     .on("java.util.List")
-      .method("indexOf").argument(1).outOf(1).shouldMatchParametrizedType(1)
-      .method("lastIndexOf").argument(1).outOf(1).shouldMatchParametrizedType(1)
+      .method("indexOf").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+      .method("lastIndexOf").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
     .on("java.util.Map")
-      .method("containsKey").argument(1).outOf(1).shouldMatchParametrizedType(1)
-      .method("containsValue").argument(1).outOf(1).shouldMatchParametrizedType(2)
-      .method("get").argument(1).outOf(1).shouldMatchParametrizedType(1)
-      .method("getOrDefault").argument(1).outOf(2).shouldMatchParametrizedType(1)
+      .method("containsKey").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+      .method("containsValue").argument(1).outOf(1).shouldMatchParametrizedType(2).add()
+      .method("get").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+      .method("getOrDefault").argument(1).outOf(2).shouldMatchParametrizedType(1).add()
       .method("remove")
-        .argument(1).outOf(1).shouldMatchParametrizedType(1)
-        .argument(1).outOf(2).shouldMatchParametrizedType(1)
-        .argument(2).outOf(2).shouldMatchParametrizedType(2)
+        .argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+        .argument(1).outOf(2).shouldMatchParametrizedType(1).add()
+        .argument(2).outOf(2).shouldMatchParametrizedType(2).add()
     .build();
 
   @Override
@@ -186,7 +186,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     }
   }
 
-  private static class TypeCheckerBuilder {
+  private static class TypeCheckerListBuilder {
 
     private final List<TypeChecker> typeCheckers = new ArrayList<>();
 
@@ -194,28 +194,34 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     private String methodName;
     private int argumentPosition;
     private int argumentCount;
+    private int parametrizedTypePosition;
 
-    private TypeCheckerBuilder on(String methodOwnerType) {
+    private TypeCheckerListBuilder on(String methodOwnerType) {
       this.methodOwnerType = methodOwnerType;
       return this;
     }
 
-    private TypeCheckerBuilder method(String methodName) {
+    private TypeCheckerListBuilder method(String methodName) {
       this.methodName = methodName;
       return this;
     }
 
-    private TypeCheckerBuilder argument(int argumentPosition) {
+    private TypeCheckerListBuilder argument(int argumentPosition) {
       this.argumentPosition = argumentPosition;
       return this;
     }
 
-    private TypeCheckerBuilder outOf(int argumentCount) {
+    private TypeCheckerListBuilder outOf(int argumentCount) {
       this.argumentCount = argumentCount;
       return this;
     }
 
-    private TypeCheckerBuilder shouldMatchParametrizedType(int parametrizedTypePosition) {
+    private TypeCheckerListBuilder shouldMatchParametrizedType(int parametrizedTypePosition) {
+      this.parametrizedTypePosition = parametrizedTypePosition;
+      return this;
+    }
+
+    private TypeCheckerListBuilder add() {
       int argumentIndex = argumentPosition - 1;
       int parametrizedTypeIndex = parametrizedTypePosition - 1;
       MethodMatcher methodMatcher = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(methodOwnerType)).name(methodName);
