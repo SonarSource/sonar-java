@@ -10,7 +10,7 @@ import java.io.File;
 class DocumentBuilderFactoryTest {
   // Vulnerable when nothing is made to protect against xxe
   DocumentBuilderFactory no_property() {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant {{Disable XML external entity (XXE) processing.}}
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); // Noncompliant {{Disable access to external entities in XML parsing.}}
     return factory;
   }
 

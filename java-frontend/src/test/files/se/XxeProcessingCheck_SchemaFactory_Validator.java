@@ -12,7 +12,7 @@ class SchemaFactory_Validator {
 
   // Vulnerable when nothing is made to protect against xxe
   Validator no_property () throws SAXException  {
-    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI); // Noncompliant {{Disable XML external entity (XXE) processing.}}
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI); // Noncompliant {{Disable access to external entities in XML parsing.}}
     Schema schema = schemaFactory.newSchema();
     Validator validator = schema.newValidator();
     return validator;

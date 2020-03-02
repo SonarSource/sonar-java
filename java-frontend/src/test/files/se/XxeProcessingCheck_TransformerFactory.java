@@ -12,7 +12,7 @@ class TransformerFactoryTest {
   TransformerFactory classField = TransformerFactory.newInstance();
 
   TransformerFactory no_call_to_securing_method() {
-    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant {{Disable XML external entity (XXE) processing.}}
+    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant {{Disable access to external entities in XML parsing.}}
     return factory;
   }
 
@@ -65,9 +65,9 @@ class TransformerFactoryTest {
   }
 
   TransformerFactory setattribute_dtd_and_stylesheet_with_non_empty_value() {
-    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant
-    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "xxx");
-    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+    TransformerFactory factory = TransformerFactory.newInstance(); // Noncompliant [[flows=stylesheet]]
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "xxx"); // flow@stylesheet [[sc=5;ec=73]] {{Implies 'factory' is unsecured. Set to "" (empty string) to protect against XXE.}}
     return factory;
   }
 

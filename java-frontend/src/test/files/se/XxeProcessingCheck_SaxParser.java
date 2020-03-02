@@ -13,7 +13,7 @@ import java.io.InputStream;
 class SAXParserTest {
   // Vulnerable when nothing is made to protect against xxe
   SAXParserFactory no_property() {
-    SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant {{Disable XML external entity (XXE) processing.}}
+    SAXParserFactory factory = SAXParserFactory.newInstance(); // Noncompliant {{Disable access to external entities in XML parsing.}}
     return factory;
   }
 
