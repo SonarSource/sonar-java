@@ -1,8 +1,11 @@
+package checks;
+
 import java.util.regex.Pattern;
 
-class A {
+class RegexPatternsNeedlesslyCheck {
 
   private static final String STRCONST = "constant";
+  private static final String ONE_CHAR_STRCONST = "a";
   private final String finalField = "";
   private static String staticNotFinal = "";
 
@@ -26,16 +29,16 @@ class A {
     Pattern.compile(param);
     Pattern.compile(finalField); // Compliant
     Pattern.compile(staticNotFinal); // Compliant
-    Pattern.compile(A.STRCONST); // Noncompliant
+    Pattern.compile(RegexPatternsNeedlesslyCheck.STRCONST); // Noncompliant
     Pattern.compile(this.finalField); // Compliant
-    Pattern.compile(A.staticNotFinal); // Compliant
+    Pattern.compile(RegexPatternsNeedlesslyCheck.staticNotFinal); // Compliant
     Pattern regex3 = Pattern.compile(param); // Compliant
     Pattern regex4 = Pattern.compile(param.toString()); // Compliant
 
     param.matches(param); // Compliant
     param.matches("myRegex2"); // Noncompliant
     param.matches(STRCONST); // Noncompliant
-    param.matches(A.STRCONST); // Noncompliant
+    param.matches(RegexPatternsNeedlesslyCheck.STRCONST); // Noncompliant
     param.matches(finalField); // Compliant
     param.matches(staticNotFinal); // Compliant
 
@@ -59,6 +62,7 @@ class A {
     param.split("*"); // Noncompliant
     param.split("."); // Noncompliant
     param.split("a"); // Compliant not included in meta characters
+    param.split(ONE_CHAR_STRCONST); // Compliant not included in meta characters
 
     param.split("\2"); // Compliant  -- this is 1 char string
     param.split("\\"); // Noncompliant
@@ -82,17 +86,16 @@ class A {
     param.split("\t");
     param.split("\n");
   }
-}
 
-enum E {
-
-  INSTANCE1(Pattern.compile(".*")), // Noncompliant {{Refactor this code to use a "static final" Pattern.}}
-  INSTANCE2(COMPILED);
-
-  private final Pattern pattern;
   private static final Pattern COMPILED = Pattern.compile(".*");
+  enum E {
 
-  E(Pattern pattern) {
-    this.pattern = pattern;
+    INSTANCE1(Pattern.compile(".*")), // Noncompliant {{Refactor this code to use a "static final" Pattern.}}
+    INSTANCE2(COMPILED);
+
+    private final Pattern pattern;
+    E(Pattern pattern) {
+      this.pattern = pattern;
+    }
   }
 }
