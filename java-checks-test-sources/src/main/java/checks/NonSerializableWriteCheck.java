@@ -1,11 +1,14 @@
+package checks;
+
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.HashMap;
 
-class A {
-  void myMethod(ObjectOutputStream out, Object x, byte[] array) {
+class NonSerializableWriteCheck {
+  void myMethod(ObjectOutputStream out, Object x, byte[] array) throws IOException {
     out.writeObject(new Object());
     out.writeObject("x");
     out.writeObject(1);
@@ -14,13 +17,13 @@ class A {
     MyNonSerializable myNonSerializable1 = new MyNonSerializable();
     MyNonSerializable myNonSerializable2 = new MyNonSerializable();
     if (myNonSerializable2 instanceof Runnable) {
-      out.writeObject(myNonSerializable1); // Noncompliant {{Make the "MyNonSerializable" class "Serializable" or don't write it.}}
+      out.writeObject(myNonSerializable1); // Noncompliant {{Make the "checks.MyNonSerializable" class "Serializable" or don't write it.}}
     }
     if (myNonSerializable2 instanceof Serializable) {
       out.writeObject(myNonSerializable2);
     }
     if (x.toString() instanceof Serializable) {
-      out.writeObject(new MyNonSerializable()); // Noncompliant [[sc=23;ec=46]] {{Make the "MyNonSerializable" class "Serializable" or don't write it.}}
+      out.writeObject(new MyNonSerializable()); // Noncompliant [[sc=23;ec=46]] {{Make the "checks.MyNonSerializable" class "Serializable" or don't write it.}}
     }
     out.writeObject(array);
   }
@@ -30,21 +33,27 @@ class MySerializable implements Serializable {
 }
 
 class MyNonSerializable implements Runnable {
+  @Override
+  public void run() {
+  }
 }
 
 class ParameterizedSerializable<T> implements Serializable {
-  
+
   T t;
 
   private void writeObject(ObjectOutputStream s) throws java.io.IOException {
     s.writeObject(t);
   }
-  
+
 }
 
 class TypeOfAssignedExpressions {
   final java.util.Map<Integer, List<Object>> cacheProp = new HashMap<>();
   final java.util.Map<Integer, List<Object>> cacheVar;
+  {
+    cacheVar = null;
+  }
   java.util.Map<Integer, List<Object>> cacheVar2 = new HashMap<>();
 
   void foo() {
