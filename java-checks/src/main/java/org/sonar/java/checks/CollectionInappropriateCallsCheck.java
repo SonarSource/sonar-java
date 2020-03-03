@@ -20,16 +20,17 @@
 package org.sonar.java.checks;
 
 import java.text.MessageFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -39,52 +40,92 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S2175")
-public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
+public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisitor {
+
+  private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";
+
+  private static final List<TypeChecker> TYPE_CHECKERS = new TypeCheckerListBuilder()
+    .on(JAVA_UTIL_COLLECTION)
+      .method("remove").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+      .method("removeAll").argument(1).outOf(1).shouldMatchCollectionOfParametrizedType(1).add()
+      .method("contains").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+    .on("java.util.List")
+      .method("indexOf").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+      .method("lastIndexOf").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+    .on("java.util.Map")
+      .method("containsKey").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+      .method("containsValue").argument(1).outOf(1).shouldMatchParametrizedType(2).add()
+      .method("get").argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+      .method("getOrDefault").argument(1).outOf(2).shouldMatchParametrizedType(1).add()
+      .method("remove")
+        .argument(1).outOf(1).shouldMatchParametrizedType(1).add()
+        .argument(1).outOf(2).shouldMatchParametrizedType(1).add()
+        .argument(2).outOf(2).shouldMatchParametrizedType(2).add()
+    .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      collectionMethodInvocation("remove"),
-      collectionMethodInvocation("contains")
-    );
-  }
-
-  private static MethodMatcher collectionMethodInvocation(String methodName) {
-    return MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf("java.util.Collection"))
-      .name(methodName)
-      .addParameter("java.lang.Object");
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Kind.METHOD_INVOCATION);
   }
 
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    ExpressionTree firstArgument = tree.arguments().get(0);
-    Type argumentType = firstArgument.symbolType();
-    if (argumentType.isUnknown()) {
+  public void visitNode(Tree tree) {
+    if (hasSemantic()) {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      TYPE_CHECKERS.stream()
+        .filter(typeChecker -> typeChecker.methodMatcher.matches(mit))
+        .forEach(typeChecker -> checkMethodInvocation(mit, typeChecker));
+    }
+  }
+
+  private void checkMethodInvocation(MethodInvocationTree tree, TypeChecker typeChecker) {
+    ExpressionTree argument = tree.arguments().get(typeChecker.argumentIndex);
+    Type argumentTypeToCheck = argument.symbolType();
+    if (typeChecker.argumentIsACollection) {
+      argumentTypeToCheck = getTypeArgumentAt(findSuperTypeMatching(argumentTypeToCheck, JAVA_UTIL_COLLECTION), 0);
+    }
+    if (argumentTypeToCheck.isUnknown()) {
       // could happen with type inference.
       return;
     }
-    Type collectionType = getMethodOwner(tree);
-    // can be null when using raw types
-    Type collectionParameterType = getTypeArgument(collectionType);
 
-    boolean isCallToParametrizedOrUnknownMethod = isCallToParametrizedOrUnknownMethod(firstArgument);
+    Type actualMethodType = getMethodOwnerType(tree);
+    Type checkedMethodType = findSuperTypeMatching(actualMethodType, typeChecker.methodOwnerType);
+    Type parameterType = getTypeArgumentAt(checkedMethodType, typeChecker.parametrizedTypeIndex);
+
+    boolean isCallToParametrizedOrUnknownMethod = isCallToParametrizedOrUnknownMethod(argument);
     if (!isCallToParametrizedOrUnknownMethod && tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       isCallToParametrizedOrUnknownMethod = isCallToParametrizedOrUnknownMethod(((MemberSelectExpressionTree) tree.methodSelect()).expression());
     }
-
-    if (collectionParameterType != null
-      && !collectionParameterType.isUnknown()
+    if (!checkedMethodType.isUnknown()
+      && !parameterType.isUnknown()
       && !isCallToParametrizedOrUnknownMethod
-      && !isArgumentCompatible(argumentType, collectionParameterType)) {
-      String message;
-      if (JUtils.isParametrized(collectionType)) {
-        message = "A \"{0}<{1}>\" cannot contain a \"{2}\"";
-      } else {
-        message = "\"{0}\" is a \"Collection<{1}>\" which cannot contain a \"{2}\"";
-      }
-      reportIssue(ExpressionUtils.methodName(tree), MessageFormat.format(message, collectionType, collectionParameterType, argumentType));
+      && !isArgumentCompatible(argumentTypeToCheck, parameterType)) {
+      reportIssue(ExpressionUtils.methodName(tree), message(actualMethodType, checkedMethodType, parameterType, argumentTypeToCheck));
     }
+  }
+
+  private static String message(Type actualMethodType, Type checkedMethodType, Type parameterType, Type argumentType) {
+    String actualType = typeNameWithParameters(actualMethodType);
+    boolean actualTypeHasTheParameterType = JUtils.typeArguments(actualMethodType).stream().anyMatch(typeArg -> typeArg.equals(parameterType));
+    boolean checkedTypeHasSeveralParameters = JUtils.typeArguments(checkedMethodType).size() > 1;
+    String typeDescription = checkedTypeHasSeveralParameters ? (" in a \"" + parameterType + "\" type") : "";
+    if (actualTypeHasTheParameterType) {
+      return MessageFormat.format("A \"{0}\" cannot contain a \"{1}\"{2}.", actualType, argumentType.name(), typeDescription);
+    } else {
+      String checkedType = typeNameWithParameters(checkedMethodType);
+      return MessageFormat.format("\"{0}\" is a \"{1}\" which cannot contain a \"{2}\"{3}.",
+        actualType, checkedType, argumentType.name(), typeDescription);
+    }
+  }
+
+  private static String typeNameWithParameters(Type type) {
+    if (JUtils.isParametrized(type)) {
+      return type.name() + JUtils.typeArguments(type).stream()
+        .map(Type::name)
+        .collect(Collectors.joining(", ", "<", ">"));
+    }
+    return type.name();
   }
 
   private static boolean isCallToParametrizedOrUnknownMethod(ExpressionTree expressionTree) {
@@ -95,24 +136,32 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
     return false;
   }
 
-  private static Type getMethodOwner(MethodInvocationTree mit) {
+  private static Type getMethodOwnerType(MethodInvocationTree mit) {
     if (mit.methodSelect().is(Kind.MEMBER_SELECT)) {
       return ((MemberSelectExpressionTree) mit.methodSelect()).expression().symbolType();
     }
     return mit.symbol().owner().type();
   }
 
-  @Nullable
-  private static Type getTypeArgument(Type collectionType) {
-    if (collectionType.is("java.util.Collection") && JUtils.isParametrized(collectionType)) {
-      return JUtils.typeArguments(collectionType).get(0);
+  private static Type getTypeArgumentAt(Type parametrizedType, int parametrizedTypeIndex) {
+    if (JUtils.isParametrized(parametrizedType)) {
+      List<Type> parameters = JUtils.typeArguments(parametrizedType);
+      if (parametrizedTypeIndex < parameters.size()) {
+        return parameters.get(parametrizedTypeIndex);
+      }
     }
-    return JUtils.directSuperTypes(collectionType)
+    return Symbols.unknownType;
+  }
+
+  private static Type findSuperTypeMatching(Type type, String genericTypeName) {
+    if (type.is(genericTypeName)) {
+      return type;
+    }
+    return JUtils.superTypes(type.symbol())
       .stream()
-      .map(CollectionInappropriateCallsCheck::getTypeArgument)
-      .filter(Objects::nonNull)
+      .filter(superType -> superType.is(genericTypeName))
       .findFirst()
-      .orElse(null);
+      .orElse(Symbols.unknownType);
   }
 
   private static boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
@@ -130,4 +179,85 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
       && JUtils.isPrimitiveWrapper(collectionParameterType)
       && isSubtypeOf(JUtils.primitiveWrapperType(argumentType), collectionParameterType);
   }
+
+  private static class TypeChecker {
+    private final String methodOwnerType;
+    private final MethodMatcher methodMatcher;
+    private final int argumentIndex;
+    private boolean argumentIsACollection;
+    private final int parametrizedTypeIndex;
+
+    private TypeChecker(String methodOwnerType, MethodMatcher methodMatcher, int argumentIndex, boolean argumentIsACollection, int parametrizedTypeIndex) {
+      this.methodOwnerType = methodOwnerType;
+      this.methodMatcher = methodMatcher;
+      this.argumentIndex = argumentIndex;
+      this.argumentIsACollection = argumentIsACollection;
+      this.parametrizedTypeIndex = parametrizedTypeIndex;
+    }
+  }
+
+  private static class TypeCheckerListBuilder {
+
+    private final List<TypeChecker> typeCheckers = new ArrayList<>();
+
+    private String methodOwnerType;
+    private String methodName;
+    private int argumentPosition;
+    private boolean argumentIsACollection;
+    private int argumentCount;
+    private int parametrizedTypePosition;
+
+    private TypeCheckerListBuilder on(String methodOwnerType) {
+      this.methodOwnerType = methodOwnerType;
+      return this;
+    }
+
+    private TypeCheckerListBuilder method(String methodName) {
+      this.methodName = methodName;
+      return this;
+    }
+
+    private TypeCheckerListBuilder argument(int argumentPosition) {
+      this.argumentPosition = argumentPosition;
+      return this;
+    }
+
+    private TypeCheckerListBuilder outOf(int argumentCount) {
+      this.argumentCount = argumentCount;
+      return this;
+    }
+
+    private TypeCheckerListBuilder shouldMatchParametrizedType(int parametrizedTypePosition) {
+      this.parametrizedTypePosition = parametrizedTypePosition;
+      this.argumentIsACollection = false;
+      return this;
+    }
+
+    private TypeCheckerListBuilder shouldMatchCollectionOfParametrizedType(int parametrizedTypePosition) {
+      this.parametrizedTypePosition = parametrizedTypePosition;
+      this.argumentIsACollection = true;
+      return this;
+    }
+
+    private TypeCheckerListBuilder add() {
+      int argumentIndex = argumentPosition - 1;
+      int parametrizedTypeIndex = parametrizedTypePosition - 1;
+      MethodMatcher methodMatcher = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(methodOwnerType)).name(methodName);
+      for (int i = 0; i < argumentCount; i++) {
+        TypeCriteria parameterType = TypeCriteria.anyType();
+        if (i == argumentIndex) {
+          parameterType = argumentIsACollection ? TypeCriteria.is(JAVA_UTIL_COLLECTION) : TypeCriteria.is("java.lang.Object");
+        }
+        methodMatcher.addParameter(parameterType);
+      }
+      typeCheckers.add(new TypeChecker(methodOwnerType, methodMatcher, argumentIndex, argumentIsACollection, parametrizedTypeIndex));
+      return this;
+    }
+
+    private List<TypeChecker> build() {
+      return typeCheckers;
+    }
+
+  }
+
 }

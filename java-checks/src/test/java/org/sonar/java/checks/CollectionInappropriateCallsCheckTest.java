@@ -22,10 +22,17 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class CollectionInappropriateCallsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CollectionInappropriateCallsCheck.java", new CollectionInappropriateCallsCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/CollectionInappropriateCallsCheck.java"), new CollectionInappropriateCallsCheck());
+  }
+
+  @Test
+  public void test_unknown_types() {
+    JavaCheckVerifier.verify("src/test/files/checks/CollectionInappropriateCallsCheckUnknownTypes.java", new CollectionInappropriateCallsCheck());
   }
 }
