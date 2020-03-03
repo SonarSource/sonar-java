@@ -40,6 +40,80 @@ class XMLInputFactoryTest {
     return factory;
   }
 
+  XMLInputFactory dtd_from_local_declaration_false() {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant
+    String value = XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES;
+    factory.setProperty(value, false);
+    return factory;
+  }
+
+  XMLInputFactory dtd_from_local_declaration_false() {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
+    String value = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+    factory.setProperty(value, false);
+    return factory;
+  }
+
+  XMLInputFactory dtd_from_local_declaration_false() {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant
+    boolean b = false;
+    factory.setProperty(XMLInputFactory.SUPPORT_DTD, b);
+    return factory;
+  }
+
+  XMLInputFactory dtd_from_local_declaration_false() {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant
+    String value = "javax.xml.stream.supportDTD";
+    factory.setProperty(value, false);
+    return factory;
+  }
+
+  XMLInputFactory dtd_from_local_declaration_false_1() {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant
+    String value1 = "javax.xml.stream.supportDTD";
+    String value2 = value1;
+    factory.setProperty(value2, false);
+    return factory;
+  }
+
+  XMLInputFactory dtd_from_local_declaration_false_2() {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
+    String value = "other.xml";
+    factory.setProperty(value, false);
+    return factory;
+  }
+
+  XMLInputFactory dtd_from_local_assign_false() {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant
+    String value = null;
+    value = "javax.xml.stream.supportDTD";
+    factory.setProperty(value, false);
+    return factory;
+  }
+
+  XMLInputFactory dtd_from_local_assign_false_2() {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant
+    String value;
+    value = "javax.xml.stream.supportDTD";
+    factory.setProperty(value, false);
+    return factory;
+  }
+
+  XMLInputFactory dtd_from_local_assign_false_3() {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Compliant
+    String value = "something else";
+    value = "javax.xml.stream.supportDTD";
+    factory.setProperty(value, false);
+    return factory;
+  }
+
+  XMLInputFactory dtd_from_local_assign_false_4() {
+    XMLInputFactory factory = XMLInputFactory.newInstance(); // Noncompliant
+    String value = "something else";
+    factory.setProperty(value, false);
+    return factory;
+  }
+
   XMLInputFactory dtd_with_primitive_false2() {
     XMLInputFactory factory = XMLInputFactory.newFactory();
     factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
