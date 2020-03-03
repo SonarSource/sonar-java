@@ -1,3 +1,5 @@
+package checks;
+
 import java.util.List;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -17,20 +19,17 @@ import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-class A {
+class IgnoredeReturnValueCheck {
   List<String> list;
   void voidMethod() {}
-  int intMethod() {}
-  UnknownType unknownTypeMethod() {}
+  int intMethod() { return 0; }
+
   void foo() {
     int a = intMethod(); //Compliant
     intMethod(); //Compliant
     voidMethod(); //Compliant
-    new A().intMethod();//Compliant
-    new A().voidMethod();//Compliant
-    unknownTypeMethod();//Compliant type is unknown
-    unresolvedMethod();//Compliant method is not resolved so type is unknown
-    fluentMethod(""); //Compliant
+    new IgnoredeReturnValueCheck().intMethod();// Compliant
+    new IgnoredeReturnValueCheck().voidMethod();// Compliant
     Integer.valueOf("1").byteValue(); // Noncompliant {{The return value of "byteValue" must be used.}}
     "plop".replace('p', 'b'); // Noncompliant [[sc=12;ec=19]] {{The return value of "replace" must be used.}}
     new RuntimeException("plop").getStackTrace()[0].getClassName(); // Noncompliant {{The return value of "getClassName" must be used.}}
@@ -56,7 +55,7 @@ class A {
 
     Optional<String> o = Optional.empty();
     o.map(s -> s.toString()); // Noncompliant
-    com.google.common.base.Optional<String> o2 = Optional.absent();
+    com.google.common.base.Optional<String> o2 = com.google.common.base.Optional.absent();
     o2.transform(s -> s.toString()); // Noncompliant
 
     String s = "s";
@@ -67,8 +66,7 @@ class A {
     s.getBytes(java.nio.charset.Charset.forName("UTF-8")); // Noncompliant not within a try/catch
   }
 
-  private boolean textIsInteger(String textToCheck) {
-
+  private boolean textIsInteger1(String textToCheck) {
     try {
       Integer.parseInt(textToCheck, 10); // OK
       textToCheck.getBytes(java.nio.charset.Charset.forName("UTF-8"));
@@ -76,6 +74,9 @@ class A {
     } catch (NumberFormatException ignored) {
       return false;
     }
+  }
+
+  private boolean textIsInteger2(String textToCheck) {
     try {
       Integer.parseInt(textToCheck, 10); // Noncompliant
       textToCheck.getBytes(java.nio.charset.Charset.forName("UTF-8")); // Noncompliant
@@ -86,7 +87,7 @@ class A {
   }
 
   private void putIfAbsentTest() {
-    private final java.util.concurrent.ConcurrentMap<String, String> map1 = new java.util.concurrent.ConcurrentHashMap<>();
+    final java.util.concurrent.ConcurrentMap<String, String> map1 = new java.util.concurrent.ConcurrentHashMap<>();
     map1.putIfAbsent("val", "val"); // Compliant, 'putIfAbsent' does have a side-effect
   }
 }
