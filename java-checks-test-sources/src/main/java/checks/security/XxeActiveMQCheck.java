@@ -77,6 +77,15 @@ class A {
 		return factory;
 	}
 
+  void conditional_2_different_factory(boolean condition) {
+    if (condition) {
+      ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616"); // Noncompliant
+    } else {
+      ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616"); // Compliant
+      factory.setTrustedPackages(Arrays.asList("org.apache.activemq.test"));
+    }
+  }
+
   ActiveMQConnectionFactory trust_all_packages_using_placeholder() {
     ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");   // Noncompliant
     factory.setTrustedPackages(Arrays.asList("*"));

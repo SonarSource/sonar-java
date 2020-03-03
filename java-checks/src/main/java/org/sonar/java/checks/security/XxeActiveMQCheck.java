@@ -21,12 +21,14 @@ package org.sonar.java.checks.security;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -35,7 +37,9 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import static org.sonar.java.checks.security.TriggeringSecuringHelper.isInvocationOnVariable;
 import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
+import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
 
 @Rule(key = "S5301")
 public class XxeActiveMQCheck extends AbstractMethodDetection {
@@ -56,13 +60,16 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
       return;
     }
 
-    MethodBodyVisitor visitor = new MethodBodyVisitor();
-    enclosingMethod.accept(visitor);
-    if (!visitor.foundCallsToSecuringMethods()) {
-      reportIssue(newClassTree,
-        "Secure this \"ActiveMQConnectionFactory\" by whitelisting the trusted packages using the \"setTrustedPackages\" method and "
-          + "make sure the \"setTrustAllPackages\" is not set to true.");
-    }
+    Optional<Symbol> assignedSymbol = getAssignedSymbol(newClassTree);
+    assignedSymbol.ifPresent(symbol -> {
+      MethodBodyVisitor visitor = new MethodBodyVisitor(symbol);
+      enclosingMethod.accept(visitor);
+      if (!visitor.foundCallsToSecuringMethods()) {
+        reportIssue(newClassTree,
+          "Secure this \"ActiveMQConnectionFactory\" by whitelisting the trusted packages using the \"setTrustedPackages\" method and "
+            + "make sure the \"setTrustAllPackages\" is not set to true.");
+      }
+    });
   }
 
   private static class MethodBodyVisitor extends BaseTreeVisitor {
@@ -79,18 +86,26 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
     private boolean hasTrustAllPackages = false;
     private boolean callArgumentsOfSetTrustedPackages = false;
 
+    private Symbol variable;
+
+    MethodBodyVisitor(Symbol variable) {
+      this.variable = variable;
+    }
+
     private boolean foundCallsToSecuringMethods() {
       return hasTrustedPackages && !hasTrustAllPackages;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-      Arguments arguments = methodInvocation.arguments();
-      if (SET_TRUSTED_PACKAGES.matches(methodInvocation)) {
-        hasTrustedPackages |= !arguments.get(0).is(Kind.NULL_LITERAL);
-        callArgumentsOfSetTrustedPackages = true;
-      } else if (SET_TRUST_ALL_PACKAGES.matches(methodInvocation)) {
-        hasTrustAllPackages |= Boolean.TRUE.equals(arguments.get(0).asConstant(Boolean.class).orElse(null));
+      if (isInvocationOnVariable(methodInvocation, variable)) {
+        Arguments arguments = methodInvocation.arguments();
+        if (SET_TRUSTED_PACKAGES.matches(methodInvocation)) {
+          hasTrustedPackages |= !arguments.get(0).is(Kind.NULL_LITERAL);
+          callArgumentsOfSetTrustedPackages = true;
+        } else if (SET_TRUST_ALL_PACKAGES.matches(methodInvocation)) {
+          hasTrustAllPackages |= Boolean.TRUE.equals(arguments.get(0).asConstant(Boolean.class).orElse(null));
+        }
       }
       super.visitMethodInvocation(methodInvocation);
       callArgumentsOfSetTrustedPackages = false;

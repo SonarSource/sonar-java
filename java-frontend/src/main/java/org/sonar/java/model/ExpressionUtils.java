@@ -157,8 +157,8 @@ public final class ExpressionUtils {
     return (MethodTree) result;
   }
 
-  public static Optional<Symbol> getAssignedSymbol(MethodInvocationTree mit) {
-    Tree parent = mit.parent();
+  public static Optional<Symbol> getAssignedSymbol(ExpressionTree exp) {
+    Tree parent = exp.parent();
     if (parent != null) {
       if (parent.is(Tree.Kind.ASSIGNMENT)) {
         return extractIdentifierSymbol(((AssignmentExpressionTree) parent).variable());
