@@ -44,8 +44,8 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.helpers.ExpressionsHelper.getConstantValueAsString;
-import static org.sonar.java.checks.security.TriggeringSecuringHelper.isInvocationOnVariable;
 import static org.sonar.java.model.ExpressionUtils.extractIdentifierSymbol;
+import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 
 @Rule(key = "S5527")
 public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {

@@ -114,6 +114,12 @@ public final class ExpressionUtils {
     return extractIdentifier(tree).map(IdentifierTree::symbol);
   }
 
+  public static boolean isInvocationOnVariable(MethodInvocationTree mit, Symbol variable) {
+    ExpressionTree methodSelect = mit.methodSelect();
+    return methodSelect.is(Tree.Kind.MEMBER_SELECT)
+      && extractIdentifierSymbol(((MemberSelectExpressionTree) methodSelect).expression()).filter(s -> s.equals(variable)).isPresent();
+  }
+
   public static ExpressionTree skipParentheses(ExpressionTree tree) {
     ExpressionTree result = tree;
     while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {

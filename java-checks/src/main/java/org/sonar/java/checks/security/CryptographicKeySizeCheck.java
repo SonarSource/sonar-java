@@ -39,8 +39,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
-import static org.sonar.java.checks.security.TriggeringSecuringHelper.isInvocationOnVariable;
 import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
+import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 
 @Rule(key = "S4426")
 public class CryptographicKeySizeCheck extends AbstractMethodDetection {

@@ -37,9 +37,9 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import static org.sonar.java.checks.security.TriggeringSecuringHelper.isInvocationOnVariable;
 import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
 import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
+import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 
 @Rule(key = "S5301")
 public class XxeActiveMQCheck extends AbstractMethodDetection {
