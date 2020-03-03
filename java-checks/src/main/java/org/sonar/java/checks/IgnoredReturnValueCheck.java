@@ -90,6 +90,9 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ExpressionTree expr = ((ExpressionStatementTree) tree).expression();
     if (expr.is(Tree.Kind.METHOD_INVOCATION)) {
+      if (isSwitchExpressionYieldedExpression(tree)) {
+        return;
+      }
       MethodInvocationTree mit = (MethodInvocationTree) expr;
       if (isExcluded(mit)) {
         return;
@@ -103,6 +106,10 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
         reportIssue(methodName, "The return value of \"" + methodName.name() + "\" must be used.");
       }
     }
+  }
+
+  private static boolean isSwitchExpressionYieldedExpression(Tree tree) {
+    return tree.parent().is(Tree.Kind.CASE_GROUP);
   }
 
   private static boolean isExcluded(MethodInvocationTree mit) {

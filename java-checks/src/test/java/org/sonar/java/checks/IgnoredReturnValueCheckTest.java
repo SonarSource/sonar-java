@@ -35,5 +35,6 @@ public class IgnoredReturnValueCheckTest {
   public void exceptions() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/IgnoredReturnValueCheckUnknownSymbols.java", new IgnoredReturnValueCheck());
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/IgnoredReturnValueCheckInternalCalls.java", new IgnoredReturnValueCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/IgnoredReturnValueCheckJava13.java", new IgnoredReturnValueCheck(), 13);
   }
 }
