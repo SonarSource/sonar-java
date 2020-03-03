@@ -30,11 +30,13 @@ import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -42,6 +44,8 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.helpers.ExpressionsHelper.getConstantValueAsString;
+import static org.sonar.java.checks.security.TriggeringSecuringHelper.isInvocationOnVariable;
+import static org.sonar.java.model.ExpressionUtils.extractIdentifierSymbol;
 
 @Rule(key = "S5527")
 public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
@@ -153,19 +157,28 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
     if (method == null) {
       return;
     }
-    if (ENABLING_SSL_METHODS.matches(mit) && LiteralUtils.isTrue(mit.arguments().get(0))) {
-      MethodBodyApacheVisitor apacheVisitor = new MethodBodyApacheVisitor();
-      method.accept(apacheVisitor);
-      if (!apacheVisitor.isSecured) {
-        reportIssue(mit, ISSUE_MESSAGE);
-      }
-    } else if (HASHTABLE_PUT.matches(mit) && isSettingSSL(mit.arguments())) {
-      MethodBodyHashtableVisitor hashtableVisitor = new MethodBodyHashtableVisitor();
-      method.accept(hashtableVisitor);
-      if (!hashtableVisitor.isSecured) {
-        reportIssue(mit, "Enable server hostname verification on this SSL/TLS connection, by setting \"mail.smtp.ssl.checkserveridentity\" to true.");
-      }
+
+    ExpressionTree methodSelect = mit.methodSelect();
+
+    if (!methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      return;
     }
+
+    extractIdentifierSymbol(((MemberSelectExpressionTree)methodSelect).expression()).ifPresent(symbol -> {
+      if (ENABLING_SSL_METHODS.matches(mit) && LiteralUtils.isTrue(mit.arguments().get(0))) {
+        MethodBodyApacheVisitor apacheVisitor = new MethodBodyApacheVisitor(symbol);
+        method.accept(apacheVisitor);
+        if (!apacheVisitor.isSecured) {
+          reportIssue(mit, ISSUE_MESSAGE);
+        }
+      } else if (HASHTABLE_PUT.matches(mit) && isSettingSSL(mit.arguments())) {
+        MethodBodyHashtableVisitor hashtableVisitor = new MethodBodyHashtableVisitor(symbol);
+        method.accept(hashtableVisitor);
+        if (!hashtableVisitor.isSecured) {
+          reportIssue(mit, "Enable server hostname verification on this SSL/TLS connection, by setting \"mail.smtp.ssl.checkserveridentity\" to true.");
+        }
+      }
+    });
   }
 
   private static boolean isSettingSSL(Arguments args) {
@@ -179,15 +192,20 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
 
   private static class MethodBodyApacheVisitor extends BaseTreeVisitor {
     private boolean isSecured = false;
+    private Symbol variable;
 
     private static final MethodMatcher SET_SSL_CHECK_SERVER_ID = MethodMatcher.create()
       .typeDefinition(APACHE_EMAIL)
       .name("setSSLCheckServerIdentity")
       .addParameter("boolean");
 
+    MethodBodyApacheVisitor(Symbol variable) {
+      this.variable = variable;
+    }
+
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (SET_SSL_CHECK_SERVER_ID.matches(mit) && isNotFalse(mit.arguments().get(0))) {
+      if (isInvocationOnVariable(mit, variable) && SET_SSL_CHECK_SERVER_ID.matches(mit) && isNotFalse(mit.arguments().get(0))) {
         this.isSecured = true;
       }
       super.visitMethodInvocation(mit);
@@ -196,14 +214,21 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
 
   private static class MethodBodyHashtableVisitor extends BaseTreeVisitor {
     private boolean isSecured = false;
+    private Symbol variable;
+
+    MethodBodyHashtableVisitor(Symbol variable) {
+      this.variable = variable;
+    }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      Arguments args = mit.arguments();
-      if (HASHTABLE_PUT.matches(mit)
-        && "mail.smtp.ssl.checkserveridentity".equals(getConstantValueAsString(args.get(0)).value())
-        && isNotFalse(args.get(1))) {
-        this.isSecured = true;
+      if (isInvocationOnVariable(mit, variable)) {
+        Arguments args = mit.arguments();
+        if (HASHTABLE_PUT.matches(mit)
+          && "mail.smtp.ssl.checkserveridentity".equals(getConstantValueAsString(args.get(0)).value())
+          && isNotFalse(args.get(1))) {
+          this.isSecured = true;
+        }
       }
       super.visitMethodInvocation(mit);
     }

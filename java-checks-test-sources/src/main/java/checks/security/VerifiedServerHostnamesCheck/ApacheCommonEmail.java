@@ -69,6 +69,18 @@ class ApacheEmail {
     Email email = new SimpleEmail();
     email.setStartTLSRequired(true);   // Noncompliant
   }
+
+  public void foo12(boolean cond) {
+    if (cond) {
+      Email email = new SimpleEmail();
+      email.setSSLOnConnect(true);  // Noncompliant
+      email.setSSLCheckServerIdentity(false);
+    } else {
+      Email email = new SimpleEmail();
+      email.setSSLOnConnect(true);  // Compliant
+      email.setSSLCheckServerIdentity(true);
+    }
+  }
 }
 interface Test {
   java.util.function.Supplier<Object> s = () -> {
