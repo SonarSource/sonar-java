@@ -1,5 +1,6 @@
 package checks.serialization;
 
+import java.io.Externalizable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +22,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.dom4j.io.SAXEventRecorder;
+
+import static java.util.Collections.EMPTY_LIST;
 
 class SerializableObjectInSessionCheck {
 
@@ -44,7 +48,7 @@ class SerializableObjectInSessionCheck {
     session.setAttribute("nonSerializableParameterized", new CustomStack<String>()); // Noncompliant {{Make "CustomStack" and its parameters serializable or don't store it in the session.}}
 
     Iterable<String> iterable = new ArrayList<>();
-    session.setAttribute("name", iterable); // Noncompliant - false positive
+    session.setAttribute("name", iterable);
 
     Collection<String> collection = new ArrayList<>();
     session.setAttribute("name", collection); // Compliant
@@ -68,17 +72,30 @@ class SerializableObjectInSessionCheck {
     session.setAttribute("name", deque); // Compliant
 
     Map<String, String> map = new HashMap<>();
-    session.setAttribute("name", map); // Noncompliant - false positive
+    session.setAttribute("name", map);
 
     SortedMap<String, String> sortedMap = new TreeMap<>();
-    session.setAttribute("name", sortedMap); // Noncompliant - false positive
+    session.setAttribute("name", sortedMap);
 
     NavigableMap<String, String> navigableMap = new TreeMap<>();
-    session.setAttribute("name", navigableMap); // Noncompliant - false positive
+    session.setAttribute("name", navigableMap);
 
     Enumeration<String> enumeration = Collections.emptyEnumeration();
-    session.setAttribute("name", enumeration); // Noncompliant - false positive
+    session.setAttribute("name", enumeration);
 
+    Externalizable externalizable = new SAXEventRecorder();
+    session.setAttribute("name", externalizable);
+
+    // EMPTY_LIST declaration is not in this file, symbol.declaration is null
+    session.setAttribute("name", EMPTY_LIST);
+
+    Class<?> serializableClass;
+    serializableClass =  String.class;
+    session.setAttribute("name",  serializableClass);
+
+    Class<?> notSerializableClass;
+    notSerializableClass = Void.class;
+    session.setAttribute("name",  notSerializableClass); // Noncompliant {{Make "Class" and its parameters serializable or don't store it in the session.}}
   }
 
   public class Address {

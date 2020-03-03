@@ -44,43 +44,43 @@ class NonSerializableWriteCheck {
     }
     out.writeObject(array);
 
-    out.writeObject(java.util.Arrays.asList("one", "two")); // Noncompliant - false positive
+    out.writeObject(java.util.Arrays.asList("one", "two"));
 
     Iterable<String> iterable = new ArrayList<>();
-    out.writeObject(iterable); // Noncompliant - false positive
+    out.writeObject(iterable);
 
     Collection<String> collection = new ArrayList<>();
-    out.writeObject(collection); // Noncompliant - false positive
+    out.writeObject(collection);
 
     List<String> list = new ArrayList<>();
-    out.writeObject(list); // Noncompliant - false positive
+    out.writeObject(list);
 
     Set<String> set = new HashSet<>();
-    out.writeObject(set); // Noncompliant - false positive
+    out.writeObject(set);
 
     SortedSet<String> sortedSet = new TreeSet<>();
-    out.writeObject(sortedSet); // Noncompliant - false positive
+    out.writeObject(sortedSet);
 
     NavigableSet<String> navigableSet = new TreeSet<>();
-    out.writeObject(navigableSet); // Noncompliant - false positive
+    out.writeObject(navigableSet);
 
     Queue<String> queue = new LinkedList<>();
-    out.writeObject(queue); // Noncompliant - false positive
+    out.writeObject(queue);
 
     Deque<String> deque = new ArrayDeque<>();
-    out.writeObject(deque); // Noncompliant - false positive
+    out.writeObject(deque);
 
     Map<String, String> map = new HashMap<>();
-    out.writeObject(map); // Noncompliant - false positive
+    out.writeObject(map);
 
     SortedMap<String, String> sortedMap = new TreeMap<>();
-    out.writeObject(sortedMap); // Noncompliant - false positive
+    out.writeObject(sortedMap);
 
     NavigableMap<String, String> navigableMap = new TreeMap<>();
-    out.writeObject(navigableMap); // Noncompliant - false positive
+    out.writeObject(navigableMap);
 
     Enumeration<String> enumeration = Collections.emptyEnumeration();
-    out.writeObject(enumeration); // Noncompliant - false positive
+    out.writeObject(enumeration);
   }
 }
 
@@ -93,7 +93,27 @@ class MyNonSerializable implements Runnable {
   }
 }
 
-class ParameterizedSerializable<T> implements Serializable {
+class ParameterizedObject<T> implements Serializable {
+
+  T t;
+
+  private void writeObject(ObjectOutputStream s) throws java.io.IOException {
+    s.writeObject(t);
+  }
+
+}
+
+class ParameterizedMyNonSerializable<T extends MyNonSerializable> implements Serializable {
+
+  T t;
+
+  private void writeObject(ObjectOutputStream s) throws java.io.IOException {
+    s.writeObject(t); // Noncompliant {{Make the "T" class "Serializable" or don't write it.}}
+  }
+
+}
+
+class ParameterizedSerializable<T extends Serializable> implements Serializable {
 
   T t;
 
@@ -113,9 +133,9 @@ class TypeOfAssignedExpressions {
 
   void foo() {
     try (FileOutputStream fos = new FileOutputStream(""); ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-      oos.writeObject(cacheProp); // compliant, real type is hashmap
-      oos.writeObject(cacheVar); // Noncompliant : no initializer
-      oos.writeObject(cacheVar2); // Noncompliant not final, so we are unsure of concrete type
+      oos.writeObject(cacheProp); // Compliant, real type is HashMap
+      oos.writeObject(cacheVar); // Compliant, real type is null
+      oos.writeObject(cacheVar2); // Compliant, real type is HashMap
     } catch (final Exception e) {
       e.printStackTrace();
     }

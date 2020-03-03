@@ -27,10 +27,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -148,6 +152,54 @@ public class ExpressionsHelper {
 
     public List<JavaFileScannerContext.Location> valuePath() {
       return valuePath;
+    }
+  }
+
+  public static boolean isNotSerializable(ExpressionTree expression) {
+    return isNonSerializable(expression.symbolType()) || isAssignedToNonSerializable(expression);
+  }
+
+  private static boolean isNonSerializable(Type type) {
+    if (type.isArray()) {
+      return isNonSerializable(((Type.ArrayType) type).elementType());
+    }
+    if (JUtils.typeArguments(type).stream().anyMatch(ExpressionsHelper::isNonSerializable)) {
+      return true;
+    }
+    if (type.isPrimitive() ||
+      type.is("java.lang.Object") ||
+      type.isSubtypeOf("java.io.Serializable")) {
+      return false;
+    }
+    // note: this is assuming that custom implementors of Collection
+    // have the good sense to make it serializable just like all implementations in the JDK
+    if(type.isSubtypeOf("java.lang.Iterable") ||
+      type.isSubtypeOf("java.util.Map") ||
+      type.isSubtypeOf("java.util.Enumeration")) {
+      return false;
+    }
+    Type erasedType = type.erasure();
+    return erasedType.equals(type) || isNonSerializable(erasedType);
+  }
+
+  private static boolean isAssignedToNonSerializable(ExpressionTree expression) {
+    return ExpressionUtils.extractIdentifierSymbol(expression)
+      .filter(symbol -> initializedAndAssignedExpressionStream(symbol).anyMatch(ExpressionsHelper::isNotSerializable))
+      .isPresent();
+  }
+
+  public static Stream<ExpressionTree> initializedAndAssignedExpressionStream(Symbol symbol) {
+    Tree declaration = symbol.declaration();
+    if (declaration == null) {
+      return Stream.empty();
+    }
+    Stream<ExpressionTree> assignedExpressionStream = getReassignments(declaration, symbol.usages()).stream()
+      .map(AssignmentExpressionTree::expression);
+    ExpressionTree initializer = getInitializerOrExpression(declaration);
+    if (initializer == null) {
+      return assignedExpressionStream;
+    } else {
+      return Stream.concat(Stream.of(initializer), assignedExpressionStream);
     }
   }
 
