@@ -1,11 +1,12 @@
 package checks;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.FileOutputStream;
 import java.io.Serializable;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 class NonSerializableWriteCheck {
   void myMethod(ObjectOutputStream out, Object x, byte[] array) throws IOException {
@@ -26,6 +27,10 @@ class NonSerializableWriteCheck {
       out.writeObject(new MyNonSerializable()); // Noncompliant [[sc=23;ec=46]] {{Make the "checks.MyNonSerializable" class "Serializable" or don't write it.}}
     }
     out.writeObject(array);
+
+    out.writeObject(java.util.Arrays.asList("one", "two")); // Noncompliant - false positive
+    List<String> list = new ArrayList<>();
+    out.writeObject(list); // Noncompliant - false positive
   }
 }
 

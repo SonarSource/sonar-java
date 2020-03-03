@@ -1,5 +1,7 @@
 package checks.serialization;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -23,6 +25,9 @@ class SerializableObjectInSessionCheck {
     session.setAttribute("stringList", java.util.Arrays.asList("one", "two"));
 
     session.setAttribute("nonSerializableParameterized", new CustomStack<String>()); // Noncompliant {{Make "CustomStack" and its parameters serializable or don't store it in the session.}}
+
+    Map<String, String> map = new HashMap<>();
+    session.setAttribute("test with map", map); // Noncompliant - false positive
   }
 
   public class Address {
