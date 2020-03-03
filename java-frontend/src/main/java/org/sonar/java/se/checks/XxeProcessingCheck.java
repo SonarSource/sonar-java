@@ -306,7 +306,7 @@ public class XxeProcessingCheck extends SECheck {
 
       if (TRANSFERRING_METHOD_CALLS.anyMatch(mit)) {
         // transfer same SV to the result of the method invocation.
-        constraintManager.setValueFactory(() -> programState.peekValue());
+        constraintManager.setValueFactory(() -> programState.peekValue(mit.arguments().size()));
       } else if (FEATURES_AND_PROPERTIES_SETTERS.anyMatch(mit)) {
         // check secured by attribute or feature
         Arguments arguments = mit.arguments();

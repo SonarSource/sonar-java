@@ -18,6 +18,14 @@ class SchemaFactory_Validator {
     return validator;
   }
 
+  Validator new_schema_with_argument () throws SAXException  {
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI); // Noncompliant
+    StreamSource xsdStreamSource = new StreamSource("xxe.xsd");
+    Schema schema = schemaFactory.newSchema(xsdStreamSource);
+    Validator validator = schema.newValidator();
+    return validator;
+  }
+
   // Securing at validator level
   Validator withAccessExternalDtdAndExternalSchema_validator() throws SAXException  {
     SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI); // Compliant
