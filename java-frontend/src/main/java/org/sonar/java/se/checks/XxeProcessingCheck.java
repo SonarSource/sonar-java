@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -55,6 +56,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2755")
 public class XxeProcessingCheck extends SECheck {
@@ -293,6 +295,11 @@ public class XxeProcessingCheck extends SECheck {
     }
 
     @Override
+    public void visitVariable(VariableTree tree) {
+      programState = addNamedConstraint(tree.initializer(), programState);
+    }
+
+    @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
 
       // Test initialisation of XML processing API
@@ -327,7 +334,7 @@ public class XxeProcessingCheck extends SECheck {
     }
 
     private ProgramState checkArguments(ProgramState state, Arguments arguments, XxeProperty property) {
-      if (isSettingProperty(arguments.get(0), property.propertyName())) {
+      if (isSettingProperty(state, arguments.get(0), property)) {
         SymbolicValue sv1 = state.peekValue();
         ExpressionTree arg1 = arguments.get(1);
         if (property.isSecuring(sv1, arg1)) {
@@ -339,8 +346,13 @@ public class XxeProcessingCheck extends SECheck {
       return state;
     }
 
-    boolean isSettingProperty(ExpressionTree arg0, String propertyName) {
-      return arg0.asConstant(String.class).filter(propertyName::equals).isPresent();
+    boolean isSettingProperty(ProgramState state, ExpressionTree arg0, XxeProperty property) {
+      if (arg0.asConstant(String.class).filter(property::isNamed).isPresent()) {
+        return true;
+      }
+
+      ConstraintsByDomain constraintsByDomain = state.getConstraints(state.peekValue(1));
+      return constraintsByDomain != null && constraintsByDomain.hasConstraint(property.namedConstraint());
     }
   }
 
@@ -349,6 +361,23 @@ public class XxeProcessingCheck extends SECheck {
     PostStatementVisitor visitor = new PostStatementVisitor(context);
     syntaxNode.accept(visitor);
     return visitor.programState;
+  }
+
+  private static ProgramState addNamedConstraint(@Nullable ExpressionTree expressionTree, ProgramState state) {
+    if (expressionTree != null) {
+      SymbolicValue sv = state.peekValue();
+      if (sv != null) {
+        Optional<String> value = expressionTree.asConstant(String.class);
+        if (value.isPresent()) {
+          for (XxeProperty property : PROPERTIES_TO_CHECK) {
+            if (property.isNamed(value.get())) {
+              return state.addConstraint(sv, property.namedConstraint());
+            }
+          }
+        }
+      }
+    }
+    return state;
   }
 
   private static class PostStatementVisitor extends CheckerTreeNodeVisitor {
@@ -381,8 +410,10 @@ public class XxeProcessingCheck extends SECheck {
       if (symbol != null && sv instanceof XxeSymbolicValue) {
         ((XxeSymbolicValue) sv).setField(ProgramState.isField(symbol));
       }
-    }
 
+      // Add a constraint when the tree assign the property key to a variable.
+      programState = addNamedConstraint(tree.expression(), programState);
+    }
   }
 
   @Override
@@ -408,8 +439,8 @@ public class XxeProcessingCheck extends SECheck {
         "Disable access to external entities in XML parsing.",
         FlowComputation.flowWithoutExceptions(context.getNode(), xxeSV,
           c -> c == AttributeDTD.UNSECURED
-          || c == AttributeSchema.UNSECURED
-          || c == AttributeStyleSheet.UNSECURED
+            || c == AttributeSchema.UNSECURED
+            || c == AttributeStyleSheet.UNSECURED
           , FLOW_CONSTRAINT_DOMAIN));
     }
   }

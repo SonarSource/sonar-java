@@ -34,12 +34,16 @@ public interface XxeProperty {
 
   XxePropertyHolder properties();
 
-  default String propertyName() {
-    return properties().propertyName;
+  default boolean isNamed(String name) {
+    return properties().propertyName.equals(name);
   }
 
   default Constraint securedConstraint() {
     return properties().secured;
+  }
+
+  default Constraint namedConstraint() {
+    return properties().named;
   }
 
   default boolean isSecuring(@Nullable SymbolicValue sv1, ExpressionTree arg1) {
@@ -81,10 +85,13 @@ public interface XxeProperty {
     private final BiPredicate<SymbolicValue, ExpressionTree> unsecuring;
     private final Constraint unsecured;
 
-    public XxePropertyHolder(String propertyName,
+    private final Constraint named;
+
+    public XxePropertyHolder(String propertyName, Constraint named,
       BiPredicate<SymbolicValue, ExpressionTree> securing, Constraint secured,
       BiPredicate<SymbolicValue, ExpressionTree> unsecuring, Constraint unsecured) {
       this.propertyName = propertyName;
+      this.named = named;
       this.securing = securing;
       this.secured = secured;
       this.unsecuring = unsecuring;
@@ -93,10 +100,10 @@ public interface XxeProperty {
   }
 
   enum AttributeDTD implements Constraint, XxeProperty {
-    UNSECURED, SECURED;
+    UNSECURED, SECURED, NAMED;
 
     private static final XxePropertyHolder PROPERTIES = new XxePropertyHolder(
-      "http://javax.xml.XMLConstants/property/accessExternalDTD",
+      "http://javax.xml.XMLConstants/property/accessExternalDTD", NAMED,
       XxeProperty::isSetToEmptyString, SECURED,
       XxeProperty::isSetToNonEmptyString, UNSECURED);
 
@@ -112,10 +119,10 @@ public interface XxeProperty {
   }
 
   enum AttributeSchema implements Constraint, XxeProperty {
-    UNSECURED, SECURED;
+    UNSECURED, SECURED, NAMED;
 
     private static final XxePropertyHolder PROPERTIES = new XxePropertyHolder(
-      "http://javax.xml.XMLConstants/property/accessExternalSchema",
+      "http://javax.xml.XMLConstants/property/accessExternalSchema", NAMED,
       XxeProperty::isSetToEmptyString, SECURED,
       XxeProperty::isSetToNonEmptyString, UNSECURED);
 
@@ -131,10 +138,10 @@ public interface XxeProperty {
   }
 
   enum AttributeStyleSheet implements Constraint, XxeProperty {
-    UNSECURED, SECURED;
+    UNSECURED, SECURED, NAMED;
 
     private static final XxePropertyHolder PROPERTIES = new XxePropertyHolder(
-      "http://javax.xml.XMLConstants/property/accessExternalStylesheet",
+      "http://javax.xml.XMLConstants/property/accessExternalStylesheet", NAMED,
       XxeProperty::isSetToEmptyString, SECURED,
       XxeProperty::isSetToNonEmptyString, UNSECURED);
 
@@ -150,10 +157,10 @@ public interface XxeProperty {
   }
 
   enum FeatureSupportDtd implements Constraint, XxeProperty {
-    UNSECURED, SECURED;
+    UNSECURED, SECURED, NAMED;
 
     private static final XxePropertyHolder PROPERTIES = new XxePropertyHolder(
-      "javax.xml.stream.supportDTD",
+      "javax.xml.stream.supportDTD", NAMED,
       XxeProperty::isSetToFalse, SECURED,
       XxeProperty::isSetToTrue, UNSECURED);
 
@@ -164,10 +171,10 @@ public interface XxeProperty {
   }
 
   enum FeatureIsSupportingExternalEntities implements Constraint, XxeProperty {
-    UNSECURED, SECURED;
+    UNSECURED, SECURED, NAMED;
 
     private static final XxePropertyHolder PROPERTIES = new XxePropertyHolder(
-      "javax.xml.stream.isSupportingExternalEntities",
+      "javax.xml.stream.isSupportingExternalEntities", NAMED,
       XxeProperty::isSetToFalse, SECURED,
       XxeProperty::isSetToTrue, UNSECURED);
 
@@ -178,10 +185,10 @@ public interface XxeProperty {
   }
 
   enum FeatureDisallowDoctypeDecl implements Constraint, XxeProperty {
-    UNSECURED, SECURED;
+    UNSECURED, SECURED, NAMED;
 
     private static final XxePropertyHolder PROPERTIES = new XxePropertyHolder(
-      "http://apache.org/xml/features/disallow-doctype-decl",
+      "http://apache.org/xml/features/disallow-doctype-decl", NAMED,
       XxeProperty::isSetToTrue, SECURED,
       XxeProperty::isSetToFalse, UNSECURED);
 
@@ -192,10 +199,10 @@ public interface XxeProperty {
   }
 
   enum FeatureLoadExternalDtd implements Constraint, XxeProperty {
-    UNSECURED, SECURED;
+    UNSECURED, SECURED, NAMED;
 
     private static final XxePropertyHolder PROPERTIES = new XxePropertyHolder(
-      "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+      "http://apache.org/xml/features/nonvalidating/load-external-dtd", NAMED,
       XxeProperty::isSetToFalse, SECURED,
       XxeProperty::isSetToTrue, UNSECURED);
 
@@ -206,10 +213,10 @@ public interface XxeProperty {
   }
 
   enum FeatureExternalGeneralEntities implements Constraint, XxeProperty {
-    UNSECURED, SECURED;
+    UNSECURED, SECURED, NAMED;
 
     private static final XxePropertyHolder PROPERTIES = new XxePropertyHolder(
-      "http://xml.org/sax/features/external-general-entities",
+      "http://xml.org/sax/features/external-general-entities", NAMED,
       XxeProperty::isSetToFalse, SECURED,
       XxeProperty::isSetToTrue, UNSECURED);
 
