@@ -71,7 +71,7 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 #### **6.1**
 
-* The `ExpressionTree` interface, from the AST API, is now enriched by two new methods `Optional<Object> asConstant()` and `<T> Optional<T> asConstant(Class<T> type)`. These methods allow to try retrieving the equivalent constant value of an expression (from a variable, for instance). An example of usage would be:
+* The `ExpressionTree` interface, from the AST API, is now enriched by two new methods `Optional<Object> asConstant()` and `<T> Optional<T> asConstant(Class<T> type)`. These methods let you try to retrieve the equivalent constant value of an expression (from a variable, for instance). An example of usage would be:
 
 ```
 class A {
