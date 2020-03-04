@@ -245,10 +245,6 @@ public class JParser {
 
   public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "13";
 
-  public static CompilationUnitTree parse(String version, String unitName, String source, List<File> classpath) {
-    return parse(version, unitName, source, true, classpath);
-  }
-
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
    * @throws RecognitionException in case of syntax errors
@@ -257,7 +253,6 @@ public class JParser {
     String version,
     String unitName,
     String source,
-    boolean resolveBindings,
     List<File> classpath
   ) {
     ASTParser astParser = ASTParser.newParser(AST.JLS13);
@@ -278,7 +273,7 @@ public class JParser {
     );
     astParser.setUnitName(unitName);
 
-    astParser.setResolveBindings(resolveBindings);
+    astParser.setResolveBindings(true);
     astParser.setBindingsRecovery(true);
 
     char[] sourceChars = source.toCharArray();
