@@ -22,10 +22,12 @@ package org.sonar.java.checks.serialization;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class SerializableObjectInSessionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/serialization/SerializableObjectInSessionCheck.java", new SerializableObjectInSessionCheck());
+    JavaCheckVerifier.verify(testSourcesPath("checks/serialization/SerializableObjectInSessionCheck.java"), new SerializableObjectInSessionCheck());
   }
 }

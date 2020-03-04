@@ -19,7 +19,10 @@
  */
 package org.sonar.java.checks.serialization;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -28,12 +31,8 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S2441")
 public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
-
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -45,31 +44,10 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree argument = mit.arguments().get(1);
     Type type = argument.symbolType();
-    if (!isSerializable(type)) {
+    if (ExpressionsHelper.isNotSerializable(argument)) {
       String andParameters = JUtils.isParametrized(type) ? " and its parameters" : "";
       reportIssue(argument, "Make \"" + type + "\"" + andParameters + " serializable or don't store it in the session.");
     }
   }
 
-  private static boolean isSerializable(Type type) {
-    if (type.isPrimitive()) {
-      return true;
-    }
-    if (type.isArray()) {
-      return isSerializable(((Type.ArrayType) type).elementType());
-    }
-    if (JUtils.isParametrized(type)) {
-      return isSerializableParametrized(type);
-    }
-    return type.isSubtypeOf("java.io.Serializable");
-  }
-
-  private static boolean isSerializableParametrized(Type type) {
-    // note: this is assuming that custom implementors of Collection
-    // have the good sense to make it serializable just like all implementations in the JDK
-    //
-    // note: type.substitution(t) should never be null
-    return (type.isSubtypeOf("java.io.Serializable") || type.isSubtypeOf("java.util.Collection"))
-      && JUtils.typeArguments(type).stream().allMatch(SerializableObjectInSessionCheck::isSerializable);
-  }
 }
