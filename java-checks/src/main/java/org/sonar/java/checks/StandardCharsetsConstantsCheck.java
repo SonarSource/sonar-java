@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -102,7 +103,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
       constantNames.put(charset.name(), constantName);
 
       for (String alias : charset.aliases()) {
-        constantNames.put(alias, constantName);
+        constantNames.put(alias.toUpperCase(Locale.ROOT), constantName);
       }
     }
 
@@ -263,6 +264,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
 
   private static Optional<String> getConstantName(ExpressionTree argument) {
     return argument.asConstant(String.class)
+      .map(String::toUpperCase)
       .map(ALIAS_TO_CONSTANT::get)
       .flatMap(Optional::ofNullable);
   }

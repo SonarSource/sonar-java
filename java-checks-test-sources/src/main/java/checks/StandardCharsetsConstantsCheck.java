@@ -63,6 +63,8 @@ class StandardCharsetsConstantsCheck {
     Charset.forName("UnicodeLittleUnmarked"); // Noncompliant {{Replace Charset.forName() call with StandardCharsets.UTF_16LE}}
     Charset.forName("UTF-8"); // Noncompliant {{Replace Charset.forName() call with StandardCharsets.UTF_8}}
     Charset.forName("UTF8"); // Noncompliant {{Replace Charset.forName() call with StandardCharsets.UTF_8}}
+    Charset.forName("utf-8"); // Noncompliant {{Replace Charset.forName() call with StandardCharsets.UTF_8}}
+    Charset.forName("Utf-8"); // Noncompliant {{Replace Charset.forName() call with StandardCharsets.UTF_8}}
 
     org.apache.commons.codec.Charsets.toCharset("UTF-8"); // Noncompliant {{Replace Charsets.toCharset() call with StandardCharsets.UTF_8}} [[sc=5;ec=57]]
 
