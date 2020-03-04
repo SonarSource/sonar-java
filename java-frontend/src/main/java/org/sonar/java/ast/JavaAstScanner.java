@@ -21,11 +21,9 @@ package org.sonar.java.ast;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Iterables;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.InterruptedIOException;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 import org.sonar.api.batch.fs.InputFile;
@@ -38,7 +36,6 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.analyzer.commons.ProgressReport;
 
 public class JavaAstScanner {
   private static final Logger LOG = Loggers.get(JavaAstScanner.class);
@@ -51,27 +48,22 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<InputFile> inputFiles) {
-    ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(Iterables.transform(inputFiles, InputFile::toString));
-
-    boolean successfullyCompleted = false;
-    boolean cancelled = false;
+    final String version;
+    if (visitor.getJavaVersion() == null || visitor.getJavaVersion().asInt() < 0) {
+      version = /* default */ JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    } else {
+      version = Integer.toString(visitor.getJavaVersion().asInt());
+    }
     try {
-      for (InputFile inputFile : inputFiles) {
-        if (analysisCancelled()) {
-          cancelled = true;
-          break;
-        }
-        simpleScan(inputFile);
-        progressReport.nextFile();
-      }
-      successfullyCompleted = !cancelled;
+      JParser.parse(
+        version,
+        visitor.getClasspath(),
+        inputFiles,
+        this::analysisCancelled,
+        sonarComponents == null || !sonarComponents.isSonarLintContext(),
+        this::simpleScan
+      );
     } finally {
-      if (successfullyCompleted) {
-        progressReport.stop();
-      } else {
-        progressReport.cancel();
-      }
       visitor.endOfAnalysis();
     }
   }
@@ -80,22 +72,10 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  private void simpleScan(InputFile inputFile) {
+  private void simpleScan(InputFile inputFile, JParser.Result result) {
     visitor.setCurrentFile(inputFile);
     try {
-      String fileContent = inputFile.contents();
-      final String version;
-      if (visitor.getJavaVersion() == null || visitor.getJavaVersion().asInt() < 0) {
-        version = /* default */ JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-      } else {
-        version = Integer.toString(visitor.getJavaVersion().asInt());
-      }
-      Tree ast = JParser.parse(
-        version,
-        inputFile.filename(),
-        fileContent,
-        visitor.getClasspath()
-      );
+      Tree ast = result.get();
       visitor.visitFile(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);

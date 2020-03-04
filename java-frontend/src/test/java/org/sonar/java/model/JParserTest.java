@@ -21,8 +21,15 @@ package org.sonar.java.model;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.function.BiConsumer;
+
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -37,6 +44,52 @@ import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JParserTest {
+
+  @Test
+  public void should_rethrow_when_consumer_throws() {
+    RuntimeException expected = new RuntimeException();
+    BiConsumer<InputFile, JParser.Result> consumer = (inputFile, result) -> { throw expected; };
+    InputFile inputFile = Mockito.mock(InputFile.class);
+    Mockito
+      .doReturn("/tmp/Example.java")
+      .when(inputFile).absolutePath();
+
+    RuntimeException actual = assertThrows(RuntimeException.class, () ->
+      JParser.parse(
+        JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
+        Collections.emptyList(),
+        Collections.singleton(inputFile),
+        () -> false,
+        false,
+        consumer
+      ));
+    assertSame(expected, actual);
+  }
+
+  @Test
+  public void consumer_should_receive_exceptions_thrown_during_parsing() throws Exception {
+    List<JParser.Result> results = new ArrayList<>();
+    BiConsumer<InputFile, JParser.Result> consumer = (inputFile, result) -> results.add(result);
+
+    InputFile inputFile = Mockito.mock(InputFile.class);
+    Mockito
+      .doReturn("/tmp/Example.java")
+      .when(inputFile).absolutePath();
+    Mockito
+      .doThrow(IOException.class)
+      .when(inputFile).contents();
+
+    JParser.parse(
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      Collections.emptyList(),
+      Collections.singleton(inputFile),
+      () -> false,
+      false,
+      consumer
+    );
+    JParser.Result result = results.get(0);
+    assertThrows(IOException.class, result::get);
+  }
 
   @Test
   public void should_throw_RecognitionException_in_case_of_syntax_error() {
