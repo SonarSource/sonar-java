@@ -1,5 +1,6 @@
 package checks.security.VerifiedServerHostnamesCheck;
 
+import java.util.Optional;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.SimpleEmail;
 
@@ -81,7 +82,28 @@ class ApacheEmail {
       email.setSSLCheckServerIdentity(true);
     }
   }
+
+  public void foo13(boolean cond) {
+    Email email = new SimpleEmail();
+    Optional.of(email).get().setSSLOnConnect(false); // Compliant
+    email.setSSLCheckServerIdentity(true);
+  }
+
+  public void foo14(boolean cond) {
+    Email email = new SimpleEmail();
+    email.setSSLOnConnect(false); // Compliant
+    Optional.of(email).get().setSSLCheckServerIdentity(true);
+  }
+
+  public void foo15(boolean cond) {
+    Email email = new SimpleEmail();
+    email.setSSLOnConnect(true);  // Compliant, can not match email to Optional, FN
+
+    Email email2 = new SimpleEmail();
+    Optional.of(email2).get().setSSLCheckServerIdentity(true);
+  }
 }
+
 interface Test {
   java.util.function.Supplier<Object> s = () -> {
     Email email = new SimpleEmail();

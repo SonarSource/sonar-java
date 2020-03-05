@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
@@ -164,21 +165,21 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    extractIdentifierSymbol(((MemberSelectExpressionTree)methodSelect).expression()).ifPresent(symbol -> {
-      if (ENABLING_SSL_METHODS.matches(mit) && LiteralUtils.isTrue(mit.arguments().get(0))) {
-        MethodBodyApacheVisitor apacheVisitor = new MethodBodyApacheVisitor(symbol);
-        method.accept(apacheVisitor);
-        if (!apacheVisitor.isSecured) {
-          reportIssue(mit, ISSUE_MESSAGE);
-        }
-      } else if (HASHTABLE_PUT.matches(mit) && isSettingSSL(mit.arguments())) {
-        MethodBodyHashtableVisitor hashtableVisitor = new MethodBodyHashtableVisitor(symbol);
-        method.accept(hashtableVisitor);
-        if (!hashtableVisitor.isSecured) {
-          reportIssue(mit, "Enable server hostname verification on this SSL/TLS connection, by setting \"mail.smtp.ssl.checkserveridentity\" to true.");
-        }
+    Symbol extractedIdentifier = extractIdentifierSymbol(((MemberSelectExpressionTree) methodSelect).expression()).orElse(null);
+
+    if (ENABLING_SSL_METHODS.matches(mit) && LiteralUtils.isTrue(mit.arguments().get(0))) {
+      MethodBodyApacheVisitor apacheVisitor = new MethodBodyApacheVisitor(extractedIdentifier);
+      method.accept(apacheVisitor);
+      if (!apacheVisitor.isSecured) {
+        reportIssue(mit, ISSUE_MESSAGE);
       }
-    });
+    } else if (HASHTABLE_PUT.matches(mit) && isSettingSSL(mit.arguments())) {
+      MethodBodyHashtableVisitor hashtableVisitor = new MethodBodyHashtableVisitor(extractedIdentifier);
+      method.accept(hashtableVisitor);
+      if (!hashtableVisitor.isSecured) {
+        reportIssue(mit, "Enable server hostname verification on this SSL/TLS connection, by setting \"mail.smtp.ssl.checkserveridentity\" to true.");
+      }
+    }
   }
 
   private static boolean isSettingSSL(Arguments args) {
@@ -199,13 +200,13 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
       .name("setSSLCheckServerIdentity")
       .addParameter("boolean");
 
-    MethodBodyApacheVisitor(Symbol variable) {
+    MethodBodyApacheVisitor(@Nullable Symbol variable) {
       this.variable = variable;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (isInvocationOnVariable(mit, variable) && SET_SSL_CHECK_SERVER_ID.matches(mit) && isNotFalse(mit.arguments().get(0))) {
+      if (isInvocationOnVariable(mit, variable, true) && SET_SSL_CHECK_SERVER_ID.matches(mit) && isNotFalse(mit.arguments().get(0))) {
         this.isSecured = true;
       }
       super.visitMethodInvocation(mit);
@@ -216,13 +217,13 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
     private boolean isSecured = false;
     private Symbol variable;
 
-    MethodBodyHashtableVisitor(Symbol variable) {
+    MethodBodyHashtableVisitor(@Nullable Symbol variable) {
       this.variable = variable;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (isInvocationOnVariable(mit, variable)) {
+      if (isInvocationOnVariable(mit, variable, true)) {
         Arguments args = mit.arguments();
         if (HASHTABLE_PUT.matches(mit)
           && "mail.smtp.ssl.checkserveridentity".equals(getConstantValueAsString(args.get(0)).value())

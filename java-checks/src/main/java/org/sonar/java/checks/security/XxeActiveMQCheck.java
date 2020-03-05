@@ -22,6 +22,7 @@ package org.sonar.java.checks.security;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
@@ -61,15 +62,13 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
     }
 
     Optional<Symbol> assignedSymbol = getAssignedSymbol(newClassTree);
-    assignedSymbol.ifPresent(symbol -> {
-      MethodBodyVisitor visitor = new MethodBodyVisitor(symbol);
-      enclosingMethod.accept(visitor);
-      if (!visitor.foundCallsToSecuringMethods()) {
-        reportIssue(newClassTree,
-          "Secure this \"ActiveMQConnectionFactory\" by whitelisting the trusted packages using the \"setTrustedPackages\" method and "
-            + "make sure the \"setTrustAllPackages\" is not set to true.");
-      }
-    });
+    MethodBodyVisitor visitor = new MethodBodyVisitor(assignedSymbol.orElse(null));
+    enclosingMethod.accept(visitor);
+    if (!visitor.foundCallsToSecuringMethods()) {
+      reportIssue(newClassTree,
+        "Secure this \"ActiveMQConnectionFactory\" by whitelisting the trusted packages using the \"setTrustedPackages\" method and "
+          + "make sure the \"setTrustAllPackages\" is not set to true.");
+    }
   }
 
   private static class MethodBodyVisitor extends BaseTreeVisitor {
@@ -88,7 +87,7 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
 
     private Symbol variable;
 
-    MethodBodyVisitor(Symbol variable) {
+    MethodBodyVisitor(@Nullable Symbol variable) {
       this.variable = variable;
     }
 
@@ -98,7 +97,7 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-      if (isInvocationOnVariable(methodInvocation, variable)) {
+      if (isInvocationOnVariable(methodInvocation, variable, true)) {
         Arguments arguments = methodInvocation.arguments();
         if (SET_TRUSTED_PACKAGES.matches(methodInvocation)) {
           hasTrustedPackages |= !arguments.get(0).is(Kind.NULL_LITERAL);

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import java.util.Optional;
+import javax.jms.JMSException;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 class A {
@@ -83,6 +85,27 @@ class A {
     } else {
       ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616"); // Compliant
       factory.setTrustedPackages(Arrays.asList("org.apache.activemq.test"));
+    }
+  }
+
+  void chained_and_secured(boolean condition) {
+    new ActiveMQConnectionFactory("tcp://localhost:61616").setTrustedPackages(Arrays.asList("org.apache.activemq.test"));
+  }
+
+  void chained_and_not_secured(boolean condition) throws JMSException {
+    new ActiveMQConnectionFactory("tcp://localhost:61616").createConnection();  // Noncompliant
+  }
+
+  void cannot_resolved_symbol(boolean condition) throws JMSException {
+    ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616"); // Compliant
+    Optional.of(factory).get().setTrustedPackages(Arrays.asList("org.apache.activemq.test"));
+  }
+
+  void conditional_2_different_factory_one_chained(boolean condition) {
+    if (condition) {
+      ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616"); // Compliant, FN
+    } else {
+      new ActiveMQConnectionFactory("tcp://localhost:61616").setTrustedPackages(Arrays.asList("org.apache.activemq.test"));
     }
   }
 

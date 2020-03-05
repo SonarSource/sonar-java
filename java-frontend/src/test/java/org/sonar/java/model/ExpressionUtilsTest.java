@@ -178,6 +178,8 @@ public class ExpressionUtilsTest {
         "    s1.toString();\n" +
         "    s2.toString();\n" +
         "    toString();\n" +
+        "    Optional.of(s1).get().toString();\n" +
+        "    Optional.of(s2).get().toString();\n" +
         "  }\n" +
         "}");
 
@@ -195,13 +197,25 @@ public class ExpressionUtilsTest {
       .map(MethodInvocationTree.class::cast)
       .collect(Collectors.toList());
 
-    assertThat(isInvocationOnVariable(invocations.get(0), variablesSymbols.get(0))).isTrue();
-    assertThat(isInvocationOnVariable(invocations.get(0), variablesSymbols.get(1))).isFalse();
-    assertThat(isInvocationOnVariable(invocations.get(1), variablesSymbols.get(0))).isFalse();
-    assertThat(isInvocationOnVariable(invocations.get(1), variablesSymbols.get(1))).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(0), variablesSymbols.get(0), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(0), variablesSymbols.get(1), true)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(1), variablesSymbols.get(0), true)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(1), variablesSymbols.get(1), true)).isTrue();
 
-    assertThat(isInvocationOnVariable(invocations.get(2), variablesSymbols.get(0))).isFalse();
-    assertThat(isInvocationOnVariable(invocations.get(2), variablesSymbols.get(1))).isFalse();
+    // We report the default value if we can not compare two symbol
+    assertThat(isInvocationOnVariable(invocations.get(2), variablesSymbols.get(0), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(2), variablesSymbols.get(1), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(3), variablesSymbols.get(0), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(3), variablesSymbols.get(1), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(4), variablesSymbols.get(0), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(4), variablesSymbols.get(1), true)).isTrue();
+
+    assertThat(isInvocationOnVariable(invocations.get(2), variablesSymbols.get(0), false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(2), variablesSymbols.get(1), false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(3), variablesSymbols.get(0), false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(3), variablesSymbols.get(1), false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(4), variablesSymbols.get(0), false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(4), variablesSymbols.get(1), false)).isFalse();
   }
 
 
