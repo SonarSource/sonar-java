@@ -46,14 +46,20 @@
   &lt;/xs:element&gt;
 &lt;/xs:schema&gt;
 </pre>
-<p>To protect Java XML Parsers from XXE attacks <a href="http://openjdk.java.net/jeps/185">these properties</a> have been implemented:</p>
-<p>- ACCESS_EXTERNAL_DTD: should be set to "" when processing XML/XSD/XLS files (it looks for external DOCTYPEs)</p>
-<p>- ACCESS_EXTERNAL_SCHEMA: should be set to "" when processing XML/XSD/XLS files (it looks for external schemalocation ect)</p>
-<p>- ACCESS_EXTERNAL_STYLESHEET should be set to "" when processing XLS file (it looks for external imports, includes ect); </p>
+<p>To protect Java XML Parsers from XXE attacks <a
+href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-94ABC0EE-9DC8-44F0-84AD-47ADD5340477">these
+properties</a> have been implemented:</p>
+<ul>
+  <li> ACCESS_EXTERNAL_DTD: should be set to "" when processing XML/XSD/XLS files (it looks for external DOCTYPEs) </li>
+  <li> ACCESS_EXTERNAL_SCHEMA: should be set to "" when processing XML/XSD/XLS files (it looks for external schemalocation ect) </li>
+  <li> ACCESS_EXTERNAL_STYLESHEET should be set to "" when processing XLS file (it looks for external imports, includes ect); </li>
+</ul>
 <p>Avoid FEATURE_SECURE_PROCESSING feature to protect from XXE attacks because depending on the implementation:</p>
-<p>- it has <a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/XMLConstants.html#FEATURE_SECURE_PROCESSING">no effect</a> to protect the
-parser from XXE attacks</p>
-<p>- or it's just an obscur shortcut (it could set ACCESS_EXTERNAL_DTD and ACCESS_EXTERNAL_SCHEMA to '')</p>
+<ul>
+  <li> it has <a
+  href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-88B04BE2-35EF-4F61-B4FA-57A0E9102342">no effect</a> to protect the parser from XXE attacks but helps guard against excessive memory consumption from XML processing. </li>
+  <li> or it's just an obscur shortcut (it could set ACCESS_EXTERNAL_DTD and ACCESS_EXTERNAL_SCHEMA to '') </li>
+</ul>
 <h2>Noncompliant Code Examples</h2>
 <p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilderFactory</a> library:</p>
 <pre>
@@ -108,6 +114,16 @@ Validator validator = schema.newValidator();   // Noncompliant
 
 StringWriter writer = new StringWriter();
 validator.validate(xmlStreamSource, new StreamResult(writer));
+</pre>
+<p><a href="https://dom4j.github.io/">Dom4j</a> library:</p>
+<pre>
+SAXReader xmlReader = new SAXReader(); // Noncompliant by default
+Document xmlResponse = xmlReader.read(xml);
+</pre>
+<p><a href="http://www.jdom.org/">Jdom2</a> library:</p>
+<pre>
+SAXBuilder builder = new SAXBuilder(); // Noncompliant by default
+Document document = builder.build(new File(xml));
 </pre>
 <h2>Compliant Solution</h2>
 <p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilderFactory</a> library:</p>
@@ -181,6 +197,20 @@ validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");   // Compliant
 
 StringWriter writer = new StringWriter();
 validator.validate(xmlStreamSource, new StreamResult(writer));
+</pre>
+<p>For <a href="https://dom4j.github.io/">dom4j</a> library, ACCESS_EXTERNAL_DTD and ACCESS_EXTERNAL_SCHEMA are not supported, thus a very strict fix
+is to disable doctype declarations:</p>
+<pre>
+SAXReader xmlReader = new SAXReader();
+xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true); // Compliant
+Document xmlResponse = xmlReader.read(xml);
+</pre>
+<p><a href="http://www.jdom.org/">Jdom2</a> library:</p>
+<pre>
+SAXBuilder builder = new SAXBuilder(); // Compliant
+builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
+builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // Compliant
+Document document = builder.build(new File(xml));
 </pre>
 <h2>See</h2>
 <ul>
