@@ -48,7 +48,6 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.java.se.symbolicvalues.SymbolicValue.ExceptionalSymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -418,17 +417,16 @@ public class XxeProcessingCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-
     ProgramState endState = context.getState();
-    if (endState.exitingOnRuntimeException() || endState.peekValue() instanceof ExceptionalSymbolicValue) {
+    if (endState.exitingOnRuntimeException()) {
       return;
     }
 
-    for (SymbolicValue sv : endState.getValuesWithConstraints(XxeSensitive.SENSITIVE)) {
-      if (sv instanceof XxeSymbolicValue) {
-        XxeSymbolicValue xxeSV = (XxeSymbolicValue) sv;
-        reportIfNotSecured(context, xxeSV, endState.getConstraints(xxeSV));
-      }
+    // We want to report only when the unsecured factory is returned, if it is the case, it will be on the top of the stack.
+    SymbolicValue peek = endState.peekValue();
+    if (peek instanceof XxeSymbolicValue) {
+      XxeSymbolicValue xxeSV = (XxeSymbolicValue) peek;
+      reportIfNotSecured(context, xxeSV, endState.getConstraints(xxeSV));
     }
   }
 

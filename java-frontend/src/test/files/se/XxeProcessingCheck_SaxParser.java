@@ -1,6 +1,9 @@
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.validation.SchemaFactory;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
@@ -155,6 +158,25 @@ class SAXParserTest {
     SAXParser parser = factory.newSAXParser();
     XMLReader xmlReader = parser.getXMLReader();
     xmlReader.parse("xxe.xml");
+  }
+
+  void correctly_secured_in_try_catch(InputSource inputSource) throws SAXException, ParserConfigurationException {
+    try {
+      DefaultHandler handler = new DefaultHandler();
+      SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+
+      SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+      schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+      schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      saxParserFactory.setSchema(schemaFactory.newSchema(new SAXSource(inputSource)));
+
+      SAXParser parser = saxParserFactory.newSAXParser();
+      parser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      parser.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+      parser.parse("xxe.xml", handler);
+    } catch(Exception e) {
+      // Do nothing
+    }
   }
 
   // Detect issues depending on the symbol
