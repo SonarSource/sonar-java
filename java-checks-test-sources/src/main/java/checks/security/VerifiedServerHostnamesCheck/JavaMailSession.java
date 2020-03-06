@@ -42,4 +42,25 @@ public class JavaMailSession {
     props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); // Noncompliant
     props.clear();   // this invocation does not check server's identity
   }
+
+  public void foo8(boolean cond) {
+    if (cond) {
+      Properties props = new Properties();
+      props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); // Noncompliant
+    } else {
+      Properties props = new Properties();
+      props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); // Compliant
+      props.put("mail.smtp.ssl.checkserveridentity", true);
+    }
+  }
+
+  public void foo9() {
+    Properties props = new Properties();
+    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");// Noncompliant
+    anotherUnrelatedCall();
+  }
+
+  private void anotherUnrelatedCall() {
+
+  }
 }

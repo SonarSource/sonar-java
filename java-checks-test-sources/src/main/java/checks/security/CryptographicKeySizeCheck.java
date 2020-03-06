@@ -1,6 +1,7 @@
 package checks.security;
 
 import java.security.KeyPairGenerator;
+import java.util.Optional;
 import javax.crypto.KeyGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.InvalidAlgorithmParameterException;
@@ -49,6 +50,28 @@ class CryptographicKeySizeCheckRSA {
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DH");
       keyGen.initialize(2048); // Compliant
     }
+  }
+
+  public void report_only_once_2(int size) throws NoSuchAlgorithmException {
+    if (size == 1) {
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DH");
+      Optional.of(keyGen).get().initialize(1); // Compliant, FN
+    } else if(size == 2) {
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+      Optional.of(keyGen).get().initialize(2); // Compliant, FN
+    } else if(size == 3) {
+      KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+      Optional.of(keyGen).get().init(3); // Compliant, FN
+    } else {
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DH");
+      Optional.of(keyGen).get().initialize(2048); // Compliant, FN
+    }
+  }
+
+  public void chained_2(int size) throws NoSuchAlgorithmException {
+    KeyPairGenerator.getInstance("RSA").initialize(1); // Compliant, FN, we don't want to risk raising FP
+    KeyPairGenerator.getInstance("RSA").initialize(1024); // Compliant, FN, we don't want to risk raising FP
+    KeyPairGenerator.getInstance("RSA").initialize(2048); // Compliant
   }
 
   public void not_assigned() throws NoSuchAlgorithmException {

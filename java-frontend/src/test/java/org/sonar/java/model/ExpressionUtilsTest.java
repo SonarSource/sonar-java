@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -42,6 +43,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 
 public class ExpressionUtilsTest {
 
@@ -165,6 +167,60 @@ public class ExpressionUtilsTest {
     assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) variables.get(1).initializer())).isPresent();
 
   }
+
+  @Test
+  public void test_invocation_on_same_variable() {
+    CompilationUnitTree tree = JParserTestUtils.parse(
+      "class A {\n" +
+        "  static {\n" +
+        "    String s1 = \"a\";" +
+        "    String s2 = \"b\";" +
+        "    s1.toString();\n" +
+        "    s2.toString();\n" +
+        "    toString();\n" +
+        "    Optional.of(s1).get().toString();\n" +
+        "    Optional.of(s2).get().toString();\n" +
+        "  }\n" +
+        "}");
+
+    StaticInitializerTree staticInitializer = (StaticInitializerTree) ((ClassTree) tree.types().get(0)).members().get(0);
+    List<Symbol> variablesSymbols = staticInitializer.body().stream()
+      .filter(t -> t instanceof VariableTree)
+      .map(VariableTree.class::cast)
+      .map(VariableTree::symbol)
+      .collect(Collectors.toList());
+
+    List<MethodInvocationTree> invocations = staticInitializer.body().stream()
+      .filter(t -> t instanceof ExpressionStatementTree)
+      .map(ExpressionStatementTree.class::cast)
+      .map(ExpressionStatementTree::expression)
+      .map(MethodInvocationTree.class::cast)
+      .collect(Collectors.toList());
+
+    assertThat(isInvocationOnVariable(invocations.get(0), variablesSymbols.get(0), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(0), variablesSymbols.get(1), true)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(1), variablesSymbols.get(0), true)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(1), variablesSymbols.get(1), true)).isTrue();
+
+    // We report the default value if we can not compare two symbol
+    assertThat(isInvocationOnVariable(invocations.get(2), variablesSymbols.get(0), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(2), variablesSymbols.get(1), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(3), variablesSymbols.get(0), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(3), variablesSymbols.get(1), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(4), variablesSymbols.get(0), true)).isTrue();
+    assertThat(isInvocationOnVariable(invocations.get(4), variablesSymbols.get(1), true)).isTrue();
+
+    assertThat(isInvocationOnVariable(invocations.get(2), variablesSymbols.get(0), false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(2), variablesSymbols.get(1), false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(3), variablesSymbols.get(0), false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(3), variablesSymbols.get(1), false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(4), variablesSymbols.get(0), false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(4), variablesSymbols.get(1), false)).isFalse();
+
+    assertThat(isInvocationOnVariable(invocations.get(4), null, false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(4), null, true)).isTrue();
+  }
+
 
   @Test
   public void securing_byte() {

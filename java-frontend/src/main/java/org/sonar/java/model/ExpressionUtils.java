@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import java.util.Optional;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -114,6 +115,22 @@ public final class ExpressionUtils {
     return extractIdentifier(tree).map(IdentifierTree::symbol);
   }
 
+  /**
+   * Return whether we are sure that the method invocation is on a given variable.
+   *
+   * If unsure (variable is null, or we can not extract an identifier from the method invocation),
+   * return a default value
+   */
+  public static boolean isInvocationOnVariable(MethodInvocationTree mit, @Nullable Symbol variable, boolean defaultReturn) {
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (variable == null || !methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      return defaultReturn;
+    }
+    return extractIdentifierSymbol(((MemberSelectExpressionTree) methodSelect).expression())
+      .map(variable::equals)
+      .orElse(defaultReturn);
+  }
+
   public static ExpressionTree skipParentheses(ExpressionTree tree) {
     ExpressionTree result = tree;
     while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
@@ -157,8 +174,8 @@ public final class ExpressionUtils {
     return (MethodTree) result;
   }
 
-  public static Optional<Symbol> getAssignedSymbol(MethodInvocationTree mit) {
-    Tree parent = mit.parent();
+  public static Optional<Symbol> getAssignedSymbol(ExpressionTree exp) {
+    Tree parent = exp.parent();
     if (parent != null) {
       if (parent.is(Tree.Kind.ASSIGNMENT)) {
         return extractIdentifierSymbol(((AssignmentExpressionTree) parent).variable());

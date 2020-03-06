@@ -21,12 +21,15 @@ package org.sonar.java.checks.security;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -36,6 +39,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
+import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
+import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 
 @Rule(key = "S5301")
 public class XxeActiveMQCheck extends AbstractMethodDetection {
@@ -56,7 +61,8 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
       return;
     }
 
-    MethodBodyVisitor visitor = new MethodBodyVisitor();
+    Optional<Symbol> assignedSymbol = getAssignedSymbol(newClassTree);
+    MethodBodyVisitor visitor = new MethodBodyVisitor(assignedSymbol.orElse(null));
     enclosingMethod.accept(visitor);
     if (!visitor.foundCallsToSecuringMethods()) {
       reportIssue(newClassTree,
@@ -79,18 +85,26 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
     private boolean hasTrustAllPackages = false;
     private boolean callArgumentsOfSetTrustedPackages = false;
 
+    private Symbol variable;
+
+    MethodBodyVisitor(@Nullable Symbol variable) {
+      this.variable = variable;
+    }
+
     private boolean foundCallsToSecuringMethods() {
       return hasTrustedPackages && !hasTrustAllPackages;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-      Arguments arguments = methodInvocation.arguments();
-      if (SET_TRUSTED_PACKAGES.matches(methodInvocation)) {
-        hasTrustedPackages |= !arguments.get(0).is(Kind.NULL_LITERAL);
-        callArgumentsOfSetTrustedPackages = true;
-      } else if (SET_TRUST_ALL_PACKAGES.matches(methodInvocation)) {
-        hasTrustAllPackages |= Boolean.TRUE.equals(arguments.get(0).asConstant(Boolean.class).orElse(null));
+      if (isInvocationOnVariable(methodInvocation, variable, true)) {
+        Arguments arguments = methodInvocation.arguments();
+        if (SET_TRUSTED_PACKAGES.matches(methodInvocation)) {
+          hasTrustedPackages |= !arguments.get(0).is(Kind.NULL_LITERAL);
+          callArgumentsOfSetTrustedPackages = true;
+        } else if (SET_TRUST_ALL_PACKAGES.matches(methodInvocation)) {
+          hasTrustAllPackages |= Boolean.TRUE.equals(arguments.get(0).asConstant(Boolean.class).orElse(null));
+        }
       }
       super.visitMethodInvocation(methodInvocation);
       callArgumentsOfSetTrustedPackages = false;

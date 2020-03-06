@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -39,8 +40,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
-import static org.sonar.java.checks.security.TriggeringSecuringHelper.isInvocationOnVariable;
 import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
+import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 
 @Rule(key = "S4426")
 public class CryptographicKeySizeCheck extends AbstractMethodDetection {
@@ -79,10 +80,8 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
     String getInstanceArg = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
     if (methodTree != null && getInstanceArg != null) {
       Optional<Symbol> assignedSymbol = getAssignedSymbol(mit);
-      assignedSymbol.ifPresent(symbol -> {
-        MethodVisitor methodVisitor = new MethodVisitor(getInstanceArg, symbol);
-        methodTree.accept(methodVisitor);
-      });
+      MethodVisitor methodVisitor = new MethodVisitor(getInstanceArg, assignedSymbol.orElse(null));
+      methodTree.accept(methodVisitor);
     }
   }
 
@@ -103,7 +102,7 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
     private final Integer minKeySize;
     private final Symbol variable;
 
-    public MethodVisitor(String getInstanceArg, Symbol variable) {
+    public MethodVisitor(String getInstanceArg, @Nullable Symbol variable) {
       this.algorithm = getInstanceArg;
       this.minKeySize = ALGORITHM_KEY_SIZE_MAP.get(this.algorithm.toUpperCase(Locale.ENGLISH));
       this.variable = variable;
@@ -113,7 +112,7 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
     public void visitMethodInvocation(MethodInvocationTree mit) {
       if (minKeySize != null && (KEY_GEN_INIT.matches(mit) || KEY_PAIR_GEN_INITIALIZE.matches(mit) || KEY_PAIR_GEN_INITIALIZE_WITH_SOURCE.matches(mit))) {
         Integer keySize = LiteralUtils.intLiteralValue(mit.arguments().get(0));
-        if (keySize != null && keySize < minKeySize && isInvocationOnVariable(mit, variable)) {
+        if (keySize != null && keySize < minKeySize && isInvocationOnVariable(mit, variable, false)) {
           reportIssue(mit, "Use a key length of at least " + minKeySize + " bits for " + algorithm + " cipher algorithm.");
         }
       }
