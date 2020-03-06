@@ -94,6 +94,20 @@ class DocumentBuilderFactoryTest {
     Document document = builder.parse(new File("xxe.xml"));
   }
 
+  void used_in_try_catch_throw_new(String content) {
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+      factory.setExpandEntityReferences(true);
+      factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true); // Compliant when set to true
+
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.parse(new File("xxe.xml"));
+    } catch (Exception e) {
+      throw new RuntimeException("");
+    }
+  }
+
   // Detect issues depending on the symbol
   DocumentBuilderFactory two_factory4(boolean b) throws ParserConfigurationException {
     if (b) {
