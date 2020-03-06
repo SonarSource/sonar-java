@@ -123,13 +123,12 @@ public final class ExpressionUtils {
    */
   public static boolean isInvocationOnVariable(MethodInvocationTree mit, @Nullable Symbol variable, boolean defaultReturn) {
     ExpressionTree methodSelect = mit.methodSelect();
-    if (variable != null && methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      Optional<Symbol> extractedSymbol = extractIdentifierSymbol(((MemberSelectExpressionTree) methodSelect).expression());
-      if (extractedSymbol.isPresent()) {
-        return extractedSymbol.get().equals(variable);
-      }
+    if (variable == null || !methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      return defaultReturn;
     }
-    return defaultReturn;
+    return extractIdentifierSymbol(((MemberSelectExpressionTree) methodSelect).expression())
+      .map(variable::equals)
+      .orElse(defaultReturn);
   }
 
   public static ExpressionTree skipParentheses(ExpressionTree tree) {

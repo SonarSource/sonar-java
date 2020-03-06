@@ -216,6 +216,9 @@ public class ExpressionUtilsTest {
     assertThat(isInvocationOnVariable(invocations.get(3), variablesSymbols.get(1), false)).isFalse();
     assertThat(isInvocationOnVariable(invocations.get(4), variablesSymbols.get(0), false)).isFalse();
     assertThat(isInvocationOnVariable(invocations.get(4), variablesSymbols.get(1), false)).isFalse();
+
+    assertThat(isInvocationOnVariable(invocations.get(4), null, false)).isFalse();
+    assertThat(isInvocationOnVariable(invocations.get(4), null, true)).isTrue();
   }
 
 
