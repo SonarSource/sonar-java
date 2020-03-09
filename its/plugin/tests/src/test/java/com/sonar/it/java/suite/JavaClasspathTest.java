@@ -165,7 +165,8 @@ public class JavaClasspathTest {
     SonarScanner scanner = ditProjectSonarScanner();
     BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(scanner);
     String logs = buildResult.getLogs();
-    assertThat(logs).contains("Please provide compiled classes of your project with sonar.java.binaries property");
+    assertThat(logs).contains("Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
+      + " or exclude them from the analysis with sonar.exclusions property.");
     assertThat(buildResult.isSuccess()).isFalse();
   }
 

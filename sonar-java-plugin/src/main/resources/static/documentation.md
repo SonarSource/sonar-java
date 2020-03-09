@@ -16,7 +16,7 @@ You can discover and update the Java-specific [properties](/analysis/analysis-pa
 
 Compiled `.class` files are required for java projects with more than one java file. If not provided properly, analysis will fail with the message:
 
-    Please provide compiled classes of your project with sonar.java.binaries property.
+    Your project contains .java files, please provide compiled classes with sonar.java.binaries property, or exclude them from the analysis with sonar.exclusions property.
 
 If only some `.class` files are missing, you'll see warnings like this:
 

@@ -327,7 +327,8 @@ public class JavaClasspathTest {
       fail("Exception should have been raised");
     } catch (AnalysisException ise) {
       assertThat(ise.getMessage())
-        .isEqualTo("Please provide compiled classes of your project with sonar.java.binaries property");
+        .isEqualTo("Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
+          + " or exclude them from the analysis with sonar.exclusions property.");
     }
   }
 
@@ -340,7 +341,8 @@ public class JavaClasspathTest {
       fail("Exception should have been raised");
     } catch (AnalysisException ise) {
       assertThat(ise.getMessage())
-        .isEqualTo("Please provide compiled classes of your project with sonar.java.binaries property");
+        .isEqualTo("Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
+          + " or exclude them from the analysis with sonar.exclusions property.");
     }
   }
 
