@@ -61,7 +61,8 @@ public class JavaClasspath extends AbstractJavaClasspath {
         if(isSonarLint()) {
           LOG.warn("sonar.java.binaries is empty, please double check your configuration");
         } else {
-          throw new AnalysisException("Please provide compiled classes of your project with sonar.java.binaries property");
+          throw new AnalysisException("Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
+            + " or exclude them from the analysis with sonar.exclusions property.");
         }
       }
       elements = new ArrayList<>(binaries);
