@@ -245,6 +245,8 @@ import java.util.function.BooleanSupplier;
 @ParametersAreNonnullByDefault
 public class JParser {
 
+  private static final boolean USE_BATCH = Boolean.getBoolean("sonar.java.internal.ecj.batch");
+
   private static final Logger LOG = Loggers.get(JParser.class);
 
   public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "13";
@@ -283,7 +285,7 @@ public class JParser {
     boolean batch,
     BiConsumer<InputFile, Result> action
   ) {
-    if (batch) {
+    if (batch && USE_BATCH) {
       batch(
         version,
         classpath,
@@ -325,6 +327,8 @@ public class JParser {
     BooleanSupplier isCanceled,
     BiConsumer<InputFile, Result> action
   ) {
+    System.err.println("Using ECJ batch");
+
     ASTParser astParser = createASTParser(version, classpath);
 
     List<String> sourceFilePaths = new ArrayList<>();
