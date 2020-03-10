@@ -19,19 +19,17 @@
  */
 package org.sonar.java.se.checks;
 
+import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
-
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.resolve.Result;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.testing.CheckVerifier;
+import org.sonar.java.testing.InternalCheckVerifier;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-
-import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -123,18 +121,20 @@ public class FlowComputationTest {
 
   @Test
   public void test_flows_with_single_msg_not_reported() throws Exception {
-    JavaCheckVerifier noFlowsVerifier = new JavaCheckVerifier() {
-      @Override
-      protected void checkIssues(Set<AnalyzerMessage> issues) {
+    ((InternalCheckVerifier) CheckVerifier.newVerifier())
+      .withCustomIssueVerifier(issues -> {
         assertThat(issues).hasSize(4);
         issues.forEach(issue -> assertThat(issue.flows.stream().allMatch(List::isEmpty))
           .as("No flows expected, but %s was reported.", issue.flows)
           .isTrue());
-      }
-    };
-
-    noFlowsVerifier.scanFile("src/test/files/se/FlowsWithSingleMsg.java",new SECheck[] { new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(),
-      new BooleanGratuitousExpressionsCheck(), new DivisionByZeroCheck()});
+      })
+      .onFile("src/test/files/se/FlowsWithSingleMsg.java")
+      .withChecks(
+        new NullDereferenceCheck(),
+        new ConditionalUnreachableCodeCheck(),
+        new BooleanGratuitousExpressionsCheck(),
+        new DivisionByZeroCheck())
+      .verifyIssues();
   }
 
   @Test

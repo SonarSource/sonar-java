@@ -21,13 +21,7 @@ package org.sonar.java.checks;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,8 +51,8 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.CheckTestUtils;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.model.VisitorsBridgeForTests;
+import org.sonar.java.testing.FilesUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -175,8 +169,8 @@ public class RulesSanityTest {
 
   private static List<InputFile> getJavaInputFiles(File moduleBaseDir) {
     return Stream.concat(
-      getFilesRecursively(new File(CheckTestUtils.testSourcesPath("")).toPath(), "java").stream(),
-      getFilesRecursively(new File(TEST_FILES_DIRECTORY).toPath(), "java").stream()
+      FilesUtils.getFilesRecursively(new File(CheckTestUtils.testSourcesPath("")).toPath(), "java").stream(),
+      FilesUtils.getFilesRecursively(new File(TEST_FILES_DIRECTORY).toPath(), "java").stream()
     )
       .map(File::getAbsolutePath)
       .filter(RulesSanityTest::isNotParsingErrorFile)
@@ -190,40 +184,10 @@ public class RulesSanityTest {
 
   private static List<File> getClassPath() {
     List<File> classpath = new ArrayList<>();
-    classpath = getFilesRecursively(new File(JavaCheckVerifier.DEFAULT_TEST_JARS_DIRECTORY).toPath(), "jar", "zip");
+    classpath.addAll(FilesUtils.getClassPath(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY));
     classpath.add(new File(TARGET_CLASSES));
     classpath.add(new File(TEST_FILES_EXTRA_CLASSES));
     return classpath;
-  }
-
-  private static List<File> getFilesRecursively(Path root, String... extensions) {
-    final List<File> files = new ArrayList<>();
-
-    FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
-      @Override
-      public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) {
-        for (String extension : extensions) {
-          if (filePath.toString().endsWith("." + extension)) {
-            files.add(filePath.toFile());
-            break;
-          }
-        }
-        return FileVisitResult.CONTINUE;
-      }
-
-      @Override
-      public FileVisitResult visitFileFailed(Path file, IOException exc) {
-        return FileVisitResult.CONTINUE;
-      }
-    };
-
-    try {
-      Files.walkFileTree(root, visitor);
-    } catch (IOException e) {
-      // we already ignore errors in the visitor
-    }
-
-    return files;
   }
 
   private static List<SanityCheckException> scanFiles(File moduleBaseDir, List<InputFile> inputFiles, List<JavaCheck> checks, List<File> classpath) {
