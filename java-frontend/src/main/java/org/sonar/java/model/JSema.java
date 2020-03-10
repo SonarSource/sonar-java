@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
@@ -28,13 +27,16 @@ import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.ASTUtils;
+import org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.eclipse.jdt.internal.compiler.env.IBinaryAnnotation;
 import org.eclipse.jdt.internal.compiler.env.IBinaryType;
+import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
 import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ModuleBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -139,12 +141,28 @@ public final class JSema implements Sema {
       methodLookupEnvironment.setAccessible(true);
       LookupEnvironment lookupEnvironment = (LookupEnvironment) methodLookupEnvironment.invoke(bindingResolver);
 
-      NameEnvironmentAnswer answer = lookupEnvironment.nameEnvironment.findType(
+      Method methodInternalFindClass = FileSystem.class.getDeclaredMethod(
+        "internalFindClass",
+        String.class,
+        char[].class,
+        boolean.class,
+        char[].class
+      );
+      methodInternalFindClass.setAccessible(true);
+      NameEnvironmentAnswer answer = (NameEnvironmentAnswer) methodInternalFindClass.invoke(
+        lookupEnvironment.nameEnvironment,
+        (packageName + ".package-info").replace('.', '/'),
         TypeConstants.PACKAGE_INFO_NAME,
-        CharOperation.splitOn('.', packageName.toCharArray())
+        true,
+        ModuleBinding.ANY
       );
       if (answer == null) {
         return new IAnnotationBinding[0];
+      }
+
+      ICompilationUnit compilationUnit = answer.getCompilationUnit();
+      if (compilationUnit != null) {
+//        throw new UnsupportedOperationException();
       }
 
       IBinaryType type = answer.getBinaryType();
