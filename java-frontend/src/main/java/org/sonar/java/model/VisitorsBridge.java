@@ -30,8 +30,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -77,7 +75,6 @@ public class VisitorsBridge {
   protected InputFile currentFile;
   protected JavaVersion javaVersion;
   private final List<File> classpath;
-  private Set<String> classesNotFound = new TreeSet<>();
   private final SquidClassLoader classLoader;
   private IssuableSubsciptionVisitorsRunner issuableSubscriptionVisitorsRunner;
   private static final Predicate<JavaFileScanner> IS_ISSUABLE_SUBSCRIPTION_VISITOR = IssuableSubscriptionVisitor.class::isInstance;
@@ -249,13 +246,6 @@ public class VisitorsBridge {
   }
 
   public void endOfAnalysis() {
-    if(!classesNotFound.isEmpty()) {
-      String message = "";
-      if(classesNotFound.size() > 50) {
-        message = ", ...";
-      }
-      LOG.warn("Classes not found during the analysis : [{}{}]", classesNotFound.stream().limit(50).collect(Collectors.joining(", ")), message);
-    }
     allScanners.stream()
       .filter(s -> s instanceof EndOfAnalysisCheck)
       .map(EndOfAnalysisCheck.class::cast)
