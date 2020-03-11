@@ -45,6 +45,8 @@ abstract class EncryptionAlgorithmCheck {
 
       Cipher.getInstance("RSA/NONE/OAEPWithSHA-1AndMGF1Padding"); // Compliant
       Cipher.getInstance("RSA/NONE/OAEPWITHSHA-256ANDMGF1PADDING"); // Compliant
+      Cipher.getInstance("RSA/None/OAEPWITHSHA-384ANDMGF1PADDING"); // Compliant
+      Cipher.getInstance("RSA/None/OAEPWITHSHA-512ANDMGF1PADDING"); // Compliant
 
       // Other
       Cipher.getInstance(null); // Compliant
@@ -52,6 +54,15 @@ abstract class EncryptionAlgorithmCheck {
       String algo = props.getProperty("myAlgo", "AES/ECB/PKCS5Padding");
       Cipher.getInstance(algo); // Noncompliant
       String s = "RSA/NONE/NoPadding"; // Compliant
+
+      // Case is ignored
+      Cipher.getInstance("rsa/NONE/NoPadding"); // Noncompliant
+      Cipher.getInstance("AES/ecb/NoPadding"); // Noncompliant
+      Cipher.getInstance("aes/GCM/NoPadding"); // Compliant
+      Cipher.getInstance("DES/CBC/NOPADDING"); // Compliant
+      Cipher.getInstance("RSA/NONE/OAEPWITHSHA-1AndMGF1Padding"); // Compliant
+      String algoUpperCase = props.getProperty("myAlgo", "AES/ECB/PKCS5PADDING");
+
     } catch (Exception  e) {
     }
   }
