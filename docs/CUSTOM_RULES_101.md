@@ -43,7 +43,7 @@ A custom plugin is a Maven project, and before diving into code, it is important
 In the code snippet below, note the plugin API version (`<sonar.version>`) provided through the properties. It relates to the minimum version of SonarQube your plugin will support, and is generally aligned to your company's SonarQube instance. In this template, we rely on the version **8.2.0.32929** (LTS version is **7.9**, but compatibility to latest release is guaranteed when packaging the plugin).
 Note that latest released versions of the Java Analyzer are always compatible with the current LTS version of SonarQube.
 
-The property `<java.plugin.version>` is the minimum version of the Java Analyzer that will be required to run your custom plugin in your SonarQube instance. Consequently, as we will rely on version **6.1.0.20866** of the Java plugin, the SonarQube instance which will use the custom plugin will also need version **6.1.0.20866** of the Java Plugin as well.
+The property `<java.plugin.version>` is the minimum version of the Java Analyzer that will be required to run your custom plugin in your SonarQube instance. Consequently, as we will rely on version **6.2.0.21135** of the Java plugin, the SonarQube instance which will use the custom plugin will also need version **6.2.0.21135** of the Java Plugin as well.
 
 For the moment, don't touch these two properties.
 
@@ -57,7 +57,7 @@ Other properties such as `<groupId>`, `<artifactId>`, `<version>`, `<name>` and 
  
 <properties>
   <sonar.version>8.2.0.32929</sonar.version>
-  <java.plugin.version>6.1.0.20866</java.plugin.version>
+  <java.plugin.version>6.2.0.21135</java.plugin.version>
 </properties>
 <name>Java Custom Rules - Template</name>
 ```
@@ -158,7 +158,7 @@ Of course, before going any further, we need a key element in rule writhing, a s
 
 Because we chose a TDD approach, the first thing to do is to write examples of the code our rule will target. In this file, we consider numerous cases that our rule may encounter during an analysis, and flag the lines which will require our implementation to raise issues. The flag to be used is a simple `// Noncompliant` trailing comment on the line of code where an issue should be raised. Why *Noncompliant*? Because the flagged lines do not *comply* with the rule.
 
-Covering all the possible cases is not necessarily required, the goal of this file is to cover all the situations which may be encountered during an analysis, but also to abstract irrelevant details. For instance, in the context of our first rule, the name of method, the content of its body, and the owner of the method make no difference, whether it's an abstract class, a concrete class, or an interface. Note that this sample file should be structurally correct and compilable.
+Covering all the possible cases is not necessarily required, the goal of this file is to cover all the situations which may be encountered during an analysis, but also to abstract irrelevant details. For instance, in the context of our first rule, the name of method, the content of its body, and the owner of the method make no difference, whether it's an abstract class, a concrete class, or an interface. Note that this sample file should be structurally correct and all code should compile.
 
 In the test file `MyFirstCustomCheck.java` created earlier, copy-paste the following code: 
 ```java
