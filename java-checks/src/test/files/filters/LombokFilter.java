@@ -346,3 +346,8 @@ class IgnoreModifier {
   String id; // NoIssue
   String name; // NoIssue
 }
+
+@lombok.Value
+public class IgnoreModifierException extends RuntimeException {
+  String id; // NoIssue
+}
