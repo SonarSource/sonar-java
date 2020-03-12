@@ -21,6 +21,7 @@ package org.sonar.java.checks.security;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
@@ -66,14 +67,14 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
       String mode = matcher.group(2);
       String padding = matcher.group(3);
 
-      if ("ECB".equals(mode)) {
+      if ("ECB".equalsIgnoreCase(mode)) {
         return true;
-      } else if ("CBC".equals(mode)) {
-        return "PKCS5Padding".equals(padding) || "PKCS7Padding".equals(padding);
+      } else if ("CBC".equalsIgnoreCase(mode)) {
+        return "PKCS5Padding".equalsIgnoreCase(padding) || "PKCS7Padding".equalsIgnoreCase(padding);
       }
 
-      if ("RSA".equals(algorithm)) {
-        return !("OAEPWITHSHA-256ANDMGF1PADDING".equals(padding) || "OAEPWithSHA-1AndMGF1Padding".equals(padding));
+      if ("RSA".equalsIgnoreCase(algorithm)) {
+        return !(padding.toUpperCase(Locale.ROOT).startsWith("OAEP"));
       }
       return false;
     }
