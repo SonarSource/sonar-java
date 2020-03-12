@@ -40,10 +40,10 @@ This project already contains custom rules. Our goal will be to add an extra rul
 
 A custom plugin is a Maven project, and before diving into code, it is important to notice a few relevant lines related to the configuration of your soon-to-be-released custom plugin.
 
-In the code snippet below, note the plugin API version (`<sonar.version>`) provided through the properties. It relates to the minimum version of SonarQube your plugin will support, and is generally aligned to your company's SonarQube instance. In this template, we rely on the version **7.7** (LTS version is **6.7**, but compatibility to latest release is guaranteed when packaging the plugin).
+In the code snippet below, note the plugin API version (`<sonar.version>`) provided through the properties. It relates to the minimum version of SonarQube your plugin will support, and is generally aligned to your company's SonarQube instance. In this template, we rely on the version **8.2.0.32929** (LTS version is **7.9**, but compatibility to latest release is guaranteed when packaging the plugin).
 Note that latest released versions of the Java Analyzer are always compatible with the current LTS version of SonarQube.
 
-The property `<java.plugin.version>` is the minimum version of the Java Analyzer that will be required to run your custom plugin in your SonarQube instance. Consequently, as we will rely on version **5.12.1.17771** of the Java plugin, the SonarQube instance which will use the custom plugin will also need version **5.12.1.17771** of the Java Plugin as well.
+The property `<java.plugin.version>` is the minimum version of the Java Analyzer that will be required to run your custom plugin in your SonarQube instance. Consequently, as we will rely on version **6.2.0.21135** of the Java plugin, the SonarQube instance which will use the custom plugin will also need version **6.2.0.21135** of the Java Plugin as well.
 
 For the moment, don't touch these two properties.
 
@@ -56,15 +56,15 @@ Other properties such as `<groupId>`, `<artifactId>`, `<version>`, `<name>` and 
 <packaging>sonar-plugin</packaging>
  
 <properties>
-  <sonar.version>7.7</sonar.version>
-  <java.plugin.version>5.12.1.17771</java.plugin.version>
+  <sonar.version>8.2.0.32929</sonar.version>
+  <java.plugin.version>6.2.0.21135</java.plugin.version>
 </properties>
 <name>Java Custom Rules - Template</name>
 ```
 
 In the code snippet below, it is important to note that the **entry point of the plugin** is provided as the `<pluginClass>` in the configuration of the sonar-packaging-maven plugin, using the fully qualified name of the java class `MyJavaRulesPlugin`.
 If you refactor your code, rename, or move the class extending `org.sonar.api.SonarPlugin`, you will have to change this configuration.
-It's also the property `<sonarQubeMinVersion>` which guarantees the compatibility with LTS 6.7.
+It's also the property `<sonarQubeMinVersion>` which guarantees the compatibility with LTS 7.9.
 
 ```xml
 <plugin>
@@ -77,7 +77,7 @@ It's also the property `<sonarQubeMinVersion>` which guarantees the compatibilit
     <pluginName>Java Custom Rules</pluginName>
     <pluginClass>org.sonar.samples.java.MyJavaRulesPlugin</pluginClass>
     <sonarLintSupported>true</sonarLintSupported>
-    <sonarQubeMinVersion>6.7</sonarQubeMinVersion> <!-- allows to depend on API 7.x but still run on LTS 6.7 -->
+    <sonarQubeMinVersion>7.9</sonarQubeMinVersion> <!-- allows to depend on API 8.x but still run on LTS 7.9 -->
   </configuration>
 </plugin>
 ```
@@ -120,6 +120,7 @@ public class MyFirstCustomCheckTest {
 ```java
 package org.sonar.samples.java.checks;
  
+import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import java.util.Collections;
@@ -157,7 +158,7 @@ Of course, before going any further, we need a key element in rule writhing, a s
 
 Because we chose a TDD approach, the first thing to do is to write examples of the code our rule will target. In this file, we consider numerous cases that our rule may encounter during an analysis, and flag the lines which will require our implementation to raise issues. The flag to be used is a simple `// Noncompliant` trailing comment on the line of code where an issue should be raised. Why *Noncompliant*? Because the flagged lines do not *comply* with the rule.
 
-Covering all the possible cases is not necessarily required, the goal of this file is to cover all the situations which may be encountered during an analysis, but also to abstract irrelevant details. For instance, in the context of our first rule, the name of method, the content of its body, and the owner of the method make no difference, whether it's an abstract class, a concrete class, or an interface. Note that this sample file does not need to be compilable, but it should be structurally correct.
+Covering all the possible cases is not necessarily required, the goal of this file is to cover all the situations which may be encountered during an analysis, but also to abstract irrelevant details. For instance, in the context of our first rule, the name of method, the content of its body, and the owner of the method make no difference, whether it's an abstract class, a concrete class, or an interface. Note that this sample file should be structurally correct and all code should compile.
 
 In the test file `MyFirstCustomCheck.java` created earlier, copy-paste the following code: 
 ```java
@@ -484,7 +485,7 @@ From there, under the language section, select "**Java**", and then "**MyCompany
 
 ![Selected rules](resources/rules_selected.png)
 
-Once activated, the only step remaining is to analyse one of your project!
+Once activated (not sure how? see [quality-profiles](https://docs.sonarqube.org/latest/instance-administration/quality-profiles/)), the only step remaining is to analyse one of your project!
 
 When encountering a method returning the same type as its parameter, the issue will now raise issue, as visible in the following picture:
 
@@ -500,7 +501,7 @@ Check this example: [SecurityAnnotationMandatoryRule.java](https://github.com/So
 
 In the `pom.xml`, define in the `Maven Dependency Plugin` part all the JARs you need to run your Unit Tests. For example, if you sample code used in your Unit Tests is having a dependency on Spring, add it there.
 
-See: [pom.xml#L147](https://github.com/SonarSource/sonar-custom-rules-examples/blob/master/java-custom-rules/pom.xml#L147)
+See: [pom.xml#L152](https://github.com/SonarSource/sonar-custom-rules-examples/blob/e4ec8a9c69249e53f7e0781c81b4d7700f735cd8/java-custom-rules/pom.xml#L152)
 
 ### How to test precise issue location
 
@@ -533,5 +534,5 @@ public interface JavaFileScannerContext {
 * [SonarJava documentation](https://docs.sonarqube.org/display/PLUG/SonarJava)
 * [SonarQube Platform](http://www.sonarqube.org/)
 * [SonarQube Java Plugin Github repository](https://github.com/SonarSource/sonar-java)
-* [SonarQube Java Custom Rules Example](https://github.com/SonarSource/sonar-custom-plugin-example)
+* [SonarQube Java Custom Rules Example](https://github.com/SonarSource/sonar-custom-rules-examples)
 You can explore a sample plugin containing some custom rules. This project can be [browsed](https://github.com/SonarSource/sonar-custom-rules-examples/tree/master/java-custom-rules) or [downloaded](https://github.com/SonarSource/sonar-custom-rules-examples/archive/master.zip).
