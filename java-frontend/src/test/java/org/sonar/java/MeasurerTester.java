@@ -51,7 +51,7 @@ public abstract class MeasurerTester {
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, measurer, mock(JavaResourceLocator.class), null, new JavaCheck[0]);
-    squid.scan(Lists.newArrayList(fs.inputFiles()), Collections.emptyList());
+    squid.scan(Lists.newArrayList(fs.inputFiles()), Collections.emptyList(), Collections.emptyList());
   }
 
   public abstract File projectDir();

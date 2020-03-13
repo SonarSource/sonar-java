@@ -21,9 +21,12 @@ package org.sonar.plugins.java;
 
 import org.junit.Test;
 import org.sonar.api.Plugin;
+import org.sonar.api.SonarEdition;
+import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
+import org.sonar.java.jsp.Jasper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,6 +49,16 @@ public class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(SonarVersion.SQ_79_RUNTIME);
     javaPlugin.define(context);
     assertThat(context.getExtensions()).hasSize(32);
+    assertThat(context.getExtensions()).doesNotContain(Jasper.class);
+  }
+
+  @Test
+  public void sonarqube_commercial_extensions() {
+    SonarRuntime sqEnterprise = SonarRuntimeImpl.forSonarQube(VERSION_7_9, SonarQubeSide.SCANNER, SonarEdition.ENTERPRISE);
+    Plugin.Context context = new Plugin.Context(sqEnterprise);
+    javaPlugin.define(context);
+    assertThat(context.getExtensions()).hasSize(33);
+    assertThat(context.getExtensions()).contains(Jasper.class);
   }
 
 }

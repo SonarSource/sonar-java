@@ -24,9 +24,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -49,12 +51,20 @@ import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
+import org.sonar.java.jsp.Jasper;
+import org.sonar.java.model.GeneratedFile;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaResourceLocator;
+import org.sonar.plugins.java.api.JspCodeVisitor;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -81,7 +91,7 @@ public class JavaSquidSensorTest {
 
   @Test
   public void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 3);
+    testIssueCreation(InputFile.Type.MAIN, 4);
   }
 
   @Test
@@ -99,8 +109,8 @@ public class JavaSquidSensorTest {
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter);
 
     jss.execute(context);
-    // argument 88 refers to the comment on line #88 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(88));
+    // argument 98 refers to the comment on line #98 in this file
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(98));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
@@ -186,5 +196,36 @@ public class JavaSquidSensorTest {
     SensorContextTester context = createParseErrorContext();
     executeJavaSquidSensor(context);
     assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
+  }
+
+  @Test
+  public void should_invoke_visitors_on_generated_code() throws Exception {
+    Path base = tmp.newFolder().toPath();
+    Path generatedFilePath = tmp.newFile("Generated.java").toPath();
+    Files.write(generatedFilePath, "class Generated {}".getBytes());
+    InputFile generatedFile = new GeneratedFile(generatedFilePath, mock(InputFile.class));
+
+    SensorContextTester context = SensorContextTester.create(base);
+    SonarComponents sonarComponents = createSonarComponentsMock(context);
+    JavaFileScanner javaFileScanner = mock(JavaFileScanner.class);
+    JspCodeScanner testCodeVisitor = mock(JspCodeScanner.class);
+    when(sonarComponents.jspCodeVisitors()).thenReturn(asList(testCodeVisitor));
+    when(sonarComponents.checkClasses()).thenReturn(new JavaCheck[]{javaFileScanner});
+
+    Jasper jasper = mock(Jasper.class);
+    when(jasper.generateFiles(any(), any())).thenReturn(asList(generatedFile));
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, context.fileSystem(), mock(JavaResourceLocator.class),
+      new MapSettings().asConfig(), mock(NoSonarFilter.class), jasper);
+    jss.execute(context);
+
+    ArgumentCaptor<JavaFileScannerContext> scannerContext = ArgumentCaptor.forClass(JavaFileScannerContext.class);
+    verify(testCodeVisitor, times(1)).scanFile(scannerContext.capture());
+    assertThat(scannerContext.getValue().getInputFile()).isSameAs(generatedFile);
+
+    // normal visitors are not invoked on generated files
+    verify(javaFileScanner, never()).scanFile(any());
+  }
+
+  interface JspCodeScanner extends JavaFileScanner, JspCodeVisitor {
   }
 }

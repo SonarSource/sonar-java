@@ -55,6 +55,7 @@ import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -85,11 +86,13 @@ public class VisitorsBridge {
   }
 
   @VisibleForTesting
-  public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath,
+                        @Nullable SonarComponents sonarComponents) {
     this(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.DISABLED);
   }
 
-  public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath,
+                        @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
     this.allScanners = new ArrayList<>();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
@@ -217,7 +220,10 @@ public class VisitorsBridge {
   }
 
   private void createSonarSymbolTable(CompilationUnitTree tree) {
-    if (sonarComponents != null && !sonarComponents.isSonarLintContext()) {
+    if (sonarComponents != null
+      && !sonarComponents.isSonarLintContext()
+      // don't provide semantic data (symbol highlighting) to SQ for generated files (jsp)
+      && !(currentFile instanceof GeneratedFile)) {
       SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(currentFile));
       symVisitor.visitCompilationUnit(tree);
     }

@@ -48,6 +48,7 @@ public class JavaSquid {
 
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
+  private final JavaAstScanner astScannerForGeneratedFiles;
 
   public JavaSquid(JavaVersion javaVersion,
     @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
@@ -73,6 +74,7 @@ public class JavaSquid {
     }
     List<File> classpath = new ArrayList<>();
     List<File> testClasspath = new ArrayList<>();
+    List<JavaCheck> jspCodeVisitors = new ArrayList<>();
     if (sonarComponents != null) {
       if(!sonarComponents.isSonarLintContext()) {
         codeVisitors = Iterables.concat(codeVisitors, Arrays.asList(new FileLinesVisitor(sonarComponents), new SyntaxHighlighterVisitor(sonarComponents)));
@@ -81,6 +83,7 @@ public class JavaSquid {
       classpath = sonarComponents.getJavaClasspath();
       testClasspath = sonarComponents.getJavaTestClasspath();
       testCodeVisitors.addAll(sonarComponents.testCheckClasses());
+      jspCodeVisitors = sonarComponents.jspCodeVisitors();
     }
 
     //AstScanner for main files
@@ -91,6 +94,9 @@ public class JavaSquid {
     astScannerForTests = new JavaAstScanner(sonarComponents);
     astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents, SymbolicExecutionMode.DISABLED));
 
+    //AstScanner for generated files
+    astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents);
+    astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, classpath, javaVersion, sonarComponents, SymbolicExecutionMode.DISABLED));
   }
 
   private static VisitorsBridge createVisitorBridge(
@@ -100,10 +106,10 @@ public class JavaSquid {
     return visitorsBridge;
   }
 
-
-  public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles) {
+  public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
     scanSources(sourceFiles);
     scanTests(testFiles);
+    scanGeneratedFiles(generatedFiles);
   }
 
   private void scanSources(Iterable<InputFile> sourceFiles) {
@@ -115,6 +121,12 @@ public class JavaSquid {
   private void scanTests(Iterable<InputFile> testFiles) {
     Profiler profiler = Profiler.create(LOG).startInfo("Java Test Files AST scan");
     astScannerForTests.scan(testFiles);
+    profiler.stopInfo();
+  }
+
+  private void scanGeneratedFiles(Iterable<? extends InputFile> generatedFiles) {
+    Profiler profiler = Profiler.create(LOG).startInfo("Java Generated Files AST scan");
+    astScannerForGeneratedFiles.scan(generatedFiles);
     profiler.stopInfo();
   }
 

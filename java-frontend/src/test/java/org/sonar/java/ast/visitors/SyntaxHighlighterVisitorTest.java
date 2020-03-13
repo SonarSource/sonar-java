@@ -204,7 +204,7 @@ public class SyntaxHighlighterVisitorTest {
 
   private void scan(InputFile inputFile) {
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new JavaCheck[] {syntaxHighlighterVisitor});
-    squid.scan(Collections.singletonList(inputFile), Collections.emptyList());
+    squid.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 
   private InputFile generateDefaultTestFile() throws IOException {

@@ -115,7 +115,7 @@ public class JavaSquidTest {
     sonarComponents = new SonarComponents(fileLinesContextFactory, context.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class));
     sonarComponents.setSensorContext(context);
     JavaSquid javaSquid = new JavaSquid(new JavaVersionImpl(), sonarComponents, new Measurer(context, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), null);
-    javaSquid.scan(Collections.singletonList(inputFile), Collections.emptyList());
+    javaSquid.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
 
     return inputFile;
   }
