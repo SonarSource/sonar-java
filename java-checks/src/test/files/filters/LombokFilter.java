@@ -345,9 +345,63 @@ class PrivateFieldOnlyUsedLocally {
 class IgnoreModifier {
   String id; // NoIssue
   String name; // NoIssue
+  @lombok.experimental.PackagePrivate String email; // WithIssue
 }
 
 @lombok.Value
-public class IgnoreModifierException extends RuntimeException {
-  String id; // NoIssue
+@lombok.experimental.NonFinal
+@lombok.AllArgsConstructor
+class NonFinalClassAnnotationException extends RuntimeException { // NoIssue
+  final int id; // NoIssue
+  private String name; // WithIssue
+
+  public String getName() {
+    return name;
+  }
+}
+
+@lombok.Value
+@lombok.AllArgsConstructor
+class NonFinalVariableAnnotationException extends RuntimeException { // NoIssue
+  int id; // NoIssue
+  @lombok.experimental.NonFinal private String name; // WithIssue
+}
+
+class FieldDefaults {
+  @lombok.experimental.FieldDefaults
+  class A {
+    int id; // WithIssue
+  }
+  @lombok.experimental.FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+  class B {
+    int id; //NoIssue
+    @lombok.experimental.PackagePrivate String name; // WithIssue
+  }
+
+  @lombok.experimental.FieldDefaults(makeFinal=true, level = lombok.AccessLevel.PRIVATE)
+  @lombok.AllArgsConstructor
+  class NonFinalVariableAnnotationException extends RuntimeException { // NoIssue
+    int id; // NoIssue
+    String name; // NoIssue
+    @lombok.experimental.NonFinal private String email;  // WithIssue
+  }
+
+  @lombok.experimental.FieldDefaults(makeFinal=false)
+  class MakeFinalFalseAnnotationException extends RuntimeException {
+    private String name; // WithIssue
+
+    public MakeFinalFalseAnnotationException(String name) {
+      this.name = name;
+    }
+  }
+
+  @lombok.experimental.FieldDefaults
+  @lombok.AllArgsConstructor
+  class FieldDefaultsException extends RuntimeException { // NoIssue
+    private String name; // WithIssue
+
+    public String getName() {
+      return name;
+    }
+  }
 }
