@@ -349,6 +349,7 @@ public class JParser {
       new FileASTRequestor() {
         @Override
         public void acceptAST(String sourceFilePath, CompilationUnit ast) {
+          System.err.println("Processing " + sourceFilePath);
           InputFile inputFile = inputs.get(new File(sourceFilePath));
           Result result;
           try {
