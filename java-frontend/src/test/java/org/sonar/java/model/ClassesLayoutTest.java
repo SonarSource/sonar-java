@@ -60,6 +60,38 @@ class ClassesLayoutTest {
     );
   }
 
+  @Test
+  void type() {
+    assertAll(
+      () -> assertThat(instanceSize(JType.class, X86_64)).isEqualTo(32),
+      () -> assertThat(instanceSize(JType.class, X86_64_COOPS)).isEqualTo(24)
+    );
+  }
+
+  @Test
+  void symbol_type() {
+    assertAll(
+      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(48),
+      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64_COOPS)).isEqualTo(32)
+    );
+  }
+
+  @Test
+  void symbol_method() {
+    assertAll(
+      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64)).isEqualTo(32),
+      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64_COOPS)).isEqualTo(24)
+    );
+  }
+
+  @Test
+  void symbol_variable() {
+    assertAll(
+      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(32),
+      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64_COOPS)).isEqualTo(24)
+    );
+  }
+
   private static long instanceSize(Class<?> cls, Layouter layouter) {
     System.out.println("***** " + layouter);
     ClassLayout classLayout = ClassLayout.parseClass(cls, layouter);
