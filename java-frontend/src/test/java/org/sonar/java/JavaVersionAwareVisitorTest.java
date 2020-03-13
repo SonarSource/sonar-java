@@ -79,7 +79,8 @@ public class JavaVersionAwareVisitorTest {
   private void checkIssues(JavaVersion version) {
     messages.clear();
     JavaSquid squid = new JavaSquid(version, null, null, null, null, javaChecks);
-    squid.scan(Collections.singletonList(TestUtils.inputFile("src/test/files/JavaVersionAwareChecks.java")), Collections.emptyList());
+    squid.scan(Collections.singletonList(TestUtils.inputFile("src/test/files/JavaVersionAwareChecks.java")),
+      Collections.emptyList(), Collections.emptyList());
   }
 
   private static class SimpleCheck extends IssuableSubscriptionVisitor {

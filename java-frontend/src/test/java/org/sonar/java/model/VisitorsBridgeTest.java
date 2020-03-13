@@ -57,6 +57,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class VisitorsBridgeTest {
 
@@ -278,6 +282,16 @@ public class VisitorsBridgeTest {
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("SE");
+  }
+
+  @Test
+  public void should_not_create_symbol_table_for_generated() {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    VisitorsBridge bridge = new VisitorsBridge(Collections.emptySet(), Collections.emptyList(), sonarComponents);
+    bridge.setCurrentFile(new GeneratedFile(null, null));
+    Tree tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
+    bridge.visitFile(tree);
+    verify(sonarComponents, never()).symbolizableFor(any());
   }
 
   private static String ruleKeyFromErrorLog(String errorLog) {

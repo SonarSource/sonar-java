@@ -43,6 +43,11 @@
       <artifactId>external-reports</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>java-jsp</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.sonarsource.analyzer-commons</groupId>
@@ -118,8 +123,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>17400000</maxsize>
-                  <minsize>16500000</minsize>
+                  <maxsize>19500000</maxsize>
+                  <minsize>19000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
@@ -174,6 +179,36 @@
                 </filter>
                 <filter>
                   <artifact>xml-apis:xml-apis</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.tomcat:tomcat-jasper</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.tomcat:tomcat-servlet-api</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.tomcat:tomcat-jsp-api</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.tomcat:tomcat-el-api</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.tomcat:tomcat-jasper-el</artifact>
                   <includes>
                     <include>**</include>
                   </includes>

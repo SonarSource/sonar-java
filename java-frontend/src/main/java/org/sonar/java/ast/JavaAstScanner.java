@@ -27,7 +27,6 @@ import java.io.InterruptedIOException;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
-
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -50,7 +49,7 @@ public class JavaAstScanner {
     this.sonarComponents = sonarComponents;
   }
 
-  public void scan(Iterable<InputFile> inputFiles) {
+  public void scan(Iterable<? extends InputFile> inputFiles) {
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
     progressReport.start(Iterables.transform(inputFiles, InputFile::toString));
 

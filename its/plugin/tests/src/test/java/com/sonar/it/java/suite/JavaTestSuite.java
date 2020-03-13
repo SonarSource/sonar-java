@@ -52,7 +52,8 @@ import static java.util.Collections.singletonList;
   SuppressWarningTest.class,
   SonarLintTest.class,
   ExternalReportTest.class,
-  DuplicationTest.class
+  DuplicationTest.class,
+  JspTest.class
 })
 public class JavaTestSuite {
 

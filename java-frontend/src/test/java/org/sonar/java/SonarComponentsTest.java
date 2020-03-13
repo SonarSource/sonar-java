@@ -38,8 +38,11 @@ import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
+import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
+import org.sonar.api.batch.rule.internal.NewActiveRule;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -50,8 +53,10 @@ import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
+import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JspCodeVisitor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -382,4 +387,25 @@ public class SonarComponentsTest {
 
   private static class CustomCheck implements JavaCheck { }
   private static class CustomTestCheck implements JavaCheck { }
+
+  @Test
+  public void should_return_generated_code_visitors() throws Exception {
+    ActiveRules activeRules = new ActiveRulesBuilder()
+      .addRule(new NewActiveRule.Builder().setRuleKey(RuleKey.of("custom", "jsp")).build())
+      .build();
+    CheckFactory checkFactory = new CheckFactory(activeRules);
+
+    JspCodeCheck check = new JspCodeCheck();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, checkFactory, new CheckRegistrar[]{getRegistrar(check)});
+    List<JavaCheck> checks = sonarComponents.jspCodeVisitors();
+    assertThat(checks).extracting(Object::getClass).containsExactly(JspCodeCheck.class);
+
+    sonarComponents = new SonarComponents(null, null, null, null, checkFactory);
+    assertThat(sonarComponents.jspCodeVisitors()).isEmpty();
+  }
+
+  @Rule(key = "jsp")
+  public static class JspCodeCheck implements JspCodeVisitor {
+
+  }
 }
