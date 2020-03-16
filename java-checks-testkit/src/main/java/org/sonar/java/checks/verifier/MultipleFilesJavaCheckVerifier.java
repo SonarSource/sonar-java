@@ -27,8 +27,11 @@ import org.sonar.plugins.java.api.JavaFileScanner;
  * Please read the documentation of @see org.sonar.java.checks.verifier.JavaCheckVerifier
  *
  * The main difference is that this class run a check on multiple files and verifies the results at the end of analysis.
+ *
+ * @deprecated This class is deprecated, all its features can be achieved by using {@link JavaCheckVerifier#newVerifier()} instead.
  */
 @Beta
+@Deprecated
 public final class MultipleFilesJavaCheckVerifier {
 
   private MultipleFilesJavaCheckVerifier() {

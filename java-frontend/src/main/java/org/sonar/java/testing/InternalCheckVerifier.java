@@ -225,7 +225,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
   private void checkIssues(Set<AnalyzerMessage> issues) {
     if (expectations.expectNoIssues()) {
-      assertNoIssues(expectations.issues, issues);
+      assertNoIssues(issues);
     } else if (expectations.expectIssueAtFileLevel() || expectations.expectIssueAtProjectLevel()) {
       assertComponentIssue(issues);
     } else {
@@ -236,18 +236,15 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
   }
 
-  private static void assertNoIssues(Multimap<Integer, Expectations.Issue> expected, Set<AnalyzerMessage> issues) {
-    if (!issues.isEmpty()) {
-      String issuesAsString = issues.stream()
-        .sorted(issueLineSorter())
-        .map(issue -> String.format("'%s' in %s%s", issue.getMessage(), issue.getInputComponent(), (issue.getLine() == null ? "" : (":" + issue.getLine()))))
-        .collect(Collectors.joining("\n--> ", "\n--> ", ""));
-      throw new AssertionError(String.format("No issues expected but got %d issue(s):%s", issues.size(), issuesAsString));
+  private static void assertNoIssues(Set<AnalyzerMessage> issues) {
+    if (issues.isEmpty()) {
+      return;
     }
-    // make sure we do not copy&paste verifyNoIssue call when we intend to call verify
-    if (!expected.isEmpty()) {
-      throw new AssertionError("The file should not declare noncompliants when no issues are expected");
-    }
+    String issuesAsString = issues.stream()
+      .sorted(issueLineSorter())
+      .map(issue -> String.format("'%s' in %s%s", issue.getMessage(), issue.getInputComponent(), (issue.getLine() == null ? "" : (":" + issue.getLine()))))
+      .collect(Collectors.joining("\n--> ", "\n--> ", ""));
+    throw new AssertionError(String.format("No issues expected but got %d issue(s):%s", issues.size(), issuesAsString));
   }
 
   private static Comparator<? super AnalyzerMessage> issueLineSorter() {

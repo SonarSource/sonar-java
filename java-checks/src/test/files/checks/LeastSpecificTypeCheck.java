@@ -153,7 +153,7 @@ class A {
 
   protected static class Visibility2 extends ProtectedBase { }
 
-  public static void visibility(Visibility2 vis) { // // Noncompliant {{Use 'A.ProtectedBase' here; it is a more general type than 'Visibility2'.}}
+  public static void visibility(Visibility2 vis) { // False-Negative
     vis.b();
   }
 

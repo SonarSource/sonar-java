@@ -135,16 +135,6 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_no_issue_fail_if_noncompliant() {
-    try {
-      JavaCheckVerifier.verifyNoIssue(FILENAME_ISSUES, NO_EFFECT_VISITOR);
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("The file should not declare noncompliants when no issues are expected");
-    }
-  }
-
-  @Test
   public void verify_no_issue() {
     JavaCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, NO_EFFECT_VISITOR);
   }

@@ -424,18 +424,6 @@ public class InternalCheckVerifierTest {
     }
 
     @Test
-    void having_non_compliant_while_expecting_no_issues() {
-      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
-        .onFile(TEST_FILE_NONCOMPLIANT)
-        .withCheck(NO_EFFECT_CHECK)
-        .verifyNoIssues());
-
-      assertThat(e)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage("The file should not declare noncompliants when no issues are expected");
-    }
-
-    @Test
     void raising_issues_while_expecting_none_should_fail() {
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE)

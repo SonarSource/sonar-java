@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
  * <p>
  * The starting point to define a verifier is {@link #newVerifier()}. Then, configuration can be specified.
  * <p>
- * It is required to provide at least to the verifier the following:
+ * It is required to provide to the verifier at least the following:
  * <ul>
  *   <li>A rule, by calling {@link #withCheck(JavaFileScanner)}, or {@link #withChecks(JavaFileScanner...)}</li>
  *   <li>A test file, by calling {@link #onFile(String)}, {@link #onFiles(String...)}, or {@link #onFiles(Collection)}</li>
