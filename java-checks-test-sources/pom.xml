@@ -15,7 +15,6 @@
   <name>SonarQube Java :: Checks Test Sources</name>
 
   <properties>
-    <maven.javadoc.skip>true</maven.javadoc.skip>
     <sonar.skip>true</sonar.skip>
   </properties>
 
@@ -25,7 +24,7 @@
    There are several redundant safety nets to ensure that SonarJava never embed them:
    1) Dependencies have the 'provided' scope
    2) No module depends on 'java-checks-test-sources', not even 'java-checks'
-   3) 'maven-deploy-plugin' is skipped for this module
+   3) Several plugins are disabled bellow to not generate jars
    -->
   <dependencies>
     <dependency>
@@ -675,13 +674,47 @@
 
   <build>
     <plugins>
+      <!--
+      We don't want to publish any artifacts from this module in artifactory or maven central.
+      Unfortunately, "org.jfrog.buildinfo : artifactory-maven-plugin" only supports maven.deploy.skip=true at the project level
+      and not in a submodule. If the bellow plugins are disabled (<phase>none</phase>), it's a workaround to
+      not generate ".jar" "-sources.jar" and "-javadoc.jar".
+      -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <configuration>
-            <!-- why? see above comment before '<dependencies>'-->
-            <skip>true</skip>
-        </configuration>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-install</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>com.mycila</groupId>
