@@ -62,8 +62,7 @@ public final class JSema implements Sema {
   }
 
   public JType type(ITypeBinding typeBinding) {
-    typeBinding = JType.normalize(typeBinding);
-    return types.computeIfAbsent(typeBinding, k -> new JType(this, k));
+    return types.computeIfAbsent(typeBinding, k -> new JType(this, JType.normalize(typeBinding)));
   }
 
   public JPackageSymbol packageSymbol(IPackageBinding packageBinding) {
@@ -71,8 +70,7 @@ public final class JSema implements Sema {
   }
 
   public JTypeSymbol typeSymbol(ITypeBinding typeBinding) {
-    typeBinding = JType.normalize(typeBinding);
-    return (JTypeSymbol) symbols.computeIfAbsent(typeBinding, k -> new JTypeSymbol(this, (ITypeBinding) k));
+    return (JTypeSymbol) symbols.computeIfAbsent(typeBinding, k -> new JTypeSymbol(this, JType.normalize((ITypeBinding) k)));
   }
 
   public JMethodSymbol methodSymbol(IMethodBinding methodBinding) {
