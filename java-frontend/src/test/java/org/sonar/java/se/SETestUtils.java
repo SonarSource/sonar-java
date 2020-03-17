@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.commons.io.FileUtils;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
 import org.sonar.java.bytecode.cfg.BytecodeCFG;
@@ -40,6 +39,7 @@ import org.sonar.java.model.Sema;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
+import org.sonar.java.testing.FilesUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.VariableSymbol;
 
@@ -49,8 +49,7 @@ import static org.mockito.Mockito.when;
 
 public class SETestUtils {
 
-  private static final File TEST_JARS = new File("target/test-jars");
-  private static final List<File> CLASS_PATH = new ArrayList<>(FileUtils.listFiles(TEST_JARS, new String[] {"jar", "zip"}, true));
+  public static final List<File> CLASS_PATH = new ArrayList<>(FilesUtils.getClassPath("target/test-jars"));
   static {
     CLASS_PATH.add(new File("target/test-classes"));
   }

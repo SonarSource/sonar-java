@@ -46,7 +46,7 @@ public class MultipleFilesJavaCheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues().withIssue(4, "extra message");
     try {
       MultipleFilesJavaCheckVerifier.verify(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE), visitor);
-      Fail.fail("");
+      Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Unexpected at [4]");
     }
@@ -57,9 +57,9 @@ public class MultipleFilesJavaCheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues().withIssue(4, "extra message").withoutIssue(1);
     try {
       MultipleFilesJavaCheckVerifier.verify(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE), visitor);
-      Fail.fail("");
+      Fail.fail("Should have failed");
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Expected {1=[{MESSAGE=message}]}, Unexpected at [4]");
+      assertThat(e).hasMessage("Expected at [1], Unexpected at [4]");
     }
   }
 
@@ -74,9 +74,9 @@ public class MultipleFilesJavaCheckVerifierTest {
     try {
       MultipleFilesJavaCheckVerifier.verifyNoIssueWithoutSemantic(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE),
         new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues());
-      Fail.fail("");
+      Fail.fail("Should have failed");
     } catch (AssertionError e) {
-      assertThat(e.getMessage()).contains("No issues expected but got:");
+      assertThat(e.getMessage()).contains("No issues expected but got 10 issue(s):");
     }
   }
 
