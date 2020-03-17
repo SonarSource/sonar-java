@@ -19,38 +19,61 @@
  */
 package org.sonar.samples.java;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static java.lang.String.format;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
-import static java.util.Collections.singletonList;
 
 @Rule(key = "jspcheck", priority = Priority.MINOR, name = "JspCodeCheck", description = "JspCodeCheck")
 public class JspCodeCheck extends IssuableSubscriptionVisitor implements JspCodeVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return singletonList(Tree.Kind.CLASS);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    Path visitedClasses = new File(context.getWorkingDirectory(), "visit.txt").toPath();
-    String name = ((ClassTree) tree).simpleName().name();
+    if (tree.is(Tree.Kind.CLASS)) {
+      visitClass((ClassTree) tree);
+    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      visitMethodInvocation((MethodInvocationTree) tree);
+    }
+  }
+
+  private void visitClass(ClassTree tree) {
+    Path visitedClasses = context.getWorkingDirectory().toPath().resolve("visit.txt");
+    String name = tree.simpleName().name();
     try {
       Files.write(visitedClasses, (name + "\n").getBytes(), APPEND, CREATE);
     } catch (IOException e) {
       throw new IllegalStateException(e);
+    }
+  }
+
+  private void visitMethodInvocation(MethodInvocationTree tree) {
+    Path path = context.getWorkingDirectory().toPath().resolve("GeneratedCodeCheck.txt");
+    if (context.getInputFile().filename().equals("index_jsp.java") && tree.firstToken().line() == 116) {
+      SourceMap.Location location = context.sourceMap().sourceMapLocationFor(tree);
+      try {
+        String data = format("%s %d:%d%n", location.inputFile().getFileName(), location.startLine(), location.endLine());
+        Files.write(path, data.getBytes(), APPEND, CREATE);
+      } catch (IOException e) {
+        throw new IllegalStateException(e);
+      }
     }
   }
 }

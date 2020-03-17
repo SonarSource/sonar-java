@@ -225,4 +225,14 @@ public interface JavaFileScannerContext {
       return Objects.hash(msg, syntaxNode);
     }
   }
+
+  /**
+   * Return JSR 45 source map for current input file
+   * @return source map or {@code null} if there is no source map available
+   */
+  @Nullable
+  default SourceMap sourceMap() {
+    return null;
+  }
+
 }

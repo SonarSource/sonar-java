@@ -288,7 +288,7 @@ public class VisitorsBridgeTest {
   public void should_not_create_symbol_table_for_generated() {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     VisitorsBridge bridge = new VisitorsBridge(Collections.emptySet(), Collections.emptyList(), sonarComponents);
-    bridge.setCurrentFile(new GeneratedFile(null, null));
+    bridge.setCurrentFile(new GeneratedFile(null));
     Tree tree = new JavaTree.CompilationUnitTreeImpl(null, new ArrayList<>(), new ArrayList<>(), null, null);
     bridge.visitFile(tree);
     verify(sonarComponents, never()).symbolizableFor(any());

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.nio.file.Paths;
 import java.util.List;
 import org.junit.Rule;
@@ -36,6 +37,7 @@ import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
+import org.sonar.java.model.GeneratedFile;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,7 +66,7 @@ class JasperTest {
   void test_empty() throws Exception {
     SensorContextTester ctx = SensorContextTester.create(tempFolder);
     ctx.fileSystem().setWorkDir(workDir);
-    List<InputFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
     assertThat(generatedFiles).isEmpty();
     assertThat(logTester.logs()).containsOnly("Found 0 JSP files.");
   }
@@ -76,7 +78,7 @@ class JasperTest {
       "<h2>Hello World!</h2>\n" +
       "</body>\n" +
       "</html>");
-    List<InputFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
 
     assertThat(generatedFiles).hasSize(1);
     InputFile generatedFile = generatedFiles.iterator().next();
@@ -87,7 +89,7 @@ class JasperTest {
   @Test
   void test_exception_handling() throws Exception {
     SensorContextTester ctx = jspContext("<%=");
-    List<InputFile> inputFiles = new Jasper().generateFiles(ctx, emptyList());
+    Collection<GeneratedFile> inputFiles = new Jasper().generateFiles(ctx, emptyList());
     assertThat(inputFiles).isEmpty();
     assertThat(logTester.logs(LoggerLevel.WARN)).contains("Failed to transpile JSP files.");
   }
@@ -107,6 +109,19 @@ class JasperTest {
     assertThatThrownBy(() -> Jasper.outputDir(ctx))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Failed to create output dir for jsp files");
+  }
+
+  @Test
+  void test_source_map() throws Exception {
+    SensorContextTester ctx = jspContext("<html>\n" +
+      "<body>\n" +
+      "<h2>Hello World!</h2>\n" +
+      "</body>\n" +
+      "</html>");
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
+    assertThat(generatedFiles).hasSize(1);
+    GeneratedFile generatedFile = generatedFiles.iterator().next();
+    assertThat(generatedFile.sourceMap()).isNotNull();
   }
 
   private SensorContextTester jspContext(String jspSource) throws IOException {

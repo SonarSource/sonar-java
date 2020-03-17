@@ -25,8 +25,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -39,6 +42,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.model.GeneratedFile;
+import org.sonar.java.model.SmapFile;
 
 import static java.util.Arrays.asList;
 
@@ -47,7 +51,7 @@ public class Jasper {
 
   private static final Logger LOG = Loggers.get(Jasper.class);
 
-  public List<InputFile> generateFiles(SensorContext context, List<File> javaClasspath) {
+  public Collection<GeneratedFile> generateFiles(SensorContext context, List<File> javaClasspath) {
     List<Path> jspFiles = jspFiles(context.fileSystem());
     LOG.debug("Found {} JSP files.", jspFiles.size());
     if (jspFiles.isEmpty()) {
@@ -60,14 +64,7 @@ public class Jasper {
       LOG.warn("Failed to transpile JSP files.", e);
       return Collections.emptyList();
     }
-    try (Stream<Path> fileStream = walk(outputDir)) {
-      List<InputFile> generatedFiles = fileStream
-        .filter(p -> p.toString().endsWith(".java"))
-        .map(path -> new GeneratedFile(path, findSource(path, context.fileSystem())))
-        .collect(Collectors.toList());
-      LOG.debug("Generated {} Java files.", generatedFiles.size());
-      return generatedFiles;
-    }
+    return findGeneratedFiles(outputDir);
   }
 
   private static List<Path> jspFiles(FileSystem fs) {
@@ -78,15 +75,12 @@ public class Jasper {
   }
 
   private static void compileJspFiles(List<Path> jspFiles, List<File> javaClasspath, Path outputDir) {
-    if (jspFiles.isEmpty()) {
-      return;
-    }
     String classpath = javaClasspath.stream().map(File::getAbsolutePath).collect(Collectors.joining(File.pathSeparator));
     List<String> args = new ArrayList<>(asList("-v", "-failFast",
       "-cache", "false",
       "-javaEncoding", StandardCharsets.UTF_8.toString(),
       "-d", outputDir.toString(),
-      "-classpath", classpath));
+      "-classpath", classpath, "-smap", "-dumpsmap"));
     jspFiles.stream().map(Path::toString).forEach(args::add);
     try {
       LOG.debug("Running JspC with args {} ", args);
@@ -98,11 +92,19 @@ public class Jasper {
     }
   }
 
-  private static InputFile findSource(Path path, FileSystem fs) {
-    String javaFilename = path.getFileName().toString();
-    String jspFilename = javaFilename.substring(0, javaFilename.length() - "_jsp.java".length()) + ".jsp";
-    // TODO we need to use source map to reliably find JSP file from which java file was generated
-    return fs.inputFile(fs.predicates().hasFilename(jspFilename));
+  private static Collection<GeneratedFile> findGeneratedFiles(Path outputDir) {
+    Map<Path, GeneratedFile> generatedFiles = new HashMap<>();
+    try (Stream<Path> fileStream = walk(outputDir)) {
+      fileStream
+        .filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".smap"))
+        .map(SmapFile::fromPath)
+        .forEach(smap -> {
+          GeneratedFile generatedFile = generatedFiles.computeIfAbsent(smap.getGeneratedFile(), p -> new GeneratedFile(smap.getGeneratedFile()));
+          generatedFile.addSmap(smap);
+        });
+      LOG.debug("Generated {} Java files.", generatedFiles.size());
+      return generatedFiles.values();
+    }
   }
 
   static Path outputDir(SensorContext sensorContext) {

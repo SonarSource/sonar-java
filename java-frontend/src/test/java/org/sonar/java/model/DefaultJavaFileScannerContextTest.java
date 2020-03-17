@@ -37,6 +37,7 @@ import org.sonar.java.TestUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -250,6 +251,21 @@ public class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.flows).isEmpty();
 
     assertMessagePosition(reportedMessage, 2, 6, 3, 10);
+  }
+
+  @Test
+  public void test_source_map() {
+    GeneratedFile file = mock(GeneratedFile.class);
+    DefaultJavaFileScannerContext ctx = new DefaultJavaFileScannerContext(compilationUnitTree, file, null, sonarComponents, new JavaVersionImpl(), true);
+    assertThat(ctx.sourceMap()).isNull();
+
+    SourceMap sourceMap = mock(SourceMap.class);
+    when(file.sourceMap()).thenReturn(sourceMap);
+
+    assertThat(ctx.sourceMap()).isSameAs(sourceMap);
+
+    ctx = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true);
+    assertThat(ctx.sourceMap()).isNull();
   }
 
   private static void assertMessagePosition(AnalyzerMessage message, int startLine, int startColumn, int endLine, int endColumn) {

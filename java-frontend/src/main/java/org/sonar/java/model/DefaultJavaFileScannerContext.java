@@ -34,6 +34,7 @@ import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -200,5 +201,14 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     if (javaCheck instanceof EndOfAnalysisCheck) {
       throw new UnsupportedOperationException("EndOfAnalysisCheck must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
     }
+  }
+
+  @Nullable
+  @Override
+  public SourceMap sourceMap() {
+    if (inputFile instanceof GeneratedFile) {
+      return ((GeneratedFile) inputFile).sourceMap();
+    }
+    return null;
   }
 }
