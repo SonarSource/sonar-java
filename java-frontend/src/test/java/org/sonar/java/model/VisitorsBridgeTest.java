@@ -146,8 +146,7 @@ public class VisitorsBridgeTest {
     } catch (Exception e) {
       Fail.fail("Should have been an AnalysisException");
     }
-    assertThat(sonarComponents.analysisErrors).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSameSizeAs(sonarComponents.analysisErrors);
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("JFS_ThrowingNPEJavaFileScanner - JFS");
   }
@@ -161,8 +160,7 @@ public class VisitorsBridgeTest {
       e.printStackTrace();
       Fail.fail("Exception should be swallowed when property is not set");
     }
-    assertThat(sonarComponents.analysisErrors).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSameSizeAs(sonarComponents.analysisErrors);
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("JFS_ThrowingNPEJavaFileScanner - JFS");
   }
@@ -180,8 +178,7 @@ public class VisitorsBridgeTest {
     } catch (Exception e) {
       Fail.fail("Should have been an AnalysisException");
     }
-    assertThat(sonarComponents.analysisErrors).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSameSizeAs(sonarComponents.analysisErrors);
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("SV1_ThrowingNPEVisitingClass - SV1");
   }
@@ -200,8 +197,7 @@ public class VisitorsBridgeTest {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
     }
-    assertThat(sonarComponents.analysisErrors).hasSize(4);
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSameSizeAs(sonarComponents.analysisErrors);
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(4);
     assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder(
         "SV1_ThrowingNPEVisitingClass - SV1",
@@ -222,8 +218,7 @@ public class VisitorsBridgeTest {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
     }
-    assertThat(sonarComponents.analysisErrors).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSameSizeAs(sonarComponents.analysisErrors);
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsOnly("IV1_ThrowingNPEVisitingClass - IV1");
   }
@@ -241,8 +236,7 @@ public class VisitorsBridgeTest {
       e.printStackTrace();
       Fail.fail("Exceptions should be swallowed when property is not set");
     }
-    assertThat(sonarComponents.analysisErrors).hasSize(3);
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSameSizeAs(sonarComponents.analysisErrors);
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(3);
     assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder(
         "SE",
@@ -265,8 +259,7 @@ public class VisitorsBridgeTest {
     } catch (Exception e) {
       Fail.fail("Should have been an AnalysisException");
     }
-    assertThat(sonarComponents.analysisErrors).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSameSizeAs(sonarComponents.analysisErrors);
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("SE");
   }
@@ -282,8 +275,7 @@ public class VisitorsBridgeTest {
       e.printStackTrace();
       Fail.fail("Exception should be swallowed when property is not set");
     }
-    assertThat(sonarComponents.analysisErrors).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSameSizeAs(sonarComponents.analysisErrors);
+    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("SE");
   }

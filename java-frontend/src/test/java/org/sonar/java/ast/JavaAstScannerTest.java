@@ -43,7 +43,6 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
@@ -185,8 +184,6 @@ public class JavaAstScannerTest {
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$CheckThrowingException -  on file '"
       + scannedFile.toString()
       + "', To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
-    assertThat(sonarComponent.analysisErrors).hasSize(1);
-    assertThat(sonarComponent.analysisErrors.get(0).getKind()).isSameAs(AnalysisError.Kind.CHECK_ERROR);
     logTester.clear();
     scanner.setVisitorBridge(new VisitorsBridge(new AnnotatedCheck(new NullPointerException("foo"))));
     scannedFile = TestUtils.inputFile("src/test/resources/AstScannerParseError.txt");
@@ -212,8 +209,6 @@ public class JavaAstScannerTest {
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/se/MethodBehavior.java")));
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
-    assertThat(sonarComponent.analysisErrors).hasSize(1);
-    assertThat(sonarComponent.analysisErrors.get(0).getKind()).isSameAs(AnalysisError.Kind.SE_ERROR);
   }
 
   @Test

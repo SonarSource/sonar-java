@@ -229,19 +229,4 @@ public class JavaTest {
     // no java version specified, got issue on java 7 code
     assertThat(getMeasureAsInteger("org.example:example-scanner", "violations")).isEqualTo(1);
   }
-
-  @Test
-  public void collect_feedback_on_server() {
-    SonarScanner scan = SonarScanner.create(TestUtils.projectDir("java-parse-error"))
-      .setProperty("sonar.projectKey", "java-parse-error")
-      .setProperty("sonar.projectName", "java-parse-error")
-      .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
-      .setProperty("sonar.java.collectAnalysisErrors", "true")
-      .setProperty("sonar.sources", "src");
-    orchestrator.executeBuild(scan);
-
-    Measures.Measure sonarjava_feedback = getMeasure("java-parse-error", "sonarjava_feedback");
-    assertThat(sonarjava_feedback).isNotNull();
-    assertThat(sonarjava_feedback.getValue()).startsWith("[{\"message\":\"Parse error at line 4 column 0");
-  }
 }

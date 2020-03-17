@@ -182,7 +182,6 @@ public class VisitorsBridge {
         scanner.getClass(), ruleKey(scanner), currentFile);
 
       LOG.error(message, e);
-      addAnalysisError(e, currentFile, kind);
 
       throw new CheckFailureException(message, e);
     }
@@ -194,12 +193,6 @@ public class VisitorsBridge {
       return annotation.key();
     }
     return "";
-  }
-
-  private void addAnalysisError(Exception e, InputFile inputFile, AnalysisError.Kind checkError) {
-    if (sonarComponents != null) {
-      sonarComponents.addAnalysisError(new AnalysisError(e, inputFile.toString(), checkError));
-    }
   }
 
   private static List<JavaFileScanner> executableScanners(List<JavaFileScanner> scanners, JavaVersion javaVersion) {
@@ -231,7 +224,6 @@ public class VisitorsBridge {
   }
 
   public void processRecognitionException(RecognitionException e, InputFile inputFile) {
-    addAnalysisError(e, inputFile, AnalysisError.Kind.PARSE_ERROR);
     if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, inputFile)) {
       this.visitFile(null);
       executableScanners.stream()

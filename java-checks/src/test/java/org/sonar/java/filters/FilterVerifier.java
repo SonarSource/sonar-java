@@ -41,7 +41,6 @@ import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
-import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.CheckTestUtils;
 import org.sonar.java.SonarComponents;
@@ -157,12 +156,7 @@ public class FilterVerifier {
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
-        return false;
-      }
-
-      @Override
-      public void addAnalysisError(AnalysisError analysisError) {
-        Fail.fail(String.format("Should not fail analysis (%s)", analysisError.getKind().name()));
+        throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));
       }
     };
     sonarComponents.setSensorContext(context);
