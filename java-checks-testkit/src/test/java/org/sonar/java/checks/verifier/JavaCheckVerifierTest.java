@@ -311,7 +311,7 @@ public class JavaCheckVerifierTest {
       Fail.fail("Should have failed");
     } catch (Error e) {
       assertThat(e).isInstanceOf(AssertionError.class);
-      assertThat(e.getMessage()).isEqualTo("Should not fail analysis (PARSE_ERROR)");
+      assertThat(e.getMessage()).isEqualTo("Should not fail analysis (Parse error at line 1 column 8: Syntax error, insert \"}\" to complete ClassBody)");
     }
   }
 
@@ -322,7 +322,7 @@ public class JavaCheckVerifierTest {
       Fail.fail("Should have failed");
     } catch (Error e) {
       assertThat(e).isInstanceOf(AssertionError.class);
-      assertThat(e.getMessage()).isEqualTo("Should not fail analysis (PARSE_ERROR)");
+      assertThat(e.getMessage()).isEqualTo("Should not fail analysis (Parse error at line 1 column 8: Syntax error, insert \"}\" to complete ClassBody)");
     }
   }
 

@@ -20,13 +20,10 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Collection;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -46,7 +43,6 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.api.utils.Version;
-import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
@@ -85,7 +81,7 @@ public class JavaSquidSensorTest {
 
   @Test
   public void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 4);
+    testIssueCreation(InputFile.Type.MAIN, 3);
   }
 
   @Test
@@ -103,8 +99,8 @@ public class JavaSquidSensorTest {
     JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter);
 
     jss.execute(context);
-    // argument 92 refers to the comment on line #92 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(92));
+    // argument 88 refers to the comment on line #88 in this file
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(88));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
@@ -146,22 +142,6 @@ public class JavaSquidSensorTest {
     return sonarComponents;
   }
 
-  @Test
-  public void verify_analysis_errors_are_collected_on_parse_error() throws Exception {
-    SensorContextTester context = createParseErrorContext();
-    context.settings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true);
-    executeJavaSquidSensor(context);
-
-    String feedback = context.<String>measure("projectKey", "sonarjava_feedback").value();
-    Collection<AnalysisError> analysisErrors = new Gson().fromJson(feedback, new TypeToken<Collection<AnalysisError>>(){}.getType());
-    assertThat(analysisErrors).hasSize(1);
-    AnalysisError analysisError = analysisErrors.iterator().next();
-    assertThat(analysisError.getMessage()).startsWith("Parse error at line 5 column 2:");
-    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 5 column 2:");
-    assertThat(analysisError.getFilename()).endsWith("ParseError.java");
-    assertThat(analysisError.getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
-  }
-
   private SensorContextTester createParseErrorContext() throws IOException {
     File file = new File("src/test/files/ParseError.java");
     SensorContextTester context = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
@@ -197,7 +177,6 @@ public class JavaSquidSensorTest {
   @Test
   public void feedbackShouldNotBeFedIfNoErrors() throws IOException {
     SensorContextTester context = createContext(InputFile.Type.MAIN);
-    context.settings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true);
     executeJavaSquidSensor(context);
     assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
   }

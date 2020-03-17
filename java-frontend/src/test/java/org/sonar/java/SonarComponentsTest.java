@@ -20,8 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -46,9 +44,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
-import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
-import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -384,65 +380,6 @@ public class SonarComponentsTest {
       Lists.<Class<? extends JavaCheck>>newArrayList(expectedCheck.getClass()), null);
   }
 
-  private static class CustomCheck implements JavaCheck {
-
-  }
-
-  private static class CustomTestCheck implements JavaCheck {
-  }
-
-  @Test
-  public void sonarcloud_feedback_metric_should_not_exceed_roughly_200ko() {
-    File file = new File("src/test/files/ParseError.java");
-    SensorContextTester sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
-    sensorContext.setSettings(new MapSettings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true));
-    Measure<String> feedback = analysisWithAnError(sensorContext);
-    Collection<AnalysisError> analysisErrorsDeserialized = new Gson().fromJson(feedback.value(), new TypeToken<Collection<AnalysisError>>(){}.getType());
-    // because we are storing stracktrace of the exception, number of exceptions we manage to serialize into given size can vary
-    assertThat(analysisErrorsDeserialized.size()).isBetween(20, 45);
-    assertThat(analysisErrorsDeserialized.iterator().next().getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
-  }
-
-  private Measure<String> analysisWithAnError(SensorContextTester sensorContext) {
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
-    sonarComponents.setSensorContext(sensorContext);
-
-    AnalysisError analysisError;
-    try {
-      throw new IllegalStateException("This is the message of this exception");
-    } catch (IllegalStateException iae) {
-      analysisError = new AnalysisError(iae, "/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/abcde/some_very/long/path/FileInError.java", AnalysisError.Kind.PARSE_ERROR);
-    }
-
-    for (int i = 0; i < 200_000; i++) {
-      sonarComponents.addAnalysisError(analysisError);
-    }
-
-    sonarComponents.saveAnalysisErrors();
-
-    return sensorContext.measure("projectKey", "sonarjava_feedback");
-  }
-
-  @Test
-  public void feedback_should_not_be_sent_in_sonarLintContext_or_when_collecting_is_disabled_or_when_no_errors() {
-    File file = new File("src/test/files/ParseError.java");
-    SensorContextTester sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
-    Measure<String> feedback = analysisWithAnError(sensorContext);
-    assertThat(feedback).isNull();
-
-    sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
-    sensorContext.setSettings(new MapSettings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true));
-    sensorContext.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    feedback = analysisWithAnError(sensorContext);
-    assertThat(feedback).isNull();
-
-    //analysis with no error
-    sensorContext = SensorContextTester.create(file.getParentFile().getAbsoluteFile());
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
-    sonarComponents.setSensorContext(sensorContext);
-    sonarComponents.saveAnalysisErrors();
-    assertThat(sensorContext.measure("projectKey", "sonarjava_feedback")).isNull();
-
-  }
-
+  private static class CustomCheck implements JavaCheck { }
+  private static class CustomTestCheck implements JavaCheck { }
 }

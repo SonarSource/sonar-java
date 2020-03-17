@@ -45,7 +45,7 @@ public class JavaPluginTest {
   public void sonarqube_7_9_extensions() {
     Plugin.Context context = new Plugin.Context(SonarVersion.SQ_79_RUNTIME);
     javaPlugin.define(context);
-    assertThat(context.getExtensions()).hasSize(34);
+    assertThat(context.getExtensions()).hasSize(32);
   }
 
 }

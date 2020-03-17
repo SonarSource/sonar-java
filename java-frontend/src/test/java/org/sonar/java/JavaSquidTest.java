@@ -79,33 +79,6 @@ public class JavaSquidTest {
   }
 
   @Test
-  public void verify_analysis_errors_are_collected_on_parse_error() throws Exception {
-    String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n";
-    scanForErrors(code);
-
-    assertThat(sonarComponents.analysisErrors).hasSize(1);
-    AnalysisError analysisError = sonarComponents.analysisErrors.get(0);
-    assertThat(analysisError.getMessage()).startsWith("Parse error at line 5 column 1:");
-    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 5 column 1:");
-    assertThat(analysisError.getFilename()).endsWith("test.java");
-    assertThat(analysisError.getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
-  }
-
-  @org.junit.Ignore("new semantic analysis does not throw exception in this case")
-  @Test
-  public void verify_analysis_errors_are_collected_on_semantic_error() throws Exception {
-    String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n}\nclass A {}";
-    scanForErrors(code);
-
-    assertThat(sonarComponents.analysisErrors).hasSize(1);
-    AnalysisError analysisError = sonarComponents.analysisErrors.get(0);
-    assertThat(analysisError.getMessage()).startsWith("Registering class 2 times : A");
-    assertThat(analysisError.getCause()).startsWith("java.lang.IllegalStateException: Registering class 2 times : A");
-    assertThat(analysisError.getFilename()).endsWith("test.java");
-    assertThat(analysisError.getKind()).isEqualTo(AnalysisError.Kind.SEMANTIC_ERROR);
-  }
-
-  @Test
   public void parsing_errors_should_be_reported_to_sonarlint() throws Exception {
     scanForErrors("class A {");
 
