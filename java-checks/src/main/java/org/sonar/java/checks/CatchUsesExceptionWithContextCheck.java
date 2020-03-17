@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -99,7 +100,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   @RuleProperty(
       key = "exceptions",
-      description = "List of exceptions which should not be checked",
+      description = "List of exceptions which should not be checked. Use a simple dash ('-') character to check all exceptions.",
       defaultValue = "" + EXCLUDED_EXCEPTION_TYPE)
   public String exceptionsCommaSeparated = EXCLUDED_EXCEPTION_TYPE;
 
@@ -220,7 +221,12 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   private List<String> getExceptions() {
     if (exceptions == null) {
-      exceptions = Stream.of(exceptionsCommaSeparated.split(",")).map(String::trim).collect(Collectors.toList());
+      if ("-".equals(exceptionsCommaSeparated.trim())) {
+        // explicitly handle '-' as discarding character
+        exceptions = Collections.emptyList();
+      } else {
+        exceptions = Stream.of(exceptionsCommaSeparated.split(",")).map(String::trim).collect(Collectors.toList());
+      }
     }
     return exceptions;
   }
