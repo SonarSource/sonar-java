@@ -47,8 +47,8 @@ import org.sonar.java.CheckTestUtils;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.model.VisitorsBridgeForTests;
+import org.sonar.java.testing.FilesUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -70,7 +70,7 @@ public class FilterVerifier {
       visitors.add(visitor);
     }
 
-    Collection<File> classpath = FileUtils.listFiles(new File(JavaCheckVerifier.DEFAULT_TEST_JARS_DIRECTORY), new String[] {"jar", "zip"}, true);
+    Collection<File> classpath = FileUtils.listFiles(new File(FilesUtils.DEFAULT_TEST_JARS_DIRECTORY), new String[] {"jar", "zip"}, true);
     List<File> projectClasspath = Lists.newArrayList(classpath);
     projectClasspath.add(new File("target/test-classes"));
 
