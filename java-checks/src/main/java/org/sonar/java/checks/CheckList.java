@@ -509,6 +509,7 @@ public final class CheckList {
       RandomFloatToIntCheck.class,
       RawByteBitwiseOperationsCheck.class,
       RawExceptionCheck.class,
+      RawTypeCheck.class,
       ReadObjectSynchronizedCheck.class,
       ReceivingIntentsCheck.class,
       RedundantAbstractMethodCheck.class,

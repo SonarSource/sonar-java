@@ -1,0 +1,16 @@
+{
+  "title": "Raw types should not be used",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3740",
+  "sqKey": "S3740",
+  "scope": "All"
+}

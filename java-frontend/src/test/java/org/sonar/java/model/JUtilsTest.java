@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -29,8 +30,6 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -112,6 +111,43 @@ class JUtilsTest {
     assertThat(JUtils.isParametrized(cu.sema.type(e.typeBinding)))
       .isEqualTo(JUtils.isParametrized(e.symbolType()))
       .isTrue();
+  }
+
+  @Test
+  void isRawType() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C {} class D<T> { void foo(D d, Unknown u) {} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+
+    ClassTreeImpl dGeneric = (ClassTreeImpl) cu.types().get(1);
+    MethodTreeImpl m = (MethodTreeImpl) dGeneric.members().get(0);
+    VariableTreeImpl dRaw = (VariableTreeImpl) m.parameters().get(0);
+    VariableTreeImpl unknown = (VariableTreeImpl) m.parameters().get(1);
+
+    assertThat(JUtils.isRawType(c.symbol().type()))
+      .isSameAs(JUtils.isRawType(dGeneric.symbol().type()))
+      .isSameAs(JUtils.isRawType(unknown.symbol().type()))
+      .isFalse();
+
+    assertThat(JUtils.isRawType(dRaw.type()
+      .symbolType()))
+      .isTrue();
+  }
+
+  @Test
+  void declaringType() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C<T> { void foo(C d, Unknown u) {} }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    VariableTreeImpl cRaw = (VariableTreeImpl) m.parameters().get(0);
+    VariableTreeImpl unknown = (VariableTreeImpl) m.parameters().get(1);
+
+    assertThat(JUtils.declaringType(unknown.symbol().type()))
+      .isSameAs(unknown.symbol().type());
+
+    assertThat(JUtils.declaringType(cRaw.type().symbolType()))
+      .isSameAs(JUtils.declaringType(c.symbol().type()))
+      .isSameAs(c.symbol().type());
   }
 
   @Test
