@@ -63,7 +63,7 @@ class ClassesLayoutTest {
   @Test
   void type() {
     assertAll(
-      () -> assertThat(instanceSize(JType.class, X86_64)).isEqualTo(32),
+      () -> assertThat(instanceSize(JType.class, X86_64)).isEqualTo(40),
       () -> assertThat(instanceSize(JType.class, X86_64_COOPS)).isEqualTo(24)
     );
   }

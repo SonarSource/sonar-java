@@ -32,9 +32,12 @@ final class JType implements Type, Type.ArrayType {
   final JSema sema;
   final ITypeBinding typeBinding;
 
+  private final String fullyQualifiedName;
+
   JType(JSema sema, ITypeBinding typeBinding) {
     this.sema = Objects.requireNonNull(sema);
     this.typeBinding = Objects.requireNonNull(typeBinding);
+    this.fullyQualifiedName = fullyQualifiedName(typeBinding);
   }
 
   @Override
@@ -117,7 +120,7 @@ final class JType implements Type, Type.ArrayType {
 
   @Override
   public String fullyQualifiedName() {
-    return fullyQualifiedName(typeBinding);
+    return fullyQualifiedName;
   }
 
   private static String fullyQualifiedName(ITypeBinding typeBinding) {
