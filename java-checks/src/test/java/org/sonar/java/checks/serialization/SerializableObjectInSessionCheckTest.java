@@ -28,6 +28,17 @@ public class SerializableObjectInSessionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/serialization/SerializableObjectInSessionCheck.java"), new SerializableObjectInSessionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/serialization/SerializableObjectInSessionCheck.java"))
+      .withCheck(new SerializableObjectInSessionCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  public void unresolved() {
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/SerializableObjectInSessionCheckUnresolved.java")
+      .withCheck(new SerializableObjectInSessionCheck())
+      .verifyNoIssues();
   }
 }

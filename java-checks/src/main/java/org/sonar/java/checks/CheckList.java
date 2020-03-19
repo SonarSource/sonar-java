@@ -82,6 +82,7 @@ import org.sonar.java.checks.security.ZipEntryCheck;
 import org.sonar.java.checks.serialization.BlindSerialVersionUidCheck;
 import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
+import org.sonar.java.checks.serialization.NonSerializableWriteCheck;
 import org.sonar.java.checks.serialization.PrivateReadResolveCheck;
 import org.sonar.java.checks.serialization.SerialVersionUidCheck;
 import org.sonar.java.checks.serialization.SerializableComparatorCheck;

@@ -1,4 +1,4 @@
-package checks;
+package checks.serialization;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,13 +34,13 @@ class NonSerializableWriteCheck {
     MyNonSerializable myNonSerializable1 = new MyNonSerializable();
     MyNonSerializable myNonSerializable2 = new MyNonSerializable();
     if (myNonSerializable2 instanceof Runnable) {
-      out.writeObject(myNonSerializable1); // Noncompliant {{Make the "checks.MyNonSerializable" class "Serializable" or don't write it.}}
+      out.writeObject(myNonSerializable1); // Noncompliant {{Make the "checks.serialization.MyNonSerializable" class "Serializable" or don't write it.}}
     }
     if (myNonSerializable2 instanceof Serializable) {
       out.writeObject(myNonSerializable2);
     }
     if (x.toString() instanceof Serializable) {
-      out.writeObject(new MyNonSerializable()); // Noncompliant [[sc=23;ec=46]] {{Make the "checks.MyNonSerializable" class "Serializable" or don't write it.}}
+      out.writeObject(new MyNonSerializable()); // Noncompliant [[sc=23;ec=46]] {{Make the "checks.serialization.MyNonSerializable" class "Serializable" or don't write it.}}
     }
     out.writeObject(array);
 

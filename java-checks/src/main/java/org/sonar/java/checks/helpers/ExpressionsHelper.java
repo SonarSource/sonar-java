@@ -160,6 +160,9 @@ public class ExpressionsHelper {
   }
 
   private static boolean isNonSerializable(Type type) {
+    if (type.isUnknown()) {
+      return false;
+    }
     if (type.isArray()) {
       return isNonSerializable(((Type.ArrayType) type).elementType());
     }
