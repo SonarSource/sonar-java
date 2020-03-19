@@ -20,6 +20,7 @@
 package org.sonar.java.jsp;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,22 +48,25 @@ public class Jasper {
   private static final Logger LOG = Loggers.get(Jasper.class);
 
   public List<InputFile> generateFiles(SensorContext context, List<File> javaClasspath) {
+    List<Path> jspFiles = jspFiles(context.fileSystem());
+    LOG.debug("Found {} JSP files.", jspFiles.size());
+    if (jspFiles.isEmpty()) {
+      return Collections.emptyList();
+    }
+    Path outputDir = outputDir(context);
     try {
-      List<Path> jspFiles = jspFiles(context.fileSystem());
-      LOG.debug("Found {} JSP files.", jspFiles.size());
-      Path outputDir = outputDir(context);
       Jasper.compileJspFiles(jspFiles, javaClasspath, outputDir);
-      try (Stream<Path> fileStream = Files.walk(outputDir)) {
-        List<InputFile> generatedFiles = fileStream
-          .filter(p -> p.toString().endsWith(".java"))
-          .map(path -> new GeneratedFile(path, findSource(path, context.fileSystem())))
-          .collect(Collectors.toList());
-        LOG.debug("Generated {} Java files.", generatedFiles.size());
-        return generatedFiles;
-      }
     } catch (Exception e) {
       LOG.warn("Failed to transpile JSP files.", e);
       return Collections.emptyList();
+    }
+    try (Stream<Path> fileStream = walk(outputDir)) {
+      List<InputFile> generatedFiles = fileStream
+        .filter(p -> p.toString().endsWith(".java"))
+        .map(path -> new GeneratedFile(path, findSource(path, context.fileSystem())))
+        .collect(Collectors.toList());
+      LOG.debug("Generated {} Java files.", generatedFiles.size());
+      return generatedFiles;
     }
   }
 
@@ -101,9 +105,21 @@ public class Jasper {
     return fs.inputFile(fs.predicates().hasFilename(jspFilename));
   }
 
-  private static Path outputDir(SensorContext sensorContext) {
-    return sensorContext.fileSystem().workDir().toPath().resolve("jsp");
+  static Path outputDir(SensorContext sensorContext) {
+    Path path = sensorContext.fileSystem().workDir().toPath().resolve("jsp");
+    try {
+      Files.createDirectories(path);
+    } catch (IOException ex) {
+      throw new IllegalStateException("Failed to create output dir for jsp files", ex);
+    }
+    return path;
   }
 
-
+  static Stream<Path> walk(Path dir) {
+    try {
+      return Files.walk(dir);
+    } catch (IOException e) {
+      throw new IllegalArgumentException("Failed to walk " + dir, e);
+    }
+  }
 }

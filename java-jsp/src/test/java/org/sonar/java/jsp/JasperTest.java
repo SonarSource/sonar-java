@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,7 @@ import org.sonar.api.utils.log.LoggerLevel;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @EnableRuleMigrationSupport
 class JasperTest {
@@ -64,6 +66,7 @@ class JasperTest {
     ctx.fileSystem().setWorkDir(workDir);
     List<InputFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
     assertThat(generatedFiles).isEmpty();
+    assertThat(logTester.logs()).containsOnly("Found 0 JSP files.");
   }
 
   @Test
@@ -87,6 +90,23 @@ class JasperTest {
     List<InputFile> inputFiles = new Jasper().generateFiles(ctx, emptyList());
     assertThat(inputFiles).isEmpty();
     assertThat(logTester.logs(LoggerLevel.WARN)).contains("Failed to transpile JSP files.");
+  }
+
+  @Test
+  void test_walk() {
+    assertThatThrownBy(() -> Jasper.walk(Paths.get("nonexistant")))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Failed to walk nonexistant");
+  }
+
+  @Test
+  void test_outputdir() throws Exception {
+    SensorContextTester ctx = SensorContextTester.create(tempFolder);
+    ctx.fileSystem().setWorkDir(workDir);
+    Files.createFile(workDir.resolve("jsp"));
+    assertThatThrownBy(() -> Jasper.outputDir(ctx))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Failed to create output dir for jsp files");
   }
 
   private SensorContextTester jspContext(String jspSource) throws IOException {
