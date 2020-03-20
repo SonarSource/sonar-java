@@ -222,6 +222,7 @@ public final class CheckList {
       BoxedBooleanExpressionsCheck.class,
       CallOuterPrivateMethodCheck.class,
       CallSuperMethodFromInnerClassCheck.class,
+      CallToDeprecatedCodeMarkedForRemovalCheck.class,
       CallToDeprecatedMethodCheck.class,
       CallToFileDeleteOnExitMethodCheck.class,
       CaseInsensitiveComparisonCheck.class,

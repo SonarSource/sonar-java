@@ -22,36 +22,16 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-import static org.sonar.java.CheckTestUtils.testSourcesPath;
-
-public class CallToDeprecatedMethodCheckTest {
+public class CallToDeprecatedCodeMarkedForRemovalCheckTest {
 
   @Test
   public void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CallToDeprecatedMethod.java"))
-      .withCheck(new CallToDeprecatedMethodCheck())
-      .verifyIssues();
-  }
-
-  /**
-   * See {@link CallToDeprecatedCodeMarkedForRemovalCheck}
-   */
-  @Test
-  public void flagged_for_removal_should_not_raise_issue() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CallToDeprecatedMethod_java9.java")
+      .onFile("src/test/files/checks/CallToDeprecatedCodeFlaggedForRemovalCheck_java9.java")
+      // 'forRemoval' introduced in java 9
       .withJavaVersion(9)
-      .withCheck(new CallToDeprecatedMethodCheck())
+      .withCheck(new CallToDeprecatedCodeMarkedForRemovalCheck())
       .verifyIssues();
   }
 
-  @Test
-  public void without_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CallToDeprecatedMethod_noSemantic.java")
-      .withCheck(new CallToDeprecatedMethodCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
 }

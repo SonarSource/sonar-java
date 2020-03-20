@@ -1,0 +1,56 @@
+<p>Java 9 introduced a flag for the <code>@Deprecated</code> annotation, which allows to explicitly say if the deprecated code is planned to be
+removed at some point or not. This is done using <code>forRemoval=true</code> as annotation parameter. The javadoc of the annotation explicitly
+mention the following: </p>
+<blockquote>
+  <p>If true, it means that this API element is earmarked for removal in a future release.</p>
+  <p>If false, the API element is deprecated, but there is currently no intention to remove it in a future release.</p>
+</blockquote>
+<p>While usually deprecated classes, interfaces, and their deprecated members should be avoided rather than used, inherited or extended, those already
+marked for removal are much more sensitive to causing trouble in your code soon. Consequently, any usage of such deprecated code should be avoided or
+removed.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+/**
+ * @deprecated As of release 1.3, replaced by {@link #Fee}. Will be dropped with release 1.4.
+ */
+@Deprecated(forRemoval=true)
+public class Foo { ... }
+
+public class Bar {
+  /**
+   * @deprecated  As of release 1.7, replaced by {@link #doTheThingBetter()}
+   */
+  @Deprecated(forRemoval=true)
+  public void doTheThing() { ... }
+
+  public void doTheThingBetter() { ... }
+
+  /**
+   * @deprecated As of release 1.14 due to poor performances.
+   */
+  @Deprecated(forRemoval=false)
+  public void doTheOtherThing() { ... }
+}
+
+public class Qix extends Bar {
+  @Override
+  public void doTheThing() { ... } // Noncompliant; don't override a deprecated method marked for removal
+}
+
+public class Bar extends Foo {  // Noncompliant; Foo is deprecated and will be removed
+
+  public void myMethod() {
+    Bar bar = new Bar();  // okay; the class isn't deprecated
+    bar.doTheThing();  // Noncompliant; doTheThing method is deprecated and will be removed
+
+    bar.doTheOtherThing(); // Okay; deprecated, but not marked for removal
+  }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="http://cwe.mitre.org/data/definitions/477.html">MITRE, CWE-477</a> - Use of Obsolete Functions </li>
+  <li> <a href="https://www.securecoding.cert.org/confluence/x/KgAVAg">CERT, MET02-J.</a> - Do not use deprecated or obsolete classes or methods </li>
+  <li> RSPEC-1874 for standard deprecation use </li>
+</ul>
+
