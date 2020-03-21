@@ -49,7 +49,6 @@ public class MethodInvocationTreeImpl extends AssessableExpressionTree implement
   public IMethodBinding methodBinding;
 
   public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, ArgumentListTreeImpl arguments) {
-    super(Kind.METHOD_INVOCATION);
     this.methodSelect = Objects.requireNonNull(methodSelect);
     this.typeArguments = typeArguments;
     this.arguments = Objects.requireNonNull(arguments);

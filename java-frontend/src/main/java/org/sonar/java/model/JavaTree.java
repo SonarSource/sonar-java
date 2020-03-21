@@ -59,7 +59,6 @@ import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
-import org.sonar.sslr.grammar.GrammarRuleKey;
 
 public abstract class JavaTree implements Tree {
 
@@ -68,13 +67,8 @@ public abstract class JavaTree implements Tree {
   @Nullable
   private Tree parent;
 
-  protected GrammarRuleKey grammarRuleKey;
-
   private List<Tree> children;
 
-  public JavaTree(GrammarRuleKey grammarRuleKey) {
-    this.grammarRuleKey = grammarRuleKey;
-  }
 
   @Override
   @Nullable
@@ -155,10 +149,6 @@ public abstract class JavaTree implements Tree {
     return false;
   }
 
-  public GrammarRuleKey getGrammarRuleKey() {
-    return grammarRuleKey;
-  }
-
   public static class CompilationUnitTreeImpl extends JavaTree implements CompilationUnitTree {
     @Nullable
     private final PackageDeclarationTree packageDeclaration;
@@ -171,7 +161,6 @@ public abstract class JavaTree implements Tree {
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
-      super(Kind.COMPILATION_UNIT);
       this.root = this;
       this.packageDeclaration = packageDeclaration;
       this.imports = imports;
@@ -239,8 +228,6 @@ public abstract class JavaTree implements Tree {
     private final SyntaxToken semicolonToken;
 
     public PackageDeclarationTreeImpl(List<AnnotationTree> annotations, SyntaxToken packageKeyword, ExpressionTree packageName, SyntaxToken semicolonToken) {
-      super(Tree.Kind.PACKAGE);
-
       this.annotations = Objects.requireNonNull(annotations);
       this.packageKeyword = packageKeyword;
       this.packageName = packageName;
@@ -321,7 +308,6 @@ public abstract class JavaTree implements Tree {
 
     public ImportTreeImpl(InternalSyntaxToken importToken, @Nullable InternalSyntaxToken staticToken,
                           Tree qualifiedIdentifier, InternalSyntaxToken semiColonToken) {
-      super(Kind.IMPORT);
       this.importToken = importToken;
       this.staticToken = staticToken;
       this.qualifiedIdentifier = qualifiedIdentifier;
@@ -401,7 +387,6 @@ public abstract class JavaTree implements Tree {
     private List<AnnotationTree> annotations;
 
     public WildcardTreeImpl(InternalSyntaxToken queryToken) {
-      super(Kind.UNBOUNDED_WILDCARD);
       this.kind = Kind.UNBOUNDED_WILDCARD;
       this.annotations = Collections.emptyList();
       this.queryToken = queryToken;
@@ -410,7 +395,6 @@ public abstract class JavaTree implements Tree {
     }
 
     public WildcardTreeImpl(Kind kind, InternalSyntaxToken extendsOrSuperToken, TypeTree bound) {
-      super(kind);
       Preconditions.checkState(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
       this.kind = kind;
       this.annotations = Collections.emptyList();
@@ -478,7 +462,6 @@ public abstract class JavaTree implements Tree {
     private final ListTree<TypeTree> typeAlternatives;
 
     public UnionTypeTreeImpl(TypeUnionListTreeImpl typeAlternatives) {
-      super(Kind.UNION_TYPE);
       this.typeAlternatives = Objects.requireNonNull(typeAlternatives);
     }
 
@@ -511,7 +494,6 @@ public abstract class JavaTree implements Tree {
   public static class NotImplementedTreeImpl extends AssessableExpressionTree {
 
     public NotImplementedTreeImpl() {
-      super(Kind.OTHER);
     }
 
     @Override
@@ -541,7 +523,6 @@ public abstract class JavaTree implements Tree {
     private List<AnnotationTree> annotations;
 
     public PrimitiveTypeTreeImpl(InternalSyntaxToken token) {
-      super(Kind.PRIMITIVE_TYPE);
       this.token = token;
       this.annotations = Collections.emptyList();
     }
@@ -584,7 +565,6 @@ public abstract class JavaTree implements Tree {
     private List<AnnotationTree> annotations;
 
     public ParameterizedTypeTreeImpl(TypeTree type, TypeArgumentListTreeImpl typeArguments) {
-      super(Kind.PARAMETERIZED_TYPE);
       this.type = Objects.requireNonNull(type);
       this.typeArguments = Objects.requireNonNull(typeArguments);
       this.annotations = Collections.emptyList();
@@ -634,7 +614,6 @@ public abstract class JavaTree implements Tree {
     private final InternalSyntaxToken ellipsisToken;
 
     public ArrayTypeTreeImpl(@Nullable TypeTree type, List<AnnotationTreeImpl> annotations, InternalSyntaxToken openBracketToken, InternalSyntaxToken closeBracketToken) {
-      super(Kind.ARRAY_TYPE);
       this.type = type;
       this.annotations = getAnnotations(annotations);
       this.openBracketToken = openBracketToken;
@@ -643,7 +622,6 @@ public abstract class JavaTree implements Tree {
     }
 
     public ArrayTypeTreeImpl(@Nullable TypeTree type, List<AnnotationTreeImpl> annotations, InternalSyntaxToken ellispsisToken) {
-      super(Kind.ARRAY_TYPE);
       this.type = type;
       this.annotations = getAnnotations(annotations);
       this.openBracketToken = null;

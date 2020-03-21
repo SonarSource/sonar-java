@@ -26,7 +26,6 @@ import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
-import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,14 +39,12 @@ public abstract class ListTreeImpl<T extends Tree> extends JavaTree implements L
   private final List<T> list;
   private final List<SyntaxToken> separators;
 
-  public ListTreeImpl(GrammarRuleKey grammarRuleKey, List<T> list) {
-    super(grammarRuleKey);
+  public ListTreeImpl(List<T> list) {
     this.list = list;
     this.separators = new ArrayList<>();
   }
 
-  public ListTreeImpl(GrammarRuleKey grammarRuleKey, List<T> list, List<SyntaxToken> separators) {
-    super(grammarRuleKey);
+  public ListTreeImpl(List<T> list, List<SyntaxToken> separators) {
     this.list = list;
     this.separators = separators;
   }

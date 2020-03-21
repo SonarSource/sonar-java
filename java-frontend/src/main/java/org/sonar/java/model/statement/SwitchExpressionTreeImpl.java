@@ -48,7 +48,6 @@ public class SwitchExpressionTreeImpl extends AssessableExpressionTree implement
 
   public SwitchExpressionTreeImpl(InternalSyntaxToken switchKeyword, InternalSyntaxToken openParenToken, ExpressionTree expression,
     InternalSyntaxToken closeParenToken, InternalSyntaxToken openBraceToken, List<CaseGroupTreeImpl> groups, InternalSyntaxToken closeBraceToken) {
-    super(Kind.SWITCH_EXPRESSION);
     this.switchKeyword = switchKeyword;
     this.openParenToken = openParenToken;
     this.expression = Objects.requireNonNull(expression);

@@ -35,7 +35,6 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   private final SwitchExpressionTree switchExpression;
 
   public SwitchStatementTreeImpl(SwitchExpressionTree switchExpression) {
-    super(Kind.SWITCH_STATEMENT);
     this.switchExpression = switchExpression;
   }
 

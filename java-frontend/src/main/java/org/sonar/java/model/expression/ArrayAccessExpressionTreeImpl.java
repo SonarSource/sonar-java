@@ -32,7 +32,6 @@ public class ArrayAccessExpressionTreeImpl extends AssessableExpressionTree impl
   private final ArrayDimensionTree dimension;
 
   public ArrayAccessExpressionTreeImpl(ArrayDimensionTree dimension) {
-    super(Kind.ARRAY_ACCESS_EXPRESSION);
     this.dimension = dimension;
   }
 

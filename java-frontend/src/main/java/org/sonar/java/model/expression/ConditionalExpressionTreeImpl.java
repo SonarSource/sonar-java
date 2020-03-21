@@ -36,8 +36,6 @@ public class ConditionalExpressionTreeImpl extends AssessableExpressionTree impl
   private final ExpressionTree falseExpression;
 
   public ConditionalExpressionTreeImpl(InternalSyntaxToken queryToken, ExpressionTree trueExpression, InternalSyntaxToken colonToken, ExpressionTree falseExpression) {
-
-    super(Kind.CONDITIONAL_EXPRESSION);
     this.queryToken = queryToken;
     this.trueExpression = trueExpression;
     this.colonToken = colonToken;

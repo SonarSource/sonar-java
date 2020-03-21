@@ -54,7 +54,6 @@ public class NewClassTreeImpl extends AssessableExpressionTree implements NewCla
   private final ClassTree classBody;
 
   public NewClassTreeImpl(Arguments arguments, @Nullable ClassTreeImpl classBody) {
-    super(Kind.NEW_CLASS);
     this.enclosingExpression = null;
     this.arguments = arguments;
     this.classBody = classBody;

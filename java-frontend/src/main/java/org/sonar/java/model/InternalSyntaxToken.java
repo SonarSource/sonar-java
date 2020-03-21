@@ -23,7 +23,6 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
-import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.List;
 
@@ -38,7 +37,6 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   private final boolean isEOF;
 
   protected InternalSyntaxToken(InternalSyntaxToken internalSyntaxToken) {
-    super(null);
     this.value = internalSyntaxToken.value;
     this.line = internalSyntaxToken.line;
     this.column = internalSyntaxToken.column;
@@ -49,7 +47,6 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   }
 
   public InternalSyntaxToken(int line, int column, String value, List<SyntaxTrivia> trivias, int startIndex, int endIndex, boolean isEOF) {
-    super(null);
     this.value = value;
     this.line = line;
     this.column = column;
@@ -118,7 +115,4 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
     throw new UnsupportedOperationException();
   }
 
-  public void setGrammarRuleKey(GrammarRuleKey grammarRuleKey) {
-    this.grammarRuleKey = grammarRuleKey;
-  }
 }

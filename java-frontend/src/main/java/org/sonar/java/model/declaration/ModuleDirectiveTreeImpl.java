@@ -31,7 +31,6 @@ public abstract class ModuleDirectiveTreeImpl extends JavaTree implements Module
   private final InternalSyntaxToken semicolonToken;
 
   public ModuleDirectiveTreeImpl(Tree.Kind directiveKind, InternalSyntaxToken directiveKeyword, InternalSyntaxToken semicolonToken) {
-    super(directiveKind);
     this.directiveKeyword = directiveKeyword;
     this.semicolonToken = semicolonToken;
   }

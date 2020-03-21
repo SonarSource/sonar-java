@@ -37,7 +37,6 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
   private final InternalSyntaxToken semicolonToken;
 
   public ReturnStatementTreeImpl(InternalSyntaxToken returnKeyword, @Nullable ExpressionTree expression, InternalSyntaxToken semicolonToken) {
-    super(Kind.RETURN_STATEMENT);
     this.returnKeyword = returnKeyword;
     this.expression = expression;
     this.semicolonToken = semicolonToken;

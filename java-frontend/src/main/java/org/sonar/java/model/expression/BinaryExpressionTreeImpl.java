@@ -37,7 +37,6 @@ public class BinaryExpressionTreeImpl extends AssessableExpressionTree implement
   private final ExpressionTree rightOperand;
 
   public BinaryExpressionTreeImpl(Kind kind, ExpressionTree leftOperand, InternalSyntaxToken operator, ExpressionTree rightOperand) {
-    super(kind);
     this.kind = Objects.requireNonNull(kind);
     this.leftOperand = Objects.requireNonNull(leftOperand);
     this.operator = operator;

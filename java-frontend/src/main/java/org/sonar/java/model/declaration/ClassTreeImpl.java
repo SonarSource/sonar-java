@@ -66,8 +66,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   public ITypeBinding typeBinding;
 
   public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
-    super(kind);
-
     this.kind = kind;
     this.openBraceToken = openBraceToken;
     this.members = members;
@@ -78,7 +76,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   public ClassTreeImpl(ModifiersTree modifiers, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
-    super(Kind.ANNOTATION_TYPE);
     this.kind = Objects.requireNonNull(Kind.ANNOTATION_TYPE);
     this.modifiers = modifiers;
     this.typeParameters = new TypeParameterListTreeImpl();

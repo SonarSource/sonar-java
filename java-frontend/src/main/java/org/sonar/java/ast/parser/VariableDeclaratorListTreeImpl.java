@@ -26,7 +26,7 @@ import java.util.List;
 public class VariableDeclaratorListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
 
   public VariableDeclaratorListTreeImpl(List<VariableTreeImpl> variables) {
-    super(JavaLexer.VARIABLE_DECLARATORS, variables);
+    super(variables);
   }
 
 }

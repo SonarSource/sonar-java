@@ -40,7 +40,6 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
 
   public WhileStatementTreeImpl(InternalSyntaxToken whileKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
     StatementTree statement) {
-    super(Kind.WHILE_STATEMENT);
     this.whileKeyword = whileKeyword;
     this.openParenToken = openParenToken;
     this.condition = Objects.requireNonNull(condition);

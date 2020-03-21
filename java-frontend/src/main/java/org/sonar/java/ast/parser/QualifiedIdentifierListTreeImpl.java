@@ -28,7 +28,7 @@ import java.util.List;
 public class QualifiedIdentifierListTreeImpl extends ListTreeImpl<TypeTree> {
 
   public QualifiedIdentifierListTreeImpl(List<TypeTree> qualifiedIdentifiers, List<SyntaxToken> separators) {
-    super(JavaLexer.QUALIFIED_IDENTIFIER_LIST, qualifiedIdentifiers, separators);
+    super(qualifiedIdentifiers, separators);
   }
 
   public static QualifiedIdentifierListTreeImpl emptyList() {

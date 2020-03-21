@@ -27,7 +27,7 @@ import java.util.List;
 
 public class InitializerListTreeImpl extends ListTreeImpl<ExpressionTree> {
   public InitializerListTreeImpl(List<ExpressionTree> list, List<SyntaxToken> separators) {
-    super(JavaLexer.ARRAY_INITIALIZER, list, separators);
+    super(list, separators);
   }
 
   public static InitializerListTreeImpl emptyList() {

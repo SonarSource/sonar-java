@@ -38,7 +38,6 @@ public class VarTypeTreeImpl extends AbstractTypedTree implements VarTypeTree, J
   private List<AnnotationTree> annotations;
 
   public VarTypeTreeImpl(InternalSyntaxToken varToken) {
-    super(Tree.Kind.VAR_TYPE);
     this.varToken = varToken;
     this.annotations =  Collections.emptyList();
   }

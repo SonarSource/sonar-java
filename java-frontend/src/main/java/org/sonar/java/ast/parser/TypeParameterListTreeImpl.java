@@ -40,14 +40,14 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
 
   public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTree> typeParameters,
     List<SyntaxToken> separators, InternalSyntaxToken closeBracketToken) {
-    super(JavaLexer.TYPE_PARAMETERS, typeParameters, separators);
+    super(typeParameters, separators);
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;
   }
 
   public TypeParameterListTreeImpl() {
-    super(JavaLexer.TYPE_PARAMETERS, Collections.emptyList(), Collections.emptyList());
+    super(Collections.emptyList(), Collections.emptyList());
     this.openBracketToken = null;
     this.closeBracketToken = null;
   }

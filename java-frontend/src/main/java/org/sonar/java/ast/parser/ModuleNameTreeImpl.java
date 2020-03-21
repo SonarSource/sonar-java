@@ -28,7 +28,7 @@ import java.util.List;
 public class ModuleNameTreeImpl extends ListTreeImpl<IdentifierTree> implements ModuleNameTree {
 
   public ModuleNameTreeImpl(List<IdentifierTree> identifiers, List<SyntaxToken> separators) {
-    super(JavaLexer.MODULE_NAME, identifiers, separators);
+    super(identifiers, separators);
   }
 
 }

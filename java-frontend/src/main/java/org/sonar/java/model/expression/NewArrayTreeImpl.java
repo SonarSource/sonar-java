@@ -49,8 +49,6 @@ public class NewArrayTreeImpl extends AssessableExpressionTree implements NewArr
   private SyntaxToken closeCurlyBraceToken;
 
   public NewArrayTreeImpl(List<ArrayDimensionTree> dimensions, ListTree<ExpressionTree> initializers) {
-    super(Kind.NEW_ARRAY);
-
     // TODO maybe type should not be null?
     this.type = null;
     this.dimensions = Objects.requireNonNull(dimensions);

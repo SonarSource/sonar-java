@@ -61,7 +61,7 @@ public class ListTreeImplTest {
 
   private static class MyList extends ListTreeImpl<Tree> {
     public MyList(List<Tree> list, List<SyntaxToken> tokens) {
-      super(null, list, tokens);
+      super(list, tokens);
     }
   }
 

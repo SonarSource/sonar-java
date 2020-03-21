@@ -28,7 +28,7 @@ import java.util.List;
 public class BoundListTreeImpl extends ListTreeImpl<Tree> {
 
   public BoundListTreeImpl(List<? extends Tree> typeTrees, List<SyntaxToken> separators) {
-    super(JavaLexer.BOUND, (List<Tree>) typeTrees, separators);
+    super((List<Tree>) typeTrees, separators);
   }
 
   public static BoundListTreeImpl emptyList() {

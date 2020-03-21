@@ -38,8 +38,6 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
   private final InternalSyntaxToken semicolonToken;
 
   public ExpressionStatementTreeImpl(ExpressionTree expression, /* FIXME */@Nullable InternalSyntaxToken semicolonToken) {
-    super(Kind.EXPRESSION_STATEMENT);
-
     this.expression = Objects.requireNonNull(expression);
     this.semicolonToken = semicolonToken;
   }

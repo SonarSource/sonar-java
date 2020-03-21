@@ -41,7 +41,6 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
   public JLabelSymbol labelSymbol;
 
   public LabeledStatementTreeImpl(IdentifierTree label, InternalSyntaxToken colonToken, StatementTree statement) {
-    super(Kind.LABELED_STATEMENT);
     this.label = Objects.requireNonNull(label);
     this.colonToken = colonToken;
     this.statement = Objects.requireNonNull(statement);

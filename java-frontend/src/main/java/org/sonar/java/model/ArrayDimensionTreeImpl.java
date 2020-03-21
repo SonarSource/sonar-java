@@ -41,7 +41,6 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
   private final SyntaxToken closeBracketToken;
 
   public ArrayDimensionTreeImpl(SyntaxToken openBracketToken, @Nullable ExpressionTree expression, SyntaxToken closeBracketToken) {
-    super(Tree.Kind.ARRAY_DIMENSION);
     this.annotations = Collections.emptyList();
     this.openBracketToken = openBracketToken;
     this.expression = expression;

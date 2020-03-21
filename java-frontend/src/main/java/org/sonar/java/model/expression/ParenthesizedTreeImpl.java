@@ -35,7 +35,6 @@ public class ParenthesizedTreeImpl extends AssessableExpressionTree implements P
   private final InternalSyntaxToken closeParenToken;
 
   public ParenthesizedTreeImpl(InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken) {
-    super(Kind.PARENTHESIZED_EXPRESSION);
     this.openParenToken = openParenToken;
     this.expression = Objects.requireNonNull(expression);
     this.closeParenToken = closeParenToken;

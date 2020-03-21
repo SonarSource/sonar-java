@@ -35,7 +35,6 @@ public class InstanceOfTreeImpl extends AssessableExpressionTree implements Inst
   private final TypeTree type;
 
   public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, TypeTree type) {
-    super(Kind.INSTANCE_OF);
     this.instanceofToken = instanceofToken;
     this.type = type;
   }

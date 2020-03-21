@@ -23,16 +23,11 @@ import java.util.Optional;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.sslr.grammar.GrammarRuleKey;
 
 /**
  * Parent class for all ExpressionTrees, which allows to express them as their constant value
  */
 public abstract class AssessableExpressionTree extends AbstractTypedTree implements ExpressionTree {
-
-  public AssessableExpressionTree(GrammarRuleKey grammarRuleKey) {
-    super(grammarRuleKey);
-  }
 
   @Override
   public Optional<Object> asConstant() {

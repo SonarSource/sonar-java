@@ -38,7 +38,6 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
   private final InternalSyntaxToken semicolonToken;
 
   public BreakStatementTreeImpl(InternalSyntaxToken breakToken, @Nullable ExpressionTree labelOrValue, InternalSyntaxToken semicolonToken) {
-    super(Kind.BREAK_STATEMENT);
     this.breakToken = breakToken;
     this.labelOrValue = labelOrValue;
     this.semicolonToken = semicolonToken;

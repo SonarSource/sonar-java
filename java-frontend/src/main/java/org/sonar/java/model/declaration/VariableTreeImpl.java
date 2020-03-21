@@ -65,7 +65,6 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     TypeTree type,
     IdentifierTree simpleName
   ) {
-    super(Kind.VARIABLE);
     this.vararg = vararg;
     this.modifiers = modifiers;
     this.type = type;
@@ -73,8 +72,6 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   public VariableTreeImpl(IdentifierTreeImpl simpleName, @Nullable ArrayTypeTreeImpl nestedDimensions) {
-    super(Kind.VARIABLE);
-
     this.modifiers = ModifiersTreeImpl.emptyModifiers();
     this.simpleName = simpleName;
     this.nestedDimensions = nestedDimensions;
@@ -82,7 +79,6 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   public VariableTreeImpl(InternalSyntaxToken equalToken, ExpressionTree initializer) {
-    super(Kind.VARIABLE);
     this.equalToken = equalToken;
     this.initializer = initializer;
   }
@@ -93,7 +89,6 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   public VariableTreeImpl(Kind kind, ModifiersTree modifiers, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
-    super(kind);
     this.modifiers = Objects.requireNonNull(modifiers);
     this.simpleName = Objects.requireNonNull(simpleName);
     this.initializer = initializer;

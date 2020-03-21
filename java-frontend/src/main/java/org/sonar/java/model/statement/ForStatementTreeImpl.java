@@ -48,7 +48,6 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   public ForStatementTreeImpl(InternalSyntaxToken forKeyword, InternalSyntaxToken openParenToken, ListTree<StatementTree> initializer,
     InternalSyntaxToken firstSemicolonToken, @Nullable ExpressionTree condition, InternalSyntaxToken secondSemicolonToken, ListTree<StatementTree> update,
     InternalSyntaxToken closeParenToken, StatementTree statement) {
-    super(Kind.FOR_STATEMENT);
     this.forKeyword = forKeyword;
     this.openParenToken = openParenToken;
     this.initializer = Objects.requireNonNull(initializer);

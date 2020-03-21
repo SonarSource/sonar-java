@@ -37,7 +37,6 @@ public class AssignmentExpressionTreeImpl extends AssessableExpressionTree imple
   private final ExpressionTree expression;
 
   public AssignmentExpressionTreeImpl(Kind kind, ExpressionTree variable, InternalSyntaxToken operatorToken, ExpressionTree expression) {
-    super(kind);
     this.kind = kind;
 
     this.variable = variable;

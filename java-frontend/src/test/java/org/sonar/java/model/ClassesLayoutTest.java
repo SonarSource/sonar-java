@@ -40,7 +40,7 @@ class ClassesLayoutTest {
   @Test
   void token() {
     assertAll(
-      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64)).isEqualTo(88),
+      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64)).isEqualTo(80),
       () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64_COOPS)).isEqualTo(56)
     );
   }
@@ -48,7 +48,7 @@ class ClassesLayoutTest {
   @Test
   void identifier() {
     assertAll(
-      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64)).isEqualTo(88),
+      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64)).isEqualTo(80),
       () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
@@ -56,7 +56,7 @@ class ClassesLayoutTest {
   @Test
   void literal() {
     assertAll(
-      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64)).isEqualTo(72),
+      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64)).isEqualTo(64),
       () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64_COOPS)).isEqualTo(40)
     );
   }
@@ -64,7 +64,7 @@ class ClassesLayoutTest {
   @Test
   void method_invocation() {
     assertAll(
-      () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64)).isEqualTo(88),
+      () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64)).isEqualTo(80),
       () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
     );
   }

@@ -44,7 +44,6 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
 
   public ForEachStatementImpl(InternalSyntaxToken forKeyword, InternalSyntaxToken openParenToken, VariableTreeImpl variable, InternalSyntaxToken colonToken,
     ExpressionTree expression, InternalSyntaxToken closeParenToken, StatementTree statement) {
-    super(Kind.FOR_EACH_STATEMENT);
     this.forKeyword = forKeyword;
     this.openParenToken = openParenToken;
     this.variable = Objects.requireNonNull(variable);

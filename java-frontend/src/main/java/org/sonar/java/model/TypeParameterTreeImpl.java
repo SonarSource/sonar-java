@@ -46,14 +46,12 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   ITypeBinding typeBinding;
 
   public TypeParameterTreeImpl(IdentifierTreeImpl identifier) {
-    super(Kind.TYPE_PARAMETER);
     this.identifier = identifier;
     this.extendsToken = null;
     this.bounds = BoundListTreeImpl.emptyList();
   }
 
   public TypeParameterTreeImpl(InternalSyntaxToken extendsToken, BoundListTreeImpl bounds) {
-    super(Kind.TYPE_PARAMETER);
     this.extendsToken = extendsToken;
     this.bounds = bounds;
   }

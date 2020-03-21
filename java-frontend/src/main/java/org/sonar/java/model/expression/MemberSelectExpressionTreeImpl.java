@@ -49,8 +49,6 @@ public class MemberSelectExpressionTreeImpl extends AssessableExpressionTree imp
   private List<AnnotationTree> annotations;
 
   public MemberSelectExpressionTreeImpl(@Nullable ArrayTypeTreeImpl nestedDimensions, InternalSyntaxToken dotToken, IdentifierTreeImpl identifier) {
-    super(Kind.MEMBER_SELECT);
-
     this.nestedDimensions = nestedDimensions;
     this.dotToken = dotToken;
     this.identifier = identifier;
@@ -58,8 +56,6 @@ public class MemberSelectExpressionTreeImpl extends AssessableExpressionTree imp
   }
 
   public MemberSelectExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken dotToken, IdentifierTree identifier) {
-    super(Kind.MEMBER_SELECT);
-
     this.nestedDimensions = null;
     this.expression = Objects.requireNonNull(expression);
     this.dotToken = dotToken;
