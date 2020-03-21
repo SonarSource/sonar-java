@@ -40,8 +40,8 @@ class ClassesLayoutTest {
   @Test
   void token() {
     assertAll(
-      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64)).isEqualTo(80),
-      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64_COOPS)).isEqualTo(56)
+      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64)).isEqualTo(72),
+      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
 

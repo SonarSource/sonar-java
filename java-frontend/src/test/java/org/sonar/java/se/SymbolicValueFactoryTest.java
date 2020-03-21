@@ -48,7 +48,7 @@ public class SymbolicValueFactoryTest {
 
   @Test
   public void testFactory() {
-    final IdentifierTree tree = new IdentifierTreeImpl(new InternalSyntaxToken(1, 1, "id", Collections.<SyntaxTrivia>emptyList(), 0, 0, false));
+    final IdentifierTree tree = new IdentifierTreeImpl(new InternalSyntaxToken(1, 1, "id", Collections.<SyntaxTrivia>emptyList(), false));
     final ConstraintManager manager = new ConstraintManager();
     SymbolicValue symbolicValue = manager.createSymbolicValue(tree);
     assertThat(symbolicValue.getClass()).as("Created without factory").isSameAs(SymbolicValue.class);

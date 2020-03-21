@@ -446,7 +446,7 @@ public class JParser {
     Token t = tokenManager.get(tokenIndex);
     if (t.tokenType == TerminalTokens.TokenNameEOF) {
       if (t.originalStart == 0) {
-        return new InternalSyntaxToken(1, 0, "", collectComments(tokenIndex), 0, 0, true);
+        return new InternalSyntaxToken(1, 0, "", collectComments(tokenIndex), true);
       }
       final int position = t.originalStart - 1;
       final char c = tokenManager.getSource().charAt(position);
@@ -458,14 +458,14 @@ public class JParser {
       } else {
         column++;
       }
-      return new InternalSyntaxToken(line, column, "", collectComments(tokenIndex), 0, 0, true);
+      return new InternalSyntaxToken(line, column, "", collectComments(tokenIndex), true);
     }
     return new InternalSyntaxToken(
       compilationUnit.getLineNumber(t.originalStart),
       compilationUnit.getColumnNumber(t.originalStart),
       t.toString(tokenManager.getSource()),
       collectComments(tokenIndex),
-      0, 0, false
+      false
     );
   }
 
@@ -479,7 +479,7 @@ public class JParser {
       compilationUnit.getColumnNumber(t.originalEnd),
       ">",
       comments,
-      0, 0, false
+      false
     );
   }
 
@@ -2496,7 +2496,7 @@ public class JParser {
               compilationUnit.getColumnNumber(pos),
               ">",
               /* TODO */ Collections.emptyList(),
-              0, 0, false
+              false
             )
           )
         );
