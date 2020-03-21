@@ -27,6 +27,7 @@ import org.openjdk.jol.layouters.HotSpotLayouter;
 import org.openjdk.jol.layouters.Layouter;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -57,6 +58,14 @@ class ClassesLayoutTest {
     assertAll(
       () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64)).isEqualTo(72),
       () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64_COOPS)).isEqualTo(40)
+    );
+  }
+
+  @Test
+  void method_invocation() {
+    assertAll(
+      () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64)).isEqualTo(88),
+      () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
 
