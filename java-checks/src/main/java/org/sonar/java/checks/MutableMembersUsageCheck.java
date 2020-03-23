@@ -26,12 +26,10 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -58,11 +56,9 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     "java.util.Collections.UnmodifiableMap",
     "com.google.common.collect.ImmutableCollection");
 
-  private static final MethodMatcherCollection UNMODIFIABLE_COLLECTION_CALL = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.util.Collections").name(NameCriteria.startsWith("unmodifiable")).withAnyParameters(),
-    MethodMatcher.create().typeDefinition("java.util.Collections").name(NameCriteria.startsWith("singleton")).withAnyParameters(),
-    MethodMatcher.create().typeDefinition("java.util.Set").name("of").withAnyParameters(),
-    MethodMatcher.create().typeDefinition("java.util.List").name("of").withAnyParameters()
+  private static final MethodMatchers UNMODIFIABLE_COLLECTION_CALL = MethodMatchers.or(
+    MethodMatchers.create().ofTypes("java.util.Collections").name(name -> name.startsWith("unmodifiable") || name.startsWith("singleton")).withAnyParameters().build(),
+    MethodMatchers.create().ofTypes("java.util.Set", "java.util.List").names("of").withAnyParameters().build()
   );
 
   private JavaFileScannerContext context;
@@ -203,7 +199,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
   }
 
   private static boolean isMutableType(ExpressionTree expressionTree) {
-    if (expressionTree.is(Tree.Kind.METHOD_INVOCATION) && UNMODIFIABLE_COLLECTION_CALL.anyMatch((MethodInvocationTree) expressionTree)) {
+    if (expressionTree.is(Tree.Kind.METHOD_INVOCATION) && UNMODIFIABLE_COLLECTION_CALL.matches((MethodInvocationTree) expressionTree)) {
       return false;
     }
     return isMutableType(expressionTree.symbolType());

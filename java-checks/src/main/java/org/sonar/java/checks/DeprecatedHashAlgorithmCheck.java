@@ -19,23 +19,19 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -46,6 +42,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorithm.MD2;
 import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorithm.MD5;
 import static org.sonar.java.checks.DeprecatedHashAlgorithmCheck.InsecureAlgorithm.SHA1;
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S2070")
 public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
@@ -93,6 +90,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
     private static final String MESSAGE_FORMAT = "Don't rely on %s because it is deprecated and use a stronger hashing algorithm.";
     protected static final Map<String, String> MESSAGE_PER_CLASS;
+
     static {
       MESSAGE_PER_CLASS = new HashMap<>();
       MESSAGE_PER_CLASS.put(MD5.classFqn, "Use a stronger hashing algorithm than MD5.");
@@ -107,6 +105,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     private final String classFqn;
     private final String methodName;
     private final String className;
+
     DeprecatedSpringPasswordEncoder(String fqn, String methodName) {
       this.classFqn = fqn;
       this.methodName = methodName;
@@ -120,7 +119,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
    * javax.crypto.Cipher is missing from this list, because it is covered by rule S5547 {@link StrongCipherAlgorithmCheck}
    * Details can be found here <a href="http://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html">Security Standard Names</a>
    */
-  private static final List<String> CRYPTO_APIS = Arrays.asList(
+  private static final String[] CRYPTO_APIS = {
     "java.security.AlgorithmParameters",
     "java.security.AlgorithmParameterGenerator",
     "java.security.MessageDigest",
@@ -129,7 +128,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     "java.security.Signature",
     "javax.crypto.Mac",
     "javax.crypto.KeyGenerator"
-  );
+  };
 
   private static final Map<String, InsecureAlgorithm> ALGORITHM_BY_METHOD_NAME = ImmutableMap.<String, InsecureAlgorithm>builder()
     .put("getMd2Digest", MD2)
@@ -147,42 +146,39 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    ArrayList<MethodMatcher> matchers = new ArrayList<>();
+  protected MethodMatchers getMethodInvocationMatchers() {
+    ArrayList<MethodMatchers> matchers = new ArrayList<>();
     matchers
-      .add(MethodMatcher.create()
-        .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
-        .name("getDigest")
-        .addParameter(JAVA_LANG_STRING));
-    for (String methodName : ALGORITHM_BY_METHOD_NAME.keySet()) {
-      matchers.add(MethodMatcher.create()
-        .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
-        .name(methodName)
-        .withAnyParameters());
-    }
-    for (String cryptoApi : CRYPTO_APIS) {
-      matchers
-        .add(MethodMatcher.create()
-          .typeDefinition(cryptoApi)
-          .name(GET_INSTANCE)
-          .addParameter(JAVA_LANG_STRING));
-      matchers
-        .add(MethodMatcher.create()
-          .typeDefinition(cryptoApi)
-          .name(GET_INSTANCE)
-          .addParameter(JAVA_LANG_STRING)
-          .addParameter(TypeCriteria.anyType()));
-    }
+      .add(MethodMatchers.create()
+        .ofTypes("org.apache.commons.codec.digest.DigestUtils")
+        .names("getDigest")
+        .addParametersMatcher(JAVA_LANG_STRING)
+        .build());
+
+    matchers.add(MethodMatchers.create()
+      .ofTypes("org.apache.commons.codec.digest.DigestUtils")
+      .name(ALGORITHM_BY_METHOD_NAME::containsKey)
+      .withAnyParameters()
+      .build());
+
+    matchers
+      .add(MethodMatchers.create()
+        .ofTypes(CRYPTO_APIS)
+        .names(GET_INSTANCE)
+        .addParametersMatcher(JAVA_LANG_STRING)
+        .addParametersMatcher(JAVA_LANG_STRING, ANY)
+        .build());
+
     for (DeprecatedSpringPasswordEncoder pe : DeprecatedSpringPasswordEncoder.values()) {
-      matchers.add(MethodMatcher.create().typeDefinition(pe.classFqn).name(pe.methodName).withAnyParameters());
+      matchers.add(MethodMatchers.create().ofTypes(pe.classFqn).names(pe.methodName).withAnyParameters().build());
     }
-    for (String methodName : ImmutableList.of("md5", "sha1")) {
-      matchers.add(MethodMatcher.create()
-        .typeDefinition("com.google.common.hash.Hashing")
-        .name(methodName)
-        .withoutParameter());
-    }
-    return matchers;
+
+    matchers.add(MethodMatchers.create()
+      .ofTypes("com.google.common.hash.Hashing")
+      .names("md5", "sha1")
+      .addWithoutParametersMatcher().build());
+
+    return MethodMatchers.or(matchers);
   }
 
   @Override

@@ -19,19 +19,15 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.NameCriteria;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -43,20 +39,22 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
+
 @Rule(key = "S2695")
 public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection {
 
   private static final String INT = "int";
   private static final String JAVA_SQL_RESULTSET = "java.sql.ResultSet";
-  private static final MethodMatcher PREPARE_STATEMENT = MethodMatcher.create()
-    .typeDefinition("java.sql.Connection").name(NameCriteria.startsWith("prepareStatement")).withAnyParameters();
+  private static final MethodMatchers PREPARE_STATEMENT = MethodMatchers.create()
+    .ofTypes("java.sql.Connection").name(name -> name.startsWith("prepareStatement")).withAnyParameters().build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition("java.sql.PreparedStatement").name(NameCriteria.startsWith("set")).addParameter(INT).addParameter(TypeCriteria.anyType()),
-      MethodMatcher.create().typeDefinition(JAVA_SQL_RESULTSET).name(NameCriteria.startsWith("get")).addParameter(INT),
-      MethodMatcher.create().typeDefinition(JAVA_SQL_RESULTSET).name(NameCriteria.startsWith("get")).addParameter(INT).addParameter(TypeCriteria.anyType()));
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofTypes("java.sql.PreparedStatement").name(name -> name.startsWith("set")).addParametersMatcher(INT, ANY).build(),
+      MethodMatchers.create().ofTypes(JAVA_SQL_RESULTSET).name(name -> name.startsWith("get")).addParametersMatcher(INT).addParametersMatcher(INT, ANY).build()
+    );
   }
 
   @Override

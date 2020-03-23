@@ -19,18 +19,15 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 import org.sonar.java.CheckTestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 
@@ -40,10 +37,11 @@ public class AbstractMethodDetectionTest {
 
   @Test
   public void detected() {
-    Visitor visitor = new Visitor(ImmutableList.of(
-      MethodMatcher.create().typeDefinition("A").name("method").addParameter("int"),
-      MethodMatcher.create().typeDefinition("A").name("method").addParameter("java.lang.String[]")
-      ));
+    Visitor visitor = new Visitor(
+      MethodMatchers.create().ofTypes("A").names("method")
+        .addParametersMatcher("int")
+        .addParametersMatcher("java.lang.String[]")
+        .build());
     JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).hasSize(3);
@@ -52,9 +50,8 @@ public class AbstractMethodDetectionTest {
 
   @Test
   public void withAnyParameters() throws Exception {
-    Visitor visitor = new Visitor(Collections.singletonList(
-      MethodMatcher.create().typeDefinition("A").name("method").withAnyParameters()
-      ));
+    Visitor visitor = new Visitor(
+      MethodMatchers.create().ofTypes("A").names("method").withAnyParameters().build());
     JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).containsExactly(14, 15, 16, 17, 19);
@@ -62,9 +59,8 @@ public class AbstractMethodDetectionTest {
 
   @Test
   public void withoutParameter() throws Exception {
-    Visitor visitor = new Visitor(Collections.singletonList(
-      MethodMatcher.create().typeDefinition("A").name("method").withoutParameter()
-      ));
+    Visitor visitor = new Visitor(
+      MethodMatchers.create().ofTypes("A").names("method").addWithoutParametersMatcher().build());
     JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).containsExactly(14);
@@ -73,14 +69,14 @@ public class AbstractMethodDetectionTest {
   class Visitor extends AbstractMethodDetection {
 
     public List<Integer> lines = new ArrayList<>();
-    private List<MethodMatcher> methodInvocationMatchers;
+    private MethodMatchers methodInvocationMatchers;
 
-    public Visitor(List<MethodMatcher> methodInvocationMatchers) {
+    public Visitor(MethodMatchers methodInvocationMatchers) {
       this.methodInvocationMatchers = methodInvocationMatchers;
     }
 
     @Override
-    protected List<MethodMatcher> getMethodInvocationMatchers() {
+    protected MethodMatchers getMethodInvocationMatchers() {
       return methodInvocationMatchers;
     }
 

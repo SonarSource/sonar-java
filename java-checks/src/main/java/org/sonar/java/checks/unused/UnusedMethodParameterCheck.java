@@ -30,12 +30,11 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.Javadoc;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -55,9 +54,9 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   private static final String AUTHORIZED_ANNOTATION = "javax.enterprise.event.Observes";
   private static final String SUPPRESS_WARNINGS_ANNOTATION = "java.lang.SuppressWarnings";
   private static final Collection<String> EXCLUDED_WARNINGS_SUPPRESSIONS = ImmutableList.of("\"rawtypes\"", "\"unchecked\"");
-  private static final MethodMatcherCollection SERIALIZABLE_METHODS = MethodMatcherCollection.create(
-    MethodMatcher.create().name("writeObject").addParameter("java.io.ObjectOutputStream"),
-    MethodMatcher.create().name("readObject").addParameter("java.io.ObjectInputStream"));
+  private static final MethodMatchers SERIALIZABLE_METHODS = MethodMatchers.or(
+    MethodMatchers.create().ofAnyType().names("writeObject").addParametersMatcher("java.io.ObjectOutputStream").build(),
+    MethodMatchers.create().ofAnyType().names("readObject").addParametersMatcher("java.io.ObjectInputStream").build());
   private static final String STRUTS_ACTION_SUPERCLASS = "org.apache.struts.action.Action";
   private static final Collection<String> EXCLUDED_STRUTS_ACTION_PARAMETER_TYPES = ImmutableList.of("org.apache.struts.action.ActionMapping",
     "org.apache.struts.action.ActionForm", "javax.servlet.http.HttpServletRequest", "javax.servlet.http.HttpServletResponse");
@@ -165,7 +164,7 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isSerializableMethod(MethodTree methodTree) {
-    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE) && SERIALIZABLE_METHODS.anyMatch(methodTree);
+    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE) && SERIALIZABLE_METHODS.matches(methodTree);
   }
 
   private static boolean isOverriding(MethodTree tree) {

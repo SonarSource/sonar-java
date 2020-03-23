@@ -21,26 +21,22 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.JUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S3020")
 public class ToArrayCheck extends AbstractMethodDetection {
 
-  private static final MethodMatcher COLLECTION_TO_ARRAY = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Collection"))
-    .name("toArray").withoutParameter();
+  private static final MethodMatchers COLLECTION_TO_ARRAY = MethodMatchers.create().ofSubTypes("java.util.Collection")
+    .names("toArray").addWithoutParametersMatcher().build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(COLLECTION_TO_ARRAY);
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return COLLECTION_TO_ARRAY;
   }
 
   @Override

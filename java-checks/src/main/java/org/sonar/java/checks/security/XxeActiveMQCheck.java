@@ -19,16 +19,13 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -38,9 +35,9 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
 import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
 import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S5301")
 public class XxeActiveMQCheck extends AbstractMethodDetection {
@@ -49,9 +46,9 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
   private static final String MQ_CONNECTION_FACTORY_CLASS_NAME = "org.apache.activemq.ActiveMQConnectionFactory";
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(MethodMatcher.create().typeDefinition(MQ_CONNECTION_FACTORY_CLASS_NAME)
-      .name(CONSTRUCTOR).withAnyParameters());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create().ofTypes(MQ_CONNECTION_FACTORY_CLASS_NAME)
+      .names(CONSTRUCTOR).withAnyParameters().build();
   }
 
   @Override
@@ -73,13 +70,15 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
 
   private static class MethodBodyVisitor extends BaseTreeVisitor {
 
-    private static final MethodMatcher SET_TRUSTED_PACKAGES = MethodMatcher.create()
-      .typeDefinition(subtypeOf(MQ_CONNECTION_FACTORY_CLASS_NAME)).name("setTrustedPackages")
-      .addParameter(TypeCriteria.anyType());
+    private static final MethodMatchers SET_TRUSTED_PACKAGES = MethodMatchers.create()
+      .ofSubTypes(MQ_CONNECTION_FACTORY_CLASS_NAME).names("setTrustedPackages")
+      .addParametersMatcher(ANY)
+      .build();
 
-    private static final MethodMatcher SET_TRUST_ALL_PACKAGES = MethodMatcher.create()
-      .typeDefinition(subtypeOf(MQ_CONNECTION_FACTORY_CLASS_NAME)).name("setTrustAllPackages")
-      .parameters("boolean");
+    private static final MethodMatchers SET_TRUST_ALL_PACKAGES = MethodMatchers.create()
+      .ofSubTypes(MQ_CONNECTION_FACTORY_CLASS_NAME).names("setTrustAllPackages")
+      .addParametersMatcher("boolean")
+      .build();
 
     private boolean hasTrustedPackages = false;
     private boolean hasTrustAllPackages = false;

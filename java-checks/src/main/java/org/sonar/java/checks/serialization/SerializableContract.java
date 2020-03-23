@@ -20,8 +20,8 @@
 package org.sonar.java.checks.serialization;
 
 import com.google.common.collect.ImmutableSet;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -52,8 +52,8 @@ public final class SerializableContract {
     String classFullyQualifiedName = classTree.symbol().type().fullyQualifiedName();
     for (Tree member : classTree.members()) {
 
-      MethodMatcher writeObjectMatcher = writeObjectMatcher(classFullyQualifiedName);
-      MethodMatcher readObjectMatcher = readObjectMatcher(classFullyQualifiedName);
+      MethodMatchers writeObjectMatcher = writeObjectMatcher(classFullyQualifiedName);
+      MethodMatchers readObjectMatcher = readObjectMatcher(classFullyQualifiedName);
 
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree methodTree = (MethodTree) member;
@@ -66,12 +66,12 @@ public final class SerializableContract {
     return hasReadObject && hasWriteObject;
   }
 
-  public static MethodMatcher readObjectMatcher(String classFullyQualifiedName) {
-    return MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("readObject").addParameter("java.io.ObjectInputStream");
+  public static MethodMatchers readObjectMatcher(String classFullyQualifiedName) {
+    return MethodMatchers.create().ofTypes(classFullyQualifiedName).names("readObject").addParametersMatcher("java.io.ObjectInputStream").build();
   }
 
-  public static MethodMatcher writeObjectMatcher(String classFullyQualifiedName) {
-    return MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("writeObject").addParameter("java.io.ObjectOutputStream");
+  public static MethodMatchers writeObjectMatcher(String classFullyQualifiedName) {
+    return MethodMatchers.create().ofTypes(classFullyQualifiedName).names("writeObject").addParametersMatcher("java.io.ObjectOutputStream").build();
   }
 
   private static boolean methodThrows(MethodTree methodTree, String... throwClauseFullyQualifiedNames) {

@@ -21,9 +21,9 @@ package org.sonar.java.checks.synchronization;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.serialization.SerializableContract;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -53,7 +53,7 @@ public class WriteObjectTheOnlySynchronizedMethodCheck extends IssuableSubscript
     MethodTree methodTree = (MethodTree) tree;
     Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
     String className = enclosingClass.type().fullyQualifiedName();
-    MethodMatcher writeObjectMatcher = SerializableContract.writeObjectMatcher(className);
+    MethodMatchers writeObjectMatcher = SerializableContract.writeObjectMatcher(className);
     if (writeObjectMatcher.matches(methodTree) && hasModifier(methodTree.modifiers(), SYNCHRONIZED)) {
       SynchronizationVisitor visitor = new SynchronizationVisitor(methodTree);
       enclosingClass.declaration().accept(visitor);

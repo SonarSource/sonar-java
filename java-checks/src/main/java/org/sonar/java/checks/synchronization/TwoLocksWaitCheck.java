@@ -20,9 +20,9 @@
 package org.sonar.java.checks.synchronization;
 
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -48,7 +48,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD;
 @Rule(key = "S3046")
 public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher WAIT_MATCHER = MethodMatcher.create().name("wait").withoutParameter();
+  private static final MethodMatchers WAIT_MATCHER = MethodMatchers.create().ofAnyType().names("wait").addWithoutParametersMatcher().build();
 
   private Deque<Counter> synchronizedStack = new LinkedList<>();
 
@@ -85,7 +85,7 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
       .ifPresent(wait -> reportIssue(wait, "Don't use \"wait()\" here; multiple locks are held.", flowFromTree(tree), null));
   }
 
-  private Optional<MethodInvocationTree> findMethodCall(Tree tree, MethodMatcher methodMatcher) {
+  private Optional<MethodInvocationTree> findMethodCall(Tree tree, MethodMatchers methodMatcher) {
     MethodInvocationVisitor visitor = new MethodInvocationVisitor(methodMatcher);
     tree.accept(visitor);
     return visitor.matchedMethods().findAny();
@@ -101,10 +101,10 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
 
-    private final MethodMatcher methodMatcher;
+    private final MethodMatchers methodMatcher;
     private Stream.Builder<MethodInvocationTree> matchedMethods = Stream.builder();
 
-    private MethodInvocationVisitor(MethodMatcher methodMatcher) {
+    private MethodInvocationVisitor(MethodMatchers methodMatcher) {
       this.methodMatcher = methodMatcher;
     }
 

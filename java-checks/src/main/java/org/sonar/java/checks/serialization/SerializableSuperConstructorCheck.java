@@ -24,9 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -36,10 +35,11 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2055")
 public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher WRITE_REPLACE = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.anyType())
-    .name("writeReplace")
-    .withoutParameter();
+  private static final MethodMatchers WRITE_REPLACE = MethodMatchers.create()
+    .ofAnyType()
+    .names("writeReplace")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Kind> nodesToVisit() {

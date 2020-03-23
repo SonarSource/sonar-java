@@ -21,8 +21,8 @@ package org.sonar.java.checks;
 
 import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 public class CompareObjectWithEqualsCheck extends CompareWithEqualsVisitor {
 
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
-  private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create().name("equals").parameters(JAVA_LANG_OBJECT);
+  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create().ofAnyType().names("equals").addParametersMatcher(JAVA_LANG_OBJECT).build();
 
   @Override
   protected void checkEqualityExpression(BinaryExpressionTree tree) {

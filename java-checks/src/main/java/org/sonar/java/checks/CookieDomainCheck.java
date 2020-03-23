@@ -19,12 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
@@ -32,10 +30,10 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 public class CookieDomainCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition("javax.servlet.http.Cookie").name("setDomain").addParameter("java.lang.String"),
-      MethodMatcher.create().typeDefinition("java.net.HttpCookie").name("setDomain").addParameter("java.lang.String")
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofTypes("javax.servlet.http.Cookie").names("setDomain").addParametersMatcher("java.lang.String").build(),
+      MethodMatchers.create().ofTypes("java.net.HttpCookie").names("setDomain").addParametersMatcher("java.lang.String").build()
     );
   }
 
