@@ -56,11 +56,6 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 public class SonarComponents {
 
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
-  /**
-   * Approximate limit of feedback of 200ko to roughly 100_000 characters of useful feedback.
-   * This does not take into account eventual overhead of serialization.
-   */
-  private static final int ERROR_SERIALIZATION_LIMIT = 100_000;
 
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
@@ -73,7 +68,6 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> testChecks;
   private final List<Checks<JavaCheck>> allChecks;
   private SensorContext context;
-  private int errorsSize = 0;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,

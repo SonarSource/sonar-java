@@ -39,7 +39,6 @@ import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
-import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
 import org.sonar.java.EndOfAnalysisCheck;
@@ -136,7 +135,7 @@ public class VisitorsBridge {
     // Symbolic execution checks
     if (symbolicExecutionEnabled) {
       try {
-        runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache), AnalysisError.Kind.SE_ERROR);
+        runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache));
         behaviorCache.cleanup();
       } catch (CheckFailureException e) {
         interruptIfFailFast(e);
@@ -145,7 +144,7 @@ public class VisitorsBridge {
 
     for (JavaFileScanner scanner : executableScanners) {
       try {
-        runScanner(javaFileScannerContext, scanner, AnalysisError.Kind.CHECK_ERROR);
+        runScanner(javaFileScannerContext, scanner);
       } catch (CheckFailureException e) {
         interruptIfFailFast(e);
       }
@@ -164,11 +163,11 @@ public class VisitorsBridge {
     }
   }
 
-  private void runScanner(JavaFileScannerContext javaFileScannerContext, JavaFileScanner scanner, AnalysisError.Kind kind) throws CheckFailureException {
-    runScanner(() -> scanner.scanFile(javaFileScannerContext), scanner, kind);
+  private void runScanner(JavaFileScannerContext javaFileScannerContext, JavaFileScanner scanner) throws CheckFailureException {
+    runScanner(() -> scanner.scanFile(javaFileScannerContext), scanner);
   }
 
-  private void runScanner(Runnable action, JavaFileScanner scanner, AnalysisError.Kind kind) throws CheckFailureException {
+  private void runScanner(Runnable action, JavaFileScanner scanner) throws CheckFailureException {
     try {
       action.run();
     } catch (IllegalRuleParameterException e) {
@@ -307,7 +306,7 @@ public class VisitorsBridge {
 
     private final void forEach(Collection<SubscriptionVisitor> visitors, Consumer<SubscriptionVisitor> callback) throws CheckFailureException {
       for (SubscriptionVisitor visitor : visitors) {
-        runScanner(() -> callback.accept(visitor), visitor, AnalysisError.Kind.CHECK_ERROR);
+        runScanner(() -> callback.accept(visitor), visitor);
       }
     }
   }
