@@ -23,20 +23,17 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.NameCriteria;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
@@ -67,24 +64,29 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   private static final String DECORATE = "decorate";
   // java.util and apache commons
-  private static final MethodMatcherCollection UNMODIFIABLE_METHOD_CALLS = MethodMatcherCollection.create()
-    .add(MethodMatcher.create().typeDefinition("java.util.Collections").name(NameCriteria.startsWith("singleton")).withAnyParameters())
-    .add(MethodMatcher.create().typeDefinition("java.util.Collections").name(NameCriteria.startsWith("empty")).withAnyParameters())
-    .add(MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name(NameCriteria.startsWith("unmodifiable")).withAnyParameters())
-       // Java 9
-    .add(MethodMatcher.create().typeDefinition("java.util.Set").name("of").withAnyParameters())
-    .add(MethodMatcher.create().typeDefinition("java.util.List").name("of").withAnyParameters())
-    .add(MethodMatcher.create().typeDefinition("java.util.Map").name("of").withAnyParameters())
-      // apache commons 3.X
-    .add(MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.apache.commons.collections.map.UnmodifiableMap")).name(DECORATE).withAnyParameters())
-    .add(MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.apache.commons.collections.set.UnmodifiableSet")).name(DECORATE).withAnyParameters())
-    .add(MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.apache.commons.collections.list.UnmodifiableList")).name(DECORATE).withAnyParameters())
-      // apache commons 4.X
-    .add(MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.apache.commons.collections4.map.UnmodifiableMap")).name(DECORATE).withAnyParameters())
-    .add(MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.apache.commons.collections4.set.UnmodifiableSet")).name(DECORATE).withAnyParameters())
-    .add(MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.apache.commons.collections4.list.UnmodifiableList")).name(DECORATE).withAnyParameters());
-  private static final MethodMatcher ARRAYS_AS_LIST = MethodMatcher.create()
-    .typeDefinition("java.util.Arrays").name("asList").withAnyParameters();
+  private static final MethodMatchers UNMODIFIABLE_METHOD_CALLS = MethodMatchers.or(
+    MethodMatchers.create().ofTypes("java.util.Collections").name(name -> name.startsWith("singleton") || name.startsWith("empty")).withAnyParameters().build(),
+    MethodMatchers.create().ofAnyType().name(name -> name.startsWith("unmodifiable")).withAnyParameters().build(),
+    // Java 9s
+    MethodMatchers.create().ofTypes("java.util.Set", "java.util.List", "java.util.Map").names("of").withAnyParameters().build(),
+    // apache...
+    MethodMatchers.create()
+      // commons 3.X
+      .ofSubTypes(
+        "org.apache.commons.collections.map.UnmodifiableMap",
+        "org.apache.commons.collections.list.UnmodifiableList",
+        "org.apache.commons.collections.set.UnmodifiableSet",
+        // commons 4.X
+        "org.apache.commons.collections4.map.UnmodifiableMap",
+        "org.apache.commons.collections4.set.UnmodifiableSet",
+        "org.apache.commons.collections4.list.UnmodifiableList")
+      .names(DECORATE)
+      .withAnyParameters()
+      .build()
+  );
+
+  private static final MethodMatchers ARRAYS_AS_LIST = MethodMatchers.create()
+    .ofTypes("java.util.Arrays").names("asList").withAnyParameters().build();
 
   private static final Set<String> ACCEPTED_TYPES = ImmutableSet.of(
     "com.google.common.collect.ImmutableMap",
@@ -213,7 +215,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   private static boolean isAcceptedTypeOrUnmodifiableMethodCall(MethodInvocationTree mit) {
     Type type = mit.symbolType();
-    return type.isUnknown() || isAcceptedType(type, ACCEPTED_TYPES) || UNMODIFIABLE_METHOD_CALLS.anyMatch(mit);
+    return type.isUnknown() || isAcceptedType(type, ACCEPTED_TYPES) || UNMODIFIABLE_METHOD_CALLS.matches(mit);
   }
 
   private static boolean isAcceptedType(Type type, Set<String> accepted) {

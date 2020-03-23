@@ -25,10 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -83,12 +82,14 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().name("wait").withoutParameter(),
-      MethodMatcher.create().name("wait").addParameter("long"),
-      MethodMatcher.create().name("wait").addParameter("long").addParameter("int"),
-      MethodMatcher.create().typeDefinition("java.util.concurrent.locks.Condition").name(NameCriteria.startsWith("await")).withAnyParameters()
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofAnyType().names("wait")
+        .addWithoutParametersMatcher()
+        .addParametersMatcher("long")
+        .addParametersMatcher("long", "int")
+        .build(),
+      MethodMatchers.create().ofTypes("java.util.concurrent.locks.Condition").name(name -> name.startsWith("await")).withAnyParameters().build()
     );
   }
 }

@@ -19,14 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S2253")
@@ -45,27 +43,33 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
   private boolean allOverloads = false;
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
+  protected MethodMatchers getMethodInvocationMatchers() {
     if (StringUtils.isEmpty(methodName)) {
-      return Collections.emptyList();
+      return MethodMatchers.none();
     }
-    MethodMatcher invocationMatcher = MethodMatcher.create().name(methodName);
+    MethodMatchers.TypeBuilder typeBuilder = MethodMatchers.create();
+    MethodMatchers.NameBuilder nameBuilder;
     if (StringUtils.isNotEmpty(className)) {
-      invocationMatcher.typeDefinition(className);
+      nameBuilder = typeBuilder.ofTypes(className);
+    } else {
+      nameBuilder = typeBuilder.ofAnyType();
     }
+    MethodMatchers.ParametersBuilder parametersBuilder = nameBuilder.names(methodName);
+
     if (allOverloads) {
-      invocationMatcher.withAnyParameters();
+      return parametersBuilder.withAnyParameters().build();
     } else {
       String[] args = StringUtils.split(argumentTypes, ",");
       if (args.length == 0) {
-        invocationMatcher.withoutParameter();
+        return parametersBuilder.addWithoutParametersMatcher().build();
       } else {
-        for (String arg : args) {
-          invocationMatcher.addParameter(StringUtils.trim(arg));
+        String[] trimmedArgs = new String[args.length];
+        for (int i = 0; i < trimmedArgs.length; i++) {
+          trimmedArgs[i] = StringUtils.trim(args[i]);
         }
+        return parametersBuilder.addParametersMatcher(trimmedArgs).build();
       }
     }
-    return Collections.singletonList(invocationMatcher);
   }
 
   @Override

@@ -25,12 +25,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -38,6 +37,8 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S2175")
 public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisitor {
@@ -182,12 +183,12 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
 
   private static class TypeChecker {
     private final String methodOwnerType;
-    private final MethodMatcher methodMatcher;
+    private final MethodMatchers methodMatcher;
     private final int argumentIndex;
     private boolean argumentIsACollection;
     private final int parametrizedTypeIndex;
 
-    private TypeChecker(String methodOwnerType, MethodMatcher methodMatcher, int argumentIndex, boolean argumentIsACollection, int parametrizedTypeIndex) {
+    private TypeChecker(String methodOwnerType, MethodMatchers methodMatcher, int argumentIndex, boolean argumentIsACollection, int parametrizedTypeIndex) {
       this.methodOwnerType = methodOwnerType;
       this.methodMatcher = methodMatcher;
       this.argumentIndex = argumentIndex;
@@ -242,14 +243,22 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     private TypeCheckerListBuilder add() {
       int argumentIndex = argumentPosition - 1;
       int parametrizedTypeIndex = parametrizedTypePosition - 1;
-      MethodMatcher methodMatcher = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(methodOwnerType)).name(methodName);
+
+      List<String> methodMatcherParameters = new ArrayList<>();
       for (int i = 0; i < argumentCount; i++) {
-        TypeCriteria parameterType = TypeCriteria.anyType();
+        String parameterType = ANY;
         if (i == argumentIndex) {
-          parameterType = argumentIsACollection ? TypeCriteria.is(JAVA_UTIL_COLLECTION) : TypeCriteria.is("java.lang.Object");
+          parameterType = argumentIsACollection ? JAVA_UTIL_COLLECTION : "java.lang.Object";
         }
-        methodMatcher.addParameter(parameterType);
+        methodMatcherParameters.add(parameterType);
       }
+
+      MethodMatchers methodMatcher = MethodMatchers.create()
+        .ofSubTypes(methodOwnerType)
+        .names(methodName)
+        .addParametersMatcher(methodMatcherParameters.toArray(new String[0]))
+        .build();
+
       typeCheckers.add(new TypeChecker(methodOwnerType, methodMatcher, argumentIndex, argumentIsACollection, parametrizedTypeIndex));
       return this;
     }

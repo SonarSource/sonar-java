@@ -21,16 +21,12 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S2122")
 public class ScheduledThreadPoolExecutorZeroCheck extends AbstractMethodDetection {
@@ -38,10 +34,10 @@ public class ScheduledThreadPoolExecutorZeroCheck extends AbstractMethodDetectio
   private static final String MESSAGE = "Increase the \"corePoolSize\".";
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.concurrent.ThreadPoolExecutor")).name("setCorePoolSize").addParameter("int"),
-      MethodMatcher.create().typeDefinition("java.util.concurrent.ScheduledThreadPoolExecutor").name("<init>").addParameter("int")
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofSubTypes("java.util.concurrent.ThreadPoolExecutor").names("setCorePoolSize").addParametersMatcher("int").build(),
+      MethodMatchers.create().ofTypes("java.util.concurrent.ScheduledThreadPoolExecutor").constructor().addParametersMatcher("int").build()
     );
   }
 

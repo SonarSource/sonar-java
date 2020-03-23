@@ -19,11 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -34,40 +35,33 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
-import javax.annotation.CheckForNull;
-import java.util.Arrays;
-import java.util.List;
-
 @Rule(key = "S2676")
 public class AbsOnNegativeCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcherCollection MATH_ABS_METHODS = MethodMatcherCollection.create(
-    MethodMatcher.create()
-      .typeDefinition("java.lang.Math")
-      .name("abs")
-      .addParameter("int"),
-    MethodMatcher.create()
-      .typeDefinition("java.lang.Math")
-      .name("abs")
-      .addParameter("long")
-  );
+  private static final MethodMatchers MATH_ABS_METHODS =
+    MethodMatchers.create()
+      .ofTypes("java.lang.Math")
+      .names("abs")
+      .addParametersMatcher("int")
+      .addParametersMatcher("long")
+      .build();
 
-  private static final MethodMatcherCollection NEGATIVE_METHODS = MethodMatcherCollection.create(
-    MethodMatcher.create()
-      .name("hashCode")
-      .withoutParameter(),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf("java.util.Random"))
-      .name("nextInt")
-      .withoutParameter(),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf("java.util.Random"))
-      .name("nextLong")
-      .withoutParameter(),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf("java.lang.Comparable"))
-      .name("compareTo")
-      .addParameter(TypeCriteria.anyType())
+  private static final MethodMatchers NEGATIVE_METHODS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofAnyType()
+      .names("hashCode")
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.util.Random")
+      .names("nextInt", "nextLong")
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.lang.Comparable")
+      .names("compareTo")
+      .addParametersMatcher(MethodMatchers.ANY)
+      .build()
   );
 
   @Override
@@ -79,7 +73,7 @@ public class AbsOnNegativeCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodTree = (MethodInvocationTree) tree;
-      if (MATH_ABS_METHODS.anyMatch(methodTree)) {
+      if (MATH_ABS_METHODS.matches(methodTree)) {
         ExpressionTree firstArgument = methodTree.arguments().get(0);
         checkForIssue(firstArgument);
       }
@@ -98,7 +92,7 @@ public class AbsOnNegativeCheck extends IssuableSubscriptionVisitor {
       }
     } else {
       MethodInvocationTree nestedTree = extractMethodInvocation(tree);
-      if (nestedTree != null && NEGATIVE_METHODS.anyMatch(nestedTree)) {
+      if (nestedTree != null && NEGATIVE_METHODS.matches(nestedTree)) {
         reportIssue(nestedTree, "Use the original value instead.");
       }
     }

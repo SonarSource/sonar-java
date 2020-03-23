@@ -30,9 +30,8 @@ import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -42,17 +41,19 @@ public class SpringAntMatcherOrderCheck extends AbstractMethodDetection {
 
   private static final Pattern MATCHER_SPECIAL_CHAR = Pattern.compile("[?*{]");
 
-  private static final MethodMatcher ANT_MATCHERS = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("org.springframework.security.config.annotation.web.AbstractRequestMatcherRegistry"))
-    .name("antMatchers")
-    .addParameter("java.lang.String[]");
+  private static final MethodMatchers ANT_MATCHERS = MethodMatchers.create()
+    .ofSubTypes("org.springframework.security.config.annotation.web.AbstractRequestMatcherRegistry")
+    .names("antMatchers")
+    .addParametersMatcher("java.lang.String[]")
+    .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(MethodMatcher.create()
-      .typeDefinition(TypeCriteria.is("org.springframework.security.config.annotation.web.builders.HttpSecurity"))
-      .name("authorizeRequests")
-      .withAnyParameters());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofTypes("org.springframework.security.config.annotation.web.builders.HttpSecurity")
+      .names("authorizeRequests")
+      .withAnyParameters()
+      .build();
   }
 
   @Override

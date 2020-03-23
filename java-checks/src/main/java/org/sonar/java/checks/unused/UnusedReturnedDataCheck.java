@@ -24,10 +24,9 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -38,15 +37,17 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2677")
 public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
 
-  private static final List<MethodMatcher> CHECKED_METHODS = Arrays.asList(
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf("java.io.BufferedReader"))
-      .name("readLine")
-      .withoutParameter(),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf("java.io.Reader"))
-      .name("read")
-      .withoutParameter());
+  private static final List<MethodMatchers> CHECKED_METHODS = Arrays.asList(
+    MethodMatchers.create()
+      .ofSubTypes("java.io.BufferedReader")
+      .names("readLine")
+      .addWithoutParametersMatcher()
+    .build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.io.Reader")
+      .names("read")
+      .addWithoutParametersMatcher()
+      .build());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -64,7 +65,7 @@ public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
       BinaryExpressionTree expressionTree = (BinaryExpressionTree) tree;
       ExpressionTree leftOperand = expressionTree.leftOperand();
       ExpressionTree rightOperand = expressionTree.rightOperand();
-      for (MethodMatcher matcher : CHECKED_METHODS) {
+      for (MethodMatchers matcher : CHECKED_METHODS) {
         MethodInvocationTree leftMit = isTreeMethodInvocation(leftOperand, matcher);
         if (leftMit != null && isTreeLiteralNull(rightOperand)) {
           raiseIssue(ExpressionUtils.methodName(leftMit));
@@ -78,7 +79,7 @@ public class UnusedReturnedDataCheck extends IssuableSubscriptionVisitor {
   }
 
   @CheckForNull
-  private static MethodInvocationTree isTreeMethodInvocation(ExpressionTree tree, MethodMatcher matcher) {
+  private static MethodInvocationTree isTreeMethodInvocation(ExpressionTree tree, MethodMatchers matcher) {
     Tree expression = ExpressionUtils.skipParentheses(tree);
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) expression;

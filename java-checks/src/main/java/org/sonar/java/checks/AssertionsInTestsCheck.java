@@ -23,19 +23,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.NameCriteria;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -56,37 +54,35 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   private static final Logger LOG = Loggers.get(AssertionsInTestsCheck.class);
 
-  private static final TypeCriteria IO_RESTASSURED = TypeCriteria.is("io.restassured.response.ValidatableResponseOptions");
-  private static final TypeCriteria ANY_TYPE = TypeCriteria.anyType();
-  private static final NameCriteria ANY_NAME = NameCriteria.any();
-
   private static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile("(assert|verify|fail|should|check|expect|validate).*");
   private static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
 
-  private static final MethodMatcherCollection ASSERTION_INVOCATION_MATCHERS = MethodMatcherCollection.create(
+  private static final MethodMatchers ASSERTION_INVOCATION_MATCHERS = MethodMatchers.or(
     // fest 1.x / 2.X
-    method(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert"), ANY_NAME).withAnyParameters(),
-    method(TypeCriteria.subtypeOf("org.fest.assertions.api.AbstractAssert"), ANY_NAME).withAnyParameters(),
+    MethodMatchers.create().ofSubTypes("org.fest.assertions.GenericAssert", "org.fest.assertions.api.AbstractAssert").anyName().withAnyParameters().build(),
     // rest assured 2.0
-    method(IO_RESTASSURED, NameCriteria.is("body")).withAnyParameters(),
-    method(IO_RESTASSURED, NameCriteria.is("time")).withAnyParameters(),
-    method(IO_RESTASSURED, NameCriteria.startsWith("content")).withAnyParameters(),
-    method(IO_RESTASSURED, NameCriteria.startsWith("status")).withAnyParameters(),
-    method(IO_RESTASSURED, NameCriteria.startsWith("header")).withAnyParameters(),
-    method(IO_RESTASSURED, NameCriteria.startsWith("cookie")).withAnyParameters(),
-    method(IO_RESTASSURED, NameCriteria.startsWith("spec")).withAnyParameters(),
+    MethodMatchers.create().ofTypes("io.restassured.response.ValidatableResponseOptions")
+      .name(name -> name.equals("body") ||
+        name.equals("time") ||
+        name.startsWith("time") ||
+        name.startsWith("content") ||
+        name.startsWith("status") ||
+        name.startsWith("header") ||
+        name.startsWith("cookie") ||
+        name.startsWith("spec"))
+      .withAnyParameters()
+      .build(),
     // assertJ
-    method(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert"), ANY_NAME).withAnyParameters(),
+    MethodMatchers.create().ofSubTypes("org.assertj.core.api.AbstractAssert").anyName().withAnyParameters().build(),
     // spring
-    method("org.springframework.test.web.servlet.ResultActions", "andExpect").addParameter(ANY_TYPE),
+    MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpect").addParametersMatcher(t -> true).build(),
     // JMockit
-    method("mockit.Verifications", "<init>").withAnyParameters(),
+    MethodMatchers.create().ofTypes("mockit.Verifications").constructor().withAnyParameters().build(),
     // Eclipse Vert.x
-    method("io.vertx.ext.unit.TestContext", NameCriteria.startsWith("asyncAssert")).withoutParameter());
+    MethodMatchers.create().ofTypes("io.vertx.ext.unit.TestContext").name(name -> name.startsWith("asyncAssert")).addWithoutParametersMatcher().build());
 
-  private static final MethodMatcherCollection REACTIVE_X_TEST_METHODS = MethodMatcherCollection.create(
-    method(TypeCriteria.subtypeOf("rx.Observable"), NameCriteria.is("test")).withAnyParameters(),
-    method(TypeCriteria.subtypeOf("io.reactivex.Observable"), NameCriteria.is("test")).withAnyParameters());
+  private static final MethodMatchers REACTIVE_X_TEST_METHODS =
+    MethodMatchers.create().ofSubTypes("rx.Observable", "io.reactivex.Observable").names("test").withAnyParameters().build();
 
   @RuleProperty(
     key = "customAssertionMethods",
@@ -94,7 +90,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
       "The wildcard character can be used at the end of the method name.",
     defaultValue = "")
   public String customAssertionMethods = "";
-  private MethodMatcherCollection customAssertionMethodsMatcher = null;
+  private MethodMatchers customAssertionMethodsMatcher = null;
 
   private final Map<Symbol, Boolean> assertionInMethod = new HashMap<>();
   private JavaFileScannerContext context;
@@ -136,27 +132,27 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     return assertionInMethod.get(symbol);
   }
 
-  private MethodMatcherCollection getCustomAssertionMethodsMatcher() {
+  private MethodMatchers getCustomAssertionMethodsMatcher() {
     if (customAssertionMethodsMatcher == null) {
       String[] fullyQualifiedMethodSymbols = customAssertionMethods.isEmpty() ? new String[0] : customAssertionMethods.split(",");
-      List<MethodMatcher> customMethodMatchers = new ArrayList<>(fullyQualifiedMethodSymbols.length);
+      List<MethodMatchers> customMethodMatchers = new ArrayList<>(fullyQualifiedMethodSymbols.length);
       for (String fullyQualifiedMethodSymbol : fullyQualifiedMethodSymbols) {
         String[] methodMatcherParts = fullyQualifiedMethodSymbol.split("#");
         if (methodMatcherParts.length == 2 && !isEmpty(methodMatcherParts[0].trim()) && !isEmpty(methodMatcherParts[1].trim())) {
           String methodName = methodMatcherParts[1].trim();
-          NameCriteria nameCriteria;
+          Predicate<String> namePredicate;
           if (methodName.endsWith("*")) {
-            nameCriteria = NameCriteria.startsWith(methodName.substring(0, methodName.length() - 1));
+            namePredicate = name -> name.startsWith(methodName.substring(0, methodName.length() - 1));
           } else {
-            nameCriteria = NameCriteria.is(methodName);
+            namePredicate = name -> name.equals(methodName);
           }
-          customMethodMatchers.add(method(methodMatcherParts[0].trim(), nameCriteria).withAnyParameters());
+          customMethodMatchers.add(MethodMatchers.create().ofSubTypes(methodMatcherParts[0].trim()).name(namePredicate).withAnyParameters().build());
         } else {
           LOG.warn("Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: '{}'", fullyQualifiedMethodSymbol);
         }
       }
 
-      customAssertionMethodsMatcher = MethodMatcherCollection.create(customMethodMatchers.toArray(new MethodMatcher[0]));
+      customAssertionMethodsMatcher = MethodMatchers.or(customMethodMatchers);
     }
 
     return customAssertionMethodsMatcher;
@@ -191,23 +187,11 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     return enclosingClass != null && enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test");
   }
 
-  private static MethodMatcher method(String typeDefinition, String methodName) {
-    return method(TypeCriteria.is(typeDefinition), NameCriteria.is(methodName));
-  }
-
-  private static MethodMatcher method(String typeDefinition, NameCriteria nameCriteria) {
-    return MethodMatcher.create().typeDefinition(TypeCriteria.is(typeDefinition)).name(nameCriteria);
-  }
-
-  private static MethodMatcher method(TypeCriteria typeDefinitionCriteria, NameCriteria nameCriteria) {
-    return MethodMatcher.create().typeDefinition(typeDefinitionCriteria).name(nameCriteria);
-  }
-
   private class AssertionVisitor extends BaseTreeVisitor {
     boolean hasAssertion = false;
-    private MethodMatcherCollection customMethodsMatcher;
+    private MethodMatchers customMethodsMatcher;
 
-    private AssertionVisitor(MethodMatcherCollection customMethodsMatcher) {
+    private AssertionVisitor(MethodMatchers customMethodsMatcher) {
       this.customMethodsMatcher = customMethodsMatcher;
     }
 
@@ -237,8 +221,8 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
     private boolean isAssertion(@Nullable IdentifierTree method, Symbol methodSymbol) {
       return matchesMethodPattern(method, methodSymbol)
-        || ASSERTION_INVOCATION_MATCHERS.anyMatch(methodSymbol)
-        || customMethodsMatcher.anyMatch(methodSymbol)
+        || ASSERTION_INVOCATION_MATCHERS.matches(methodSymbol)
+        || customMethodsMatcher.matches(methodSymbol)
         || isLocalMethodWithAssertion(methodSymbol);
     }
 
@@ -249,7 +233,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
       String methodName = method.name();
       if (TEST_METHODS_PATTERN.matcher(methodName).matches()) {
-        return !REACTIVE_X_TEST_METHODS.anyMatch(methodSymbol);
+        return !REACTIVE_X_TEST_METHODS.matches(methodSymbol);
       }
       return ASSERTION_METHODS_PATTERN.matcher(methodName).matches();
     }

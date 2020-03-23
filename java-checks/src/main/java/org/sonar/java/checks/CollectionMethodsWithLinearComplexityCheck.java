@@ -29,10 +29,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -42,6 +41,8 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S2250")
 public class CollectionMethodsWithLinearComplexityCheck extends IssuableSubscriptionVisitor {
@@ -53,27 +54,25 @@ public class CollectionMethodsWithLinearComplexityCheck extends IssuableSubscrip
   private static final String CONCURRENT_LINKED_QUEUE = "java.util.concurrent.ConcurrentLinkedQueue";
   private static final String CONCURRENT_LINKED_DEQUE = "java.util.concurrent.ConcurrentLinkedDeque";
 
-  private static MethodMatcher collectionMethodMatcher() {
-    return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Collection"));
-  }
+  private static final MethodMatchers.NameBuilder COLLECTION_METHOD_MATCHER = MethodMatchers.create().ofSubTypes("java.util.Collection");
 
-  private static final Map<MethodMatcher, Set<String>> matcherActualTypeMap;
+  private static final Map<MethodMatchers, Set<String>> matcherActualTypeMap;
   static {
-    ImmutableMap.Builder<MethodMatcher, Set<String>> builder = ImmutableMap.builder();
+    ImmutableMap.Builder<MethodMatchers, Set<String>> builder = ImmutableMap.builder();
 
-    MethodMatcher collectionContains = collectionMethodMatcher().name("contains").addParameter("java.lang.Object");
+    MethodMatchers collectionContains = COLLECTION_METHOD_MATCHER.names("contains").addParametersMatcher("java.lang.Object").build();
     builder.put(collectionContains, ImmutableSet.of(ARRAY_LIST, LINKED_LIST, COPY_ON_WRITE_ARRAY_LIST, COPY_ON_WRITE_ARRAY_SET, CONCURRENT_LINKED_QUEUE, CONCURRENT_LINKED_DEQUE));
 
-    MethodMatcher collectionSize = collectionMethodMatcher().name("size").withoutParameter();
+    MethodMatchers collectionSize = COLLECTION_METHOD_MATCHER.names("size").addWithoutParametersMatcher().build();
     builder.put(collectionSize, ImmutableSet.of(CONCURRENT_LINKED_QUEUE, CONCURRENT_LINKED_DEQUE));
 
-    MethodMatcher collectionAdd = collectionMethodMatcher().name("add").addParameter(TypeCriteria.anyType());
+    MethodMatchers collectionAdd = COLLECTION_METHOD_MATCHER.names("add").addParametersMatcher(ANY).build();
     builder.put(collectionAdd, ImmutableSet.of(COPY_ON_WRITE_ARRAY_SET, COPY_ON_WRITE_ARRAY_LIST));
 
-    MethodMatcher collectionRemove = collectionMethodMatcher().name("remove").addParameter("java.lang.Object");
+    MethodMatchers collectionRemove = COLLECTION_METHOD_MATCHER.names("remove").addParametersMatcher("java.lang.Object").build();
     builder.put(collectionRemove, ImmutableSet.of(ARRAY_LIST, COPY_ON_WRITE_ARRAY_SET, COPY_ON_WRITE_ARRAY_LIST));
 
-    MethodMatcher listGet = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.List")).name("get").addParameter("int");
+    MethodMatchers listGet = MethodMatchers.create().ofSubTypes("java.util.List").names("get").addParametersMatcher("int").build();
     builder.put(listGet, Collections.singleton(LINKED_LIST));
     matcherActualTypeMap = builder.build();
   }

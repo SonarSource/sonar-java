@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.NameCriteria;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -33,10 +33,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S3415")
 public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
@@ -47,24 +43,27 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
     Tree.Kind.NULL_LITERAL, Tree.Kind.BOOLEAN_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL};
   private static final String MESSAGE = "Swap these 2 arguments so they are in the correct order: expected value, actual value.";
 
-  private static final MethodMatcherCollection COLLECTION_CREATION_CALL = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.util.Collections").name(NameCriteria.startsWith("singleton")).withAnyParameters(),
-    MethodMatcher.create().typeDefinition("java.util.Collections").name(NameCriteria.startsWith("empty")).withAnyParameters(),
-    MethodMatcher.create().typeDefinition("java.util.Arrays").name("asList").withAnyParameters());
+  private static final MethodMatchers COLLECTION_CREATION_CALL = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("java.util.Collections")
+      .name(name -> name.startsWith("singleton") || name.startsWith("empty"))
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create().ofTypes("java.util.Arrays").names("asList").withAnyParameters().build());
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(MethodMatcher.create().typeDefinition(ORG_JUNIT_ASSERT).name("assertEquals").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(ORG_JUNIT_ASSERT).name("assertSame").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(ORG_JUNIT_ASSERT).name("assertNotSame").withAnyParameters(),
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofTypes(ORG_JUNIT_ASSERT)
+        .names("assertEquals", "assertSame", "assertNotSame")
+        .withAnyParameters()
+        .build(),
       // JUnit 5
-      MethodMatcher.create().typeDefinition(ORG_JUNIT5_ASSERTIONS).name("assertArrayEquals").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(ORG_JUNIT5_ASSERTIONS).name("assertEquals").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(ORG_JUNIT5_ASSERTIONS).name("assertIterableEquals").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(ORG_JUNIT5_ASSERTIONS).name("assertLinesMatch").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(ORG_JUNIT5_ASSERTIONS).name("assertNotEquals").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(ORG_JUNIT5_ASSERTIONS).name("assertNotSame").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(ORG_JUNIT5_ASSERTIONS).name("assertSame").withAnyParameters());
+      MethodMatchers.create().ofTypes(ORG_JUNIT5_ASSERTIONS)
+        .names("assertArrayEquals", "assertEquals", "assertIterableEquals", "assertLinesMatch", "assertNotEquals", "assertNotSame", "assertSame")
+        .withAnyParameters()
+        .build()
+    );
   }
 
   @Override
@@ -95,7 +94,7 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
   private static boolean isCollectionCreationWithConstants(ExpressionTree actualArgument) {
     if (actualArgument.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) actualArgument;
-      return COLLECTION_CREATION_CALL.anyMatch(mit) && mit.arguments().stream().allMatch(AssertionArgumentOrderCheck::isConstant);
+      return COLLECTION_CREATION_CALL.matches(mit) && mit.arguments().stream().allMatch(AssertionArgumentOrderCheck::isConstant);
     }
     return false;
   }

@@ -20,8 +20,8 @@
 package org.sonar.java.checks.synchronization;
 
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -44,7 +44,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.SYNCHRONIZED_STATEMENT;
 @Rule(key = "S3067")
 public class SynchronizationOnGetClassCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher GET_CLASS_MATCHER = MethodMatcher.create().name("getClass").withoutParameter();
+  private static final MethodMatchers GET_CLASS_MATCHER = MethodMatchers.create().ofAnyType().names("getClass").addWithoutParametersMatcher().build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
