@@ -19,19 +19,18 @@
  */
 package org.sonar.java.checks.methods;
 
-import org.sonar.java.matcher.MethodMatcher;
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Arrays;
-import java.util.List;
-
 public abstract class AbstractMethodDetection extends IssuableSubscriptionVisitor {
 
-  private List<MethodMatcher> matchers;
+  private MethodMatchers matchers;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -41,32 +40,26 @@ public abstract class AbstractMethodDetection extends IssuableSubscriptionVisito
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      for (MethodMatcher invocationMatcher : matchers()) {
-        checkInvocation(tree, invocationMatcher);
+      if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree mit = (MethodInvocationTree) tree;
+        if (matchers().matches(mit)) {
+          onMethodInvocationFound(mit);
+        }
+      } else if (tree.is(Tree.Kind.NEW_CLASS)) {
+        NewClassTree newClassTree = (NewClassTree) tree;
+        if (matchers().matches(newClassTree)) {
+          onConstructorFound(newClassTree);
+        }
+      } else if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
+        MethodReferenceTree methodReferenceTree = (MethodReferenceTree) tree;
+        if (matchers().matches(methodReferenceTree)) {
+          onMethodReferenceFound(methodReferenceTree);
+        }
       }
     }
   }
 
-  private void checkInvocation(Tree tree, MethodMatcher invocationMatcher) {
-    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      if (invocationMatcher.matches(mit)) {
-        onMethodInvocationFound(mit);
-      }
-    } else if (tree.is(Tree.Kind.NEW_CLASS)) {
-      NewClassTree newClassTree = (NewClassTree) tree;
-      if (invocationMatcher.matches(newClassTree)) {
-        onConstructorFound(newClassTree);
-      }
-    } else if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
-      MethodReferenceTree methodReferenceTree = (MethodReferenceTree) tree;
-      if (invocationMatcher.matches(methodReferenceTree)) {
-        onMethodReferenceFound(methodReferenceTree);
-      }
-    }
-  }
-
-  protected abstract List<MethodMatcher> getMethodInvocationMatchers();
+  protected abstract MethodMatchers getMethodInvocationMatchers();
 
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     // Do nothing by default
@@ -80,7 +73,7 @@ public abstract class AbstractMethodDetection extends IssuableSubscriptionVisito
     // Do nothing by default
   }
 
-  private List<MethodMatcher> matchers() {
+  private MethodMatchers matchers() {
     if (matchers == null) {
       matchers = getMethodInvocationMatchers();
     }

@@ -22,9 +22,8 @@ package org.sonar.java.checks.security;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -40,16 +39,11 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S4830")
 public class ServerCertificatesCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher CHECK_TRUSTED_MATCHER = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("javax.net.ssl.X509TrustManager"))
-    .addParameter(TypeCriteria.is("java.security.cert.X509Certificate[]"))
-    .addParameter(TypeCriteria.is("java.lang.String"));
-
-  private static final MethodMatcher CHECK_CLIENT_TRUSTED_MATCHER = CHECK_TRUSTED_MATCHER.copy()
-    .name("checkClientTrusted");
-
-  private static final MethodMatcher CHECK_SERVER_TRUSTED_MATCHER = CHECK_TRUSTED_MATCHER.copy()
-    .name("checkServerTrusted");
+  private static final MethodMatchers CHECK_MATCHER = MethodMatchers.create()
+    .ofSubTypes("javax.net.ssl.X509TrustManager")
+    .names("checkClientTrusted", "checkServerTrusted")
+    .addParametersMatcher("java.security.cert.X509Certificate[]", "java.lang.String")
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -66,7 +60,7 @@ public class ServerCertificatesCheck extends IssuableSubscriptionVisitor {
     if (blockTree == null) {
       return;
     }
-    if ((CHECK_CLIENT_TRUSTED_MATCHER.matches(methodTree) || CHECK_SERVER_TRUSTED_MATCHER.matches(methodTree)) &&
+    if (CHECK_MATCHER.matches(methodTree) &&
       !ThrowExceptionVisitor.throwsException(blockTree)) {
       reportIssue(methodTree.simpleName(), "Enable server certificate validation on this SSL/TLS connection.");
     }

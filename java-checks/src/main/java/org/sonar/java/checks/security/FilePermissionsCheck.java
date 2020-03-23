@@ -26,8 +26,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -41,15 +41,17 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String ISSUE_MESSAGE = "Make sure this permission is safe.";
   private static final Set<String> POSIX_OTHER_PERMISSIONS = new HashSet<>(Arrays.asList("OTHERS_READ", "OTHERS_WRITE", "OTHERS_EXECUTE"));
-  private static final MethodMatcher POSIX_FILE_PERMISSIONS_FROM_STRING = MethodMatcher.create()
-    .name("fromString")
-    .typeDefinition("java.nio.file.attribute.PosixFilePermissions")
-    .parameters(JAVA_LANG_STRING);
+  private static final MethodMatchers POSIX_FILE_PERMISSIONS_FROM_STRING = MethodMatchers.create()
+    .ofTypes("java.nio.file.attribute.PosixFilePermissions")
+    .names("fromString")
+    .addParametersMatcher(JAVA_LANG_STRING)
+    .build();
 
-  private static final MethodMatcher RUNTIME_EXEC = MethodMatcher.create()
-    .name("exec")
-    .typeDefinition("java.lang.Runtime")
-    .withAnyParameters();
+  private static final MethodMatchers RUNTIME_EXEC = MethodMatchers.create()
+    .ofTypes("java.lang.Runtime")
+    .names("exec")
+    .withAnyParameters()
+    .build();
 
   // 'other' group not being 0
   private static final Pattern CHMOD_OCTAL_PATTERN = Pattern.compile("(^|\\s)[0-7]{2,3}[1-7](\\s|$)");
@@ -123,7 +125,7 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkExecSingleStringArgument(ExpressionTree arg0) {
-    if (chmodCommand(arg0).filter(FilePermissionsCheck::isSensisitiveChmodMode).isPresent()) {
+    if (chmodCommand(arg0).filter(FilePermissionsCheck::isSensitiveChmodMode).isPresent()) {
       reportIssue(arg0, ISSUE_MESSAGE);
     }
   }
@@ -137,7 +139,7 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
     // check all other arguments against sensitive configuration
     for (int i = 1; i < initializers.size(); i++) {
       ExpressionTree arg = initializers.get(i);
-      if (arg.asConstant(String.class).filter(FilePermissionsCheck::isSensisitiveChmodMode).isPresent()) {
+      if (arg.asConstant(String.class).filter(FilePermissionsCheck::isSensitiveChmodMode).isPresent()) {
         reportIssue(arg, ISSUE_MESSAGE);
       }
     }
@@ -147,7 +149,7 @@ public class FilePermissionsCheck extends IssuableSubscriptionVisitor {
     return expr.asConstant(String.class).filter(cmd -> cmd.contains("chmod"));
   }
 
-  private static boolean isSensisitiveChmodMode(String mode) {
+  private static boolean isSensitiveChmodMode(String mode) {
     return CHMOD_OCTAL_PATTERN.matcher(mode).find() || SIMPLIFIED_CHMOD_OTHER_PATTERN.matcher(mode).find();
   }
 }

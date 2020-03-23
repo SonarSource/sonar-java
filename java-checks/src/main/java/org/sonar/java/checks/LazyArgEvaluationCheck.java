@@ -20,23 +20,17 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -51,155 +45,145 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.matcher.TypeCriteria.anyType;
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S2629")
 public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final TypeCriteria STRING = TypeCriteria.is("java.lang.String");
-  private static final TypeCriteria OBJECT_ARR = TypeCriteria.is("java.lang.Object[]");
+  private static final String STRING = "java.lang.String";
+  private static final String OBJECT_ARR = "java.lang.Object[]";
 
-  interface LogLevels {
-    /**
-     * The methods used by the logger to log messages.
-     */
-    List<MethodMatcher> log();
+  private static class SLF4J {
 
-    /**
-     * The method matcher corresponding to the test method used to check if a logger level is enabled.
-     * For instance: 'isTraceEnabled()'.
-     */
-    MethodMatcher test();
+    private static final String[] METHOD_NAMES = {
+      "trace",
+      "debug",
+      "info",
+      "warn",
+      "error"
+    };
 
-    static Stream<LogLevels> logLevels() {
-      return Stream.of(SLF4J.values(), JUL.values(), LOG4J.values())
-        .flatMap(Arrays::stream);
-    }
+    private static final String LOGGER = "org.slf4j.Logger";
+    private static final String MARKER = "org.slf4j.Marker";
 
-    static MethodMatcher levelTestMatcher(TypeCriteria typeDefinition, String level) {
-      return MethodMatcher.create()
-        .typeDefinition(typeDefinition)
-        .name(String.format("is%c%sEnabled", level.charAt(0), level.toLowerCase(Locale.ROOT).substring(1)));
-    }
+    private static final MethodMatchers LOG = MethodMatchers.create()
+      .ofSubTypes(LOGGER)
+      .names(METHOD_NAMES)
+      .addParametersMatcher(STRING)
+      .addParametersMatcher(STRING, ANY)
+      .addParametersMatcher(STRING, ANY, ANY)
+      .addParametersMatcher(STRING, OBJECT_ARR)
+      .addParametersMatcher(MARKER, STRING)
+      .addParametersMatcher(MARKER, STRING, ANY)
+      .addParametersMatcher(MARKER, STRING, ANY, ANY)
+      .addParametersMatcher(MARKER, STRING, OBJECT_ARR)
+      .build();
 
-    enum SLF4J implements LogLevels {
-      TRACE,
-      DEBUG,
-      INFO,
-      WARN,
-      ERROR
-      ;
-
-      private static final TypeCriteria LOGGER = TypeCriteria.subtypeOf("org.slf4j.Logger");
-      private static final TypeCriteria MARKER = TypeCriteria.is("org.slf4j.Marker");
-
-      @Override
-      public List<MethodMatcher> log() {
-        return slf4jVariants(() -> MethodMatcher.create().typeDefinition(LOGGER).name(toString().toLowerCase(Locale.ROOT)));
-      }
-
-      @Override
-      public MethodMatcher test() {
-        return LogLevels.levelTestMatcher(LOGGER, toString()).withoutParameter();
-      }
-
-      private static List<MethodMatcher> slf4jVariants(Supplier<MethodMatcher> prototype) {
-        return Arrays.asList(
-          prototype.get().parameters(STRING),
-          prototype.get().parameters(STRING, anyType()),
-          prototype.get().parameters(STRING, anyType(), anyType()),
-          prototype.get().parameters(STRING, OBJECT_ARR),
-          prototype.get().parameters(MARKER, STRING),
-          prototype.get().parameters(MARKER, STRING, anyType()),
-          prototype.get().parameters(MARKER, STRING, anyType(), anyType()),
-          prototype.get().parameters(MARKER, STRING, OBJECT_ARR)
-        );
-      }
-    }
-
-    enum JUL implements LogLevels {
-      SEVERE,
-      WARNING,
-      INFO,
-      CONFIG,
-      FINE,
-      FINER,
-      FINEST;
-
-      private static final String LOGGER = "java.util.logging.Logger";
-      private static final MethodMatcher LOG = MethodMatcher.create()
-        .typeDefinition(LOGGER)
-        .name("log")
-        .addParameter("java.util.logging.Level")
-        .addParameter(STRING);
-
-      @Override
-      public List<MethodMatcher> log() {
-        return Collections.singletonList(
-          MethodMatcher.create()
-          .typeDefinition(LOGGER)
-          .name(toString().toLowerCase(Locale.ROOT))
-          .addParameter(STRING));
-      }
-
-      @Override
-      public MethodMatcher test() {
-        return MethodMatcher.create()
-          .typeDefinition(LOGGER)
-          .name("isLoggable")
-          .addParameter("java.util.logging.Level");
-      }
-    }
-
-    enum LOG4J implements LogLevels {
-      DEBUG,
-      ERROR,
-      FATAL,
-      INFO,
-      TRACE,
-      WARN;
-
-      private static final String LEVEL = "org.apache.logging.log4j.Level";
-
-      private static final TypeCriteria LOGGER = TypeCriteria.subtypeOf("org.apache.logging.log4j.Logger");
-      private static final TypeCriteria MARKER = TypeCriteria.is("org.apache.logging.log4j.Marker");
-      private static final Predicate<Type> SUPPLIER = TypeCriteria.subtypeOf("org.apache.logging.log4j.util.Supplier")
-        .or(TypeCriteria.subtypeOf("org.apache.logging.log4j.util.MessageSupplier"));
-
-      private static final List<MethodMatcher> TESTS = Arrays.asList(
-        MethodMatcher.create().typeDefinition(LOGGER).name("isEnabled").addParameter(LEVEL),
-        MethodMatcher.create().typeDefinition(LOGGER).name("isEnabled").addParameter(LEVEL).addParameter(MARKER));
-
-      private static final MethodMatcher LOG = MethodMatcher.create().typeDefinition(LOGGER).name("log").withAnyParameters();
-
-      @Override
-      public List<MethodMatcher> log() {
-        return Collections.singletonList(MethodMatcher.create()
-          .typeDefinition(LOGGER)
-          .name(toString().toLowerCase(Locale.ROOT))
-          .withAnyParameters());
-      }
-
-      @Override
-      public MethodMatcher test() {
-        return LogLevels.levelTestMatcher(LOGGER, toString()).withAnyParameters();
-      }
-    }
+    private static final MethodMatchers TEST = MethodMatchers.create()
+      .ofSubTypes(LOGGER)
+      .names(testMethodNames(METHOD_NAMES))
+      .addWithoutParametersMatcher()
+      .build();
   }
 
-  private static final MethodMatcher PRECONDITIONS = MethodMatcher.create()
-    .typeDefinition("com.google.common.base.Preconditions")
-    .name("checkState")
-    .withAnyParameters();
+  private static class JUL {
 
-  private static final MethodMatcherCollection LAZY_ARG_METHODS = MethodMatcherCollection.create(PRECONDITIONS, LogLevels.JUL.LOG, LogLevels.LOG4J.LOG);
-  static {
-    LogLevels.logLevels().map(LogLevels::log).forEach(LAZY_ARG_METHODS::addAll);
+    private static final String[] METHOD_NAMES = {
+      "severe",
+      "warning",
+      "info",
+      "config",
+      "fine",
+      "finer",
+      "finest"
+    };
+
+    private static final String LOGGER = "java.util.logging.Logger";
+
+    private static final MethodMatchers LOG = MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes(LOGGER)
+        .names(METHOD_NAMES)
+        .addParametersMatcher(STRING)
+        .build(),
+      MethodMatchers.create()
+        .ofTypes(LOGGER)
+        .names("log")
+        .addParametersMatcher("java.util.logging.Level", STRING)
+        .build());
+
+    private static final MethodMatchers TEST = MethodMatchers.create()
+      .ofTypes(LOGGER)
+      .names("isLoggable")
+      .addParametersMatcher("java.util.logging.Level")
+      .build();
   }
 
-  private static final MethodMatcherCollection LOG_LEVEL_TESTS = MethodMatcherCollection.create().addAll(LogLevels.LOG4J.TESTS);
-  static {
-    LogLevels.logLevels().map(LogLevels::test).forEach(LOG_LEVEL_TESTS::add);
+  private static class LOG4J {
+
+    private static final String[] METHOD_NAMES = {
+      "debug",
+      "error",
+      "fatal",
+      "info",
+      "trace",
+      "warn"
+    };
+
+    private static final String LEVEL = "org.apache.logging.log4j.Level";
+    private static final String LOGGER = "org.apache.logging.log4j.Logger";
+    private static final String MARKER = "org.apache.logging.log4j.Marker";
+    private static final Predicate<Type> SUPPLIER = type ->
+      type.isSubtypeOf("org.apache.logging.log4j.util.Supplier") ||
+      type.isSubtypeOf("org.apache.logging.log4j.util.MessageSupplier");
+
+    private static final MethodMatchers LOG = MethodMatchers.or(
+      MethodMatchers.create()
+        .ofSubTypes(LOGGER)
+        .names(METHOD_NAMES)
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create()
+        .ofSubTypes(LOGGER)
+        .names("log")
+        .withAnyParameters()
+        .build());
+
+    private static final MethodMatchers TEST = MethodMatchers.or(
+      MethodMatchers.create()
+        .ofSubTypes(LOGGER)
+        .names(testMethodNames(METHOD_NAMES))
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create()
+        .ofSubTypes(LOGGER)
+        .names("isEnabled")
+        .addParametersMatcher(LEVEL)
+        .addParametersMatcher(LEVEL, MARKER)
+        .build());
+  }
+
+  private static final MethodMatchers PRECONDITIONS = MethodMatchers.create()
+    .ofTypes("com.google.common.base.Preconditions")
+    .names("checkState")
+    .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers LAZY_ARG_METHODS = MethodMatchers.or(
+    PRECONDITIONS,
+    SLF4J.LOG,
+    JUL.LOG,
+    LOG4J.LOG);
+
+  private static final MethodMatchers LOG_LEVEL_TESTS = MethodMatchers.or(
+    SLF4J.TEST,
+    JUL.TEST,
+    LOG4J.TEST);
+
+  private static String[] testMethodNames(String[] lowerCaseNames) {
+    return Stream.of(lowerCaseNames)
+      .map(name -> "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1) + "Enabled")
+      .toArray(String[]::new);
   }
 
   private JavaFileScannerContext context;
@@ -216,13 +200,13 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    if (LAZY_ARG_METHODS.anyMatch(tree) && !insideCatchStatement() && !insideLevelTest() && !argsUsingSuppliers(tree)) {
+    if (LAZY_ARG_METHODS.matches(tree) && !insideCatchStatement() && !insideLevelTest() && !argsUsingSuppliers(tree)) {
       onMethodInvocationFound(tree);
     }
   }
 
   private static boolean argsUsingSuppliers(MethodInvocationTree tree) {
-    return tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(LogLevels.LOG4J.SUPPLIER::test);
+    return tree.arguments().stream().map(ExpressionTree::symbolType).anyMatch(LOG4J.SUPPLIER);
   }
 
   @Override
@@ -293,7 +277,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
   private static Stream<ExpressionTree> findStringArg(MethodInvocationTree mit) {
     return mit.arguments().stream()
-      .filter(arg -> arg.symbolType().is("java.lang.String"));
+      .filter(arg -> arg.symbolType().is(STRING));
   }
 
   private static class StringExpressionVisitor extends BaseTreeVisitor {
@@ -375,7 +359,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (LOG_LEVEL_TESTS.anyMatch(mit)) {
+      if (LOG_LEVEL_TESTS.matches(mit)) {
         match = true;
       }
     }

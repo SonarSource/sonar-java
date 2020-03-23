@@ -19,15 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.BiPredicate;
-
 import javax.annotation.CheckForNull;
-
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -39,22 +35,33 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 public class StringCallsBeyondBoundsCheck extends AbstractMethodDetection {
 
   private static final String STRING = "java.lang.String";
-  private static final MethodMatcher STRING_LENGTH =
-    MethodMatcher.create().typeDefinition(STRING).name("length").withoutParameter();
+  private static final MethodMatchers STRING_LENGTH = MethodMatchers.create()
+    .ofTypes(STRING).names("length").addWithoutParametersMatcher().build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition(STRING).name("charAt").addParameter("int"),
-      MethodMatcher.create().typeDefinition(STRING).name("codePointAt").addParameter("int"),
-      MethodMatcher.create().typeDefinition(STRING).name("codePointBefore").addParameter("int"),
-      MethodMatcher.create().typeDefinition(STRING).name("codePointCount").addParameter("int").addParameter("int"),
-      MethodMatcher.create().typeDefinition(STRING).name("getChars").addParameter("int").addParameter("int").addParameter("char[]").addParameter("int"),
-      MethodMatcher.create().typeDefinition(STRING).name("offsetByCodePoints").addParameter("int").addParameter("int"),
-      MethodMatcher.create().typeDefinition(STRING).name("substring").addParameter("int"),
-      MethodMatcher.create().typeDefinition(STRING).name("substring").addParameter("int").addParameter("int"),
-      MethodMatcher.create().typeDefinition(STRING).name("subSequence").addParameter("int").addParameter("int")
-    );
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes(STRING)
+        .names("charAt", "codePointAt", "codePointBefore")
+        .addParametersMatcher("int")
+        .build(),
+      MethodMatchers.create()
+        .ofTypes(STRING)
+        .names("codePointCount", "offsetByCodePoints", "subSequence")
+        .addParametersMatcher("int", "int")
+        .build(),
+      MethodMatchers.create()
+        .ofTypes(STRING)
+        .names("substring")
+        .addParametersMatcher("int")
+        .addParametersMatcher("int", "int")
+        .build(),
+      MethodMatchers.create()
+        .ofTypes(STRING)
+        .names("getChars")
+        .addParametersMatcher("int", "int", "char[]", "int")
+        .build());
   }
 
   @Override

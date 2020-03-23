@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -33,8 +31,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class EnumEqualCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(MethodMatcher.create().name("equals").parameters("java.lang.Object"));
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create().ofAnyType().names("equals").addParametersMatcher("java.lang.Object").build();
   }
 
   @Override

@@ -20,7 +20,6 @@
 package org.sonar.java.checks.security;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,10 +27,10 @@ import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -72,22 +71,38 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private static final String INT = "int";
   private static final String BOOLEAN = "boolean";
 
-  private static final List<MethodMatcher> CONSTRUCTORS_WITH_SECURE_PARAM_LAST = Arrays.asList(
-    constructorMatcher(JAX_RS_NEW_COOKIE).parameters(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, BOOLEAN),
-    constructorMatcher(JAX_RS_NEW_COOKIE).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, BOOLEAN),
-    constructorMatcher(JAX_RS_NEW_COOKIE).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN));
+  private static final MethodMatchers CONSTRUCTORS_WITH_SECURE_PARAM_LAST = MethodMatchers.create()
+    .ofTypes(JAX_RS_NEW_COOKIE)
+    .constructor()
+    .addParametersMatcher(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, BOOLEAN)
+    .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, BOOLEAN)
+    .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN)
+    .build();
 
-  private static final List<MethodMatcher> CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_LAST = Arrays.asList(
-    constructorMatcher(JAX_RS_NEW_COOKIE)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN),
-    constructorMatcher(JAX_RS_NEW_COOKIE).parameters(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN),
-    constructorMatcher(JAX_RS_NEW_COOKIE).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN),
-    constructorMatcher(SPRING_SAVED_COOKIE).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, BOOLEAN, INT),
-    constructorMatcher(PLAY_COOKIE).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN));
+  private static final MethodMatchers CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_LAST = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(JAX_RS_NEW_COOKIE)
+      .constructor()
+      .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN)
+      .addParametersMatcher(JAX_RS_COOKIE, JAVA_LANG_STRING, INT, "java.util.Date", BOOLEAN, BOOLEAN)
+      .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN)
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(SPRING_SAVED_COOKIE)
+      .constructor()
+      .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, BOOLEAN, INT)
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(PLAY_COOKIE)
+      .constructor()
+      .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN)
+      .build());
 
-  private static final List<MethodMatcher> CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_BEFORE_LAST = Collections.singletonList(
-    constructorMatcher(PLAY_COOKIE)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN, "play.mvc.Http$Cookie$SameSite"));
+  private static final MethodMatchers CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_BEFORE_LAST = MethodMatchers.create()
+    .ofTypes(PLAY_COOKIE)
+    .constructor()
+    .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN, "play.mvc.Http$Cookie$SameSite")
+    .build();
 
   private final Map<Symbol.VariableSymbol, NewClassTree> unsecuredCookies = new HashMap<>();
   private final Set<NewClassTree> cookieConstructors = new HashSet<>();
@@ -179,11 +194,11 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private static boolean isSecureParamFalse(NewClassTree newClassTree) {
     ExpressionTree secureArgument = null;
     Arguments arguments = newClassTree.arguments();
-    if (CONSTRUCTORS_WITH_SECURE_PARAM_LAST.stream().anyMatch(m -> m.matches(newClassTree))) {
+    if (CONSTRUCTORS_WITH_SECURE_PARAM_LAST.matches(newClassTree)) {
       secureArgument = arguments.get(arguments.size() - 1);
-    } else if (CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_LAST.stream().anyMatch(m -> m.matches(newClassTree))) {
+    } else if (CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_LAST.matches(newClassTree)) {
       secureArgument = arguments.get(arguments.size() - 2);
-    } else if (CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_BEFORE_LAST.stream().anyMatch(m -> m.matches(newClassTree))) {
+    } else if (CONSTRUCTORS_WITH_SECURE_PARAM_BEFORE_BEFORE_LAST.matches(newClassTree)) {
       secureArgument = arguments.get(arguments.size() - 3);
     }
     if (secureArgument != null) {
@@ -212,10 +227,6 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
       id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
     }
     return id;
-  }
-
-  private static MethodMatcher constructorMatcher(String fullyQualifiedName) {
-    return MethodMatcher.create().typeDefinition(fullyQualifiedName).name("<init>");
   }
 
 }

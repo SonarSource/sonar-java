@@ -19,12 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
@@ -32,8 +30,12 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 public class LongBitsToDoubleOnIntCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(MethodMatcher.create().typeDefinition("java.lang.Double").name("longBitsToDouble").addParameter("long"));
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofTypes("java.lang.Double")
+      .names("longBitsToDouble")
+      .addParametersMatcher("long")
+      .build();
   }
 
   @Override

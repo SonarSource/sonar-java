@@ -19,18 +19,16 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S2140")
 public class RandomFloatToIntCheck extends IssuableSubscriptionVisitor {
@@ -38,19 +36,24 @@ public class RandomFloatToIntCheck extends IssuableSubscriptionVisitor {
   private static final String NEXT_FLOAT = "nextFloat";
   private static final String NEXT_DOUBLE = "nextDouble";
 
-  private final MethodMatcher mathRandomMethodMatcher = MethodMatcher.create().typeDefinition("java.lang.Math").name("random").withoutParameter();
+  private static final MethodMatchers MATH_RANDOM_METHOD_MATCHER = MethodMatchers.create()
+    .ofTypes("java.lang.Math").names("random").addWithoutParametersMatcher().build();
 
-  private final MethodMatcherCollection methodMatchers = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.util.Random").name(NEXT_DOUBLE).withoutParameter(),
-    MethodMatcher.create().typeDefinition("java.util.Random").name(NEXT_FLOAT).withoutParameter(),
-    MethodMatcher.create().typeDefinition("java.util.concurrent.ThreadLocalRandom").name(NEXT_DOUBLE).withAnyParameters(),
-    MethodMatcher.create().typeDefinition("org.apache.commons.lang.math.JVMRandom").name(NEXT_DOUBLE).withoutParameter(),
-    MethodMatcher.create().typeDefinition("org.apache.commons.lang.math.JVMRandom").name(NEXT_FLOAT).withoutParameter(),
-    MethodMatcher.create().typeDefinition("org.apache.commons.lang.math.RandomUtils").name(NEXT_DOUBLE).withoutParameter(),
-    MethodMatcher.create().typeDefinition("org.apache.commons.lang.math.RandomUtils").name(NEXT_FLOAT).withoutParameter(),
-    MethodMatcher.create().typeDefinition("org.apache.commons.lang3.RandomUtils").name(NEXT_DOUBLE).withoutParameter(),
-    MethodMatcher.create().typeDefinition("org.apache.commons.lang3.RandomUtils").name(NEXT_FLOAT).withoutParameter()
-  );
+  private static final MethodMatchers METHOD_MATCHERS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("java.util.concurrent.ThreadLocalRandom")
+      .names(NEXT_DOUBLE)
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(
+        "java.util.Random",
+        "org.apache.commons.lang.math.JVMRandom",
+        "org.apache.commons.lang.math.RandomUtils",
+        "org.apache.commons.lang3.RandomUtils")
+      .names(NEXT_DOUBLE, NEXT_FLOAT)
+      .addWithoutParametersMatcher()
+      .build());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -69,9 +72,9 @@ public class RandomFloatToIntCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (mathRandomMethodMatcher.matches(tree)) {
+      if (MATH_RANDOM_METHOD_MATCHER.matches(tree)) {
         reportIssue(tree.methodSelect(), "Use \"java.util.Random.nextInt()\" instead.");
-      } else if (methodMatchers.anyMatch(tree)) {
+      } else if (METHOD_MATCHERS.matches(tree)) {
         reportIssue(tree.methodSelect(), "Use \"nextInt()\" instead.");
       }
       super.visitMethodInvocation(tree);

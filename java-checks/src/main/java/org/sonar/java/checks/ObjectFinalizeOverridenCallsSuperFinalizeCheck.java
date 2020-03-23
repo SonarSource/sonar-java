@@ -20,10 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Iterables;
-
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -36,11 +38,6 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-
-import javax.annotation.Nullable;
-
-import java.util.Arrays;
-import java.util.List;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "ObjectFinalizeOverridenCallsSuperFinalizeCheck", repositoryKey = "squid")
@@ -48,7 +45,8 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends IssuableSubscriptionVisitor {
 
   private static final String FINALIZE = "finalize";
-  private static final MethodMatcher FINALIZE_MATCHER = MethodMatcher.create().name(FINALIZE).withoutParameter();
+  private static final MethodMatchers FINALIZE_MATCHER = MethodMatchers.create()
+    .ofAnyType().names(FINALIZE).addWithoutParametersMatcher().build();
 
   private MethodInvocationTree lastStatementTree;
 

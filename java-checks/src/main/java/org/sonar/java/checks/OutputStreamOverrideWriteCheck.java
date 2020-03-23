@@ -23,9 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -35,8 +34,15 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4349")
 public class OutputStreamOverrideWriteCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher WRITE_BYTES_INT_INT = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("write").parameters("byte[]", "int", "int");
-  private static final MethodMatcher WRITE_INT = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("write").parameters("int");
+  private static final MethodMatchers WRITE_BYTES_INT_INT = MethodMatchers.create().ofAnyType()
+    .names("write")
+    .addParametersMatcher("byte[]", "int", "int")
+    .build();
+
+  private static final MethodMatchers WRITE_INT = MethodMatchers.create().ofAnyType()
+    .names("write")
+    .addParametersMatcher("int")
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -55,10 +61,9 @@ public class OutputStreamOverrideWriteCheck extends IssuableSubscriptionVisitor 
       return;
     }
     Optional<MethodTree> writeByteIntInt = findMethod(classTree, WRITE_BYTES_INT_INT);
-    Optional<MethodTree> writeInt = findMethod(classTree, WRITE_INT);
-
     if (!writeByteIntInt.isPresent()) {
       String message = "Provide an override of \"write(byte[],int,int)\" for this class.";
+      Optional<MethodTree> writeInt = findMethod(classTree, WRITE_INT);
       if (writeInt.isPresent()) {
         MethodTree writeIntTree = writeInt.get();
         if (writeIntTree.block().body().isEmpty()) {
@@ -70,7 +75,7 @@ public class OutputStreamOverrideWriteCheck extends IssuableSubscriptionVisitor 
 
   }
 
-  private static Optional<MethodTree> findMethod(ClassTree classTree, MethodMatcher methodMatcher) {
+  private static Optional<MethodTree> findMethod(ClassTree classTree, MethodMatchers methodMatcher) {
     return classTree.members()
       .stream()
       .filter(m -> m.is(Tree.Kind.METHOD))

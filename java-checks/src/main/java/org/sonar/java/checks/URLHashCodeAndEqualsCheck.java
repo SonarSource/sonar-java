@@ -19,29 +19,26 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Rule(key = "S2112")
 public class URLHashCodeAndEqualsCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_NET_URL = "java.net.URL";
 
-  private static final MethodMatcherCollection URL_MATCHERS = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition(JAVA_NET_URL).name("equals").addParameter("java.lang.Object"),
-    MethodMatcher.create().typeDefinition(JAVA_NET_URL).name("hashCode").withoutParameter());
+  private static final MethodMatchers URL_MATCHERS = MethodMatchers.or(
+    MethodMatchers.create().ofTypes(JAVA_NET_URL).names("equals").addParametersMatcher("java.lang.Object").build(),
+    MethodMatchers.create().ofTypes(JAVA_NET_URL).names("hashCode").addWithoutParametersMatcher().build());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -58,7 +55,7 @@ public class URLHashCodeAndEqualsCheck extends IssuableSubscriptionVisitor {
           reportIssue(variableTree.type(), "Use the URI class instead.");
         }
       }
-    } else if (hasSemantic() && URL_MATCHERS.anyMatch((MethodInvocationTree) tree)) {
+    } else if (hasSemantic() && URL_MATCHERS.matches((MethodInvocationTree) tree)) {
       reportIssue(tree, "Use the URI class instead.");
     }
   }

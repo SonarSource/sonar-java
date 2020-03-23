@@ -22,9 +22,8 @@ package org.sonar.java.checks.security;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -33,31 +32,37 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S5344")
 public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher JDBC_AUTHENTICATION = MethodMatcher.create()
-    .typeDefinition("org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder")
-    .name("jdbcAuthentication")
-    .withoutParameter();
+  private static final MethodMatchers JDBC_AUTHENTICATION = MethodMatchers.create()
+    .ofSubTypes("org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder")
+    .names("jdbcAuthentication")
+    .addWithoutParametersMatcher()
+    .build();
 
-  private static final MethodMatcher USER_DETAIL_SERVICE = MethodMatcher.create()
-    .typeDefinition("org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder")
-    .name("userDetailsService")
-    .withAnyParameters();
+  private static final MethodMatchers USER_DETAIL_SERVICE = MethodMatchers.create()
+    .ofSubTypes("org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder")
+    .names("userDetailsService")
+    .withAnyParameters()
+    .build();
 
-  private static final MethodMatcher PASSWORD_ENCODER_SETTER = MethodMatcher.create()
-    .typeDefinition("org.springframework.security.config.annotation.authentication.configurers.userdetails.AbstractDaoAuthenticationConfigurer")
-    .name("passwordEncoder")
-    .withAnyParameters();
+  private static final MethodMatchers PASSWORD_ENCODER_SETTER = MethodMatchers.create()
+    .ofSubTypes("org.springframework.security.config.annotation.authentication.configurers.userdetails.AbstractDaoAuthenticationConfigurer")
+    .names("passwordEncoder")
+    .withAnyParameters()
+    .build();
 
-  private static final MethodMatcherCollection UNSAFE_PASSWORD_ENCODERS = MethodMatcherCollection.create(
-    constructorMatcher("org.springframework.security.authentication.encoding.ShaPasswordEncoder").withAnyParameters(),
-    constructorMatcher("org.springframework.security.authentication.encoding.Md5PasswordEncoder").withAnyParameters(),
-    constructorMatcher("org.springframework.security.crypto.password.LdapShaPasswordEncoder").withAnyParameters(),
-    constructorMatcher("org.springframework.security.crypto.password.Md4PasswordEncoder").withAnyParameters(),
-    constructorMatcher("org.springframework.security.crypto.password.MessageDigestPasswordEncoder").withAnyParameters(),
-    constructorMatcher("org.springframework.security.crypto.password.NoOpPasswordEncoder").withAnyParameters(),
-    constructorMatcher("org.springframework.security.crypto.password.StandardPasswordEncoder").withAnyParameters(),
-    constructorMatcher("org.springframework.security.crypto.password.SCryptPasswordEncoder").withAnyParameters()
-  );
+  private static final MethodMatchers UNSAFE_PASSWORD_ENCODERS = MethodMatchers.create()
+    .ofTypes(
+      "org.springframework.security.authentication.encoding.ShaPasswordEncoder",
+      "org.springframework.security.authentication.encoding.Md5PasswordEncoder",
+      "org.springframework.security.crypto.password.LdapShaPasswordEncoder",
+      "org.springframework.security.crypto.password.Md4PasswordEncoder",
+      "org.springframework.security.crypto.password.MessageDigestPasswordEncoder",
+      "org.springframework.security.crypto.password.NoOpPasswordEncoder",
+      "org.springframework.security.crypto.password.StandardPasswordEncoder",
+      "org.springframework.security.crypto.password.SCryptPasswordEncoder")
+    .constructor()
+    .withAnyParameters()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -69,7 +74,7 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
     if (!hasSemantic()) {
       return;
     }
-    if (tree.is(Tree.Kind.NEW_CLASS) && UNSAFE_PASSWORD_ENCODERS.anyMatch(((NewClassTree) tree))) {
+    if (tree.is(Tree.Kind.NEW_CLASS) && UNSAFE_PASSWORD_ENCODERS.matches(((NewClassTree) tree))) {
       reportIssue(((NewClassTree) tree).identifier(), "Use secure \"PasswordEncoder\" implementation.");
     } else if (tree.is(Tree.Kind.METHOD)) {
       MethodInvocationVisitor visitor = new MethodInvocationVisitor();
@@ -78,10 +83,6 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
         reportIssue(visitor.tree, "Don't use the default \"PasswordEncoder\" relying on plain-text.");
       }
     }
-  }
-
-  private static MethodMatcher constructorMatcher(String fullyQualifiedName) {
-    return MethodMatcher.create().typeDefinition(fullyQualifiedName).name("<init>");
   }
 
   static class MethodInvocationVisitor extends BaseTreeVisitor {

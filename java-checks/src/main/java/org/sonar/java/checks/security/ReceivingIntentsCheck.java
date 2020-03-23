@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
@@ -32,9 +30,12 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
 public class ReceivingIntentsCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(MethodMatcher.create()
-      .typeDefinition("android.content.Context").name("registerReceiver").withAnyParameters());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofTypes("android.content.Context")
+      .names("registerReceiver")
+      .withAnyParameters()
+      .build();
   }
 
   @Override

@@ -20,16 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -61,14 +59,11 @@ public class ReplaceGuavaWithJava8Check extends AbstractMethodDetection implemen
   }
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition(GUAVA_BASE_ENCODING).name("base64").withoutParameter(),
-      MethodMatcher.create().typeDefinition(GUAVA_BASE_ENCODING).name("base64Url").withoutParameter(),
-      MethodMatcher.create().typeDefinition(GUAVA_OPTIONAL).name("absent").withoutParameter(),
-      MethodMatcher.create().typeDefinition(GUAVA_OPTIONAL).name("fromNullable").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(GUAVA_OPTIONAL).name("of").withAnyParameters()
-    );
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofTypes(GUAVA_BASE_ENCODING).names("base64", "base64Url").addWithoutParametersMatcher().build(),
+      MethodMatchers.create().ofTypes(GUAVA_OPTIONAL).names("absent").addWithoutParametersMatcher().build(),
+      MethodMatchers.create().ofTypes(GUAVA_OPTIONAL).names("fromNullable", "of").withAnyParameters().build());
   }
 
   @Override

@@ -19,23 +19,31 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S2141")
 public class ClassWithoutHashCodeInHashStructureCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create().name("equals").parameters("java.lang.Object");
-  private static final MethodMatcher HASHCODE_MATCHER = MethodMatcher.create().name("hashCode").withoutParameter();
+  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
+    .ofAnyType()
+    .names("equals")
+    .addParametersMatcher("java.lang.Object")
+    .build();
+
+  private static final MethodMatchers HASHCODE_MATCHER = MethodMatchers.create()
+    .ofAnyType()
+    .names("hashCode")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

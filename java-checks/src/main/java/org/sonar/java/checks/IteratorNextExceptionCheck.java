@@ -22,9 +22,8 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -39,11 +38,11 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2272")
 public class IteratorNextExceptionCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher NEXT_INVOCATION_MATCHER =
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf("java.util.Iterator"))
-      .name("next")
-      .withoutParameter();
+  private static final MethodMatchers NEXT_INVOCATION_MATCHER = MethodMatchers.create()
+      .ofSubTypes("java.util.Iterator")
+      .names("next")
+      .addWithoutParametersMatcher()
+      .build();
 
   @Override
   public List<Kind> nodesToVisit() {

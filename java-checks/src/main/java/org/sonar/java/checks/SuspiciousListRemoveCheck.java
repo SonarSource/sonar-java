@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -43,8 +43,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S5413")
 public class SuspiciousListRemoveCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher LIST_REMOVE = MethodMatcher.create().typeDefinition("java.util.List")
-    .name("remove").addParameter("int");
+  private static final MethodMatchers LIST_REMOVE = MethodMatchers.create()
+    .ofTypes("java.util.List")
+    .names("remove")
+    .addParametersMatcher("int")
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

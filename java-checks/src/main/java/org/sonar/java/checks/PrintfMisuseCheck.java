@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -40,11 +38,13 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S3457")
 public class PrintfMisuseCheck extends AbstractPrintfChecker {
 
-  private static final MethodMatcher TO_STRING = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("toString").withoutParameter();
-  private static final MethodMatcherCollection GET_LOGGER = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("getLogger").parameters(JAVA_LANG_STRING, JAVA_LANG_STRING),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("getAnonymousLogger").parameters(JAVA_LANG_STRING)
-    );
+  private static final MethodMatchers TO_STRING = MethodMatchers.create()
+    .ofAnyType().names("toString").addWithoutParametersMatcher().build();
+  private static final MethodMatchers GET_LOGGER = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("getLogger").addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING).build(),
+    MethodMatchers.create()
+      .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("getAnonymousLogger").addParametersMatcher(JAVA_LANG_STRING).build());
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
@@ -54,7 +54,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
       return;
     }
     if (!isMessageFormat) {
-      isMessageFormat = JAVA_UTIL_LOGGER_LOG_MATCHER.anyMatch(mit);
+      isMessageFormat = JAVA_UTIL_LOGGER_LOG_MATCHER.matches(mit);
       if (isMessageFormat && hasResourceBundle(mit)) {
         return;
       }
@@ -82,7 +82,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
         VariableTree var = ((VariableTree) decl);
         ExpressionTree init = var.initializer();
         if (init != null && init.is(Tree.Kind.METHOD_INVOCATION)) {
-          return GET_LOGGER.anyMatch((MethodInvocationTree) init);
+          return GET_LOGGER.matches((MethodInvocationTree) init);
         }
       }
     }
@@ -238,7 +238,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   @Override
   protected void handleOtherFormatTree(MethodInvocationTree mit, ExpressionTree formatTree, List<ExpressionTree> args) {
     if (isIncorrectConcatenation(formatTree)) {
-      if (JAVA_UTIL_LOGGER_LOG_MATCHER.anyMatch(mit)) {
+      if (JAVA_UTIL_LOGGER_LOG_MATCHER.matches(mit)) {
         if (isLastArgumentThrowable(args)) {
           reportIssue(mit, "Lambda should be used to differ string concatenation.");
         } else {

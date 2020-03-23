@@ -19,10 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -34,14 +35,15 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S2134")
 public class ThreadOverridesRunCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_THREAD = "java.lang.Thread";
-  private static final MethodMatcher RUN = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAVA_LANG_THREAD)).name("run").withoutParameter();
+  private static final MethodMatchers RUN = MethodMatchers.create()
+    .ofSubTypes(JAVA_LANG_THREAD)
+    .names("run")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -105,7 +107,11 @@ public class ThreadOverridesRunCheck extends IssuableSubscriptionVisitor {
 
     private boolean callSuperWithRunnable = false;
 
-    private static final MethodMatcher SUPER_THREAD = MethodMatcher.create().typeDefinition(JAVA_LANG_THREAD).name("<init>").withAnyParameters();
+    private static final MethodMatchers SUPER_THREAD = MethodMatchers.create()
+      .ofTypes(JAVA_LANG_THREAD)
+      .constructor()
+      .withAnyParameters()
+      .build();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {

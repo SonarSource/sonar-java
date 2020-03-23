@@ -24,7 +24,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -46,27 +46,39 @@ public class LogConfigurationCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition("org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory").name("newConfigurationBuilder").withoutParameter(),
-      MethodMatcher.create().typeDefinition(LOG4J_CONFIGURATOR).name("setAllLevels").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(LOG4J_CONFIGURATOR).name(SET_LEVEL).withAnyParameters(),
-      MethodMatcher.create().typeDefinition(LOG4J_CONFIGURATOR).name("setRootLevel").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("org.apache.logging.log4j.core.config.Configuration").name(ADD_APPENDER).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("org.apache.logging.log4j.core.config.LoggerConfig").name(ADD_APPENDER).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("org.apache.logging.log4j.core.config.LoggerConfig").name(SET_LEVEL).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("org.apache.logging.log4j.core.LoggerContext").name("setConfigLocation").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(LOG4J_CONFIGURATION_SOURCE).name("<init>").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(LOG4J_CONFIGURATION_SOURCE).name("fromResource").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(LOG4J_CONFIGURATION_SOURCE).name("fromUri").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.util.logging.LogManager").name("readConfiguration").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.util.logging.Logger").name(SET_LEVEL).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.util.logging.Logger").name("addHandler").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("ch.qos.logback.classic.Logger").name(ADD_APPENDER).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("ch.qos.logback.classic.Logger").name(SET_LEVEL).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("ch.qos.logback.classic.joran.JoranConfigurator").name("<init>").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.lang.System").name("setProperty").parameters("java.lang.String", "java.lang.String")
-      );
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes("org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory")
+        .names("newConfigurationBuilder")
+        .addWithoutParametersMatcher()
+        .build(),
+      MethodMatchers.create()
+        .ofTypes(LOG4J_CONFIGURATOR)
+        .names("setAllLevels", SET_LEVEL, "setRootLevel")
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create()
+        .ofTypes("org.apache.logging.log4j.core.config.Configuration")
+        .names(ADD_APPENDER)
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create()
+        .ofTypes("org.apache.logging.log4j.core.config.LoggerConfig")
+        .names(ADD_APPENDER, SET_LEVEL)
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create()
+        .ofTypes("org.apache.logging.log4j.core.LoggerContext")
+        .names("setConfigLocation")
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create().ofTypes(LOG4J_CONFIGURATION_SOURCE).names("<init>", "fromResource", "fromUri").withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("java.util.logging.LogManager").names("readConfiguration").withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("java.util.logging.Logger").names(SET_LEVEL, "addHandler").withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("ch.qos.logback.classic.Logger").names(ADD_APPENDER, SET_LEVEL).withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("ch.qos.logback.classic.joran.JoranConfigurator").constructor().withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("java.lang.System").names("setProperty").addParametersMatcher("java.lang.String", "java.lang.String").build());
   }
 
   @Override

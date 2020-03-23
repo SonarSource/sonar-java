@@ -1,41 +1,48 @@
+package checks;
+
+import checks.Foo;
+import com.github.jknack.handlebars.internal.Files;
+import com.sun.org.apache.xerces.internal.xni.XNIException;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import org.slf4j.Logger;
 
 import static java.util.logging.Level.WARNING;
 
-class A {
+class CatchUsesExceptionWithContextCheck {
   private static final Logger LOGGER = null;
   private static final org.slf4j.Marker MARKER = null;
   private static final java.util.logging.Logger JAVA_LOGGER = null;
 
-  private void f() {
+  private void f(Exception x) {
     try {
     } catch (Exception e) {                     // Noncompliant {{Either log or rethrow this exception.}} [[sc=14;ec=25]]
     } catch (Exception e) {                     // Compliant
       System.out.println(e);
     } catch (Exception e) {                     // Noncompliant
-      System.out.println("foo", e.getMessage());
+      System.out.println("foo: " + e.getMessage());
     } catch (Exception e) {                     // Compliant
-      System.out.println("", e);
+      System.out.println("" + e);
     } catch (Exception f) {                     // Noncompliant
-      System.out.println("", e);
+      System.out.println("" + x);
     } catch (Exception f) {                     // Compliant
-      System.out.println("", f);
+      System.out.println("" + f);
     } catch (Exception e) {                     // Compliant
-      System.out.println("", e);
+      System.out.println("" + e);
       try {
       } catch (Exception f) {                   // Noncompliant
       }
     } catch (Exception e) {
       try {
       } catch (Exception f) {                   // Noncompliant {{Either log or rethrow this exception.}}
-        System.out.println("", e);
+        System.out.println("" + e);
       }
     } catch (RuntimeException e) {
       try {
       } catch (Exception f) {                   // Compliant
-        System.out.println("", f);
+        System.out.println("" + f);
       }
-      System.out.println("", e);
+      System.out.println("" + e);
     }
   }
 
@@ -44,10 +51,11 @@ class A {
   }
 
   private void h() {
+    Object someContextVariable = null;
     try {
       /* ... */
-    } catch (Exception e) {                     // Compliant
-      throw Throwables.propagate(e);
+    } catch (Error e) {                     // Compliant
+      throw com.google.common.base.Throwables.propagate(e);
     } catch (RuntimeException e) {              // Compliant - propagation
       throw e;
     } catch (Exception e) {                     // Noncompliant
@@ -73,21 +81,23 @@ class A {
     }
 
     try {
+      Files.read("");
     } catch (IOException e) {                    // Compliant
-      throw Throwables.propagate(e);
+      throw com.google.common.base.Throwables.propagate(e);
     }
 
     try {
+      Files.read("");
     } catch (IOException e) {                    // Compliant
       throw new RuntimeException(e);
     } catch (Exception e) {                      // Noncompliant
       throw new RuntimeException(e.getMessage());
-    } catch (Exception e) {                      // Compliant
-      throw Throwables.propagate(e);
+    } catch (Error e) {                      // Compliant
+      throw com.google.common.base.Throwables.propagate(e);
     }
 
     try {
-    } catch (Exception e) {                      // Compliant
+    } catch (RuntimeException e) {                      // Compliant
       throw e;
     } catch (Exception ex) {
       throw new XNIException(ex);
@@ -95,11 +105,17 @@ class A {
 
 
     try {
+      if (true) {
+        throw new java.text.ParseException("", 0);
+      } else {
+        throw new MalformedURLException();
+      }
+      Thread.currentThread().join();
     } catch (NumberFormatException e) {          // Compliant
-      return 0;
+      return;
     } catch (InterruptedException e) {           // Compliant
       /* do nothing */
-    } catch (ParseException e) {                 // Compliant
+    } catch (java.text.ParseException e) {                 // Compliant
     } catch (MalformedURLException e) {          // Compliant
     } catch (java.time.format.DateTimeParseException e) {          // Compliant
     }
@@ -166,7 +182,7 @@ class A {
     } catch (NoSuchMethodException e) { // Compliant
       // do nothing
     } catch (Exception e) { // Noncompliant
-      System.out.println("", e.getCause());
+      System.out.println("" + e.getCause());
     }
   }
 
@@ -387,7 +403,7 @@ class A {
     void doSomething();
   }
 
-  MyEnum foo() {
+  MyEnum foo(Object... args) {
     try {
       return Enum.valueOf(MyEnum.class, "C");
     } catch (IllegalArgumentException e) { // Compliant

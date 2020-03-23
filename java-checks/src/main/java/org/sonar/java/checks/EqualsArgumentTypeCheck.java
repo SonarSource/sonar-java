@@ -22,10 +22,9 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -40,16 +39,22 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
+
 @Rule(key = "S2097")
 public class EqualsArgumentTypeCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create()
-    .name("equals")
-    .addParameter(TypeCriteria.anyType());
+  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
+    .ofAnyType()
+    .names("equals")
+    .addParametersMatcher(ANY)
+    .build();
 
-  private static final MethodMatcher GETCLASS_MATCHER = MethodMatcher.create()
-    .name("getClass")
-    .withoutParameter();
+  private static final MethodMatchers GETCLASS_MATCHER = MethodMatchers.create()
+    .ofAnyType()
+    .names("getClass")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

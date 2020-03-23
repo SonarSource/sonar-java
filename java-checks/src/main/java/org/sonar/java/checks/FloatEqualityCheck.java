@@ -22,10 +22,9 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -35,10 +34,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S1244")
 public class FloatEqualityCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcherCollection EQUALS_MATCHER = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.lang.Double").name("equals").parameters("java.lang.Object"),
-    MethodMatcher.create().typeDefinition("java.lang.Float").name("equals").parameters("java.lang.Object")
-  );
+  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
+    .ofTypes("java.lang.Double", "java.lang.Float")
+    .names("equals")
+    .addParametersMatcher("java.lang.Object")
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -49,7 +49,7 @@ public class FloatEqualityCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if(tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
-      if (EQUALS_MATCHER.anyMatch(mit)) {
+      if (EQUALS_MATCHER.matches(mit)) {
         reportIssue(mit.methodSelect(), "Equality tests should not be made with floating point values.");
       }
       return;

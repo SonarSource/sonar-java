@@ -24,9 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -38,10 +38,11 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2118")
 public class NonSerializableWriteCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher WRITE_OBJECT_MATCHER = MethodMatcher.create()
-    .typeDefinition("java.io.ObjectOutputStream")
-    .name("writeObject")
-    .addParameter("java.lang.Object");
+  private static final MethodMatchers WRITE_OBJECT_MATCHER = MethodMatchers.create()
+    .ofTypes("java.io.ObjectOutputStream")
+    .names("writeObject")
+    .addParametersMatcher("java.lang.Object")
+    .build();
 
   private final List<Symbol> testedSymbols = new ArrayList<>();
 

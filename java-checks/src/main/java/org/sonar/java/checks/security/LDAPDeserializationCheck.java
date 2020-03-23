@@ -19,13 +19,10 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -38,10 +35,10 @@ public class LDAPDeserializationCheck extends AbstractMethodDetection {
   private static final int RET_OBJ_INDEX = 4;
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(CLASS_NAME)).name(CONSTRUCTOR_NAME).withAnyParameters(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(CLASS_NAME)).name("setReturningObjFlag").parameters("boolean"));
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofSubTypes(CLASS_NAME).names(CONSTRUCTOR_NAME).withAnyParameters().build(),
+      MethodMatchers.create().ofSubTypes(CLASS_NAME).names("setReturningObjFlag").addParametersMatcher("boolean").build());
   }
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {

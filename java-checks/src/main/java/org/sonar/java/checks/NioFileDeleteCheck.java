@@ -19,22 +19,20 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S4042")
 public class NioFileDeleteCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(MethodMatcher.create().typeDefinition("java.io.File").name("delete").withoutParameter());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create().ofTypes("java.io.File").names("delete").addWithoutParametersMatcher().build();
   }
 
   @Override

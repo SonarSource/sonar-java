@@ -24,10 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -38,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.helpers.ReassignmentFinder.getInitializerOrExpression;
 import static org.sonar.java.checks.helpers.ReassignmentFinder.getReassignments;
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.CONSTRUCTOR;
 
 @Rule(key = "S2077")
 public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
@@ -46,44 +45,47 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
   private static final String JAVA_SQL_CONNECTION = "java.sql.Connection";
   private static final String SPRING_JDBC_OPERATIONS = "org.springframework.jdbc.core.JdbcOperations";
 
-  private static final MethodMatcherCollection SQL_INJECTION_SUSPECTS = MethodMatcherCollection.create(
-    MethodMatcher.create().callSite(TypeCriteria.subtypeOf("org.hibernate.Session")).name("createQuery").withAnyParameters(),
-    MethodMatcher.create().callSite(TypeCriteria.subtypeOf("org.hibernate.Session")).name("createSQLQuery").withAnyParameters(),
-
-    matcherBuilder(JAVA_SQL_STATEMENT).name("executeQuery").withAnyParameters(),
-    matcherBuilder(JAVA_SQL_STATEMENT).name("execute").withAnyParameters(),
-    matcherBuilder(JAVA_SQL_STATEMENT).name("executeUpdate").withAnyParameters(),
-    matcherBuilder(JAVA_SQL_STATEMENT).name("executeLargeUpdate").withAnyParameters(),
-    matcherBuilder(JAVA_SQL_STATEMENT).name("addBatch").withAnyParameters(),
-
-    matcherBuilder(JAVA_SQL_CONNECTION).name("prepareStatement").withAnyParameters(),
-    matcherBuilder(JAVA_SQL_CONNECTION).name("prepareCall").withAnyParameters(),
-    matcherBuilder(JAVA_SQL_CONNECTION).name("nativeSQL").withAnyParameters(),
-
-    MethodMatcher.create().typeDefinition("javax.persistence.EntityManager").name("createNativeQuery").withAnyParameters(),
-    MethodMatcher.create().typeDefinition("javax.persistence.EntityManager").name("createQuery").withAnyParameters(),
-
-    matcherBuilder(SPRING_JDBC_OPERATIONS).name("batchUpdate").withAnyParameters(),
-    matcherBuilder(SPRING_JDBC_OPERATIONS).name("execute").withAnyParameters(),
-    matcherBuilder(SPRING_JDBC_OPERATIONS).name("query").withAnyParameters(),
-    matcherBuilder(SPRING_JDBC_OPERATIONS).name("queryForList").withAnyParameters(),
-    matcherBuilder(SPRING_JDBC_OPERATIONS).name("queryForMap").withAnyParameters(),
-    matcherBuilder(SPRING_JDBC_OPERATIONS).name("queryForObject").withAnyParameters(),
-    matcherBuilder(SPRING_JDBC_OPERATIONS).name("queryForRowSet").withAnyParameters(),
-    matcherBuilder(SPRING_JDBC_OPERATIONS).name("queryForInt").withAnyParameters(),
-    matcherBuilder(SPRING_JDBC_OPERATIONS).name("queryForLong").withAnyParameters(),
-    matcherBuilder(SPRING_JDBC_OPERATIONS).name("update").withAnyParameters(),
-    MethodMatcher.create().typeDefinition("org.springframework.jdbc.core.PreparedStatementCreatorFactory").name("<init>").withAnyParameters(),
-    MethodMatcher.create().typeDefinition("org.springframework.jdbc.core.PreparedStatementCreatorFactory").name("newPreparedStatementCreator").withAnyParameters(),
-
-    matcherBuilder("javax.jdo.PersistenceManager").name("newQuery").withAnyParameters(),
-    matcherBuilder("javax.jdo.Query").name("setFilter").withAnyParameters(),
-    matcherBuilder("javax.jdo.Query").name("setGrouping").withAnyParameters()
-  );
-
-  private static MethodMatcher matcherBuilder(String typeFQN) {
-    return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(typeFQN));
-  }
+  private static final MethodMatchers SQL_INJECTION_SUSPECTS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofSubTypes("org.hibernate.Session")
+      .names("createQuery", "createSQLQuery")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes(JAVA_SQL_STATEMENT)
+      .names("executeQuery", "execute", "executeUpdate", "executeLargeUpdate", "addBatch")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes(JAVA_SQL_CONNECTION)
+      .names("prepareStatement", "prepareCall", "nativeSQL")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("javax.persistence.EntityManager")
+      .names("createNativeQuery", "createQuery")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create().ofSubTypes(SPRING_JDBC_OPERATIONS)
+      .names("batchUpdate", "execute", "query", "queryForList", "queryForMap", "queryForObject",
+        "queryForRowSet", "queryForInt", "queryForLong", "update")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("org.springframework.jdbc.core.PreparedStatementCreatorFactory")
+      .names(CONSTRUCTOR, "newPreparedStatementCreator")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("javax.jdo.PersistenceManager")
+      .names("newQuery")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("javax.jdo.Query")
+      .names("setFilter", "setGrouping")
+      .withAnyParameters()
+      .build());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -116,10 +118,10 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     if (tree.is(Tree.Kind.NEW_CLASS)) {
-      return SQL_INJECTION_SUSPECTS.anyMatch((NewClassTree) tree);
+      return SQL_INJECTION_SUSPECTS.matches((NewClassTree) tree);
     }
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      return SQL_INJECTION_SUSPECTS.anyMatch((MethodInvocationTree) tree);
+      return SQL_INJECTION_SUSPECTS.matches((MethodInvocationTree) tree);
     }
     return false;
   }

@@ -19,25 +19,26 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S3864")
 public class StreamPeekCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition("java.util.stream.Stream").name("peek").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.util.stream.IntStream").name("peek").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.util.stream.LongStream").name("peek").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.util.stream.DoubleStream").name("peek").withAnyParameters()
-    );
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofTypes(
+        "java.util.stream.Stream",
+        "java.util.stream.IntStream",
+        "java.util.stream.LongStream",
+        "java.util.stream.DoubleStream")
+      .names("peek")
+      .withAnyParameters()
+      .build();
   }
 
   @Override

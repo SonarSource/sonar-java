@@ -20,12 +20,10 @@
 package org.sonar.java.checks;
 
 import javax.annotation.CheckForNull;
-
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type.Primitives;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -35,14 +33,18 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S5411")
 public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final MethodMatcher OPTIONAL_ORELSE = MethodMatcher.create().typeDefinition("java.util.Optional").name("orElse").addParameter(TypeCriteria.anyType());
+  private static final MethodMatchers OPTIONAL_ORELSE = MethodMatchers.create()
+    .ofTypes("java.util.Optional").names("orElse").addParametersMatcher(ANY).build();
+
   private static final String BOOLEAN = "java.lang.Boolean";
   private JavaFileScannerContext context;
 

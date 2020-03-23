@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -37,8 +37,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class IndexOfStartPositionCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
-  private static final MethodMatcher INDEX_OF_METHOD = MethodMatcher.create()
-    .typeDefinition(JAVA_LANG_STRING).name("indexOf").addParameter(JAVA_LANG_STRING);
+  private static final MethodMatchers INDEX_OF_METHOD = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING)
+    .names("indexOf")
+    .addParametersMatcher(JAVA_LANG_STRING)
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

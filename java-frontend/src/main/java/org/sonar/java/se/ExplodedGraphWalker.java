@@ -46,8 +46,6 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.DebugCheck;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
@@ -70,6 +68,7 @@ import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -117,15 +116,20 @@ public class ExplodedGraphWalker {
   @VisibleForTesting
   static final int MAX_EXEC_PROGRAM_POINT = 2;
 
-  private static final MethodMatcher SYSTEM_EXIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.System").name("exit").addParameter("int");
+  private static final MethodMatchers SYSTEM_EXIT_MATCHER = MethodMatchers.create().ofTypes("java.lang.System").names("exit").addParametersMatcher("int").build();
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
-  private static final MethodMatcher OBJECT_WAIT_MATCHER = MethodMatcher.create().typeDefinition(JAVA_LANG_OBJECT).name("wait").withAnyParameters();
-  private static final MethodMatcher GET_CLASS_MATCHER = MethodMatcher.create().typeDefinition(JAVA_LANG_OBJECT).name("getClass").withoutParameter();
-  private static final MethodMatcher THREAD_SLEEP_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Thread").name("sleep").withAnyParameters();
-  private static final MethodMatcher EQUALS = MethodMatcher.create().name("equals").parameters(JAVA_LANG_OBJECT);
-  public static final MethodMatcherCollection EQUALS_METHODS = MethodMatcherCollection.create(
+  private static final MethodMatchers.NameBuilder JAVA_LANG_OBJECT_SUBTYPE = MethodMatchers.create().ofSubTypes(JAVA_LANG_OBJECT);
+  private static final MethodMatchers OBJECT_WAIT_MATCHER = JAVA_LANG_OBJECT_SUBTYPE.names("wait")
+    .addWithoutParametersMatcher()
+    .addParametersMatcher("long")
+    .addParametersMatcher("long", "int")
+    .build();
+  private static final MethodMatchers GET_CLASS_MATCHER = JAVA_LANG_OBJECT_SUBTYPE.names("getClass").addWithoutParametersMatcher().build();
+  private static final MethodMatchers THREAD_SLEEP_MATCHER = MethodMatchers.create().ofTypes("java.lang.Thread").names("sleep").withAnyParameters().build();
+  private static final MethodMatchers EQUALS = MethodMatchers.create().ofAnyType().names("equals").addParametersMatcher(JAVA_LANG_OBJECT).build();
+  public static final MethodMatchers EQUALS_METHODS = MethodMatchers.or(
     EQUALS,
-    MethodMatcher.create().name("equals").typeDefinition("java.util.Objects").withAnyParameters());
+    MethodMatchers.create().ofTypes("java.util.Objects").names("equals").withAnyParameters().build());
 
   private final AlwaysTrueOrFalseExpressionCollector alwaysTrueOrFalseExpressionCollector;
   private MethodTree methodTree;
@@ -694,7 +698,7 @@ public class ExplodedGraphWalker {
     final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.valuesAndSymbols);
     if (methodInvokedBehavior != null
       && methodInvokedBehavior.isComplete()
-      && !EQUALS_METHODS.anyMatch(mit)) {
+      && !EQUALS_METHODS.matches(mit)) {
       List<SymbolicValue> invocationArguments = invocationArguments(unstack.values);
       List<Type> invocationTypes = mit.arguments().stream().map(ExpressionTree::symbolType).collect(Collectors.toList());
 

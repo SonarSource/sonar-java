@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -49,12 +47,18 @@ public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
   }
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().name("wait").withoutParameter(),
-      MethodMatcher.create().name("wait").addParameter("long"),
-      MethodMatcher.create().name("wait").addParameter("long").addParameter("int"),
-      MethodMatcher.create().name("notify").withoutParameter(),
-      MethodMatcher.create().name("notifyAll").withoutParameter());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofAnyType().names("wait")
+        .addWithoutParametersMatcher()
+        .addParametersMatcher("long")
+        .addParametersMatcher("long", "int")
+        .build(),
+      MethodMatchers.create()
+        .ofAnyType()
+        .names("notify", "notifyAll")
+        .addWithoutParametersMatcher()
+        .build());
   }
 }

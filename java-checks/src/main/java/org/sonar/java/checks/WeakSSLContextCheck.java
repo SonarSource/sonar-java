@@ -25,9 +25,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -42,10 +42,12 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
   private static final Set<String> STRONG_PROTOCOLS = new HashSet<>(Arrays.asList("TLSv1.2", "DTLSv1.2", "TLSv1.3", "DTLSv1.3"));
   private static final Set<String> STRONG_AFTER_JAVA_8 = new HashSet<>(Arrays.asList("TLS", "DTLS"));
 
-  private static final MethodMatcher SSLCONTEXT_GETINSTANCE_MATCHER = MethodMatcher.create()
-    .typeDefinition("javax.net.ssl.SSLContext")
-    .name("getInstance")
-    .withAnyParameters();
+  private static final MethodMatchers SSLCONTEXT_GETINSTANCE_MATCHER = MethodMatchers.create()
+    .ofTypes("javax.net.ssl.SSLContext")
+    .names("getInstance")
+    .withAnyParameters()
+    .build();
+
   private boolean projectHasJava8OrHigher;
 
   @Override

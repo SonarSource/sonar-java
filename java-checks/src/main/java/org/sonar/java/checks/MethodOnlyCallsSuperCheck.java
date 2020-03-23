@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -41,17 +41,12 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S1185")
 public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
 
-  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
-  private static final MethodMatcherCollection ALLOWED_METHODS = MethodMatcherCollection.create(
-    MethodMatcher.create().name("toString").typeDefinition(TypeCriteria.anyType()).withoutParameter(),
-    MethodMatcher.create().name("hashCode").typeDefinition(TypeCriteria.anyType()).withoutParameter(),
-    MethodMatcher.create().name("equals").typeDefinition(TypeCriteria.anyType()).parameters(JAVA_LANG_OBJECT));
+  private static final MethodMatchers ALLOWED_METHODS = MethodMatchers.or(
+    MethodMatchers.create().ofAnyType().names("toString", "hashCode").addWithoutParametersMatcher().build(),
+    MethodMatchers.create().ofAnyType().names("equals").addParametersMatcher("java.lang.Object").build());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -64,7 +59,7 @@ public class MethodOnlyCallsSuperCheck extends IssuableSubscriptionVisitor {
       return;
     }
     MethodTree methodTree = (MethodTree) tree;
-    if (ALLOWED_METHODS.anyMatch(methodTree)) {
+    if (ALLOWED_METHODS.matches(methodTree)) {
       return;
     }
     if (isSingleStatementMethod(methodTree) && isUselessSuperCall(methodTree)

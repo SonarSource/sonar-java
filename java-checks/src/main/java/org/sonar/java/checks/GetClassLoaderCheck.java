@@ -19,20 +19,18 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S3032")
 public class GetClassLoaderCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(MethodMatcher.create().typeDefinition("java.lang.Class").name("getClassLoader").withoutParameter());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create().ofTypes("java.lang.Class").names("getClassLoader").addWithoutParametersMatcher().build();
   }
 
   @Override
