@@ -47,9 +47,7 @@ final class JType implements Type, Type.ArrayType {
 
   @Override
   public boolean isSubtypeOf(String fullyQualifiedName) {
-    ITypeBinding otherTypeBinding = sema.resolveType(fullyQualifiedName);
-    return otherTypeBinding != null
-      && isSubtype(this.typeBinding, otherTypeBinding);
+    return isSubtypeOf(sema.getClassType(fullyQualifiedName));
   }
 
   @Override

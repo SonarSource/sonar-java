@@ -48,6 +48,7 @@ public final class JSema implements Sema {
   private final Map<ITypeBinding, JType> types = new HashMap<>();
   private final Map<IBinding, JSymbol> symbols = new HashMap<>();
   private final Map<IAnnotationBinding, JSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
+  private final Map<String, Type> nameToTypeCache = new HashMap<>();
 
   JSema(AST ast) {
     this.ast = ast;
@@ -92,8 +93,10 @@ public final class JSema implements Sema {
 
   @Override
   public Type getClassType(String fullyQualifiedName) {
-    ITypeBinding typeBinding = resolveType(fullyQualifiedName);
-    return typeBinding != null ? type(typeBinding) : Symbols.unknownType;
+    return nameToTypeCache.computeIfAbsent(fullyQualifiedName, (t) -> {
+      ITypeBinding typeBinding = resolveType(t);
+      return typeBinding != null ? type(typeBinding) : Symbols.unknownType;
+    });
   }
 
   @Nullable
