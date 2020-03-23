@@ -59,7 +59,7 @@ public class Jasper {
     }
     Path outputDir = outputDir(context);
     try {
-      Jasper.compileJspFiles(jspFiles, javaClasspath, outputDir);
+      Jasper.compileJspFiles(jspFiles, javaClasspath, outputDir, context.fileSystem().baseDir());
     } catch (Exception e) {
       LOG.warn("Failed to transpile JSP files.", e);
       return Collections.emptyList();
@@ -74,12 +74,13 @@ public class Jasper {
       .collect(Collectors.toList());
   }
 
-  private static void compileJspFiles(List<Path> jspFiles, List<File> javaClasspath, Path outputDir) {
+  private static void compileJspFiles(List<Path> jspFiles, List<File> javaClasspath, Path outputDir, File baseDir) {
     String classpath = javaClasspath.stream().map(File::getAbsolutePath).collect(Collectors.joining(File.pathSeparator));
     List<String> args = new ArrayList<>(asList("-v", "-failFast",
       "-cache", "false",
       "-javaEncoding", StandardCharsets.UTF_8.toString(),
       "-d", outputDir.toString(),
+      "-webapp", baseDir.getAbsolutePath(),
       "-classpath", classpath, "-smap", "-dumpsmap"));
     jspFiles.stream().map(Path::toString).forEach(args::add);
     try {
