@@ -1,7 +1,3 @@
-//faking the fact to be part of java.lang in order to redefine the Deprecated annotation.
-//depending of the JDK used for run tests (java 8 vs 9+), the annotation in bytecode might not be present
-package java.lang;
-
 class CallToDeprecatedMethod {
 
   @Deprecated
@@ -45,8 +41,4 @@ class CallToDeprecatedMethod {
     @Override
     void bar() {}  // Noncompliant {{Don't override a deprecated method or explicitly mark it as "@Deprecated".}}
   }
-}
-
-@interface Deprecated {
-  boolean forRemoval() default false;
 }
