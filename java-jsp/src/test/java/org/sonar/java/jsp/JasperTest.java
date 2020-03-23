@@ -57,7 +57,7 @@ class JasperTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    // on MacOs tmp is symbolic link which doesn't work well with Jasper, so we create tmp in 'target/tmp'
+    // on macOS tmp is symbolic link which doesn't work well with Jasper, so we create tmp in 'target/tmp'
     tempFolder = Paths.get("target/tmp");
     Files.createDirectories(tempFolder);
     webInf = tempFolder.resolve("WEB-INF");
