@@ -112,12 +112,12 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
     if (methodSymbol.isDeprecated()) {
       return Optional.empty();
     }
-    return isOverridingDeprecatedConcreteMethod(methodSymbol);
+    return tryGetOverridingDeprecatedConcreteMethod(methodSymbol);
   }
 
   abstract void checkOverridingMethod(MethodTree methodTree, Symbol.MethodSymbol deprecatedSymbol);
 
-  private static Optional<Symbol.MethodSymbol> isOverridingDeprecatedConcreteMethod(Symbol.MethodSymbol symbol) {
+  private static Optional<Symbol.MethodSymbol> tryGetOverridingDeprecatedConcreteMethod(Symbol.MethodSymbol symbol) {
     Symbol.MethodSymbol overriddenMethod = symbol.overriddenSymbol();
     while(overriddenMethod != null && !overriddenMethod.isUnknown()) {
       if (overriddenMethod.isAbstract()) {
