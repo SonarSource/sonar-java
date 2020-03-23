@@ -20,12 +20,10 @@
 package org.sonar.java.checks;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -35,25 +33,27 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class StringPrimitiveConstructorCheck extends AbstractMethodDetection {
 
   private static final String STRING = "java.lang.String";
-  private static final String INIT = "<init>";
   private static final BigInteger MIN_BIG_INTEGER_VALUE = BigInteger.valueOf(Long.MIN_VALUE);
   private static final BigInteger MAX_BIG_INTEGER_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition(STRING).name(INIT).withoutParameter(),
-      MethodMatcher.create().typeDefinition(STRING).name(INIT).addParameter(STRING),
-      MethodMatcher.create().typeDefinition("java.lang.Byte").name(INIT).addParameter("byte"),
-      MethodMatcher.create().typeDefinition("java.lang.Character").name(INIT).addParameter("char"),
-      MethodMatcher.create().typeDefinition("java.lang.Short").name(INIT).addParameter("short"),
-      MethodMatcher.create().typeDefinition("java.lang.Integer").name(INIT).addParameter("int"),
-      MethodMatcher.create().typeDefinition("java.lang.Long").name(INIT).addParameter("long"),
-      MethodMatcher.create().typeDefinition("java.lang.Float").name(INIT).addParameter("float"),
-      MethodMatcher.create().typeDefinition("java.lang.Double").name(INIT).addParameter("double"),
-      MethodMatcher.create().typeDefinition("java.lang.Boolean").name(INIT).addParameter("boolean"),
-      MethodMatcher.create().typeDefinition("java.math.BigInteger").name(INIT).addParameter(STRING)
-    );
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes(STRING)
+        .constructor()
+        .addWithoutParametersMatcher()
+        .addParametersMatcher(STRING)
+        .build(),
+      MethodMatchers.create().ofTypes("java.lang.Byte").constructor().addParametersMatcher("byte").build(),
+      MethodMatchers.create().ofTypes("java.lang.Character").constructor().addParametersMatcher("char").build(),
+      MethodMatchers.create().ofTypes("java.lang.Short").constructor().addParametersMatcher("short").build(),
+      MethodMatchers.create().ofTypes("java.lang.Integer").constructor().addParametersMatcher("int").build(),
+      MethodMatchers.create().ofTypes("java.lang.Long").constructor().addParametersMatcher("long").build(),
+      MethodMatchers.create().ofTypes("java.lang.Float").constructor().addParametersMatcher("float").build(),
+      MethodMatchers.create().ofTypes("java.lang.Double").constructor().addParametersMatcher("double").build(),
+      MethodMatchers.create().ofTypes("java.lang.Boolean").constructor().addParametersMatcher("boolean").build(),
+      MethodMatchers.create().ofTypes("java.math.BigInteger").constructor().addParametersMatcher(STRING).build());
   }
 
   @Override

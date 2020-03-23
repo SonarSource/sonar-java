@@ -19,12 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
@@ -32,16 +30,12 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      arrayMethodInvocation("toString"),
-      arrayMethodInvocation("hashCode"));
-  }
-
-  private static MethodMatcher arrayMethodInvocation(String methodName) {
-    return MethodMatcher.create()
-      .callSite(Type::isArray)
-      .name(methodName).withoutParameter();
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofType(Type::isArray)
+      .names("toString", "hashCode")
+      .addWithoutParametersMatcher()
+      .build();
   }
 
   @Override

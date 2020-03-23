@@ -19,20 +19,16 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import static org.sonar.java.matcher.TypeCriteria.subtypeOf;
 
 @Rule(key = "S4435")
 public class SecureXmlTransformerCheck extends AbstractMethodDetection {
@@ -40,12 +36,12 @@ public class SecureXmlTransformerCheck extends AbstractMethodDetection {
   private static final String TRANSFORMER_FACTORY_CLASS_NAME = "javax.xml.transform.TransformerFactory";
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(
-      MethodMatcher.create()
-        .typeDefinition(subtypeOf(TRANSFORMER_FACTORY_CLASS_NAME))
-        .name("newInstance")
-        .withAnyParameters());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+        .ofSubTypes(TRANSFORMER_FACTORY_CLASS_NAME)
+        .names("newInstance")
+        .withAnyParameters()
+        .build();
   }
 
   @Override
@@ -67,17 +63,19 @@ public class SecureXmlTransformerCheck extends AbstractMethodDetection {
     private static final String ACCESS_EXTERNAL_DTD_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalDTD";
     private static final String ACCESS_EXTERNAL_STYLESHEET_PROPERTY = "http://javax.xml.XMLConstants/property/accessExternalStylesheet";
 
-    private static final MethodMatcher SET_FEATURE =
-      MethodMatcher.create()
-        .typeDefinition(subtypeOf(TRANSFORMER_FACTORY_CLASS_NAME))
-        .name("setFeature")
-        .parameters("java.lang.String", "boolean");
+    private static final MethodMatchers SET_FEATURE =
+      MethodMatchers.create()
+        .ofSubTypes(TRANSFORMER_FACTORY_CLASS_NAME)
+        .names("setFeature")
+        .addParametersMatcher("java.lang.String", "boolean")
+        .build();
 
-    private static final MethodMatcher SET_ATTRIBUTE =
-      MethodMatcher.create()
-        .typeDefinition(subtypeOf(TRANSFORMER_FACTORY_CLASS_NAME))
-        .name("setAttribute")
-        .parameters("java.lang.String", "java.lang.Object");
+    private static final MethodMatchers SET_ATTRIBUTE =
+      MethodMatchers.create()
+        .ofSubTypes(TRANSFORMER_FACTORY_CLASS_NAME)
+        .names("setAttribute")
+        .addParametersMatcher("java.lang.String", "java.lang.Object")
+        .build();
 
     private boolean hasSecureProcessingFeature = false;
     private boolean hasSecuredExternalDtd = false;

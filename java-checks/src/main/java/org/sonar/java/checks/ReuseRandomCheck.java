@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -37,8 +35,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class ReuseRandomCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(MethodMatcher.create().typeDefinition("java.util.Random").name("<init>").withoutParameter());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofTypes("java.util.Random").constructor().addWithoutParametersMatcher().build();
   }
 
   @Override
@@ -66,7 +65,7 @@ public class ReuseRandomCheck extends AbstractMethodDetection {
     if (expression.is(Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) expression).symbol().owner();
       return symbol.isMethodSymbol() &&
-        !("<init>".equals(symbol.name()) || ("main".equals(symbol.name()) && symbol.isStatic()));
+        !(MethodMatchers.CONSTRUCTOR.equals(symbol.name()) || ("main".equals(symbol.name()) && symbol.isStatic()));
     }
     return false;
   }

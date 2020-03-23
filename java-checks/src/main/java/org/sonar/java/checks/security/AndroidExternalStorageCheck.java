@@ -19,28 +19,27 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S5324")
 public class AndroidExternalStorageCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition("android.os.Environment").name("getExternalStorageDirectory").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("android.os.Environment").name("getExternalStoragePublicDirectory").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("android.content.Context").name("getExternalFilesDir").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("android.content.Context").name("getExternalFilesDirs").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("android.content.Context").name("getExternalMediaDirs").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("android.content.Context").name("getExternalCacheDir").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("android.content.Context").name("getExternalCacheDirs").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("android.content.Context").name("getObbDir").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("android.content.Context").name("getObbDirs").withAnyParameters()
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes("android.os.Environment")
+        .names("getExternalStorageDirectory", "getExternalStoragePublicDirectory")
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create()
+        .ofTypes("android.content.Context")
+        .names("getExternalFilesDir", "getExternalFilesDirs", "getExternalMediaDirs", "getExternalCacheDir", "getExternalCacheDirs", "getObbDir", "getObbDirs")
+        .withAnyParameters()
+        .build()
     );
   }
 

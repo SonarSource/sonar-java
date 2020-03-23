@@ -31,11 +31,10 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.VariableSymbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -59,7 +58,6 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
 
   private static final List<String> IGNORED_COOKIE_NAMES = ImmutableList.of("csrf", "xsrf");
 
-  private static final String CONSTRUCTOR = "<init>";
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_DATE = "java.util.Date";
   private static final String INT = "int";
@@ -89,26 +87,37 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     ClassName.PLAY_COOKIE,
     ClassName.PLAY_COOKIE_BUILDER);
 
-  private static final MethodMatcher PLAY_COOKIE_BUILDER = MethodMatcher.create()
-    .typeDefinition(ClassName.PLAY_COOKIE).name("builder").withAnyParameters();
+  private static final MethodMatchers PLAY_COOKIE_BUILDER = MethodMatchers.create()
+    .ofTypes(ClassName.PLAY_COOKIE).names("builder").withAnyParameters().build();
 
-  private static final List<MethodMatcher> CONSTRUCTORS_WITH_HTTP_ONLY_PARAM = Arrays.asList(
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
-      .parameters(ClassName.JAX_RS_COOKIE, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_NEW_COOKIE)).name(CONSTRUCTOR)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(ClassName.PLAY_COOKIE)).name(CONSTRUCTOR)
-      .parameters(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN));
+  private static final MethodMatchers CONSTRUCTORS_WITH_HTTP_ONLY_PARAM = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofSubTypes(ClassName.JAX_RS_NEW_COOKIE)
+      .constructor()
+      .addParametersMatcher(ClassName.JAX_RS_COOKIE, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN)
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes(ClassName.JAX_RS_NEW_COOKIE)
+      .constructor()
+      .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, JAVA_LANG_STRING, INT, JAVA_UTIL_DATE, BOOLEAN, BOOLEAN)
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes(ClassName.JAX_RS_NEW_COOKIE)
+      .constructor()
+      .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, JAVA_LANG_STRING, INT, BOOLEAN, BOOLEAN)
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes(ClassName.PLAY_COOKIE)
+      .constructor()
+      .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN)
+      .build());
 
-  private static final List<MethodMatcher> CONSTRUCTORS_WITH_GOOD_DEFAULT = Arrays.asList(
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(CONSTRUCTOR).withoutParameter(),
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(CONSTRUCTOR).parameters(JAVA_LANG_STRING));
+  private static final MethodMatchers CONSTRUCTORS_WITH_GOOD_DEFAULT = MethodMatchers.create()
+    .ofSubTypes(ClassName.SHIRO_COOKIE)
+    .constructor()
+    .addWithoutParametersMatcher()
+    .addParametersMatcher(JAVA_LANG_STRING)
+    .build();
 
   @Override
   public void setContext(JavaFileScannerContext context) {
@@ -261,12 +270,12 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isCompliantConstructorCall(NewClassTree newClassTree) {
-    if (CONSTRUCTORS_WITH_HTTP_ONLY_PARAM.stream().anyMatch(matcher -> matcher.matches(newClassTree))) {
+    if (CONSTRUCTORS_WITH_HTTP_ONLY_PARAM.matches(newClassTree)) {
       Arguments arguments = newClassTree.arguments();
       ExpressionTree lastArgument = arguments.get(arguments.size() - 1);
       return LiteralUtils.isTrue(lastArgument);
     } else {
-      return CONSTRUCTORS_WITH_GOOD_DEFAULT.stream().anyMatch(matcher -> matcher.matches(newClassTree));
+      return CONSTRUCTORS_WITH_GOOD_DEFAULT.matches(newClassTree);
     }
   }
 

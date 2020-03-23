@@ -19,17 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -41,44 +35,41 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4034")
 public class PreferStreamAnyMatchCheck extends AbstractMethodDetection {
 
-  private static final Set<String> STREAM_TYPES = ImmutableSet.of("java.util.stream.Stream", "java.util.stream.IntStream", "java.util.stream.LongStream",
-    "java.util.stream.DoubleStream");
+  private static final String[] STREAM_TYPES = {
+    "java.util.stream.Stream",
+    "java.util.stream.IntStream",
+    "java.util.stream.LongStream",
+    "java.util.stream.DoubleStream"
+  };
 
-  private static final MethodMatcherCollection FIND_METHODS = MethodMatcherCollection.create();
+  private static final MethodMatchers FIND_METHODS = MethodMatchers.create()
+    .ofTypes(STREAM_TYPES).names("findFirst", "findAny").addWithoutParametersMatcher().build();
 
-  static {
-    STREAM_TYPES.forEach(type -> {
-      FIND_METHODS.add(MethodMatcher.create().typeDefinition(type).name("findFirst").withoutParameter());
-      FIND_METHODS.add(MethodMatcher.create().typeDefinition(type).name("findAny").withoutParameter());
-    });
-  }
+  private static final MethodMatchers MAP_METHODS = MethodMatchers.create()
+    .ofTypes(STREAM_TYPES).names("map").addParametersMatcher("java.util.function.Function").build();
 
-  private static final MethodMatcherCollection MAP_METHODS = MethodMatcherCollection.create();
-  static {
-    STREAM_TYPES.forEach(type ->
-      MAP_METHODS.add(MethodMatcher.create().typeDefinition(type).name("map").addParameter("java.util.function.Function"))
-    );
-  }
+  private static final MethodMatchers FILTER_METHODS = MethodMatchers.create()
+    .ofTypes(STREAM_TYPES).names("filter").withAnyParameters().build();
 
-  private static final MethodMatcherCollection FILTER_METHODS = MethodMatcherCollection.create();
-
-  static {
-    STREAM_TYPES.forEach(type -> FILTER_METHODS.add(MethodMatcher.create().typeDefinition(type).name("filter").withAnyParameters()));
-  }
-
-  private static final MethodMatcher BOOLEAN_VALUE = MethodMatcher.create().typeDefinition("java.lang.Boolean")
-    .name("booleanValue").withoutParameter();
+  private static final MethodMatchers BOOLEAN_VALUE = MethodMatchers.create()
+    .ofTypes("java.lang.Boolean")
+    .names("booleanValue")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    List<MethodMatcher> matchers = new ArrayList<>();
-    Stream.of("java.util.Optional", "java.util.OptionalInt", "java.util.OptionalLong", "java.util.OptionalDouble")
-      .map(type -> MethodMatcher.create().typeDefinition(type).name("isPresent").withoutParameter())
-      .forEach(matchers::add);
-    STREAM_TYPES.stream()
-      .map(type -> MethodMatcher.create().typeDefinition(type).name("anyMatch").addParameter("java.util.function.Predicate"))
-      .forEach(matchers::add);
-    return matchers;
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes("java.util.Optional", "java.util.OptionalInt", "java.util.OptionalLong", "java.util.OptionalDouble")
+        .names("isPresent")
+        .addWithoutParametersMatcher()
+        .build(),
+      MethodMatchers.create()
+        .ofTypes(STREAM_TYPES)
+        .names("anyMatch")
+        .addParametersMatcher("java.util.function.Predicate")
+        .build());
   }
 
   @Override
@@ -106,7 +97,7 @@ public class PreferStreamAnyMatchCheck extends AbstractMethodDetection {
     }
     if (predicate.is(Tree.Kind.METHOD_REFERENCE) && isBooleanValueReference((MethodReferenceTree) predicate)) {
       previousMITInChain(anyMatchMIT)
-        .filter(MAP_METHODS::anyMatch)
+        .filter(MAP_METHODS::matches)
         .ifPresent(mapMIT -> context.reportIssue(this, reportTree,
           "Use mapper from \"map()\" directly as predicate in \"anyMatch()\"."));
     }
@@ -118,9 +109,9 @@ public class PreferStreamAnyMatchCheck extends AbstractMethodDetection {
 
   private void handleIsPresent(MethodInvocationTree isPresentMIT) {
     previousMITInChain(isPresentMIT)
-      .filter(FIND_METHODS::anyMatch)
+      .filter(FIND_METHODS::matches)
       .ifPresent(findMIT ->
-        previousMITInChain(findMIT).filter(FILTER_METHODS::anyMatch)
+        previousMITInChain(findMIT).filter(FILTER_METHODS::matches)
           .ifPresent(filterMIT ->
     context.reportIssue(this, ExpressionUtils.methodName(filterMIT), ExpressionUtils.methodName(isPresentMIT),
       "Replace this \"filter()." + ExpressionUtils.methodName(findMIT).name() + "().isPresent()\" chain with \"anyMatch()\".")));

@@ -24,11 +24,9 @@ import java.util.LinkedList;
 import java.util.Objects;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -42,18 +40,22 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String JAVA_IO_SERIALIZABLE = "java.io.Serializable";
-  private static final MethodMatcherCollection EXCLUDED_SERIALIZABLE_METHODS = MethodMatcherCollection.create(
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObject").addParameter(TypeCriteria.subtypeOf("java.io.ObjectInputStream")),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("writeObject").addParameter(TypeCriteria.subtypeOf("java.io.ObjectOutputStream")),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObjectNoData").withoutParameter(),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("writeReplace").withoutParameter(),
-    MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readResolve").withoutParameter()
-  );
+  private static final MethodMatchers EXCLUDED_SERIALIZABLE_METHODS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofSubTypes(JAVA_IO_SERIALIZABLE)
+      .names("readObject")
+      .addParametersMatcher(params -> params.size() == 1 && params.get(0).isSubtypeOf("java.io.ObjectInputStream"))
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes(JAVA_IO_SERIALIZABLE)
+      .names("writeObject")
+      .addParametersMatcher(params -> params.size() == 1 && params.get(0).isSubtypeOf("java.io.ObjectOutputStream"))
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes(JAVA_IO_SERIALIZABLE)
+      .names("readObjectNoData", "writeReplace", "readResolve")
+      .addWithoutParametersMatcher()
+      .build());
 
   private JavaFileScannerContext context;
   private Deque<MethodReference> methodReferences = new LinkedList<>();
@@ -86,7 +88,7 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   }
 
   private static boolean isExcluded(MethodTree tree) {
-    return tree.is(Tree.Kind.CONSTRUCTOR) || EXCLUDED_SERIALIZABLE_METHODS.anyMatch(tree);
+    return tree.is(Tree.Kind.CONSTRUCTOR) || EXCLUDED_SERIALIZABLE_METHODS.matches(tree);
   }
 
   @Override

@@ -26,11 +26,11 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -52,12 +52,12 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private static final String JAVA_IO_FILE = "java.io.File";
-  private static final MethodMatcher FILE_CREATE_TEMP_FILE = MethodMatcher.create()
-    .typeDefinition(JAVA_IO_FILE).name("createTempFile").withAnyParameters();
-  private static final MethodMatcher FILE_DELETE = MethodMatcher.create()
-    .typeDefinition(JAVA_IO_FILE).name("delete").withoutParameter();
-  private static final MethodMatcher FILE_MKDIR = MethodMatcher.create()
-    .typeDefinition(JAVA_IO_FILE).name("mkdir").withoutParameter();
+  private static final MethodMatchers FILE_CREATE_TEMP_FILE = MethodMatchers.create()
+    .ofTypes(JAVA_IO_FILE).names("createTempFile").withAnyParameters().build();
+  private static final MethodMatchers FILE_DELETE = MethodMatchers.create()
+    .ofTypes(JAVA_IO_FILE).names("delete").addWithoutParametersMatcher().build();
+  private static final MethodMatchers FILE_MKDIR = MethodMatchers.create()
+    .ofTypes(JAVA_IO_FILE).names("mkdir").addWithoutParametersMatcher().build();
 
   private final Deque<Map<Symbol, State>> symbolStack = new LinkedList<>();
   private JavaFileScannerContext context;

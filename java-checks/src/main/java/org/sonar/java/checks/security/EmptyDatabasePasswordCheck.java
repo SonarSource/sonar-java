@@ -19,14 +19,12 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -39,13 +37,14 @@ public class EmptyDatabasePasswordCheck extends AbstractMethodDetection {
   private static final int URL_ARGUMENT = 0;
   private static final Pattern EMPTY_PASSWORD_PATTERN = Pattern.compile(".*password\\s*=\\s*([&;\\)].*|$)");
   private static final Pattern URL_PATTERN = Pattern.compile("(jdbc:mysql://[^:]*:?(?<password>.*)@.*)|(jdbc:oracle:[^:]*:?.*/(?<password2>.*)@.*)");
-  private static final List<MethodMatcher> METHOD_MATCHERS = Collections.singletonList(
-    MethodMatcher.create().typeDefinition("java.sql.DriverManager").name("getConnection").withAnyParameters());
-
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return METHOD_MATCHERS;
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofTypes("java.sql.DriverManager")
+      .names("getConnection")
+      .withAnyParameters()
+      .build();
   }
 
   @Override

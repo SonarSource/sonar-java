@@ -19,8 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,7 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -43,10 +41,10 @@ public class StrongCipherAlgorithmCheck extends AbstractMethodDetection {
     .map(name -> name.toUpperCase(Locale.ROOT)).collect(Collectors.toSet());
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition("javax.crypto.Cipher").name("getInstance").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("javax.crypto.NullCipher").name("<init>").withAnyParameters());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofTypes("javax.crypto.Cipher").names("getInstance").withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("javax.crypto.NullCipher").constructor().withAnyParameters().build());
   }
 
   @Override

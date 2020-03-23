@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
@@ -31,16 +29,26 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
 @Rule(key = "S5304")
 public class EnvVariablesHotspotCheck extends AbstractMethodDetection {
 
-  private static final MethodMatcher RUNTIME_EXEC =
-    MethodMatcher.create().typeDefinition("java.lang.Runtime").name("exec").withAnyParameters();
+  private static final MethodMatchers RUNTIME_EXEC = MethodMatchers.create()
+    .ofTypes("java.lang.Runtime")
+    .names("exec")
+    .withAnyParameters()
+    .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition("java.lang.System").name("getenv").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.lang.ProcessBuilder").name("environment").withoutParameter(),
-      RUNTIME_EXEC
-      );
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes("java.lang.System")
+        .names("getenv")
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create()
+        .ofTypes("java.lang.ProcessBuilder")
+        .names("environment")
+        .addWithoutParametersMatcher()
+        .build(),
+      RUNTIME_EXEC);
   }
 
   @Override

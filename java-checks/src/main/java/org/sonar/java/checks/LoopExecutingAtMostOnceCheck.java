@@ -24,12 +24,10 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
@@ -49,9 +47,9 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 @Rule(key = "S1751")
 public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcherCollection NEXT_ELEMENT = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Enumeration")).name("hasMoreElements").withoutParameter(),
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Iterator")).name("hasNext").withoutParameter());
+  private static final MethodMatchers NEXT_ELEMENT = MethodMatchers.or(
+    MethodMatchers.create().ofSubTypes("java.util.Enumeration").names("hasMoreElements").addWithoutParametersMatcher().build(),
+    MethodMatchers.create().ofSubTypes("java.util.Iterator").names("hasNext").addWithoutParametersMatcher().build());
 
   private static final Tree.Kind[] LOOP_KINDS = {
     Tree.Kind.DO_STATEMENT,
@@ -138,7 +136,7 @@ public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
   private static boolean isWhileNextElementLoop(Tree loopTree) {
     if (loopTree.is(Tree.Kind.WHILE_STATEMENT)) {
       ExpressionTree condition = ExpressionUtils.skipParentheses(((WhileStatementTree) loopTree).condition());
-      return condition.is(Tree.Kind.METHOD_INVOCATION) && NEXT_ELEMENT.anyMatch((MethodInvocationTree) condition);
+      return condition.is(Tree.Kind.METHOD_INVOCATION) && NEXT_ELEMENT.matches((MethodInvocationTree) condition);
     }
     return false;
   }

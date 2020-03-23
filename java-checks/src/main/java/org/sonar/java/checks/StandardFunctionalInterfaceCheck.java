@@ -19,20 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
-import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.CheckForNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,20 +29,39 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.CheckForNull;
+import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1711")
 public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcherCollection OBJECT_METHODS = MethodMatcherCollection.create(
-    methodMatcherWithName("equals", "java.lang.Object"),
-    methodMatcherWithName("getClass"),
-    methodMatcherWithName("hashcode"),
-    methodMatcherWithName("notify"),
-    methodMatcherWithName("notifyAll"),
-    methodMatcherWithName("toString"),
-    methodMatcherWithName("wait"),
-    methodMatcherWithName("wait", "long"),
-    methodMatcherWithName("wait", "long", "int"));
+  private static final MethodMatchers OBJECT_METHODS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofAnyType()
+      .names("equals")
+      .addParametersMatcher("java.lang.Object")
+      .build(),
+    MethodMatchers.create()
+      .ofAnyType()
+      .names("getClass", "hashcode", "notify", "notifyAll", "toString")
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofAnyType()
+      .names("wait")
+      .addWithoutParametersMatcher()
+      .addParametersMatcher("long")
+      .addParametersMatcher("long", "int")
+      .build());
 
   private static final Set<String> STD_INTERFACE_NAMES = new HashSet<>();
 
@@ -117,17 +122,6 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
     FunctionalInterface functionalInterface = new FunctionalInterface(name, returnType, parameters);
     STD_INTERFACE_NAMES.add(functionalInterface.getName());
     STD_INTERFACE_BY_PARAMETER_COUNT.computeIfAbsent(functionalInterface.getParameterCount(), key -> new ArrayList<>()).add(functionalInterface);
-  }
-
-  private static MethodMatcher methodMatcherWithName(String name, String... parameters) {
-    MethodMatcher methodMatcher = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name(name);
-    if(parameters.length == 0) {
-      methodMatcher.withoutParameter();
-    }
-    for (String parameter : parameters) {
-      methodMatcher.addParameter(parameter);
-    }
-    return methodMatcher;
   }
 
   @Override
@@ -197,7 +191,7 @@ public class StandardFunctionalInterfaceCheck extends IssuableSubscriptionVisito
 
   private static boolean isNotObjectMethod(MethodSymbol method) {
     MethodTree declaration = method.declaration();
-    return declaration == null || !OBJECT_METHODS.anyMatch(declaration);
+    return declaration == null || !OBJECT_METHODS.matches(declaration);
   }
 
   private static class FunctionalInterface {

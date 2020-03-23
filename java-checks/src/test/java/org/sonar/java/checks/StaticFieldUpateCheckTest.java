@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,6 +34,6 @@ public class StaticFieldUpateCheckTest {
 
   @Test
   public void should_not_have_any_method_invocation_matchers() {
-    assertThat(new StaticFieldUpateCheck().getMethodInvocationMatchers()).isEmpty();
+    assertThat(new StaticFieldUpateCheck().getMethodInvocationMatchers()).isSameAs(MethodMatchers.none());
   }
 }

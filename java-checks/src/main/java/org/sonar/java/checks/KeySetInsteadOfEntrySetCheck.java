@@ -20,10 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Iterables;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -34,22 +36,20 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import javax.annotation.CheckForNull;
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S2864")
 public class KeySetInsteadOfEntrySetCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher MAP_GET_METHOD = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("java.util.Map"))
-    .name("get")
-    .addParameter("java.lang.Object");
+  private static final MethodMatchers MAP_GET_METHOD = MethodMatchers.create()
+    .ofSubTypes("java.util.Map")
+    .names("get")
+    .addParametersMatcher("java.lang.Object")
+    .build();
 
-  private static final MethodMatcher MAP_KEYSET_METHOD = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("java.util.Map"))
-    .name("keySet")
-    .withoutParameter();
+  private static final MethodMatchers MAP_KEYSET_METHOD = MethodMatchers.create()
+    .ofSubTypes("java.util.Map")
+    .names("keySet")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Kind> nodesToVisit() {

@@ -19,25 +19,23 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S4508")
 public class ObjectDeserializationCheck extends AbstractMethodDetection {
 
-  private static final String OBJECT_INPUT_STREAM = "java.io.ObjectInputStream";
   private static final String MESSAGE = "Make sure deserializing objects is safe here.";
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition(OBJECT_INPUT_STREAM).name("readObject").withoutParameter(),
-      MethodMatcher.create().typeDefinition(OBJECT_INPUT_STREAM).name("readUnshared").withoutParameter()
-    );
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofSubTypes("java.io.ObjectInputStream")
+      .names("readObject", "readUnshared")
+      .addWithoutParametersMatcher()
+      .build();
   }
 
   @Override

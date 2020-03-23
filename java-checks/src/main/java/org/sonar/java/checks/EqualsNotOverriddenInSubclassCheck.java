@@ -23,9 +23,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -37,7 +37,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2160")
 public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create().name("equals").parameters("java.lang.Object");
+  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
+    .ofAnyType().names("equals").addParametersMatcher("java.lang.Object").build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

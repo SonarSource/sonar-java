@@ -26,8 +26,6 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.se.CheckerContext;
@@ -37,6 +35,7 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintsByDomain;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -44,6 +43,8 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S3065")
 public class MinMaxRangeCheck extends SECheck {
@@ -53,10 +54,11 @@ public class MinMaxRangeCheck extends SECheck {
   private static final String FLOW_MESSAGE = "Returns the %s bound.";
   private static final String ISSUE_MESSAGE = "Change these chained %s methods invocations, as final results will always be the %s bound.";
 
-  private static final MethodMatcher MIN_MAX_MATCHER = MethodMatcher.create()
-    .typeDefinition("java.lang.Math")
-    .name(name -> "min".equals(name) || "max".equals(name))
-    .addParameter(TypeCriteria.anyType()).addParameter(TypeCriteria.anyType());
+  private static final MethodMatchers MIN_MAX_MATCHER = MethodMatchers.create()
+    .ofTypes("java.lang.Math")
+    .names("min", "max")
+    .addParametersMatcher(ANY, ANY)
+    .build();
 
   private enum Operation {
     MIN,

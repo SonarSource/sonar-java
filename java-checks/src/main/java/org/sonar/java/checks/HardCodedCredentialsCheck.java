@@ -35,10 +35,10 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -62,24 +62,29 @@ public class HardCodedCredentialsCheck extends IssuableSubscriptionVisitor {
 
   private static final int MINIMUM_PASSWORD_LENGTH = 1;
 
-  private static final MethodMatcher PASSWORD_AUTHENTICATION_CONSTRUCTOR = MethodMatcher.create()
-    .typeDefinition("java.net.PasswordAuthentication")
-    .name("<init>")
-    .addParameter(JAVA_LANG_STRING)
-    .addParameter("char[]");
+  private static final MethodMatchers PASSWORD_AUTHENTICATION_CONSTRUCTOR = MethodMatchers.create()
+    .ofTypes("java.net.PasswordAuthentication")
+    .constructor()
+    .addParametersMatcher(JAVA_LANG_STRING, "char[]")
+    .build();
 
-  private static final MethodMatcher STRING_TO_CHAR_ARRAY = MethodMatcher.create()
-    .typeDefinition(JAVA_LANG_STRING)
-    .name("toCharArray")
-    .withoutParameter();
+  private static final MethodMatchers STRING_TO_CHAR_ARRAY = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING)
+    .names("toCharArray")
+    .addWithoutParametersMatcher()
+    .build();
 
-  private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create()
-    .name("equals")
-    .parameters(JAVA_LANG_OBJECT);
+  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
+    .ofAnyType()
+    .names("equals")
+    .addParametersMatcher(JAVA_LANG_OBJECT)
+    .build();
 
-  private static final MethodMatcher GET_CONNECTION_MATCHER = MethodMatcher.create()
-    .typeDefinition("java.sql.DriverManager")
-    .name("getConnection").withAnyParameters();
+  private static final MethodMatchers GET_CONNECTION_MATCHER = MethodMatchers.create()
+    .ofTypes("java.sql.DriverManager")
+    .names("getConnection")
+    .withAnyParameters()
+    .build();
 
   private static final int GET_CONNECTION_PASSWORD_ARGUMENT = 2;
 

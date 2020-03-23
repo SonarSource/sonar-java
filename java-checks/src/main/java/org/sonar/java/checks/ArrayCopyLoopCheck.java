@@ -21,14 +21,11 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
-
 import javax.annotation.CheckForNull;
-
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type.Primitives;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -45,16 +42,18 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S3012")
 public class ArrayCopyLoopCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher COLLECTION_ADD =
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Collection")).name("add").addParameter(TypeCriteria.anyType());
+  private static final MethodMatchers COLLECTION_ADD =
+    MethodMatchers.create().ofSubTypes("java.util.Collection").names("add").addParametersMatcher(ANY).build();
 
   @Override
   public List<Kind> nodesToVisit() {

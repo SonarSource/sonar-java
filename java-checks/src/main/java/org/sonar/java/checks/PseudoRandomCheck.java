@@ -20,14 +20,13 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -39,7 +38,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Make sure that using this pseudorandom number generator is safe here.";
-  private static final MethodMatcher MATH_RANDOM_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Math").name("random").withoutParameter();
+  private static final MethodMatchers MATH_RANDOM_MATCHER = MethodMatchers.create()
+    .ofTypes("java.lang.Math").names("random").addWithoutParametersMatcher().build();
 
   private static final Set<String> RANDOM_STATIC_TYPES = ImmutableSet.of(
     "java.util.concurrent.ThreadLocalRandom",

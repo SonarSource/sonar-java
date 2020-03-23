@@ -112,6 +112,6 @@ public class ParameterNullnessCheck extends SECheck {
   }
 
   private static boolean parameterIsNullable(Symbol.MethodSymbol method, int param) {
-    return isAnnotatedNullable(JUtils.parameterAnnotations(method, param)) || EQUALS_METHODS.anyMatch(method);
+    return isAnnotatedNullable(JUtils.parameterAnnotations(method, param)) || EQUALS_METHODS.matches(method);
   }
 }

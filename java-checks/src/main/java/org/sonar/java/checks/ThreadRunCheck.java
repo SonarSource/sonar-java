@@ -19,25 +19,26 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1217")
 public class ThreadRunCheck extends AbstractMethodDetection {
-  private static final MethodMatcher THREAD_RUN_METHOD_MATCHER = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Thread")).name("run")
-    .withAnyParameters();
+
+  private static final MethodMatchers THREAD_RUN_METHOD_MATCHER = MethodMatchers.create()
+    .ofSubTypes("java.lang.Thread")
+    .names("run")
+    .withAnyParameters()
+    .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(THREAD_RUN_METHOD_MATCHER);
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return THREAD_RUN_METHOD_MATCHER;
   }
 
   @Override

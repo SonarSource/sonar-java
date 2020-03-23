@@ -19,12 +19,9 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
@@ -34,24 +31,24 @@ public class AndroidBroadcastingCheck extends AbstractMethodDetection {
 
   private static final String MESSAGE = "Make sure that broadcasting intents is safe here.";
 
-  private static final MethodMatcher SEND_BROADCAST = androidContext().name("sendBroadcast").withAnyParameters();
-  private static final MethodMatcher SEND_BROADCAST_AS_USER = androidContext().name("sendBroadcastAsUser").withAnyParameters();
-  private static final MethodMatcher SEND_ORDERED_BROADCAST = androidContext().name("sendOrderedBroadcast").withAnyParameters();
-  private static final MethodMatcher SEND_ORDERED_BROADCAST_AS_USER = androidContext().name("sendOrderedBroadcastAsUser").withAnyParameters();
-  private static final MethodMatcher SEND_STICKY_BROADCAST = androidContext().name("sendStickyBroadcast").withAnyParameters();
-  private static final MethodMatcher SEND_STICKY_BROADCAST_AS_USER = androidContext().name("sendStickyBroadcastAsUser").withAnyParameters();
-  private static final MethodMatcher SEND_STICKY_ORDERED_BROADCAST = androidContext().name("sendStickyOrderedBroadcast").withAnyParameters();
-  private static final MethodMatcher SEND_STICKY_ORDERED_BROADCAST_AS_USER = androidContext().name("sendStickyOrderedBroadcastAsUser").withAnyParameters();
-  private static final MethodMatcherCollection STICKY_BROADCAST = MethodMatcherCollection.create(SEND_STICKY_BROADCAST,
+  private static final MethodMatchers SEND_BROADCAST = androidContext().names("sendBroadcast").withAnyParameters().build();
+  private static final MethodMatchers SEND_BROADCAST_AS_USER = androidContext().names("sendBroadcastAsUser").withAnyParameters().build();
+  private static final MethodMatchers SEND_ORDERED_BROADCAST = androidContext().names("sendOrderedBroadcast").withAnyParameters().build();
+  private static final MethodMatchers SEND_ORDERED_BROADCAST_AS_USER = androidContext().names("sendOrderedBroadcastAsUser").withAnyParameters().build();
+  private static final MethodMatchers SEND_STICKY_BROADCAST = androidContext().names("sendStickyBroadcast").withAnyParameters().build();
+  private static final MethodMatchers SEND_STICKY_BROADCAST_AS_USER = androidContext().names("sendStickyBroadcastAsUser").withAnyParameters().build();
+  private static final MethodMatchers SEND_STICKY_ORDERED_BROADCAST = androidContext().names("sendStickyOrderedBroadcast").withAnyParameters().build();
+  private static final MethodMatchers SEND_STICKY_ORDERED_BROADCAST_AS_USER = androidContext().names("sendStickyOrderedBroadcastAsUser").withAnyParameters().build();
+  private static final MethodMatchers STICKY_BROADCAST = MethodMatchers.or(SEND_STICKY_BROADCAST,
     SEND_STICKY_BROADCAST_AS_USER, SEND_STICKY_ORDERED_BROADCAST, SEND_STICKY_ORDERED_BROADCAST_AS_USER);
 
-  private static MethodMatcher androidContext() {
-    return MethodMatcher.create().typeDefinition("android.content.Context");
+  private static MethodMatchers.NameBuilder androidContext() {
+    return MethodMatchers.create().ofTypes("android.content.Context");
   }
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
       SEND_BROADCAST,
       SEND_BROADCAST_AS_USER,
       SEND_ORDERED_BROADCAST,
@@ -65,16 +62,25 @@ public class AndroidBroadcastingCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (SEND_BROADCAST.matches(mit) && (mit.arguments().size() < 2 || mit.arguments().get(1).is(NULL_LITERAL))) {
-      reportIssue(mit.methodSelect(), MESSAGE);
-    } else if (SEND_BROADCAST_AS_USER.matches(mit) && (mit.arguments().size() < 3 || mit.arguments().get(2).is(NULL_LITERAL))) {
-      reportIssue(mit.methodSelect(), MESSAGE);
-    } else if (SEND_ORDERED_BROADCAST.matches(mit) && mit.arguments().size() > 1 && mit.arguments().get(1).is(NULL_LITERAL)) {
-      reportIssue(mit.methodSelect(), MESSAGE);
-    } else if (SEND_ORDERED_BROADCAST_AS_USER.matches(mit) && mit.arguments().size() > 2 && mit.arguments().get(2).is(NULL_LITERAL)) {
-      reportIssue(mit.methodSelect(), MESSAGE);
-    } else if (STICKY_BROADCAST.anyMatch(mit)) {
+    if (isSendBroadcast(mit) || isSendBroadcastAsUser(mit) || isSendOrderedBroadcast(mit) ||
+      isSendOrderedBroadcastAsUser(mit) || STICKY_BROADCAST.matches(mit)) {
       reportIssue(mit.methodSelect(), MESSAGE);
     }
+  }
+
+  private static boolean isSendBroadcast(MethodInvocationTree mit) {
+    return SEND_BROADCAST.matches(mit) && (mit.arguments().size() < 2 || mit.arguments().get(1).is(NULL_LITERAL));
+  }
+
+  private static boolean isSendBroadcastAsUser(MethodInvocationTree mit) {
+    return SEND_BROADCAST_AS_USER.matches(mit) && (mit.arguments().size() < 3 || mit.arguments().get(2).is(NULL_LITERAL));
+  }
+
+  private static boolean isSendOrderedBroadcast(MethodInvocationTree mit) {
+    return SEND_ORDERED_BROADCAST.matches(mit) && mit.arguments().size() > 1 && mit.arguments().get(1).is(NULL_LITERAL);
+  }
+
+  private static boolean isSendOrderedBroadcastAsUser(MethodInvocationTree mit) {
+    return SEND_ORDERED_BROADCAST_AS_USER.matches(mit) && mit.arguments().size() > 2 && mit.arguments().get(2).is(NULL_LITERAL);
   }
 }

@@ -19,14 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -42,16 +40,15 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
 
   private static final String STRING = "java.lang.String";
   private static final String PATTERN = "java.util.regex.Pattern";
-  private static final MethodMatcher SPLIT_MATCHER = MethodMatcher.create().typeDefinition(STRING).name("split").withAnyParameters();
+  private static final MethodMatchers SPLIT_MATCHER = MethodMatchers.create()
+    .ofTypes(STRING).names("split").withAnyParameters().build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition(PATTERN).name("compile").addParameter(STRING),
-      MethodMatcher.create().typeDefinition(STRING).name("matches").withAnyParameters(),
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofTypes(PATTERN).names("compile").addParametersMatcher(STRING).build(),
       SPLIT_MATCHER,
-      MethodMatcher.create().typeDefinition(STRING).name("replaceAll").withAnyParameters(),
-      MethodMatcher.create().typeDefinition(STRING).name("replaceFirst").withAnyParameters());
+      MethodMatchers.create().ofTypes(STRING).names("matches", "replaceAll", "replaceFirst").withAnyParameters().build());
   }
 
   @Override

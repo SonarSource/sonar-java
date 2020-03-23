@@ -24,7 +24,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcherFactory;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
@@ -35,6 +34,7 @@ import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -87,11 +87,11 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       + " E.G. \"org.assoc.res.MyResource#closeMe\" or \"org.assoc.res.MySpecialResource#closeMe(java.lang.String, int)\"")
   public String closingMethod = "";
 
-  private MethodMatcherCollection classConstructor;
+  private MethodMatchers classConstructor;
 
-  private MethodMatcherCollection factoryList;
-  private MethodMatcherCollection openingList;
-  private MethodMatcherCollection closingList;
+  private MethodMatchers factoryList;
+  private MethodMatchers openingList;
+  private MethodMatchers closingList;
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -140,11 +140,11 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     return mit.symbolType().name();
   }
 
-  private static MethodMatcherCollection createMethodMatchers(String rule) {
+  private static MethodMatchers createMethodMatchers(String rule) {
     if (rule.length() > 0) {
-      return MethodMatcherCollection.create(MethodMatcherFactory.methodMatcher(rule));
+      return MethodMatcherFactory.methodMatchers(rule);
     } else {
-      return MethodMatcherCollection.create();
+      return MethodMatchers.none();
     }
   }
 
@@ -168,10 +168,10 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     }
 
     protected boolean isClosingResource(MethodInvocationTree mit) {
-      return closingMethods().anyMatch(mit);
+      return closingMethods().matches(mit);
     }
 
-    private MethodMatcherCollection closingMethods() {
+    private MethodMatchers closingMethods() {
       if (closingList == null) {
         closingList = createMethodMatchers(closingMethod);
       }
@@ -205,7 +205,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     }
 
     private boolean isOpeningResource(MethodInvocationTree syntaxNode) {
-      return openingMethods().anyMatch(syntaxNode);
+      return openingMethods().matches(syntaxNode);
     }
 
     @Override
@@ -216,7 +216,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       }
     }
 
-    private MethodMatcherCollection openingMethods() {
+    private MethodMatchers openingMethods() {
       if (openingList == null) {
         openingList = createMethodMatchers(openingMethod);
       }
@@ -244,24 +244,24 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     }
 
     private boolean isCreatingResource(NewClassTree newClassTree) {
-      return constructorClasses().anyMatch(newClassTree);
+      return constructorClasses().matches(newClassTree);
     }
 
-    private MethodMatcherCollection constructorClasses() {
+    private MethodMatchers constructorClasses() {
       if (classConstructor == null) {
-        classConstructor = MethodMatcherCollection.create();
+        classConstructor = MethodMatchers.none();
         if (constructor.length() > 0) {
-          classConstructor.add(MethodMatcherFactory.constructorMatcher(constructor));
+          classConstructor = MethodMatcherFactory.constructorMatcher(constructor);
         }
       }
       return classConstructor;
     }
 
     private boolean isCreatingResource(MethodInvocationTree mit) {
-      return factoryMethods().anyMatch(mit);
+      return factoryMethods().matches(mit);
     }
 
-    private MethodMatcherCollection factoryMethods() {
+    private MethodMatchers factoryMethods() {
       if (factoryList == null) {
         factoryList = createMethodMatchers(factoryMethod);
       }

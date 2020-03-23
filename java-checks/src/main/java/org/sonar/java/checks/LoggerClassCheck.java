@@ -23,10 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -38,20 +36,37 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S3416")
 public class LoggerClassCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcherCollection LOG_FACTORIES = MethodMatcherCollection.create(
-    // covers slf4j, log4j, java.util.logging and perhaps many others
-    MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("getLogger").addParameter("java.lang.Class"),
-    MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("getLogger").addParameter("java.lang.String"),
-    // Apache commons-logging
-    MethodMatcher.create().typeDefinition("org.apache.commons.logging.LogFactory").name("getLog").addParameter("java.lang.Class"),
-    MethodMatcher.create().typeDefinition("org.apache.commons.logging.LogFactory").name("getLog").addParameter("java.lang.String"),
-    // sonar-api
-    MethodMatcher.create().typeDefinition("org.sonar.api.utils.log.Loggers").name("get").addParameter("java.lang.Class"),
-    MethodMatcher.create().typeDefinition("org.sonar.api.utils.log.Loggers").name("get").addParameter("java.lang.String")
-  );
+  private static final String CLASS = "java.lang.Class";
+  public static final String STRING = "java.lang.String";
 
-  private static final MethodMatcher CLAZZ_GETNAME = MethodMatcher.create()
-    .typeDefinition("java.lang.Class").name("getName").withoutParameter();
+  private static final MethodMatchers LOG_FACTORIES = MethodMatchers.or(
+    // covers slf4j, log4j, java.util.logging and perhaps many others
+    MethodMatchers.create()
+      .ofAnyType()
+      .names("getLogger")
+      .addParametersMatcher(CLASS)
+      .addParametersMatcher(STRING)
+      .build(),
+    // Apache commons-logging
+    MethodMatchers.create()
+      .ofTypes("org.apache.commons.logging.LogFactory")
+      .names("getLog")
+      .addParametersMatcher(CLASS)
+      .addParametersMatcher(STRING)
+      .build(),
+    // sonar-api
+    MethodMatchers.create()
+      .ofTypes("org.sonar.api.utils.log.Loggers")
+      .names("get")
+      .addParametersMatcher(CLASS)
+      .addParametersMatcher(STRING)
+      .build());
+
+  private static final MethodMatchers CLAZZ_GETNAME = MethodMatchers.create()
+    .ofTypes(CLASS)
+    .names("getName")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -76,7 +91,7 @@ public class LoggerClassCheck extends IssuableSubscriptionVisitor {
     }
     ExpressionTree initializer = declaration.initializer();
     if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION)
-      && LOG_FACTORIES.anyMatch((MethodInvocationTree) initializer)) {
+      && LOG_FACTORIES.matches((MethodInvocationTree) initializer)) {
       ExpressionTree firstArg = ((MethodInvocationTree) initializer).arguments().get(0);
       Symbol classLiteral = classLiteral(firstArg);
       if (classLiteral != null && !clazz.type().erasure().equals(classLiteral.type().erasure())) {

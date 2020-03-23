@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -44,22 +44,37 @@ public class SocketUsageCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
       // === java.net ===
-      MethodMatcher.create().typeDefinition("java.net.Socket").name(INIT).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.net.ServerSocket").name(INIT).withAnyParameters(),
-      MethodMatcher.create().typeDefinition(JAVAX_NET_SOCKET_FACTORY).name(INIT).withAnyParameters(),
-      MethodMatcher.create().typeDefinition(JAVAX_NET_SOCKET_FACTORY).name("createSocket").withAnyParameters(),
+      MethodMatchers.create()
+        .ofTypes("java.net.Socket", "java.net.ServerSocket", JAVAX_NET_SOCKET_FACTORY)
+        .names(INIT)
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create()
+        .ofTypes(JAVAX_NET_SOCKET_FACTORY)
+        .names("createSocket")
+        .withAnyParameters()
+        .build(),
 
       // === java.nio.channels ===
-      MethodMatcher.create().typeDefinition("java.nio.channels.AsynchronousServerSocketChannel").name(OPEN_METHOD).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.nio.channels.AsynchronousSocketChannel").name(OPEN_METHOD).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.nio.channels.SocketChannel").name(OPEN_METHOD).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.nio.channels.ServerSocketChannel").name(OPEN_METHOD).withAnyParameters(),
+      MethodMatchers.create()
+        .ofTypes(
+          "java.nio.channels.AsynchronousServerSocketChannel",
+          "java.nio.channels.AsynchronousSocketChannel",
+          "java.nio.channels.SocketChannel",
+          "java.nio.channels.ServerSocketChannel")
+        .names(OPEN_METHOD)
+        .withAnyParameters()
+        .build(),
 
       // === Netty ===
-      MethodMatcher.create().typeDefinition("io.netty.channel.ChannelInitializer").name(INIT).withAnyParameters());
+      MethodMatchers.create()
+        .ofTypes("io.netty.channel.ChannelInitializer")
+        .names(INIT)
+        .withAnyParameters()
+        .build());
   }
 
   @Override

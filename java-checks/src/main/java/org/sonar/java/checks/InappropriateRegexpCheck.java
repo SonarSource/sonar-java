@@ -19,12 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -37,11 +35,12 @@ public class InappropriateRegexpCheck extends AbstractMethodDetection {
   private static final String INAPPROPRIATE_REGEXPS = "\\.|\\|";
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition("java.lang.String").name("replaceAll").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.lang.String").name("replaceFirst").withAnyParameters()
-      );
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofTypes("java.lang.String")
+      .names("replaceAll", "replaceFirst")
+      .withAnyParameters()
+      .build();
   }
 
   @Override

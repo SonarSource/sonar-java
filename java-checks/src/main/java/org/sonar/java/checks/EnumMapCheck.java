@@ -19,12 +19,13 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -36,13 +37,11 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.List;
-
 @Rule(key = "S1640")
 public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
   private JavaFileScannerContext context;
   private static final String JAVA_UTIL_MAP = "java.util.Map";
-  private static final MethodMatcher mapPut = MethodMatcher.create().typeDefinition(JAVA_UTIL_MAP).name("put").withAnyParameters();
+  private static final MethodMatchers mapPut = MethodMatchers.create().ofTypes(JAVA_UTIL_MAP).names("put").withAnyParameters().build();
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {

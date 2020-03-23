@@ -24,9 +24,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -54,27 +53,30 @@ public class CookieShouldNotContainSensitiveDataCheck extends AbstractMethodDete
       "org.apache.shiro.web.servlet.Cookie"
   );
 
-  private static final String CONSTRUCTOR = "<init>";
   private static final String SET_VALUE_METHOD = "setValue";
   private static final String WITH_VALUE_METHOD = "withValue";
   private static final String BUILDER_METHOD = "builder";
   private static final String JAVA_LANG_STRING = "java.lang.String";
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
       // setters
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(SET_VALUE_METHOD).parameters(JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(SET_VALUE_METHOD).parameters(JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(SET_VALUE_METHOD).parameters(JAVA_LANG_STRING),
+      MethodMatchers.create()
+        .ofSubTypes(ClassName.SERVLET_COOKIE, ClassName.NET_HTTP_COOKIE, ClassName.SHIRO_COOKIE)
+        .names(SET_VALUE_METHOD)
+        .addParametersMatcher(JAVA_LANG_STRING)
+        .build(),
       // constructors
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SERVLET_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.NET_HTTP_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.SHIRO_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
+      MethodMatchers.create()
+        .ofSubTypes(ClassName.SERVLET_COOKIE, ClassName.NET_HTTP_COOKIE, ClassName.SHIRO_COOKIE)
+        .constructor()
+        .withAnyParameters()
+        .build(),
       // javax.ws.rs.core.NewCookie is a subtype of JAX_RS_COOKIE
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.JAX_RS_COOKIE)).name(CONSTRUCTOR).withAnyParameters(),
-      MethodMatcher.create().typeDefinition(ClassName.PLAY_COOKIE).name(BUILDER_METHOD).parameters(JAVA_LANG_STRING, JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(ClassName.PLAY_COOKIE_BUILDER)).name(WITH_VALUE_METHOD).parameters(JAVA_LANG_STRING));
+      MethodMatchers.create().ofSubTypes(ClassName.JAX_RS_COOKIE).constructor().withAnyParameters().build(),
+      MethodMatchers.create().ofTypes(ClassName.PLAY_COOKIE).names(BUILDER_METHOD).addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING).build(),
+      MethodMatchers.create().ofSubTypes(ClassName.PLAY_COOKIE_BUILDER).names(WITH_VALUE_METHOD).addParametersMatcher(JAVA_LANG_STRING).build());
   }
 
   @Override

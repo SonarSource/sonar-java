@@ -22,11 +22,9 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -36,8 +34,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4929")
 public class InputStreamOverrideReadCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher READ_BYTES_INT_INT = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("read").parameters("byte[]", "int", "int");
-  private static final MethodMatcher READ_INT = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("read").parameters("int");
+  private static final MethodMatchers READ_BYTES_INT_INT = MethodMatchers.create()
+    .ofAnyType().names("read").addParametersMatcher("byte[]", "int", "int").build();
+  private static final MethodMatchers READ_INT = MethodMatchers.create()
+    .ofAnyType().names("read").addParametersMatcher("int").build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -68,7 +68,7 @@ public class InputStreamOverrideReadCheck extends IssuableSubscriptionVisitor {
 
   }
 
-  private static Optional<MethodTree> findMethod(ClassTree classTree, MethodMatcher methodMatcher) {
+  private static Optional<MethodTree> findMethod(ClassTree classTree, MethodMatchers methodMatcher) {
     return classTree.members()
       .stream()
       .filter(m -> m.is(Tree.Kind.METHOD))

@@ -20,15 +20,13 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -44,10 +42,11 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
   private Deque<Boolean> classWithSynchronizedMethod = new LinkedList<>();
   private Deque<Boolean> withinStaticInitializer = new LinkedList<>();
   private Deque<Boolean> methodUsesLocks = new LinkedList<>();
-  private MethodMatcherCollection locks = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.util.concurrent.locks.Lock").name("lock").withoutParameter(),
-    MethodMatcher.create().typeDefinition("java.util.concurrent.locks.Lock").name("tryLock").withoutParameter()
-  );
+  private MethodMatchers locks = MethodMatchers.create()
+    .ofTypes("java.util.concurrent.locks.Lock")
+    .names("lock", "tryLock")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -86,7 +85,7 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
         methodUsesLocks.push(false);
         break;
       case METHOD_INVOCATION:
-        if (locks.anyMatch((MethodInvocationTree) tree) && methodUsesLocks.size() != 1) {
+        if (locks.matches((MethodInvocationTree) tree) && methodUsesLocks.size() != 1) {
           methodUsesLocks.pop();
           methodUsesLocks.push(true);
         }
@@ -162,8 +161,8 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
   }
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.emptyList();
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.none();
   }
 
 }

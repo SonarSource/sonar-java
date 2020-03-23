@@ -24,11 +24,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -40,7 +39,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4348")
 public class IterableIteratorCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher ITERATOR = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Iterable")).name("iterator").withoutParameter();
+  private static final MethodMatchers ITERATOR = MethodMatchers.create()
+    .ofSubTypes("java.lang.Iterable").names("iterator").addWithoutParametersMatcher().build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

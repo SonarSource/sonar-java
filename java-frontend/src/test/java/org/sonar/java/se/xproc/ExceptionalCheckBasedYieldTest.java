@@ -22,7 +22,6 @@ package org.sonar.java.se.xproc;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Pair;
@@ -32,6 +31,7 @@ import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -108,7 +108,7 @@ public class ExceptionalCheckBasedYieldTest {
 
   private static class TestSECheck extends SECheck {
 
-    private static final MethodMatcher MATCHER = MethodMatcher.create().typeDefinition("foo.bar.A").name("plantFlowers").addParameter("boolean");
+    private static final MethodMatchers MATCHER = MethodMatchers.create().ofTypes("foo.bar.A").names("plantFlowers").addParametersMatcher("boolean").build();
 
     @Override
     public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
