@@ -35,6 +35,7 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -48,7 +49,7 @@ public class MethodMatcherFactoryTest {
   @Test
   public void fail_arg() throws Exception {
     try {
-      MethodMatcherFactory.methodMatcher("org.sonar.test.Test$match");
+      MethodMatcherFactory.methodMatchers("org.sonar.test.Test$match");
       fail("Argument should not be accepted.");
     } catch (IllegalArgumentException iae) {
       assertThat(iae.getMessage()).contains("method");
@@ -62,20 +63,20 @@ public class MethodMatcherFactoryTest {
     }
 
     try {
-      MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match(java.lang.String;int)");
+      MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String;int)");
       fail("Argument should not be accepted.");
     } catch (IllegalArgumentException iae) {
       assertThat(iae.getMessage()).contains("constructor").contains("method");
     }
 
     try {
-      MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match(java.lang.String,int)followed by anything");
+      MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String,int)followed by anything");
       fail("Argument should not be accepted.");
     } catch (IllegalArgumentException iae) {
       assertThat(iae.getMessage()).contains("constructor").contains("method");
     }
     try {
-      MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match this is an error");
+      MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match this is an error");
       fail("Argument should not be accepted.");
     } catch (IllegalArgumentException iae) {
       assertThat(iae.getMessage()).contains("method");
@@ -84,7 +85,7 @@ public class MethodMatcherFactoryTest {
 
   @Test
   public void inner_classes() throws Exception {
-    MethodMatcher anyArg = MethodMatcherFactory.methodMatcher("org.sonar.test.Outer$Inner#foo");
+    MethodMatchers anyArg = MethodMatcherFactory.methodMatchers("org.sonar.test.Outer$Inner#foo");
     MethodVisitor visitor = new MethodVisitor();
     visitor.add(anyArg);
     scanWithVisitor(visitor, TestUtils.inputFile("src/test/files/matcher/InnerClass.java"));
@@ -93,11 +94,11 @@ public class MethodMatcherFactoryTest {
 
   @Test
   public void methodFactoryMatching() {
-    MethodMatcher anyArg = MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match");
-    MethodMatcher stringOnly = MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match(java.lang.String)");
-    MethodMatcher stringInt = MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match(java.lang.String,int)");
-    MethodMatcher intInt = MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match(int,int)");
-    MethodMatcher onlyBoolean = MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match(java.lang.Boolean)");
+    MethodMatchers anyArg = MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match");
+    MethodMatchers stringOnly = MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String)");
+    MethodMatchers stringInt = MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String,int)");
+    MethodMatchers intInt = MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(int,int)");
+    MethodMatchers onlyBoolean = MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.Boolean)");
 
     MethodVisitor visitor = new MethodVisitor();
     visitor.add(anyArg);
@@ -132,10 +133,10 @@ public class MethodMatcherFactoryTest {
 
   @Test
   public void constructorFactoryMatching() {
-    MethodMatcher anyArg = MethodMatcherFactory.constructorMatcher("java.lang.String");
-    MethodMatcher noArg = MethodMatcherFactory.constructorMatcher("java.lang.String()");
-    MethodMatcher stringBuilder = MethodMatcherFactory.constructorMatcher("java.lang.String(java.lang.StringBuilder)");
-    MethodMatcher stringBytes = MethodMatcherFactory.constructorMatcher("java.lang.String(byte[],int,int)");
+    MethodMatchers anyArg = MethodMatcherFactory.constructorMatcher("java.lang.String");
+    MethodMatchers noArg = MethodMatcherFactory.constructorMatcher("java.lang.String()");
+    MethodMatchers stringBuilder = MethodMatcherFactory.constructorMatcher("java.lang.String(java.lang.StringBuilder)");
+    MethodMatchers stringBytes = MethodMatcherFactory.constructorMatcher("java.lang.String(byte[],int,int)");
     MethodVisitor visitor = new MethodVisitor();
     visitor.add(anyArg);
     visitor.add(noArg);
@@ -183,13 +184,13 @@ public class MethodMatcherFactoryTest {
 
   private static class MethodVisitor extends SubscriptionVisitor {
 
-    private final Map<MethodMatcher, Integer> matches = new HashMap<>();
+    private final Map<MethodMatchers, Integer> matches = new HashMap<>();
 
-    void add(MethodMatcher matcher) {
+    void add(MethodMatchers matcher) {
       matches.put(matcher, Integer.valueOf(0));
     }
 
-    int count(MethodMatcher matcher) {
+    int count(MethodMatchers matcher) {
       // Generates an NPE if the matcher was not registered, but this OK for a test.
       return matches.get(matcher).intValue();
     }
@@ -205,7 +206,7 @@ public class MethodMatcherFactoryTest {
     }
 
     public void visitNewClass(NewClassTree tree) {
-      for (MethodMatcher matcher : matches.keySet()) {
+      for (MethodMatchers matcher : matches.keySet()) {
         if (matcher.matches(tree)) {
           countMatch(matcher);
         }
@@ -213,14 +214,14 @@ public class MethodMatcherFactoryTest {
     }
 
     private void visitMethodInvocation(MethodInvocationTree tree) {
-      for (MethodMatcher matcher : matches.keySet()) {
+      for (MethodMatchers matcher : matches.keySet()) {
         if (matcher.matches(tree)) {
           countMatch(matcher);
         }
       }
     }
 
-    public void countMatch(MethodMatcher matcher) {
+    public void countMatch(MethodMatchers matcher) {
       int n = matches.get(matcher).intValue() + 1;
       matches.put(matcher, Integer.valueOf(n));
     }

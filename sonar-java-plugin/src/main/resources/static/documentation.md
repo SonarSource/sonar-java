@@ -69,6 +69,12 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **6.3**
+
+* API is now enriched with `MethodMatchers`. You can use it to identify a method with given a Type, Name and Parameters.
+We realized that MethodMatchers is a really convenient way of writing new rules, it will hopefully ease the addition of rules in custom plugins, without having to rewrite the logic.
+We are heavily using it in the different [checks](https://github.com/SonarSource/sonar-java/tree/master/java-checks/src/main/java/org/sonar/java/checks), plenty of examples can be found there.
+
 #### **6.1**
 
 * The `ExpressionTree` interface, from the AST API, is now enriched by two new methods `Optional<Object> asConstant()` and `<T> Optional<T> asConstant(Class<T> type)`. These methods let you try to retrieve the equivalent constant value of an expression (from a variable, for instance). An example of usage would be:
