@@ -256,16 +256,13 @@ public class DefaultJavaFileScannerContextTest {
   @Test
   public void test_source_map() {
     GeneratedFile file = mock(GeneratedFile.class);
-    DefaultJavaFileScannerContext ctx = new DefaultJavaFileScannerContext(compilationUnitTree, file, null, sonarComponents, new JavaVersionImpl(), true);
-    assertThat(ctx.sourceMap()).isNull();
-
     SourceMap sourceMap = mock(SourceMap.class);
     when(file.sourceMap()).thenReturn(sourceMap);
-
-    assertThat(ctx.sourceMap()).isSameAs(sourceMap);
+    DefaultJavaFileScannerContext ctx = new DefaultJavaFileScannerContext(compilationUnitTree, file, null, sonarComponents, new JavaVersionImpl(), true);
+    assertThat(ctx.sourceMap().get()).isSameAs(sourceMap);
 
     ctx = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true);
-    assertThat(ctx.sourceMap()).isNull();
+    assertThat(ctx.sourceMap()).isEmpty();
   }
 
   private static void assertMessagePosition(AnalyzerMessage message, int startLine, int startColumn, int endLine, int endColumn) {

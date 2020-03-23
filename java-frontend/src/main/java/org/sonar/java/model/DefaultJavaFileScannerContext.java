@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
@@ -203,12 +204,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     }
   }
 
-  @Nullable
   @Override
-  public SourceMap sourceMap() {
+  public Optional<SourceMap> sourceMap() {
     if (inputFile instanceof GeneratedFile) {
-      return ((GeneratedFile) inputFile).sourceMap();
+      return Optional.of(((GeneratedFile) inputFile).sourceMap());
     }
-    return null;
+    return Optional.empty();
   }
 }

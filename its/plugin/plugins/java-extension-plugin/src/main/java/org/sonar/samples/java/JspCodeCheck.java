@@ -28,7 +28,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JspCodeVisitor;
-import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -67,13 +66,16 @@ public class JspCodeCheck extends IssuableSubscriptionVisitor implements JspCode
   private void visitMethodInvocation(MethodInvocationTree tree) {
     Path path = context.getWorkingDirectory().toPath().resolve("GeneratedCodeCheck.txt");
     if (context.getInputFile().filename().equals("index_jsp.java") && tree.firstToken().line() == 116) {
-      SourceMap.Location location = context.sourceMap().sourceMapLocationFor(tree);
-      try {
-        String data = format("%s %d:%d%n", location.inputFile().getFileName(), location.startLine(), location.endLine());
-        Files.write(path, data.getBytes(), APPEND, CREATE);
-      } catch (IOException e) {
-        throw new IllegalStateException(e);
-      }
+      context.sourceMap()
+        .flatMap(sourceMap -> sourceMap.sourceMapLocationFor(tree))
+        .ifPresent(location -> {
+          try {
+            String data = format("%s %d:%d%n", location.inputFile().getFileName(), location.startLine(), location.endLine());
+            Files.write(path, data.getBytes(), APPEND, CREATE);
+          } catch (IOException e) {
+            throw new IllegalStateException(e);
+          }
+        });
     }
   }
 }

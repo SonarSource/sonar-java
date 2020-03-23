@@ -21,7 +21,7 @@ package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
 import java.nio.file.Path;
-import javax.annotation.Nullable;
+import java.util.Optional;
 import org.sonar.plugins.java.api.tree.Tree;
 
 /**
@@ -35,8 +35,7 @@ public interface SourceMap {
    *
    * @return location in JSP file or null
    */
-  @Nullable
-  Location sourceMapLocationFor(Tree tree);
+  Optional<Location> sourceMapLocationFor(Tree tree);
 
   interface Location {
     Path inputFile();

@@ -24,38 +24,46 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.Scanner;
-import javax.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.plugins.java.api.SourceMap;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class GeneratedFileTest {
+public class GeneratedFileTest {
 
-  @TempDir
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
   Path tmp;
   Path expected;
   private GeneratedFile actual;
 
-  @BeforeEach
-  void setUp() throws Exception {
+  @Rule
+  public LogTester logTester = new LogTester();
+
+  @Before
+  public void setUp() throws Exception {
+    tmp = temporaryFolder.newFolder().toPath();
     expected = tmp.resolve("file.jsp");
     Files.write(expected, "content".getBytes(StandardCharsets.UTF_8));
     actual = new GeneratedFile(expected);
   }
 
   @Test
-  void test() throws Exception {
+  public void test() throws Exception {
     assertEquals(expected.toAbsolutePath().toString(), actual.absolutePath());
     assertEquals(expected.toString(), actual.relativePath());
     assertEquals(expected, actual.path());
@@ -76,7 +84,7 @@ class GeneratedFileTest {
   }
 
   @Test
-  void test_not_implemented() throws Exception {
+  public void test_not_implemented() throws Exception {
     assertThrows(UnsupportedOperationException.class, () -> actual.type());
     assertThrows(UnsupportedOperationException.class, () -> actual.status());
     assertThrows(UnsupportedOperationException.class, () -> actual.lines());
@@ -88,7 +96,7 @@ class GeneratedFileTest {
   }
 
   @Test
-  void test_source_map() {
+  public void test_source_map() {
     String smap = "SMAP\n" +
       "index_jsp.java\n" +
       "JSP\n" +
@@ -119,18 +127,20 @@ class GeneratedFileTest {
     assertLocation(sourceMap.getLocation(304, 305), 162, 162);
 
     // start is not mapped
-    assertThat(sourceMap.getLocation(100, 207)).isNull();
+    assertThat(sourceMap.getLocation(100, 207)).isEmpty();
     // end is not mapped
-    assertThat(sourceMap.getLocation(207, 209)).isNull();
+    assertThat(sourceMap.getLocation(207, 209)).isEmpty();
   }
 
-  private void assertLocation(@Nullable SourceMap.Location location, int expectedStart, int expectedEnd) {
-    assertThat(location.startLine()).isEqualTo(expectedStart);
-    assertThat(location.endLine()).isEqualTo(expectedEnd);
+  private void assertLocation(Optional<SourceMap.Location> location, int expectedStart, int expectedEnd) {
+    assertThat(location).isPresent();
+    SourceMap.Location loc = location.get();
+    assertThat(loc.startLine()).isEqualTo(expectedStart);
+    assertThat(loc.endLine()).isEqualTo(expectedEnd);
   }
 
   @Test
-  void should_not_accept_unrelated_smap() throws Exception {
+  public void should_not_accept_unrelated_smap() throws Exception {
     String smap = "SMAP\n" +
       "index_jsp.java\n" +
       "JSP\n" +
@@ -158,15 +168,13 @@ class GeneratedFileTest {
       "*E\n";
 
     SmapFile unrelated = new SmapFile(tmp.resolve("index_jsp.class.smap"), new Scanner(unrelatedSmap));
-    assertThatThrownBy(() -> generatedFile.addSmap(unrelated))
-      .isInstanceOf(IllegalStateException.class)
-      .hasMessage(format("Invalid smap %s for this generated file %s", tmp.resolve("unrelated.java"),
-        tmp.resolve("index_jsp.java")));
-
+    generatedFile.addSmap(unrelated);
+    assertThat(generatedFile.smapFiles).containsExactly(smapFile);
+    assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(format("Invalid smap %s for %s.", tmp.resolve("unrelated.java"), tmp.resolve("index_jsp.java")));
   }
 
   @Test
-  void sourcemap_should_be_instantiated_lazily() throws Exception {
+  public void sourcemap_should_be_instantiated_lazily() throws Exception {
     String smap = "SMAP\n" +
       "index_jsp.java\n" +
       "JSP\n" +
@@ -187,7 +195,7 @@ class GeneratedFileTest {
   }
 
   @Test
-  void test_multiple_files() {
+  public void test_multiple_files() {
     String smap = "SMAP\n" +
       "index_jsp.java\n" +
       "JSP\n" +
@@ -208,15 +216,15 @@ class GeneratedFileTest {
 
     GeneratedFile.SourceMapImpl sourceMap = ((GeneratedFile.SourceMapImpl) generatedFile.sourceMap());
 
-    SourceMap.Location loc1 = sourceMap.getLocation(1, 1);
-    assertThat(loc1.inputFile()).isEqualTo(Paths.get("index.jsp"));
+    Optional<SourceMap.Location> loc1 = sourceMap.getLocation(1, 1);
+    assertThat(loc1.get().inputFile()).isEqualTo(Paths.get("index.jsp"));
     assertLocation(loc1, 1, 1);
 
-    SourceMap.Location loc2 = sourceMap.getLocation(2, 2);
-    assertThat(loc2.inputFile()).isEqualTo(Paths.get("index2.jsp"));
+    Optional<SourceMap.Location> loc2 = sourceMap.getLocation(2, 2);
+    assertThat(loc2.get().inputFile()).isEqualTo(Paths.get("index2.jsp"));
     assertLocation(loc2, 2, 2);
 
     // spanning two input files (should never happen)
-    assertThat(sourceMap.getLocation(1, 2)).isNull();
+    assertThat(sourceMap.getLocation(1, 2)).isEmpty();
   }
 }
