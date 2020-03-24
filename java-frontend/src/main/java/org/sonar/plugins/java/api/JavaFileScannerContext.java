@@ -23,6 +23,7 @@ import com.google.common.annotations.Beta;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
@@ -225,4 +226,13 @@ public interface JavaFileScannerContext {
       return Objects.hash(msg, syntaxNode);
     }
   }
+
+  /**
+   * Return JSR 45 source map for current input file
+   * @return source map if available
+   */
+  default Optional<SourceMap> sourceMap() {
+    return Optional.empty();
+  }
+
 }

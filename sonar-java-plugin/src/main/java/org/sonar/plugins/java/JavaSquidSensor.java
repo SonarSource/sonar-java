@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -41,6 +42,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
+import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -99,7 +101,7 @@ public class JavaSquidSensor implements Sensor {
     squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
   }
 
-  private List<InputFile> runJasper(SensorContext context) {
+  private Collection<GeneratedFile> runJasper(SensorContext context) {
     return jasper != null ? jasper.generateFiles(context, sonarComponents.getJavaClasspath()) : Collections.emptyList();
   }
 

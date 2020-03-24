@@ -61,8 +61,12 @@ public class JspTest {
       .setProperty("sonar.scm.disabled", "true");
     TestUtils.provisionProject(ORCHESTRATOR, "org.sonarsource.it.projects:" + PROJECT, PROJECT, "java", "jsp");
     ORCHESTRATOR.executeBuild(build);
-    Path actual = TestUtils.projectDir(PROJECT).toPath().resolve("target/sonar/visit.txt");
-    List<String> lines = Files.readAllLines(actual);
+
+    Path visitTest = TestUtils.projectDir(PROJECT).toPath().resolve("target/sonar/visit.txt");
+    List<String> lines = Files.readAllLines(visitTest);
     assertThat(lines).containsExactlyInAnyOrder("GreetingServlet", "greeting_jsp", "index_jsp");
+
+    Path sourceMapTest = TestUtils.projectDir(PROJECT).toPath().resolve("target/sonar/GeneratedCodeCheck.txt");
+    assertThat(sourceMapTest).hasContent("index.jsp 1:6");
   }
 }
