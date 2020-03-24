@@ -25,6 +25,7 @@ import org.openjdk.jol.datamodel.X86_64_DataModel;
 import org.openjdk.jol.info.ClassLayout;
 import org.openjdk.jol.layouters.HotSpotLayouter;
 import org.openjdk.jol.layouters.Layouter;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
@@ -58,6 +59,14 @@ class ClassesLayoutTest {
     assertAll(
       () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64)).isEqualTo(64),
       () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64_COOPS)).isEqualTo(40)
+    );
+  }
+
+  @Test
+  void variable_declaration() {
+    assertAll(
+      () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64)).isEqualTo(112),
+      () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64_COOPS)).isEqualTo(64)
     );
   }
 
