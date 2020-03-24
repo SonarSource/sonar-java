@@ -41,7 +41,7 @@ public class ExportsDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements
 
   public ExportsDirectiveTreeImpl(InternalSyntaxToken exportsKeyword, ExpressionTree packageName, @Nullable InternalSyntaxToken toKeyword, ListTree<ModuleNameTree> moduleNames,
     InternalSyntaxToken semicolonToken) {
-    super(Tree.Kind.EXPORTS_DIRECTIVE, exportsKeyword, semicolonToken);
+    super(exportsKeyword, semicolonToken);
     this.packageName = packageName;
     this.toKeyword = toKeyword;
     this.moduleNames = moduleNames;

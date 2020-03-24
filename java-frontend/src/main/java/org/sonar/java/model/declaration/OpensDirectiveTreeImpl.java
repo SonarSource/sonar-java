@@ -41,7 +41,7 @@ public class OpensDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements O
 
   public OpensDirectiveTreeImpl(InternalSyntaxToken opensKeyword, ExpressionTree packageName, @Nullable InternalSyntaxToken toKeyword, ListTree<ModuleNameTree> moduleNames,
     InternalSyntaxToken semicolonToken) {
-    super(Tree.Kind.OPENS_DIRECTIVE, opensKeyword, semicolonToken);
+    super(opensKeyword, semicolonToken);
     this.packageName = packageName;
     this.toKeyword = toKeyword;
     this.moduleNames = moduleNames;

@@ -38,7 +38,7 @@ public class ProvidesDirectiveTreeImpl extends ModuleDirectiveTreeImpl implement
 
   public ProvidesDirectiveTreeImpl(InternalSyntaxToken providesKeyword, TypeTree typeName, InternalSyntaxToken withKeyword,
     ListTree<TypeTree> typeNames, InternalSyntaxToken semicolonToken) {
-    super(Tree.Kind.PROVIDES_DIRECTIVE, providesKeyword, semicolonToken);
+    super(providesKeyword, semicolonToken);
     this.typeName =typeName;
     this.withKeyword = withKeyword;
     this.typeNames = typeNames;
