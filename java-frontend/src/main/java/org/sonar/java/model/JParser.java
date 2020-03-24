@@ -1181,7 +1181,6 @@ public class JParser {
     }
 
     VariableTreeImpl t = new VariableTreeImpl(
-      e.isVarargs(),
       convertModifiers(e.modifiers()),
       type,
       convertSimpleName(e.getName())

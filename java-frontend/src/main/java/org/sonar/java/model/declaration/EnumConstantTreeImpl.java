@@ -38,7 +38,7 @@ public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConsta
 
   public EnumConstantTreeImpl(ModifiersTree modifiers, IdentifierTree simpleName, NewClassTreeImpl initializer,
     @Nullable InternalSyntaxToken separatorToken) {
-    super(Kind.ENUM_CONSTANT, modifiers, simpleName, Objects.requireNonNull(initializer));
+    super(modifiers, simpleName, Objects.requireNonNull(initializer));
     if (separatorToken != null) {
       this.setEndToken(separatorToken);
     }

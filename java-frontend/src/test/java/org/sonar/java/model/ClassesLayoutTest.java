@@ -65,8 +65,8 @@ class ClassesLayoutTest {
   @Test
   void variable_declaration() {
     assertAll(
-      () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64)).isEqualTo(112),
-      () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64_COOPS)).isEqualTo(64)
+      () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64)).isEqualTo(96),
+      () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64_COOPS)).isEqualTo(56)
     );
   }
 

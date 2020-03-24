@@ -54,62 +54,36 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   public IVariableBinding variableBinding;
 
-  // Syntax tree holders
-  @Nullable
-  private ArrayTypeTreeImpl nestedDimensions;
-  private boolean vararg = false;
-
   public VariableTreeImpl(
-    boolean vararg,
     ModifiersTree modifiers,
     TypeTree type,
     IdentifierTree simpleName
   ) {
-    this.vararg = vararg;
     this.modifiers = modifiers;
     this.type = type;
     this.simpleName = simpleName;
   }
 
-  public VariableTreeImpl(IdentifierTreeImpl simpleName, @Nullable ArrayTypeTreeImpl nestedDimensions) {
+  public VariableTreeImpl(IdentifierTreeImpl simpleName) {
     this.modifiers = ModifiersTreeImpl.emptyModifiers();
     this.simpleName = simpleName;
-    this.nestedDimensions = nestedDimensions;
     this.initializer = null;
-  }
-
-  public VariableTreeImpl(InternalSyntaxToken equalToken, ExpressionTree initializer) {
-    this.equalToken = equalToken;
-    this.initializer = initializer;
-  }
-
-  public VariableTreeImpl(IdentifierTreeImpl simpleName) {
-    this(simpleName, null);
     this.type = new InferedTypeTree();
   }
 
-  public VariableTreeImpl(Kind kind, ModifiersTree modifiers, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
+  public VariableTreeImpl(ModifiersTree modifiers, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
     this.modifiers = Objects.requireNonNull(modifiers);
     this.simpleName = Objects.requireNonNull(simpleName);
     this.initializer = initializer;
   }
 
   public VariableTreeImpl completeType(TypeTree type) {
-    TypeTree actualType = type;
-
-    if (nestedDimensions != null) {
-      nestedDimensions.setLastChildType(type);
-      actualType = nestedDimensions;
-    }
-
-    this.type = actualType;
-
+    this.type = type;
     return this;
   }
 
   public VariableTreeImpl completeModifiers(ModifiersTreeImpl modifiers) {
     this.modifiers = modifiers;
-
     return this;
   }
 
@@ -123,32 +97,6 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     this.equalToken = equalToken;
 
     return completeType(type);
-  }
-
-  public VariableTreeImpl completeIdentifierAndDims(IdentifierTreeImpl simpleName, ArrayTypeTreeImpl nestedDimensions) {
-    this.simpleName = simpleName;
-    if (this.nestedDimensions != null) {
-      ArrayTypeTreeImpl newType = nestedDimensions;
-      newType.completeType(this.nestedDimensions);
-      this.nestedDimensions = newType;
-    } else {
-      this.nestedDimensions = nestedDimensions;
-    }
-
-    return this;
-  }
-
-  public void addEllipsisDimension(ArrayTypeTreeImpl dimension) {
-    vararg = true;
-    if (nestedDimensions != null) {
-      nestedDimensions.setLastChildType(dimension);
-    } else {
-      nestedDimensions = dimension;
-    }
-  }
-
-  public boolean isVararg() {
-    return vararg;
   }
 
   @Override
