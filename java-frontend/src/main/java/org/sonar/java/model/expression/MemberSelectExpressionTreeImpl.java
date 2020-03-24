@@ -19,14 +19,12 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Nullable;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -36,45 +34,20 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
-import org.sonar.plugins.java.api.tree.TypeTree;
 
 public class MemberSelectExpressionTreeImpl extends AssessableExpressionTree implements MemberSelectExpressionTree, JavaTree.AnnotatedTypeTree {
 
   private ExpressionTree expression;
 
-  @Nullable
-  private final ArrayTypeTreeImpl nestedDimensions;
   private InternalSyntaxToken dotToken;
   private final IdentifierTree identifier;
   private List<AnnotationTree> annotations;
 
-  public MemberSelectExpressionTreeImpl(@Nullable ArrayTypeTreeImpl nestedDimensions, InternalSyntaxToken dotToken, IdentifierTreeImpl identifier) {
-    this.nestedDimensions = nestedDimensions;
-    this.dotToken = dotToken;
-    this.identifier = identifier;
-    this.annotations = Collections.emptyList();
-  }
-
   public MemberSelectExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken dotToken, IdentifierTree identifier) {
-    this.nestedDimensions = null;
     this.expression = Objects.requireNonNull(expression);
     this.dotToken = dotToken;
     this.identifier = Objects.requireNonNull(identifier);
     this.annotations = Collections.emptyList();
-  }
-
-  public MemberSelectExpressionTreeImpl completeWithExpression(ExpressionTree expression) {
-    Preconditions.checkState(this.expression == null);
-    ExpressionTree result = expression;
-
-    if (nestedDimensions != null) {
-      nestedDimensions.setLastChildType((TypeTree) expression);
-      result = nestedDimensions;
-    }
-
-    this.expression = result;
-
-    return this;
   }
 
   @Override

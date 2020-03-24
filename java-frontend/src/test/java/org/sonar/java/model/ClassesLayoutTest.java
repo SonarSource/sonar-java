@@ -74,7 +74,7 @@ class ClassesLayoutTest {
   @Test
   void member_select() {
     assertAll(
-      () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64)).isEqualTo(88),
+      () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64)).isEqualTo(80),
       () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
