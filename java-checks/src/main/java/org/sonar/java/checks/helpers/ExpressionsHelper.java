@@ -156,13 +156,15 @@ public class ExpressionsHelper {
   }
 
   public static boolean isNotSerializable(ExpressionTree expression) {
-    return isNonSerializable(expression.symbolType()) || isAssignedToNonSerializable(expression);
+    Type symbolType = expression.symbolType();
+    if (symbolType.isUnknown()) {
+      return false;
+    }
+    return isNonSerializable(symbolType)
+      || isAssignedToNonSerializable(expression);
   }
 
   private static boolean isNonSerializable(Type type) {
-    if (type.isUnknown()) {
-      return false;
-    }
     if (type.isArray()) {
       return isNonSerializable(((Type.ArrayType) type).elementType());
     }
