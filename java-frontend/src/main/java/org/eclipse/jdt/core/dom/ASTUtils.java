@@ -91,4 +91,9 @@ public final class ASTUtils {
     return domInstances;
   }
 
+  public static String signature(IMethodBinding methodBinding) {
+    char[] signature = ((MethodBinding) methodBinding).binding.signature();
+    return new String(signature);
+  }
+
 }

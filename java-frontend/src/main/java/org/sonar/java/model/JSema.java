@@ -124,18 +124,7 @@ public final class JSema implements Sema {
   }
 
   static String signature(IMethodBinding methodBinding) {
-    try {
-      Field fieldBinding = Class.forName("org.eclipse.jdt.core.dom.MethodBinding")
-        .getDeclaredField("binding");
-      fieldBinding.setAccessible(true);
-      Method methodSignature = MethodBinding.class
-        .getMethod("signature");
-      methodSignature.setAccessible(true);
-      char[] signature = (char[]) methodSignature.invoke(fieldBinding.get(methodBinding));
-      return new String(signature);
-    } catch (ReflectiveOperationException e) {
-      throw new IllegalStateException(e);
-    }
+    return ASTUtils.signature(methodBinding);
   }
 
 }
