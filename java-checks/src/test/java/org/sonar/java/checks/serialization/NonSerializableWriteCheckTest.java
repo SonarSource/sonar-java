@@ -34,4 +34,12 @@ public class NonSerializableWriteCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  public void unresolved() {
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/NonSerializableWriteCheckUnresolved.java")
+      .withCheck(new NonSerializableWriteCheck())
+      .verifyNoIssues();
+  }
+
 }
