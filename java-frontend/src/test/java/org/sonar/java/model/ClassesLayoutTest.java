@@ -119,6 +119,14 @@ class ClassesLayoutTest {
     );
   }
 
+  @Test
+  void annotation() {
+    assertAll(
+      () -> assertThat(instanceSize(JSymbolMetadata.JAnnotationInstance.class, X86_64)).isEqualTo(32),
+      () -> assertThat(instanceSize(JSymbolMetadata.JAnnotationInstance.class, X86_64_COOPS)).isEqualTo(24)
+    );
+  }
+
   private static long instanceSize(Class<?> cls, Layouter layouter) {
     System.out.println("***** " + layouter);
     ClassLayout classLayout = ClassLayout.parseClass(cls, layouter);
