@@ -33,16 +33,12 @@ final class KeywordThis extends IdentifierTreeImpl {
     this.typeBinding = typeBinding;
   }
 
-  Symbol resolveSymbol() {
+  @Override
+  public Symbol symbol() {
     if (typeBinding == null) {
       return Symbols.unknownSymbol;
     }
     return root.sema.typeSymbol(typeBinding).thisSymbol;
-  }
-
-  @Override
-  public Symbol symbol() {
-    return resolveSymbol();
   }
 
 }
