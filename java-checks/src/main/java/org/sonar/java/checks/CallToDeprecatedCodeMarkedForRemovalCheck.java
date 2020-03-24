@@ -21,33 +21,38 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-@DeprecatedRuleKey(ruleKey = "CallToDeprecatedMethod", repositoryKey = "squid")
-@Rule(key = "S1874")
-public class CallToDeprecatedMethodCheck extends AbstractCallToDeprecatedCodeChecker {
+@Rule(key = "S5738")
+public class CallToDeprecatedCodeMarkedForRemovalCheck extends AbstractCallToDeprecatedCodeChecker {
+
+  private static final String MESSAGE = "Remove this call to a deprecated %s, it has been marked for removal.";
 
   @Override
   void checkDeprecatedIdentifier(IdentifierTree identifierTree, Symbol deprecatedSymbol) {
-    if (isFlaggedForRemoval(deprecatedSymbol)) {
-      // do not overlap with S5738
+    if (!isFlaggedForRemoval(deprecatedSymbol)) {
+      // do not overlap with S1874
       return;
     }
-    String name = deprecatedSymbol.name();
-    if (isConstructor(deprecatedSymbol)) {
-      name = deprecatedSymbol.owner().name();
+    String deprecatedCode = "code";
+    if (deprecatedSymbol.isMethodSymbol()) {
+      deprecatedCode = "method";
+    } else if (deprecatedSymbol.isTypeSymbol()) {
+      deprecatedCode = "class";
+    } else if (deprecatedSymbol.isVariableSymbol()) {
+      deprecatedCode = "field";
     }
-    reportIssue(identifierTree, String.format("Remove this use of \"%s\"; it is deprecated.", name));
+    reportIssue(identifierTree, String.format(MESSAGE, deprecatedCode));
   }
 
   @Override
-  void checkOverridingMethod(MethodTree methodTree, Symbol.MethodSymbol deprecatedSymbol) {
-    if (isFlaggedForRemoval(deprecatedSymbol)) {
-      // do not overlap with S5738
+  void checkOverridingMethod(MethodTree methodTree, MethodSymbol deprecatedSymbol) {
+    if (!isFlaggedForRemoval(deprecatedSymbol)) {
+      // do not overlap with S1874
       return;
     }
-    reportIssue(methodTree.simpleName(), "Don't override a deprecated method or explicitly mark it as \"@Deprecated\".");
+    reportIssue(methodTree.simpleName(), "Don't override this deprecated method, it has been marked for removal.");
   }
 }
