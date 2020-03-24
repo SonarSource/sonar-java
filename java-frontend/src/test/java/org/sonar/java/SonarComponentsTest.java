@@ -54,6 +54,7 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
+import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -242,18 +243,8 @@ public class SonarComponentsTest {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
     SensorContextTester context = SensorContextTester.create(new File("."));
-
     DefaultFileSystem fileSystem = context.fileSystem();
-    TestInputFileBuilder inputFileBuilder = new TestInputFileBuilder("", "file.java");
-    inputFileBuilder.setLines(45);
-    int[] lineStartOffsets = new int[45];
-    lineStartOffsets[35] = 12;
-    lineStartOffsets[42] = 1;
-    int lastValidOffset = 420;
-    inputFileBuilder.setOriginalLineStartOffsets(lineStartOffsets);
-    inputFileBuilder.setOriginalLineEndOffsets(computeLineEndOffsets(lineStartOffsets, lastValidOffset));
-    inputFileBuilder.setLastValidOffset(lastValidOffset);
-    InputFile inputFile = inputFileBuilder.build();
+    InputFile inputFile = createInputFile();
     fileSystem.add(inputFile);
 
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
@@ -281,6 +272,45 @@ public class SonarComponentsTest {
     context.setRuntime(SonarRuntimeImpl.forSonarQube(V6_7, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
     assertThat(sonarComponents.reportAnalysisError(parseError, inputFile)).isFalse();
 
+  }
+
+  @Test
+  public void test_filtered_issue_are_not_reported() throws Exception {
+    JavaCheck expectedCheck = new CustomCheck();
+    CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
+    SensorContextTester context = SensorContextTester.create(new File("."));
+    DefaultFileSystem fileSystem = context.fileSystem();
+    InputFile inputFile = createInputFile();
+    fileSystem.add(inputFile);
+
+    when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
+
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null, null, checkFactory, new CheckRegistrar[] {
+      expectedRegistrar
+    });
+
+    sonarComponents.setSensorContext(context);
+    sonarComponents.setIssueFilter(new FakeJavaIssueFilter());
+
+    sonarComponents.addIssue(inputFile, expectedCheck, 42, "message on line 42", null);
+    sonarComponents.addIssue(inputFile, expectedCheck, 35, "message on line 35", null);
+
+    List<Issue> issues = new ArrayList<>(context.allIssues());
+    assertThat(issues).hasSize(1);
+    assertThat(issues.get(0).primaryLocation().message()).isEqualTo("message on line 35");
+  }
+
+  private InputFile createInputFile() {
+    TestInputFileBuilder inputFileBuilder = new TestInputFileBuilder("", "file.java");
+    inputFileBuilder.setLines(45);
+    int[] lineStartOffsets = new int[45];
+    lineStartOffsets[35] = 12;
+    lineStartOffsets[42] = 1;
+    int lastValidOffset = 420;
+    inputFileBuilder.setOriginalLineStartOffsets(lineStartOffsets);
+    inputFileBuilder.setOriginalLineEndOffsets(computeLineEndOffsets(lineStartOffsets, lastValidOffset));
+    inputFileBuilder.setLastValidOffset(lastValidOffset);
+    return inputFileBuilder.build();
   }
 
   @Test
@@ -407,5 +437,13 @@ public class SonarComponentsTest {
   @Rule(key = "jsp")
   public static class JspCodeCheck implements JspCodeVisitor {
 
+  }
+
+  private static class FakeJavaIssueFilter implements SonarJavaIssueFilter {
+
+    @Override
+    public boolean accept(RuleKey ruleKey, AnalyzerMessage analyzerMessage) {
+      return !Integer.valueOf(42).equals(analyzerMessage.getLine());
+    }
   }
 }

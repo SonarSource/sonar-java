@@ -46,6 +46,7 @@ import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -67,6 +68,8 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> checks;
   private final List<Checks<JavaCheck>> testChecks;
   private final List<Checks<JavaCheck>> allChecks;
+  @Nullable
+  private SonarJavaIssueFilter issueFilter;
   private SensorContext context;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
@@ -212,6 +215,9 @@ public class SonarComponents {
     if (inputComponent == null) {
       return;
     }
+    if (issueFilter != null && !issueFilter.accept(key, analyzerMessage)) {
+      return;
+    }
     Double cost = analyzerMessage.getCost();
     reportIssue(analyzerMessage, key, inputComponent, cost);
   }
@@ -299,4 +305,9 @@ public class SonarComponents {
     // TODO to be changed to context.project() once LTS 7.x has been released
     return context.module();
   }
+
+  public void setIssueFilter(SonarJavaIssueFilter issueFilter) {
+    this.issueFilter = issueFilter;
+  }
+
 }

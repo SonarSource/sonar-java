@@ -25,8 +25,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.scan.issue.filter.FilterableIssue;
-import org.sonar.api.scan.issue.filter.IssueFilterChain;
+import org.sonar.api.rule.RuleKey;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.CheckTestUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -40,7 +40,8 @@ public class PostAnalysisIssueFilterTest {
   private static final InputFile INPUT_FILE = CheckTestUtils.inputFile("src/test/files/filters/PostAnalysisIssueFilter.java");
   private static JavaFileScannerContext context;
   private PostAnalysisIssueFilter postAnalysisIssueFilter;
-  private static final ArrayList<FakeJavaIssueFilter> ISSUE_FILTERS = Lists.newArrayList(new FakeJavaIssueFilter(true), new FakeJavaIssueFilter(false));
+  private static final FakeJavaIssueFilter acceptingIssueFilter = new FakeJavaIssueFilter(true);
+  private static final ArrayList<FakeJavaIssueFilter> ISSUE_FILTERS = Lists.newArrayList(acceptingIssueFilter, new FakeJavaIssueFilter(false));
 
   @Before
   public void setUp() {
@@ -56,24 +57,15 @@ public class PostAnalysisIssueFilterTest {
   }
 
   @Test
-  public void issue_filter_should_reject_issue_if_any_issue_filter_reject_the_issue() {
-    postAnalysisIssueFilter.setIssueFilters(ISSUE_FILTERS);
-
-    assertThat(postAnalysisIssueFilter.accept(mock(FilterableIssue.class), mock(IssueFilterChain.class))).isFalse();
+  public void issue_filter_should_accept_issue() {
+    postAnalysisIssueFilter.setIssueFilters(Lists.newArrayList(acceptingIssueFilter));
+    assertThat(postAnalysisIssueFilter.accept(null, null)).isTrue();
   }
 
   @Test
-  public void issue_filter_should_depends_on_chain_if_filters_accetps() {
-    postAnalysisIssueFilter.setIssueFilters(new ArrayList<>());
-
-    FilterableIssue issue = mock(FilterableIssue.class);
-    IssueFilterChain chain = mock(IssueFilterChain.class);
-
-    when(chain.accept(issue)).thenReturn(true);
-    assertThat(postAnalysisIssueFilter.accept(issue, chain)).isTrue();
-
-    when(chain.accept(issue)).thenReturn(false);
-    assertThat(postAnalysisIssueFilter.accept(issue, chain)).isFalse();
+  public void issue_filter_should_reject_issue_if_any_issue_filter_reject_the_issue() {
+    postAnalysisIssueFilter.setIssueFilters(ISSUE_FILTERS);
+    assertThat(postAnalysisIssueFilter.accept(null, null)).isFalse();
   }
 
   @Test
@@ -101,7 +93,7 @@ public class PostAnalysisIssueFilterTest {
     }
 
     @Override
-    public boolean accept(FilterableIssue issue) {
+    public boolean accept(RuleKey ruleKey, AnalyzerMessage analyzerMessage) {
       return accepted;
     }
 

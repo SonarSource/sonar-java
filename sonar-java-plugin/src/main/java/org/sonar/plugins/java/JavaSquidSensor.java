@@ -96,6 +96,7 @@ public class JavaSquidSensor implements Sensor {
 
     Measurer measurer = new Measurer(context, noSonarFilter);
     PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter();
+    sonarComponents.setIssueFilter(postAnalysisIssueFilter);
 
     JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
