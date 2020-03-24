@@ -19,53 +19,71 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3740")
-public class RawTypeCheck extends IssuableSubscriptionVisitor {
+public class RawTypeCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  private JavaFileScannerContext context;
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.VARIABLE, Tree.Kind.METHOD, Tree.Kind.NEW_CLASS, Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    switch (tree.kind()) {
-      case VARIABLE:
-        checkTypeTree(((VariableTree) tree).type());
-        break;
-      case METHOD:
-        checkTypeTree(((MethodTree) tree).returnType());
-        break;
-      case NEW_CLASS:
-        checkTypeTree(((NewClassTree) tree).identifier());
-        break;
-      case CLASS:
-      case INTERFACE:
-      case ENUM:
-        ClassTree classTree = (ClassTree) tree;
-        classTree.superInterfaces().forEach(this::checkTypeTree);
-        checkTypeTree(classTree.superClass());
-        break;
-      default:
-        // do nothing - can not occur
-        break;
+  public void visitMethod(MethodTree tree) {
+    if (tree.symbol().overriddenSymbol() != null) {
+      // only scan body of the method
+      scan(tree.block());
+    } else {
+      checkTypeTree(tree.returnType());
+      super.visitMethod(tree);
     }
+  }
+
+  @Override
+  public void visitParameterizedType(ParameterizedTypeTree tree) {
+    tree.typeArguments().stream()
+      .filter(TypeTree.class::isInstance)
+      .map(TypeTree.class::cast)
+      .forEach(this::checkTypeTree);
+    super.visitParameterizedType(tree);
+  }
+
+  @Override
+  public void visitNewClass(NewClassTree tree) {
+    checkTypeTree(tree.identifier());
+    super.visitNewClass(tree);
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    checkTypeTree(tree.type());
+    super.visitVariable(tree);
+  }
+
+  @Override
+  public void visitClass(ClassTree tree) {
+    tree.superInterfaces().forEach(this::checkTypeTree);
+    checkTypeTree(tree.superClass());
+    super.visitClass(tree);
   }
 
   private void checkTypeTree(@Nullable TypeTree typeTree) {
@@ -82,7 +100,7 @@ public class RawTypeCheck extends IssuableSubscriptionVisitor {
   private void checkIdentifier(IdentifierTree identifier) {
     Type type = identifier.symbolType();
     if (JUtils.isRawType(type) && !type.equals(JUtils.declaringType(type))) {
-      reportIssue(identifier, "Provide the parametrized type for this generic.");
+      context.reportIssue(this, identifier, "Provide the parametrized type for this generic.");
     }
   }
 }
