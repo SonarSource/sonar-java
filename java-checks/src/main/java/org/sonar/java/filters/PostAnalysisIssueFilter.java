@@ -21,11 +21,15 @@ package org.sonar.java.filters;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.scan.issue.filter.FilterableIssue;
-import org.sonar.api.scan.issue.filter.IssueFilterChain;
+import org.sonar.api.rule.RuleKey;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonarsource.api.sonarlint.SonarLintSide;
+import org.sonar.api.scanner.ScannerSide;
 
+@ScannerSide
+@SonarLintSide
 public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueFilter {
 
   private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
@@ -49,13 +53,13 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueF
   }
 
   @Override
-  public boolean accept(FilterableIssue issue, IssueFilterChain chain) {
+  public boolean accept(RuleKey ruleKey, AnalyzerMessage analyzerMessage) {
     for (JavaIssueFilter javaIssueFilter : getIssueFilters()) {
-      if (!javaIssueFilter.accept(issue)) {
+      if (!javaIssueFilter.accept(ruleKey, analyzerMessage)) {
         return false;
       }
     }
-    return chain.accept(issue);
+    return true;
   }
 
   @Override

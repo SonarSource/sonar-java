@@ -62,19 +62,22 @@ public class JavaSquidSensor implements Sensor {
   private final NoSonarFilter noSonarFilter;
   @Nullable
   private final Jasper jasper;
+  private final PostAnalysisIssueFilter postAnalysisIssueFilter;
 
   public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
-                         Configuration settings, NoSonarFilter noSonarFilter) {
-    this(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, null);
+                         Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
+    this(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter, null);
   }
 
   public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
-                         Configuration settings, NoSonarFilter noSonarFilter, @Nullable Jasper jasper) {
+                         Configuration settings, NoSonarFilter noSonarFilter,
+                         PostAnalysisIssueFilter postAnalysisIssueFilter, @Nullable Jasper jasper) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.fs = fs;
     this.javaResourceLocator = javaResourceLocator;
     this.settings = settings;
+    this.postAnalysisIssueFilter = postAnalysisIssueFilter;
     this.jasper = jasper;
   }
 
@@ -95,7 +98,6 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
 
     Measurer measurer = new Measurer(context, noSonarFilter);
-    PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter();
 
     JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));

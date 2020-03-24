@@ -37,7 +37,6 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
@@ -81,24 +80,21 @@ public class FilterVerifier {
     Multimap<Integer, String> issuesByLines = HashMultimap.create();
     for (AnalyzerMessage analyzerMessage : testJavaFileScannerContext.getIssues()) {
       Integer issueLine = analyzerMessage.getLine();
-      String ruleKey = AnnotationUtils.getAnnotation(analyzerMessage.getCheck().getClass(), Rule.class).key();
-      FilterableIssue issue = mock(FilterableIssue.class);
-      when(issue.ruleKey()).thenReturn(RuleKey.of("repo", ruleKey));
-      when(issue.componentKey()).thenReturn(inputFile.key());
-      when(issue.line()).thenReturn(issueLine);
+      String ruleKeyName = AnnotationUtils.getAnnotation(analyzerMessage.getCheck().getClass(), Rule.class).key();
+      RuleKey ruleKey = RuleKey.of("repo", ruleKeyName);
 
       if (issueCollector.rejectedIssuesLines.contains(issueLine)) {
 
-        assertThat(filter.accept(issue))
+        assertThat(filter.accept(ruleKey, analyzerMessage))
           .overridingErrorMessage("Line #" + issueLine + " has been marked with 'NoIssue' but issue of rule '" + ruleKey + "' has been accepted!")
           .isFalse();
       } else if (issueCollector.acceptedIssuesLines.contains(issueLine)) {
         // force check on accepted issues
-        assertThat(filter.accept(issue))
+        assertThat(filter.accept(ruleKey, analyzerMessage))
           .overridingErrorMessage("Line #" + issueLine + " has been marked with 'WithIssue' but no issue have been raised!")
           .isTrue();
       } else {
-        issuesByLines.put(issueLine, ruleKey);
+        issuesByLines.put(issueLine, ruleKeyName);
       }
     }
 
@@ -153,7 +149,7 @@ public class FilterVerifier {
   private static SonarComponents sonarComponents(InputFile inputFile) {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     context.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
         throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));
