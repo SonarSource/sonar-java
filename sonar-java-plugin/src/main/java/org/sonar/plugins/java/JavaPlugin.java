@@ -80,6 +80,7 @@ public class JavaPlugin implements Plugin {
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
       JavaSquidSensor.class,
+      PostAnalysisIssueFilter.class,
       XmlFileSensor.class
       );
 

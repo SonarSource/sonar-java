@@ -358,7 +358,7 @@ public class VisitorsBridgeTest {
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     sensorContextTester.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failOnException));
 
-    sonarComponents = new SonarComponents(null, null, null, null, null);
+    sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
 
     VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents, SymbolicExecutionMode.ENABLED_WITHOUT_X_FILE, analysisIssueFilter);

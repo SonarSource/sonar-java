@@ -25,7 +25,11 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonarsource.api.sonarlint.SonarLintSide;
+import org.sonar.api.scanner.ScannerSide;
 
+@ScannerSide
+@SonarLintSide
 public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueFilter {
 
   private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
