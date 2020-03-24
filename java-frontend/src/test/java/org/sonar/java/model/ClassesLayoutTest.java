@@ -28,6 +28,7 @@ import org.openjdk.jol.layouters.Layouter;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,6 +68,14 @@ class ClassesLayoutTest {
     assertAll(
       () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64)).isEqualTo(96),
       () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64_COOPS)).isEqualTo(56)
+    );
+  }
+
+  @Test
+  void member_select() {
+    assertAll(
+      () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64)).isEqualTo(88),
+      () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
 
