@@ -39,6 +39,11 @@ final class JSymbolMetadata implements SymbolMetadata {
   private final JSema sema;
   private final IAnnotationBinding[] annotationBindings;
 
+  /**
+   * Cache for {@link #annotations()}.
+   */
+  private List<AnnotationInstance> annotations;
+
   JSymbolMetadata(JSema sema, IAnnotationBinding[] annotationBindings) {
     this.sema = Objects.requireNonNull(sema);
     this.annotationBindings = annotationBindings;
@@ -53,9 +58,12 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   @Override
   public List<AnnotationInstance> annotations() {
-    return Arrays.stream(annotationBindings)
-      .map(sema::annotation)
-      .collect(Collectors.toList());
+    if (annotations == null) {
+      annotations = Arrays.stream(annotationBindings)
+        .map(sema::annotation)
+        .collect(Collectors.toList());
+    }
+    return annotations;
   }
 
   @Override
@@ -84,6 +92,11 @@ final class JSymbolMetadata implements SymbolMetadata {
     private final JSema sema;
     private final IAnnotationBinding annotationBinding;
 
+    /**
+     * Cache for {@link #values()}.
+     */
+    private List<AnnotationValue> values;
+
     JAnnotationInstance(JSema sema, IAnnotationBinding annotationBinding) {
       this.sema = sema;
       this.annotationBinding = annotationBinding;
@@ -96,11 +109,12 @@ final class JSymbolMetadata implements SymbolMetadata {
 
     @Override
     public List<AnnotationValue> values() {
-      List<AnnotationValue> r = new ArrayList<>();
-      for (IMemberValuePairBinding pair : annotationBinding.getDeclaredMemberValuePairs()) {
-        r.add(new AnnotationValueResolve(pair.getName(), convertAnnotationValue(pair.getValue())));
+      if (values == null) {
+        values = Arrays.stream(annotationBinding.getDeclaredMemberValuePairs())
+          .map(p -> new AnnotationValueResolve(p.getName(), convertAnnotationValue(p.getValue())))
+          .collect(Collectors.toList());
       }
-      return r;
+      return values;
     }
 
     private Object convertAnnotationValue(Object value) {

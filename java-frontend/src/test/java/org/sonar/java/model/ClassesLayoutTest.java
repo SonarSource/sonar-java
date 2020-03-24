@@ -98,7 +98,7 @@ class ClassesLayoutTest {
   @Test
   void symbol_type() {
     assertAll(
-      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(48),
+      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(56),
       () -> assertThat(instanceSize(JTypeSymbol.class, X86_64_COOPS)).isEqualTo(32)
     );
   }
@@ -106,7 +106,7 @@ class ClassesLayoutTest {
   @Test
   void symbol_method() {
     assertAll(
-      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64)).isEqualTo(32),
+      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64)).isEqualTo(40),
       () -> assertThat(instanceSize(JMethodSymbol.class, X86_64_COOPS)).isEqualTo(24)
     );
   }
@@ -114,7 +114,7 @@ class ClassesLayoutTest {
   @Test
   void symbol_variable() {
     assertAll(
-      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(32),
+      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(40),
       () -> assertThat(instanceSize(JVariableSymbol.class, X86_64_COOPS)).isEqualTo(24)
     );
   }
@@ -122,7 +122,7 @@ class ClassesLayoutTest {
   @Test
   void annotation() {
     assertAll(
-      () -> assertThat(instanceSize(JSymbolMetadata.JAnnotationInstance.class, X86_64)).isEqualTo(32),
+      () -> assertThat(instanceSize(JSymbolMetadata.JAnnotationInstance.class, X86_64)).isEqualTo(40),
       () -> assertThat(instanceSize(JSymbolMetadata.JAnnotationInstance.class, X86_64_COOPS)).isEqualTo(24)
     );
   }

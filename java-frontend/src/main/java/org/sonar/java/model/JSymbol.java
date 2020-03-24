@@ -44,6 +44,11 @@ abstract class JSymbol implements Symbol {
   protected final JSema sema;
   protected final IBinding binding;
 
+  /**
+   * Cache for {@link #metadata()}.
+   */
+  private SymbolMetadata metadata;
+
   JSymbol(JSema sema, IBinding binding) {
     this.sema = Objects.requireNonNull(sema);
     this.binding = Objects.requireNonNull(binding);
@@ -303,6 +308,13 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final SymbolMetadata metadata() {
+    if (metadata == null) {
+      metadata = convertMetadata();
+    }
+    return metadata;
+  }
+
+  private SymbolMetadata convertMetadata() {
     switch (binding.getKind()) {
       case IBinding.PACKAGE:
         return new JSymbolMetadata(sema, sema.resolvePackageAnnotations(binding.getName()));
