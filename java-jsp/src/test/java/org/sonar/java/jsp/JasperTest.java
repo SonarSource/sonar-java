@@ -26,7 +26,9 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.nio.file.Paths;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -46,7 +48,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @EnableRuleMigrationSupport
 class JasperTest {
 
-  @TempDir
   Path tempFolder;
   Path webInf;
 
@@ -58,8 +59,16 @@ class JasperTest {
 
   @BeforeEach
   void setUp() throws Exception {
+    // on macOS tmp is symbolic link which doesn't work well with Jasper, so we create tmp in 'target/tmp'
+    tempFolder = Paths.get("target/tmp");
+    Files.createDirectories(tempFolder);
     webInf = tempFolder.resolve("WEB-INF");
     Files.createDirectory(webInf);
+  }
+
+  @AfterEach
+  void tearDown() throws Exception {
+    FileUtils.deleteDirectory(tempFolder.toFile());
   }
 
   @Test
