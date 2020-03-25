@@ -1,9 +1,24 @@
+import java.io.Serializable;
+
 /**
  * Extra rules running:
- * - TodoTagPresenceCheck (S1135)
- * - UnusedPrivateFieldCheck (S1068)
- * - BadConstantNameCheck (S115)
- * - SuppressWarningCheck (S1309) - Raise an issue on all the @SuppressWarning annotation, can not be suppressed
+ * - TodoTagPresenceCheck
+ * - BadConstantNameCheck
+ * - SuppressWarningCheck - Raise an issue on all the @SuppressWarning annotation, can not be suppressed
+ * - UnusedPrivateFieldCheck
+ * - ObjectFinalizeCheck
+ * - SwitchCaseWithoutBreakCheck
+ * - RedundantTypeCastCheck
+ * - CallToDeprecatedMethodCheck
+ * - CallToDeprecatedCodeMarkedForRemovalCheck
+ * - MissingDeprecatedCheck
+ * - DivisionByZeroCheck
+ * - EmptyBlockCheck
+ * - EmptyStatementUsageCheck
+ * - ReturnInFinallyCheck
+ * - EqualsOverridenWithHashCodeCheck
+ * - StaticMembersAccessCheck
+ * - SerialVersionUidCheck
  */
 class Test {
   class UnusedPrivateFieldCheck {
@@ -33,7 +48,7 @@ class Test {
     }
   }
 
-  @SuppressWarnings({"repo:S1068", "repo:S115"}) // WithIssue
+  @SuppressWarnings({"java:S1068", "java:S115"}) // WithIssue
   class C {
     private static final int bad_constant_name = 42; // NoIssue
 
@@ -44,7 +59,7 @@ class Test {
     }
   }
 
-  @SuppressWarnings("repo:S115") // WithIssue
+  @SuppressWarnings("java:S115") // WithIssue
   class D {
     private static final int bad_constant_name = 42; // NoIssue
 
@@ -57,15 +72,14 @@ class Test {
   }
 
   @SuppressWarnings // WithIssue
-  @Deprecated
   class E {
   }
 
   class F {
-    @SuppressWarnings("repo:S115") // WithIssue
+    @SuppressWarnings("java:S115") // WithIssue
     private static final int bad_constant_name = 42; // NoIssue
 
-    @SuppressWarnings("repo:S1068") // WithIssue
+    @SuppressWarnings("java:S1068") // WithIssue
     private String s; // NoIssue
 
     int foo() {
@@ -89,19 +103,19 @@ class Test {
     @SuppressWarning("S115") // WithIssue
     private static final int bad_constant_name3 = 42; // WithIssue
 
-    @SuppressWarnings("squid:ObjectFinalizeCheck") // WithIssue
+    @SuppressWarnings({"squid:ObjectFinalizeCheck", "java:S1874"}) // WithIssue
     void a() {
       Object object = new Object();
       object.finalize(); // NoIssue
     }
 
-    @SuppressWarnings("squid:S1111") // WithIssue
+    @SuppressWarnings({"squid:S1111", "java:S1874"}) // WithIssue
     void b() {
       Object object = new Object();
       object.finalize(); // NoIssue
     }
 
-    @SuppressWarnings("repo:S1111") // WithIssue
+    @SuppressWarnings({"java:S1111", "java:S1874"}) // WithIssue
     void c() {
       Object object = new Object();
       object.finalize(); // NoIssue
@@ -119,7 +133,7 @@ class Test {
  * TODO  NoIssue
  */
 // TODO another one NoIssue
-@SuppressWarnings("repo:S1135") // WithIssue
+@SuppressWarnings("java:S1135") // WithIssue
 class JavadocSuppressed {
 
 
@@ -136,9 +150,133 @@ class Javadoc {
    * Works on method too
    * TODO  NoIssue
    */
-  @SuppressWarnings("repo:S1135") // WithIssue
+  @SuppressWarnings("java:S1135") // WithIssue
   void m() {
 
   }
 
+}
+
+// cast supresses S1905
+@SuppressWarnings("cast") // WithIssue
+class Cast {
+  void f() {
+    String s1 = "";
+    String s2 = (String) s1; // NoIssue
+  }
+}
+
+// deprecation supresses S1874 (but not S5738)
+@SuppressWarnings("deprecation") // WithIssue
+class Deprecation1 {
+
+  @Deprecated
+  private String deprecated; // WithIssue
+
+  @Deprecated(forRemoval=true)
+  private String deprecatedForRemoval; // WithIssue
+
+  void f() {
+    String s = deprecated  // NoIssue
+      + deprecatedForRemoval; // WithIssue
+  }
+}
+
+// removal supresses S5738 (but not S1874)
+@SuppressWarnings("removal") // WithIssue
+class Deprecation2 {
+
+  @Deprecated
+  private String deprecated; // WithIssue
+
+  @Deprecated(forRemoval=true)
+  private String deprecatedForRemoval; // WithIssue
+
+  void f() {
+    String s = deprecated  // WithIssue
+      + deprecatedForRemoval; // NoIssue
+  }
+}
+
+// dep-ann supresses S1123
+@SuppressWarnings("dep-ann") // WithIssue
+class Deprecation3 {
+  @Deprecated
+  public void foo1() { // NoIssue
+  }
+
+  /**
+   * @deprecated
+   */
+  public void foo2() { // NoIssue
+  }
+
+}
+
+// divzero supresses S3518
+@SuppressWarnings("divzero") // WithIssue
+class Divzero {
+  void f() {
+    int j = 1 / 0; // NoIssue
+  }
+}
+
+// empty supresses S108, S1116
+@SuppressWarnings("empty") // WithIssue
+class Empty {
+  void f(boolean b) {
+    if (b) { } // NoIssue
+    ; // NoIssue
+  }
+}
+
+// fallthrough supresses S128
+@SuppressWarnings("fallthrough") // WithIssue
+class FallThough {
+  private String s; // WithIssue
+
+  void f() {
+    switch (myVariable) {
+      case 2: // NoIssue
+        doSomething();
+      default:
+        doSomethingElse();
+        break;
+    }
+  }
+}
+
+// finally supresses S1143
+@SuppressWarnings("finally") // WithIssue
+class Finally {
+  void f() {
+    try {
+      // Not empty
+    } finally {
+      return; // NoIssue
+    }
+  }
+}
+
+// overrides supresses S1206
+@SuppressWarnings("overrides") // WithIssue
+class Overrides {
+  @Override
+  public boolean equals(Object obj) { // NoIssue
+    return super.equals(obj);
+  }
+}
+
+// serial supresses S2209
+@SuppressWarnings("serial") // WithIssue
+class Serial implements Serializable { // NoIssue
+}
+
+// static supresses S2209
+@SuppressWarnings("static") // WithIssue
+class Static {
+  public static int counter = 0;
+  void f() {
+    this.counter ++; // NoIssue
+  }
 }
