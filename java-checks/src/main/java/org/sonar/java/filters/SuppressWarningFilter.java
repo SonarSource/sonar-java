@@ -22,6 +22,7 @@ package org.sonar.java.filters;
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 
@@ -51,6 +52,20 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
+
+  private static final Multimap<String, String> JAVAC_WARNING_SUPPRESSING_RULES = new ImmutableMultimap.Builder<String, String>()
+      .put("cast", "java:S1905")
+      .put("deprecation", "java:S1874")
+      .put("dep-ann", "java:S1123")
+      .put("divzero", "java:S3518")
+      .putAll("empty", "java:S1116", "java:S108")
+      .put("fallthrough", "java:S128")
+      .put("finally", "java:S1143")
+      .put("overrides", "java:S1206")
+      .put("removal", "java:S5738")
+      .put("serial", "java:S2057")
+      .put("static", "java:S2209")
+      .build();
 
   private final Map<String, Multimap<String, Integer>> excludedLinesByComponent = new HashMap<>();
 
@@ -185,7 +200,13 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
         args.addAll(getRulesFromExpression(initializer));
       }
     } else {
-      expression.asConstant(String.class).ifPresent(args::add);
+      expression.asConstant(String.class).ifPresent(rule -> {
+        if (JAVAC_WARNING_SUPPRESSING_RULES.containsKey(rule)) {
+          args.addAll(JAVAC_WARNING_SUPPRESSING_RULES.get(rule));
+        } else {
+          args.add(rule);
+        }
+      });
     }
     return args;
   }

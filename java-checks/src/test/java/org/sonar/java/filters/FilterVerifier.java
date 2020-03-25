@@ -81,7 +81,7 @@ public class FilterVerifier {
     for (AnalyzerMessage analyzerMessage : testJavaFileScannerContext.getIssues()) {
       Integer issueLine = analyzerMessage.getLine();
       String ruleKeyName = AnnotationUtils.getAnnotation(analyzerMessage.getCheck().getClass(), Rule.class).key();
-      RuleKey ruleKey = RuleKey.of("repo", ruleKeyName);
+      RuleKey ruleKey = RuleKey.of("java", ruleKeyName);
 
       if (issueCollector.rejectedIssuesLines.contains(issueLine)) {
 
