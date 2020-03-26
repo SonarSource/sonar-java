@@ -108,8 +108,8 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
 
   private static String message(Type actualMethodType, Type checkedMethodType, Type parameterType, Type argumentType) {
     String actualType = typeNameWithParameters(actualMethodType);
-    boolean actualTypeHasTheParameterType = JUtils.typeArguments(actualMethodType).stream().anyMatch(typeArg -> typeArg.equals(parameterType));
-    boolean checkedTypeHasSeveralParameters = JUtils.typeArguments(checkedMethodType).size() > 1;
+    boolean actualTypeHasTheParameterType = actualMethodType.typeArguments().stream().anyMatch(typeArg -> typeArg.equals(parameterType));
+    boolean checkedTypeHasSeveralParameters = checkedMethodType.typeArguments().size() > 1;
     String typeDescription = checkedTypeHasSeveralParameters ? (" in a \"" + parameterType + "\" type") : "";
     if (actualTypeHasTheParameterType) {
       return MessageFormat.format("A \"{0}\" cannot contain a \"{1}\"{2}.", actualType, argumentType.name(), typeDescription);
@@ -121,8 +121,8 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
   }
 
   private static String typeNameWithParameters(Type type) {
-    if (JUtils.isParametrized(type)) {
-      return type.name() + JUtils.typeArguments(type).stream()
+    if (type.isParameterized()) {
+      return type.name() + type.typeArguments().stream()
         .map(Type::name)
         .collect(Collectors.joining(", ", "<", ">"));
     }
@@ -144,11 +144,11 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     return mit.symbol().owner().type();
   }
 
-  private static Type getTypeArgumentAt(Type parametrizedType, int parametrizedTypeIndex) {
-    if (JUtils.isParametrized(parametrizedType)) {
-      List<Type> parameters = JUtils.typeArguments(parametrizedType);
-      if (parametrizedTypeIndex < parameters.size()) {
-        return parameters.get(parametrizedTypeIndex);
+  private static Type getTypeArgumentAt(Type type, int index) {
+    if (type.isParameterized()) {
+      List<Type> parameters = type.typeArguments();
+      if (index < parameters.size()) {
+        return parameters.get(index);
       }
     }
     return Symbols.unknownType;

@@ -31,6 +31,7 @@ import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -78,6 +79,36 @@ class JTypeTest {
         assertThat(type("int").isVoid())
           .isFalse()
     );
+  }
+
+  @Test
+  void isParametrizedType() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() { new java.util.ArrayList<String>(); } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
+    AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
+
+    assertThat(cu.sema.type(e.typeBinding).isParameterized())
+      .isEqualTo(e.symbolType().isParameterized())
+      .isTrue();
+  }
+
+  @Test
+  void typeArguments() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() { new java.util.HashMap<Integer, String>(); } }");
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
+    ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
+    AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
+
+    assertThat(cu.sema.type(e.typeBinding).typeArguments().toString())
+      .isEqualTo(e.symbolType().typeArguments().toString())
+      .isEqualTo("[Integer, String]");
+
+    assertThat(cu.sema.type(c.typeBinding).typeArguments())
+      .isEqualTo(c.symbol().type().typeArguments())
+      .isEmpty();
   }
 
   @Test

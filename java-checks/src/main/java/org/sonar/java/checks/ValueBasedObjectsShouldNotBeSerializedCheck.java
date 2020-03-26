@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ValueBasedUtils;
 import org.sonar.java.checks.serialization.SerializableContract;
-import org.sonar.java.model.JUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -78,9 +77,9 @@ public class ValueBasedObjectsShouldNotBeSerializedCheck extends IssuableSubscri
   private static boolean isSerializableAndValueBased(Type type) {
     // we check first the ParametrizedTypeJavaType, in order to filter out the non-serializable
     // generic value-based class Optional<T>
-    if (JUtils.isParametrized(type)) {
+    if (type.isParameterized()) {
       return isSubtypeOfCollectionApi(type) &&
-        JUtils.typeArguments(type).stream().anyMatch(ValueBasedObjectsShouldNotBeSerializedCheck::isSerializableAndValueBased);
+        type.typeArguments().stream().anyMatch(ValueBasedObjectsShouldNotBeSerializedCheck::isSerializableAndValueBased);
     }
     return ValueBasedUtils.isValueBased(type);
   }

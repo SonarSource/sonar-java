@@ -75,6 +75,27 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 We realized that MethodMatchers is a really convenient way of writing new rules, it will hopefully ease the addition of rules in custom plugins, without having to rewrite the logic.
 We are heavily using it in the different [checks](https://github.com/SonarSource/sonar-java/tree/master/java-checks/src/main/java/org/sonar/java/checks), plenty of examples can be found there.
 
+* Two new methods have been added in the semantic API in order to access parametrized type in custom rules. The changes are available in `org.sonar.plugins.java.api.semantic.Type`:
+     ```
+     /**
+      * Check if the current type is a parameterized type or not.
+      *
+      * @return true in case of Generic and Parameterized types
+      *
+      * @since SonarJava 6.3
+      */
+     boolean isParameterized();
+
+     /**
+      * The arguments of a parameterized type, as a parameterization of a generic type.
+      *
+      * @return the ordered list of type arguments. Returns an empty lists for non-parameterized types.
+      *
+      * @since SonarJava 6.3
+      */
+     List<Type> typeArguments();
+     ```
+
 #### **6.1**
 
 * The `ExpressionTree` interface, from the AST API, is now enriched by two new methods `Optional<Object> asConstant()` and `<T> Optional<T> asConstant(Class<T> type)`. These methods let you try to retrieve the equivalent constant value of an expression (from a variable, for instance). An example of usage would be:

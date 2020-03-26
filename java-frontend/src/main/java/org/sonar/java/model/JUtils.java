@@ -34,10 +34,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -200,17 +198,6 @@ public final class JUtils {
       || ((JMethodSymbol) method).methodBinding().isGenericMethod();
   }
 
-  public static boolean isParametrized(Type type) {
-    if (type.isUnknown()) {
-      return false;
-    }
-    JType t = (JType) type;
-    return t.typeBinding.isParameterizedType()
-      // when diamond operator is not fully resolved by ECJ, there is 0 typeArguments, while ECJ
-      // knows it is a Parameterized Type
-      && t.typeBinding.getTypeArguments().length > 0;
-  }
-
   public static boolean isRawType(Type type) {
     if (type.isUnknown()) {
       return false;
@@ -225,19 +212,6 @@ public final class JUtils {
     }
     JType t = (JType) type;
     return t.sema.type(t.typeBinding.getTypeDeclaration());
-  }
-
-  public static List<Type> typeArguments(Type type) {
-    if (type.isUnknown()) {
-      return Collections.emptyList();
-    }
-    JType t = (JType) type;
-    ITypeBinding[] typeArguments = t.typeBinding.getTypeArguments();
-    Type[] result = new Type[typeArguments.length];
-    for (int i = 0; i < typeArguments.length; i++) {
-      result[i] = t.sema.type(typeArguments[i]);
-    }
-    return Arrays.asList(result);
   }
 
   public static Set<Type> directSuperTypes(Type type) {

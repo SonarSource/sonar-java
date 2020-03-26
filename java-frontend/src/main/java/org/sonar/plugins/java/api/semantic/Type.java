@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.java.api.semantic;
 
+import java.util.List;
+
 /**
  * Interface to access resolved type of an expression or a Type.
  */
@@ -158,6 +160,24 @@ public interface Type {
    * @return erased type.
    */
   Type erasure();
+
+  /**
+   * Check if the current type is a parameterized type or not.
+   *
+   * @return true in case of Generic and Parameterized types
+   *
+   * @since SonarJava 6.3
+   */
+  boolean isParameterized();
+
+  /**
+   * The arguments of a parameterized type, as a parameterization of a generic type.
+   *
+   * @return the ordered list of type arguments. Returns an empty lists for non-parameterized types.
+   *
+   * @since SonarJava 6.3
+   */
+  List<Type> typeArguments();
 
   /**
    * Type for arrays.

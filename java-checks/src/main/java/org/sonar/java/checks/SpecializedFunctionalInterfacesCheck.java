@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -102,7 +101,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
   }
 
   private static Optional<String> matchFunctionalInterface(Type type, boolean usedAsMethodReference) {
-    if (type.isUnknown() || !JUtils.isParametrized(type)) {
+    if (type.isUnknown() || !type.isParameterized()) {
       return Optional.empty();
     }
     switch (type.fullyQualifiedName()) {
@@ -221,7 +220,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     final String paramTypeName;
 
     ParameterTypeNameAndTreeType(Type parametrizedType, int typeArgumentIndex) {
-      paramType = JUtils.typeArguments(parametrizedType).get(typeArgumentIndex);
+      paramType = parametrizedType.typeArguments().get(typeArgumentIndex);
       paramTypeName = returnStringFromJavaObject(paramType);
     }
 

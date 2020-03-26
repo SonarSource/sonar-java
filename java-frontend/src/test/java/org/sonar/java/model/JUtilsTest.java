@@ -101,19 +101,6 @@ class JUtilsTest {
   }
 
   @Test
-  void isParametrizedType() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() { new java.util.ArrayList<String>(); } }");
-    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
-    AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
-
-    assertThat(JUtils.isParametrized(cu.sema.type(e.typeBinding)))
-      .isEqualTo(JUtils.isParametrized(e.symbolType()))
-      .isTrue();
-  }
-
-  @Test
   void isRawType() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C {} class D<T> { void foo(D d, Unknown u) {} }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
@@ -148,19 +135,6 @@ class JUtilsTest {
     assertThat(JUtils.declaringType(cRaw.type().symbolType()))
       .isSameAs(JUtils.declaringType(c.symbol().type()))
       .isSameAs(c.symbol().type());
-  }
-
-  @Test
-  void typeArguments() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() { new java.util.HashMap<Integer, String>(); } }");
-    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
-    AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
-
-    assertThat(JUtils.typeArguments(cu.sema.type(e.typeBinding)).toString())
-      .isEqualTo(JUtils.typeArguments(e.symbolType()).toString())
-      .isEqualTo("[Integer, String]");
   }
 
   @Test

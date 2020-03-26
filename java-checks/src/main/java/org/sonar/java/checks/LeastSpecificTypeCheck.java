@@ -147,7 +147,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       }
 
       boolean definesSymbol = definesSymbol(m, typeSymbol);
-      boolean isSpecialization = !JUtils.isParametrized(startType) && JUtils.isParametrized(type);
+      boolean isSpecialization = !startType.isParameterized() && type.isParameterized();
       if (definesSymbol && !isSpecialization && result.isEmpty()) {
         result.add(Lists.newArrayList(type));
       }
