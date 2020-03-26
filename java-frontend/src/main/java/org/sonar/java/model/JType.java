@@ -178,6 +178,9 @@ final class JType implements Type, Type.ArrayType {
 
   @Override
   public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
     if (obj instanceof JType) {
       JType other = (JType) obj;
       return areEqual(this.typeBinding, other.typeBinding);
