@@ -98,24 +98,24 @@ class ClassesLayoutTest {
   @Test
   void symbol_type() {
     assertAll(
-      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(56),
-      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64_COOPS)).isEqualTo(32)
+      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(72),
+      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64_COOPS)).isEqualTo(40)
     );
   }
 
   @Test
   void symbol_method() {
     assertAll(
-      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64)).isEqualTo(40),
-      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64_COOPS)).isEqualTo(24)
+      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64)).isEqualTo(56),
+      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64_COOPS)).isEqualTo(32)
     );
   }
 
   @Test
   void symbol_variable() {
     assertAll(
-      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(40),
-      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64_COOPS)).isEqualTo(24)
+      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(56),
+      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64_COOPS)).isEqualTo(32)
     );
   }
 
