@@ -105,6 +105,41 @@ class SQLInjection {
     }
   }
 
+  void falseNegative(String param) throws SQLException {
+    Connection conn = DriverManager.getConnection("url", "user1", "password");
+    String s;
+    s = "SELECT FROM " + param;
+    conn.prepareStatement(s); // Compliant, false negative
+
+    String s2 = "SELECT";
+    s2 = s2 + param;
+    conn.prepareStatement(s2); // Compliant, true negative
+
+    String s3;
+    s3 = "SELECT";
+    s3 += param;
+    conn.prepareStatement(s3); // Noncompliant, true positive
+  }
+
+  void testSecondaryLocations(String param) throws SQLException {
+    Connection conn = DriverManager.getConnection("url", "user1", "password");
+
+    String query1 = "SELECT"; // secondary location
+    query1 += param; // secondary location
+    conn.prepareStatement(query1); // Noncompliant [[secondary=128,127]]]
+
+
+    boolean bool = false;
+    String query2 = "Select Lname ";
+    if(bool) {
+      query2 += "FROM Customers";
+    } else {
+      query2 += param;
+    }
+    query2 = query2 + " WHERE Snum =2001";
+    conn.prepareStatement(query2); // Noncompliant [[secondary=133,135,137,139]]
+  }
+
   void foo(Connection conn, String param) throws SQLException {
     Statement stmt = conn.createStatement();
     String localVar = param;
