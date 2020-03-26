@@ -56,6 +56,9 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
     if (!(obj instanceof JSymbol)) {
       return false;
     }
