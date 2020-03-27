@@ -1,16 +1,18 @@
+package checks.SpringComponentWithNonAutowiredMembersCheck;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import javax.inject.Inject;
 import javax.annotation.Resource;
 
 @Controller
-public class HelloWorld {
+public class DefaultAnnotations {
 
   private String name = null; // Noncompliant [[sc=18;ec=22]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
   public String address = null; // Noncompliant [[sc=17;ec=24]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
@@ -28,7 +30,7 @@ public class HelloWorld {
   @Value("${some.config.key}")
   String someConfigKey; // Compliant
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(HelloWorld.class); // Compliant
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAnnotations.class); // Compliant
   void someMethod(){}
 }
 
@@ -39,6 +41,11 @@ class ServiceHelloWorld {
 
 @Repository
 class RepositoryHelloWorld {
+  protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+}
+
+@Component
+class ComponentHelloWorld {
   protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
 }
 
@@ -73,7 +80,7 @@ class UniqueConstructor2 {
 @Service
 class DualConstructor {
   private final String name; // Noncompliant
-  private final String address; // Noncompliant
+  private String address; // Noncompliant
 
   public DualConstructor(String name) {
     this.name = name;
@@ -85,19 +92,19 @@ class DualConstructor {
 }
 
 @Controller
-class ConstructorInjection {
+class ConstructorInjection1 {
   private String env;  // Compliant
   private String yyyAdaptor; // Compliant
   private String jaxbContext; // Noncompliant - not used in @Autowired constructor
 
-  public ConstructorInjection(String env, String yyyAdaptor, String jaxbContext) {
+  public ConstructorInjection1(String env, String yyyAdaptor, String jaxbContext) {
     this.env = env;
     this.yyyAdaptor = yyyAdaptor;
     this.jaxbContext = jaxbContext;
   }
 
   @Autowired
-  public ConstructorInjection(String env, String yyyAdaptor) {
+  public ConstructorInjection1(String env, String yyyAdaptor) {
     this.env = env;
     this.yyyAdaptor = yyyAdaptor;
   }
