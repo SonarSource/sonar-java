@@ -2,6 +2,9 @@ import lombok.val;
 import lombok.var; // NoIssue
 import java.util.List; // WithIssue
 import static lombok.AccessLevel.PRIVATE;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 class Fields {
   @lombok.Getter
@@ -412,4 +415,26 @@ class FieldDefaults {
       return name;
     }
   }
+}
+
+class SpringComponentsInjected {
+
+  @Controller
+  @lombok.AllArgsConstructor
+  public class SampleService1 { // NoIssue
+    private final String someField; // NoIssue
+  }
+
+  @Service
+  @lombok.RequiredArgsConstructor
+  public class SampleService2 { // NoIssue
+    private final String someField; // NoIssue
+  }
+
+  @Repository
+  @lombok.NoArgsConstructor(force = true)
+  public class SampleService3 { // NoIssue
+    private final String someField; // NoIssue
+  }
+
 }
