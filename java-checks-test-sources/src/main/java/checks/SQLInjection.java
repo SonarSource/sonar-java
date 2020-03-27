@@ -1,11 +1,14 @@
+package checks;
+
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import org.hibernate.Session;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 import javax.jdo.PersistenceManager;
 
@@ -13,7 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 
-class A {
+class SQLInjection {
   private static final String CONSTANT = "SELECT * FROM TABLE";
   public void method(String param, String param2, EntityManager entityManager) {
     try {
@@ -71,7 +74,7 @@ class A {
       ps.executeQuery();
 
 
-      Session session;
+      Session session = null;
       session.createQuery("From Customer where id > ?");
       session.createQuery(query); // Noncompliant
       conn.prepareStatement(param);
@@ -102,7 +105,42 @@ class A {
     }
   }
 
-  void foo(Connection conn, String param) {
+  void falseNegative(String param) throws SQLException {
+    Connection conn = DriverManager.getConnection("url", "user1", "password");
+    String s;
+    s = "SELECT FROM " + param;
+    conn.prepareStatement(s); // Compliant, false negative
+
+    String s2 = "SELECT";
+    s2 = s2 + param;
+    conn.prepareStatement(s2); // Compliant, true negative
+
+    String s3;
+    s3 = "SELECT";
+    s3 += param;
+    conn.prepareStatement(s3); // Noncompliant, true positive
+  }
+
+  void testSecondaryLocations(String param) throws SQLException {
+    Connection conn = DriverManager.getConnection("url", "user1", "password");
+
+    String query1 = "SELECT"; // secondary location
+    query1 += param; // secondary location
+    conn.prepareStatement(query1); // Noncompliant [[secondary=128,127]]]
+
+
+    boolean bool = false;
+    String query2 = "Select Lname ";
+    if(bool) {
+      query2 += "FROM Customers";
+    } else {
+      query2 += param;
+    }
+    query2 = query2 + " WHERE Snum =2001";
+    conn.prepareStatement(query2); // Noncompliant [[secondary=133,135,137,139]]
+  }
+
+  void foo(Connection conn, String param) throws SQLException {
     Statement stmt = conn.createStatement();
     String localVar = param;
     String aliasParam;
@@ -144,7 +182,7 @@ class A {
   PersistenceManager pm;
 
   void jdo(int id, String name) {
-    javax.jdo.Query q = pm.newQuery(Person.class, id + " > query_id "); // Noncompliant
+    javax.jdo.Query q = pm.newQuery(Test.class, id + " > query_id "); // Noncompliant
     q.setFilter("name == " + name); // Noncompliant
   }
 }
@@ -162,13 +200,13 @@ class Spring {
     jdbcOperations.queryForObject(sqlInjection, Integer.class);  // Noncompliant
 
     new PreparedStatementCreatorFactory(sqlInjection);  // Noncompliant
-    preparedStatementCreatorFactory.newPreparedStatementCreator(sqlInjection, new int[] {});  // Noncompliant
+    preparedStatementCreatorFactory.newPreparedStatementCreator(sqlInjection, new Object[] {});  // Noncompliant
   }
 }
 
 
 class Test {
-  public void foo() {
+  public void foo(String page, String projectUuid) {
     String from = "from ResourceDBO r, ProjectDBO p where p.id = r.entityId and r.type = :entityType and r.mimeType in :mimeTypes";
     if (projectUuid != null) {
       from += " and p.uuid = :projectUuid";
@@ -177,14 +215,14 @@ class Test {
     boolean asc = false;
     if (page != null) {
       String countJql = "select count(*) " + from;
-      Session session;
+      Session session = null;
       session.createQuery(countJql); // Noncompliant
 
     }
   }
 }
 
-class B {
+class SQLInjectionB {
 
   private String user;
   private JdbcTemplate tmpl = new JdbcTemplate();

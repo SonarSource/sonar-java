@@ -22,9 +22,12 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -98,9 +101,35 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       Optional<ExpressionTree> sqlStringArg = arguments(tree)
         .filter(arg -> arg.symbolType().is("java.lang.String"))
         .findFirst();
-      sqlStringArg.filter(SQLInjectionCheck::isDynamicString)
-        .ifPresent(arg -> reportIssue(arg, "Ensure that string concatenation is required and safe for this SQL query."));
+
+      if (sqlStringArg.isPresent()) {
+        ExpressionTree sqlArg = sqlStringArg.get();
+        if (isDynamicConcatenation(sqlArg)) {
+          reportIssue(sqlArg, "Ensure that string concatenation is required and safe for this SQL query.");
+        } else if (sqlArg.is(Tree.Kind.IDENTIFIER)) {
+          Symbol symbol = ((IdentifierTree) sqlArg).symbol();
+          ExpressionTree initializerOrExpression = getInitializerOrExpression(symbol.declaration());
+          List<AssignmentExpressionTree> reassignments = getReassignments(symbol.owner().declaration(), symbol.usages());
+
+          if ((initializerOrExpression != null && isDynamicConcatenation(initializerOrExpression)) ||
+            reassignments.stream().anyMatch(SQLInjectionCheck::isDynamicPlusAssignment)) {
+            reportIssue(sqlArg, "Ensure that string concatenation is required and safe for this SQL query.", secondaryLocations(initializerOrExpression, reassignments), null);
+          }
+        }
+      }
     }
+  }
+
+  private static List<JavaFileScannerContext.Location> secondaryLocations(@Nullable ExpressionTree initializerOrExpression, List<AssignmentExpressionTree> reassignments) {
+    List<JavaFileScannerContext.Location> secondaryLocations = reassignments.stream()
+      .map(AssignmentExpressionTree::expression)
+      .map(expr -> new JavaFileScannerContext.Location("Sensitive update", expr))
+      .collect(Collectors.toList());
+
+    if (initializerOrExpression != null) {
+      secondaryLocations.add(new JavaFileScannerContext.Location("Sensitive variable manipulation", initializerOrExpression));
+    }
+    return secondaryLocations;
   }
 
   private static Stream<ExpressionTree> arguments(Tree methodTree) {
@@ -130,16 +159,11 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     return arguments(tree).findAny().isPresent();
   }
 
-  private static boolean isDynamicString(ExpressionTree arg) {
-    if (arg.is(Tree.Kind.PLUS_ASSIGNMENT)) {
-      return !((AssignmentExpressionTree) arg).expression().asConstant().isPresent();
-    }
-    if (arg.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = ((IdentifierTree) arg).symbol();
-      ExpressionTree initializerOrExpression = getInitializerOrExpression(symbol.declaration());
-      return (initializerOrExpression != null && isDynamicString(initializerOrExpression)) || getReassignments(symbol.owner().declaration(), symbol.usages()).stream()
-        .anyMatch(SQLInjectionCheck::isDynamicString);
-    }
+  private static boolean isDynamicPlusAssignment(ExpressionTree arg) {
+    return arg.is(Tree.Kind.PLUS_ASSIGNMENT) && !((AssignmentExpressionTree) arg).expression().asConstant().isPresent();
+  }
+
+  private static boolean isDynamicConcatenation(ExpressionTree arg) {
     return arg.is(Tree.Kind.PLUS) && !arg.asConstant().isPresent();
   }
 }
