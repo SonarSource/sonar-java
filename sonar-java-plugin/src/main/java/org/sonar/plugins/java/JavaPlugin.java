@@ -21,6 +21,7 @@ package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.Plugin;
+import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
@@ -33,6 +34,7 @@ import org.sonar.java.JavaSonarLintClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
+import org.sonar.java.jsp.Jasper;
 import org.sonar.plugins.surefire.SurefireExtensions;
 
 public class JavaPlugin implements Plugin {
@@ -54,15 +56,12 @@ public class JavaPlugin implements Plugin {
         .name("Fail on exceptions")
         .description("when set to true, if an exception is thrown by the analyzer the analysis will fail")
         .build());
-      builder.add(PropertyDefinition.builder(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY)
-        .defaultValue("false")
-        .hidden()
-        .name("Collect analysis error")
-        .description("when set to true, if an exception is thrown by the analyzer, feedback will be collected and sent to server")
-        .build());
-      builder.add(JavaMetricDefinition.class);
 
       ExternalReportExtensions.define(context);
+
+      if (context.getRuntime().getEdition() != SonarEdition.COMMUNITY) {
+        builder.add(Jasper.class);
+      }
     }
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(

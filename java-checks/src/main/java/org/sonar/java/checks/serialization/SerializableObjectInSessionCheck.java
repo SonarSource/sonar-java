@@ -19,25 +19,27 @@
  */
 package org.sonar.java.checks.serialization;
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.JUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S2441")
 public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(MethodMatcher.create().typeDefinition("javax.servlet.http.HttpSession")
-      .name("setAttribute").addParameter("java.lang.String").addParameter(TypeCriteria.anyType()));
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofTypes("javax.servlet.http.HttpSession")
+      .names("setAttribute")
+      .addParametersMatcher("java.lang.String", ANY)
+      .build();
   }
 
   @Override
@@ -46,7 +48,7 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
     Type type = argument.symbolType();
     if (ExpressionsHelper.isNotSerializable(argument)) {
       String andParameters = JUtils.isParametrized(type) ? " and its parameters" : "";
-      reportIssue(argument, "Make \"" + type + "\"" + andParameters + " serializable or don't store it in the session.");
+      reportIssue(argument, "Make \"" + type.name() + "\"" + andParameters + " serializable or don't store it in the session.");
     }
   }
 

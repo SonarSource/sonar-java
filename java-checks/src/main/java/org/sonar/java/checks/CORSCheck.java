@@ -27,11 +27,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -46,21 +45,32 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S5122")
 public class CORSCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcherCollection SET_ADD_HEADER_MATCHER = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("javax.servlet.http.HttpServletResponse").name("setHeader").withAnyParameters(),
-    MethodMatcher.create().typeDefinition("javax.servlet.http.HttpServletResponse").name("addHeader").withAnyParameters()
-  );
+  private static final MethodMatchers SET_ADD_HEADER_MATCHER = MethodMatchers.create()
+    .ofTypes("javax.servlet.http.HttpServletResponse")
+    .names("setHeader", "addHeader")
+    .withAnyParameters()
+    .build();
 
   private static final String ACCESS_CONTROL_ALLOW_ORIGIN = "access-control-allow-origin";
   private static final Set<String> ANNOTATION_ORIGINS_KEY_ALIAS = ImmutableSet.of("origins", "value");
 
-  private static final MethodMatcherCollection ADD_ALLOWED_ORIGIN_MATCHER = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("org.springframework.web.cors.CorsConfiguration").name("addAllowedOrigin").withAnyParameters(),
-    MethodMatcher.create().typeDefinition("org.springframework.web.servlet.config.annotation.CorsRegistration").name("allowedOrigins").withAnyParameters()
-  );
+  private static final MethodMatchers ADD_ALLOWED_ORIGIN_MATCHER = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("org.springframework.web.cors.CorsConfiguration")
+      .names("addAllowedOrigin")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create().ofTypes("org.springframework.web.servlet.config.annotation.CorsRegistration")
+      .names("allowedOrigins")
+      .withAnyParameters()
+      .build());
 
-  private static final MethodMatcher APPLY_PERMIT_DEFAULT_VALUES = MethodMatcher.create().typeDefinition("org.springframework.web.cors.CorsConfiguration")
-    .name("applyPermitDefaultValues").withAnyParameters();
+  private static final MethodMatchers APPLY_PERMIT_DEFAULT_VALUES = MethodMatchers.create()
+    .ofTypes("org.springframework.web.cors.CorsConfiguration")
+    .names("applyPermitDefaultValues")
+    .withAnyParameters()
+    .build();
+
   public static final String MESSAGE = "Make sure that enabling CORS is safe here.";
 
   @Override
@@ -133,14 +143,14 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (SET_ADD_HEADER_MATCHER.anyMatch(mit)) {
+      if (SET_ADD_HEADER_MATCHER.matches(mit)) {
         String headerName = ExpressionsHelper.getConstantValueAsString(mit.arguments().get(0)).value();
         if (ACCESS_CONTROL_ALLOW_ORIGIN.equalsIgnoreCase(headerName) && isStar(mit.arguments().get(1))) {
           reportTree(mit);
         }
       } else if (APPLY_PERMIT_DEFAULT_VALUES.matches(mit)) {
         applyPermit.add(mit);
-      } else if (ADD_ALLOWED_ORIGIN_MATCHER.anyMatch(mit) && isStar(mit.arguments().get(0))) {
+      } else if (ADD_ALLOWED_ORIGIN_MATCHER.matches(mit) && isStar(mit.arguments().get(0))) {
         addAllowedOrigin.add(mit);
       }
       super.visitMethodInvocation(mit);

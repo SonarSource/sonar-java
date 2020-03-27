@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -40,7 +39,6 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
   private final InternalSyntaxToken colonOrArrowToken;
 
   public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, List<ExpressionTree> expressions, InternalSyntaxToken colonOrArrowToken) {
-    super(JavaLexer.SWITCH_LABEL);
     this.caseOrDefaultKeyword = caseOrDefaultKeyword;
     this.expressions = expressions;
     this.isFallThrough = JavaPunctuator.COLON.getValue().equals(colonOrArrowToken.text());

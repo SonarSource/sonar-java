@@ -20,7 +20,10 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
@@ -38,6 +41,8 @@ import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
+import org.sonar.java.jsp.Jasper;
+import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -55,14 +60,25 @@ public class JavaSquidSensor implements Sensor {
   private final JavaResourceLocator javaResourceLocator;
   private final Configuration settings;
   private final NoSonarFilter noSonarFilter;
+  @Nullable
+  private final Jasper jasper;
+  private final PostAnalysisIssueFilter postAnalysisIssueFilter;
 
-  public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs,
-    JavaResourceLocator javaResourceLocator, Configuration settings, NoSonarFilter noSonarFilter) {
+  public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
+                         Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter) {
+    this(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter, null);
+  }
+
+  public JavaSquidSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
+                         Configuration settings, NoSonarFilter noSonarFilter,
+                         PostAnalysisIssueFilter postAnalysisIssueFilter, @Nullable Jasper jasper) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.fs = fs;
     this.javaResourceLocator = javaResourceLocator;
     this.settings = settings;
+    this.postAnalysisIssueFilter = postAnalysisIssueFilter;
+    this.jasper = jasper;
   }
 
   @Override
@@ -82,11 +98,13 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
 
     Measurer measurer = new Measurer(context, noSonarFilter);
-    PostAnalysisIssueFilter postAnalysisIssueFilter = new PostAnalysisIssueFilter();
 
     JavaSquid squid = new JavaSquid(getJavaVersion(), isXFileEnabled(), sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter, sonarComponents.checkClasses());
-    squid.scan(getSourceFiles(), getTestFiles());
-    sonarComponents.saveAnalysisErrors();
+    squid.scan(getSourceFiles(), getTestFiles(), runJasper(context));
+  }
+
+  private Collection<GeneratedFile> runJasper(SensorContext context) {
+    return jasper != null ? jasper.generateFiles(context, sonarComponents.getJavaClasspath()) : Collections.emptyList();
   }
 
   private Iterable<InputFile> getSourceFiles() {

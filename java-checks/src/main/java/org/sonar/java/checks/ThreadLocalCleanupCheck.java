@@ -22,9 +22,8 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -32,14 +31,16 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
+
 @Rule(key = "S5164")
 public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
 
   private static final String THREAD_LOCAL = "java.lang.ThreadLocal";
-  private static final MethodMatcher THREADLOCAL_SET = MethodMatcher.create()
-    .typeDefinition(THREAD_LOCAL).name("set").addParameter(TypeCriteria.anyType());
-  private static final MethodMatcher THREADLOCAL_REMOVE = MethodMatcher.create()
-    .typeDefinition(THREAD_LOCAL).name("remove").withoutParameter();
+  private static final MethodMatchers THREADLOCAL_SET = MethodMatchers.create()
+    .ofTypes(THREAD_LOCAL).names("set").addParametersMatcher(ANY).build();
+  private static final MethodMatchers THREADLOCAL_REMOVE = MethodMatchers.create()
+    .ofTypes(THREAD_LOCAL).names("remove").addWithoutParametersMatcher().build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

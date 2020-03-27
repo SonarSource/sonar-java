@@ -19,13 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -34,21 +31,21 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 public class AccessibilityChangeCheck extends AbstractMethodDetection {
 
   private static final String JAVA_LANG_REFLECT_FIELD = "java.lang.reflect.Field";
-  private static final List<MethodMatcher> METHOD_MATCHERS = Arrays.asList(
-    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.reflect.AccessibleObject")).name("setAccessible").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("set").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("setBoolean").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("setByte").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("setChar").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("setDouble").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("setFloat").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("setInt").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("setLong").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_LANG_REFLECT_FIELD).name("setShort").withAnyParameters()
+  private static final MethodMatchers METHOD_MATCHERS = MethodMatchers.or(
+    MethodMatchers.create().ofSubTypes("java.lang.reflect.AccessibleObject").names("setAccessible").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("set").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setBoolean").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setByte").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setChar").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setDouble").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setFloat").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setInt").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setLong").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes(JAVA_LANG_REFLECT_FIELD).names("setShort").withAnyParameters().build()
   );
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
+  protected MethodMatchers getMethodInvocationMatchers() {
     return METHOD_MATCHERS;
   }
 

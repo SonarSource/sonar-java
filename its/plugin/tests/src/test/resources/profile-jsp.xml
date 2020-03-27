@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile>
+  <name>jsp</name>
+  <language>java</language>
+  <rules>
+    <rule>
+      <repositoryKey>java-extension</repositoryKey>
+      <key>jspcheck</key>
+      <priority>MAJOR</priority>
+    </rule>
+  </rules>
+</profile>

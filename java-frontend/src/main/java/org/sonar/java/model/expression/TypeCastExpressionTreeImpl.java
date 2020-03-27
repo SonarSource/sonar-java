@@ -47,7 +47,6 @@ public class TypeCastExpressionTreeImpl extends AssessableExpressionTree impleme
   private final ExpressionTree expression;
 
   public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
-    super(Kind.TYPE_CAST);
     this.type = Objects.requireNonNull(type);
     this.bounds = BoundListTreeImpl.emptyList();
     this.closeParenToken = closeParenToken;
@@ -56,7 +55,6 @@ public class TypeCastExpressionTreeImpl extends AssessableExpressionTree impleme
   }
 
   public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken andToken, ListTree<Tree> bounds, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
-    super(Kind.TYPE_CAST);
     this.type = Objects.requireNonNull(type);
     this.bounds = bounds;
     this.closeParenToken = closeParenToken;

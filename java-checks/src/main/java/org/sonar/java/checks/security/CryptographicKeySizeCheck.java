@@ -20,8 +20,6 @@
 package org.sonar.java.checks.security;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -31,9 +29,9 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -62,16 +60,32 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
     "DSA", 2048,
     "AES", 128);
 
-  private static final MethodMatcher KEY_GEN_INIT = MethodMatcher.create().typeDefinition(KEY_GENERATOR).name("init").addParameter("int");
-  private static final MethodMatcher KEY_PAIR_GEN_INITIALIZE = MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name("initialize").addParameter("int");
-  private static final MethodMatcher KEY_PAIR_GEN_INITIALIZE_WITH_SOURCE = KEY_PAIR_GEN_INITIALIZE.copy().addParameter("java.security.SecureRandom");
+  private static final MethodMatchers KEY_GEN = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(KEY_GENERATOR)
+      .names("init")
+      .addParametersMatcher("int")
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(KEY_PAIR_GENERATOR)
+      .names("initialize")
+      .addParametersMatcher("int")
+      .addParametersMatcher("int", "java.security.SecureRandom")
+      .build()) ;
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition(KEY_GENERATOR).name(GET_INSTANCE_METHOD).addParameter(STRING),
-      MethodMatcher.create().typeDefinition(KEY_PAIR_GENERATOR).name(GET_INSTANCE_METHOD).addParameter(STRING),
-      MethodMatcher.create().typeDefinition(EC_GEN_PARAMETER_SPEC).name("<init>").addParameter(STRING));
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes(KEY_GENERATOR, KEY_PAIR_GENERATOR)
+        .names(GET_INSTANCE_METHOD)
+        .addParametersMatcher(STRING)
+        .build(),
+      MethodMatchers.create()
+        .ofTypes(EC_GEN_PARAMETER_SPEC)
+        .constructor()
+        .addParametersMatcher(STRING)
+        .build());
   }
 
   @Override
@@ -110,7 +124,7 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (minKeySize != null && (KEY_GEN_INIT.matches(mit) || KEY_PAIR_GEN_INITIALIZE.matches(mit) || KEY_PAIR_GEN_INITIALIZE_WITH_SOURCE.matches(mit))) {
+      if (minKeySize != null && KEY_GEN.matches(mit)) {
         Integer keySize = LiteralUtils.intLiteralValue(mit.arguments().get(0));
         if (keySize != null && keySize < minKeySize && isInvocationOnVariable(mit, variable, false)) {
           reportIssue(mit, "Use a key length of at least " + minKeySize + " bits for " + algorithm + " cipher algorithm.");

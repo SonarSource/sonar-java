@@ -77,7 +77,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   public IMethodBinding methodBinding;
 
   public MethodTreeImpl(FormalParametersListTreeImpl parameters, @Nullable SyntaxToken defaultToken, @Nullable ExpressionTree defaultValue) {
-    super(Kind.METHOD);
     this.typeParameters = new TypeParameterListTreeImpl();
     this.parameters = parameters;
     this.openParenToken = parameters.openParenToken();
@@ -97,9 +96,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     ListTree<TypeTree> throwsClauses,
     @Nullable BlockTree block,
     @Nullable SyntaxToken semicolonToken) {
-
-    super(returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD);
-
     this.typeParameters = new TypeParameterListTreeImpl();
     this.modifiers = null;
     this.returnType = returnType;

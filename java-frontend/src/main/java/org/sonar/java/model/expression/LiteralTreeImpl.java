@@ -34,7 +34,6 @@ public class LiteralTreeImpl extends AssessableExpressionTree implements Literal
   private final InternalSyntaxToken token;
 
   public LiteralTreeImpl(Kind kind, InternalSyntaxToken token) {
-    super(kind);
     this.kind = Objects.requireNonNull(kind);
     this.token = token;
   }

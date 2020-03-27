@@ -54,7 +54,7 @@ public class FileLinesVisitorTest {
 
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new FileLinesVisitor(sonarComponents));
 
-    squid.scan(Collections.singletonList(inputFile), Collections.emptyList());
+    squid.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 
   @Test

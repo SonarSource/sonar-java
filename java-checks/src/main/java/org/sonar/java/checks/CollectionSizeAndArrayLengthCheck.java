@@ -19,11 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -32,13 +33,15 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Rule(key = "S3981")
 public class CollectionSizeAndArrayLengthCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher COLLECTION_SIZE = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Collection")).name("size").withoutParameter();
+  private static final MethodMatchers COLLECTION_SIZE = MethodMatchers.create()
+    .ofSubTypes("java.util.Collection")
+    .names("size")
+    .addWithoutParametersMatcher()
+    .build();
+
   private static final String COLLECTION_ISSUE_MSG = "The size of %s is always \">=0\", so update this test to use isEmpty().";
   private static final String ARRAY_ISSUE_MSG = "The length of %s is always \">=0\", so update this test to either \"==0\" or \">0\".";
 

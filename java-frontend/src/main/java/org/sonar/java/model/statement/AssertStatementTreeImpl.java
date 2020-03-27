@@ -44,7 +44,6 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   private InternalSyntaxToken semicolonToken;
 
   public AssertStatementTreeImpl(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
-    super(Kind.ASSERT_STATEMENT);
     this.assertToken = assertToken;
     this.condition = Objects.requireNonNull(condition);
     this.colonToken = null;
@@ -53,7 +52,6 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   }
 
   public AssertStatementTreeImpl(InternalSyntaxToken colonToken, ExpressionTree detail) {
-    super(Kind.ASSERT_STATEMENT);
     this.colonToken = colonToken;
     this.detail = Objects.requireNonNull(detail);
   }

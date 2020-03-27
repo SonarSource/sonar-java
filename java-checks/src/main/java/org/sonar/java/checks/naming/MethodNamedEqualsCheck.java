@@ -20,8 +20,8 @@
 package org.sonar.java.checks.naming;
 
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -33,7 +33,7 @@ import java.util.List;
 public class MethodNamedEqualsCheck extends IssuableSubscriptionVisitor {
 
   private static final String EQUALS = "equals";
-  private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create().name(EQUALS).parameters("java.lang.Object");
+  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create().ofAnyType().names(EQUALS).addParametersMatcher("java.lang.Object").build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

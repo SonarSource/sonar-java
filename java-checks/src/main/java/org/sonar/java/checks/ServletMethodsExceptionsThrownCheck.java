@@ -27,11 +27,9 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.NameCriteria;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -44,8 +42,8 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 @Rule(key = "S1989")
 public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher IS_SERVLET_DO_METHOD = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("javax.servlet.http.HttpServlet")).name(NameCriteria.startsWith("do")).withAnyParameters();
+  private static final MethodMatchers IS_SERVLET_DO_METHOD = MethodMatchers.create()
+    .ofSubTypes("javax.servlet.http.HttpServlet").name(name -> name.startsWith("do")).withAnyParameters().build();
 
   private final Deque<Boolean> shouldCheck = new ArrayDeque<>();
   private final Deque<List<Type>> tryCatches = new ArrayDeque<>();

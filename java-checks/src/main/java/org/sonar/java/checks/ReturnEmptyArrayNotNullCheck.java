@@ -20,10 +20,17 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -33,14 +40,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = "S1168")
 public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
@@ -92,8 +91,8 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   private static final List<String> REQUIRES_RETURN_NULL = Collections.singletonList(
     "org.springframework.batch.item.ItemProcessor");
 
-  private static final MethodMatcher ITEM_PROCESSOR_PROCESS_METHOD = MethodMatcher.create()
-    .name("process").withAnyParameters();
+  private static final MethodMatchers ITEM_PROCESSOR_PROCESS_METHOD = MethodMatchers.create()
+    .ofAnyType().names("process").withAnyParameters().build();
 
   private final Deque<Returns> returnType = new LinkedList<>();
 

@@ -20,10 +20,17 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
-
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
@@ -33,6 +40,7 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -42,17 +50,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
 
@@ -60,8 +57,8 @@ public class NullDereferenceCheck extends SECheck {
     "\"NullPointerException\" will be thrown when invoking method \"%s()\".");
 
   private static final String JAVA_LANG_NPE = "java.lang.NullPointerException";
-  private static final MethodMatcher OPTIONAL_OR_ELSE_GET_MATCHER = MethodMatcher.create().typeDefinition("java.util.Optional").name("orElseGet")
-    .addParameter("java.util.function.Supplier");
+  private static final MethodMatchers OPTIONAL_OR_ELSE_GET_MATCHER = MethodMatchers.create().ofTypes("java.util.Optional").names("orElseGet")
+    .addParametersMatcher("java.util.function.Supplier").build();
 
   private static class NullDereferenceIssue {
     final ExplodedGraph.Node node;

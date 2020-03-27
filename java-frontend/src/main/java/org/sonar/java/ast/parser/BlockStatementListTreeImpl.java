@@ -26,7 +26,7 @@ import java.util.List;
 public class BlockStatementListTreeImpl extends ListTreeImpl<StatementTree> {
 
   public BlockStatementListTreeImpl(List<? extends StatementTree> statements) {
-    super(JavaLexer.BLOCK_STATEMENTS, (List<StatementTree>) statements);
+    super((List<StatementTree>) statements);
   }
 
 }

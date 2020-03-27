@@ -49,7 +49,6 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
   public JLabelSymbol labelSymbol;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
-    super(Kind.IDENTIFIER);
     this.nameToken = Objects.requireNonNull(nameToken);
     this.annotations = Collections.emptyList();
   }

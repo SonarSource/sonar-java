@@ -540,12 +540,12 @@ public class JavaCheckVerifierTest {
     private static Tree mockTree(final AnalyzerMessage analyzerMessage) {
       AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
       if (textSpan.onLine()) {
-        return new InternalSyntaxToken(textSpan.startLine, 0, "mock", new ArrayList<>(), 0, 0, false);
+        return new InternalSyntaxToken(textSpan.startLine, 0, "mock", new ArrayList<>(), false);
       }
       return new ReturnStatementTreeImpl(
-        new InternalSyntaxToken(textSpan.startLine, textSpan.startCharacter - 1, "", new ArrayList<>(), 0, 0, false),
+        new InternalSyntaxToken(textSpan.startLine, textSpan.startCharacter - 1, "", new ArrayList<>(), false),
         null,
-        new InternalSyntaxToken(textSpan.endLine, textSpan.endCharacter - 1, "", new ArrayList<>(), 0, 0, false));
+        new InternalSyntaxToken(textSpan.endLine, textSpan.endCharacter - 1, "", new ArrayList<>(), false));
     }
   }
 

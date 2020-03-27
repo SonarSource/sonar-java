@@ -19,16 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import static java.lang.String.format;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.annotation.CheckForNull;
-
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -37,54 +31,41 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import static java.lang.String.format;
+
 @Rule(key = "S2121")
 public class SillyStringOperationsCheck extends AbstractMethodDetection {
 
   private static final String CHAR_SEQUENCE = "java.lang.CharSequence";
   private static final String STRING = "java.lang.String";
-  private static final MethodMatcher STRING_LENGTH = MethodMatcher.create().typeDefinition(STRING).name("length").withoutParameter();
+  private static final MethodMatchers STRING_LENGTH = MethodMatchers.create()
+    .ofTypes(STRING).names("length").addWithoutParametersMatcher().build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-        MethodMatcher.create().typeDefinition(STRING).name("contains")
-          .addParameter(TypeCriteria.subtypeOf(CHAR_SEQUENCE)),
-        MethodMatcher.create().typeDefinition(STRING).name("compareTo")
-          .addParameter(TypeCriteria.is(STRING)),
-        MethodMatcher.create().typeDefinition(STRING).name("compareToIgnoreCase")
-          .addParameter(TypeCriteria.is(STRING)),
-        MethodMatcher.create().typeDefinition(STRING).name("endsWith")
-          .addParameter(TypeCriteria.is(STRING)),
-        MethodMatcher.create().typeDefinition(STRING).name("indexOf")
-          .addParameter(TypeCriteria.is(STRING)),
-        MethodMatcher.create().typeDefinition(STRING).name("indexOf")
-          .addParameter(TypeCriteria.is(STRING))
-          .addParameter("int"),
-        MethodMatcher.create().typeDefinition(STRING).name("lastIndexOf")
-          .addParameter(TypeCriteria.is(STRING)),
-        MethodMatcher.create().typeDefinition(STRING).name("lastIndexOf")
-          .addParameter(TypeCriteria.is(STRING))
-          .addParameter("int"),
-        MethodMatcher.create().typeDefinition(STRING).name("matches")
-          .addParameter(TypeCriteria.is(STRING)),
-        MethodMatcher.create().typeDefinition(STRING).name("replaceFirst")
-          .addParameter(TypeCriteria.is(STRING))
-          .addParameter(TypeCriteria.is(STRING)),
-        MethodMatcher.create().typeDefinition(STRING).name("split")
-          .addParameter(TypeCriteria.is(STRING)),
-        MethodMatcher.create().typeDefinition(STRING).name("split")
-          .addParameter(TypeCriteria.is(STRING))
-          .addParameter("int"),
-        MethodMatcher.create().typeDefinition(STRING).name("startsWith")
-          .addParameter(TypeCriteria.is(STRING)),
-        MethodMatcher.create().typeDefinition(STRING).name("startsWith")
-          .addParameter(TypeCriteria.is(STRING))
-          .addParameter("int"),
-        MethodMatcher.create().typeDefinition(STRING).name("substring")
-          .addParameter("int"),
-        MethodMatcher.create().typeDefinition(STRING).name("substring")
-          .addParameter("int")
-          .addParameter("int"));
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofTypes(STRING)
+        .names("contains")
+        .addParametersMatcher(params -> params.size() == 1 && params.get(0).isSubtypeOf(CHAR_SEQUENCE))
+        .build(),
+      MethodMatchers.create().ofTypes(STRING)
+        .names("compareTo", "compareToIgnoreCase", "endsWith", "indexOf", "lastIndexOf", "matches", "split", "startsWith")
+        .addParametersMatcher(STRING)
+        .build(),
+      MethodMatchers.create().ofTypes(STRING)
+        .names("replaceFirst")
+        .addParametersMatcher(STRING, STRING)
+        .build(),
+      MethodMatchers.create().ofTypes(STRING)
+        .names("indexOf", "lastIndexOf", "split", "startsWith")
+        .addParametersMatcher(STRING, "int")
+        .build(),
+      MethodMatchers.create()
+        .ofTypes(STRING)
+        .names("substring")
+        .addParametersMatcher("int")
+        .addParametersMatcher("int", "int")
+        .build());
   }
 
   @Override

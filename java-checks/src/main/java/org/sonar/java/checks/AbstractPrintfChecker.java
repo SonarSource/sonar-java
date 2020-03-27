@@ -33,10 +33,8 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -44,6 +42,8 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
@@ -56,20 +56,25 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
   private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
 
   private static final String PRINTF_METHOD_NAME = "printf";
-  private static final MethodMatcher ORG_APACHE_LOGGING_LOG4J_LOGGER_PRINTF = MethodMatcher.create()
-    .typeDefinition(ORG_APACHE_LOGGING_LOG4J_LOGGER).name(PRINTF_METHOD_NAME).withAnyParameters();
   private static final String FORMAT_METHOD_NAME = "format";
   protected static final List<String> LEVELS = Arrays.asList("debug", "error", "info", "trace", "warn", "fatal");
 
-  protected static final MethodMatcher MESSAGE_FORMAT = MethodMatcher.create().typeDefinition("java.text.MessageFormat").name(FORMAT_METHOD_NAME).withAnyParameters();
-  protected static final MethodMatcher JAVA_UTIL_LOGGER_LOG_LEVEL_STRING = MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("log")
-    .addParameter("java.util.logging.Level")
-    .addParameter(JAVA_LANG_STRING);
-  protected static final MethodMatcher JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY = MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("log")
-    .addParameter("java.util.logging.Level")
-    .addParameter(JAVA_LANG_STRING)
-    .addParameter(TypeCriteria.anyType());
-  protected static final MethodMatcherCollection JAVA_UTIL_LOGGER_LOG_MATCHER = MethodMatcherCollection.create(
+  protected static final MethodMatchers MESSAGE_FORMAT = MethodMatchers.create()
+    .ofTypes("java.text.MessageFormat")
+    .names(FORMAT_METHOD_NAME)
+    .withAnyParameters()
+    .build();
+  protected static final MethodMatchers JAVA_UTIL_LOGGER_LOG_LEVEL_STRING = MethodMatchers.create()
+    .ofTypes(JAVA_UTIL_LOGGING_LOGGER)
+    .names("log")
+    .addParametersMatcher("java.util.logging.Level", JAVA_LANG_STRING)
+    .build();
+  protected static final MethodMatchers JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY = MethodMatchers.create()
+    .ofTypes(JAVA_UTIL_LOGGING_LOGGER)
+    .names("log")
+    .addParametersMatcher("java.util.logging.Level", JAVA_LANG_STRING, ANY)
+    .build();
+  protected static final MethodMatchers JAVA_UTIL_LOGGER_LOG_MATCHER = MethodMatchers.or(
     JAVA_UTIL_LOGGER_LOG_LEVEL_STRING,
     JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY);
     
@@ -77,37 +82,40 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
 
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    ArrayList<MethodMatcher> matchers = new ArrayList<>(slf4jMethods());
-    matchers.addAll(log4jMethods());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    ArrayList<MethodMatchers> matchers = new ArrayList<>(slf4jMethods());
+    matchers.add(log4jMethods());
     matchers.addAll(Arrays.asList(
-      MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name(FORMAT_METHOD_NAME).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.io.PrintStream").name(PRINTF_METHOD_NAME).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(PRINTF_METHOD_NAME).withAnyParameters(),
+      MethodMatchers.create().ofTypes(JAVA_LANG_STRING).names(FORMAT_METHOD_NAME).withAnyParameters().build(),
+      MethodMatchers.create()
+        .ofTypes("java.util.Formatter").names(FORMAT_METHOD_NAME).withAnyParameters().build(),
+      MethodMatchers.create()
+        .ofTypes("java.io.PrintStream").names(FORMAT_METHOD_NAME, PRINTF_METHOD_NAME).withAnyParameters().build(),
+      MethodMatchers.create()
+        .ofTypes("java.io.PrintWriter").names(FORMAT_METHOD_NAME, PRINTF_METHOD_NAME).withAnyParameters().build(),
       MESSAGE_FORMAT,
       JAVA_UTIL_LOGGER_LOG_LEVEL_STRING,
       JAVA_UTIL_LOGGER_LOG_LEVEL_STRING_ANY
       ));
-    return matchers;
+    return MethodMatchers.or(matchers);
   }
 
-  private static Collection<MethodMatcher> slf4jMethods() {
+  private static Collection<MethodMatchers> slf4jMethods() {
     return LEVELS.stream()
-      .map(l -> MethodMatcher.create().typeDefinition(ORG_SLF4J_LOGGER).name(l).withAnyParameters())
+      .map(l -> MethodMatchers.create().ofTypes(ORG_SLF4J_LOGGER).names(l).withAnyParameters().build())
       .collect(Collectors.toList());
   }
 
-  private static Collection<MethodMatcher> log4jMethods() {
-    List<MethodMatcher> matchers = new ArrayList<>();
-    matchers.add(ORG_APACHE_LOGGING_LOG4J_LOGGER_PRINTF);
-    matchers.add(MethodMatcher.create().typeDefinition(ORG_APACHE_LOGGING_LOG4J_LOGGER).name("log").withAnyParameters());
-    matchers.addAll(LEVELS.stream()
-      .map(l -> MethodMatcher.create().typeDefinition(ORG_APACHE_LOGGING_LOG4J_LOGGER).name(l).withAnyParameters())
-      .collect(Collectors.toList()));
-    return matchers;
+  private static MethodMatchers log4jMethods() {
+    List<String> methodNames = new ArrayList<>();
+    methodNames.add(PRINTF_METHOD_NAME);
+    methodNames.add("log");
+    methodNames.addAll(LEVELS);
+    return MethodMatchers.create()
+      .ofTypes(ORG_APACHE_LOGGING_LOG4J_LOGGER)
+      .names(methodNames.toArray(new String[0]))
+      .withAnyParameters()
+      .build();
   }
 
   protected final void checkFormatting(MethodInvocationTree mit, boolean isMessageFormat) {

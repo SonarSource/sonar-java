@@ -63,7 +63,7 @@ public class SyntaxHighlighterVisitorTest {
   public void setUp() throws Exception {
     context = SensorContextTester.create(temp.getRoot());
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
-      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class));
+      mock(JavaClasspath.class), mock(JavaTestClasspath.class), mock(CheckFactory.class), null);
     sonarComponents.setSensorContext(context);
     syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents);
   }
@@ -204,7 +204,7 @@ public class SyntaxHighlighterVisitorTest {
 
   private void scan(InputFile inputFile) {
     JavaSquid squid = new JavaSquid(new JavaVersionImpl(), null, null, null, null, new JavaCheck[] {syntaxHighlighterVisitor});
-    squid.scan(Collections.singletonList(inputFile), Collections.emptyList());
+    squid.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 
   private InputFile generateDefaultTestFile() throws IOException {

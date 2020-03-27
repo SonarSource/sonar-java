@@ -20,7 +20,6 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.Iterables;
-import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -37,7 +36,7 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
   private final InternalSyntaxToken closeBracketToken;
 
   public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, List<Tree> expressions, List<SyntaxToken> separators, InternalSyntaxToken closeBracketToken) {
-    super(JavaLexer.TYPE_ARGUMENTS, expressions, separators);
+    super(expressions, separators);
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;

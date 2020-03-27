@@ -211,6 +211,22 @@ public final class JUtils {
       && t.typeBinding.getTypeArguments().length > 0;
   }
 
+  public static boolean isRawType(Type type) {
+    if (type.isUnknown()) {
+      return false;
+    }
+    JType t = (JType) type;
+    return t.typeBinding.isRawType();
+  }
+
+  public static Type declaringType(Type type) {
+    if (type.isUnknown()) {
+      return type;
+    }
+    JType t = (JType) type;
+    return t.sema.type(t.typeBinding.getTypeDeclaration());
+  }
+
   public static List<Type> typeArguments(Type type) {
     if (type.isUnknown()) {
       return Collections.emptyList();

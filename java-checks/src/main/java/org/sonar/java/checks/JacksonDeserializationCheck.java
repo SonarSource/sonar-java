@@ -20,15 +20,13 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -41,16 +39,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4544")
 public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcherCollection ENABLE_DEFAULT_TYPING = MethodMatcherCollection.create(
-      MethodMatcher.create()
-          .typeDefinition("com.fasterxml.jackson.databind.ObjectMapper")
-          .name("enableDefaultTyping")
-          .withoutParameter(),
-      MethodMatcher.create()
-          .typeDefinition("org.codehaus.jackson.map.ObjectMapper")
-          .name("enableDefaultTyping")
-          .withoutParameter()
-      );
+  private static final MethodMatchers ENABLE_DEFAULT_TYPING = MethodMatchers.create()
+    .ofTypes(
+      "com.fasterxml.jackson.databind.ObjectMapper",
+      "org.codehaus.jackson.map.ObjectMapper")
+    .names("enableDefaultTyping")
+    .addWithoutParametersMatcher()
+    .build();
+
   private static final String MESSAGE = "Make sure using this Jackson deserialization configuration is safe here.";
 
   @Override
@@ -63,7 +59,7 @@ public class JacksonDeserializationCheck extends IssuableSubscriptionVisitor {
     if (!hasSemantic()) {
       return;
     }
-    if (tree.is(Tree.Kind.METHOD_INVOCATION) && ENABLE_DEFAULT_TYPING.anyMatch((MethodInvocationTree) tree)) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION) && ENABLE_DEFAULT_TYPING.matches((MethodInvocationTree) tree)) {
       reportIssue(tree, MESSAGE);
     } else if (tree.is(Tree.Kind.ANNOTATION)) {
       AnnotationTree annotationTree = (AnnotationTree) tree;

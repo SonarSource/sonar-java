@@ -1,15 +1,17 @@
-import org.fest.assertions.BooleanAssert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.Mockito;
+package checks;
+
 import com.google.common.truth.Truth;
 import com.google.common.truth.Truth8;
-
+import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
+import org.fest.assertions.BooleanAssert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 public class AssertionsCompletenessCheck {
 
@@ -99,7 +101,7 @@ public class AssertionsCompletenessCheck {
     org.assertj.core.api.Assertions.assertThat(a).asList().hasSize(0);
     org.assertj.core.api.Assertions.assertThat(a).asList(); // Noncompliant
     org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
-    softly.assertThat(null); // Noncompliant
+    softly.assertThat((Path) null); // Noncompliant
     softly.assertAll();
   }
 
@@ -122,7 +124,7 @@ public class AssertionsCompletenessCheck {
     org.assertj.core.api.Java6Assertions.assertThat(a).asList().hasSize(0);
     org.assertj.core.api.Java6Assertions.assertThat(a).asList(); // Noncompliant
     org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
-    softly.assertThat(null); // Noncompliant
+    softly.assertThat((String) null); // Noncompliant
     softly.assertAll();
   }
 
@@ -157,7 +159,7 @@ public class AssertionsCompletenessCheck {
 
   @Test
   void assertj_java6_soft_assertions_ok() {
-    org.assertj.core.api.Java6SoftAssertions softly = new org.assertj.core.api.Java6SoftAssertions().assertThat(new A());
+    org.assertj.core.api.Java6SoftAssertions softly = new org.assertj.core.api.Java6SoftAssertions();
     softly.assertThat(5).isLessThan(3);
     softly.assertAll();
   }
@@ -234,7 +236,7 @@ public class AssertionsCompletenessCheck {
 
   @Test
   public void assertj_junit_soft_assertions_cross_methods_6() throws Exception {
-    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=265,260]] {{Add one or more 'assertThat' before 'assertAll'.}}
+    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=267,262]] {{Add one or more 'assertThat' before 'assertAll'.}}
   }
 
   private void doSomething(org.assertj.core.api.SoftAssertions softly) {
@@ -300,6 +302,9 @@ public class AssertionsCompletenessCheck {
     });
     // missing "assertThat"
     mainSoftly.assertAll(); // Noncompliant
+  }
+
+  static class A {
   }
 
 }

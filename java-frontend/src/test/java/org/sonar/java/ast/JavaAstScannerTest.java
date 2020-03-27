@@ -43,7 +43,6 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.Version;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
-import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.ExceptionHandler;
 import org.sonar.java.Measurer;
@@ -142,7 +141,7 @@ public class JavaAstScannerTest {
         JavaAstScannerTest.this.context.setCancelled(true);
       }
     });
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponents.setSensorContext(context);
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
     scanner.setVisitorBridge(new VisitorsBridge(Lists.newArrayList(visitor), new ArrayList<>(), sonarComponents));
@@ -179,7 +178,7 @@ public class JavaAstScannerTest {
   @Test
   public void should_swallow_log_and_report_checks_exceptions() {
     JavaAstScanner scanner = new JavaAstScanner(null);
-    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
+    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponent.setSensorContext(context);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singleton(new CheckThrowingException(new NullPointerException("foo"))), new ArrayList<>(), sonarComponent));
     InputFile scannedFile = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
@@ -188,8 +187,6 @@ public class JavaAstScannerTest {
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$CheckThrowingException -  on file '"
       + scannedFile.toString()
       + "', To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
-    assertThat(sonarComponent.analysisErrors).hasSize(1);
-    assertThat(sonarComponent.analysisErrors.get(0).getKind()).isSameAs(AnalysisError.Kind.CHECK_ERROR);
     logTester.clear();
     scanner.setVisitorBridge(new VisitorsBridge(new AnnotatedCheck(new NullPointerException("foo"))));
     scannedFile = TestUtils.inputFile("src/test/resources/AstScannerParseError.txt");
@@ -203,7 +200,7 @@ public class JavaAstScannerTest {
   public void should_swallow_log_and_report_checks_exceptions_for_symbolic_execution() {
     JavaAstScanner scanner = new JavaAstScanner(null);
     logTester.clear();
-    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null);
+    SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     context.setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     sonarComponent.setSensorContext(context);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(new SECheck() {
@@ -215,8 +212,6 @@ public class JavaAstScannerTest {
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/se/MethodBehavior.java")));
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Unable to run check class org.sonar.java.se.SymbolicExecutionVisitor");
-    assertThat(sonarComponent.analysisErrors).hasSize(1);
-    assertThat(sonarComponent.analysisErrors.get(0).getKind()).isSameAs(AnalysisError.Kind.SE_ERROR);
   }
 
   @Test
@@ -251,7 +246,7 @@ public class JavaAstScannerTest {
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     sensorContextTester.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failOnException));
 
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
 
     VisitorsBridge visitorsBridge = new VisitorsBridge(new ArrayList(), new ArrayList<>(), sonarComponents);

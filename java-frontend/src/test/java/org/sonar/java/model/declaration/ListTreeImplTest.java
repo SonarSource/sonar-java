@@ -61,11 +61,11 @@ public class ListTreeImplTest {
 
   private static class MyList extends ListTreeImpl<Tree> {
     public MyList(List<Tree> list, List<SyntaxToken> tokens) {
-      super(null, list, tokens);
+      super(list, tokens);
     }
   }
 
   private SyntaxToken createToken(String value) {
-    return new InternalSyntaxToken(1,1, value, new ArrayList<>(), 0,0,false);
+    return new InternalSyntaxToken(1, 1, value, new ArrayList<>(), false);
   }
 }

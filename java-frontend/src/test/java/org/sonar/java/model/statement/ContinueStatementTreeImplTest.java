@@ -58,6 +58,6 @@ public class ContinueStatementTreeImplTest {
   }
 
   private static InternalSyntaxToken createToken(String value) {
-    return new InternalSyntaxToken(1, 1, value, new ArrayList<>(), 0, 0, false);
+    return new InternalSyntaxToken(1, 1, value, new ArrayList<>(), false);
   }
 }

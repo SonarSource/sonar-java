@@ -19,14 +19,12 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Collections;
-import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -43,15 +41,15 @@ import static org.sonar.java.checks.helpers.ReassignmentFinder.getReassignments;
 @Rule(key = "S3329")
 public class CipherBlockChainingCheck extends AbstractMethodDetection {
 
-  private static final MethodMatcher SECURE_RANDOM_GENERATE_SEED = MethodMatcher.create()
-    .typeDefinition("java.security.SecureRandom")
-    .name("generateSeed")
-    .withAnyParameters();
+  private static final MethodMatchers SECURE_RANDOM_GENERATE_SEED = MethodMatchers.create()
+    .ofTypes("java.security.SecureRandom")
+    .names("generateSeed")
+    .withAnyParameters()
+    .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(
-      MethodMatcher.create().typeDefinition("javax.crypto.spec.IvParameterSpec").name("<init>").withAnyParameters());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create().ofTypes("javax.crypto.spec.IvParameterSpec").constructor().withAnyParameters().build();
   }
 
   @Override
@@ -100,10 +98,11 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
       ivParameterSpecInstantiation = newClassTree;
     }
 
-    private static final MethodMatcher SECURE_RANDOM_NEXT_BYTES = MethodMatcher.create()
-      .typeDefinition("java.security.SecureRandom")
-      .name("nextBytes")
-      .withAnyParameters();
+    private static final MethodMatchers SECURE_RANDOM_NEXT_BYTES = MethodMatchers.create()
+      .ofTypes("java.security.SecureRandom")
+      .names("nextBytes")
+      .withAnyParameters()
+      .build();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {

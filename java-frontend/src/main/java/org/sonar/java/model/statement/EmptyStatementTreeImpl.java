@@ -32,7 +32,6 @@ public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTr
   private final InternalSyntaxToken semicolonToken;
 
   public EmptyStatementTreeImpl(InternalSyntaxToken semicolonToken) {
-    super(Kind.EMPTY_STATEMENT);
     this.semicolonToken = semicolonToken;
   }
 

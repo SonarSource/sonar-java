@@ -64,7 +64,6 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     @Nullable InternalSyntaxToken finallyKeyword,
     @Nullable BlockTreeImpl finallyBlock
   ) {
-    super(Kind.TRY_STATEMENT);
     this.tryToken = tryToken;
     this.openParenToken = openParenToken;
     this.resources = resources;
@@ -76,8 +75,6 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   }
 
   public TryStatementTreeImpl(List<CatchTreeImpl> catches, @Nullable InternalSyntaxToken finallyKeyword, @Nullable BlockTreeImpl finallyBlock) {
-    super(Kind.TRY_STATEMENT);
-
     this.openParenToken = null;
     this.resources = ResourceListTreeImpl.emptyList();
     this.closeParenToken = null;
@@ -96,9 +93,6 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     InternalSyntaxToken openParenToken, ResourceListTreeImpl resources, InternalSyntaxToken closeParenToken,
     BlockTreeImpl block,
     List<CatchTreeImpl> catches) {
-
-    super(Kind.TRY_STATEMENT);
-
     this.tryToken = tryToken;
     this.openParenToken = openParenToken;
     this.resources = resources;

@@ -19,26 +19,29 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S4065")
 public class ThreadLocalWithInitialCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
-  private static final MethodMatcher THREADLOCAL_CONSTRUCTOR = MethodMatcher.create().typeDefinition("java.lang.ThreadLocal").name("<init>").withoutParameter();
+
+  private static final MethodMatchers THREADLOCAL_CONSTRUCTOR = MethodMatchers.create()
+    .ofTypes("java.lang.ThreadLocal")
+    .constructor()
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(THREADLOCAL_CONSTRUCTOR);
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return THREADLOCAL_CONSTRUCTOR;
   }
 
   @Override

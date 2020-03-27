@@ -29,7 +29,7 @@ import java.util.List;
 public class ResourceListTreeImpl extends ListTreeImpl<Tree> {
 
   public ResourceListTreeImpl(List<Tree> resources, List<SyntaxToken> tokens) {
-    super(JavaLexer.RESOURCE_SPECIFICATION, resources, tokens);
+    super(resources, tokens);
   }
 
   public static ListTree<Tree> emptyList() {

@@ -26,6 +26,6 @@ import java.util.List;
 
 public class StatementExpressionListTreeImpl extends ListTreeImpl<StatementTree> {
   public StatementExpressionListTreeImpl(List<? extends StatementTree> statementTrees, List<SyntaxToken> separators) {
-    super(JavaLexer.STATEMENT_EXPRESSION, (List<StatementTree>) statementTrees, separators);
+    super((List<StatementTree>) statementTrees, separators);
   }
 }

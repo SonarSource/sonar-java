@@ -99,8 +99,7 @@ public class SerialVersionUidCheck extends IssuableSubscriptionVisitor {
   private static boolean isExclusion(Symbol.TypeSymbol symbol) {
     return symbol.isAbstract()
       || symbol.type().isSubtypeOf("java.lang.Throwable")
-      || isGuiClass(symbol)
-      || hasSuppressWarningAnnotation(symbol);
+      || isGuiClass(symbol);
   }
 
   private static boolean isGuiClass(Symbol.TypeSymbol symbol) {
@@ -118,20 +117,4 @@ public class SerialVersionUidCheck extends IssuableSubscriptionVisitor {
     return fullyQualifiedName.startsWith("javax.swing.") || fullyQualifiedName.startsWith("java.awt.");
   }
 
-  private static boolean hasSuppressWarningAnnotation(Symbol.TypeSymbol symbol) {
-    List<SymbolMetadata.AnnotationValue> annotations = symbol.metadata().valuesForAnnotation("java.lang.SuppressWarnings");
-    return annotations != null && annotations.stream()
-        .map(SymbolMetadata.AnnotationValue::value)
-        .anyMatch(SerialVersionUidCheck::isSuppressingEquals);
-  }
-
-  private static boolean isSuppressingEquals(Object object) {
-    if (object instanceof Object[]) {
-      return Arrays.stream((Object[]) object)
-        .filter(String.class::isInstance)
-        .map(String.class::cast)
-        .anyMatch("serial"::equals);
-    }
-    return false;
-  }
 }

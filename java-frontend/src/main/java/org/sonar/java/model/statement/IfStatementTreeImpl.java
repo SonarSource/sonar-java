@@ -48,15 +48,12 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   private final StatementTree elseStatement;
 
   public IfStatementTreeImpl(InternalSyntaxToken elseKeyword, StatementTree elseStatement) {
-    super(Kind.IF_STATEMENT);
     this.elseKeyword = elseKeyword;
     this.elseStatement = Objects.requireNonNull(elseStatement);
   }
 
   public IfStatementTreeImpl(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
     StatementTree thenStatement) {
-
-    super(Kind.IF_STATEMENT);
     this.ifKeyword = ifKeyword;
     this.openParenToken = openParenToken;
     this.condition = Objects.requireNonNull(condition);

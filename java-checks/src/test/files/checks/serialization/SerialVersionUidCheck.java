@@ -31,16 +31,8 @@ class Outer {
 }
 
 @SuppressWarnings("serial")
-class J implements Serializable {}
+class J implements Serializable {} // Noncompliant, this issue will be filtered by the supress warning filter
 
-@SuppressWarnings("deprecation")
-class K implements Serializable {} // Noncompliant
-
-@SuppressWarnings({"serial", "deprecation"})
-class M implements Serializable {} // Compliant
-
-@SuppressWarnings(UNKNOWN)
-class L implements Serializable {} // Noncompliant
 enum MyEnum {
   FOO {
     void fun() {}

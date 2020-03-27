@@ -37,7 +37,6 @@ public class AnnotationTreeImpl extends AssessableExpressionTree implements Anno
   private final Arguments arguments;
 
   public AnnotationTreeImpl(InternalSyntaxToken atToken, TypeTree annotationType, ArgumentListTreeImpl arguments) {
-    super(Kind.ANNOTATION);
     this.atToken = atToken;
     this.annotationType = annotationType;
     this.arguments = arguments;

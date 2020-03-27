@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
@@ -34,6 +35,7 @@ import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -200,5 +202,13 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     if (javaCheck instanceof EndOfAnalysisCheck) {
       throw new UnsupportedOperationException("EndOfAnalysisCheck must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
     }
+  }
+
+  @Override
+  public Optional<SourceMap> sourceMap() {
+    if (inputFile instanceof GeneratedFile) {
+      return Optional.of(((GeneratedFile) inputFile).sourceMap());
+    }
+    return Optional.empty();
   }
 }

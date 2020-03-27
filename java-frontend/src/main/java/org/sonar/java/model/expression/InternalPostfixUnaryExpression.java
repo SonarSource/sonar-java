@@ -36,7 +36,6 @@ public class InternalPostfixUnaryExpression extends AssessableExpressionTree imp
   private final InternalSyntaxToken operatorToken;
 
   public InternalPostfixUnaryExpression(Kind kind, ExpressionTree expression, InternalSyntaxToken operatorToken) {
-    super(kind);
     this.kind = Objects.requireNonNull(kind);
     this.expression = Objects.requireNonNull(expression);
     this.operatorToken = operatorToken;

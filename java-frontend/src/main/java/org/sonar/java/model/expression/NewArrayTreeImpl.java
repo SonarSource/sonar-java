@@ -24,8 +24,6 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import org.sonar.java.model.ArrayDimensionTreeImpl;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
@@ -49,8 +47,6 @@ public class NewArrayTreeImpl extends AssessableExpressionTree implements NewArr
   private SyntaxToken closeCurlyBraceToken;
 
   public NewArrayTreeImpl(List<ArrayDimensionTree> dimensions, ListTree<ExpressionTree> initializers) {
-    super(Kind.NEW_ARRAY);
-
     // TODO maybe type should not be null?
     this.type = null;
     this.dimensions = Objects.requireNonNull(dimensions);
@@ -77,11 +73,6 @@ public class NewArrayTreeImpl extends AssessableExpressionTree implements NewArr
 
   public NewArrayTreeImpl completeDimensions(List<ArrayDimensionTree> arrayDimensions) {
     this.dimensions = ImmutableList.<ArrayDimensionTree>builder().addAll(arrayDimensions).addAll(dimensions).build();
-    return this;
-  }
-
-  public NewArrayTreeImpl completeFirstDimension(List<AnnotationTree> annotations) {
-    ((ArrayDimensionTreeImpl) this.dimensions.get(0)).completeAnnotations(annotations);
     return this;
   }
 

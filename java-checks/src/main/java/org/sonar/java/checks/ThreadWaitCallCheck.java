@@ -19,13 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S2236")
@@ -37,13 +34,17 @@ public class ThreadWaitCallCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    TypeCriteria subtypeOfThread = TypeCriteria.subtypeOf("java.lang.Thread");
-    return Arrays.asList(
-      MethodMatcher.create().callSite(subtypeOfThread).name("wait").withoutParameter(),
-      MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long"),
-      MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long").addParameter("int"),
-      MethodMatcher.create().callSite(subtypeOfThread).name("notify").withoutParameter(),
-      MethodMatcher.create().callSite(subtypeOfThread).name("notifyAll").withoutParameter());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofSubTypes("java.lang.Thread")
+        .names("wait")
+        .addParametersMatcher("long")
+        .addParametersMatcher("long", "int")
+        .build(),
+      MethodMatchers.create()
+        .ofSubTypes("java.lang.Thread")
+        .names("wait", "notify", "notifyAll")
+        .addWithoutParametersMatcher().build());
   }
 }

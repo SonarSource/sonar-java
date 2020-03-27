@@ -1,0 +1,23 @@
+{
+  "title": "\"@Deprecated\" code marked for removal should never be used",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "cwe",
+    "obsolete",
+    "cert"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5738",
+  "sqKey": "S5738",
+  "scope": "All",
+  "securityStandards": {
+    "CWE": [
+      477
+    ]
+  }
+}

@@ -27,10 +27,6 @@ import java.util.List;
 
 public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
 
-  public InferedTypeTree(){
-    super(null);
-  }
-
   @Override
   public Kind kind() {
     return Kind.INFERED_TYPE;

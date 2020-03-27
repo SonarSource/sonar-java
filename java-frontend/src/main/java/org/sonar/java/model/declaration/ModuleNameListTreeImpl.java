@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.declaration;
 
-import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.plugins.java.api.tree.ModuleNameTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -30,7 +29,7 @@ import java.util.List;
 public class ModuleNameListTreeImpl extends ListTreeImpl<ModuleNameTree> {
 
   public ModuleNameListTreeImpl(List<ModuleNameTree> moduleNames, List<SyntaxToken> separators) {
-    super(JavaLexer.MODULE_NAME_LIST, moduleNames, separators);
+    super(moduleNames, separators);
   }
 
   public static ModuleNameListTreeImpl emptyList() {

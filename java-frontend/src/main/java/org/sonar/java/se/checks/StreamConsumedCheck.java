@@ -19,13 +19,12 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
@@ -34,6 +33,7 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -44,11 +44,6 @@ import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Note that {@link StreamNotConsumedCheck} is implemented by using constraints set by this check
@@ -62,25 +57,26 @@ public class StreamConsumedCheck extends SECheck {
 
   private static final Set<String> STREAM_TYPES = ImmutableSet.of("java.util.stream.Stream", "java.util.stream.IntStream", "java.util.stream.LongStream",
     "java.util.stream.DoubleStream");
-  private static final MethodMatcherCollection TERMINAL_OPERATIONS = MethodMatcherCollection.create();
-  static {
-    List<String> terminalMethods = ImmutableList.of("forEach", "forEachOrdered", "toArray", "collect", "reduce", "findAny", "findFirst", "count", "min", "max", "anyMatch",
-      "allMatch", "noneMatch", "average", "summaryStatistics", "sum");
+  private static final MethodMatchers TERMINAL_OPERATIONS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(STREAM_TYPES.toArray(new String[0]))
+      .names("forEach", "forEachOrdered", "toArray", "collect", "reduce", "findAny", "findFirst", "count", "min", "max", "anyMatch",
+        "allMatch", "noneMatch", "average", "summaryStatistics", "sum")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.util.stream.BaseStream")
+      .names("iterator", "spliterator")
+      .addWithoutParametersMatcher()
+      .build()
+  );
 
-    STREAM_TYPES.forEach(streamType -> terminalMethods.forEach(method ->
-      TERMINAL_OPERATIONS.add(MethodMatcher.create().typeDefinition(streamType).name(method).withAnyParameters())));
-    TERMINAL_OPERATIONS.add(baseStreamMethod("iterator").withoutParameter());
-    TERMINAL_OPERATIONS.add(baseStreamMethod("spliterator").withoutParameter());
-  }
-  private static final MethodMatcherCollection BASE_STREAM_INTERMEDIATE_OPERATIONS = MethodMatcherCollection.create(
-    baseStreamMethod("sequential").withoutParameter(),
-    baseStreamMethod("parallel").withoutParameter(),
-    baseStreamMethod("unordered").withoutParameter(),
-    baseStreamMethod("onClose").withAnyParameters());
 
-  private static MethodMatcher baseStreamMethod(String methodName) {
-    return MethodMatcher.create().typeDefinition("java.util.stream.BaseStream").name(methodName);
-  }
+  private static final MethodMatchers.NameBuilder JAVA_UTIL_STREAM_BASESTREAM =  MethodMatchers.create()
+    .ofSubTypes("java.util.stream.BaseStream");
+  private static final MethodMatchers BASE_STREAM_INTERMEDIATE_OPERATIONS = MethodMatchers.or(
+    JAVA_UTIL_STREAM_BASESTREAM.names("sequential", "parallel", "unordered").addWithoutParametersMatcher().build(),
+    JAVA_UTIL_STREAM_BASESTREAM.names("onClose").withAnyParameters().build());
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -134,7 +130,7 @@ public class StreamConsumedCheck extends SECheck {
 
   private ProgramState handleMethodReference(CheckerContext context, MethodReferenceTree mrt) {
     ProgramState programState = context.getState();
-    if (TERMINAL_OPERATIONS.anyMatch(mrt.method().symbol())) {
+    if (TERMINAL_OPERATIONS.matches(mrt.method().symbol())) {
       Tree expression = mrt.expression();
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         SymbolicValue ownerSV = programState.getValue(((IdentifierTree) expression).symbol());
@@ -165,7 +161,7 @@ public class StreamConsumedCheck extends SECheck {
   }
 
   private static boolean isIntermediateOperation(MethodInvocationTree mit) {
-    if (BASE_STREAM_INTERMEDIATE_OPERATIONS.anyMatch(mit)) {
+    if (BASE_STREAM_INTERMEDIATE_OPERATIONS.matches(mit)) {
       return true;
     }
     Symbol method = mit.symbol();
@@ -181,7 +177,7 @@ public class StreamConsumedCheck extends SECheck {
   }
 
   private static boolean isTerminalOperation(MethodInvocationTree methodInvocationTree) {
-    return TERMINAL_OPERATIONS.anyMatch(methodInvocationTree);
+    return TERMINAL_OPERATIONS.matches(methodInvocationTree);
   }
 
   private static Set<Flow> flow(SymbolicValue invocationTarget, ExplodedGraph.Node node) {

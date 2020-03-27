@@ -28,7 +28,30 @@ public class CallToDeprecatedMethodCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/CallToDeprecatedMethod.java"), new CallToDeprecatedMethodCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/CallToDeprecatedMethod_noSemantic.java", new CallToDeprecatedMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CallToDeprecatedMethod.java"))
+      .withCheck(new CallToDeprecatedMethodCheck())
+      .verifyIssues();
+  }
+
+  /**
+   * See {@link CallToDeprecatedCodeMarkedForRemovalCheck}
+   */
+  @Test
+  public void flagged_for_removal_should_not_raise_issue() {
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CallToDeprecatedMethod_java9.java")
+      .withJavaVersion(9)
+      .withCheck(new CallToDeprecatedMethodCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  public void without_semantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CallToDeprecatedMethod_noSemantic.java")
+      .withCheck(new CallToDeprecatedMethodCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

@@ -22,8 +22,8 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -96,22 +96,24 @@ public class StringToPrimitiveConversionCheck extends IssuableSubscriptionVisito
     private final String className;
     private final Type.Primitives tag;
     private final String message;
-    private final MethodMatcher unboxingInvocationMatcher;
-    private final MethodMatcher valueOfInvocationMatcher;
+    private final MethodMatchers unboxingInvocationMatcher;
+    private final MethodMatchers valueOfInvocationMatcher;
 
     private PrimitiveCheck(String primitiveName, String className, Type.Primitives tag) {
       this.primitiveName = primitiveName;
       this.className = className;
       this.tag = tag;
       this.message = "Use \"" + parseMethodName() + "\" for this string-to-" + primitiveName + " conversion.";
-      this.unboxingInvocationMatcher = MethodMatcher.create()
-        .typeDefinition("java.lang." + className)
-        .name(primitiveName + "Value")
-        .withoutParameter();
-      this.valueOfInvocationMatcher = MethodMatcher.create()
-        .typeDefinition("java.lang." + className)
-        .name("valueOf")
-        .addParameter("java.lang.String");
+      this.unboxingInvocationMatcher = MethodMatchers.create()
+        .ofTypes("java.lang." + className)
+        .names(primitiveName + "Value")
+        .addWithoutParametersMatcher()
+        .build();
+      this.valueOfInvocationMatcher = MethodMatchers.create()
+        .ofTypes("java.lang." + className)
+        .names("valueOf")
+        .addParametersMatcher("java.lang.String")
+        .build();
     }
 
     private void checkMethodInvocation(MethodInvocationTree methodInvocationTree) {

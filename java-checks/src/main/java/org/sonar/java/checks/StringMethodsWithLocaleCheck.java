@@ -19,9 +19,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -30,27 +31,18 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
-
 @Rule(key = "S1449")
 public class StringMethodsWithLocaleCheck extends AbstractMethodDetection {
 
   private static final String STRING = "java.lang.String";
-  private static final MethodMatcher STRING_FORMAT = stringMethod().name("format").withAnyParameters();
+  private static final MethodMatchers STRING_FORMAT = MethodMatchers.create().ofTypes(STRING).names("format").withAnyParameters().build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      stringMethod().name("toUpperCase").withoutParameter(),
-      stringMethod().name("toLowerCase").withoutParameter(),
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofTypes(STRING).names("toUpperCase", "toLowerCase").addWithoutParametersMatcher().build(),
       STRING_FORMAT
     );
-  }
-
-  private static MethodMatcher stringMethod() {
-    return MethodMatcher.create().typeDefinition(STRING);
   }
 
   @Override
@@ -59,7 +51,7 @@ public class StringMethodsWithLocaleCheck extends AbstractMethodDetection {
     if (STRING_FORMAT.matches(mit) && (isLocaleVariant(mit) || !usesLocaleDependentFormatteer(mit.arguments().get(0)))) {
       return;
     }
-    if(report.is(Tree.Kind.MEMBER_SELECT)) {
+    if (report.is(Tree.Kind.MEMBER_SELECT)) {
       report = ((MemberSelectExpressionTree) report).identifier();
     }
     reportIssue(report, "Define the locale to be used in this String operation.");

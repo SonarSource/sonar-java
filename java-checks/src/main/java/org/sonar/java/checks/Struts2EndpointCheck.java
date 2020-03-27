@@ -23,10 +23,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -34,7 +33,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4531")
 public class Struts2EndpointCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher STRUTS2_METHOD = MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("execute").withoutParameter();
+  private static final MethodMatchers STRUTS2_METHOD = MethodMatchers.create()
+    .ofAnyType().names("execute").addWithoutParametersMatcher().build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

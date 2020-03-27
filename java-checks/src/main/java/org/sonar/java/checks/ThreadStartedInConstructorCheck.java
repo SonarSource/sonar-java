@@ -25,9 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,10 +36,11 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2693")
 public class ThreadStartedInConstructorCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher THREAD_START = MethodMatcher.create()
-    .typeDefinition("java.lang.Thread")
-    .name("start")
-    .withoutParameter();
+  private static final MethodMatchers THREAD_START = MethodMatchers.create()
+    .ofSubTypes("java.lang.Thread")
+    .names("start")
+    .addWithoutParametersMatcher()
+    .build();
 
   private final Deque<Boolean> inMethodOrStaticInitializerOrFinalClass = new LinkedList<>();
 

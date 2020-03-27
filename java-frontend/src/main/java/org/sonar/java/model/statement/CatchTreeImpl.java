@@ -41,8 +41,6 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
   private final InternalSyntaxToken closeParenToken;
 
   public CatchTreeImpl(InternalSyntaxToken catchToken, InternalSyntaxToken openParenToken, VariableTreeImpl parameter, InternalSyntaxToken closeParenToken, BlockTreeImpl block) {
-    super(Kind.CATCH);
-
     this.catchToken = catchToken;
     this.openParenToken = openParenToken;
     this.parameter = Objects.requireNonNull(parameter);

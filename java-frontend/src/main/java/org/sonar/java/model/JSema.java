@@ -27,25 +27,12 @@ import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.ASTUtils;
-import org.eclipse.jdt.internal.compiler.batch.FileSystem;
-import org.eclipse.jdt.internal.compiler.env.IBinaryAnnotation;
-import org.eclipse.jdt.internal.compiler.env.IBinaryType;
-import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
-import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
-import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
-import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
-import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
-import org.eclipse.jdt.internal.compiler.lookup.ModuleBinding;
-import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +45,7 @@ public final class JSema implements Sema {
   private final Map<ITypeBinding, JType> types = new HashMap<>();
   private final Map<IBinding, JSymbol> symbols = new HashMap<>();
   private final Map<IAnnotationBinding, JSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
+  private final Map<String, Type> nameToTypeCache = new HashMap<>();
 
   JSema(AST ast) {
     this.ast = ast;
@@ -102,8 +90,10 @@ public final class JSema implements Sema {
 
   @Override
   public Type getClassType(String fullyQualifiedName) {
-    ITypeBinding typeBinding = resolveType(fullyQualifiedName);
-    return typeBinding != null ? type(typeBinding) : Symbols.unknownType;
+    return nameToTypeCache.computeIfAbsent(fullyQualifiedName, (t) -> {
+      ITypeBinding typeBinding = resolveType(t);
+      return typeBinding != null ? type(typeBinding) : Symbols.unknownType;
+    });
   }
 
   @Nullable
@@ -127,83 +117,11 @@ public final class JSema implements Sema {
   }
 
   IAnnotationBinding[] resolvePackageAnnotations(String packageName) {
-    // See org.eclipse.jdt.core.dom.PackageBinding#getAnnotations()
-    try {
-      Method methodGetBindingResolver = ast.getClass()
-        .getDeclaredMethod("getBindingResolver");
-      methodGetBindingResolver.setAccessible(true);
-      Object bindingResolver = methodGetBindingResolver.invoke(ast);
-
-      Method methodLookupEnvironment = bindingResolver.getClass()
-        .getDeclaredMethod("lookupEnvironment");
-      methodLookupEnvironment.setAccessible(true);
-      LookupEnvironment lookupEnvironment = (LookupEnvironment) methodLookupEnvironment.invoke(bindingResolver);
-
-      Method methodInternalFindClass = FileSystem.class.getDeclaredMethod(
-        "internalFindClass",
-        String.class,
-        char[].class,
-        boolean.class,
-        char[].class
-      );
-      methodInternalFindClass.setAccessible(true);
-      NameEnvironmentAnswer answer = (NameEnvironmentAnswer) methodInternalFindClass.invoke(
-        lookupEnvironment.nameEnvironment,
-        (packageName + ".package-info").replace('.', '/'),
-        TypeConstants.PACKAGE_INFO_NAME,
-        true,
-        ModuleBinding.ANY
-      );
-      if (answer == null) {
-        return new IAnnotationBinding[0];
-      }
-
-      ICompilationUnit compilationUnit = answer.getCompilationUnit();
-      if (compilationUnit != null) {
-//        throw new UnsupportedOperationException();
-      }
-
-      IBinaryType type = answer.getBinaryType();
-      if (type == null) {
-        // Can happen for instance with ant, as ant only generates 'package-info.class'
-        // when there is annotations in the package-info.java file.
-        return new IAnnotationBinding[0];
-      }
-      IBinaryAnnotation[] binaryAnnotations = type.getAnnotations();
-      AnnotationBinding[] binaryInstances =
-        BinaryTypeBinding.createAnnotations(binaryAnnotations, lookupEnvironment, type.getMissingTypeNames());
-      AnnotationBinding[] allInstances =
-        AnnotationBinding.addStandardAnnotations(binaryInstances, type.getTagBits(), lookupEnvironment);
-
-      Method methodGetAnnotationInstance = bindingResolver.getClass()
-        .getDeclaredMethod("getAnnotationInstance", AnnotationBinding.class);
-      methodGetAnnotationInstance.setAccessible(true);
-
-      IAnnotationBinding[] domInstances = new IAnnotationBinding[allInstances.length];
-      for (int i = 0; i < allInstances.length; i++) {
-        // FIXME can be null if annotation can not be resolved e.g. due to incomplete classpath
-        domInstances[i] = (IAnnotationBinding) methodGetAnnotationInstance.invoke(bindingResolver, allInstances[i]);
-      }
-      return domInstances;
-
-    } catch (ReflectiveOperationException e) {
-      throw new RuntimeException(e);
-    }
+    return ASTUtils.resolvePackageAnnotations(ast, packageName);
   }
 
   static String signature(IMethodBinding methodBinding) {
-    try {
-      Field fieldBinding = Class.forName("org.eclipse.jdt.core.dom.MethodBinding")
-        .getDeclaredField("binding");
-      fieldBinding.setAccessible(true);
-      Method methodSignature = MethodBinding.class
-        .getMethod("signature");
-      methodSignature.setAccessible(true);
-      char[] signature = (char[]) methodSignature.invoke(fieldBinding.get(methodBinding));
-      return new String(signature);
-    } catch (ReflectiveOperationException e) {
-      throw new IllegalStateException(e);
-    }
+    return ASTUtils.signature(methodBinding);
   }
 
 }

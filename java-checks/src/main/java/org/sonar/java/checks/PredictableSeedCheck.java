@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -36,15 +34,26 @@ public class PredictableSeedCheck extends AbstractMethodDetection {
   private static final Tree.Kind[] LITERAL_KINDS = {Tree.Kind.STRING_LITERAL, Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.CHAR_LITERAL,
     Tree.Kind.NULL_LITERAL, Tree.Kind.BOOLEAN_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL};
   private static final String JAVA_SECURITY_SECURE_RANDOM = "java.security.SecureRandom";
-  private static final MethodMatcher GET_BYTES = MethodMatcher.create().typeDefinition("java.lang.String").name("getBytes").withAnyParameters();
+  private static final MethodMatchers GET_BYTES = MethodMatchers.create()
+    .ofTypes("java.lang.String")
+    .names("getBytes")
+    .withAnyParameters()
+    .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition(JAVA_SECURITY_SECURE_RANDOM).name("<init>").parameters("byte[]"),
-      MethodMatcher.create().typeDefinition(JAVA_SECURITY_SECURE_RANDOM).name("setSeed").parameters("byte[]"),
-      MethodMatcher.create().typeDefinition(JAVA_SECURITY_SECURE_RANDOM).name("setSeed").parameters("long")
-      );
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes(JAVA_SECURITY_SECURE_RANDOM)
+        .constructor()
+        .addParametersMatcher("byte[]")
+        .build(),
+      MethodMatchers.create()
+        .ofTypes(JAVA_SECURITY_SECURE_RANDOM)
+        .names("setSeed")
+        .addParametersMatcher("byte[]")
+        .addParametersMatcher("long")
+        .build());
   }
 
   @Override

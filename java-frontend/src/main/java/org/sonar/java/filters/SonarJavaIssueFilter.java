@@ -19,9 +19,12 @@
  */
 package org.sonar.java.filters;
 
-import org.sonar.api.scan.issue.filter.IssueFilter;
+import org.sonar.api.rule.RuleKey;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;
 
-public interface SonarJavaIssueFilter extends JavaCheck, IssueFilter {
+public interface SonarJavaIssueFilter extends JavaCheck {
+
+  boolean accept(RuleKey ruleKey, AnalyzerMessage analyzerMessage);
 
 }

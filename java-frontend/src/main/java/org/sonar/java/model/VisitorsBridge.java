@@ -39,7 +39,6 @@ import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.check.Rule;
-import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.CheckFailureException;
 import org.sonar.java.EndOfAnalysisCheck;
@@ -55,6 +54,7 @@ import org.sonar.java.se.SymbolicExecutionMode;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -76,6 +76,7 @@ public class VisitorsBridge {
   protected JavaVersion javaVersion;
   private final List<File> classpath;
   private final SquidClassLoader classLoader;
+  private final JavaFileScanner analysisIssueFilter;
   private IssuableSubsciptionVisitorsRunner issuableSubscriptionVisitorsRunner;
   private static final Predicate<JavaFileScanner> IS_ISSUABLE_SUBSCRIPTION_VISITOR = IssuableSubscriptionVisitor.class::isInstance;
 
@@ -85,17 +86,26 @@ public class VisitorsBridge {
   }
 
   @VisibleForTesting
-  public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    this(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.DISABLED);
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath,
+                        @Nullable SonarComponents sonarComponents) {
+    this(visitors, projectClasspath, sonarComponents, SymbolicExecutionMode.DISABLED, null);
   }
 
-  public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath,
+                        @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode) {
+    this(visitors, projectClasspath, sonarComponents, symbolicExecutionMode, null);
+  }
+
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath,
+                        @Nullable SonarComponents sonarComponents, SymbolicExecutionMode symbolicExecutionMode,
+                        @Nullable JavaFileScanner analysisIssueFilter) {
     this.allScanners = new ArrayList<>();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
         allScanners.add((JavaFileScanner) visitor);
       }
     }
+    this.analysisIssueFilter = analysisIssueFilter;
     this.classpath = projectClasspath;
     this.executableScanners = allScanners.stream().filter(IS_ISSUABLE_SUBSCRIPTION_VISITOR.negate()).collect(Collectors.toList());
     this.issuableSubscriptionVisitorsRunner = new IssuableSubsciptionVisitorsRunner(allScanners);
@@ -130,10 +140,19 @@ public class VisitorsBridge {
 
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.sema, sonarComponents, fileParsed);
 
+    // Prepare issue filter
+    if (analysisIssueFilter != null) {
+      try {
+        runScanner(javaFileScannerContext, analysisIssueFilter);
+      } catch (CheckFailureException e) {
+        interruptIfFailFast(e);
+      }
+    }
+
     // Symbolic execution checks
     if (symbolicExecutionEnabled) {
       try {
-        runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache), AnalysisError.Kind.SE_ERROR);
+        runScanner(javaFileScannerContext, new SymbolicExecutionVisitor(executableScanners, behaviorCache));
         behaviorCache.cleanup();
       } catch (CheckFailureException e) {
         interruptIfFailFast(e);
@@ -142,7 +161,7 @@ public class VisitorsBridge {
 
     for (JavaFileScanner scanner : executableScanners) {
       try {
-        runScanner(javaFileScannerContext, scanner, AnalysisError.Kind.CHECK_ERROR);
+        runScanner(javaFileScannerContext, scanner);
       } catch (CheckFailureException e) {
         interruptIfFailFast(e);
       }
@@ -161,11 +180,11 @@ public class VisitorsBridge {
     }
   }
 
-  private void runScanner(JavaFileScannerContext javaFileScannerContext, JavaFileScanner scanner, AnalysisError.Kind kind) throws CheckFailureException {
-    runScanner(() -> scanner.scanFile(javaFileScannerContext), scanner, kind);
+  private void runScanner(JavaFileScannerContext javaFileScannerContext, JavaFileScanner scanner) throws CheckFailureException {
+    runScanner(() -> scanner.scanFile(javaFileScannerContext), scanner);
   }
 
-  private void runScanner(Runnable action, JavaFileScanner scanner, AnalysisError.Kind kind) throws CheckFailureException {
+  private void runScanner(Runnable action, JavaFileScanner scanner) throws CheckFailureException {
     try {
       action.run();
     } catch (IllegalRuleParameterException e) {
@@ -182,7 +201,6 @@ public class VisitorsBridge {
         scanner.getClass(), ruleKey(scanner), currentFile);
 
       LOG.error(message, e);
-      addAnalysisError(e, currentFile, kind);
 
       throw new CheckFailureException(message, e);
     }
@@ -194,12 +212,6 @@ public class VisitorsBridge {
       return annotation.key();
     }
     return "";
-  }
-
-  private void addAnalysisError(Exception e, InputFile inputFile, AnalysisError.Kind checkError) {
-    if (sonarComponents != null) {
-      sonarComponents.addAnalysisError(new AnalysisError(e, inputFile.toString(), checkError));
-    }
   }
 
   private static List<JavaFileScanner> executableScanners(List<JavaFileScanner> scanners, JavaVersion javaVersion) {
@@ -224,14 +236,16 @@ public class VisitorsBridge {
   }
 
   private void createSonarSymbolTable(CompilationUnitTree tree) {
-    if (sonarComponents != null && !sonarComponents.isSonarLintContext()) {
+    if (sonarComponents != null
+      && !sonarComponents.isSonarLintContext()
+      // don't provide semantic data (symbol highlighting) to SQ for generated files (jsp)
+      && !(currentFile instanceof GeneratedFile)) {
       SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(currentFile));
       symVisitor.visitCompilationUnit(tree);
     }
   }
 
   public void processRecognitionException(RecognitionException e, InputFile inputFile) {
-    addAnalysisError(e, inputFile, AnalysisError.Kind.PARSE_ERROR);
     if(sonarComponents == null || !sonarComponents.reportAnalysisError(e, inputFile)) {
       this.visitFile(null);
       executableScanners.stream()
@@ -309,7 +323,7 @@ public class VisitorsBridge {
 
     private final void forEach(Collection<SubscriptionVisitor> visitors, Consumer<SubscriptionVisitor> callback) throws CheckFailureException {
       for (SubscriptionVisitor visitor : visitors) {
-        runScanner(() -> callback.accept(visitor), visitor, AnalysisError.Kind.CHECK_ERROR);
+        runScanner(() -> callback.accept(visitor), visitor);
       }
     }
   }

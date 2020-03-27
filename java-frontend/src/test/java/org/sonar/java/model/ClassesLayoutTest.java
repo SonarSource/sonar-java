@@ -25,8 +25,11 @@ import org.openjdk.jol.datamodel.X86_64_DataModel;
 import org.openjdk.jol.info.ClassLayout;
 import org.openjdk.jol.layouters.HotSpotLayouter;
 import org.openjdk.jol.layouters.Layouter;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -39,15 +42,15 @@ class ClassesLayoutTest {
   @Test
   void token() {
     assertAll(
-      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64)).isEqualTo(88),
-      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64_COOPS)).isEqualTo(56)
+      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64)).isEqualTo(72),
+      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
 
   @Test
   void identifier() {
     assertAll(
-      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64)).isEqualTo(88),
+      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64)).isEqualTo(80),
       () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
@@ -55,15 +58,39 @@ class ClassesLayoutTest {
   @Test
   void literal() {
     assertAll(
-      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64)).isEqualTo(72),
+      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64)).isEqualTo(64),
       () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64_COOPS)).isEqualTo(40)
+    );
+  }
+
+  @Test
+  void variable_declaration() {
+    assertAll(
+      () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64)).isEqualTo(96),
+      () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64_COOPS)).isEqualTo(56)
+    );
+  }
+
+  @Test
+  void member_select() {
+    assertAll(
+      () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64)).isEqualTo(80),
+      () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
+    );
+  }
+
+  @Test
+  void method_invocation() {
+    assertAll(
+      () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64)).isEqualTo(80),
+      () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
 
   @Test
   void type() {
     assertAll(
-      () -> assertThat(instanceSize(JType.class, X86_64)).isEqualTo(32),
+      () -> assertThat(instanceSize(JType.class, X86_64)).isEqualTo(40),
       () -> assertThat(instanceSize(JType.class, X86_64_COOPS)).isEqualTo(24)
     );
   }
@@ -71,24 +98,32 @@ class ClassesLayoutTest {
   @Test
   void symbol_type() {
     assertAll(
-      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(48),
-      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64_COOPS)).isEqualTo(32)
+      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(72),
+      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64_COOPS)).isEqualTo(40)
     );
   }
 
   @Test
   void symbol_method() {
     assertAll(
-      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64)).isEqualTo(32),
-      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64_COOPS)).isEqualTo(24)
+      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64)).isEqualTo(56),
+      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64_COOPS)).isEqualTo(32)
     );
   }
 
   @Test
   void symbol_variable() {
     assertAll(
-      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(32),
-      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64_COOPS)).isEqualTo(24)
+      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(56),
+      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64_COOPS)).isEqualTo(32)
+    );
+  }
+
+  @Test
+  void annotation() {
+    assertAll(
+      () -> assertThat(instanceSize(JSymbolMetadata.JAnnotationInstance.class, X86_64)).isEqualTo(40),
+      () -> assertThat(instanceSize(JSymbolMetadata.JAnnotationInstance.class, X86_64_COOPS)).isEqualTo(24)
     );
   }
 

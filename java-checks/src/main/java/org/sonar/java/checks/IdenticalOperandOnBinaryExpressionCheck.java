@@ -20,11 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -33,20 +37,22 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.CheckForNull;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S1764")
 public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
-  private static final MethodMatcher EQUALS_MATCHER = MethodMatcher.create().typeDefinition(JAVA_LANG_OBJECT).name("equals").addParameter(JAVA_LANG_OBJECT);
-  private static final MethodMatcher DEEP_EQUALS_MATCHER = MethodMatcher.create().typeDefinition("java.util.Objects")
-    .name("equals").addParameter(JAVA_LANG_OBJECT).addParameter(JAVA_LANG_OBJECT);
-  private static final MethodMatcher OBJECTS_EQUALS_MATCHER = MethodMatcher.create().typeDefinition("java.util.Objects")
-    .name("deepEquals").addParameter(JAVA_LANG_OBJECT).addParameter(JAVA_LANG_OBJECT);
+
+  private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
+    .ofAnyType()
+    .names("equals")
+    .addParametersMatcher(JAVA_LANG_OBJECT)
+    .build();
+
+  private static final MethodMatchers OBJECTS_EQUALS_MATCHER = MethodMatchers.create()
+    .ofTypes("java.util.Objects")
+    .names("equals", "deepEquals")
+    .addParametersMatcher(JAVA_LANG_OBJECT, JAVA_LANG_OBJECT)
+    .build();
 
   /**
    * symetric operators : a OP b is equivalent to b OP a
@@ -116,7 +122,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
             null);
         }
       }
-    } else if (DEEP_EQUALS_MATCHER.matches(mit) || OBJECTS_EQUALS_MATCHER.matches(mit)) {
+    } else if (OBJECTS_EQUALS_MATCHER.matches(mit)) {
       ExpressionTree leftOp = mit.arguments().get(0);
       ExpressionTree rightOp = mit.arguments().get(1);
       if(SyntacticEquivalence.areEquivalent(leftOp, rightOp)) {

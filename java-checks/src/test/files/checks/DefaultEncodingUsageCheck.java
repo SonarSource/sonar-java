@@ -82,10 +82,12 @@ class A {
     IOUtils.toString(bytes); // Noncompliant
     IOUtils.toString(uri); // Noncompliant
     IOUtils.toString(url); // Noncompliant
+    IOUtils.toString(url, StandardCharsets.UTF_8); // Compliant
     IOUtils.write(chars, output); // Noncompliant
     IOUtils.write(charSequence, output); // Noncompliant
     IOUtils.write(buffer, output); // Noncompliant
     IOUtils.write(s, output); // Noncompliant
+    IOUtils.write(s, output,  StandardCharsets.UTF_8); // Compliant
     IOUtils.writeLines(lines, "\n", output); // Noncompliant
   }
 
@@ -110,6 +112,7 @@ class A {
     IOUtils.toString(bytes, (String) null); // Noncompliant
     IOUtils.toString(uri, (String) null); // Noncompliant
     IOUtils.toString(url, (String) null); // Noncompliant
+    IOUtils.toString(url, (java.nio.charset.Charset) null); // Noncompliant
     IOUtils.write(chars, output, (String) null); // Noncompliant
     IOUtils.write(charSequence, output, (String) null); // Noncompliant
     IOUtils.write(buffer, output, (String) null); // Noncompliant

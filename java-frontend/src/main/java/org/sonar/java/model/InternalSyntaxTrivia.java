@@ -30,7 +30,6 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   private final int column;
 
   public InternalSyntaxTrivia(String comment, int startLine, int column) {
-    super(null);
     this.comment = comment;
     this.startLine = startLine;
     this.column = column;

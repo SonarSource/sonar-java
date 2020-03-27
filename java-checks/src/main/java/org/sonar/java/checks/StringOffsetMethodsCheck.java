@@ -19,13 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -34,19 +31,27 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4635")
 public class StringOffsetMethodsCheck extends AbstractMethodDetection {
 
-  private static final TypeCriteria JAVA_LANG_STRING = TypeCriteria.is("java.lang.String");
-  private static final TypeCriteria INT = TypeCriteria.is("int");
-  private static final MethodMatcher SUBSTRING = MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("substring").parameters(INT);
+  private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final String INT = "int";
+  private static final MethodMatchers SUBSTRING = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING)
+    .names("substring")
+    .addParametersMatcher(INT)
+    .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("indexOf").parameters(JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("indexOf").parameters(INT),
-      MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("lastIndexOf").parameters(JAVA_LANG_STRING),
-      MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("lastIndexOf").parameters(INT),
-      MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("startsWith").parameters(JAVA_LANG_STRING)
-      );
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes(JAVA_LANG_STRING)
+        .names("indexOf", "lastIndexOf")
+        .addParametersMatcher(INT)
+        .build(),
+      MethodMatchers.create()
+        .ofTypes(JAVA_LANG_STRING)
+        .names("indexOf", "lastIndexOf", "startsWith")
+        .addParametersMatcher(JAVA_LANG_STRING)
+        .build());
   }
 
   @Override

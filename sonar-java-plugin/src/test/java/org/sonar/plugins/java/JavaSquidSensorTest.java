@@ -20,16 +20,15 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Collection;
+import java.nio.file.Path;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -46,19 +45,26 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.api.utils.Version;
-import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
+import org.sonar.java.jsp.Jasper;
+import org.sonar.java.model.GeneratedFile;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaResourceLocator;
+import org.sonar.plugins.java.api.JspCodeVisitor;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -80,7 +86,7 @@ public class JavaSquidSensorTest {
 
   @Test
   public void test_toString() {
-    assertThat(new JavaSquidSensor(null, null, null, null, null).toString()).isEqualTo("JavaSquidSensor");
+    assertThat(new JavaSquidSensor(null, null, null, null, null, null).toString()).isEqualTo("JavaSquidSensor");
   }
 
   @Test
@@ -100,11 +106,11 @@ public class JavaSquidSensorTest {
     DefaultFileSystem fs = context.fileSystem();
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(new JavaClasspath(settings.asConfig(), fs));
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter);
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null);
 
     jss.execute(context);
-    // argument 92 refers to the comment on line #92 in this file
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(92));
+    // argument 98 refers to the comment on line #98 in this file
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Sets.newHashSet(98));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
@@ -138,28 +144,12 @@ public class JavaSquidSensorTest {
     FileLinesContext fileLinesContext = mock(FileLinesContext.class);
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
     when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
-    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory));
+    SonarComponents sonarComponents = spy(new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null));
     sonarComponents.setSensorContext(contextTester);
 
     BadMethodNameCheck check = new BadMethodNameCheck();
     when(sonarComponents.checkClasses()).thenReturn(new JavaCheck[] {check});
     return sonarComponents;
-  }
-
-  @Test
-  public void verify_analysis_errors_are_collected_on_parse_error() throws Exception {
-    SensorContextTester context = createParseErrorContext();
-    context.settings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true);
-    executeJavaSquidSensor(context);
-
-    String feedback = context.<String>measure("projectKey", "sonarjava_feedback").value();
-    Collection<AnalysisError> analysisErrors = new Gson().fromJson(feedback, new TypeToken<Collection<AnalysisError>>(){}.getType());
-    assertThat(analysisErrors).hasSize(1);
-    AnalysisError analysisError = analysisErrors.iterator().next();
-    assertThat(analysisError.getMessage()).startsWith("Parse error at line 5 column 2:");
-    assertThat(analysisError.getCause()).startsWith("com.sonar.sslr.api.RecognitionException: Parse error at line 5 column 2:");
-    assertThat(analysisError.getFilename()).endsWith("ParseError.java");
-    assertThat(analysisError.getKind()).isEqualTo(AnalysisError.Kind.PARSE_ERROR);
   }
 
   private SensorContextTester createParseErrorContext() throws IOException {
@@ -186,18 +176,17 @@ public class JavaSquidSensorTest {
     DefaultFileSystem fs = context.fileSystem().setWorkDir(tmp.getRoot().toPath());
     JavaClasspath javaClasspath = mock(JavaClasspath.class);
     JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null);
     DefaultJavaResourceLocator javaResourceLocator = mock(DefaultJavaResourceLocator.class);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
 
-    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, new MapSettings().asConfig(), noSonarFilter);
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, fs, javaResourceLocator, new MapSettings().asConfig(), noSonarFilter, null);
     jss.execute(context);
   }
 
   @Test
   public void feedbackShouldNotBeFedIfNoErrors() throws IOException {
     SensorContextTester context = createContext(InputFile.Type.MAIN);
-    context.settings().setProperty(SonarComponents.COLLECT_ANALYSIS_ERRORS_KEY, true);
     executeJavaSquidSensor(context);
     assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
   }
@@ -207,5 +196,36 @@ public class JavaSquidSensorTest {
     SensorContextTester context = createParseErrorContext();
     executeJavaSquidSensor(context);
     assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
+  }
+
+  @Test
+  public void should_invoke_visitors_on_generated_code() throws Exception {
+    Path base = tmp.newFolder().toPath();
+    Path generatedFilePath = tmp.newFile("Generated.java").toPath();
+    Files.write(generatedFilePath, "class Generated {}".getBytes());
+    GeneratedFile generatedFile = new GeneratedFile(generatedFilePath);
+
+    SensorContextTester context = SensorContextTester.create(base);
+    SonarComponents sonarComponents = createSonarComponentsMock(context);
+    JavaFileScanner javaFileScanner = mock(JavaFileScanner.class);
+    JspCodeScanner testCodeVisitor = mock(JspCodeScanner.class);
+    when(sonarComponents.jspCodeVisitors()).thenReturn(asList(testCodeVisitor));
+    when(sonarComponents.checkClasses()).thenReturn(new JavaCheck[]{javaFileScanner});
+
+    Jasper jasper = mock(Jasper.class);
+    when(jasper.generateFiles(any(), any())).thenReturn(asList(generatedFile));
+    JavaSquidSensor jss = new JavaSquidSensor(sonarComponents, context.fileSystem(), mock(JavaResourceLocator.class),
+      new MapSettings().asConfig(), mock(NoSonarFilter.class), null, jasper);
+    jss.execute(context);
+
+    ArgumentCaptor<JavaFileScannerContext> scannerContext = ArgumentCaptor.forClass(JavaFileScannerContext.class);
+    verify(testCodeVisitor, times(1)).scanFile(scannerContext.capture());
+    assertThat(scannerContext.getValue().getInputFile()).isSameAs(generatedFile);
+
+    // normal visitors are not invoked on generated files
+    verify(javaFileScanner, never()).scanFile(any());
+  }
+
+  interface JspCodeScanner extends JavaFileScanner, JspCodeVisitor {
   }
 }

@@ -19,13 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(key = "S4011")
@@ -41,25 +39,25 @@ public class DisallowedConstructorCheck extends AbstractMethodDetection {
   private boolean allOverloads = false;
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    MethodMatcher invocationMatcher = MethodMatcher.create().name("<init>");
+  protected MethodMatchers getMethodInvocationMatchers() {
     if (StringUtils.isEmpty(className)) {
-      return Collections.emptyList();
+      return MethodMatchers.none();
     }
-    invocationMatcher.typeDefinition(className);
+    MethodMatchers.ParametersBuilder invocationMatcher = MethodMatchers.create().ofTypes(className).constructor();
     if (allOverloads) {
-      invocationMatcher.withAnyParameters();
+      return invocationMatcher.withAnyParameters().build();
     } else {
       String[] args = StringUtils.split(argumentTypes, ",");
       if (args.length == 0) {
-        invocationMatcher.withoutParameter();
+        return invocationMatcher.addWithoutParametersMatcher().build();
       } else {
-        for (String arg : args) {
-          invocationMatcher.addParameter(StringUtils.trim(arg));
+        String[] trimmedArgs = new String[args.length];
+        for (int i = 0; i < trimmedArgs.length; i++) {
+          trimmedArgs[i] = StringUtils.trim(args[i]);
         }
+        return invocationMatcher.addParametersMatcher(trimmedArgs).build();
       }
     }
-    return Collections.singletonList(invocationMatcher);
   }
 
   @Override

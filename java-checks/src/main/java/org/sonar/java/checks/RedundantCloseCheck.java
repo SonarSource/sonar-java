@@ -19,10 +19,13 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -33,18 +36,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Rule(key = "S4087")
 public class RedundantCloseCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher AUTOCLOSEABLE_CLOSE = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("java.lang.AutoCloseable"))
-    .name("close")
-    .withoutParameter();
+  private static final MethodMatchers AUTOCLOSEABLE_CLOSE = MethodMatchers.create()
+    .ofSubTypes("java.lang.AutoCloseable")
+    .names("close")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

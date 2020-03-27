@@ -19,14 +19,11 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -34,28 +31,31 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4425")
 public class IntegerToHexStringCheck extends AbstractMethodDetection {
 
-  private static final MethodMatcher APPEND_MATCHER = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("java.lang.AbstractStringBuilder"))
-    .name("append")
-    .addParameter(TypeCriteria.is("java.lang.String"));
+  private static final MethodMatchers APPEND_MATCHER = MethodMatchers.create()
+    .ofSubTypes("java.lang.AbstractStringBuilder")
+    .names("append")
+    .addParametersMatcher("java.lang.String")
+    .build();
 
-  private static final MethodMatcher PRINT_MATCHER = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("java.io.PrintStream"))
-    .name("print")
-    .addParameter(TypeCriteria.is("java.lang.String"));
+  private static final MethodMatchers PRINT_MATCHER = MethodMatchers.create()
+    .ofSubTypes("java.io.PrintStream")
+    .names("print")
+    .addParametersMatcher("java.lang.String")
+    .build();
 
-  private static final MethodMatcher JOINER_MATCHER = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("java.util.StringJoiner"))
-    .name("add")
-    .addParameter(TypeCriteria.is("java.lang.CharSequence"));
+  private static final MethodMatchers JOINER_MATCHER = MethodMatchers.create()
+    .ofSubTypes("java.util.StringJoiner")
+    .names("add")
+    .addParametersMatcher("java.lang.CharSequence")
+    .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(
-      MethodMatcher.create()
-        .typeDefinition(TypeCriteria.is("java.lang.Integer"))
-        .name("toHexString")
-        .addParameter(TypeCriteria.is("int")));
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+      .ofTypes("java.lang.Integer")
+      .names("toHexString")
+      .addParametersMatcher("int")
+      .build();
   }
 
   @Override

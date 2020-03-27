@@ -24,6 +24,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
+import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -50,7 +51,6 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
-import org.sonar.java.AnalysisError;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
@@ -550,10 +550,10 @@ public class InternalCheckVerifier implements CheckVerifier {
     SensorContextTester context = SensorContextTester.create(new File(""))
       .setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     context.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
-    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null) {
+    SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null) {
       @Override
-      public void addAnalysisError(AnalysisError analysisError) {
-        throw new AssertionError(String.format("Should not fail analysis (%s)", analysisError.getKind().name()));
+      public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
+        throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));
       }
     };
     sonarComponents.setSensorContext(context);

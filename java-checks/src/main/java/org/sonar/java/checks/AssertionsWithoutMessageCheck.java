@@ -20,14 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.NameCriteria;
-import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -44,8 +40,8 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   private static final String ASSERT = "assert";
 
   private static final String GENERIC_ASSERT = "org.fest.assertions.GenericAssert";
-  private static final MethodMatcher FEST_AS_METHOD = MethodMatcher.create()
-    .typeDefinition(GENERIC_ASSERT).name("as").addParameter("java.lang.String");
+  private static final MethodMatchers FEST_AS_METHOD = MethodMatchers.create()
+    .ofSubTypes(GENERIC_ASSERT).names("as").addParametersMatcher("java.lang.String").build();
   private static final Set<String> ASSERT_METHODS_WITH_ONE_PARAM = ImmutableSet.of("assertNull", "assertNotNull");
   private static final Set<String> ASSERT_METHODS_WITH_TWO_PARAMS = ImmutableSet.of("assertEquals", "assertSame", "assertNotSame", "assertThat");
   private static final Set<String> JUNIT5_ASSERT_METHODS_IGNORED = ImmutableSet.of("assertAll", "assertLinesMatch");
@@ -53,15 +49,13 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   private static final Set<String> JUNIT5_ASSERT_METHODS_WITH_DELTA = ImmutableSet.of("assertArrayEquals", "assertEquals");
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Lists.newArrayList(
-      MethodMatcher.create().typeDefinition("org.junit.jupiter.api.Assertions").name(NameCriteria.startsWith(ASSERT)).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith(ASSERT)).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("org.junit.Assert").name("fail").withAnyParameters(),
-      MethodMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith(ASSERT)).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("fail")).withAnyParameters(),
-      MethodMatcher.create().typeDefinition("org.fest.assertions.Fail").name(NameCriteria.startsWith("fail")).withAnyParameters(),
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(GENERIC_ASSERT)).name(NameCriteria.any()).withAnyParameters()
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofTypes("org.junit.jupiter.api.Assertions").name(name -> name.startsWith(ASSERT)).withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("org.junit.Assert").name(name -> name.startsWith(ASSERT) || name.equals("fail")).withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("junit.framework.Assert").name(name -> name.startsWith(ASSERT) || name.startsWith("fail")).withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("org.fest.assertions.Fail").name(name -> name.startsWith("fail")).withAnyParameters().build(),
+      MethodMatchers.create().ofSubTypes(GENERIC_ASSERT).anyName().withAnyParameters().build()
     );
   }
 

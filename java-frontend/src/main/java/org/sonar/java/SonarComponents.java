@@ -22,7 +22,6 @@ package org.sonar.java;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.ScannerSide;
@@ -45,27 +45,18 @@ import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
-import org.sonar.api.measures.Metric;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @ScannerSide
 @SonarLintSide
 public class SonarComponents {
 
-  /**
-   * Metric to collect
-   */
-  public static final Metric<String> FEEDBACK_METRIC = new Metric.Builder("sonarjava_feedback", "SonarJava feedback", Metric.ValueType.DATA).setHidden(true).create();
-  public static final String COLLECT_ANALYSIS_ERRORS_KEY = "sonar.java.collectAnalysisErrors";
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
-  /**
-   * Approximate limit of feedback of 200ko to roughly 100_000 characters of useful feedback.
-   * This does not take into account eventual overhead of serialization.
-   */
-  private static final int ERROR_SERIALIZATION_LIMIT = 100_000;
 
   private final FileLinesContextFactory fileLinesContextFactory;
   private final JavaTestClasspath javaTestClasspath;
@@ -77,15 +68,13 @@ public class SonarComponents {
   private final List<Checks<JavaCheck>> checks;
   private final List<Checks<JavaCheck>> testChecks;
   private final List<Checks<JavaCheck>> allChecks;
+  private final SonarJavaIssueFilter issueFilter;
   private SensorContext context;
-  @VisibleForTesting
-  public List<AnalysisError> analysisErrors;
-  private int errorsSize = 0;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
-                         CheckFactory checkFactory) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null);
+                         CheckFactory checkFactory, SonarJavaIssueFilter postAnalysisIssueFilter) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, null, postAnalysisIssueFilter);
   }
 
   /**
@@ -93,8 +82,8 @@ public class SonarComponents {
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable CheckRegistrar[] checkRegistrars) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, checkRegistrars, null);
+                         @Nullable CheckRegistrar[] checkRegistrars, SonarJavaIssueFilter postAnalysisIssueFilter) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, checkRegistrars, null, postAnalysisIssueFilter);
   }
 
   /**
@@ -102,8 +91,8 @@ public class SonarComponents {
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable ProjectDefinition projectDefinition) {
-    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, projectDefinition);
+                         @Nullable ProjectDefinition projectDefinition, SonarJavaIssueFilter postAnalysisIssueFilter) {
+    this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, null, projectDefinition, postAnalysisIssueFilter);
   }
 
   /**
@@ -111,7 +100,8 @@ public class SonarComponents {
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable CheckRegistrar[] checkRegistrars, @Nullable ProjectDefinition projectDefinition) {
+                         @Nullable CheckRegistrar[] checkRegistrars, @Nullable ProjectDefinition projectDefinition,
+                         SonarJavaIssueFilter postAnalysisIssueFilter) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
@@ -121,7 +111,7 @@ public class SonarComponents {
     this.checks = new ArrayList<>();
     this.testChecks = new ArrayList<>();
     this.allChecks = new ArrayList<>();
-    this.analysisErrors = new ArrayList<>();
+    this.issueFilter = postAnalysisIssueFilter;
     if (checkRegistrars != null) {
       CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
       for (CheckRegistrar checkClassesRegister : checkRegistrars) {
@@ -193,6 +183,13 @@ public class SonarComponents {
     return visitors;
   }
 
+  public List<JavaCheck> jspCodeVisitors() {
+    return allChecks.stream()
+      .flatMap(javaChecks -> javaChecks.all().stream())
+      .filter(check -> check instanceof JspCodeVisitor)
+      .collect(Collectors.toList());
+  }
+
   public RuleKey getRuleKey(JavaCheck check) {
     for (Checks<JavaCheck> sonarChecks : checks()) {
       RuleKey ruleKey = sonarChecks.ruleKey(check);
@@ -217,6 +214,9 @@ public class SonarComponents {
     }
     InputComponent inputComponent = analyzerMessage.getInputComponent();
     if (inputComponent == null) {
+      return;
+    }
+    if (issueFilter != null && !issueFilter.accept(key, analyzerMessage)) {
       return;
     }
     Double cost = analyzerMessage.getCost();
@@ -248,7 +248,7 @@ public class SonarComponents {
     return isSonarLintContext();
   }
 
-  public void reportAnalysisError(InputFile inputFile, String message) {
+  private void reportAnalysisError(InputFile inputFile, String message) {
     context.newAnalysisError()
       .onFile(inputFile)
       .message(message)
@@ -283,27 +283,8 @@ public class SonarComponents {
     return context.isCancelled();
   }
 
-  public void addAnalysisError(AnalysisError analysisError) {
-    if (errorsSize < ERROR_SERIALIZATION_LIMIT) {
-      errorsSize += analysisError.serializedSize();
-      analysisErrors.add(analysisError);
-    }
-  }
-
-  public void saveAnalysisErrors() {
-    if (!isSonarLintContext() && !analysisErrors.isEmpty() && shouldCollectAnalysisErrors()) {
-      Gson gson = new Gson();
-      String metricValue = gson.toJson(analysisErrors);
-      context.<String>newMeasure().forMetric(FEEDBACK_METRIC).on(context.module()).withValue(metricValue).save();
-    }
-  }
-
   public boolean shouldFailAnalysisOnException() {
     return context.config().getBoolean(FAIL_ON_EXCEPTION_KEY).orElse(false);
-  }
-
-  private boolean shouldCollectAnalysisErrors() {
-    return context.config().getBoolean(COLLECT_ANALYSIS_ERRORS_KEY).orElse(false);
   }
 
   public File workDir() {
@@ -325,4 +306,5 @@ public class SonarComponents {
     // TODO to be changed to context.project() once LTS 7.x has been released
     return context.module();
   }
+
 }

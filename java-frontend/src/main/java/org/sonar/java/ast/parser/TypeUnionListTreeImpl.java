@@ -27,7 +27,7 @@ import java.util.List;
 public class TypeUnionListTreeImpl extends ListTreeImpl<TypeTree> {
 
   public TypeUnionListTreeImpl(List<TypeTree> types, List<SyntaxToken> separatorsList) {
-    super(JavaLexer.CATCH_TYPE, types, separatorsList);
+    super(types, separatorsList);
   }
 
 }

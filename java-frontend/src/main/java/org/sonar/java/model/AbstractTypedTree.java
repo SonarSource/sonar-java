@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import javax.annotation.Nullable;
 
@@ -33,10 +32,6 @@ public abstract class AbstractTypedTree extends JavaTree {
 
   @Nullable
   public ITypeBinding typeBinding;
-
-  public AbstractTypedTree(GrammarRuleKey grammarRuleKey) {
-    super(grammarRuleKey);
-  }
 
   public Type symbolType() {
     return typeBinding != null

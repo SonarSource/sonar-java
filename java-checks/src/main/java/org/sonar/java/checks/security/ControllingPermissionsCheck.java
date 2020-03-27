@@ -23,11 +23,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -66,11 +65,11 @@ public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
   private static final String GLOBAL_METHOD_SECURITY_CONFIGURATION = "org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration";
 
   private static final String MUTABLE_ACL_SERVICE = "org.springframework.security.acls.model.MutableAclService";
-  private static final MethodMatcherCollection METHOD_MATCHERS = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition(MUTABLE_ACL_SERVICE).name("createAcl").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(MUTABLE_ACL_SERVICE).name("deleteAcl").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(MUTABLE_ACL_SERVICE).name("updateAcl").withAnyParameters(),
-    MethodMatcher.create().typeDefinition("org.springframework.security.config.annotation.web.builders.HttpSecurity").name("authorizeRequests").withAnyParameters());
+  private static final MethodMatchers METHOD_MATCHERS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(MUTABLE_ACL_SERVICE).names("createAcl", "deleteAcl", "updateAcl").withAnyParameters().build(),
+    MethodMatchers.create()
+      .ofTypes("org.springframework.security.config.annotation.web.builders.HttpSecurity").names("authorizeRequests").withAnyParameters().build());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -148,7 +147,7 @@ public class ControllingPermissionsCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleMethodInvocationTree(MethodInvocationTree tree) {
-    if (METHOD_MATCHERS.anyMatch(tree)) {
+    if (METHOD_MATCHERS.matches(tree)) {
       reportIssue(ExpressionUtils.methodName(tree));
     }
   }

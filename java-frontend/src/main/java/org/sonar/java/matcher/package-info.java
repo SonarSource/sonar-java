@@ -18,7 +18,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 @ParametersAreNonnullByDefault
+@MethodsAreNonnullByDefault
 package org.sonar.java.matcher;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-
+import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;

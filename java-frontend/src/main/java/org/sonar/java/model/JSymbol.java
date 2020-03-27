@@ -44,6 +44,21 @@ abstract class JSymbol implements Symbol {
   protected final JSema sema;
   protected final IBinding binding;
 
+  /**
+   * Cache for {@link #hashCode()}.
+   */
+  private int hashCode;
+
+  /**
+   * Cache for {@link #owner()}.
+   */
+  private Symbol owner;
+
+  /**
+   * Cache for {@link #metadata()}.
+   */
+  private SymbolMetadata metadata;
+
   JSymbol(JSema sema, IBinding binding) {
     this.sema = Objects.requireNonNull(sema);
     this.binding = Objects.requireNonNull(binding);
@@ -51,6 +66,9 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
     if (!(obj instanceof JSymbol)) {
       return false;
     }
@@ -98,10 +116,12 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final int hashCode() {
-    Symbol owner = owner();
-    int result = owner == null ? 0 : (owner.hashCode() * 31);
-    result += name().hashCode();
-    return result;
+    if (hashCode == 0) {
+      Symbol owner = owner();
+      hashCode = owner == null ? 0 : (owner.hashCode() * 31);
+      hashCode += name().hashCode();
+    }
+    return hashCode;
   }
 
   /**
@@ -124,6 +144,13 @@ abstract class JSymbol implements Symbol {
    */
   @Override
   public final Symbol owner() {
+    if (owner == null) {
+      owner = convertOwner();
+    }
+    return owner;
+  }
+
+  private Symbol convertOwner() {
     switch (binding.getKind()) {
       case IBinding.PACKAGE:
         return Symbols.rootPackage;
@@ -303,6 +330,13 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final SymbolMetadata metadata() {
+    if (metadata == null) {
+      metadata = convertMetadata();
+    }
+    return metadata;
+  }
+
+  private SymbolMetadata convertMetadata() {
     switch (binding.getKind()) {
       case IBinding.PACKAGE:
         return new JSymbolMetadata(sema, sema.resolvePackageAnnotations(binding.getName()));

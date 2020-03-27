@@ -33,7 +33,7 @@ public class UsesDirectiveTreeImpl extends ModuleDirectiveTreeImpl implements Us
   private final TypeTree typeName;
 
   public UsesDirectiveTreeImpl(InternalSyntaxToken usesKeyword, TypeTree typeName, InternalSyntaxToken semicolonToken) {
-    super(Tree.Kind.USES_DIRECTIVE, usesKeyword, semicolonToken);
+    super(usesKeyword, semicolonToken);
     this.typeName = typeName;
   }
 

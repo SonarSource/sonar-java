@@ -23,9 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -42,21 +41,17 @@ import static org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
   private static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
   private static final String SLF4J_LOGGER = "org.slf4j.Logger";
-  private static final MethodMatcherCollection LOGGING_METHODS = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("config").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("info").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("log").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("logp").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("logrb").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("throwing").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("severe").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("warning").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("debug").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("error").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("info").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("trace").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("warn").withAnyParameters()
-  );
+  private static final MethodMatchers LOGGING_METHODS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(JAVA_UTIL_LOGGING_LOGGER)
+      .names("config", "info", "log", "logp", "logrb", "throwing", "severe", "warning")
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes(SLF4J_LOGGER)
+      .names("debug", "error", "info", "trace", "warn")
+      .withAnyParameters()
+      .build());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -93,7 +88,7 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
     ExpressionTree expression = ((ExpressionStatementTree) statementTree).expression();
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) expression;
-      return LOGGING_METHODS.anyMatch(mit) && isExceptionUsed(exceptionIdentifier, mit);
+      return LOGGING_METHODS.matches(mit) && isExceptionUsed(exceptionIdentifier, mit);
     }
     return false;
   }

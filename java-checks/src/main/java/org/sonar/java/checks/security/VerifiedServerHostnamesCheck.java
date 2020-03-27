@@ -26,11 +26,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -54,10 +53,11 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
   private static final String ISSUE_MESSAGE = "Enable server hostname verification on this SSL/TLS connection.";
 
   private static final String JAVAX_NET_SSL_HOSTNAME_VERIFIER = "javax.net.ssl.HostnameVerifier";
-  private static final MethodMatcher HOSTNAME_VERIFIER = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf(JAVAX_NET_SSL_HOSTNAME_VERIFIER))
-    .name("verify")
-    .parameters("java.lang.String", "javax.net.ssl.SSLSession");
+  private static final MethodMatchers HOSTNAME_VERIFIER = MethodMatchers.create()
+    .ofSubTypes(JAVAX_NET_SSL_HOSTNAME_VERIFIER)
+    .names("verify")
+    .addParametersMatcher("java.lang.String", "javax.net.ssl.SSLSession")
+    .build();
 
   private static final String APACHE_EMAIL = "org.apache.commons.mail.Email";
   private static final Set<String> ENABLING_SSL_METHOD_NAMES = new HashSet<>(Arrays.asList(
@@ -66,14 +66,17 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
     "setTLS",
     "setStartTLSEnabled",
     "setStartTLSRequired"));
-  private static final MethodMatcher ENABLING_SSL_METHODS = MethodMatcher.create()
-    .typeDefinition(APACHE_EMAIL)
+  private static final MethodMatchers ENABLING_SSL_METHODS = MethodMatchers.create()
+    .ofSubTypes(APACHE_EMAIL)
     .name(ENABLING_SSL_METHOD_NAMES::contains)
-    .addParameter("boolean");
-  private static final MethodMatcher HASHTABLE_PUT = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf("java.util.Hashtable"))
-    .name("put")
-    .withAnyParameters();
+    .addParametersMatcher("boolean")
+    .build();
+
+  private static final MethodMatchers HASHTABLE_PUT = MethodMatchers.create()
+    .ofSubTypes("java.util.Hashtable")
+    .names("put")
+    .withAnyParameters()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -195,10 +198,11 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
     private boolean isSecured = false;
     private Symbol variable;
 
-    private static final MethodMatcher SET_SSL_CHECK_SERVER_ID = MethodMatcher.create()
-      .typeDefinition(APACHE_EMAIL)
-      .name("setSSLCheckServerIdentity")
-      .addParameter("boolean");
+    private static final MethodMatchers SET_SSL_CHECK_SERVER_ID = MethodMatchers.create()
+      .ofSubTypes(APACHE_EMAIL)
+      .names("setSSLCheckServerIdentity")
+      .addParametersMatcher("boolean")
+      .build();
 
     MethodBodyApacheVisitor(@Nullable Symbol variable) {
       this.variable = variable;

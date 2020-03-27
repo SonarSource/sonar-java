@@ -35,7 +35,7 @@ public class RequiresDirectiveTreeImpl extends ModuleDirectiveTreeImpl implement
   private final ModuleNameTree moduleName;
 
   public RequiresDirectiveTreeImpl(InternalSyntaxToken requiresKeyword, ModifiersTree modifiers, ModuleNameTree moduleName, InternalSyntaxToken semicolonToken) {
-    super(Tree.Kind.REQUIRES_DIRECTIVE, requiresKeyword, semicolonToken);
+    super(requiresKeyword, semicolonToken);
     this.modifiers = modifiers;
     this.moduleName = moduleName;
   }

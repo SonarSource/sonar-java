@@ -34,25 +34,17 @@ final class KeywordSuper extends IdentifierTreeImpl {
     this.typeBinding = typeBinding;
   }
 
-  Type resolveType() {
-    return resolveSymbol().type();
-  }
-
-  Symbol resolveSymbol() {
-    if (typeBinding == null) {
-      return Symbols.unknownSymbol;
-    }
-    return root.sema.typeSymbol(typeBinding).superSymbol;
-  }
-
   @Override
   public Type symbolType() {
-    return resolveType();
+    return symbol().type();
   }
 
   @Override
   public Symbol symbol() {
-    return resolveSymbol();
+    if (typeBinding == null) {
+      return Symbols.unknownSymbol;
+    }
+    return root.sema.typeSymbol(typeBinding).superSymbol;
   }
 
 }

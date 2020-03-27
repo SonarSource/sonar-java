@@ -20,12 +20,10 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -38,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2131")
 public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final MethodMatcherCollection TO_STRING_MATCHERS = getToStringMatchers(
+  private static final MethodMatchers TO_STRING_MATCHERS = MethodMatchers.create().ofSubTypes(
     "java.lang.Byte",
     "java.lang.Character",
     "java.lang.Short",
@@ -46,7 +44,10 @@ public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implem
     "java.lang.Long",
     "java.lang.Float",
     "java.lang.Double",
-    "java.lang.Boolean");
+    "java.lang.Boolean")
+    .names("toString")
+    .addWithoutParametersMatcher()
+    .build();
 
   private JavaFileScannerContext context;
 
@@ -56,20 +57,9 @@ public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implem
     scan(context.getTree());
   }
 
-  private static MethodMatcherCollection getToStringMatchers(String... typeFullyQualifiedNames) {
-    MethodMatcherCollection matchers = MethodMatcherCollection.create();
-    for (String fullyQualifiedName : typeFullyQualifiedNames) {
-      matchers.add(MethodMatcher.create()
-        .typeDefinition(TypeCriteria.subtypeOf(fullyQualifiedName))
-        .name("toString")
-        .withoutParameter());
-    }
-    return matchers;
-  }
-
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    if (TO_STRING_MATCHERS.anyMatch(tree)) {
+    if (TO_STRING_MATCHERS.matches(tree)) {
       ExpressionTree abstractTypedTree = ((MemberSelectExpressionTree) tree.methodSelect()).expression();
       if (abstractTypedTree.is(Kind.NEW_CLASS) || isValueOfInvocation(abstractTypedTree)) {
         String typeName = abstractTypedTree.symbolType().toString();
@@ -95,10 +85,11 @@ public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implem
       return false;
     }
     Type type = abstractTypedTree.symbolType();
-    MethodMatcher valueOfMatcher = MethodMatcher.create()
-      .typeDefinition(type.fullyQualifiedName())
-      .name("valueOf")
-      .addParameter(JUtils.primitiveType(type).fullyQualifiedName());
+    MethodMatchers valueOfMatcher = MethodMatchers.create()
+      .ofTypes(type.fullyQualifiedName())
+      .names("valueOf")
+      .addParametersMatcher(JUtils.primitiveType(type).fullyQualifiedName())
+      .build();
     return valueOfMatcher.matches((MethodInvocationTree) abstractTypedTree);
   }
 }

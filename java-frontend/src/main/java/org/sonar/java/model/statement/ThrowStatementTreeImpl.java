@@ -36,7 +36,6 @@ public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTr
   private final InternalSyntaxToken semicolonToken;
 
   public ThrowStatementTreeImpl(InternalSyntaxToken throwKeyword, ExpressionTree expression, InternalSyntaxToken semicolonToken) {
-    super(Kind.THROW_STATEMENT);
     this.throwKeyword = throwKeyword;
     this.expression = Objects.requireNonNull(expression);
     this.semicolonToken = semicolonToken;

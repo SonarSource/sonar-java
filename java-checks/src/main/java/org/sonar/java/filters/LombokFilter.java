@@ -33,6 +33,7 @@ import org.sonar.java.checks.CollectionInappropriateCallsCheck;
 import org.sonar.java.checks.ConstantsShouldBeStaticFinalCheck;
 import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
 import org.sonar.java.checks.EqualsNotOverridenWithCompareToCheck;
+import org.sonar.java.checks.ExceptionsShouldBeImmutableCheck;
 import org.sonar.java.checks.FieldModifierCheck;
 import org.sonar.java.checks.PrivateFieldUsedLocallyCheck;
 import org.sonar.java.checks.SillyEqualsCheck;
@@ -49,6 +50,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
@@ -64,9 +66,12 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     SillyEqualsCheck.class,
     CollectionInappropriateCallsCheck.class,
     UselessImportCheck.class,
-    FieldModifierCheck.class);
+    FieldModifierCheck.class,
+    ExceptionsShouldBeImmutableCheck.class);
 
   private static final String LOMBOK_VAL = "lombok.val";
+  private static final String LOMBOK_VALUE = "lombok.Value";
+  private static final String LOMBOK_FIELD_DEFAULTS = "lombok.experimental.FieldDefaults";
 
   private static final List<String> GENERATE_UNUSED_FIELD_RELATED_METHODS = ImmutableList.<String>builder()
     .add("lombok.Getter")
@@ -87,11 +92,15 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
   private static final List<String> GENERATE_EQUALS = ImmutableList.<String>builder()
     .add("lombok.EqualsAndHashCode")
     .add("lombok.Data")
-    .add("lombok.Value")
+    .add(LOMBOK_VALUE)
     .build();
 
   private static final List<String> UTILITY_CLASS = ImmutableList.<String>builder()
     .add("lombok.experimental.UtilityClass")
+    .build();
+
+  private static final List<String> NON_FINAL = ImmutableList.<String>builder()
+    .add("lombok.experimental.NonFinal")
     .build();
 
   @Override
@@ -117,7 +126,22 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     excludeLinesIfTrue(generatesEquals, tree, EqualsNotOverriddenInSubclassCheck.class, EqualsNotOverridenWithCompareToCheck.class);
     excludeLinesIfTrue(generatesPrivateConstructor(tree), tree, UtilityClassWithPublicConstructorCheck.class);
     excludeLinesIfTrue(usesAnnotation(tree, UTILITY_CLASS), tree, BadFieldNameCheck.class, ConstantsShouldBeStaticFinalCheck.class);
-    excludeLinesIfTrue(usesAnnotation(tree, Collections.singletonList("lombok.Value")), tree, FieldModifierCheck.class);
+
+    if (generatesPrivateFields(tree)) {
+      tree.members().stream()
+        .filter(t -> t.is(Tree.Kind.VARIABLE))
+        .map(VariableTree.class::cast)
+        .filter(v -> !generatesPackagePrivateAccess(v))
+        .forEach(v -> excludeLines(v, FieldModifierCheck.class));
+    }
+
+    if (generatesFinalFields(tree)) {
+      tree.members().stream()
+        .filter(t -> t.is(Tree.Kind.VARIABLE))
+        .map(VariableTree.class::cast)
+        .filter(v -> !generatesNonFinal(v))
+        .forEach(v -> excludeLines(v, ExceptionsShouldBeImmutableCheck.class));
+    }
 
     super.visitClass(tree);
   }
@@ -157,12 +181,55 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     return values.stream().anyMatch(av -> "access".equals(av.name()) && "PRIVATE".equals(getAccessLevelValue(av.value())));
   }
 
+  private static boolean generatesPrivateFields(ClassTree tree) {
+    if (usesAnnotation(tree, Collections.singletonList(LOMBOK_VALUE))) {
+      return true;
+    }
+    // Annotated with @lombok.experimental.FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+    List<SymbolMetadata.AnnotationValue> annotationValues = tree.symbol().metadata().valuesForAnnotation(LOMBOK_FIELD_DEFAULTS);
+    return annotationValues != null &&
+      annotationValues.stream()
+        .filter(Objects::nonNull)
+        .anyMatch(
+          av -> "level".equals(av.name()) && "PRIVATE".equals(getAccessLevelValue(av.value()))
+        );
+  }
+
+  private static boolean generatesPackagePrivateAccess(VariableTree tree) {
+    return tree.symbol().metadata().isAnnotatedWith("lombok.experimental.PackagePrivate");
+  }
+
+  private static boolean generatesFinalFields(ClassTree classTree) {
+    if (usesAnnotation(classTree, Collections.singletonList(LOMBOK_VALUE)) && !usesAnnotation(classTree, NON_FINAL)) {
+      return true;
+    }
+    // Annotated with @lombok.experimental.FieldDefaults(makeFinal=true)
+    List<SymbolMetadata.AnnotationValue> annotationValues = classTree.symbol().metadata().valuesForAnnotation(LOMBOK_FIELD_DEFAULTS);
+    return annotationValues != null &&
+      annotationValues.stream()
+        .filter(Objects::nonNull)
+        .anyMatch(
+          av -> "makeFinal".equals(av.name()) && getMakeFinalValue(av.value())
+        );
+  }
+
+  private static boolean generatesNonFinal(VariableTree tree) {
+    return tree.symbol().metadata().isAnnotatedWith("lombok.experimental.NonFinal");
+  }
+
   @Nullable
   private static String getAccessLevelValue(Object value) {
     if (value instanceof Symbol) {
       return ((Symbol) value).name();
     }
     return null;
+  }
+
+  private static boolean getMakeFinalValue(Object value) {
+    if (value instanceof Boolean) {
+      return (Boolean) value;
+    }
+    return false;
   }
 
   @Override

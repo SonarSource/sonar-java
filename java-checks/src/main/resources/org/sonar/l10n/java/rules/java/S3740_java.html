@@ -1,0 +1,13 @@
+<p>Generic types shouldn't be used raw (without type parameters) in variable declarations or return values. Doing so bypasses generic type checking,
+and defers the catch of unsafe code to runtime.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+List myList; // Noncompliant
+Set mySet; // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+List&lt;String&gt; myList;
+Set&lt;? extends Number&gt; mySet;
+</pre>
+

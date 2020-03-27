@@ -19,13 +19,16 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -37,22 +40,23 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S1075")
 public class HardcodedURICheck extends IssuableSubscriptionVisitor {
 
-  private static final String CONSTRUCTOR_NAME = "<init>";
   private static final String JAVA_LANG_STRING = "java.lang.String";
-  private static final MethodMatcherCollection MATCHERS = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.net.URI").name(CONSTRUCTOR_NAME).addParameter(JAVA_LANG_STRING),
-    MethodMatcher.create().typeDefinition("java.io.File").name(CONSTRUCTOR_NAME).addParameter(JAVA_LANG_STRING),
-    MethodMatcher.create().typeDefinition("java.io.File").name(CONSTRUCTOR_NAME).addParameter(TypeCriteria.anyType()).addParameter(JAVA_LANG_STRING));
+  private static final MethodMatchers MATCHERS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("java.net.URI")
+      .constructor()
+      .addParametersMatcher(JAVA_LANG_STRING).build(),
+    MethodMatchers.create()
+      .ofTypes("java.io.File")
+      .constructor()
+      .addParametersMatcher(JAVA_LANG_STRING)
+      .addParametersMatcher(ANY, JAVA_LANG_STRING)
+      .build());
 
   private static final String SCHEME = "[a-zA-Z][a-zA-Z\\+\\.\\-]+";
   private static final String FOLDER_NAME = "[^/?%*:\\\\|\"<>]+";
@@ -84,7 +88,7 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkNewClassTree(NewClassTree nct) {
-    if (MATCHERS.anyMatch(nct)) {
+    if (MATCHERS.matches(nct)) {
       nct.arguments().forEach(this::checkExpression);
     }
   }

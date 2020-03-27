@@ -19,10 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -32,18 +33,12 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-
 @Rule(key = "S2133")
 public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Object")).name("getClass").withoutParameter());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create().ofAnyType().names("getClass").addWithoutParametersMatcher().build();
   }
 
   @Override

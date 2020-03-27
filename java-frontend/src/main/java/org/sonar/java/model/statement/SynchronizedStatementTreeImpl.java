@@ -40,7 +40,6 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
 
   public SynchronizedStatementTreeImpl(InternalSyntaxToken synchronizedKeyword, InternalSyntaxToken openParenToken,
     ExpressionTree expression, InternalSyntaxToken closeParenToken, BlockTreeImpl block) {
-    super(Kind.SYNCHRONIZED_STATEMENT);
     this.expression = Objects.requireNonNull(expression);
     this.block = Objects.requireNonNull(block);
     this.synchronizedKeyword = synchronizedKeyword;

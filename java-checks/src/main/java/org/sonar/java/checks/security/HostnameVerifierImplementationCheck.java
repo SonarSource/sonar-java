@@ -23,11 +23,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -41,12 +40,11 @@ public class HostnameVerifierImplementationCheck extends IssuableSubscriptionVis
 
   private static final String ISSUE_MESSAGE = "Do not unconditionally return true in this method.";
 
-  private static final TypeCriteria TYPE_CRITERIA_STRING = TypeCriteria.is("java.lang.String");
-  private static final TypeCriteria TYPE_CRITERIA_SSL_SESSION = TypeCriteria.is("javax.net.ssl.SSLSession");
-  private static final MethodMatcher VERIFY_METHOD_MATCHER = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("javax.net.ssl.HostnameVerifier"))
-    .name("verify")
-    .addParameter(TYPE_CRITERIA_STRING)
-    .addParameter(TYPE_CRITERIA_SSL_SESSION);
+  private static final MethodMatchers VERIFY_METHOD_MATCHER = MethodMatchers.create()
+    .ofSubTypes("javax.net.ssl.HostnameVerifier")
+    .names("verify")
+    .addParametersMatcher("java.lang.String", "javax.net.ssl.SSLSession")
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

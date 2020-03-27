@@ -21,15 +21,13 @@ package org.sonar.java.checks.security;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -51,19 +49,21 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
     "setStartTLSRequired"
   ));
 
-  private static final MethodMatcher ENABLING_SSL_METHODS = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.is(APACHE_EMAIL))
+  private static final MethodMatchers ENABLING_SSL_METHODS = MethodMatchers.create()
+    .ofSubTypes(APACHE_EMAIL)
     .name(ENABLING_SSL_METHOD_NAMES::contains)
-    .addParameter(BOOLEAN);
+    .addParametersMatcher(BOOLEAN)
+    .build();
 
-  private static final MethodMatcher HASHTABLE_PUT = MethodMatcher.create()
-    .typeDefinition(TypeCriteria.subtypeOf(HASHTABLE))
-    .name("put")
-    .withAnyParameters();
+  private static final MethodMatchers HASHTABLE_PUT = MethodMatchers.create()
+    .ofSubTypes(HASHTABLE)
+    .names("put")
+    .withAnyParameters()
+    .build();
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(ENABLING_SSL_METHODS, HASHTABLE_PUT);
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(ENABLING_SSL_METHODS, HASHTABLE_PUT);
   }
 
   @Override
@@ -111,10 +111,11 @@ public class SMTPSSLServerIdentityCheck extends AbstractMethodDetection {
 
     private boolean isSecured = false;
 
-    private static final MethodMatcher SET_SSL_CHECK_SERVER_ID = MethodMatcher.create()
-      .typeDefinition(APACHE_EMAIL)
-      .name("setSSLCheckServerIdentity")
-      .addParameter(BOOLEAN);
+    private static final MethodMatchers SET_SSL_CHECK_SERVER_ID = MethodMatchers.create()
+      .ofSubTypes(APACHE_EMAIL)
+      .names("setSSLCheckServerIdentity")
+      .addParametersMatcher(BOOLEAN)
+      .build();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {

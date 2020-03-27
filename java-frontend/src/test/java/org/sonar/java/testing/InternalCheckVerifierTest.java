@@ -22,6 +22,7 @@ package org.sonar.java.testing;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.check.Rule;
+import org.sonar.java.AnalysisException;
 import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -51,8 +52,8 @@ public class InternalCheckVerifierTest {
         .verifyNoIssues());
 
       assertThat(e)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage("Should not fail analysis (CHECK_ERROR)");
+        .isInstanceOf(AnalysisException.class)
+        .hasMessage("Failing check");
     }
 
     @Test
@@ -64,7 +65,7 @@ public class InternalCheckVerifierTest {
 
       assertThat(e)
         .isInstanceOf(AssertionError.class)
-        .hasMessage("Should not fail analysis (PARSE_ERROR)");
+        .hasMessage("Should not fail analysis (Parse error at line 1 column 8: Syntax error, insert \"}\" to complete ClassBody)");
     }
 
     @Test

@@ -21,15 +21,13 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -75,11 +73,12 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
 
   private static final Set<String> EXCLUDED_PREFIX = ImmutableSet.of("parse", "format", "decode", "valueOf");
 
-  private static final MethodMatcherCollection EXCLUDED = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.lang.Character").name("toChars").parameters("int", "char[]", "int"),
-    MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("intern").withoutParameter());
+  private static final MethodMatchers EXCLUDED = MethodMatchers.or(
+    MethodMatchers.create().ofTypes("java.lang.Character").names("toChars").addParametersMatcher("int", "char[]", "int").build(),
+    MethodMatchers.create().ofTypes(JAVA_LANG_STRING).names("intern").addWithoutParametersMatcher().build());
 
-  private static final MethodMatcher STRING_GET_BYTES = MethodMatcher.create().typeDefinition(JAVA_LANG_STRING).name("getBytes").parameters("java.nio.charset.Charset");
+  private static final MethodMatchers STRING_GET_BYTES = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING).names("getBytes").addParametersMatcher("java.nio.charset.Charset").build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -107,7 +106,7 @@ public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isExcluded(MethodInvocationTree mit) {
     String methodName = mit.symbol().name();
-    return mit.symbol().isUnknown() || EXCLUDED.anyMatch(mit) ||
+    return mit.symbol().isUnknown() || EXCLUDED.matches(mit) ||
       (isInTryCatch(mit) && (EXCLUDED_PREFIX.stream().anyMatch(methodName::startsWith) || STRING_GET_BYTES.matches(mit)));
   }
 

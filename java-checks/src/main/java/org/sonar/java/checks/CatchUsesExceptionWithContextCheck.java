@@ -35,11 +35,9 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherCollection;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -63,33 +61,32 @@ import static org.sonar.java.model.ExpressionUtils.skipParentheses;
 @Rule(key = "S1166")
 public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final MethodMatcherCollection GET_MESSAGE_METHODS = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition("java.lang.Throwable").name("getMessage").withoutParameter(),
-    MethodMatcher.create().typeDefinition("java.lang.Throwable").name("getLocalizedMessage").withoutParameter());
+  private static final MethodMatchers GET_MESSAGE_METHODS = MethodMatchers.create()
+    .ofSubTypes("java.lang.Throwable")
+    .names("getMessage", "getLocalizedMessage")
+    .addWithoutParametersMatcher()
+    .build();
 
   private static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
   private static final String SLF4J_LOGGER = "org.slf4j.Logger";
 
-  private static final MethodMatcher JAVA_UTIL_LOG_METHOD = MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("log").withAnyParameters();
-  private static final MethodMatcher JAVA_UTIL_LOGP_METHOD = MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("logp").withAnyParameters();
-  private static final MethodMatcher JAVA_UTIL_LOGRB_METHOD = MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("logrb").withAnyParameters();
+  private static final MethodMatchers JAVA_UTIL_LOG_METHOD = MethodMatchers.create()
+    .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("log").withAnyParameters().build();
 
-  private static final MethodMatcherCollection LOGGING_METHODS = MethodMatcherCollection.create(
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("config").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("fine").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("finer").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("finest").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("info").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("severe").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(JAVA_UTIL_LOGGING_LOGGER).name("warning").withAnyParameters(),
+  private static final MethodMatchers JAVA_UTIL_LOGP_METHOD = MethodMatchers.create()
+    .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("logp").withAnyParameters().build();
+
+  private static final MethodMatchers JAVA_UTIL_LOGRB_METHOD = MethodMatchers.create()
+    .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("logrb").withAnyParameters().build();
+
+  private static final MethodMatchers LOGGING_METHODS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes(JAVA_UTIL_LOGGING_LOGGER).names("config", "fine", "finer", "finest", "info", "severe", "warning").withAnyParameters().build(),
     JAVA_UTIL_LOG_METHOD,
     JAVA_UTIL_LOGP_METHOD,
     JAVA_UTIL_LOGRB_METHOD,
-    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("debug").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("error").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("info").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("trace").withAnyParameters(),
-    MethodMatcher.create().typeDefinition(SLF4J_LOGGER).name("warn").withAnyParameters());
+    MethodMatchers.create()
+      .ofTypes(SLF4J_LOGGER).names("debug", "error", "info", "trace", "warn").withAnyParameters().build());
 
   private static final String EXCLUDED_EXCEPTION_TYPE = "java.lang.InterruptedException, " +
       "java.lang.NumberFormatException, " +
@@ -138,10 +135,13 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   }
 
   private static class EnumValueOfVisitor extends BaseTreeVisitor {
-    private static final MethodMatcher ENUM_VALUE_OF = MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf("java.lang.Enum"))
-      .name("valueOf")
-      .withAnyParameters();
+
+    private static final MethodMatchers ENUM_VALUE_OF = MethodMatchers.create()
+      .ofSubTypes("java.lang.Enum")
+      .names("valueOf")
+      .withAnyParameters()
+      .build();
+
     private boolean hasEnumValueOf = false;
 
     @Override
@@ -178,7 +178,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
     super.visitMethodInvocation(mit);
-    if (LOGGING_METHODS.anyMatch(mit)) {
+    if (LOGGING_METHODS.matches(mit)) {
       usageStatusStack.forEach(usageStatus -> usageStatus.addLoggingMethodInvocation(mit));
     }
   }
@@ -328,7 +328,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
         ExpressionTree initializer = getVariableInitializer(variable);
         return assignments.isEmpty() && initializer != null && isSimpleExceptionMessage(initializer);
       } else if (innerExpression.is(Kind.METHOD_INVOCATION)) {
-        return GET_MESSAGE_METHODS.anyMatch(((MethodInvocationTree) innerExpression));
+        return GET_MESSAGE_METHODS.matches(((MethodInvocationTree) innerExpression));
       }
       return false;
     }
@@ -370,7 +370,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (!hasGetMessageCall && GET_MESSAGE_METHODS.anyMatch(mit)) {
+      if (!hasGetMessageCall && GET_MESSAGE_METHODS.matches(mit)) {
         hasGetMessageCall = true;
       }
       super.visitMethodInvocation(mit);

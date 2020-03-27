@@ -36,21 +36,21 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implement
   private InternalSyntaxToken closeParenToken;
 
   public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.ARGUMENTS, Collections.emptyList(), Collections.emptyList());
+    super(Collections.emptyList(), Collections.emptyList());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
   }
 
   public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.ARGUMENTS, Collections.singletonList(expression), Collections.emptyList());
+    super(Collections.singletonList(expression), Collections.emptyList());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
   }
 
   public ArgumentListTreeImpl(List<ExpressionTree> expressions, List<SyntaxToken> separators) {
-    super(JavaLexer.ARGUMENTS, expressions, separators);
+    super(expressions, separators);
   }
 
   public ArgumentListTreeImpl complete(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {

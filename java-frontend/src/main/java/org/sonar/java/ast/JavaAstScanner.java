@@ -25,7 +25,6 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.InterruptedIOException;
 import java.util.Collections;
 import javax.annotation.Nullable;
-
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -47,7 +46,7 @@ public class JavaAstScanner {
     this.sonarComponents = sonarComponents;
   }
 
-  public void scan(Iterable<InputFile> inputFiles) {
+  public void scan(Iterable<? extends InputFile> inputFiles) {
     final String version;
     if (visitor.getJavaVersion() == null || visitor.getJavaVersion().asInt() < 0) {
       version = /* default */ JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;

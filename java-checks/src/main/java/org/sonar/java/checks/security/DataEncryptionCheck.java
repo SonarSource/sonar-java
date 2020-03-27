@@ -19,28 +19,28 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Arrays;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S4787")
 public class DataEncryptionCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Arrays.asList(
-      MethodMatcher.create()
-        .typeDefinition("javax.crypto.Cipher")
-        .name("getInstance")
-        .withAnyParameters(),
-      MethodMatcher.create()
-        .typeDefinition("org.apache.commons.crypto.utils.Utils")
-        .name("getCipherInstance")
-        .withAnyParameters());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create()
+        .ofTypes("javax.crypto.Cipher")
+        .names("getInstance")
+        .withAnyParameters()
+        .build(),
+      MethodMatchers.create()
+        .ofTypes("org.apache.commons.crypto.utils.Utils")
+        .names("getCipherInstance")
+        .withAnyParameters()
+        .build());
   }
 
   @Override

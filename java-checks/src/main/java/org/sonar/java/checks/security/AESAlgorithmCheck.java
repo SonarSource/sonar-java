@@ -19,14 +19,11 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Collections;
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
@@ -34,12 +31,12 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 public class AESAlgorithmCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return Collections.singletonList(
-      MethodMatcher.create()
-        .typeDefinition(TypeCriteria.is("javax.crypto.Cipher"))
-        .name("getInstance")
-        .withAnyParameters());
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.create()
+        .ofTypes("javax.crypto.Cipher")
+        .names("getInstance")
+        .withAnyParameters()
+        .build();
   }
 
   @Override

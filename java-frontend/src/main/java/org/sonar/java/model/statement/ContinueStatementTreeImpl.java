@@ -40,7 +40,6 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
   private final InternalSyntaxToken semicolonToken;
 
   public ContinueStatementTreeImpl(InternalSyntaxToken continueKeyword, @Nullable IdentifierTreeImpl label, InternalSyntaxToken semicolonToken) {
-    super(Kind.CONTINUE_STATEMENT);
     this.continueKeyword = continueKeyword;
     this.label = label;
     this.semicolonToken = semicolonToken;

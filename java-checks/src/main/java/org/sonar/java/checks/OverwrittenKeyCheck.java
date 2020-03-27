@@ -22,11 +22,16 @@ package org.sonar.java.checks;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -41,19 +46,16 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.CheckForNull;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S4143")
 public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher MAP_PUT = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Map")).name("put")
-    .parameters(TypeCriteria.anyType(), TypeCriteria.anyType());
+  private static final MethodMatchers MAP_PUT = MethodMatchers.create()
+    .ofSubTypes("java.util.Map")
+    .names("put")
+    .addParametersMatcher(ANY, ANY)
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

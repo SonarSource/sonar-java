@@ -22,9 +22,8 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -36,7 +35,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S4517")
 public class InputStreamReadCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatcher INPUT_STREAM_READ = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.io.InputStream")).name("read").withoutParameter();
+  private static final MethodMatchers INPUT_STREAM_READ = MethodMatchers.create()
+    .ofSubTypes("java.io.InputStream").names("read").addWithoutParametersMatcher().build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
