@@ -65,13 +65,15 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
       String mode = matcher.group(2);
       String padding = matcher.group(3);
 
-      if ("ECB".equalsIgnoreCase(mode)) {
+      boolean isRSA = "RSA".equalsIgnoreCase(algorithm);
+
+      if ("ECB".equalsIgnoreCase(mode) && !isRSA) {
         return true;
       } else if ("CBC".equalsIgnoreCase(mode)) {
         return "PKCS5Padding".equalsIgnoreCase(padding) || "PKCS7Padding".equalsIgnoreCase(padding);
       }
 
-      if ("RSA".equalsIgnoreCase(algorithm)) {
+      if (isRSA) {
         return !(padding.toUpperCase(Locale.ROOT).startsWith("OAEP"));
       }
       return false;
