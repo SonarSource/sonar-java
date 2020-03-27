@@ -24,7 +24,6 @@ abstract class EncryptionAlgorithmCheck {
 
       Cipher.getInstance("Blowfish/ECB/PKCS5Padding"); // Noncompliant
       Cipher.getInstance("DES/ECB/PKCS5Padding"); // Noncompliant
-      Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding"); // Noncompliant
 
       Cipher.getInstance("AES/GCM/NoPadding"); // Compliant
 
@@ -42,7 +41,10 @@ abstract class EncryptionAlgorithmCheck {
       // Third case
       Cipher.getInstance("RSA/NONE/NoPadding"); // Noncompliant
       Cipher.getInstance("RSA/GCM/NoPadding"); // Noncompliant
+      Cipher.getInstance("RSA/ECB/NoPadding"); // Noncompliant
 
+      // SUN Security Provider (default for openjdk 11 for example) treats ECB as None
+      Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding"); // Compliant
       Cipher.getInstance("RSA/NONE/OAEPWithSHA-1AndMGF1Padding"); // Compliant
       Cipher.getInstance("RSA/NONE/OAEPWITHSHA-256ANDMGF1PADDING"); // Compliant
       Cipher.getInstance("RSA/None/OAEPWITHSHA-384ANDMGF1PADDING"); // Compliant
