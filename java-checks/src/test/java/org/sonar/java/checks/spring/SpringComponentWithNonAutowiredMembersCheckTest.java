@@ -22,21 +22,35 @@ package org.sonar.java.checks.spring;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 public class SpringComponentWithNonAutowiredMembersCheckTest {
 
-  private String basePath = "src/test/files/checks/spring/SpringComponentWithNonAutowiredMembersCheck/";
+  private String basePath = "checks/SpringComponentWithNonAutowiredMembersCheck/";
   private SpringComponentWithNonAutowiredMembersCheck check = new SpringComponentWithNonAutowiredMembersCheck();
 
   @Test
   public void default_annotations() {
-    JavaCheckVerifier.verify(basePath + "DefaultAnnotations.java", check);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(basePath + "DefaultAnnotations.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath(basePath + "DefaultAnnotations.java"))
+      .withCheck(check)
+      .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath(basePath + "DefaultAnnotations.java"))
+      .withCheck(check)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void custom_annotations() {
     check.customInjectionAnnotations = "com.mycompany.myproject.MyController$MyInjectionAnnotation ,,";
-    JavaCheckVerifier.verify(basePath + "CustomAnnotations.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath(basePath + "CustomAnnotations.java"))
+      .withCheck(check)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

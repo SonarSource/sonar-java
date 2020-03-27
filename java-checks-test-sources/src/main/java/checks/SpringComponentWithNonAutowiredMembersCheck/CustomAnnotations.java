@@ -1,12 +1,11 @@
-package com.mycompany.myproject;
+package checks.SpringComponentWithNonAutowiredMembersCheck;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
-import javax.inject.Inject;
-import javax.annotation.Resource;
 
 @Controller
-public class MyController {
+public class CustomAnnotations {
 
   @interface MyInjectionAnnotation {}
 
@@ -30,7 +29,7 @@ class ConstructorInjection {
   private String yyyAdaptor; // Compliant
   private String jaxbContext; // Noncompliant - not used in @Autowired constructor
 
-  @MyController.MyInjectionAnnotation
+  @CustomAnnotations.MyInjectionAnnotation
   public ConstructorInjection(String env, String yyyAdaptor,
                               @Qualifier("YYYYReq") String jaxbContext) {
 
@@ -38,7 +37,7 @@ class ConstructorInjection {
     this.yyyAdaptor = yyyAdaptor;
   }
 
-  @MyController.MyInjectionAnnotation
+  @CustomAnnotations.MyInjectionAnnotation
   public ConstructorInjection(String env, String yyyAdaptor) {
     this.env = env;
     this.yyyAdaptor = yyyAdaptor;
