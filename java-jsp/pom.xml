@@ -26,6 +26,12 @@
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-jasper</artifactId>
       <version>9.0.30</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.jdt</groupId>
+          <artifactId>ecj</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.ant</groupId>
