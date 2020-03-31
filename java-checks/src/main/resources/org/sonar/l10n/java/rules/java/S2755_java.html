@@ -1,4 +1,8 @@
-<p>Allowing access to external entities in XML Parsing could introduce vulnerabilities like SSRF or confidential file disclosures:</p>
+<p><a href="https://www.w3.org/TR/xml/">XML specification</a> allows the use of entities that can be <a
+href="https://www.w3.org/TR/xml/#sec-internal-ent">internal</a> or <a href="https://www.w3.org/TR/xml/#sec-external-ent">external</a> (file system /
+network access ...).</p>
+<p>Allowing access to external entities in XML parsing could lead to vulnerabilities like confidential file disclosures or <a
+href="https://www.owasp.org/index.php/Server_Side_Request_Forgery">SSRFs</a>.</p>
 <p>Example in XML document:</p>
 <pre>
 &lt;?xml version="1.0" encoding="utf-8"?&gt;
@@ -58,7 +62,7 @@ properties</a> have been implemented:</p>
 <ul>
   <li> it has <a
   href="https://docs.oracle.com/en/java/javase/13/security/java-api-xml-processing-jaxp-security-guide.html#GUID-88B04BE2-35EF-4F61-B4FA-57A0E9102342">no effect</a> to protect the parser from XXE attacks but helps guard against excessive memory consumption from XML processing. </li>
-  <li> or it's just an obscur shortcut (it could set ACCESS_EXTERNAL_DTD and ACCESS_EXTERNAL_SCHEMA to '') </li>
+  <li> or it's just an obscur shortcut (it could set ACCESS_EXTERNAL_DTD and ACCESS_EXTERNAL_SCHEMA to "" but without guarantee). </li>
 </ul>
 <h2>Noncompliant Code Examples</h2>
 <p><a href="https://docs.oracle.com/javase/9/docs/api/javax/xml/parsers/DocumentBuilderFactory.html">DocumentBuilderFactory</a> library:</p>
