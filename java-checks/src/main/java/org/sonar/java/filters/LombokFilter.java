@@ -126,7 +126,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     excludeLinesIfTrue(generatesEquals || usesAnnotation(tree, GENERATE_UNUSED_FIELD_RELATED_METHODS), tree, UnusedPrivateFieldCheck.class, PrivateFieldUsedLocallyCheck.class);
     excludeLinesIfTrue(usesAnnotation(tree, GENERATE_CONSTRUCTOR), tree, AtLeastOneConstructorCheck.class, SpringComponentWithNonAutowiredMembersCheck.class);
     excludeLinesIfTrue(generatesEquals, tree, EqualsNotOverriddenInSubclassCheck.class, EqualsNotOverridenWithCompareToCheck.class);
-    excludeLinesIfTrue(generatesPrivateConstructor(tree), tree, UtilityClassWithPublicConstructorCheck.class);
+    excludeLinesIfTrue(generatesNonPublicConstructor(tree), tree, UtilityClassWithPublicConstructorCheck.class);
     excludeLinesIfTrue(usesAnnotation(tree, UTILITY_CLASS), tree, BadFieldNameCheck.class, ConstantsShouldBeStaticFinalCheck.class);
 
     if (generatesPrivateFields(tree)) {
@@ -168,7 +168,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     return annotations.stream().anyMatch(classMetadata::isAnnotatedWith);
   }
 
-  private static boolean generatesPrivateConstructor(ClassTree classTree) {
+  private static boolean generatesNonPublicConstructor(ClassTree classTree) {
     if (usesAnnotation(classTree, UTILITY_CLASS)) {
       return true;
     }
@@ -176,11 +176,12 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     return GENERATE_CONSTRUCTOR.stream()
       .map(metadata::valuesForAnnotation)
       .filter(Objects::nonNull)
-      .anyMatch(LombokFilter::generatesPrivateAccess);
+      // By default, constructor is public
+      .anyMatch(LombokFilter::generatesNonPublicAccess);
   }
 
-  private static boolean generatesPrivateAccess(List<SymbolMetadata.AnnotationValue> values) {
-    return values.stream().anyMatch(av -> "access".equals(av.name()) && "PRIVATE".equals(getAccessLevelValue(av.value())));
+  private static boolean generatesNonPublicAccess(List<SymbolMetadata.AnnotationValue> values) {
+    return values.stream().anyMatch(av -> "access".equals(av.name()) && !"PUBLIC".equals(getAccessLevelValue(av.value())));
   }
 
   private static boolean generatesPrivateFields(ClassTree tree) {
