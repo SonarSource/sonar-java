@@ -185,20 +185,6 @@ public class JavaSquidSensorTest {
   }
 
   @Test
-  public void feedbackShouldNotBeFedIfNoErrors() throws IOException {
-    SensorContextTester context = createContext(InputFile.Type.MAIN);
-    executeJavaSquidSensor(context);
-    assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
-  }
-
-  @Test
-  public void feedbackShouldNotBeFedIfNotSonarCloudHost() throws IOException {
-    SensorContextTester context = createParseErrorContext();
-    executeJavaSquidSensor(context);
-    assertThat(context.<String>measure("projectKey", "sonarjava_feedback")).isNull();
-  }
-
-  @Test
   public void should_invoke_visitors_on_generated_code() throws Exception {
     Path base = tmp.newFolder().toPath();
     Path generatedFilePath = tmp.newFile("Generated.java").toPath();
