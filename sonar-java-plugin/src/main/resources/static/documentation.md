@@ -96,6 +96,24 @@ We are heavily using it in the different [checks](https://github.com/SonarSource
      List<Type> typeArguments();
      ```
 
+* The [`JavaCheckVerifier`](https://github.com/SonarSource/sonar-java/tree/master/java-checks-testkit/src/main/java/org/sonar/java/checks/verifier/JavaCheckVerifier.java#L51), used to test rules implementations and delivered with the `java-checks-testkit` package, has been fully reworked in order to tackle inconcistencies. All the previously existing methods from it has been **deprecated**. In addition, a new method has been added, which allows access to a new rule testing interface. Starting from 6.3, when writting custom rules test, you should therefore rely only on `org.sonar.java.checks.verifier.JavaCheckVerifier.newVerifier()`. Example of change:
+     ```
+     // old test prior to 6.3:
+     @Test
+     public void deprecatedCustomRuleTest() {
+        JavaCheckVerifier.verify("path/to/my/custom/check/test/file.java", new MyCheck());
+     }
+
+     // new test starting from 6.3:
+     @Test
+     public void newCustomRuleTest() {
+        JavaCheckVerifier.newVerifier()
+          .onFile("path/to/my/custom/check/test/file.java")
+          .withCheck(new MyCheck())
+          .verifyIssues();
+     }
+     ```
+
 #### **6.1**
 
 * The `ExpressionTree` interface, from the AST API, is now enriched by two new methods `Optional<Object> asConstant()` and `<T> Optional<T> asConstant(Class<T> type)`. These methods let you try to retrieve the equivalent constant value of an expression (from a variable, for instance). An example of usage would be:
@@ -235,7 +253,7 @@ class A {
         ```
 * **Added**
     * `org.sonar.plugins.java.api.JavaFileScannerContext`: Following methods have been added in order to provide help reporting issues at project level, and access data through SonarQube's InputFile API, which won't be possible anymore through files:
-    ```
+        ```
         //JavaFileScannerContext: New methods
         /**
         * Report an issue at at the project level.
@@ -243,13 +261,13 @@ class A {
         * @param message Message to display to the user
         */
         void addIssueOnProject(JavaCheck check, String message);
-    
+
         /**
         * InputFile under analysis.
         * @return the currently analyzed inputFile.
         */
         InputFile getInputFile();
-        
+
         /**
         * InputComponent representing the project being analyzed
         * @return the project component
