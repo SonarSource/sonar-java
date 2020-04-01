@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -44,6 +44,8 @@ import org.sonar.java.model.GeneratedFile;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 @EnableRuleMigrationSupport
 class JasperTest {
@@ -56,6 +58,7 @@ class JasperTest {
 
   @Rule
   public LogTester logTester = new LogTester();
+  private Path jspFile;
 
   @BeforeEach
   void setUp() throws Exception {
@@ -63,7 +66,7 @@ class JasperTest {
     tempFolder = Paths.get("target/tmp");
     Files.createDirectories(tempFolder);
     webInf = tempFolder.resolve("WEB-INF");
-    Files.createDirectory(webInf);
+    Files.createDirectories(webInf);
   }
 
   @AfterEach
@@ -100,7 +103,8 @@ class JasperTest {
     SensorContextTester ctx = jspContext("<%=");
     Collection<GeneratedFile> inputFiles = new Jasper().generateFiles(ctx, emptyList());
     assertThat(inputFiles).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Failed to transpile JSP files.");
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Error transpiling " + jspFile.toAbsolutePath());
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Some JSP pages failed to transpile. Enable debug log for details.");
   }
 
   @Test
@@ -133,10 +137,24 @@ class JasperTest {
     assertThat(generatedFile.sourceMap()).isNotNull();
   }
 
+  @Test
+  void test_failure_invalid_classpath() throws Exception {
+    SensorContextTester ctx = jspContext("<html>\n" +
+      "<body>\n" +
+      "<h2>Hello World!</h2>\n" +
+      "</body>\n" +
+      "</html>");
+    Jasper jasper = spy(new Jasper());
+    doThrow(new IllegalStateException()).when(jasper).initClassLoader(emptyList());
+    Collection<GeneratedFile> generatedFiles = jasper.generateFiles(ctx, emptyList());
+    assertThat(generatedFiles).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains("Failed to transpile JSP files.");
+  }
+
   private SensorContextTester jspContext(String jspSource) throws IOException {
-    Path jsp = createJspFile(jspSource);
+    jspFile = createJspFile(jspSource);
     SensorContextTester ctx = SensorContextTester.create(tempFolder);
-    DefaultInputFile inputFile = TestInputFileBuilder.create("", tempFolder.toFile(), jsp.toFile())
+    DefaultInputFile inputFile = TestInputFileBuilder.create("", tempFolder.toFile(), jspFile.toFile())
       .setLanguage("jsp")
       .setContents(jspSource)
       .build();

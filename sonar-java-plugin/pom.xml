@@ -123,8 +123,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>19500000</maxsize>
-                  <minsize>19000000</minsize>
+                  <maxsize>19000000</maxsize>
+                  <minsize>18000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
@@ -184,31 +184,13 @@
                   </includes>
                 </filter>
                 <filter>
-                  <artifact>org.apache.tomcat:tomcat-jasper</artifact>
+                  <artifact>org.apache.tomcat.embed:tomcat-embed-jasper</artifact>
                   <includes>
                     <include>**</include>
                   </includes>
                 </filter>
                 <filter>
-                  <artifact>org.apache.tomcat:tomcat-servlet-api</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-                <filter>
-                  <artifact>org.apache.tomcat:tomcat-jsp-api</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-                <filter>
-                  <artifact>org.apache.tomcat:tomcat-el-api</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-                <filter>
-                  <artifact>org.apache.tomcat:tomcat-jasper-el</artifact>
+                  <artifact>org.apache.tomcat.embed:tomcat-embed-el</artifact>
                   <includes>
                     <include>**</include>
                   </includes>
