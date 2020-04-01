@@ -14,4 +14,4 @@ If you want to:
 Then, please reach us though our mailing list to discuss the issue, using our [SonarQube Community Forum](https://community.sonarsource.com/), prior to submitting any code change.
 
 Thanks,
-*The SonarJava Team*
+*The SonarSource Languages Team*

@@ -197,7 +197,7 @@ public class VisitorsBridge {
       }
 
       String message = String.format(
-        "Unable to run check %s - %s on file '%s', To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/",
+        "Unable to run check %s - %s on file '%s', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource.com/",
         scanner.getClass(), ruleKey(scanner), currentFile);
 
       LOG.error(message, e);

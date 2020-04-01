@@ -286,7 +286,7 @@ public class JavaClasspathTest {
       fail("Exception should have been raised");
     } catch (AnalysisException ise) {
       assertThat(ise.getMessage())
-        .isEqualTo("sonar.binaries and sonar.libraries are not supported since version 4.0 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
+        .isEqualTo("sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer, please use sonar.java.binaries and sonar.java.libraries instead");
     }
   }
 

@@ -135,7 +135,7 @@ public class JavaAstScanner {
   }
 
   private static String getAnalysisExceptionMessage(InputFile file) {
-    return String.format("SonarQube is unable to analyze file : '%s'", file);
+    return String.format("Unable to analyze file : '%s'", file);
   }
 
   public void setVisitorBridge(VisitorsBridge visitor) {

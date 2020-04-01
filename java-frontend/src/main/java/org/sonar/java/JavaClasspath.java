@@ -55,7 +55,7 @@ public class JavaClasspath extends AbstractJavaClasspath {
       Set<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES);
       if (binaries.isEmpty() && libraries.isEmpty() && useDeprecatedProperties()) {
         throw new AnalysisException(
-          "sonar.binaries and sonar.libraries are not supported since version 4.0 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
+          "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer, please use sonar.java.binaries and sonar.java.libraries instead");
       }
       if (binaries.isEmpty() && hasMoreThanOneJavaFile()) {
         if(isSonarLint()) {
