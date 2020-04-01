@@ -3,7 +3,7 @@ Writing Custom Java Rules 101
 
 You are using SonarQube and its Java Analyzer to analyze your projects, but there aren't rules that allow you to target some of your company's specific needs? Then your logical choice may be to implement your own set of custom Java rules.
 
-This document is an introduction to custom rule writing for the SonarQube Java Analyzer. It will cover all the main concepts of static analysis required to understand and develop effective rules, relying on the API provided by the SonarQube Java Plugin.
+This document is an introduction to custom rule writing for the SonarQube Java Analyzer. It will cover all the main concepts of static analysis required to understand and develop effective rules, relying on the API provided by the SonarSource Analyzer for Java.
 
 ## Content
 
@@ -30,7 +30,7 @@ This document is an introduction to custom rule writing for the SonarQube Java A
 
 ## Getting started
 
-The rules you are going to develop will be delivered using a dedicated, custom plugin, relying on the **SonarQube Java Plugin API**. In order to start working efficiently, we provide a empty template maven project, that you will fill in while following this tutorial.
+The rules you are going to develop will be delivered using a dedicated, custom plugin, relying on the **SonarSource Analyzer for Java API**. In order to start working efficiently, we provide a empty template maven project, that you will fill in while following this tutorial.
 
 Grab the template project from there and import it to your IDE: https://github.com/SonarSource/sonar-custom-rules-examples/tree/master/java-custom-rules
 
@@ -358,7 +358,7 @@ If it passed...
 
 When writing custom Java rules, you can only use classes from package [`org.sonar.plugins.java.api`](https://github.com/SonarSource/sonar-java/tree/5.12.1.17771/java-frontend/src/main/java/org/sonar/plugins/java/api).
 
-When browsing the existing 500+ rules from the SonarJava plugin, you will sometime notice use of some other utility classes, not part of the API. While these classes could be sometime extremely useful in your context, **these classes are not available at runtime** for custom rule plugins. It means that, while your unit tests are still going to pass when building the plugin, your rules will most likely make analysis **crash at analysis time**.
+When browsing the existing 500+ rules from the SonarSource Analyzer for Java, you will sometime notice use of some other utility classes, not part of the API. While these classes could be sometime extremely useful in your context, **these classes are not available at runtime** for custom rule plugins. It means that, while your unit tests are still going to pass when building the plugin, your rules will most likely make analysis **crash at analysis time**.
 
 Note that we are always open to discussion, so don't hesitate to reach us and participate to threads, through our [community forum](https://community.sonarsource.com/), to suggest features and API improvement!
 
@@ -396,7 +396,7 @@ public static List<Class<? extends JavaCheck>> getJavaChecks() {
 
 ### Rule Registrar
 
-Because your rules are relying on the SonarJava API, you also need to tell the SonarJava parent plugin that some new rules have to be retrieved. If you are using the template custom plugin as a base of this tutorial, you should have everything done already, but feel free to have a look at the `MyJavaFileCheckRegistrar.java` class, which connects the dots. Finally, be sure that this registrar class is also correctly added as an extension for your custom plugin, by adding it to your Plugin definition class (`MyJavaRulesPlugin.java`).
+Because your rules are relying on the SonarSource Analyzer for Java API, you also need to tell the parent Java plugin that some new rules have to be retrieved. If you are using the template custom plugin as a base of this tutorial, you should have everything done already, but feel free to have a look at the `MyJavaFileCheckRegistrar.java` class, which connects the dots. Finally, be sure that this registrar class is also correctly added as an extension for your custom plugin, by adding it to your Plugin definition class (`MyJavaRulesPlugin.java`).
 
 ```java
 /**
@@ -476,7 +476,7 @@ Then, grab the jar file `java-custom-rules-1.0-SNAPSHOT.jar` from the `target` f
 >
 > Before going further, be sure to have the adequate version of the SonarQube Java Plugin with your SonarQube instance. The dependency over the Java Plugin of our custom plugin is defined in its `pom`, as seen in the first chapter of this tutorial.
 >
-> If you have a fresh install or do not possess the same version, install the adequate version of the Java Plugin. The latest version of the plugin can be downloaded from [HERE](https://docs.sonarqube.org/display/PLUG/SonarJava).
+> If you have a fresh install or do not possess the same version, install the adequate version of the Java Plugin. The latest version of the plugin can be downloaded from [HERE](https://docs.sonarqube.org/latest/analysis/languages/java/).
 >
 
 Now, (re-)start your SonarQube instance, log as admin and navigate to the ***Rules*** tab.
@@ -531,8 +531,8 @@ public interface JavaFileScannerContext {
 
 ## References
 
-* [SonarJava documentation](https://docs.sonarqube.org/display/PLUG/SonarJava)
+* [Analysis of Java code documentation](https://docs.sonarqube.org/latest/analysis/languages/java/)
 * [SonarQube Platform](http://www.sonarqube.org/)
-* [SonarQube Java Plugin Github repository](https://github.com/SonarSource/sonar-java)
-* [SonarQube Java Custom Rules Example](https://github.com/SonarSource/sonar-custom-rules-examples)
+* [SonarSource Code Quality and Security for Java Github repository](https://github.com/SonarSource/sonar-java)
+* [SonarSource Java Custom Rules Example](https://github.com/SonarSource/sonar-custom-rules-examples)
 You can explore a sample plugin containing some custom rules. This project can be [browsed](https://github.com/SonarSource/sonar-custom-rules-examples/tree/master/java-custom-rules) or [downloaded](https://github.com/SonarSource/sonar-custom-rules-examples/archive/master.zip).

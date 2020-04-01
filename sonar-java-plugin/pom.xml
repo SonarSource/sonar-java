@@ -103,7 +103,7 @@
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
         <configuration>
-          <pluginName>SonarJava</pluginName>
+          <pluginName>Java Code Quality and Security</pluginName>
           <skipDependenciesPackaging>true</skipDependenciesPackaging>
           <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
           <sonarLintSupported>true</sonarLintSupported>

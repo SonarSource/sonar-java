@@ -1,7 +1,7 @@
-SonarJava [![Build Status](https://api.cirrus-ci.com/github/SonarSource/sonar-java.svg)](https://cirrus-ci.com/github/SonarSource/sonar-java) [![Quality Gate](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=alert_status)](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava) [![Coverage](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=coverage)](https://next.sonarqube.com/sonarqube/component_measures/domain/Coverage?id=org.sonarsource.java%3Ajava)
+Code Quality and Security for Java [![Build Status](https://api.cirrus-ci.com/github/SonarSource/sonar-java.svg)](https://cirrus-ci.com/github/SonarSource/sonar-java) [![Quality Gate](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=alert_status)](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava) [![Coverage](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=coverage)](https://next.sonarqube.com/sonarqube/component_measures/domain/Coverage?id=org.sonarsource.java%3Ajava)
 ==========
 
-SonarJava is a code analyzer for Java projects. Information about the SonarJava features is available [here](https://redirect.sonarsource.com/plugins/java.html).
+This SonarSource project is a code analyzer for Java projects. Information about the analysis of Java features is available [here](https://redirect.sonarsource.com/plugins/java.html).
 
 Features
 --------
@@ -25,7 +25,7 @@ Have question or feedback?
 
 To provide feedback (request a feature, report a bug etc.) use the [SonarQube Community Forum](https://community.sonarsource.com/). Please do not forget to specify the language (Java!), plugin version and SonarQube version.
 
-If you have a question on how to use plugin (and the [docs](https://docs.sonarqube.org/display/PLUG/SonarJava) don't help you), we also encourage you to use the community forum.
+If you have a question on how to use plugin (and the [docs](https://docs.sonarqube.org/latest/analysis/languages/java/) don't help you), we also encourage you to use the community forum.
 
 Contributing
 ------------
@@ -118,6 +118,6 @@ For example using the command:
 
 ### License
 
-Copyright 2012-2019 SonarSource.
+Copyright 2012-2020 SonarSource.
 
 Licensed under the [GNU Lesser General Public License, Version 3.0](https://www.gnu.org/licenses/lgpl.txt)

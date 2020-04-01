@@ -114,7 +114,7 @@ public class JavaAstScannerTest {
     InputFile inputFile = TestUtils.emptyInputFile(filename);
     AnalysisException e = assertThrows(AnalysisException.class,
       () -> scanSingleFile(inputFile, true));
-    assertThat(e.getMessage()).isEqualTo("SonarQube is unable to analyze file : '!!dummy'");
+    assertThat(e.getMessage()).isEqualTo("Unable to analyze file : '!!dummy'");
   }
 
   @Test
@@ -180,14 +180,14 @@ public class JavaAstScannerTest {
     scanner.scan(Collections.singletonList(scannedFile));
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$CheckThrowingException -  on file '"
       + scannedFile.toString()
-      + "', To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
+      + "', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource.com/");
     logTester.clear();
     scanner.setVisitorBridge(new VisitorsBridge(new AnnotatedCheck(new NullPointerException("foo"))));
     scannedFile = TestUtils.inputFile("src/test/resources/AstScannerParseError.txt");
     scanner.scan(Collections.singletonList(scannedFile));
     assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(3).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$AnnotatedCheck - AnnotatedCheck on file '"
       + scannedFile.toString()
-      + "', To help improve SonarJava, please report this problem to SonarSource : see https://www.sonarqube.org/community/");
+      + "', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource.com/");
   }
 
   @Test

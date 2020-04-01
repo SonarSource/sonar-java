@@ -159,7 +159,7 @@ class A {
         ```
     * According to Java Language Specification every array type implements the interface `java.io.Serializable`, calling `isSubtypeOf("java.io.Serializable")` on an array type now consistently returns `true`.
     * Symbol corresponding to generic method invocations are now correctly parameterized.
-    * In some special cases (mostly missing bytecode dependencies, misconfigured projects), and due to ECJ recovery system, unknown/recovered types can now lead to unknown symbols, even on `ClassTree`/`MethodTree`/`VariableTree`. To illustrate this, the following example now associate the method to an unknown symbol, while previous semantic engine from SonarJava 5.X series was creating a `Symbol.MethodSymbol` with an unknown return type.
+    * In some special cases (mostly missing bytecode dependencies, misconfigured projects), and due to ECJ recovery system, unknown/recovered types can now lead to unknown symbols, even on `ClassTree`/`MethodTree`/`VariableTree`. To illustrate this, the following example now associate the method to an unknown symbol, while previous semantic engine from version 5.X series was creating a `Symbol.MethodSymbol` with an unknown return type.
         ```
         Class A {
           UnknownType<String> myMethod() { /* ... */ }

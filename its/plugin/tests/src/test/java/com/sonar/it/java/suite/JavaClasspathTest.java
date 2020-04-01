@@ -155,7 +155,8 @@ public class JavaClasspathTest {
     scanner.setProperty("sonar.libraries", guavaJarPath);
     BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(scanner);
 
-    assertThat(buildResult.getLogs()).contains("sonar.binaries and sonar.libraries are not supported since version 4.0 of sonar-java-plugin," +
+    assertThat(buildResult.getLogs()).contains(
+      "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer," +
       " please use sonar.java.binaries and sonar.java.libraries instead");
     assertThat(buildResult.isSuccess()).isFalse();
   }
