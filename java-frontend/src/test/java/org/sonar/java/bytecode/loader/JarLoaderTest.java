@@ -20,9 +20,7 @@
 package org.sonar.java.bytecode.loader;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -30,17 +28,15 @@ import java.io.InputStream;
 import java.net.URL;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public class JarLoaderTest {
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
-
   @Test
   public void shouldThrowIllegalArgumentException() throws Exception {
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("file can't be null");
-    new JarLoader(null);
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+      () -> new JarLoader(null));
+    assertThat(e.getMessage()).isEqualTo("file can't be null");
   }
 
   @Test
@@ -64,9 +60,9 @@ public class JarLoaderTest {
 
     loader.close();
 
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("zip file closed");
-    loader.findResource("META-INF/MANIFEST.MF");
+    IllegalStateException e = assertThrows(IllegalStateException.class,
+      () -> loader.findResource("META-INF/MANIFEST.MF"));
+    assertThat(e.getMessage()).isEqualTo("zip file closed");
   }
 
   @Test
@@ -83,9 +79,9 @@ public class JarLoaderTest {
 
     loader.close();
 
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("zip file closed");
-    loader.loadBytes("META-INF/MANIFEST.MF");
+    IllegalStateException e = assertThrows(IllegalStateException.class,
+      () -> loader.loadBytes("META-INF/MANIFEST.MF"));
+    assertThat(e.getMessage()).isEqualTo("zip file closed");
   }
 
   @Test
@@ -99,9 +95,9 @@ public class JarLoaderTest {
   @Test
   public void testCorruptedJar() {
     File jar = new File("src/test/files/bytecode/src/tags/TagName.java");
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("Unable to open " + jar.getAbsolutePath());
-    new JarLoader(jar);
+    IllegalStateException e = assertThrows(IllegalStateException.class,
+      () -> new JarLoader(jar));
+    assertThat(e.getMessage()).isEqualTo("Unable to open " + jar.getAbsolutePath());
   }
 
 }

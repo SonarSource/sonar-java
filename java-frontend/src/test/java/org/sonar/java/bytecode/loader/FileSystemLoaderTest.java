@@ -19,25 +19,21 @@
  */
 package org.sonar.java.bytecode.loader;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.io.File;
 import java.net.URL;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public class FileSystemLoaderTest {
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
-
   @Test
   public void shouldThrowIllegalArgumentException() throws Exception {
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("baseDir can't be null");
-    new FileSystemLoader(null);
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+      () -> new FileSystemLoader(null));
+    assertThat(e.getMessage()).isEqualTo("baseDir can't be null");
   }
 
   @Test
@@ -56,9 +52,9 @@ public class FileSystemLoaderTest {
 
     loader.close();
 
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("Loader closed");
-    loader.findResource("tags/TagName.class");
+    IllegalStateException e = assertThrows(IllegalStateException.class,
+      () -> loader.findResource("tags/TagName.class"));
+    assertThat(e.getMessage()).isEqualTo("Loader closed");
   }
 
   @Test
@@ -72,9 +68,9 @@ public class FileSystemLoaderTest {
 
     loader.close();
 
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("Loader closed");
-    loader.loadBytes("tags/TagName.class");
+    IllegalStateException e = assertThrows(IllegalStateException.class,
+      () -> loader.loadBytes("tags/TagName.class"));
+    assertThat(e.getMessage()).isEqualTo("Loader closed");
   }
 
   @Test

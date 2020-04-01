@@ -28,12 +28,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -59,6 +56,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -69,8 +67,6 @@ import static org.mockito.Mockito.when;
 
 public class JavaAstScannerTest {
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
   @Rule
   public LogTester logTester = new LogTester();
   private SensorContextTester context;
@@ -114,10 +110,11 @@ public class JavaAstScannerTest {
 
   @Test
   public void scan_single_file_with_dumb_file_should_fail_when_fail_fast() throws Exception {
-    thrown.expect(AnalysisException.class);
     String filename = "!!dummy";
-    thrown.expectMessage("SonarQube is unable to analyze file : '!!dummy'");
-    scanSingleFile(TestUtils.emptyInputFile(filename), true);
+    InputFile inputFile = TestUtils.emptyInputFile(filename);
+    AnalysisException e = assertThrows(AnalysisException.class,
+      () -> scanSingleFile(inputFile, true));
+    assertThat(e.getMessage()).isEqualTo("SonarQube is unable to analyze file : '!!dummy'");
   }
 
   @Test
@@ -155,21 +152,21 @@ public class JavaAstScannerTest {
   @Test
   public void should_interrupt_analysis_when_InterruptedException_is_thrown() {
     InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
-
-    thrown.expectMessage("Analysis cancelled");
-    thrown.expect(new AnalysisExceptionBaseMatcher(RecognitionException.class, "instanceof AnalysisException with RecognitionException cause"));
-
-    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedException()))));
+    VisitorsBridge visitorsBridge = new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedException())));
+    AnalysisException e = assertThrows(AnalysisException.class,
+      () -> JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge));
+    assertThat(e.getMessage()).isEqualTo("Analysis cancelled");
+    assertThat(e.getCause().getClass()).isEqualTo(RecognitionException.class);
   }
 
   @Test
   public void should_interrupt_analysis_when_InterruptedIOException_is_thrown() {
     InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
-
-    thrown.expectMessage("Analysis cancelled");
-    thrown.expect(new AnalysisExceptionBaseMatcher(RecognitionException.class, "instanceof AnalysisException with RecognitionException cause"));
-
-    JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedIOException()))));
+    VisitorsBridge visitorsBridge = new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedIOException())));
+    AnalysisException e = assertThrows(AnalysisException.class,
+      () -> JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge));
+    assertThat(e.getMessage()).isEqualTo("Analysis cancelled");
+    assertThat(e.getCause().getClass()).isEqualTo(RecognitionException.class);
   }
 
   @Test
@@ -277,29 +274,6 @@ public class JavaAstScannerTest {
     public AnnotatedCheck(RuntimeException e) {
       super(e);
     }
-  }
-
-  private static class AnalysisExceptionBaseMatcher extends BaseMatcher {
-
-    private final Class<? extends Exception> expectedCause;
-    private final String description;
-
-    public AnalysisExceptionBaseMatcher(Class<? extends Exception> expectedCause, String description) {
-      this.expectedCause = expectedCause;
-      this.description = description;
-    }
-
-    @Override
-    public boolean matches(Object item) {
-      return item instanceof AnalysisException
-        && expectedCause.equals(((AnalysisException) item).getCause().getClass());
-    }
-
-    @Override
-    public void describeTo(Description description) {
-      description.appendText(this.description);
-    }
-
   }
 
   private static class FakeAuditListener implements JavaFileScanner, ExceptionHandler {

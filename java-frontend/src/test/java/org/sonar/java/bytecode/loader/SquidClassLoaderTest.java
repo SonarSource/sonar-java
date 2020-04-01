@@ -30,7 +30,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
@@ -38,11 +37,9 @@ import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public class SquidClassLoaderTest {
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
 
   @Rule
   public LogTester logTester = new LogTester();
@@ -64,8 +61,8 @@ public class SquidClassLoaderTest {
     classLoader = new SquidClassLoader(Collections.emptyList());
     assertThat(classLoader.loadClass("java.lang.Integer")).isNotNull();
     assertThat(classLoader.getResource("java/lang/Integer.class")).isNotNull();
-    thrown.expect(ClassNotFoundException.class);
-    classLoader.loadClass(SquidClassLoader.class.getName());
+    assertThrows(ClassNotFoundException.class,
+      () -> classLoader.loadClass(SquidClassLoader.class.getName()));
   }
 
   @Test
@@ -83,8 +80,8 @@ public class SquidClassLoaderTest {
     assertThat(classLoader.loadClass("org.sonar.tests.Hello")).isNotNull();
     assertThat(classLoader.getResource("org/sonar/tests/Hello.class")).isNotNull();
     assertThat(Iterators.forEnumeration(classLoader.findResources("org/sonar/tests/Hello.class"))).hasSize(1);
-    thrown.expect(ClassNotFoundException.class);
-    classLoader.loadClass("foo.Unknown");
+    assertThrows(ClassNotFoundException.class,
+      () -> classLoader.loadClass("foo.Unknown"));
   }
 
   @Test
@@ -95,8 +92,8 @@ public class SquidClassLoaderTest {
     assertThat(classLoader.loadClass("com.github.simonpercic.oklog.BuildConfig")).isNotNull();
     assertThat(classLoader.getResource("com/github/simonpercic/oklog/BuildConfig.class")).isNotNull();
     assertThat(Iterators.forEnumeration(classLoader.findResources("com/github/simonpercic/oklog/BuildConfig.class"))).hasSize(1);
-    thrown.expect(ClassNotFoundException.class);
-    classLoader.loadClass("foo.Unknown");
+    assertThrows(ClassNotFoundException.class,
+      () -> classLoader.loadClass("foo.Unknown"));
   }
 
   @Test
@@ -160,8 +157,8 @@ public class SquidClassLoaderTest {
     assertThat(classLoader.loadClass("tags.TagName")).isNotNull();
     assertThat(classLoader.getResource("tags/TagName.class")).isNotNull();
     assertThat(Iterators.forEnumeration(classLoader.findResources("tags/TagName.class"))).hasSize(1);
-    thrown.expect(ClassNotFoundException.class);
-    classLoader.loadClass("tags.Unknown");
+    assertThrows(ClassNotFoundException.class,
+      () -> classLoader.loadClass("foo.Unknown"));
   }
 
   @Test
@@ -195,9 +192,9 @@ public class SquidClassLoaderTest {
     classLoader = new SquidClassLoader(Arrays.asList(jar));
     classLoader.close();
 
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("java.lang.IllegalStateException: zip file closed");
-    classLoader.getResource("org/sonar/tests/Hello.class");
+    IllegalStateException e = assertThrows(IllegalStateException.class,
+      () -> classLoader.getResource("org/sonar/tests/Hello.class"));
+    assertThat(e.getMessage()).isEqualTo("java.lang.IllegalStateException: zip file closed");
   }
 
   @Test

@@ -19,9 +19,7 @@
  */
 package org.sonar.java.se.xproc;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.sonar.java.model.Sema;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.Pair;
@@ -36,15 +34,13 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
 
 public class ExceptionalCheckBasedYieldTest {
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
 
   private static final String FILENAME = "src/test/files/se/ExceptionalCheckBasedYields.java";
   private static final SymbolicValue SV_CAUSING_EXCEPTION = new SymbolicValue();
@@ -129,21 +125,24 @@ public class ExceptionalCheckBasedYieldTest {
 
   @Test
   public void exceptionType_is_required() {
-    thrown.expect(IllegalArgumentException.class);
     final Class<? extends SECheck> seCheckClass = new SECheck() {
     }.getClass();
     String exceptionType = null;
-    new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, exceptionType, seCheckClass, null, mockMethodBehavior());
+    MethodBehavior methodBehavior = mockMethodBehavior();
+
+    assertThrows(IllegalArgumentException.class,
+      () -> new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, exceptionType, seCheckClass, null, methodBehavior));
   }
 
   @Test
   public void exceptionType_cannot_be_changed() {
-    thrown.expect(UnsupportedOperationException.class);
     final Class<? extends SECheck> seCheckClass = new SECheck() {
     }.getClass();
     String exceptionType = "someException";
     ExceptionalCheckBasedYield yield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, exceptionType, seCheckClass, null, mockMethodBehavior());
-    yield.setExceptionType("anotherException");
+
+    assertThrows(UnsupportedOperationException.class,
+      () -> yield.setExceptionType("anotherException"));
   }
 
   @Test

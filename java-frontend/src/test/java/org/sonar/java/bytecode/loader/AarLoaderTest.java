@@ -20,33 +20,30 @@
 package org.sonar.java.bytecode.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class AarLoaderTest {
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void shouldThrowIllegalArgumentException() throws Exception {
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("file can't be null");
-    new AarLoader(null);
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+      () -> new AarLoader(null));
+    assertThat(e.getMessage()).isEqualTo("file can't be null");
   }
 
   @Test
   public void testCorruptedAar() {
     File aar = new File("src/test/files/bytecode/src/tags/TagName.java");
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("Unable to open " + aar.getAbsolutePath());
-    new AarLoader(aar);
+    IllegalStateException e = assertThrows(IllegalStateException.class,
+      () -> new AarLoader(aar));
+    assertThat(e.getMessage()).isEqualTo("Unable to open " + aar.getAbsolutePath());
   }
   
   @Test
@@ -79,9 +76,9 @@ public class AarLoaderTest {
 
     loader.close();
 
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("zip file closed");
-    loader.findResource("META-INF/MANIFEST.MF");
+    IllegalStateException e = assertThrows(IllegalStateException.class,
+      () -> loader.findResource("META-INF/MANIFEST.MF"));
+    assertThat(e.getMessage()).isEqualTo("zip file closed");
   }
 
   @Test
@@ -96,9 +93,9 @@ public class AarLoaderTest {
 
     loader.close();
 
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("zip file closed");
-    loader.loadBytes("com/github/simonpercic/oklog/BuildConfig.class");
+    IllegalStateException e = assertThrows(IllegalStateException.class,
+      () -> loader.loadBytes("com/github/simonpercic/oklog/BuildConfig.class"));
+    assertThat(e.getMessage()).isEqualTo("zip file closed");
   }
 
   @Test
