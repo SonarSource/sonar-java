@@ -2,6 +2,8 @@ import lombok.val;
 import lombok.var; // NoIssue
 import java.util.List; // WithIssue
 import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.PUBLIC;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Repository;
@@ -203,46 +205,67 @@ static class UtilityClassWithPublicConstructorCheck {
   }
 
   static class A { // WithIssue
+    public static int i;
   }
 
   @lombok.NoArgsConstructor
   public static class B { // WithIssue
+    public static int i;
   }
 
   @lombok.RequiredArgsConstructor
   public static class C { // WithIssue
+    public static int i;
   }
 
   @lombok.AllArgsConstructor
   public static class D { // WithIssue
+    public static int i;
   }
 
   @lombok.NoArgsConstructor(staticName = "yolo", access = lombok.AccessLevel.PRIVATE)
   public static class E { // NoIssue
+    public static int i;
   }
 
   @lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
   public static class F { // NoIssue
+    public static int i;
   }
 
   @lombok.AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
   public static class G { // NoIssue
+    public static int i;
   }
 
   @lombok.NoArgsConstructor(access = PRIVATE)
-  public static class H { // NoIssue
+  public static class H1 { // NoIssue
+    public static int i;
+  }
+
+  @lombok.NoArgsConstructor(access = PROTECTED)
+  public static class H2 { // NoIssue
+    public static int i;
+  }
+
+  @lombok.NoArgsConstructor(access = PUBLIC)
+  public static class H3 { // WithIssue
+    public static int i;
   }
 
   @lombok.NoArgsConstructor(access = lombok.AccessLevel.NONE)
-  public static class I { // WithIssue
+  public static class I { // NoIssue
+    public static int i;
   }
 
   @lombok.NoArgsConstructor()
   public static class J { // WithIssue
+    public static int i;
   }
 
   @lombok.NoArgsConstructor(access = getValue()) // does not compile - for coverage only
   public static class K { // NoIssue
+    public static int i;
   }
 
   public static lombok.AccessLevel getValue() {
