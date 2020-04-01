@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -107,12 +106,8 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
       !type.isSubtypeOf("java.util.LinkedHashMap");
   }
 
-  private static boolean hasEnumKey(Type symbolType) {
-    Type type = symbolType;
-    if (JUtils.isParametrized(type)) {
-      return JUtils.typeArguments(type).get(0).symbol().isEnum();
-    }
-    return false;
+  private static boolean hasEnumKey(Type type) {
+    return type.isParameterized() && type.typeArguments().get(0).symbol().isEnum();
   }
 
   private void addIssue(Tree typeTree) {

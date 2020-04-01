@@ -44,8 +44,8 @@ public class CompareToNotOverloadedCheck extends IssuableSubscriptionVisitor {
       JUtils.superTypes(ownerType).stream().filter(supertype -> supertype.is("java.lang.Comparable")).findFirst().ifPresent(
         comparableType -> {
           String name = "Object";
-          if (JUtils.isParametrized(comparableType)) {
-            name = JUtils.typeArguments(comparableType).get(0).symbol().name();
+          if (comparableType.isParameterized()) {
+            name = comparableType.typeArguments().get(0).symbol().name();
           }
           reportIssue(methodTree.parameters().get(0), "Refactor this method so that its argument is of type '" + name + "'.");
         });

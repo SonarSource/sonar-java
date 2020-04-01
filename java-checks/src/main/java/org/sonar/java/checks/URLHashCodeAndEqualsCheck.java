@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -71,8 +70,8 @@ public class URLHashCodeAndEqualsCheck extends IssuableSubscriptionVisitor {
 
   @CheckForNull
   private static Type getFirstTypeParameter(Type type) {
-    if (JUtils.isParametrized(type)) {
-      return JUtils.typeArguments(type).get(0);
+    if (type.isParameterized()) {
+      return type.typeArguments().get(0);
     }
     return null;
   }

@@ -105,8 +105,8 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean useRawTypeOfParametrizedType(Type methodParam, Type overrideeParam) {
-    return !JUtils.isParametrized(methodParam)
-      && JUtils.isParametrized(overrideeParam)
+    return !methodParam.isParameterized()
+      && overrideeParam.isParameterized()
       && methodParam.erasure().equals(overrideeParam.erasure());
   }
 

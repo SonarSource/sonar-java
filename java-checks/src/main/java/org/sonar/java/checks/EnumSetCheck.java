@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -78,8 +77,8 @@ public class EnumSetCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkIssue(Type type, Tree reportTree) {
-    if (type.isSubtypeOf("java.util.Set") && !type.isSubtypeOf("java.util.EnumSet") && JUtils.isParametrized(type)) {
-      Type typeArgument = JUtils.typeArguments(type).get(0);
+    if (type.isSubtypeOf("java.util.Set") && !type.isSubtypeOf("java.util.EnumSet") && type.isParameterized()) {
+      Type typeArgument = type.typeArguments().get(0);
       if (typeArgument != null && typeArgument.symbol().isEnum()) {
         reportIssue(reportTree, "Convert this Set to an EnumSet.");
       }

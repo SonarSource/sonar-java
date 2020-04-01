@@ -323,5 +323,15 @@ public class Symbols {
     public Type erasure() {
       return unknownType;
     }
+
+    @Override
+    public boolean isParameterized() {
+      return false;
+    }
+
+    @Override
+    public List<Type> typeArguments() {
+      return Collections.emptyList();
+    }
   }
 }

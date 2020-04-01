@@ -31,7 +31,6 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -168,7 +167,7 @@ public class ExpressionsHelper {
     if (type.isArray()) {
       return isNonSerializable(((Type.ArrayType) type).elementType());
     }
-    if (JUtils.typeArguments(type).stream().anyMatch(ExpressionsHelper::isNonSerializable)) {
+    if (type.typeArguments().stream().anyMatch(ExpressionsHelper::isNonSerializable)) {
       return true;
     }
     if (type.isPrimitive() ||

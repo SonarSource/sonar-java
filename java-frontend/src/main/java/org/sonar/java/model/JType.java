@@ -25,6 +25,8 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 final class JType implements Type, Type.ArrayType {
@@ -33,6 +35,11 @@ final class JType implements Type, Type.ArrayType {
   final ITypeBinding typeBinding;
 
   private final String fullyQualifiedName;
+
+  /**
+   * Cache for {@link #typeArguments()}.
+   */
+  private List<Type> typeArguments;
 
   JType(JSema sema, ITypeBinding typeBinding) {
     this.sema = Objects.requireNonNull(sema);
@@ -224,4 +231,32 @@ final class JType implements Type, Type.ArrayType {
     return typeBinding.isParameterizedType() || typeBinding.isGenericType();
   }
 
+  @Override
+  public boolean isParameterized() {
+    return typeBinding.isParameterizedType()
+      // when diamond operator is not fully resolved by ECJ, there is 0 typeArguments, while ECJ
+      // knows it is a Parameterized Type
+      && typeBinding.getTypeArguments().length > 0;
+  }
+
+  @Override
+  public List<Type> typeArguments() {
+    if (typeArguments == null) {
+      convertTypeArguments();
+    }
+    return typeArguments;
+  }
+
+  private void convertTypeArguments() {
+    ITypeBinding[] typeArgs = typeBinding.getTypeArguments();
+    if (typeArgs.length == 0) {
+      typeArguments = Collections.emptyList();
+      return;
+    }
+    Type[] result = new Type[typeArgs.length];
+    for (int i = 0; i < typeArgs.length; i++) {
+      result[i] = sema.type(typeArgs[i]);
+    }
+    typeArguments = Arrays.asList(result);
+  }
 }

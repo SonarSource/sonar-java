@@ -73,7 +73,7 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
   @CheckForNull
   private static Type getCollectionItemType(ExpressionTree expression) {
     Type expressionType = expression.symbolType();
-    if (expressionType.isSubtypeOf("java.util.Collection") && !JUtils.isParametrized(expressionType)) {
+    if (expressionType.isSubtypeOf("java.util.Collection") && !expressionType.isParameterized()) {
       // Ignoring raw collections (too many FP)
       return null;
     }
@@ -81,9 +81,9 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
       return ((Type.ArrayType) expressionType).elementType();
     } else if(expressionType.isClass()) {
       return JUtils.superTypes(expressionType.symbol()).stream()
-        .filter(t -> t.is("java.lang.Iterable") && JUtils.isParametrized(t))
+        .filter(t -> t.is("java.lang.Iterable") && t.isParameterized())
         .findFirst()
-        .map(iter -> JUtils.typeArguments(iter).get(0))
+        .map(iter -> iter.typeArguments().get(0))
         .orElse(null);
     }
     return null;

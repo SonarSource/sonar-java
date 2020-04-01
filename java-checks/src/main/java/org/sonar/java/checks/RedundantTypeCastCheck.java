@@ -186,8 +186,8 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isRawTypeOfParameterizedType(Type parentType, Type childType) {
-    return JUtils.isParametrized(childType)
-      && !JUtils.isParametrized(parentType)
+    return childType.isParameterized()
+      && !parentType.isParameterized()
       && parentType.erasure().equals(childType.erasure());
   }
 

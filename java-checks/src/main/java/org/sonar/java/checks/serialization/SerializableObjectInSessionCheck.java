@@ -47,7 +47,7 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
     ExpressionTree argument = mit.arguments().get(1);
     Type type = argument.symbolType();
     if (ExpressionsHelper.isNotSerializable(argument)) {
-      String andParameters = JUtils.isParametrized(type) ? " and its parameters" : "";
+      String andParameters = type.isParameterized() ? " and its parameters" : "";
       reportIssue(argument, "Make \"" + type.name() + "\"" + andParameters + " serializable or don't store it in the session.");
     }
   }
