@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 
 public class ExpressionUtilsTest {
@@ -133,13 +134,14 @@ public class ExpressionUtilsTest {
 
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void test_cannot_extract_identifier() throws Exception {
     File file = new File("src/test/files/model/ExpressionUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
     List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);
-    ExpressionUtils.extractIdentifier(assignments.get(4));
+    assertThrows(IllegalArgumentException.class,
+      () -> ExpressionUtils.extractIdentifier(assignments.get(4)));
   }
 
   @Test
