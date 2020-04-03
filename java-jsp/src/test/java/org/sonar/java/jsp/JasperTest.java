@@ -37,6 +37,7 @@ import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
@@ -53,6 +54,12 @@ import static org.mockito.Mockito.spy;
 @EnableRuleMigrationSupport
 class JasperTest {
 
+  private static final String JSP_SOURCE = "<html>\n" +
+    "<body>\n" +
+    "<h2>Hello World!</h2>\n" +
+    "</body>\n" +
+    "</html>";
+
   Path tempFolder;
   Path webInf;
 
@@ -67,7 +74,6 @@ class JasperTest {
   void setUp() throws Exception {
     // on macOS tmp is symbolic link which doesn't work well with Jasper, so we create tmp in 'target/tmp'
     tempFolder = Paths.get("target/tmp");
-    Files.createDirectories(tempFolder);
     webInf = tempFolder.resolve("src/main/webapp/WEB-INF");
     Files.createDirectories(webInf);
   }
@@ -88,11 +94,7 @@ class JasperTest {
 
   @Test
   void test_compilation() throws Exception {
-    SensorContextTester ctx = jspContext("<html>\n" +
-      "<body>\n" +
-      "<h2>Hello World!</h2>\n" +
-      "</body>\n" +
-      "</html>");
+    SensorContextTester ctx = jspContext(JSP_SOURCE);
     Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
 
     assertThat(generatedFiles).hasSize(1);
@@ -121,21 +123,7 @@ class JasperTest {
 
   @Test
   void test_compilation_without_webinf() throws Exception {
-    Path path = tempFolder.resolve("test.jsp");
-    String code = "<html>\n" +
-      "<body>\n" +
-      "<h2>Hello World!</h2>\n" +
-      "</body>\n" +
-      "</html>";
-    Files.write(path, code.getBytes(StandardCharsets.UTF_8));
-    jspFile = path;
-    SensorContextTester ctx = SensorContextTester.create(tempFolder);
-    DefaultInputFile inputFile = TestInputFileBuilder.create("", tempFolder.toFile(), jspFile.toFile())
-      .setLanguage("jsp")
-      .setContents(code)
-      .build();
-    ctx.fileSystem().add(inputFile);
-    ctx.fileSystem().setWorkDir(workDir);
+    SensorContext ctx = jspContext(JSP_SOURCE, tempFolder.resolve("test.jsp"));
     Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
 
     assertThat(generatedFiles).hasSize(1);
@@ -173,11 +161,7 @@ class JasperTest {
 
   @Test
   void test_source_map() throws Exception {
-    SensorContextTester ctx = jspContext("<html>\n" +
-      "<body>\n" +
-      "<h2>Hello World!</h2>\n" +
-      "</body>\n" +
-      "</html>");
+    SensorContextTester ctx = jspContext(JSP_SOURCE);
     Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
     assertThat(generatedFiles).hasSize(1);
     GeneratedFile generatedFile = generatedFiles.iterator().next();
@@ -186,11 +170,7 @@ class JasperTest {
 
   @Test
   void should_log_warning_when_jasper_fails() throws Exception {
-    SensorContextTester ctx = jspContext("<html>\n" +
-      "<body>\n" +
-      "<h2>Hello World!</h2>\n" +
-      "</body>\n" +
-      "</html>");
+    SensorContextTester ctx = jspContext(JSP_SOURCE);
     Jasper jasper = spy(new Jasper());
     // we make Jasper#getJasperOptions blowup
     doThrow(new IllegalStateException()).when(jasper).getJasperOptions(any(), any());
@@ -199,8 +179,35 @@ class JasperTest {
     assertThat(logTester.logs(LoggerLevel.WARN)).contains("Failed to transpile JSP files.");
   }
 
+  /**
+   * Following test tests execution of Jasper in directory which is a symlink. This was an issue in
+   * rev. 24936c9eed88b9886cea36246aae32f6432d2cc9 , but was fixed later on by explicitly setting the context
+   * directory instead of relying on automatic lookup.
+   */
+  @Test
+  void test_jasper_with_symlink() throws Exception {
+    Path output = tempFolder.resolve("out").toAbsolutePath();
+    Files.createDirectories(output);
+    Path link = tempFolder.resolve("link");
+    Files.createSymbolicLink(link, output);
+
+    Path path = link.resolve("WEB-INF/test.jsp");
+    SensorContextTester ctx = jspContext(JSP_SOURCE, path);
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
+
+    assertThat(generatedFiles).hasSize(1);
+    InputFile generatedFile = generatedFiles.iterator().next();
+    List<String> generatedCode = Files.readAllLines(generatedFile.path());
+    assertThat(generatedCode).contains("      out.write(\"<html>\\n<body>\\n<h2>Hello World!</h2>\\n</body>\\n</html>\");");
+
+  }
+
   private SensorContextTester jspContext(String jspSource) throws IOException {
-    jspFile = createJspFile(jspSource);
+    return jspContext(jspSource, webInf.resolve("jsp/test.jsp"));
+  }
+
+  private SensorContextTester jspContext(String jspSource, Path path) throws IOException {
+    jspFile = createJspFile(jspSource, path);
     SensorContextTester ctx = SensorContextTester.create(tempFolder);
     DefaultInputFile inputFile = TestInputFileBuilder.create("", tempFolder.toFile(), jspFile.toFile())
       .setLanguage("jsp")
@@ -211,8 +218,7 @@ class JasperTest {
     return ctx;
   }
 
-  private Path createJspFile(String content) throws IOException {
-    Path path = webInf.resolve("jsp/test.jsp");
+  private Path createJspFile(String content, Path path) throws IOException {
     Files.createDirectories(path.getParent());
     Files.write(path, content.getBytes(StandardCharsets.UTF_8));
     return path;
