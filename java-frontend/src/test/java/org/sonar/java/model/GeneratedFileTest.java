@@ -112,11 +112,12 @@ public class GeneratedFileTest {
       "160,3:300,2\n" +
       "*E\n";
 
-    SmapFile smapFile = new SmapFile(tmp.resolve("index_jsp.class.smap"), new Scanner(smap));
+    SmapFile smapFile = new SmapFile(tmp.resolve("index_jsp.class.smap"), Paths.get("/src/main/webapp"), new Scanner(smap));
     GeneratedFile generatedFile = new GeneratedFile(tmp.resolve("index_jsp.java"));
     generatedFile.addSmap(smapFile);
 
     GeneratedFile.SourceMapImpl sourceMap = ((GeneratedFile.SourceMapImpl) generatedFile.sourceMap());
+    assertThat(sourceMap.getLocation(116, 116).get().inputFile()).isEqualTo(Paths.get("/src/main/webapp/index.jsp"));
 
     assertLocation(sourceMap.getLocation(116, 116), 1, 6);
     assertLocation(sourceMap.getLocation(207, 207), 123, 123);
@@ -152,7 +153,7 @@ public class GeneratedFileTest {
       "1,6:116,0\n" +
       "*E\n";
 
-    SmapFile smapFile = new SmapFile(tmp.resolve("index_jsp.class.smap"), new Scanner(smap));
+    SmapFile smapFile = new SmapFile(tmp.resolve("index_jsp.class.smap"), Paths.get(""), new Scanner(smap));
     GeneratedFile generatedFile = new GeneratedFile(tmp.resolve("index_jsp.java"));
     generatedFile.addSmap(smapFile);
 
@@ -167,7 +168,7 @@ public class GeneratedFileTest {
       "1,6:116,0\n" +
       "*E\n";
 
-    SmapFile unrelated = new SmapFile(tmp.resolve("index_jsp.class.smap"), new Scanner(unrelatedSmap));
+    SmapFile unrelated = new SmapFile(tmp.resolve("index_jsp.class.smap"), Paths.get(""), new Scanner(unrelatedSmap));
     generatedFile.addSmap(unrelated);
     assertThat(generatedFile.smapFiles).containsExactly(smapFile);
     assertThat(logTester.logs(LoggerLevel.WARN)).containsExactly(format("Invalid smap %s for %s.", tmp.resolve("unrelated.java"), tmp.resolve("index_jsp.java")));
@@ -186,7 +187,7 @@ public class GeneratedFileTest {
       "1,6:116,0\n" +
       "*E\n";
 
-    SmapFile smapFile = new SmapFile(tmp.resolve("index_jsp.class.smap"), new Scanner(smap));
+    SmapFile smapFile = new SmapFile(tmp.resolve("index_jsp.class.smap"), Paths.get(""), new Scanner(smap));
     GeneratedFile generatedFile = new GeneratedFile(tmp.resolve("index_jsp.java"));
     generatedFile.addSmap(smapFile);
 
@@ -210,7 +211,7 @@ public class GeneratedFileTest {
       "2#1:2\n" +
       "*E\n";
 
-    SmapFile smapFile = new SmapFile(tmp.resolve("index_jsp.class.smap"), new Scanner(smap));
+    SmapFile smapFile = new SmapFile(tmp.resolve("index_jsp.class.smap"), Paths.get(""), new Scanner(smap));
     GeneratedFile generatedFile = new GeneratedFile(tmp.resolve("index_jsp.java"));
     generatedFile.addSmap(smapFile);
 
