@@ -66,7 +66,7 @@ public class SmapFileTest {
       "*E\n";
     Path path = temporaryFolder.newFile("test_jsp.class.smap").toPath();
     Files.write(path, sourceMap.getBytes(StandardCharsets.UTF_8));
-    SmapFile smap = SmapFile.fromPath(path);
+    SmapFile smap = SmapFile.fromPath(path, Paths.get(""));
     assertThat(smap.getGeneratedFile()).isEqualTo(path.resolveSibling("test_jsp.java"));
     assertThat(smap.getFileSection()).containsExactly(
       entry(0, new SmapFile.FileInfo(0, "test.jsp", "WEB-INF/test.jsp")),
@@ -85,33 +85,35 @@ public class SmapFileTest {
 
   @Test
   public void invalid_file() {
+    Path uriRoot = Paths.get("");
     Path p = Paths.get("file.class.smap");
-    assertThatThrownBy(() -> new SmapFile(p, new Scanner("not a smap file")))
+    assertThatThrownBy(() -> new SmapFile(p, uriRoot, new Scanner("not a smap file")))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Not a source map");
 
-    assertThatThrownBy(() -> new SmapFile(p, new Scanner("SMAP\ntest.groovy\nGroovy\n\n")))
+    assertThatThrownBy(() -> new SmapFile(p, uriRoot, new Scanner("SMAP\ntest.groovy\nGroovy\n\n")))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Not a JSP source map");
 
-    assertThatThrownBy(() -> new SmapFile(p, new Scanner("SMAP\ntest.jsp\nJSP\n*E")))
+    assertThatThrownBy(() -> new SmapFile(p, uriRoot, new Scanner("SMAP\ntest.jsp\nJSP\n*E")))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Section *S JSP not found");
 
-    assertThatThrownBy(() -> new SmapFile(p, new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*E")))
+    assertThatThrownBy(() -> new SmapFile(p, uriRoot, new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*E")))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Section *F not found");
 
-    assertThatThrownBy(() -> new SmapFile(p, new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n")))
+    assertThatThrownBy(() -> new SmapFile(p, uriRoot, new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n")))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Section *L not found");
   }
 
   @Test
   public void invalid_line_info() {
+    Path uriRoot = Paths.get("");
     Path p = Paths.get("file.class.smap");
 
-    new SmapFile(p, new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n" +
+    new SmapFile(p, uriRoot, new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n" +
       "invalid line info\n"
       ));
 
@@ -120,7 +122,7 @@ public class SmapFileTest {
 
   @Test
   public void nonexisting_path() {
-    assertThatThrownBy(() -> SmapFile.fromPath(Paths.get("nonexisting.java")))
+    assertThatThrownBy(() -> SmapFile.fromPath(Paths.get("nonexisting.java"), Paths.get("")))
       .isInstanceOf(IllegalStateException.class)
       .hasCauseInstanceOf(FileNotFoundException.class)
       .hasMessage("Error reading sourcemap nonexisting.java");
@@ -165,7 +167,7 @@ public class SmapFileTest {
 
   @Test
   public void smapfile_tostring() {
-    SmapFile smapFile = new SmapFile(Paths.get("nonexisting.java"), new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n"));
+    SmapFile smapFile = new SmapFile(Paths.get("nonexisting.java"), Paths.get(""), new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n"));
     assertThat(smapFile.toString()).isEqualTo("test.jsp");
   }
 

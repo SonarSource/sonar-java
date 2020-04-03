@@ -19,6 +19,7 @@
  */
 package org.sonar.java.jsp;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -42,8 +43,10 @@ import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.model.GeneratedFile;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 
@@ -65,7 +68,7 @@ class JasperTest {
     // on macOS tmp is symbolic link which doesn't work well with Jasper, so we create tmp in 'target/tmp'
     tempFolder = Paths.get("target/tmp");
     Files.createDirectories(tempFolder);
-    webInf = tempFolder.resolve("WEB-INF");
+    webInf = tempFolder.resolve("src/main/webapp/WEB-INF");
     Files.createDirectories(webInf);
   }
 
@@ -96,6 +99,50 @@ class JasperTest {
     InputFile generatedFile = generatedFiles.iterator().next();
     List<String> generatedCode = Files.readAllLines(generatedFile.path());
     assertThat(generatedCode).contains("      out.write(\"<html>\\n<body>\\n<h2>Hello World!</h2>\\n</body>\\n</html>\");");
+  }
+
+  @Test
+  void test_with_classpath() throws Exception {
+    SensorContextTester ctx = jspContext("<%@ taglib prefix=\"spring\" uri=\"http://www.springframework.org/tags\" %> \n" +
+      "<html>\n" +
+      "<body>\n" +
+      "<h2>Hello World!</h2>\n" +
+      "<spring:url value=\"/url/path\" />\n" +
+      "</body>\n" +
+      "</html>");
+    File springJar = Paths.get("target/test-jars/spring-webmvc-5.2.3.RELEASE.jar").toFile();
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, singletonList(springJar));
+
+    assertThat(generatedFiles).hasSize(1);
+    InputFile generatedFile = generatedFiles.iterator().next();
+    List<String> generatedCode = Files.readAllLines(generatedFile.path());
+    assertThat(generatedCode).contains("    org.springframework.web.servlet.tags.UrlTag _jspx_th_spring_005furl_005f0 = new org.springframework.web.servlet.tags.UrlTag();");
+  }
+
+  @Test
+  void test_compilation_without_webinf() throws Exception {
+    Path path = tempFolder.resolve("test.jsp");
+    String code = "<html>\n" +
+      "<body>\n" +
+      "<h2>Hello World!</h2>\n" +
+      "</body>\n" +
+      "</html>";
+    Files.write(path, code.getBytes(StandardCharsets.UTF_8));
+    jspFile = path;
+    SensorContextTester ctx = SensorContextTester.create(tempFolder);
+    DefaultInputFile inputFile = TestInputFileBuilder.create("", tempFolder.toFile(), jspFile.toFile())
+      .setLanguage("jsp")
+      .setContents(code)
+      .build();
+    ctx.fileSystem().add(inputFile);
+    ctx.fileSystem().setWorkDir(workDir);
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList());
+
+    assertThat(generatedFiles).hasSize(1);
+    InputFile generatedFile = generatedFiles.iterator().next();
+    List<String> generatedCode = Files.readAllLines(generatedFile.path());
+    assertThat(generatedCode).contains("      out.write(\"<html>\\n<body>\\n<h2>Hello World!</h2>\\n</body>\\n</html>\");");
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("WEB-INF directory not found, will use basedir as context root");
   }
 
   @Test
@@ -138,14 +185,15 @@ class JasperTest {
   }
 
   @Test
-  void test_failure_invalid_classpath() throws Exception {
+  void should_log_warning_when_jasper_fails() throws Exception {
     SensorContextTester ctx = jspContext("<html>\n" +
       "<body>\n" +
       "<h2>Hello World!</h2>\n" +
       "</body>\n" +
       "</html>");
     Jasper jasper = spy(new Jasper());
-    doThrow(new IllegalStateException()).when(jasper).initClassLoader(emptyList());
+    // we make Jasper#getJasperOptions blowup
+    doThrow(new IllegalStateException()).when(jasper).getJasperOptions(any(), any());
     Collection<GeneratedFile> generatedFiles = jasper.generateFiles(ctx, emptyList());
     assertThat(generatedFiles).isEmpty();
     assertThat(logTester.logs(LoggerLevel.WARN)).contains("Failed to transpile JSP files.");
@@ -164,7 +212,8 @@ class JasperTest {
   }
 
   private Path createJspFile(String content) throws IOException {
-    Path path = webInf.resolve("test.jsp");
+    Path path = webInf.resolve("jsp/test.jsp");
+    Files.createDirectories(path.getParent());
     Files.write(path, content.getBytes(StandardCharsets.UTF_8));
     return path;
   }

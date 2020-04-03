@@ -19,7 +19,6 @@
  */
 package org.sonar.java.jsp;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,11 +26,14 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -42,6 +44,7 @@ import org.apache.jasper.compiler.Compiler;
 import org.apache.jasper.compiler.JspRuntimeContext;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.jasper.servlet.JspCServletContext;
+import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -62,8 +65,10 @@ public class Jasper {
     if (jspFiles.isEmpty()) {
       return Collections.emptyList();
     }
+    Path uriRoot = findWebInfParentDirectory(sensorContext.fileSystem())
+      .orElse(sensorContext.fileSystem().baseDir().getAbsoluteFile().toPath());
+    LOG.debug("Context root set to {}", uriRoot);
     Path outputDir = outputDir(sensorContext);
-    File baseDir = sensorContext.fileSystem().baseDir();
     // Jasper internally calls Thread#getContextClassLoader to instantiate some classes. ContextClassLoader is set by scanner
     // and doesn't contain plugin jar, so we need to configure ContextClassLoader with the class loader of the plugin to be able
     // to run Jasper. Original classloader is restored in finally.
@@ -72,34 +77,62 @@ public class Jasper {
       ClassLoader classLoader = initClassLoader(javaClasspath);
       Thread.currentThread().setContextClassLoader(classLoader);
       JspFactory.setDefaultFactory(new JspFactoryImpl());
-      JspCServletContext servletContext = new ServletContext(toUrl(baseDir), classLoader);
-      JasperOptions options = new JasperOptions(servletContext, outputDir);
+      JspCServletContext servletContext = new ServletContext(uriRoot.toUri().toURL(), classLoader);
+      JasperOptions options = getJasperOptions(outputDir, servletContext);
       JspRuntimeContext runtimeContext = new JspRuntimeContext(servletContext, options);
 
       boolean errorTranspiling = false;
-      for (Path file : jspFiles) {
-        LOG.debug("Transpiling JSP: {}", file);
+      for (Path jsp : jspFiles) {
         try {
-          String relativePath = file.toAbsolutePath().toString().substring(baseDir.getAbsolutePath().length());
-          JspCompilationContext compilationContext = new JspCompilationContext(relativePath, options, servletContext, null, runtimeContext);
-          compilationContext.setClassLoader(classLoader);
-          Compiler compiler = compilationContext.createCompiler();
-          compiler.compile(false, true);
+          transpileJsp(jsp, uriRoot, classLoader, servletContext, options, runtimeContext);
         } catch (Exception e) {
           errorTranspiling = true;
-          LOG.debug("Error transpiling " + file, e);
+          LOG.debug("Error transpiling " + jsp, e);
         }
       }
       if (errorTranspiling) {
         LOG.warn("Some JSP pages failed to transpile. Enable debug log for details.");
       }
-      return findGeneratedFiles(outputDir);
+      return findGeneratedFiles(outputDir, uriRoot);
     } catch (Exception e) {
       LOG.warn("Failed to transpile JSP files.", e);
       return Collections.emptyList();
     } finally {
       Thread.currentThread().setContextClassLoader(originalClassLoader);
     }
+  }
+
+  private static void transpileJsp(Path jsp, Path uriRoot, ClassLoader classLoader, JspCServletContext servletContext,
+                                   JasperOptions options, JspRuntimeContext runtimeContext) throws Exception {
+    LOG.debug("Transpiling JSP: {}", jsp);
+    String jspUri = "/" + uriRoot.relativize(jsp).toString();
+    JspCompilationContext compilationContext = new JspCompilationContext(jspUri, options, servletContext, null,
+      runtimeContext);
+    compilationContext.setClassLoader(classLoader);
+    Compiler compiler = compilationContext.createCompiler();
+    compiler.compile(false, true);
+  }
+
+  JasperOptions getJasperOptions(Path outputDir, JspCServletContext servletContext) {
+    return new JasperOptions(servletContext, outputDir);
+  }
+
+  private static Optional<Path> findWebInfParentDirectory(FileSystem fs) {
+    FilePredicates predicates = fs.predicates();
+    List<InputFile> inputFiles = new ArrayList<>();
+    fs.inputFiles(predicates.matchesPathPattern("**/WEB-INF/**")).forEach(inputFiles::add);
+    if (!inputFiles.isEmpty()) {
+      Path path = Paths.get(inputFiles.get(0).absolutePath());
+      Path parent = path.getParent();
+      while (parent != null) {
+        if (parent.endsWith("WEB-INF")) {
+          return Optional.ofNullable(parent.getParent());
+        }
+        parent = parent.getParent();
+      }
+    }
+    LOG.debug("WEB-INF directory not found, will use basedir as context root");
+    return Optional.empty();
   }
 
   private static List<Path> jspFiles(FileSystem fs) {
@@ -109,8 +142,7 @@ public class Jasper {
       .collect(Collectors.toList());
   }
 
-  @VisibleForTesting
-  ClassLoader initClassLoader(List<File> classPath) {
+  private static ClassLoader initClassLoader(List<File> classPath) {
     URL[] urls = classPath.stream().map(Jasper::toUrl).toArray(URL[]::new);
     return new URLClassLoader(urls, Jasper.class.getClassLoader());
   }
@@ -119,17 +151,17 @@ public class Jasper {
     try {
       return f.toURI().toURL();
     } catch (MalformedURLException e) {
-      // can't happen
-      throw new RuntimeException(e);
+      // this should never happen when converting url from file
+      throw new IllegalStateException(e);
     }
   }
 
-  private static Collection<GeneratedFile> findGeneratedFiles(Path outputDir) {
+  private static Collection<GeneratedFile> findGeneratedFiles(Path outputDir, Path uriRoot) {
     Map<Path, GeneratedFile> generatedFiles = new HashMap<>();
     try (Stream<Path> fileStream = walk(outputDir)) {
       fileStream
         .filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".smap"))
-        .map(SmapFile::fromPath)
+        .map(p -> SmapFile.fromPath(p, uriRoot))
         .forEach(smap -> {
           GeneratedFile generatedFile = generatedFiles.computeIfAbsent(smap.getGeneratedFile(), p -> new GeneratedFile(smap.getGeneratedFile()));
           generatedFile.addSmap(smap);

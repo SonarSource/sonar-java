@@ -53,20 +53,22 @@ public class SmapFile {
   private static final Logger LOG = Loggers.get(SmapFile.class);
 
   private final Path generatedFile;
+  private final Path uriRoot;
   private Map<Integer, FileInfo> fileSection;
   private List<LineInfo> lineSection;
   private final Scanner sc;
 
 
-  public static SmapFile fromPath(Path sourceMapPath) {
+  public static SmapFile fromPath(Path sourceMapPath, Path uriRoot) {
     try (Scanner sc = new Scanner(sourceMapPath.toFile(), StandardCharsets.UTF_8.toString())) {
-      return new SmapFile(sourceMapPath, sc);
+      return new SmapFile(sourceMapPath, uriRoot, sc);
     } catch (Exception e) {
       throw new IllegalStateException("Error reading sourcemap " + sourceMapPath, e);
     }
   }
 
-  SmapFile(Path sourceMapPath, Scanner scanner) {
+  SmapFile(Path sourceMapPath, Path uriRoot, Scanner scanner) {
+    this.uriRoot = uriRoot;
     this.sc = scanner;
     String header = sc.nextLine();
     if (!"SMAP".equals(header)) {
@@ -83,6 +85,10 @@ public class SmapFile {
     fileSection = readFileSection();
     findSection("*L");
     lineSection = readLineSection();
+  }
+
+  public Path getUriRoot() {
+    return uriRoot;
   }
 
   public Path getGeneratedFile() {

@@ -28,7 +28,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,7 +85,7 @@ public class GeneratedFile implements InputFile {
         for (SmapFile.LineInfo lineInfo : sm.getLineSection()) {
           for (int i = 0; i < lineInfo.repeatCount; i++) {
             int inputLine = lineInfo.inputStartLine + i;
-            Path inputFile = Paths.get(sm.getFileSection().get(lineInfo.lineFileId).sourcePath);
+            Path inputFile = sm.getUriRoot().resolve(sm.getFileSection().get(lineInfo.lineFileId).sourcePath);
             LocationImpl location = new LocationImpl(inputFile, inputLine, inputLine);
             int outputStart = lineInfo.outputStartLine + (i * lineInfo.outputLineIncrement);
             int outputEnd = lineInfo.outputStartLine + ((i + 1) * lineInfo.outputLineIncrement) - 1;
