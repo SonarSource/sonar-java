@@ -32,7 +32,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +39,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
+
+  /**
+   * Cache for {@link #interfaces()}.
+   */
+  private List<Type> interfaces;
 
   final SpecialField superSymbol = new SpecialField() {
     @Override
@@ -92,9 +96,10 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
   @Override
   public List<Type> interfaces() {
-    return Arrays.stream(typeBinding().getInterfaces())
-      .map(sema::type)
-      .collect(Collectors.toList());
+    if (interfaces == null) {
+      interfaces = sema.types(typeBinding().getInterfaces());
+    }
+    return interfaces;
   }
 
   @Override
