@@ -26,13 +26,26 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
+
+  /**
+   * Cache for {@link #parameterTypes()}.
+   */
+  private List<Type> parameterTypes;
+
+  /**
+   * Cache for {@link #returnType()}.
+   */
+  private TypeSymbol returnType;
+
+  /**
+   * Cache for {@link #thrownTypes()}.
+   */
+  private List<Type> thrownTypes;
 
   JMethodSymbol(JSema sema, IMethodBinding methodBinding) {
     super(sema, methodBinding);
@@ -44,9 +57,10 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
   @Override
   public List<Type> parameterTypes() {
-    return Arrays.stream(methodBinding().getParameterTypes())
-      .map(sema::type)
-      .collect(Collectors.toList());
+    if (parameterTypes == null) {
+      parameterTypes = sema.types(methodBinding().getParameterTypes());
+    }
+    return parameterTypes;
   }
 
   /**
@@ -54,14 +68,18 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
    */
   @Override
   public TypeSymbol returnType() {
-    return sema.typeSymbol(methodBinding().getReturnType());
+    if (returnType == null) {
+      returnType = sema.typeSymbol(methodBinding().getReturnType());
+    }
+    return returnType;
   }
 
   @Override
   public List<Type> thrownTypes() {
-    return Arrays.stream(methodBinding().getExceptionTypes())
-      .map(sema::type)
-      .collect(Collectors.toList());
+    if (thrownTypes == null) {
+      thrownTypes = sema.types(methodBinding().getExceptionTypes());
+    }
+    return thrownTypes;
   }
 
   @Nullable

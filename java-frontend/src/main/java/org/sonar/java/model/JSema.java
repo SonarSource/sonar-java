@@ -27,15 +27,14 @@ import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.ASTUtils;
-import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +55,17 @@ public final class JSema implements Sema {
 
   public JType type(ITypeBinding typeBinding) {
     return types.computeIfAbsent(typeBinding, k -> new JType(this, JType.normalize(typeBinding)));
+  }
+
+  List<Type> types(ITypeBinding[] typeBindings) {
+    if (typeBindings.length == 0) {
+      return Collections.emptyList();
+    }
+    Type[] result = new Type[typeBindings.length];
+    for (int i = 0; i < typeBindings.length; i++) {
+      result[i] = type(typeBindings[i]);
+    }
+    return Arrays.asList(result);
   }
 
   public JPackageSymbol packageSymbol(IPackageBinding packageBinding) {

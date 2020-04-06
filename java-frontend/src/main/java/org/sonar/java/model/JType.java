@@ -25,7 +25,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -242,21 +241,9 @@ final class JType implements Type, Type.ArrayType {
   @Override
   public List<Type> typeArguments() {
     if (typeArguments == null) {
-      convertTypeArguments();
+      typeArguments = sema.types(typeBinding.getTypeArguments());
     }
     return typeArguments;
   }
 
-  private void convertTypeArguments() {
-    ITypeBinding[] typeArgs = typeBinding.getTypeArguments();
-    if (typeArgs.length == 0) {
-      typeArguments = Collections.emptyList();
-      return;
-    }
-    Type[] result = new Type[typeArgs.length];
-    for (int i = 0; i < typeArgs.length; i++) {
-      result[i] = sema.type(typeArgs[i]);
-    }
-    typeArguments = Arrays.asList(result);
-  }
 }

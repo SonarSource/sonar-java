@@ -106,8 +106,8 @@ class ClassesLayoutTest {
   @Test
   void symbol_method() {
     assertAll(
-      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64)).isEqualTo(56),
-      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64_COOPS)).isEqualTo(32)
+      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64)).isEqualTo(80),
+      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
 
