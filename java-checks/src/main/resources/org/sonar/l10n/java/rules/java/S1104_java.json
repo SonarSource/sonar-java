@@ -1,6 +1,6 @@
 {
   "title": "Class variable fields should not have public accessibility",
-  "type": "VULNERABILITY",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
