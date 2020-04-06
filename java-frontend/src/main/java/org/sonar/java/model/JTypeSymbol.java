@@ -41,6 +41,11 @@ import java.util.stream.Collectors;
 final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
   /**
+   * Cache for {@link #superClass()}.
+   */
+  private Type superclass = Symbols.unknownType;
+
+  /**
    * Cache for {@link #interfaces()}.
    */
   private List<Type> interfaces;
@@ -84,6 +89,14 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   @CheckForNull
   @Override
   public Type superClass() {
+    if (superclass == Symbols.unknownType) {
+      superclass = convertSuperClass();
+    }
+    return superclass;
+  }
+
+  @CheckForNull
+  private Type convertSuperClass() {
     if (typeBinding().isInterface() || typeBinding().isArray()) {
       return sema.type(Objects.requireNonNull(sema.resolveType("java.lang.Object")));
     } else if (typeBinding().getSuperclass() == null) {

@@ -98,7 +98,7 @@ class ClassesLayoutTest {
   @Test
   void symbol_type() {
     assertAll(
-      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(80),
+      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(88),
       () -> assertThat(instanceSize(JTypeSymbol.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
