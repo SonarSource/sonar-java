@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -408,6 +409,22 @@ public class SonarComponentsTest {
       fail("reading file content should have failed");
     }
   }
+
+  @Test
+  public void jsp_classpath_should_include_plugin() throws Exception {
+    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
+    DefaultFileSystem fs = sensorContextTester.fileSystem();
+
+    JavaClasspath javaClasspath = mock(JavaClasspath.class);
+    File someJar = new File("some.jar");
+    when(javaClasspath.getElements()).thenReturn(Collections.singletonList(someJar));
+
+    File plugin = new File("target/classes");
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, mock(JavaTestClasspath.class), checkFactory, null);
+    List<String> jspClassPath = sonarComponents.getJspClasspath().stream().map(File::getAbsolutePath).collect(Collectors.toList());
+    assertThat(jspClassPath).containsExactly(plugin.getAbsolutePath(), someJar.getAbsolutePath());
+  }
+
 
   private static CheckRegistrar getRegistrar(final JavaCheck expectedCheck) {
     return registrarContext -> registrarContext.registerClassesForRepository(REPOSITORY_NAME,

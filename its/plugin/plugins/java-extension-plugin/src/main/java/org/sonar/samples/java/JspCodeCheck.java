@@ -28,6 +28,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -55,9 +56,11 @@ public class JspCodeCheck extends IssuableSubscriptionVisitor implements JspCode
 
   private void visitClass(ClassTree tree) {
     Path visitedClasses = context.getWorkingDirectory().toPath().resolve("visit.txt");
-    String name = tree.simpleName().name();
+    Symbol.TypeSymbol symbol = tree.symbol();
+    String name = symbol.type().fullyQualifiedName();
+    String parent = symbol.superClass().isUnknown() ? "unknown" : symbol.superClass().fullyQualifiedName();
     try {
-      Files.write(visitedClasses, (name + "\n").getBytes(), APPEND, CREATE);
+      Files.write(visitedClasses, format("%s extends %s%n", name, parent).getBytes(), APPEND, CREATE);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }

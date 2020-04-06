@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -150,6 +151,22 @@ public class SonarComponents {
 
   public List<File> getJavaTestClasspath() {
     return javaTestClasspath.getElements();
+  }
+
+  public List<File> getJspClasspath() {
+    List<File> jspClasspath = new ArrayList<>();
+    jspClasspath.add(findPluginJar());
+    jspClasspath.addAll(javaClasspath.getElements());
+    return jspClasspath;
+  }
+
+  private static File findPluginJar() {
+    try {
+      return new File(SonarComponents.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+    } catch (URISyntaxException e) {
+      // this should not happen under normal circumstances, and if it does we want to be aware of it
+      throw new IllegalStateException("Failed to obtain plugin jar.", e);
+    }
   }
 
   public void registerCheckClasses(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {

@@ -72,6 +72,7 @@ public class JavaSquid {
     List<File> classpath = new ArrayList<>();
     List<File> testClasspath = new ArrayList<>();
     List<JavaCheck> jspCodeVisitors = new ArrayList<>();
+    List<File> jspClasspath = new ArrayList<>();
     if (sonarComponents != null) {
       if(!sonarComponents.isSonarLintContext()) {
         codeVisitors = Iterables.concat(codeVisitors, Arrays.asList(new FileLinesVisitor(sonarComponents), new SyntaxHighlighterVisitor(sonarComponents)));
@@ -79,6 +80,7 @@ public class JavaSquid {
       }
       classpath = sonarComponents.getJavaClasspath();
       testClasspath = sonarComponents.getJavaTestClasspath();
+      jspClasspath = sonarComponents.getJspClasspath();
       testCodeVisitors.addAll(sonarComponents.testCheckClasses());
       jspCodeVisitors = sonarComponents.jspCodeVisitors();
     }
@@ -95,7 +97,7 @@ public class JavaSquid {
 
     //AstScanner for generated files
     astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents);
-    astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, classpath, javaVersion, sonarComponents,
+    astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, jspClasspath, javaVersion, sonarComponents,
       SymbolicExecutionMode.DISABLED, postAnalysisIssueFilter));
   }
 

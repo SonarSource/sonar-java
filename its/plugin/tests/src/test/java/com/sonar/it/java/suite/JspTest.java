@@ -64,7 +64,9 @@ public class JspTest {
 
     Path visitTest = TestUtils.projectDir(PROJECT).toPath().resolve("target/sonar/visit.txt");
     List<String> lines = Files.readAllLines(visitTest);
-    assertThat(lines).containsExactlyInAnyOrder("GreetingServlet", "greeting_jsp", "index_jsp");
+    assertThat(lines).containsExactlyInAnyOrder("GreetingServlet extends javax.servlet.http.HttpServlet",
+      "org.apache.jsp.views.greeting_jsp extends org.apache.jasper.runtime.HttpJspBase",
+      "org.apache.jsp.index_jsp extends org.apache.jasper.runtime.HttpJspBase");
 
     Path sourceMapTest = TestUtils.projectDir(PROJECT).toPath().resolve("target/sonar/GeneratedCodeCheck.txt");
     assertThat(sourceMapTest).hasContent("index.jsp 1:6");
