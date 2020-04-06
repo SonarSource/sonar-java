@@ -74,7 +74,7 @@ public class JavaSquidTest {
     // No measures
     assertThat(context.measures(defaultFile.key())).isEmpty();
 
-    verify(javaClasspath, times(1)).getElements();
+    verify(javaClasspath, times(2)).getElements();
     verify(javaTestClasspath, times(1)).getElements();
   }
 
