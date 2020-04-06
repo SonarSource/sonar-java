@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -46,6 +47,11 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
    * Cache for {@link #thrownTypes()}.
    */
   private List<Type> thrownTypes;
+
+  /**
+   * Cache for {@link #overriddenSymbol()}.
+   */
+  private MethodSymbol overriddenSymbol = Symbols.unknownMethodSymbol;
 
   JMethodSymbol(JSema sema, IMethodBinding methodBinding) {
     super(sema, methodBinding);
@@ -85,6 +91,14 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   @Nullable
   @Override
   public MethodSymbol overriddenSymbol() {
+    if (overriddenSymbol == Symbols.unknownMethodSymbol) {
+      overriddenSymbol = convertOverriddenSymbol();
+    }
+    return overriddenSymbol;
+  }
+
+  @Nullable
+  private MethodSymbol convertOverriddenSymbol() {
     IMethodBinding overrides = find(
       methodBinding()::overrides,
       methodBinding().getDeclaringClass()
