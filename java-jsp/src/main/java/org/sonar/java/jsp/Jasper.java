@@ -144,7 +144,23 @@ public class Jasper {
 
   private static ClassLoader initClassLoader(List<File> classPath) {
     URL[] urls = classPath.stream().map(Jasper::toUrl).toArray(URL[]::new);
-    return new URLClassLoader(urls, Jasper.class.getClassLoader());
+    return new JasperClassLoader(urls, Jasper.class.getClassLoader());
+  }
+
+  private static class JasperClassLoader extends URLClassLoader {
+
+    public JasperClassLoader(URL[] urls, ClassLoader parent) {
+      super(urls, parent);
+    }
+
+    @Override
+    public URL findResource(String name) {
+      URL resource = super.findResource(name);
+      if (resource == null) {
+        resource = ClassLoader.getSystemResource(name);
+      }
+      return resource;
+    }
   }
 
   private static URL toUrl(File f) {
