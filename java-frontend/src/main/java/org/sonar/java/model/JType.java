@@ -236,7 +236,7 @@ final class JType implements Type, Type.ArrayType {
     return typeBinding.isParameterizedType()
       // when diamond operator is not fully resolved by ECJ, there is 0 typeArguments, while ECJ
       // knows it is a Parameterized Type
-      && typeBinding.getTypeArguments().length > 0;
+      && !typeArguments().isEmpty();
   }
 
   @Override
