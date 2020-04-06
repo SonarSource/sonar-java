@@ -86,7 +86,7 @@ final class JType implements Type, Type.ArrayType {
 
   @Override
   public boolean isVoid() {
-    return "void".equals(typeBinding.getName());
+    return "void".equals(fullyQualifiedName());
   }
 
   @Override
@@ -98,7 +98,7 @@ final class JType implements Type, Type.ArrayType {
   @Override
   public boolean isPrimitive(Primitives primitive) {
     // TODO suboptimal
-    return primitive.name().toLowerCase().equals(typeBinding.getName());
+    return primitive.name().toLowerCase().equals(fullyQualifiedName());
   }
 
   @Override
@@ -108,7 +108,7 @@ final class JType implements Type, Type.ArrayType {
 
   @Override
   public boolean isNumerical() {
-    switch (typeBinding.getName()) {
+    switch (fullyQualifiedName()) {
       case "byte":
       case "char":
       case "short":
