@@ -61,11 +61,12 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       if (typeBinding().isInterface()) {
         // JLS § 15.12.1:
         // for "T.super.foo()", if T is an interface, 'super' keyword is used to access method of the interface itself
-        return sema.type(typeBinding());
+        return JTypeSymbol.this.type();
       }
-      return sema.type(typeBinding().getSuperclass());
+      return JTypeSymbol.this.superClass();
     }
   };
+
   final SpecialField thisSymbol = new SpecialField() {
     @Override
     public String name() {
@@ -74,7 +75,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
     @Override
     public Type type() {
-      return sema.type(typeBinding());
+      return JTypeSymbol.this.type();
     }
   };
 
