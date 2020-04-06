@@ -34,7 +34,8 @@ public class MyClass {
 }
 </pre>
 <h2>Exceptions</h2>
-<p>Because they are not modifiable, this rule ignores <code>public final</code> fields.</p>
+<p>Because they are not modifiable, this rule ignores <code>public final</code> fields. Also, annotated fields, whatever the annotation(s) will be
+ignored, as annotations are often used by injection frameworks, which in exchange require having public fields.</p>
 <h2>See</h2>
 <ul>
   <li> <a href="http://cwe.mitre.org/data/definitions/493.html">MITRE, CWE-493</a> - Critical Public Variable Without Final Modifier </li>
