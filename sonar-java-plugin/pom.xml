@@ -189,6 +189,7 @@
                     <include>**</include>
                   </includes>
                 </filter>
+                <!-- this is needed because org.apache.el.ExpressionFactoryImpl is instantiated with reflection -->
                 <filter>
                   <artifact>org.apache.tomcat.embed:tomcat-embed-el</artifact>
                   <includes>
