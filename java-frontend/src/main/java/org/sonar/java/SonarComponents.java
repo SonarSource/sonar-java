@@ -155,11 +155,16 @@ public class SonarComponents {
 
   public List<File> getJspClasspath() {
     List<File> jspClasspath = new ArrayList<>();
+    // sonar-java jar is added to classpath in order to have semantic information on code generated from JSP files
     jspClasspath.add(findPluginJar());
-    jspClasspath.addAll(javaClasspath.getElements());
+    jspClasspath.addAll(getJavaClasspath());
     return jspClasspath;
   }
 
+  /**
+   *
+   * @return the jar of sonar-java plugin
+   */
   private static File findPluginJar() {
     try {
       return new File(SonarComponents.class.getProtectionDomain().getCodeSource().getLocation().toURI());
