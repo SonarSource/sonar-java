@@ -34,6 +34,7 @@ import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.batch.fs.InputFile;
@@ -49,6 +50,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
@@ -187,7 +189,11 @@ class JasperTest {
    * Following test tests execution of Jasper in directory which is a symlink. This was an issue in
    * rev. 24936c9eed88b9886cea36246aae32f6432d2cc9 , but was fixed later on by explicitly setting the context
    * directory instead of relying on automatic lookup.
+   *
+   * This test might fail on Windows when run with the non-administrator account due to JDK issue
+   * https://bugs.openjdk.java.net/browse/JDK-8218418, it was fixed in JDK 13
    */
+  @DisabledOnOs(WINDOWS)
   @Test
   void test_jasper_with_symlink() throws Exception {
     Path output = tempFolder.resolve("out").toAbsolutePath();
