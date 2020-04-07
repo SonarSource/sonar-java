@@ -27,11 +27,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.batch.fs.InputFile;
@@ -47,6 +50,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
@@ -60,6 +64,8 @@ class JasperTest {
     "</body>\n" +
     "</html>";
 
+  private static final String SPRING_TLD = "<%@ taglib prefix=\"spring\" uri=\"http://www.springframework.org/tags\" %>\n";
+
   Path tempFolder;
   Path webInf;
 
@@ -69,6 +75,7 @@ class JasperTest {
   @Rule
   public LogTester logTester = new LogTester();
   private Path jspFile;
+  private final File springJar = Paths.get("target/test-jars/spring-webmvc-5.2.3.RELEASE.jar").toFile();
 
   @BeforeEach
   void setUp() throws Exception {
@@ -105,14 +112,13 @@ class JasperTest {
 
   @Test
   void test_with_classpath() throws Exception {
-    SensorContextTester ctx = jspContext("<%@ taglib prefix=\"spring\" uri=\"http://www.springframework.org/tags\" %> \n" +
+    SensorContextTester ctx = jspContext(SPRING_TLD +
       "<html>\n" +
       "<body>\n" +
       "<h2>Hello World!</h2>\n" +
       "<spring:url value=\"/url/path\" />\n" +
       "</body>\n" +
       "</html>");
-    File springJar = Paths.get("target/test-jars/spring-webmvc-5.2.3.RELEASE.jar").toFile();
     Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, singletonList(springJar));
 
     assertThat(generatedFiles).hasSize(1);
@@ -183,7 +189,11 @@ class JasperTest {
    * Following test tests execution of Jasper in directory which is a symlink. This was an issue in
    * rev. 24936c9eed88b9886cea36246aae32f6432d2cc9 , but was fixed later on by explicitly setting the context
    * directory instead of relying on automatic lookup.
+   *
+   * This test might fail on Windows when run with the non-administrator account due to JDK issue
+   * https://bugs.openjdk.java.net/browse/JDK-8218418, it was fixed in JDK 13
    */
+  @DisabledOnOs(WINDOWS)
   @Test
   void test_jasper_with_symlink() throws Exception {
     Path output = tempFolder.resolve("out").toAbsolutePath();
@@ -200,6 +210,46 @@ class JasperTest {
     List<String> generatedCode = Files.readAllLines(generatedFile.path());
     assertThat(generatedCode).contains("      out.write(\"<html>\\n<body>\\n<h2>Hello World!</h2>\\n</body>\\n</html>\");");
 
+  }
+
+  @Test
+  void test_compile_custom_tag() throws Exception {
+    String tagLib = "<%@ taglib prefix=\"t\" tagdir=\"/WEB-INF/tags\" %>";
+    SensorContextTester ctx = jspContext(tagLib +
+      "<t:mytag />");
+    // spring tag library is used to complete coverage in Jasper classloader - it has resource which is on the project's
+    // classpath
+    createJspFile(tagLib +
+      SPRING_TLD +
+      "<spring:url value=\"/url/path\" />\n" +
+      "<h2>Hello World!</h2>", webInf.resolve("tags/mytag.tag"));
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, singletonList(springJar));
+
+    assertThat(generatedFiles).hasSize(2);
+    GeneratedFile testJspFile = generatedFiles.stream().filter(f -> f.filename().equals("test_jsp.java"))
+      .findAny().get();
+    List<String> testJsp = Files.readAllLines(testJspFile.path());
+    assertThat(testJsp).contains(
+      "    org.apache.jsp.tag.web.mytag_tag _jspx_th_t_005fmytag_005f0 = new org.apache.jsp.tag.web.mytag_tag();");
+    GeneratedFile tagFile = generatedFiles.stream().filter(f -> f.filename().equals("mytag_tag.java"))
+      .findAny().get();
+    List<String> tag = Files.readAllLines(tagFile.path());
+    assertThat(tag).contains("      out.write(\"\\n<h2>Hello World!</h2>\");");
+    assertThat(tag).contains("    org.springframework.web.servlet.tags.UrlTag _jspx_th_spring_005furl_005f0 = new org.springframework.web.servlet.tags.UrlTag();");
+  }
+
+  @Test
+  void test_failing_tag_compilation() throws Exception {
+    String tagLib = "<%@ taglib prefix=\"t\" tagdir=\"/WEB-INF/tags\" %>";
+    SensorContextTester ctx = jspContext(tagLib +
+      "<t:mytag />");
+    createJspFile(tagLib + "<% new Missing(); %> ", webInf.resolve("tags/mytag.tag"));
+    Map<String, GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList()).
+      stream().collect(Collectors.toMap(GeneratedFile::filename, f -> f));
+
+    assertThat(generatedFiles).hasSize(1);
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Error transpiling " +
+      webInf.resolve("jsp/test.jsp").toAbsolutePath());
   }
 
   private SensorContextTester jspContext(String jspSource) throws IOException {

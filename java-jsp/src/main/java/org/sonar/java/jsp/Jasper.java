@@ -105,7 +105,8 @@ public class Jasper {
   private static void transpileJsp(Path jsp, Path uriRoot, ClassLoader classLoader, JspCServletContext servletContext,
                                    JasperOptions options, JspRuntimeContext runtimeContext) throws Exception {
     LOG.debug("Transpiling JSP: {}", jsp);
-    String jspUri = "/" + uriRoot.relativize(jsp).toString();
+    // on windows we need to replace \ in path to / to form uri (see org.apache.jasper.JspC#processFile)
+    String jspUri = "/" + uriRoot.relativize(jsp).toString().replace('\\','/');
     JspCompilationContext compilationContext = new JspCompilationContext(jspUri, options, servletContext, null,
       runtimeContext);
     compilationContext.setClassLoader(classLoader);
@@ -144,7 +145,23 @@ public class Jasper {
 
   private static ClassLoader initClassLoader(List<File> classPath) {
     URL[] urls = classPath.stream().map(Jasper::toUrl).toArray(URL[]::new);
-    return new URLClassLoader(urls, Jasper.class.getClassLoader());
+    return new JasperClassLoader(urls, Jasper.class.getClassLoader());
+  }
+
+  private static class JasperClassLoader extends URLClassLoader {
+
+    public JasperClassLoader(URL[] urls, ClassLoader parent) {
+      super(urls, parent);
+    }
+
+    @Override
+    public URL findResource(String name) {
+      URL resource = super.findResource(name);
+      if (resource == null) {
+        resource = ClassLoader.getSystemResource(name);
+      }
+      return resource;
+    }
   }
 
   private static URL toUrl(File f) {
