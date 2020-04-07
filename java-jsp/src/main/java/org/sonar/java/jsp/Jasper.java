@@ -105,7 +105,8 @@ public class Jasper {
   private static void transpileJsp(Path jsp, Path uriRoot, ClassLoader classLoader, JspCServletContext servletContext,
                                    JasperOptions options, JspRuntimeContext runtimeContext) throws Exception {
     LOG.debug("Transpiling JSP: {}", jsp);
-    String jspUri = "/" + uriRoot.relativize(jsp).toString();
+    // on windows we need to replace \ in path to / to form uri (see org.apache.jasper.JspC#processFile)
+    String jspUri = "/" + uriRoot.relativize(jsp).toString().replace('\\','/');
     JspCompilationContext compilationContext = new JspCompilationContext(jspUri, options, servletContext, null,
       runtimeContext);
     compilationContext.setClassLoader(classLoader);
