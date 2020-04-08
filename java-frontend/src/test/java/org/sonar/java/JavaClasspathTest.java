@@ -32,16 +32,11 @@ import org.sonar.api.utils.log.LoggerLevel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class JavaClasspathTest {
 
   private MapSettings settings;
   private DefaultFileSystem fs;
-  private AnalysisWarningsWrapper analysisWarnings;
 
   private JavaClasspath javaClasspath;
 
@@ -53,7 +48,6 @@ public class JavaClasspathTest {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("foo.java"));
     settings = new MapSettings();
-    analysisWarnings = mock(AnalysisWarningsWrapper.class);
   }
 
   /**
@@ -66,7 +60,6 @@ public class JavaClasspathTest {
     fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
     javaClasspath = createJavaClasspath();
     Mockito.verifyZeroInteractions(fs);
-    Mockito.verifyZeroInteractions(analysisWarnings);
   }
 
   @Test
@@ -88,7 +81,6 @@ public class JavaClasspathTest {
     assertThat(javaClasspath.hasJavaSources()).isTrue();
     String warning = "Bytecode of dependencies was not provided for analysis of source files, " +
       "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property.";
-    verify(analysisWarnings).addUnique(eq(warning));
   }
 
   @Test
@@ -97,7 +89,6 @@ public class JavaClasspathTest {
     javaClasspath.init();
     assertThat(javaClasspath.getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES)).isEmpty();
     assertThat(javaClasspath.hasJavaSources()).isTrue();
-    verifyZeroInteractions(analysisWarnings);
   }
 
   @Test
@@ -399,6 +390,6 @@ public class JavaClasspathTest {
   }
 
   private JavaClasspath createJavaClasspath() {
-    return new JavaClasspath(settings.asConfig(), fs, analysisWarnings);
+    return new JavaClasspath(settings.asConfig(), fs);
   }
 }

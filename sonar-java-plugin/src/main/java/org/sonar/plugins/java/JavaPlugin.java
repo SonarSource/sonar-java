@@ -25,7 +25,6 @@ import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
-import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
@@ -83,8 +82,6 @@ public class JavaPlugin implements Plugin {
       PostAnalysisIssueFilter.class,
       XmlFileSensor.class
       );
-
-    builder.add(AnalysisWarningsWrapper.class);
 
     context.addExtensions(builder.build());
   }

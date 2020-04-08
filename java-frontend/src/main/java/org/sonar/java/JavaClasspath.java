@@ -34,15 +34,8 @@ public class JavaClasspath extends AbstractJavaClasspath {
 
   private static final Logger LOG = Loggers.get(JavaClasspath.class);
 
-  private final AnalysisWarningsWrapper analysisWarnings;
-
-  public JavaClasspath(Configuration settings, FileSystem fs, AnalysisWarningsWrapper analysisWarnings) {
-    super(settings, fs, InputFile.Type.MAIN);
-    this.analysisWarnings = analysisWarnings;
-  }
-
   public JavaClasspath(Configuration settings, FileSystem fs) {
-    this(settings, fs, AnalysisWarningsWrapper.NOOP_ANALYSIS_WARNINGS);
+    super(settings, fs, InputFile.Type.MAIN);
   }
 
   @Override
@@ -70,7 +63,6 @@ public class JavaClasspath extends AbstractJavaClasspath {
         String warning = "Bytecode of dependencies was not provided for analysis of source files, " +
           "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property.";
         LOG.warn(warning);
-        analysisWarnings.addUnique(warning);
       }
       elements.addAll(libraries);
       profiler.stopInfo();
