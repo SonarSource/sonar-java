@@ -28,22 +28,34 @@ public class MismatchPackageDirectoryCheckTest {
 
   @Test
   public void correctMatch() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/mismatchPackage/Matching.java"), new MismatchPackageDirectoryCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/mismatchPackage/Matching.java"))
+      .withCheck(new MismatchPackageDirectoryCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void defaultPackage() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/mismatchPackage/DefaultPackage.java", new MismatchPackageDirectoryCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/mismatchPackage/DefaultPackage.java")
+      .withCheck(new MismatchPackageDirectoryCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void mismatch() {
-    JavaCheckVerifier.verify("src/test/files/checks/mismatchPackage/Mismatch.java", new MismatchPackageDirectoryCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/mismatchPackage/Mismatch.java")
+      .withCheck(new MismatchPackageDirectoryCheck())
+      .verifyIssues();
   }
 
   @Test
   public void mismatchWithDots() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/mismatchPackage/with.dots/PackageWithDots.java"), new MismatchPackageDirectoryCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/mismatchPackage/with.dots/PackageWithDots.java")
+      .withCheck(new MismatchPackageDirectoryCheck())
+      .verifyIssues();
   }
 
 }
