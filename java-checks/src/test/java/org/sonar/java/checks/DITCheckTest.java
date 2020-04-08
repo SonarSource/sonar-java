@@ -28,15 +28,27 @@ public class DITCheckTest {
 
   @Test
   public void defaults() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/DitOk.java", new DITCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DitOk.java")
+      .withCheck(new DITCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void max_level_is_2() {
     DITCheck check = new DITCheck();
     check.setMax(2);
-    JavaCheckVerifier.verify("src/test/files/checks/Dit.java", check);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/Dit.java", check);
+
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/Dit.java")
+      .withCheck(check)
+      .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/Dit.java")
+      .withCheck(check)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
@@ -44,15 +56,23 @@ public class DITCheckTest {
     DITCheck check = new DITCheck();
     check.setMax(2);
     check.setFilteredClasses("java.lang.Object");
-    JavaCheckVerifier.verify("src/test/files/checks/DitFiltered.java", check);
+
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DitFiltered.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void intermediate_match() {
     DITCheck check = new DITCheck();
     check.setMax(2);
-    check.setFilteredClasses("my.testpackage.C");
-    JavaCheckVerifier.verify(testSourcesPath("checks/DitIntermediateMatching.java"), check);
+    check.setFilteredClasses("checks.Dit_C");
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/DitIntermediateMatching.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }
