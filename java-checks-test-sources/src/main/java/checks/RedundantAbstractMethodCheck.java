@@ -1,3 +1,5 @@
+package checks;
+
 class SimpleCases {
   interface I {
     void foo();

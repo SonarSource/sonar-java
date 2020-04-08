@@ -27,7 +27,17 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class RedundantAbstractMethodCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/RedundantAbstractMethodCheck.java"), new RedundantAbstractMethodCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/RedundantAbstractMethodCheck.java"), new RedundantAbstractMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/RedundantAbstractMethodCheck.java"))
+      .withCheck(new RedundantAbstractMethodCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  public void no_issues_without_semantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/RedundantAbstractMethodCheck.java"))
+      .withCheck(new RedundantAbstractMethodCheck())
+      .verifyIssues();
   }
 }
