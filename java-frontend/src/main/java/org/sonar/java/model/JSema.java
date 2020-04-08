@@ -103,7 +103,7 @@ public final class JSema implements Sema {
 
   @Override
   public Type getClassType(String fullyQualifiedName) {
-    return nameToTypeCache.computeIfAbsent(fullyQualifiedName, (t) -> {
+    return nameToTypeCache.computeIfAbsent(fullyQualifiedName, t -> {
       ITypeBinding typeBinding = resolveType(t);
       return typeBinding != null ? type(typeBinding) : Symbols.unknownType;
     });
