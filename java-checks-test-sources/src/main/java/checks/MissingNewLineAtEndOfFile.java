@@ -1,2 +1,4 @@
+package checks;
+
 class MissingNewlineAtEndOfFile {
 }
