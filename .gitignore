@@ -13,6 +13,10 @@ dependency-reduced-pom.xml
 .project
 .settings
 
+# ---- Sonar Scanners
+.scannerwork
+.sonar
+
 # ---- Mac OS X
 .DS_Store
 Icon?
