@@ -50,6 +50,11 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
    */
   private List<Type> interfaces;
 
+  /**
+   * Cache for {@link #memberSymbols()}.
+   */
+  private Collection<Symbol> memberSymbols;
+
   final SpecialField superSymbol = new SpecialField() {
     @Override
     public String name() {
@@ -118,6 +123,13 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
   @Override
   public Collection<Symbol> memberSymbols() {
+    if (memberSymbols == null) {
+      memberSymbols = convertMemberSymbols();
+    }
+    return memberSymbols;
+  }
+
+  private Collection<Symbol> convertMemberSymbols() {
     Collection<Symbol> members = new ArrayList<>();
     for (ITypeBinding b : typeBinding().getDeclaredTypes()) {
       members.add(sema.typeSymbol(b));
