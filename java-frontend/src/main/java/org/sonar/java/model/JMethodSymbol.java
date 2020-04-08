@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import org.eclipse.jdt.core.dom.ASTUtils;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.resolve.Symbols;
@@ -53,8 +54,13 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
    */
   private MethodSymbol overriddenSymbol = Symbols.unknownMethodSymbol;
 
+  private final String signature;
+
   JMethodSymbol(JSema sema, IMethodBinding methodBinding) {
     super(sema, methodBinding);
+    this.signature = methodBinding().getDeclaringClass().getBinaryName()
+      + "#" + name()
+      + ASTUtils.signature(methodBinding().getMethodDeclaration());
   }
 
   IMethodBinding methodBinding() {
@@ -134,9 +140,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
   @Override
   public String signature() {
-    return methodBinding().getDeclaringClass().getBinaryName()
-      + "#" + name()
-      + JSema.signature(methodBinding().getMethodDeclaration());
+    return signature;
   }
 
   @Nullable

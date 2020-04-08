@@ -133,8 +133,4 @@ public final class JSema implements Sema {
     return ASTUtils.resolvePackageAnnotations(ast, packageName);
   }
 
-  static String signature(IMethodBinding methodBinding) {
-    return ASTUtils.signature(methodBinding);
-  }
-
 }
