@@ -24,9 +24,9 @@ import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.notifications.AnalysisWarnings;
 
 /**
- * Wrap an AnalysisWarnings instance, available since SQ API 7.4.
- * Do not load this class on older runtimes.
- * Drop this class when the minimum supported version of SonarJava reaches 7.4.
+ * Wrap an {@link AnalysisWarnings} instance, available since SQ API 7.4.
+ * AnalysisWarnings are not supported in SonarLint context, hence this wrapper when running in SonarLint.
+ * The wrapper allows to avoid null check in every components which requires it.
  */
 @ScannerSide
 @InstantiationStrategy("PER_BATCH")
