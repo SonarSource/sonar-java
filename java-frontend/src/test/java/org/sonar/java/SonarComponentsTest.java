@@ -444,7 +444,7 @@ public class SonarComponentsTest {
     JspCodeCheck check = new JspCodeCheck();
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, checkFactory, new CheckRegistrar[]{getRegistrar(check)}, null);
     List<JavaCheck> checks = sonarComponents.jspCodeVisitors();
-    assertThat(checks).extracting(Object::getClass).containsExactly(JspCodeCheck.class);
+    assertThat(checks).allMatch(JspCodeCheck.class::isInstance);
 
     sonarComponents = new SonarComponents(null, null, null, null, checkFactory, null);
     assertThat(sonarComponents.jspCodeVisitors()).isEmpty();
