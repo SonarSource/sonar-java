@@ -26,7 +26,10 @@ public class MutableMembersUsageCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/MutableMembersUsageCheck.java", new MutableMembersUsageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MutableMembersUsageCheck.java")
+      .withCheck(new MutableMembersUsageCheck())
+      .verifyIssues();
   }
 
 }

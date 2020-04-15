@@ -28,6 +28,9 @@ public class BigDecimalDoubleConstructorCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/BigDecimalDoubleConstructorCheck.java"), new BigDecimalDoubleConstructorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/BigDecimalDoubleConstructorCheck.java"))
+      .withCheck(new BigDecimalDoubleConstructorCheck())
+      .verifyIssues();
   }
 }

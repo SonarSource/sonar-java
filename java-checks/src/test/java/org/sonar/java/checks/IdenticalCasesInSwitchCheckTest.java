@@ -26,6 +26,9 @@ public class IdenticalCasesInSwitchCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/IdenticalCasesInSwitchCheck.java", new IdenticalCasesInSwitchCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IdenticalCasesInSwitchCheck.java")
+      .withCheck(new IdenticalCasesInSwitchCheck())
+      .verifyIssues();
   }
 }

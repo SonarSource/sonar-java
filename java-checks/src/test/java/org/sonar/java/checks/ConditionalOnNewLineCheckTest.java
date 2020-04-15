@@ -28,7 +28,10 @@ public class ConditionalOnNewLineCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/ConditionalOnNewLineCheck.java"), new ConditionalOnNewLineCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ConditionalOnNewLineCheck.java"))
+      .withCheck(new ConditionalOnNewLineCheck())
+      .verifyIssues();
   }
 
 }

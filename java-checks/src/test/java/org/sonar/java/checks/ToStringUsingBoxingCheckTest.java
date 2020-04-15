@@ -26,7 +26,10 @@ public class ToStringUsingBoxingCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ToStringUsingBoxingCheck.java", new ToStringUsingBoxingCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ToStringUsingBoxingCheck.java")
+      .withCheck(new ToStringUsingBoxingCheck())
+      .verifyIssues();
   }
 
 }

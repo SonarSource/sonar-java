@@ -26,6 +26,9 @@ public class ShiftOnIntOrLongCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ShiftOnIntOrLongCheck.java", new ShiftOnIntOrLongCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ShiftOnIntOrLongCheck.java")
+      .withCheck(new ShiftOnIntOrLongCheck())
+      .verifyIssues();
   }
 }

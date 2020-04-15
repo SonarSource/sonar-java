@@ -26,7 +26,10 @@ public class CollectionMethodsWithLinearComplexityCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CollectionMethodsWithLinearComplexity.java", new CollectionMethodsWithLinearComplexityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CollectionMethodsWithLinearComplexity.java")
+      .withCheck(new CollectionMethodsWithLinearComplexityCheck())
+      .verifyIssues();
   }
 
 }

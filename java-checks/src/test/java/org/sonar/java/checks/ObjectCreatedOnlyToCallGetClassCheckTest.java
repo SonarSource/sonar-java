@@ -26,6 +26,9 @@ public class ObjectCreatedOnlyToCallGetClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ObjectCreatedOnlyToCallGetClassCheck.java", new ObjectCreatedOnlyToCallGetClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ObjectCreatedOnlyToCallGetClassCheck.java")
+      .withCheck(new ObjectCreatedOnlyToCallGetClassCheck())
+      .verifyIssues();
   }
 }

@@ -18,12 +18,21 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package org.sonar.java.checks.security;
+
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+
 public class AndroidSSLConnectionCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/AndroidSSLConnection.java", new AndroidSSLConnectionCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/AndroidSSLConnection.java", new AndroidSSLConnectionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/AndroidSSLConnection.java")
+      .withCheck(new AndroidSSLConnectionCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/AndroidSSLConnection.java")
+      .withCheck(new AndroidSSLConnectionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

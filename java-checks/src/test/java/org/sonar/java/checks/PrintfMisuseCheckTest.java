@@ -28,11 +28,17 @@ public class PrintfMisuseCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/PrintfMisuseCheck.java"), new PrintfMisuseCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/PrintfMisuseCheck.java"))
+      .withCheck(new PrintfMisuseCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_lambda_in_unknown_method_invocation() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/PrintfMisuseCheckLambda.java", new PrintfMisuseCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PrintfMisuseCheckLambda.java")
+      .withCheck(new PrintfMisuseCheck())
+      .verifyNoIssues();
   }
 }

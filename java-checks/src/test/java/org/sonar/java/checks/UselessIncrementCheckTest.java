@@ -28,6 +28,9 @@ public class UselessIncrementCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/UselessIncrementCheck.java"), new UselessIncrementCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/UselessIncrementCheck.java"))
+      .withCheck(new UselessIncrementCheck())
+      .verifyIssues();
   }
 }

@@ -26,7 +26,14 @@ public class DataEncryptionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/DataEncryptionCheck.java", new DataEncryptionCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/DataEncryptionCheck.java", new DataEncryptionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/DataEncryptionCheck.java")
+      .withCheck(new DataEncryptionCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/DataEncryptionCheck.java")
+      .withCheck(new DataEncryptionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

@@ -26,7 +26,10 @@ public class BasicAuthCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/BasicAuthCheck.java", new BasicAuthCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/BasicAuthCheck.java")
+      .withCheck(new BasicAuthCheck())
+      .verifyIssues();
   }
 
 }

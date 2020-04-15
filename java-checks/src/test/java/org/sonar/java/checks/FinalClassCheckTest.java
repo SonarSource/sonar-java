@@ -26,7 +26,14 @@ public class FinalClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/FinalClassCheck.java", new FinalClassCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/FinalClassCheck.java", new FinalClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FinalClassCheck.java")
+      .withCheck(new FinalClassCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FinalClassCheck.java")
+      .withCheck(new FinalClassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

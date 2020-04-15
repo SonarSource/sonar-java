@@ -26,12 +26,19 @@ public class XmlDeserializationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/XmlDeserialization.java", new XmlDeserializationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/XmlDeserialization.java")
+      .withCheck(new XmlDeserializationCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/XmlDeserialization.java", new XmlDeserializationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/XmlDeserialization.java")
+      .withCheck(new XmlDeserializationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class SerializableComparatorCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/serialization/SerializableComparatorCheck.java", new SerializableComparatorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/SerializableComparatorCheck.java")
+      .withCheck(new SerializableComparatorCheck())
+      .verifyIssues();
   }
 
 }

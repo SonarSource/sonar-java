@@ -26,20 +26,29 @@ public class MagicNumberCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/MagicNumberCheck.java", new MagicNumberCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MagicNumberCheck.java")
+      .withCheck(new MagicNumberCheck())
+      .verifyIssues();
   }
 
   @Test
   public void detectedWithTwoAuthorized() {
     MagicNumberCheck check = new MagicNumberCheck();
     check.authorizedNumbers = "-1,0,1,2";
-    JavaCheckVerifier.verify("src/test/files/checks/MagicNumberCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MagicNumberCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
-  
+
   @Test
   public void detectedWithAuthorizedNumberSpaces() {
     MagicNumberCheck check = new MagicNumberCheck();
     check.authorizedNumbers = " -1,0 , 1 ,2";
-    JavaCheckVerifier.verify("src/test/files/checks/MagicNumberCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MagicNumberCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 }

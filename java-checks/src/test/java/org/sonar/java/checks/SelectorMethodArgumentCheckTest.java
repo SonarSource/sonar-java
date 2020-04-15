@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class SelectorMethodArgumentCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SelectorMethodArgumentCheck.java", new SelectorMethodArgumentCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SelectorMethodArgumentCheck.java")
+      .withCheck(new SelectorMethodArgumentCheck())
+      .verifyIssues();
   }
 }

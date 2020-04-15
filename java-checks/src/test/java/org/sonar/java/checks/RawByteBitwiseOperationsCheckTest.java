@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class RawByteBitwiseOperationsCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/RawByteBitwiseOperationsCheck.java", new RawByteBitwiseOperationsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RawByteBitwiseOperationsCheck.java")
+      .withCheck(new RawByteBitwiseOperationsCheck())
+      .verifyIssues();
   }
 }

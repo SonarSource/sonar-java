@@ -26,8 +26,15 @@ public class RedundantThrowsDeclarationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/RedundantThrowsDeclaration.java", new RedundantThrowsDeclarationCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/RedundantThrowsDeclaration.java", new RedundantThrowsDeclarationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RedundantThrowsDeclaration.java")
+      .withCheck(new RedundantThrowsDeclarationCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RedundantThrowsDeclaration.java")
+      .withCheck(new RedundantThrowsDeclarationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

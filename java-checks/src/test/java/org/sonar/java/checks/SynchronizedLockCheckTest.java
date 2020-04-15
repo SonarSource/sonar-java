@@ -28,6 +28,9 @@ public class SynchronizedLockCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/SynchronizedLockCheck.java"), new SynchronizedLockCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SynchronizedLockCheck.java"))
+      .withCheck(new SynchronizedLockCheck())
+      .verifyIssues();
   }
 }

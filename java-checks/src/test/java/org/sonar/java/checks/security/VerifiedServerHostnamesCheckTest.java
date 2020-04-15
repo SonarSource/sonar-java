@@ -30,17 +30,26 @@ public class VerifiedServerHostnamesCheckTest {
 
   @Test
   public void hostname_verifier() {
-    JavaCheckVerifier.verify(testSourcesPath(TEST_FOLDER + "HostnameVerifier.java"), new VerifiedServerHostnamesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath(TEST_FOLDER + "HostnameVerifier.java"))
+      .withCheck(new VerifiedServerHostnamesCheck())
+      .verifyIssues();
   }
 
   @Test
   public void java_mail_session() {
-    JavaCheckVerifier.verify(testSourcesPath(TEST_FOLDER + "JavaMailSession.java"), new VerifiedServerHostnamesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath(TEST_FOLDER + "JavaMailSession.java"))
+      .withCheck(new VerifiedServerHostnamesCheck())
+      .verifyIssues();
   }
 
   @Test
   public void apache_common_email() {
-    JavaCheckVerifier.verify(testSourcesPath(TEST_FOLDER + "ApacheCommonEmail.java"), new VerifiedServerHostnamesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath(TEST_FOLDER + "ApacheCommonEmail.java"))
+      .withCheck(new VerifiedServerHostnamesCheck())
+      .verifyIssues();
   }
 
 }

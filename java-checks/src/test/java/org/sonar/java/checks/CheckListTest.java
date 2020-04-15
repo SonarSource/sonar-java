@@ -144,10 +144,10 @@ public class CheckListTest {
       keys.add(rule.key());
       names.add(rule.name());
       assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + "_java.html"))
-        .overridingErrorMessage("No description for " + rule.key()+ " " +keyMap.get(rule.key()))
+        .overridingErrorMessage("No description for " + rule.key() + " " + keyMap.get(rule.key()))
         .isNotNull();
       assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + "_java.json"))
-        .overridingErrorMessage("No json metadata file for " + rule.key()+ " " +keyMap.get(rule.key()))
+        .overridingErrorMessage("No json metadata file for " + rule.key() + " " + keyMap.get(rule.key()))
         .isNotNull();
 
       assertThat(rule.htmlDescription()).isNull();
@@ -170,7 +170,7 @@ public class CheckListTest {
 
   @Test
   public void enforce_CheckList_registration() {
-    List<File> files = (List<File>) FileUtils.listFiles(new File("src/main/java/org/sonar/java/checks/"), new String[]{"java"}, false);
+    List<File> files = (List<File>) FileUtils.listFiles(new File("src/main/java/org/sonar/java/checks/"), new String[] {"java"}, false);
     List<Class> checks = CheckList.getChecks();
     for (File file : files) {
       String name = file.getName();

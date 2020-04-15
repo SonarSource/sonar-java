@@ -26,6 +26,9 @@ public class IfElseIfStatementEndsWithElseCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/IfElseIfStatementEndsWithElseCheck.java", new IfElseIfStatementEndsWithElseCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IfElseIfStatementEndsWithElseCheck.java")
+      .withCheck(new IfElseIfStatementEndsWithElseCheck())
+      .verifyIssues();
   }
 }

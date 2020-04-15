@@ -26,7 +26,14 @@ public class ConfusingOverloadCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ConfusingOverloadCheck.java", new ConfusingOverloadCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ConfusingOverloadCheck.java", new ConfusingOverloadCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ConfusingOverloadCheck.java")
+      .withCheck(new ConfusingOverloadCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ConfusingOverloadCheck.java")
+      .withCheck(new ConfusingOverloadCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

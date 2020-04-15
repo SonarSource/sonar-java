@@ -26,7 +26,10 @@ public class MissingCurlyBracesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/MissingCurlyBraces.java", new MissingCurlyBracesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MissingCurlyBraces.java")
+      .withCheck(new MissingCurlyBracesCheck())
+      .verifyIssues();
   }
 
 }

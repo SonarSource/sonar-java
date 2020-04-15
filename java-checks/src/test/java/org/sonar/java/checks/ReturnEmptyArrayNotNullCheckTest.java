@@ -26,12 +26,19 @@ public class ReturnEmptyArrayNotNullCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ReturnEmptyArrayNotNullCheck.java", new ReturnEmptyArrayNotNullCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ReturnEmptyArrayNotNullCheck.java")
+      .withCheck(new ReturnEmptyArrayNotNullCheck())
+      .verifyIssues();
   }
 
   @Test
   public void noIssueWithoutSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ReturnEmptyArrayNotNullCheck.java", new ReturnEmptyArrayNotNullCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ReturnEmptyArrayNotNullCheck.java")
+      .withCheck(new ReturnEmptyArrayNotNullCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

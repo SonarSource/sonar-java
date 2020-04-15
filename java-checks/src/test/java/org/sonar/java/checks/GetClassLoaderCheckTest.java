@@ -28,6 +28,9 @@ public class GetClassLoaderCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/GetClassLoaderCheck.java"), new GetClassLoaderCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/GetClassLoaderCheck.java"))
+      .withCheck(new GetClassLoaderCheck())
+      .verifyIssues();
   }
 }

@@ -26,7 +26,10 @@ public class ChildClassShadowFieldCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ChildClassShadowField.java", new ChildClassShadowFieldCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ChildClassShadowField.java")
+      .withCheck(new ChildClassShadowFieldCheck())
+      .verifyIssues();
   }
 
 }

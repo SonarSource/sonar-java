@@ -26,6 +26,9 @@ public class MainMethodThrowsExceptionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/MainMethodThrowsExceptionCheck.java", new MainMethodThrowsExceptionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MainMethodThrowsExceptionCheck.java")
+      .withCheck(new MainMethodThrowsExceptionCheck())
+      .verifyIssues();
   }
 }

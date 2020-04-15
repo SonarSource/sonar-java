@@ -23,10 +23,17 @@ import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class BoxedBooleanExpressionsCheckTest {
-  
+
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/BoxedBooleanExpressionsCheck.java", new BoxedBooleanExpressionsCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/BoxedBooleanExpressionsCheck.java", new BoxedBooleanExpressionsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/BoxedBooleanExpressionsCheck.java")
+      .withCheck(new BoxedBooleanExpressionsCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/BoxedBooleanExpressionsCheck.java")
+      .withCheck(new BoxedBooleanExpressionsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

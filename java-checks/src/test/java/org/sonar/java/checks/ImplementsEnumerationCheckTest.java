@@ -26,7 +26,10 @@ public class ImplementsEnumerationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ImplementsEnumerationCheck.java", new ImplementsEnumerationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ImplementsEnumerationCheck.java")
+      .withCheck(new ImplementsEnumerationCheck())
+      .verifyIssues();
   }
 
 }

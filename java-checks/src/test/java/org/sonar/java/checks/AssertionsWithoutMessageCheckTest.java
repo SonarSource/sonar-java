@@ -26,6 +26,9 @@ public class AssertionsWithoutMessageCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsWithoutMessageCheck.java", new AssertionsWithoutMessageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AssertionsWithoutMessageCheck.java")
+      .withCheck(new AssertionsWithoutMessageCheck())
+      .verifyIssues();
   }
 }

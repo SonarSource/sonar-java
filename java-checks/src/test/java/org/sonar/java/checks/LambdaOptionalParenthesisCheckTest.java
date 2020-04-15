@@ -26,11 +26,18 @@ public class LambdaOptionalParenthesisCheckTest {
 
   @Test
   public void no_version() {
-    JavaCheckVerifier.verify("src/test/files/checks/LambdaOptionalParenthesisCheck_no_version.java", new LambdaOptionalParenthesisCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LambdaOptionalParenthesisCheck_no_version.java")
+      .withCheck(new LambdaOptionalParenthesisCheck())
+      .verifyIssues();
   }
 
   @Test
   public void java8() {
-    JavaCheckVerifier.verify("src/test/files/checks/LambdaOptionalParenthesisCheck.java", new LambdaOptionalParenthesisCheck(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LambdaOptionalParenthesisCheck.java")
+      .withCheck(new LambdaOptionalParenthesisCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 }

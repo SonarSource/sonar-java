@@ -26,7 +26,10 @@ public class CustomCryptographicAlgorithmCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CustomCryptographicAlgorithmCheck.java", new CustomCryptographicAlgorithmCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CustomCryptographicAlgorithmCheck.java")
+      .withCheck(new CustomCryptographicAlgorithmCheck())
+      .verifyIssues();
   }
 
 }

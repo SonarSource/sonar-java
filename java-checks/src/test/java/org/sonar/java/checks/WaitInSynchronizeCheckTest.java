@@ -26,6 +26,9 @@ public class WaitInSynchronizeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/WaitInSynchronizeCheck.java", new WaitInSynchronizeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/WaitInSynchronizeCheck.java")
+      .withCheck(new WaitInSynchronizeCheck())
+      .verifyIssues();
   }
 }

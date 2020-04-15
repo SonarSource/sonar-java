@@ -28,7 +28,10 @@ public class StaticMembersAccessCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/StaticMembersAccessCheck.java"), new StaticMembersAccessCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StaticMembersAccessCheck.java"))
+      .withCheck(new StaticMembersAccessCheck())
+      .verifyIssues();
   }
 
 }

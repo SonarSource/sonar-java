@@ -26,7 +26,10 @@ public class UnusedReturnedDataCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedReturnedData.java", new UnusedReturnedDataCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedReturnedData.java")
+      .withCheck(new UnusedReturnedDataCheck())
+      .verifyIssues();
   }
 
 }

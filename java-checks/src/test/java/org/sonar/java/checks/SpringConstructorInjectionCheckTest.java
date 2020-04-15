@@ -26,8 +26,15 @@ public class SpringConstructorInjectionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SpringConstructorInjectionCheck.java", new SpringConstructorInjectionCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SpringConstructorInjectionCheck.java", new SpringConstructorInjectionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SpringConstructorInjectionCheck.java")
+      .withCheck(new SpringConstructorInjectionCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SpringConstructorInjectionCheck.java")
+      .withCheck(new SpringConstructorInjectionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

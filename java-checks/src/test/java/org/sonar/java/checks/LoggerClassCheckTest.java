@@ -26,8 +26,15 @@ public class LoggerClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/LoggerClass.java", new LoggerClassCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/LoggerClass.java", new LoggerClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LoggerClass.java")
+      .withCheck(new LoggerClassCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LoggerClass.java")
+      .withCheck(new LoggerClassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

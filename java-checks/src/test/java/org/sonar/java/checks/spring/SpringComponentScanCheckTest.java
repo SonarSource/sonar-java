@@ -26,8 +26,15 @@ public class SpringComponentScanCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringComponentScanCheck.java", new SpringComponentScanCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringComponentScanCheck.java", new SpringComponentScanCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringComponentScanCheck.java")
+      .withCheck(new SpringComponentScanCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringComponentScanCheck.java")
+      .withCheck(new SpringComponentScanCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

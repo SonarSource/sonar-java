@@ -28,7 +28,10 @@ public class ToStringReturningNullCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/ToStringReturningNullCheck.java"), new ToStringReturningNullCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ToStringReturningNullCheck.java"))
+      .withCheck(new ToStringReturningNullCheck())
+      .verifyIssues();
   }
 
 }

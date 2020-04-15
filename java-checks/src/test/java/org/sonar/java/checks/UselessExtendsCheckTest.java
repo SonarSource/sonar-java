@@ -26,12 +26,19 @@ public class UselessExtendsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UselessExtendsCheck.java", new UselessExtendsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessExtendsCheck.java")
+      .withCheck(new UselessExtendsCheck())
+      .verifyIssues();
   }
 
   @Test
   public void noSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UselessExtendsCheck.java", new UselessExtendsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessExtendsCheck.java")
+      .withCheck(new UselessExtendsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

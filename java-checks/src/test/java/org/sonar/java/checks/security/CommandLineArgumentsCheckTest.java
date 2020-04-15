@@ -26,12 +26,19 @@ public class CommandLineArgumentsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/CommandLineArgumentsCheck.java", new CommandLineArgumentsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/CommandLineArgumentsCheck.java")
+      .withCheck(new CommandLineArgumentsCheck())
+      .verifyIssues();
   }
 
   @Test
   public void noSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/CommandLineArgumentsCheck.java", new CommandLineArgumentsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/CommandLineArgumentsCheck.java")
+      .withCheck(new CommandLineArgumentsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

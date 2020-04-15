@@ -26,8 +26,15 @@ public class WriteObjectTheOnlySynchronizedMethodCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/WriteObjectTheOnlySynchronizedMethodCheck.java", new WriteObjectTheOnlySynchronizedMethodCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/WriteObjectTheOnlySynchronizedMethodCheck.java", new WriteObjectTheOnlySynchronizedMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/WriteObjectTheOnlySynchronizedMethodCheck.java")
+      .withCheck(new WriteObjectTheOnlySynchronizedMethodCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/WriteObjectTheOnlySynchronizedMethodCheck.java")
+      .withCheck(new WriteObjectTheOnlySynchronizedMethodCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

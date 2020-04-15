@@ -26,7 +26,11 @@ public class DateAndTimesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DateAndTimesCheck.java", new DateAndTimesCheck(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DateAndTimesCheck.java")
+      .withCheck(new DateAndTimesCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 
 }

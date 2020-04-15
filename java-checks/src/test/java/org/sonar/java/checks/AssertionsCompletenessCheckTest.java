@@ -25,8 +25,15 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class AssertionsCompletenessCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsCompletenessCheck.java", new AssertionsCompletenessCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/AssertionsCompletenessCheck.java", new AssertionsCompletenessCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AssertionsCompletenessCheck.java")
+      .withCheck(new AssertionsCompletenessCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AssertionsCompletenessCheck.java")
+      .withCheck(new AssertionsCompletenessCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

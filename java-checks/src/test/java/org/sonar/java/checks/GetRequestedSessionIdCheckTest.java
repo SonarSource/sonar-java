@@ -26,7 +26,10 @@ public class GetRequestedSessionIdCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/GetRequestedSessionIdCheck.java", new GetRequestedSessionIdCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/GetRequestedSessionIdCheck.java")
+      .withCheck(new GetRequestedSessionIdCheck())
+      .verifyIssues();
   }
 
 }

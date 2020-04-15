@@ -26,7 +26,10 @@ public class DefaultInitializedFieldCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DefaultInitializedFieldCheck.java", new DefaultInitializedFieldCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DefaultInitializedFieldCheck.java")
+      .withCheck(new DefaultInitializedFieldCheck())
+      .verifyIssues();
   }
 
 }

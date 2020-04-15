@@ -28,7 +28,10 @@ public class HardcodedIpCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/HardcodedIpCheck.java"), new HardcodedIpCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/HardcodedIpCheck.java"))
+      .withCheck(new HardcodedIpCheck())
+      .verifyIssues();
   }
 
 }

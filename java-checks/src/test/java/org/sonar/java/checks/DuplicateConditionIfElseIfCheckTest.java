@@ -26,7 +26,10 @@ public class DuplicateConditionIfElseIfCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DuplicateConditionIfElseIfCheck.java", new DuplicateConditionIfElseIfCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DuplicateConditionIfElseIfCheck.java")
+      .withCheck(new DuplicateConditionIfElseIfCheck())
+      .verifyIssues();
   }
 
 }

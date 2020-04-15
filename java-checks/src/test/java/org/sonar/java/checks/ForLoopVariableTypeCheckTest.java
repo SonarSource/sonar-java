@@ -29,7 +29,14 @@ public class ForLoopVariableTypeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(FILENAME, CHECK);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME, CHECK);
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(CHECK)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(CHECK)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

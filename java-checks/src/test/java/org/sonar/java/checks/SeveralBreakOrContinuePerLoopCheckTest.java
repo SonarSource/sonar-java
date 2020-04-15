@@ -26,7 +26,10 @@ public class SeveralBreakOrContinuePerLoopCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SeveralBreakOrContinuePerLoopCheck.java", new SeveralBreakOrContinuePerLoopCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SeveralBreakOrContinuePerLoopCheck.java")
+      .withCheck(new SeveralBreakOrContinuePerLoopCheck())
+      .verifyIssues();
   }
 
 }

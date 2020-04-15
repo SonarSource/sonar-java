@@ -28,12 +28,19 @@ public class ServerCertificatesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(TEST_FILE, new ServerCertificatesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILE)
+      .withCheck(new ServerCertificatesCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(TEST_FILE, new ServerCertificatesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILE)
+      .withCheck(new ServerCertificatesCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

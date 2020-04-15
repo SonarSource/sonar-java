@@ -27,7 +27,10 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class StringMethodsOnSingleCharCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/StringMethodsOnSingleCharCheck.java"), new StringMethodsOnSingleCharCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StringMethodsOnSingleCharCheck.java"))
+      .withCheck(new StringMethodsOnSingleCharCheck())
+      .verifyIssues();
   }
 
 }

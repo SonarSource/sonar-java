@@ -26,8 +26,15 @@ public class SpringIncompatibleTransactionalCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringIncompatibleTransactionalCheck.java", new SpringIncompatibleTransactionalCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringIncompatibleTransactionalCheck.java", new SpringIncompatibleTransactionalCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringIncompatibleTransactionalCheck.java")
+      .withCheck(new SpringIncompatibleTransactionalCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringIncompatibleTransactionalCheck.java")
+      .withCheck(new SpringIncompatibleTransactionalCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

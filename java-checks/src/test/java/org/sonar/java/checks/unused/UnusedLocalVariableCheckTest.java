@@ -26,8 +26,15 @@ public class UnusedLocalVariableCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedLocalVariableCheck.java", new UnusedLocalVariableCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/unused/UnusedLocalVariableCheck.java", new UnusedLocalVariableCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedLocalVariableCheck.java")
+      .withCheck(new UnusedLocalVariableCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedLocalVariableCheck.java")
+      .withCheck(new UnusedLocalVariableCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

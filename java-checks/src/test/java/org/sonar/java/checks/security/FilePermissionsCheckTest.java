@@ -28,7 +28,10 @@ public class FilePermissionsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/security/FilePermissionsCheck.java"), new FilePermissionsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/FilePermissionsCheck.java"))
+      .withCheck(new FilePermissionsCheck())
+      .verifyIssues();
   }
 
 }

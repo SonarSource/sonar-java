@@ -31,7 +31,10 @@ public class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     assertThat(check.forClasses).isEqualTo("**.api.**");
     assertThat(check.exclusion).isEqualTo("**.internal.**");
-    JavaCheckVerifier.verify("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
@@ -39,13 +42,20 @@ public class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = null;
     check.exclusion = null;
-    JavaCheckVerifier.verify("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void no_issue_without_Semantic() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java")
+      .withCheck(check)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
@@ -53,7 +63,10 @@ public class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "**.open.**";
     check.exclusion = "";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiCustom.java")
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
   @Test
@@ -61,21 +74,29 @@ public class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
     check.exclusion = "**.internal.**";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiExclusion.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiExclusion.java")
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
   @Test
   public void testIncompleteJavadoc() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
-    JavaCheckVerifier.verify("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiIncomplete.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiIncomplete.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void testInvalidDeclaredException() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiInvalidException.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiInvalidException.java")
+      .withCheck(check)
+      .verifyNoIssues();
   }
 }
-

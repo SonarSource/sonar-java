@@ -26,12 +26,19 @@ public class VolatileVariablesOperationsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/VolatileVariablesOperationsCheck.java", new VolatileVariablesOperationsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/VolatileVariablesOperationsCheck.java")
+      .withCheck(new VolatileVariablesOperationsCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_noSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/VolatileVariablesOperationsCheck.java", new VolatileVariablesOperationsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/VolatileVariablesOperationsCheck.java")
+      .withCheck(new VolatileVariablesOperationsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

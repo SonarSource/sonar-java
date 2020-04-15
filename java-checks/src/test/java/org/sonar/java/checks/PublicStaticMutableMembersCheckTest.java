@@ -26,7 +26,10 @@ public class PublicStaticMutableMembersCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PublicStaticMutableMembersCheck.java", new PublicStaticMutableMembersCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PublicStaticMutableMembersCheck.java")
+      .withCheck(new PublicStaticMutableMembersCheck())
+      .verifyIssues();
   }
 
 }

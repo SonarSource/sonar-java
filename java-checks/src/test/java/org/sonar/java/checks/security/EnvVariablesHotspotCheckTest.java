@@ -26,7 +26,10 @@ public class EnvVariablesHotspotCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/EnvVariablesHotspot.java", new EnvVariablesHotspotCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/EnvVariablesHotspot.java")
+      .withCheck(new EnvVariablesHotspotCheck())
+      .verifyIssues();
   }
 
 }

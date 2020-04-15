@@ -28,7 +28,10 @@ public class InterfaceAsConstantContainerCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/InterfaceAsConstantContainerCheck.java"), new InterfaceAsConstantContainerCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/InterfaceAsConstantContainerCheck.java"))
+      .withCheck(new InterfaceAsConstantContainerCheck())
+      .verifyIssues();
   }
 
 }

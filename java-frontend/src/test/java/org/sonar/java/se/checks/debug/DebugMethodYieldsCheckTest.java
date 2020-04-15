@@ -20,13 +20,18 @@
 package org.sonar.java.se.checks.debug;
 
 import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.testing.CheckVerifier;
 
 public class DebugMethodYieldsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/debug/DebugMethodYieldsCheck.java", new DebugMethodYieldsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/debug/DebugMethodYieldsCheck.java")
+      .withCheck(new DebugMethodYieldsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test

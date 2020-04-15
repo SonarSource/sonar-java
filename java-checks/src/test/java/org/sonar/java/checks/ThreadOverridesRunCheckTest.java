@@ -26,6 +26,9 @@ public class ThreadOverridesRunCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/ThreadOverridesRunCheck.java", new ThreadOverridesRunCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThreadOverridesRunCheck.java")
+      .withCheck(new ThreadOverridesRunCheck())
+      .verifyIssues();
   }
 }

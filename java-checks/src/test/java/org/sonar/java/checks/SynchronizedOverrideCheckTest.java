@@ -25,11 +25,18 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class SynchronizedOverrideCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SynchronizedOverrideCheck.java", new SynchronizedOverrideCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SynchronizedOverrideCheck.java")
+      .withCheck(new SynchronizedOverrideCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SynchronizedOverrideCheck.java", new SynchronizedOverrideCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SynchronizedOverrideCheck.java")
+      .withCheck(new SynchronizedOverrideCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

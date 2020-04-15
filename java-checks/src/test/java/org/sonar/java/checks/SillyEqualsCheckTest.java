@@ -26,7 +26,10 @@ public class SillyEqualsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SillyEquals.java", new SillyEqualsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SillyEquals.java")
+      .withCheck(new SillyEqualsCheck())
+      .verifyIssues();
   }
 
 }

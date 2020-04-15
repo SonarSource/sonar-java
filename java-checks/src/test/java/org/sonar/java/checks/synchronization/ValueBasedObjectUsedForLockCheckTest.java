@@ -26,12 +26,19 @@ public class ValueBasedObjectUsedForLockCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/synchronization/ValueBasedObjectUsedForLockCheck.java", new ValueBasedObjectUsedForLockCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/synchronization/ValueBasedObjectUsedForLockCheck.java")
+      .withCheck(new ValueBasedObjectUsedForLockCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_issue_if_not_java8() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/synchronization/ValueBasedObjectUsedForLockCheck.java", new ValueBasedObjectUsedForLockCheck(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/synchronization/ValueBasedObjectUsedForLockCheck.java")
+      .withCheck(new ValueBasedObjectUsedForLockCheck())
+      .withJavaVersion(7)
+      .verifyNoIssues();
   }
 
 }

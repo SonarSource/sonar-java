@@ -26,7 +26,10 @@ public class InnerStaticClassesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/InnerStaticClassesCheck.java", new InnerStaticClassesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InnerStaticClassesCheck.java")
+      .withCheck(new InnerStaticClassesCheck())
+      .verifyIssues();
   }
 
 }

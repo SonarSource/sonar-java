@@ -26,14 +26,20 @@ public class ExpressionComplexityCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/ExpressionComplexityCheck.java", new ExpressionComplexityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ExpressionComplexityCheck.java")
+      .withCheck(new ExpressionComplexityCheck())
+      .verifyIssues();
   }
 
   @Test
   public void custom() {
     ExpressionComplexityCheck check = new ExpressionComplexityCheck();
     check.max = 4;
-    JavaCheckVerifier.verify("src/test/files/checks/ExpressionComplexityCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ExpressionComplexityCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

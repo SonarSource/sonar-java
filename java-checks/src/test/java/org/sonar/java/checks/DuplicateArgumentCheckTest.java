@@ -26,7 +26,10 @@ public class DuplicateArgumentCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DuplicateArgumentCheck.java", new DuplicateArgumentCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DuplicateArgumentCheck.java")
+      .withCheck(new DuplicateArgumentCheck())
+      .verifyIssues();
   }
 
 }

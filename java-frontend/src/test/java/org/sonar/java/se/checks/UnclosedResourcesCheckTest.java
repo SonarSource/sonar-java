@@ -20,7 +20,8 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.testing.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,34 +29,58 @@ public class UnclosedResourcesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/UnclosedResourcesCheck.java", new UnclosedResourcesCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/UnclosedResourcesCheck.java")
+      .withCheck(new UnclosedResourcesCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void jdbcTests() {
-    JavaCheckVerifier.verify("src/test/files/se/JdbcResourcesTestFile.java", new UnclosedResourcesCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/JdbcResourcesTestFile.java")
+      .withCheck(new UnclosedResourcesCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void spring() {
-    JavaCheckVerifier.verify("src/test/files/se/SpringResource.java", new UnclosedResourcesCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/SpringResource.java")
+      .withCheck(new UnclosedResourcesCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void streams() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/StreamResource.java", new UnclosedResourcesCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/StreamResource.java")
+      .withCheck(new UnclosedResourcesCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   public void testWithExcludedTypes() {
     UnclosedResourcesCheck unclosedResourcesCheck = new UnclosedResourcesCheck();
     unclosedResourcesCheck.excludedTypes = "java.io.FileInputStream, java.sql.Statement";
-    JavaCheckVerifier.verify("src/test/files/se/ExcludedResourcesTestFile.java", unclosedResourcesCheck);
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ExcludedResourcesTestFile.java")
+      .withCheck(unclosedResourcesCheck)
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void try_with_resources() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/UnclosedResourcesCheckARM.java", new UnclosedResourcesCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/UnclosedResourcesCheckARM.java")
+      .withCheck(new UnclosedResourcesCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
@@ -66,11 +91,19 @@ public class UnclosedResourcesCheckTest {
 
   @Test
   public void test_streams() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/UnclosedResourcesCheckStreams.java", new UnclosedResourcesCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/UnclosedResourcesCheckStreams.java")
+      .withCheck(new UnclosedResourcesCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void skip_exception_messages() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/UnclosedResourcesCheckWithoutExceptionMessages.java", new UnclosedResourcesCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/UnclosedResourcesCheckWithoutExceptionMessages.java")
+      .withCheck(new UnclosedResourcesCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 }

@@ -26,7 +26,10 @@ public class FinalizeFieldsSetCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/FinalizeFieldsSetCheck.java", new FinalizeFieldsSetCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FinalizeFieldsSetCheck.java")
+      .withCheck(new FinalizeFieldsSetCheck())
+      .verifyIssues();
   }
 
 }

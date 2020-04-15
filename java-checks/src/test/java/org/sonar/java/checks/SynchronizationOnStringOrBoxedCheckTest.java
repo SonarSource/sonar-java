@@ -26,7 +26,10 @@ public class SynchronizationOnStringOrBoxedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SynchronizationOnStringOrBoxedCheck.java", new SynchronizationOnStringOrBoxedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SynchronizationOnStringOrBoxedCheck.java")
+      .withCheck(new SynchronizationOnStringOrBoxedCheck())
+      .verifyIssues();
   }
 
 }

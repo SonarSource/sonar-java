@@ -28,17 +28,31 @@ public class SMTPSSLServerIdentityCheckTest {
 
   @Test
   public void test_apache_email() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/security/SMTPSSLServerIdentityCheck/ApacheEmail.java"), new SMTPSSLServerIdentityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/SMTPSSLServerIdentityCheck/ApacheEmail.java"))
+      .withCheck(new SMTPSSLServerIdentityCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_java_mail_session() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/SMTPSSLServerIdentityCheck/JavaMailSession.java", new SMTPSSLServerIdentityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/SMTPSSLServerIdentityCheck/JavaMailSession.java")
+      .withCheck(new SMTPSSLServerIdentityCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/security/SMTPSSLServerIdentityCheck/ApacheEmail.java"), new SMTPSSLServerIdentityCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/SMTPSSLServerIdentityCheck/JavaMailSession.java", new SMTPSSLServerIdentityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/SMTPSSLServerIdentityCheck/ApacheEmail.java"))
+      .withCheck(new SMTPSSLServerIdentityCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/SMTPSSLServerIdentityCheck/JavaMailSession.java")
+      .withCheck(new SMTPSSLServerIdentityCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

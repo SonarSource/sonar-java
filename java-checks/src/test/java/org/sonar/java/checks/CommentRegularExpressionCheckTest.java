@@ -34,14 +34,20 @@ public class CommentRegularExpressionCheckTest {
     CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
     check.regularExpression = "(?i).*TODO.*";
     check.message = "Avoid TODO";
-    JavaCheckVerifier.verify("src/test/files/checks/CommentRegularExpressionCheck.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CommentRegularExpressionCheck.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void should_not_fail_with_empty_regular_expression() {
     CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
     check.regularExpression = "";
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/CommentRegularExpressionCheck2.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CommentRegularExpressionCheck2.java"))
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
   @Test
@@ -49,7 +55,7 @@ public class CommentRegularExpressionCheckTest {
     CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
     check.regularExpression = "[[";
     assertThrows(AnalysisException.class,
-      () -> JavaCheckVerifier.verify("src/test/files/checks/CommentRegularExpressionCheck.java", check));
+      () -> JavaCheckVerifier.newVerifier().onFile("src/test/files/checks/CommentRegularExpressionCheck.java").withCheck(check).verifyIssues());
   }
 
 }

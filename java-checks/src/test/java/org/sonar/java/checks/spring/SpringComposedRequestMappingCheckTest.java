@@ -26,8 +26,15 @@ public class SpringComposedRequestMappingCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringComposedRequestMappingCheck.java", new SpringComposedRequestMappingCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringComposedRequestMappingCheck.java", new SpringComposedRequestMappingCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringComposedRequestMappingCheck.java")
+      .withCheck(new SpringComposedRequestMappingCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringComposedRequestMappingCheck.java")
+      .withCheck(new SpringComposedRequestMappingCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class DefaultEncodingUsageCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DefaultEncodingUsageCheck.java", new DefaultEncodingUsageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DefaultEncodingUsageCheck.java")
+      .withCheck(new DefaultEncodingUsageCheck())
+      .verifyIssues();
   }
 
 }

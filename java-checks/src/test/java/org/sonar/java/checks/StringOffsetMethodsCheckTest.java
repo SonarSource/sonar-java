@@ -28,7 +28,10 @@ public class StringOffsetMethodsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/StringOffsetMethodsCheck.java"), new StringOffsetMethodsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StringOffsetMethodsCheck.java"))
+      .withCheck(new StringOffsetMethodsCheck())
+      .verifyIssues();
   }
 
 }

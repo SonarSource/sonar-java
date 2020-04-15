@@ -28,7 +28,10 @@ public class InnerClassOfNonSerializableCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/InnerClassOfNonSerializableCheck.java"), new InnerClassOfNonSerializableCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/InnerClassOfNonSerializableCheck.java"))
+      .withCheck(new InnerClassOfNonSerializableCheck())
+      .verifyIssues();
   }
 
 }

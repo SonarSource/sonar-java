@@ -26,12 +26,19 @@ public class LeastSpecificTypeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/LeastSpecificTypeCheck.java", new LeastSpecificTypeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LeastSpecificTypeCheck.java")
+      .withCheck(new LeastSpecificTypeCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/LeastSpecificTypeCheck.java", new LeastSpecificTypeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LeastSpecificTypeCheck.java")
+      .withCheck(new LeastSpecificTypeCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

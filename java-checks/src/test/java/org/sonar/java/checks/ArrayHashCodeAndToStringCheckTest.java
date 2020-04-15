@@ -28,7 +28,10 @@ public class ArrayHashCodeAndToStringCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/ArrayHashCodeAndToStringCheck.java"), new ArrayHashCodeAndToStringCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ArrayHashCodeAndToStringCheck.java"))
+      .withCheck(new ArrayHashCodeAndToStringCheck())
+      .verifyIssues();
   }
 
 }

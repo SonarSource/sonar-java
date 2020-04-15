@@ -26,7 +26,14 @@ public class EnumEqualCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EnumEqualCheck.java", new EnumEqualCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/EnumEqualCheck.java", new EnumEqualCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EnumEqualCheck.java")
+      .withCheck(new EnumEqualCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EnumEqualCheck.java")
+      .withCheck(new EnumEqualCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

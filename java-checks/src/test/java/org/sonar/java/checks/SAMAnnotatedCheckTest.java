@@ -30,23 +30,46 @@ public class SAMAnnotatedCheckTest {
 
   @Test
   public void no_issue_with_no_java_version() {
-    JavaCheckVerifier.verify("src/test/files/checks/SAMAnnotatedCheck_no_version.java", new SAMAnnotatedCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SAMAnnotatedCheck_no_version.java", new SAMAnnotatedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SAMAnnotatedCheck_no_version.java")
+      .withCheck(new SAMAnnotatedCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SAMAnnotatedCheck_no_version.java")
+      .withCheck(new SAMAnnotatedCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void test_java_8() {
-    JavaCheckVerifier.verify(FILE, new SAMAnnotatedCheck(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILE)
+      .withCheck(new SAMAnnotatedCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 
   @Test
   public void test_java_9() {
-    JavaCheckVerifier.verify(FILE, new SAMAnnotatedCheck(), 9);
-    JavaCheckVerifier.verify("src/test/files/checks/SAMAnnotatedCheck_java9.java", new SAMAnnotatedCheck(), 9);
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILE)
+      .withCheck(new SAMAnnotatedCheck())
+      .withJavaVersion(9)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SAMAnnotatedCheck_java9.java")
+      .withCheck(new SAMAnnotatedCheck())
+      .withJavaVersion(9)
+      .verifyIssues();
   }
 
   @Test
   public void no_issue_with_java_7() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/SAMAnnotatedCheck_java7.java"), new SAMAnnotatedCheck(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SAMAnnotatedCheck_java7.java"))
+      .withCheck(new SAMAnnotatedCheck())
+      .withJavaVersion(7)
+      .verifyNoIssues();
   }
 }

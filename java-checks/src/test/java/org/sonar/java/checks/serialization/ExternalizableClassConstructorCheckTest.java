@@ -25,11 +25,18 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class ExternalizableClassConstructorCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/serialization/ExternalizableClassConstructorCheck.java", new ExternalizableClassConstructorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/ExternalizableClassConstructorCheck.java")
+      .withCheck(new ExternalizableClassConstructorCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/serialization/ExternalizableClassConstructorCheck.java", new ExternalizableClassConstructorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/ExternalizableClassConstructorCheck.java")
+      .withCheck(new ExternalizableClassConstructorCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

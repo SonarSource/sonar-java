@@ -28,9 +28,15 @@ public class UnusedPrivateClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/UnusedPrivateClass.java"), new UnusedPrivateClassCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/UnusedPrivateClass.java"), new UnusedPrivateClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/UnusedPrivateClass.java"))
+      .withCheck(new UnusedPrivateClassCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/UnusedPrivateClass.java"))
+      .withCheck(new UnusedPrivateClassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
-
 
 }

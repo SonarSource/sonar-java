@@ -30,12 +30,19 @@ public class IntegerToHexStringCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(TEST_FILE, new IntegerToHexStringCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILE)
+      .withCheck(new IntegerToHexStringCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(TEST_FILE, new IntegerToHexStringCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILE)
+      .withCheck(new IntegerToHexStringCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

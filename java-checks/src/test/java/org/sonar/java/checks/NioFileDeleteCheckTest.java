@@ -26,12 +26,19 @@ public class NioFileDeleteCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NioFileDeleteCheck.java", new NioFileDeleteCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NioFileDeleteCheck.java")
+      .withCheck(new NioFileDeleteCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_issue_with_version_6() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/NioFileDeleteCheck.java", new NioFileDeleteCheck(), 6);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NioFileDeleteCheck.java")
+      .withCheck(new NioFileDeleteCheck())
+      .withJavaVersion(6)
+      .verifyNoIssues();
   }
 
 }

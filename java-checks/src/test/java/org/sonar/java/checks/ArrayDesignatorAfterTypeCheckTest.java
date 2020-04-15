@@ -26,7 +26,10 @@ public class ArrayDesignatorAfterTypeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ArrayDesignatorAfterTypeCheck.java", new ArrayDesignatorAfterTypeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ArrayDesignatorAfterTypeCheck.java")
+      .withCheck(new ArrayDesignatorAfterTypeCheck())
+      .verifyIssues();
   }
 
 }

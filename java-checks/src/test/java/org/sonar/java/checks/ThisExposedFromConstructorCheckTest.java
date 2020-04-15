@@ -26,7 +26,14 @@ public class ThisExposedFromConstructorCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ThisExposedFromConstructorCheck.java", new ThisExposedFromConstructorCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ThisExposedFromConstructorCheck.java", new ThisExposedFromConstructorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThisExposedFromConstructorCheck.java")
+      .withCheck(new ThisExposedFromConstructorCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThisExposedFromConstructorCheck.java")
+      .withCheck(new ThisExposedFromConstructorCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

@@ -28,7 +28,10 @@ public class LabelsShouldNotBeUsedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/LabelsShouldNotBeUsedCheck.java"), new LabelsShouldNotBeUsedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/LabelsShouldNotBeUsedCheck.java"))
+      .withCheck(new LabelsShouldNotBeUsedCheck())
+      .verifyIssues();
   }
 
 }

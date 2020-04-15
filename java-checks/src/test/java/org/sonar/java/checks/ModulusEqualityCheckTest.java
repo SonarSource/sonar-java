@@ -28,6 +28,9 @@ public class ModulusEqualityCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/ModulusEqualityCheck.java"), new ModulusEqualityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ModulusEqualityCheck.java"))
+      .withCheck(new ModulusEqualityCheck())
+      .verifyIssues();
   }
 }

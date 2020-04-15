@@ -30,7 +30,10 @@ public class JunitMethodDeclarationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/JunitMethodDeclarationCheck.java", new JunitMethodDeclarationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/JunitMethodDeclarationCheck.java")
+      .withCheck(new JunitMethodDeclarationCheck())
+      .verifyIssues();
   }
 
   @Test

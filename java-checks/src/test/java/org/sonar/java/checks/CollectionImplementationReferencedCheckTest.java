@@ -26,7 +26,10 @@ public class CollectionImplementationReferencedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CollectionImplementationReferencedCheck.java", new CollectionImplementationReferencedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CollectionImplementationReferencedCheck.java")
+      .withCheck(new CollectionImplementationReferencedCheck())
+      .verifyIssues();
   }
 
 }

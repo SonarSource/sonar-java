@@ -28,19 +28,27 @@ public class IndentationCheckTest {
 
   @Test
   public void detected_default_indentation_level() {
-    JavaCheckVerifier.verify("src/test/files/checks/IndentationCheck_default.java", new IndentationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IndentationCheck_default.java")
+      .withCheck(new IndentationCheck())
+      .verifyIssues();
   }
 
   @Test
   public void detected_custom_level() {
     IndentationCheck check = new IndentationCheck();
     check.indentationLevel = 4;
-    JavaCheckVerifier.verify("src/test/files/checks/IndentationCheck_custom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IndentationCheck_custom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
-
 
   @Test
   public void assume_tab_is_indentation_level() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/IndentationCheck_tab.java"), new IndentationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/IndentationCheck_tab.java"))
+      .withCheck(new IndentationCheck())
+      .verifyIssues();
   }
 }

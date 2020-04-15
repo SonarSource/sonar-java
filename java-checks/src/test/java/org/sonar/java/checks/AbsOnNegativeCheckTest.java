@@ -26,7 +26,10 @@ public class AbsOnNegativeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AbsOnNegative.java", new AbsOnNegativeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AbsOnNegative.java")
+      .withCheck(new AbsOnNegativeCheck())
+      .verifyIssues();
   }
 
 }

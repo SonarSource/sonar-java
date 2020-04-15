@@ -20,16 +20,15 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Iterables;
+import javax.annotation.Nullable;
 import org.junit.Test;
-
-import org.sonar.java.se.JavaCheckVerifier;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.SETestUtils;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValueTestUtil;
-
-import javax.annotation.Nullable;
+import org.sonar.java.testing.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.checks.DivisionByZeroCheck.ZeroConstraint.NON_ZERO;
@@ -43,12 +42,20 @@ public class DivisionByZeroCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/DivisionByZeroCheck.java", new DivisionByZeroCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/DivisionByZeroCheck.java")
+      .withCheck(new DivisionByZeroCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void invocation_leading_to_ArithmeticException() {
-    JavaCheckVerifier.verify("src/test/files/se/MethodInvocationLeadingToArithmeticException.java", new DivisionByZeroCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/MethodInvocationLeadingToArithmeticException.java")
+      .withCheck(new DivisionByZeroCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
@@ -67,7 +74,8 @@ public class DivisionByZeroCheckTest {
     assertThat(bConstraint).isNull();
   }
 
-  private DivisionByZeroCheck.ZeroConstraint copyConstraint(SymbolicValue a, SymbolicValue b, RelationalSymbolicValue.Kind relation, @Nullable DivisionByZeroCheck.ZeroConstraint expected) {
+  private DivisionByZeroCheck.ZeroConstraint copyConstraint(SymbolicValue a, SymbolicValue b, RelationalSymbolicValue.Kind relation,
+    @Nullable DivisionByZeroCheck.ZeroConstraint expected) {
     ProgramState ps = Iterables.getOnlyElement(a.setConstraint(ProgramState.EMPTY_STATE, ZERO));
     RelationalSymbolicValue rel = new RelationalSymbolicValue(relation);
     SymbolicValueTestUtil.computedFrom(rel, b, a);

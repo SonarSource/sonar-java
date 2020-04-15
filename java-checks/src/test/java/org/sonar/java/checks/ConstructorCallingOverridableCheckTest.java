@@ -26,7 +26,14 @@ public class ConstructorCallingOverridableCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ConstructorCallingOverridableCheck.java", new ConstructorCallingOverridableCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ConstructorCallingOverridableCheck.java", new ConstructorCallingOverridableCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ConstructorCallingOverridableCheck.java")
+      .withCheck(new ConstructorCallingOverridableCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ConstructorCallingOverridableCheck.java")
+      .withCheck(new ConstructorCallingOverridableCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

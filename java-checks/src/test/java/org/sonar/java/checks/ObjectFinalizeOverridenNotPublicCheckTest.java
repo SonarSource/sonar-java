@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class ObjectFinalizeOverridenNotPublicCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ObjectFinalizeOverridenNotPublicCheck.java", new ObjectFinalizeOverridenNotPublicCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ObjectFinalizeOverridenNotPublicCheck.java")
+      .withCheck(new ObjectFinalizeOverridenNotPublicCheck())
+      .verifyIssues();
   }
 }

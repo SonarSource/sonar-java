@@ -26,6 +26,9 @@ public class TooManyStatementsPerLineCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/TooManyStatementsPerLine.java", new TooManyStatementsPerLineCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/TooManyStatementsPerLine.java")
+      .withCheck(new TooManyStatementsPerLineCheck())
+      .verifyIssues();
   }
 }

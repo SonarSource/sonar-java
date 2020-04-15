@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class SerialVersionUidCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/serialization/SerialVersionUidCheck.java", new SerialVersionUidCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/SerialVersionUidCheck.java")
+      .withCheck(new SerialVersionUidCheck())
+      .verifyIssues();
   }
 }

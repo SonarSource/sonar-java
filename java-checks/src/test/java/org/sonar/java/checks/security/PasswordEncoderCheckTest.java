@@ -28,8 +28,15 @@ public class PasswordEncoderCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/security/PasswordEncoder.java"), new PasswordEncoderCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/security/PasswordEncoder.java"), new PasswordEncoderCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/PasswordEncoder.java"))
+      .withCheck(new PasswordEncoderCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/PasswordEncoder.java"))
+      .withCheck(new PasswordEncoderCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

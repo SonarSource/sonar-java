@@ -25,7 +25,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class CollectionsEmptyConstantsCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CollectionsEmptyConstants.java", new CollectionsEmptyConstantsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CollectionsEmptyConstants.java")
+      .withCheck(new CollectionsEmptyConstantsCheck())
+      .verifyIssues();
   }
 
 }

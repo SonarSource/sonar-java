@@ -26,6 +26,9 @@ public class IdenticalOperandOnBinaryExpressionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/IdenticalOperandOnBinaryExpression.java", new IdenticalOperandOnBinaryExpressionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IdenticalOperandOnBinaryExpression.java")
+      .withCheck(new IdenticalOperandOnBinaryExpressionCheck())
+      .verifyIssues();
   }
 }

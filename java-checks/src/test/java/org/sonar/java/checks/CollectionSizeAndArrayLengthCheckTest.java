@@ -28,11 +28,18 @@ public class CollectionSizeAndArrayLengthCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/CollectionSizeAndArrayLengthCheck.java"), new CollectionSizeAndArrayLengthCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CollectionSizeAndArrayLengthCheck.java"))
+      .withCheck(new CollectionSizeAndArrayLengthCheck())
+      .verifyIssues();
   }
 
   @Test
   public void noIssueWithoutSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/CollectionSizeAndArrayLengthCheck.java"), new CollectionSizeAndArrayLengthCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CollectionSizeAndArrayLengthCheck.java"))
+      .withCheck(new CollectionSizeAndArrayLengthCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

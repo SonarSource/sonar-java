@@ -26,8 +26,15 @@ public class AndroidBroadcastingCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/AndroidBroadcasting.java", new AndroidBroadcastingCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/AndroidBroadcasting.java", new AndroidBroadcastingCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/AndroidBroadcasting.java")
+      .withCheck(new AndroidBroadcastingCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/AndroidBroadcasting.java")
+      .withCheck(new AndroidBroadcastingCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -26,16 +26,26 @@ public class SimpleClassNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SimpleClassNameCheck.java", new SimpleClassNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SimpleClassNameCheck.java")
+      .withCheck(new SimpleClassNameCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_file_with_wildcard_import() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/SimpleClassNameCheckWithWildCard.java", new SimpleClassNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SimpleClassNameCheckWithWildCard.java")
+      .withCheck(new SimpleClassNameCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void test_without_semantic() throws Exception {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SimpleClassNameCheck.java", new SimpleClassNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SimpleClassNameCheck.java")
+      .withCheck(new SimpleClassNameCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

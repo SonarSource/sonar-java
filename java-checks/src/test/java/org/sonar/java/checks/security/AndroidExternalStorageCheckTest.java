@@ -26,8 +26,15 @@ public class AndroidExternalStorageCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/AndroidExternalStorage.java", new AndroidExternalStorageCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/AndroidExternalStorage.java", new AndroidExternalStorageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/AndroidExternalStorage.java")
+      .withCheck(new AndroidExternalStorageCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/AndroidExternalStorage.java")
+      .withCheck(new AndroidExternalStorageCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

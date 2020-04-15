@@ -26,7 +26,10 @@ public class PrimitiveTypeBoxingWithToStringCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PrimitiveTypeBoxingWithToStringCheck.java", new PrimitiveTypeBoxingWithToStringCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PrimitiveTypeBoxingWithToStringCheck.java")
+      .withCheck(new PrimitiveTypeBoxingWithToStringCheck())
+      .verifyIssues();
   }
 
 }

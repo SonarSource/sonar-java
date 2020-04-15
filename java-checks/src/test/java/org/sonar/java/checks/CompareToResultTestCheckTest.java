@@ -26,7 +26,14 @@ public class CompareToResultTestCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CompareToResultTestCheck.java", new CompareToResultTestCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/CompareToResultTestCheck.java", new CompareToResultTestCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CompareToResultTestCheck.java")
+      .withCheck(new CompareToResultTestCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CompareToResultTestCheck.java")
+      .withCheck(new CompareToResultTestCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

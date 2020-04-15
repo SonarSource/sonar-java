@@ -26,17 +26,27 @@ public class UnusedTestRuleCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedTestRuleCheck.java", new UnusedTestRuleCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedTestRuleCheck.java")
+      .withCheck(new UnusedTestRuleCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_JUnit5() {
-    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedTestRuleCheck_JUnit5.java", new UnusedTestRuleCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedTestRuleCheck_JUnit5.java")
+      .withCheck(new UnusedTestRuleCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_no_issues_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/unused/UnusedTestRuleCheck_JUnit5.java", new UnusedTestRuleCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedTestRuleCheck_JUnit5.java")
+      .withCheck(new UnusedTestRuleCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

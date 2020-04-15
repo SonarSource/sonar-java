@@ -26,7 +26,14 @@ public class VariableDeclarationScopeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/VariableDeclarationScopeCheck.java", new VariableDeclarationScopeCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/VariableDeclarationScopeCheck.java", new VariableDeclarationScopeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/VariableDeclarationScopeCheck.java")
+      .withCheck(new VariableDeclarationScopeCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/VariableDeclarationScopeCheck.java")
+      .withCheck(new VariableDeclarationScopeCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

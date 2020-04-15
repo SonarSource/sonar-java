@@ -28,12 +28,18 @@ public class PrintfFailCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/PrintfFailCheck.java"), new PrintfFailCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/PrintfFailCheck.java"))
+      .withCheck(new PrintfFailCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_lambda_in_unknown_method_invocation() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/PrintfFailCheckLambda.java", new PrintfFailCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PrintfFailCheckLambda.java")
+      .withCheck(new PrintfFailCheck())
+      .verifyNoIssues();
   }
 
 }

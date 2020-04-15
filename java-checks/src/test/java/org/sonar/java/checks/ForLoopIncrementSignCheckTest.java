@@ -26,7 +26,10 @@ public class ForLoopIncrementSignCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ForLoopIncrementSignCheck.java", new ForLoopIncrementSignCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ForLoopIncrementSignCheck.java")
+      .withCheck(new ForLoopIncrementSignCheck())
+      .verifyIssues();
   }
 
 }

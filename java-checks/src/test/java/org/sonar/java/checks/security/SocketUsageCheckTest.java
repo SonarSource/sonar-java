@@ -26,12 +26,19 @@ public class SocketUsageCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/SocketUsageCheck.java", new SocketUsageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/SocketUsageCheck.java")
+      .withCheck(new SocketUsageCheck())
+      .verifyIssues();
   }
 
   @Test
   public void noSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/SocketUsageCheck.java", new SocketUsageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/SocketUsageCheck.java")
+      .withCheck(new SocketUsageCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

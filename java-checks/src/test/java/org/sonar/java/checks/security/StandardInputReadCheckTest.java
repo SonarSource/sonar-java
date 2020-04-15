@@ -26,12 +26,19 @@ public class StandardInputReadCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/StandardInputReadCheck.java", new StandardInputReadCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/StandardInputReadCheck.java")
+      .withCheck(new StandardInputReadCheck())
+      .verifyIssues();
   }
 
   @Test
   public void noSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/StandardInputReadCheck.java", new StandardInputReadCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/StandardInputReadCheck.java")
+      .withCheck(new StandardInputReadCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

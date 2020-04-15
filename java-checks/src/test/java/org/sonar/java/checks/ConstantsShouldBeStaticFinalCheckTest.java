@@ -26,6 +26,9 @@ public class ConstantsShouldBeStaticFinalCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ConstantsShouldBeStaticFinalCheck.java", new ConstantsShouldBeStaticFinalCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ConstantsShouldBeStaticFinalCheck.java")
+      .withCheck(new ConstantsShouldBeStaticFinalCheck())
+      .verifyIssues();
   }
 }

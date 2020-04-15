@@ -26,7 +26,10 @@ public class IncrementDecrementInSubExpressionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/IncrementDecrementInSubExpressionCheck.java", new IncrementDecrementInSubExpressionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IncrementDecrementInSubExpressionCheck.java")
+      .withCheck(new IncrementDecrementInSubExpressionCheck())
+      .verifyIssues();
   }
 
 }

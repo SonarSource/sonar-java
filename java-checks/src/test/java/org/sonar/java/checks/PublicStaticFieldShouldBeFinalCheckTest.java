@@ -26,7 +26,10 @@ public class PublicStaticFieldShouldBeFinalCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PublicStaticFieldShouldBeFinalCheck.java", new PublicStaticFieldShouldBeFinalCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PublicStaticFieldShouldBeFinalCheck.java")
+      .withCheck(new PublicStaticFieldShouldBeFinalCheck())
+      .verifyIssues();
   }
 
 }

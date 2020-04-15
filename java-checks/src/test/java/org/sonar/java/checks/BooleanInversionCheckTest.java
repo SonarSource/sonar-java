@@ -26,7 +26,10 @@ public class BooleanInversionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/BooleanInversionCheck.java", new BooleanInversionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/BooleanInversionCheck.java")
+      .withCheck(new BooleanInversionCheck())
+      .verifyIssues();
   }
 
 }

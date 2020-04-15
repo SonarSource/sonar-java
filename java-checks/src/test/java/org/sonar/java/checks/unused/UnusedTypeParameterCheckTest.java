@@ -28,6 +28,9 @@ public class UnusedTypeParameterCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/unused/UnusedTypeParameterCheck.java"), new UnusedTypeParameterCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/unused/UnusedTypeParameterCheck.java"))
+      .withCheck(new UnusedTypeParameterCheck())
+      .verifyIssues();
   }
 }

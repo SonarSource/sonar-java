@@ -26,7 +26,10 @@ public class RedundantJumpCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/RedundantJumpCheck.java", new RedundantJumpCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RedundantJumpCheck.java")
+      .withCheck(new RedundantJumpCheck())
+      .verifyIssues();
   }
 
 }

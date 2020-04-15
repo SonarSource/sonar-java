@@ -28,6 +28,9 @@ public class LDAPDeserializationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/security/LDAPDeserializationCheck.java"), new LDAPDeserializationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/LDAPDeserializationCheck.java"))
+      .withCheck(new LDAPDeserializationCheck())
+      .verifyIssues();
   }
 }

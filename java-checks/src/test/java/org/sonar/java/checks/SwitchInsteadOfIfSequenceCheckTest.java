@@ -26,11 +26,18 @@ public class SwitchInsteadOfIfSequenceCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/SwitchInsteadOfIfSequenceCheck.java", new SwitchInsteadOfIfSequenceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SwitchInsteadOfIfSequenceCheck.java")
+      .withCheck(new SwitchInsteadOfIfSequenceCheck())
+      .verifyIssues();
   }
 
   @Test
   public void prior_java_7() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/SwitchInsteadOfIfSequenceCheck.java", new SwitchInsteadOfIfSequenceCheck(), 6);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SwitchInsteadOfIfSequenceCheck.java")
+      .withCheck(new SwitchInsteadOfIfSequenceCheck())
+      .withJavaVersion(6)
+      .verifyNoIssues();
   }
 }

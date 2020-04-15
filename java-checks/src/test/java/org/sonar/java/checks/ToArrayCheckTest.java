@@ -28,8 +28,15 @@ public class ToArrayCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/ToArrayCheck.java"), new ToArrayCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/ToArrayCheck.java"), new ToArrayCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ToArrayCheck.java"))
+      .withCheck(new ToArrayCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ToArrayCheck.java"))
+      .withCheck(new ToArrayCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

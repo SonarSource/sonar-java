@@ -25,7 +25,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class RedundantTypeCastCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/RedundantTypeCastCheck.java", new RedundantTypeCastCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/RedundantTypeCastCheck.java", new RedundantTypeCastCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RedundantTypeCastCheck.java")
+      .withCheck(new RedundantTypeCastCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RedundantTypeCastCheck.java")
+      .withCheck(new RedundantTypeCastCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class ReflectionOnNonRuntimeAnnotationCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ReflectionOnNonRuntimeAnnotationCheck.java", new ReflectionOnNonRuntimeAnnotationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ReflectionOnNonRuntimeAnnotationCheck.java")
+      .withCheck(new ReflectionOnNonRuntimeAnnotationCheck())
+      .verifyIssues();
   }
 }

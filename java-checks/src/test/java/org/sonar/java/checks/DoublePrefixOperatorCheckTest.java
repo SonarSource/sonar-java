@@ -26,6 +26,9 @@ public class DoublePrefixOperatorCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DoublePrefixOperatorCheck/DoublePrefixOperatorCheck.java", new DoublePrefixOperatorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DoublePrefixOperatorCheck/DoublePrefixOperatorCheck.java")
+      .withCheck(new DoublePrefixOperatorCheck())
+      .verifyIssues();
   }
 }

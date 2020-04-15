@@ -26,7 +26,10 @@ public class ModifiersOrderCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ModifiersOrderCheck.java", new ModifiersOrderCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ModifiersOrderCheck.java")
+      .withCheck(new ModifiersOrderCheck())
+      .verifyIssues();
   }
 
 }

@@ -26,7 +26,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.java.se.AlwaysTrueOrFalseExpressionCollector;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.testing.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +35,11 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java")
+      .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
@@ -43,43 +48,75 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
       .filter(file -> file.getName().startsWith("spring-core-") || file.getName().startsWith("spring-web-"))
       .collect(Collectors.toList());
     classpath.add(new File("target/test-classes"));
-    JavaCheckVerifier.verify("src/test/files/se/SpringNullableAndNonNullAnnotationsWithoutJSR305.java", new BooleanGratuitousExpressionsCheck(), classpath);
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/SpringNullableAndNonNullAnnotationsWithoutJSR305.java")
+      .withCheck(new BooleanGratuitousExpressionsCheck())
+      .withClassPath(classpath)
+      .verifyIssues();
   }
 
   @Test
   public void test_unreachable_vs_gratuitous() {
-    JavaCheckVerifier.verify("src/test/files/se/UnreachableOrGratuitous.java", new ConditionalUnreachableCodeCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/UnreachableOrGratuitous.java")
+      .withCheck(new ConditionalUnreachableCodeCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void whole_stack_required_for_ps_equality() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/PsEqualityRequiresFullStack.java", new AssertNoAlwaysTrueOrFalseExpression());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/PsEqualityRequiresFullStack.java")
+      .withCheck(new AssertNoAlwaysTrueOrFalseExpression())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   public void condition_always_true_with_optional() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ConditionAlwaysTrueWithOptional.java", new AssertNoAlwaysTrueOrFalseExpression());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ConditionAlwaysTrueWithOptional.java")
+      .withCheck(new AssertNoAlwaysTrueOrFalseExpression())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   public void resetFields_ThreadSleepCalls() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ThreadSleepCall.java", new AssertNoAlwaysTrueOrFalseExpression());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ThreadSleepCall.java")
+      .withCheck(new AssertNoAlwaysTrueOrFalseExpression())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   public void reporting() {
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckReporting.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheckReporting.java")
+      .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void reporting_getting_wrong_parent() {
     // Checks flow iterating through the correct parent
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheckParentLoop.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheckParentLoop.java")
+      .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_transitivity() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/Transitivity.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/Transitivity.java")
+      .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   private static class AssertNoAlwaysTrueOrFalseExpression extends SECheck {
@@ -94,11 +131,19 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   @Test
   public void test_constraint_is_not_lost_after_copying() throws Exception {
     // see also SONARJAVA-2351
-    JavaCheckVerifier.verify("src/test/files/se/ConstraintCopy.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ConstraintCopy.java")
+      .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_binary_expressions_always_not_null() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/BinaryExpressionNotNull.java", new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/BinaryExpressionNotNull.java")
+      .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 }

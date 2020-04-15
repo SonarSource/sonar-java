@@ -26,6 +26,9 @@ public class LogConfigurationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/LogConfigurationCheck.java", new LogConfigurationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/LogConfigurationCheck.java")
+      .withCheck(new LogConfigurationCheck())
+      .verifyIssues();
   }
 }

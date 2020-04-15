@@ -26,8 +26,15 @@ public class UnusedMethodParameterCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedMethodParameterCheck.java", new UnusedMethodParameterCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/unused/UnusedMethodParameterCheck.java", new UnusedMethodParameterCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedMethodParameterCheck.java")
+      .withCheck(new UnusedMethodParameterCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedMethodParameterCheck.java")
+      .withCheck(new UnusedMethodParameterCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -26,8 +26,15 @@ public class ProtectedMemberInFinalClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ProtectedMemberInFinalClassCheck.java", new ProtectedMemberInFinalClassCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ProtectedMemberInFinalClassCheck.java", new ProtectedMemberInFinalClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ProtectedMemberInFinalClassCheck.java")
+      .withCheck(new ProtectedMemberInFinalClassCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ProtectedMemberInFinalClassCheck.java")
+      .withCheck(new ProtectedMemberInFinalClassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

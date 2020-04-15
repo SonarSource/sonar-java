@@ -28,11 +28,18 @@ public class BooleanMethodNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BooleanMethodNameCheck.java"), new BooleanMethodNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/naming/BooleanMethodNameCheck.java"))
+      .withCheck(new BooleanMethodNameCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/naming/BooleanMethodNameCheck.java"), new BooleanMethodNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/naming/BooleanMethodNameCheck.java"))
+      .withCheck(new BooleanMethodNameCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

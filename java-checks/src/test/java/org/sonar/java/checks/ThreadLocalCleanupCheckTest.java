@@ -26,8 +26,15 @@ public class ThreadLocalCleanupCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ThreadLocalCleanup.java", new ThreadLocalCleanupCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ThreadLocalCleanup.java", new ThreadLocalCleanupCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThreadLocalCleanup.java")
+      .withCheck(new ThreadLocalCleanupCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThreadLocalCleanup.java")
+      .withCheck(new ThreadLocalCleanupCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

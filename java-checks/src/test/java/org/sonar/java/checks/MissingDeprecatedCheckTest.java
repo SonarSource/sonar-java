@@ -26,12 +26,19 @@ public class MissingDeprecatedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/MissingDeprecatedCheck.java", new MissingDeprecatedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MissingDeprecatedCheck.java")
+      .withCheck(new MissingDeprecatedCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_java9() {
-    JavaCheckVerifier.verify("src/test/files/checks/MissingDeprecatedCheckJava9.java", new MissingDeprecatedCheck(), 9);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MissingDeprecatedCheckJava9.java")
+      .withCheck(new MissingDeprecatedCheck())
+      .withJavaVersion(9)
+      .verifyIssues();
   }
 
 }

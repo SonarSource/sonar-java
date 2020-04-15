@@ -28,12 +28,22 @@ public class SpecializedFunctionalInterfacesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"), new SpecializedFunctionalInterfacesCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"), new SpecializedFunctionalInterfacesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"))
+      .withCheck(new SpecializedFunctionalInterfacesCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"))
+      .withCheck(new SpecializedFunctionalInterfacesCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void test_unknown_types() {
-    JavaCheckVerifier.verify("src/test/files/checks/SpecializedFunctionalInterfacesCheckUnknownTypes.java", new SpecializedFunctionalInterfacesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SpecializedFunctionalInterfacesCheckUnknownTypes.java")
+      .withCheck(new SpecializedFunctionalInterfacesCheck())
+      .verifyIssues();
   }
 }

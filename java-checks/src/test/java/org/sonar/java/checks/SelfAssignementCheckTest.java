@@ -28,7 +28,10 @@ public class SelfAssignementCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/SelfAssignementCheck.java"), new SelfAssignementCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SelfAssignementCheck.java"))
+      .withCheck(new SelfAssignementCheck())
+      .verifyIssues();
   }
 
 }

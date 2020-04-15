@@ -28,7 +28,10 @@ public class CookieDomainCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/CookieDomainCheck.java"), new CookieDomainCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CookieDomainCheck.java"))
+      .withCheck(new CookieDomainCheck())
+      .verifyIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class MethodNameSameAsClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/MethodNameSameAsClassCheck.java", new MethodNameSameAsClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/MethodNameSameAsClassCheck.java")
+      .withCheck(new MethodNameSameAsClassCheck())
+      .verifyIssues();
   }
 
 }

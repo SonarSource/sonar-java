@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class URLHashCodeAndEqualsCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/URLHashCodeAndEqualsCheck.java", new URLHashCodeAndEqualsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/URLHashCodeAndEqualsCheck.java")
+      .withCheck(new URLHashCodeAndEqualsCheck())
+      .verifyIssues();
   }
 }

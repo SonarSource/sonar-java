@@ -26,7 +26,10 @@ public class SwitchWithLabelsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SwitchWithLabelsCheck.java", new SwitchWithLabelsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SwitchWithLabelsCheck.java")
+      .withCheck(new SwitchWithLabelsCheck())
+      .verifyIssues();
   }
 
 }

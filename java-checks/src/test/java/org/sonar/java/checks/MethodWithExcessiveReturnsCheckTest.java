@@ -26,14 +26,20 @@ public class MethodWithExcessiveReturnsCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/MethodWithExcessiveReturnsCheck.java", new MethodWithExcessiveReturnsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MethodWithExcessiveReturnsCheck.java")
+      .withCheck(new MethodWithExcessiveReturnsCheck())
+      .verifyIssues();
   }
 
   @Test
   public void custom() {
     MethodWithExcessiveReturnsCheck check = new MethodWithExcessiveReturnsCheck();
     check.max = 4;
-    JavaCheckVerifier.verify("src/test/files/checks/MethodWithExcessiveReturnsCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MethodWithExcessiveReturnsCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

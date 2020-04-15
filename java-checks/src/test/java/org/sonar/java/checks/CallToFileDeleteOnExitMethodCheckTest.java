@@ -28,7 +28,10 @@ public class CallToFileDeleteOnExitMethodCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/CallToFileDeleteOnExitMethod.java"), new CallToFileDeleteOnExitMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CallToFileDeleteOnExitMethod.java"))
+      .withCheck(new CallToFileDeleteOnExitMethodCheck())
+      .verifyIssues();
   }
 
 }

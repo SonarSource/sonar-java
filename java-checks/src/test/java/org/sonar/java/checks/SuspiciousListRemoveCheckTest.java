@@ -26,7 +26,14 @@ public class SuspiciousListRemoveCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SuspiciousListRemove.java", new SuspiciousListRemoveCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SuspiciousListRemove.java", new SuspiciousListRemoveCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SuspiciousListRemove.java")
+      .withCheck(new SuspiciousListRemoveCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SuspiciousListRemove.java")
+      .withCheck(new SuspiciousListRemoveCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

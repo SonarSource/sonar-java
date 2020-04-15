@@ -26,11 +26,18 @@ public class ControllingPermissionsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/ControllingPermissionsCheck.java", new ControllingPermissionsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/ControllingPermissionsCheck.java")
+      .withCheck(new ControllingPermissionsCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/ControllingPermissionsCheck.java", new ControllingPermissionsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/ControllingPermissionsCheck.java")
+      .withCheck(new ControllingPermissionsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

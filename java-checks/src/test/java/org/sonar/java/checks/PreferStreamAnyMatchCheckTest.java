@@ -27,6 +27,9 @@ public class PreferStreamAnyMatchCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PreferStreamAnyMatch.java", new PreferStreamAnyMatchCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PreferStreamAnyMatch.java")
+      .withCheck(new PreferStreamAnyMatchCheck())
+      .verifyIssues();
   }
 }

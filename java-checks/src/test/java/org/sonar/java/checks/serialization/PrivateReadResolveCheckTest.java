@@ -26,12 +26,19 @@ public class PrivateReadResolveCheckTest {
 
   @Test
   public void private_read_resolve_check_test() {
-    JavaCheckVerifier.verify("src/test/files/checks/serialization/PrivateReadResolveCheck.java", new PrivateReadResolveCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/PrivateReadResolveCheck.java")
+      .withCheck(new PrivateReadResolveCheck())
+      .verifyIssues();
   }
 
   @Test
   public void private_read_resolve_check_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/serialization/PrivateReadResolveCheck.java", new PrivateReadResolveCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/PrivateReadResolveCheck.java")
+      .withCheck(new PrivateReadResolveCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

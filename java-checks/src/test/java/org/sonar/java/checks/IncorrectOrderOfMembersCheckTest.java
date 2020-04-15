@@ -26,7 +26,10 @@ public class IncorrectOrderOfMembersCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/IncorrectOrderOfMembersCheck.java", new IncorrectOrderOfMembersCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IncorrectOrderOfMembersCheck.java")
+      .withCheck(new IncorrectOrderOfMembersCheck())
+      .verifyIssues();
   }
 
 }

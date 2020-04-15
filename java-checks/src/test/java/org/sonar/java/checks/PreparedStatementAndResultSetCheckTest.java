@@ -26,7 +26,10 @@ public class PreparedStatementAndResultSetCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PreparedStatementAndResultSetCheck.java", new PreparedStatementAndResultSetCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PreparedStatementAndResultSetCheck.java")
+      .withCheck(new PreparedStatementAndResultSetCheck())
+      .verifyIssues();
   }
 
 }

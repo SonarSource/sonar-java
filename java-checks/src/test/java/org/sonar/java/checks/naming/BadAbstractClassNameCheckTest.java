@@ -29,8 +29,14 @@ public class BadAbstractClassNameCheckTest {
   @Test
   public void test() {
     BadAbstractClassNameCheck check = new BadAbstractClassNameCheck();
-    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BadAbstractClassName.java"), check);
-    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BadAbstractClassName.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/naming/BadAbstractClassName.java"))
+      .withCheck(check)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/naming/BadAbstractClassName.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

@@ -26,14 +26,20 @@ public class BadLocalVariableNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadLocalVariableNameNoncompliant.java", new BadLocalVariableNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadLocalVariableNameNoncompliant.java")
+      .withCheck(new BadLocalVariableNameCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test2() {
     BadLocalVariableNameCheck check = new BadLocalVariableNameCheck();
     check.format = "^[a-zA-Z0-9_][a-zA-Z0-9_][a-zA-Z0-9_][a-zA-Z0-9_]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadLocalVariableName.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadLocalVariableName.java")
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class NullCipherCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NullCipherCheck.java", new NullCipherCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NullCipherCheck.java")
+      .withCheck(new NullCipherCheck())
+      .verifyIssues();
   }
 
 }

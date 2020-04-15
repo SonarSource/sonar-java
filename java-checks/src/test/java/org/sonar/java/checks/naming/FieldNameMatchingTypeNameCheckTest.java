@@ -28,7 +28,10 @@ public class FieldNameMatchingTypeNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/naming/FieldNameMatchingTypeNameCheck.java"), new FieldNameMatchingTypeNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/naming/FieldNameMatchingTypeNameCheck.java"))
+      .withCheck(new FieldNameMatchingTypeNameCheck())
+      .verifyIssues();
   }
 
 }

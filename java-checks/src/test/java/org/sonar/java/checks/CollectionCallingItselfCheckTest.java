@@ -26,6 +26,9 @@ public class CollectionCallingItselfCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CollectionCallingItselfCheck.java", new CollectionCallingItselfCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CollectionCallingItselfCheck.java")
+      .withCheck(new CollectionCallingItselfCheck())
+      .verifyIssues();
   }
 }

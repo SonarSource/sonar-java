@@ -26,7 +26,10 @@ public class IndexOfWithPositiveNumberCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/IndexOfWithPositiveNumber.java", new IndexOfWithPositiveNumberCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IndexOfWithPositiveNumber.java")
+      .withCheck(new IndexOfWithPositiveNumberCheck())
+      .verifyIssues();
   }
 
 }

@@ -58,6 +58,7 @@ import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.HappyPathYield;
 import org.sonar.java.se.xproc.MethodBehavior;
 import org.sonar.java.se.xproc.MethodYield;
+import org.sonar.java.testing.CheckVerifier;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -75,54 +76,77 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void seEngineTest() {
-    JavaCheckVerifier.verify("src/test/files/se/SeEngineTest.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/SeEngineTest.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_cleanup_state() {
     final int[] steps = new int[2];
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCleanupState.java", new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
-      @Override
-      public void visitNode(Tree tree) {
-        ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel(), false);
-        explodedGraphWalker.visitMethod((MethodTree) tree, methodBehaviorForSymbol(((MethodTree) tree).symbol()));
-        steps[0] += explodedGraphWalker.steps;
-      }
-    });
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCleanupState.java", new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
-      @Override
-      public void visitNode(Tree tree) {
-        ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel());
-        MethodTree methodTree = (MethodTree) tree;
-        explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
-        steps[1] += explodedGraphWalker.steps;
-      }
-    });
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/SeEngineTestCleanupState.java")
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+        @Override
+        public void visitNode(Tree tree) {
+          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel(), false);
+          explodedGraphWalker.visitMethod((MethodTree) tree, methodBehaviorForSymbol(((MethodTree) tree).symbol()));
+          steps[0] += explodedGraphWalker.steps;
+        }
+      })
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/SeEngineTestCleanupState.java")
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+        @Override
+        public void visitNode(Tree tree) {
+          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel());
+          MethodTree methodTree = (MethodTree) tree;
+          explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
+          steps[1] += explodedGraphWalker.steps;
+        }
+      })
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
     assertThat(steps[0]).isPositive();
     assertThat(steps[0]).isGreaterThan(steps[1]);
   }
 
   @Test
   public void reproducer() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/Reproducer.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/Reproducer.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void exception_catched_in_loop() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/LoopExceptionField.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/LoopExceptionField.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void constraints_on_fields() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/ConstraintsOnFields.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ConstraintsOnFields.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void different_exceptions_lead_to_different_program_states_with_catch_exception_block() {
     Set<Type> encounteredExceptions = new HashSet<>();
     int[] tested = {0};
-
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/ExceptionalSymbolicValueStacked.java", new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
 
       private ExplodedGraphWalker explodedGraphWalker;
 
@@ -168,7 +192,14 @@ public class ExplodedGraphWalkerTest {
           super.visitNode(methodTree);
         }
       };
-    });
+    };
+
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ExceptionalSymbolicValueStacked.java")
+      .withCheck(
+        sev)
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
 
     assertThat(encounteredExceptions).hasSize(2);
     assertThat(tested[0]).isEqualTo(2);
@@ -177,7 +208,7 @@ public class ExplodedGraphWalkerTest {
   @Test
   public void use_false_branch_on_loop_when_reaching_max_exec_program_point() {
     ProgramPoint[] programPoints = new ProgramPoint[2];
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestMaxExecProgramPoint.java", new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
 
       private ExplodedGraphWalker explodedGraphWalker = null;
 
@@ -213,7 +244,13 @@ public class ExplodedGraphWalkerTest {
         MethodTree methodTree = (MethodTree) tree;
         explodedGraphWalker.visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
       }
-    });
+    };
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/SeEngineTestMaxExecProgramPoint.java")
+      .withCheck(
+        sev)
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
 
     // we reached the max number of execution of a program point
     assertThat(programPoints[0]).isNotNull();
@@ -228,23 +265,28 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void test_limited_loop_execution() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCase.java", new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
-      @Override
-      public void visitNode(Tree tree) {
-        try {
-          MethodTree methodTree = (MethodTree) tree;
-          new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
-        } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
-          fail("loop execution should be limited");
-        }
-      }
-    });
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/SeEngineTestCase.java")
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+        @Override
+        public void visitNode(Tree tree) {
+          try {
+            MethodTree methodTree = (MethodTree) tree;
+            new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
+          } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
+            fail("loop execution should be limited");
+          }
+          }
+        })
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   public void test_max_number_starting_states() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxStartingStates.java",
-      new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/MaxStartingStates.java")
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
         @Override
         public void visitNode(Tree tree) {
           try {
@@ -255,13 +297,16 @@ public class ExplodedGraphWalkerTest {
             assertThat(exception.getMessage()).startsWith("reached maximum number of 1024 starting states for method");
           }
         }
-      });
+      })
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   public void test_max_number_starting_states_boundaries() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/StartingStates1024.java",
-      new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/StartingStates1024.java")
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
         @Override
         public void visitNode(Tree tree) {
           try {
@@ -271,151 +316,244 @@ public class ExplodedGraphWalkerTest {
             fail("Should have been able to generate 1024 states!");
           }
         }
-      });
+      })
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   public void test_maximum_steps_reached() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxSteps.java", new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
-      @Override
-      public void visitNode(Tree tree) {
-        try {
-          MethodTree methodTree = (MethodTree) tree;
-          new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
-          fail("Too many states were processed !");
-        } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
-          assertThat(exception.getMessage()).startsWith("reached limit of 16000 steps for method");
-        }
-      }
-    });
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/MaxSteps.java")
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+        @Override
+        public void visitNode(Tree tree) {
+          try {
+            MethodTree methodTree = (MethodTree) tree;
+            new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
+            fail("Too many states were processed !");
+          } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
+            assertThat(exception.getMessage()).startsWith("reached limit of 16000 steps for method");
+          }
+          }
+        })
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   public void test_maximum_steps_reached_with_issue() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/MaxStepsWithIssue.java", new UnclosedResourcesCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/MaxStepsWithIssue.java")
+      .withCheck(
+        new UnclosedResourcesCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_maximum_number_nested_states() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxNestedStates.java", new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
-      @Override
-      public void visitNode(Tree tree) {
-        try {
-          MethodTree methodTree = (MethodTree) tree;
-          new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
-          fail("Too many states were processed !");
-        } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
-          assertThat(exception.getMessage()).startsWith("reached maximum number of 10000 branched states");
-        }
-      }
-    });
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/MaxNestedStates.java")
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+        @Override
+        public void visitNode(Tree tree) {
+          try {
+            MethodTree methodTree = (MethodTree) tree;
+            new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel()).visitMethod(methodTree, methodBehaviorForSymbol(methodTree.symbol()));
+            fail("Too many states were processed !");
+          } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
+            assertThat(exception.getMessage()).startsWith("reached maximum number of 10000 branched states");
+          }
+          }
+        })
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   public void test_propagation_of_bytecode_analysis_failure() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/BytecodeExceptionPropagation.java", new NullDereferenceCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/BytecodeExceptionPropagation.java")
+      .withCheck(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
 
   }
 
   @Test
   public void system_exit() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/SystemExit.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/SystemExit.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void read_parametersAreNonnullByDefault_and_parametersAreNullableByDefault_annotations() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/annotations/PackageAnnotationsNullable.java", seChecks());
-    JavaCheckVerifier.verify("src/test/files/se/annotations/PackageAnnotationsNonNull.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/annotations/PackageAnnotationsNullable.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/annotations/PackageAnnotationsNonNull.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
 
-    JavaCheckVerifier.verify("src/test/files/se/annotations/ClassAnnotationsNullable.java", seChecks());
-    JavaCheckVerifier.verify("src/test/files/se/annotations/ClassAnnotationsNonNull.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/annotations/ClassAnnotationsNullable.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/annotations/ClassAnnotationsNonNull.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
 
-    JavaCheckVerifier.verify("src/test/files/se/annotations/MethodAnnotationsNullable.java", seChecks());
-    JavaCheckVerifier.verify("src/test/files/se/annotations/MethodAnnotationsNonNull.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/annotations/MethodAnnotationsNullable.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/annotations/MethodAnnotationsNonNull.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void read_jetbrains_nullness_annotations() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/annotations/JetBrains.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/annotations/JetBrains.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void androidx_nullness_annotations() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/annotations/AndroidXAnnotations.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/annotations/AndroidXAnnotations.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void xproc_usage_of_method_behaviors() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/XProcMethodBehavior.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XProcMethodBehavior.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void xproc_usage_of_method_behaviors_with_explicit_exceptional_path() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/XProcMethodBehaviorExplicitException.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XProcMethodBehaviorExplicitException.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void xproc_usage_of_method_behaviors_with_explicit_exceptional_path_and_branching() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/XProcMethodBehaviorExplicitExceptionBranching.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XProcMethodBehaviorExplicitExceptionBranching.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void xproc_usage_of_exceptional_path_and_branching() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/XProcExceptionalBranching.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XProcExceptionalBranching.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void xproc_usage_of_exceptional_path_and_branching_with_reporting() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/XProcExceptionalBranchingReporting.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XProcExceptionalBranchingReporting.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void xproc_reporting_with_var_args() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/XProcReportingWithVarArgs.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XProcReportingWithVarArgs.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void xproc_keep_yield_for_reporting() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/YieldReporting.java", new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
-      @Override
-      public void visitNode(Tree tree) {
-        MethodTree methodTree = (MethodTree) tree;
-        if ("test".equals(methodTree.symbol().name())) {
-          ExplodedGraphWalker egw = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel());
-          egw.visitMethod(methodTree, null);
-          assertThat(egw.checkerDispatcher.methodYield).isNull();
-        }
-      }
-    });
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/YieldReporting.java")
+      .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
+        @Override
+        public void visitNode(Tree tree) {
+          MethodTree methodTree = (MethodTree) tree;
+          if ("test".equals(methodTree.symbol().name())) {
+            ExplodedGraphWalker egw = new ExplodedGraphWalker(this.behaviorCache, (Sema) context.getSemanticModel());
+            egw.visitMethod(methodTree, null);
+            assertThat(egw.checkerDispatcher.methodYield).isNull();
+          }
+          }
+        })
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   public void test_this_super_not_null() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/ThisSuperNotNull.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ThisSuperNotNull.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   static class MethodAsInstruction extends SECheck {
     int toStringCall = 0;
+
     @Override
     public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
-      if(syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-        if(((MethodInvocationTree) syntaxNode).symbol().name().equals("toString")) {
+      if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+        if (((MethodInvocationTree) syntaxNode).symbol().name().equals("toString")) {
           toStringCall++;
         }
       }
       return super.checkPreStatement(context, syntaxNode);
     }
   }
+
   @Test
   public void methods_should_be_evaluated_only_once() throws Exception {
     MethodAsInstruction check = new MethodAsInstruction();
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/EvaluateMethodOnce.java", check);
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/EvaluateMethodOnce.java")
+      .withCheck(check)
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
     assertThat(check.toStringCall).isEqualTo(1);
   }
 
   @Test
   public void compound_assignment_should_create_new_value_on_stack() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/CompoundAssignmentExecution.java", new SECheck() {
+    SECheck check = new SECheck() {
 
       private SymbolicValue rhsValue;
 
@@ -438,7 +576,12 @@ public class ExplodedGraphWalkerTest {
         }
         return state;
       }
-    });
+    };
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/CompoundAssignmentExecution.java")
+      .withCheck(check)
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
@@ -456,13 +599,17 @@ public class ExplodedGraphWalkerTest {
         return state;
       }
     };
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/BinaryTreeExecution.java", check);
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/BinaryTreeExecution.java")
+      .withCheck(check)
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
     assertThat(counter[0]).isEqualTo(17);
   }
 
   @Test
   public void simple_assignment_should_preserve_value_on_stack() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SimpleAssignmentExecution.java", new SECheck() {
+    SECheck check = new SECheck() {
 
       private SymbolicValue rhsValue;
 
@@ -485,7 +632,12 @@ public class ExplodedGraphWalkerTest {
         }
         return state;
       }
-    });
+    };
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/SimpleAssignmentExecution.java")
+      .withCheck(check)
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
@@ -501,8 +653,7 @@ public class ExplodedGraphWalkerTest {
       DebugMethodYieldsCheck.class,
       MinMaxRangeCheck.class,
       ParameterNullnessCheck.class,
-      XxeProcessingCheck.class
-      )
+      XxeProcessingCheck.class)
       .map(Class::getSimpleName)
       .collect(Collectors.toList());
     // Compute the list of SEChecks defined in package
@@ -522,26 +673,39 @@ public class ExplodedGraphWalkerTest {
   @Test
   public void private_method_should_be_visited() {
     List<String> visitedMethods = new ArrayList<>();
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/XprocIfaceWithPrivateMethod.java", new SECheck() {
-      @Override
-      public void init(MethodTree methodTree, CFG cfg) {
-        visitedMethods.add(methodTree.symbol().name());
-      }
-    });
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XprocIfaceWithPrivateMethod.java")
+      .withCheck(new SECheck() {
+        @Override
+        public void init(MethodTree methodTree, CFG cfg) {
+          visitedMethods.add(methodTree.symbol().name());
+        }
+      })
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
     assertThat(visitedMethods).containsExactly("test", "privateMethod");
   }
 
   @Test
   public void constraints_on_field_reset() {
-    JavaCheckVerifier.verify("src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsA.java", seChecks());
-    JavaCheckVerifier.verify("src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsB.java", seChecks());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsA.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile("src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsB.java")
+      .withChecks(seChecks())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_enqueueing_of_catch_blocks() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/java/org/sonar/java/bytecode/se/testdata/ExceptionEnqueue.java");
 
-    MethodBehavior mb = sev.behaviorCache.behaviors.get("org.sonar.java.bytecode.se.testdata.ExceptionEnqueue#testCatchBlockEnqueue(Lorg/sonar/java/bytecode/se/testdata/ExceptionEnqueue;)Z");
+    MethodBehavior mb = sev.behaviorCache.behaviors
+      .get("org.sonar.java.bytecode.se.testdata.ExceptionEnqueue#testCatchBlockEnqueue(Lorg/sonar/java/bytecode/se/testdata/ExceptionEnqueue;)Z");
     List<HappyPathYield> happyPathYields = mb.happyPathYields().collect(Collectors.toList());
     assertThat(happyPathYields).hasSize(1);
     assertThat(happyPathYields.get(0).resultConstraint()).isNull();
@@ -555,7 +719,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   private static SECheck[] seChecks() {
-    return new SECheck[]{
+    return new SECheck[] {
       new NullDereferenceCheck(),
       new DivisionByZeroCheck(),
       new ConditionalUnreachableCodeCheck(),

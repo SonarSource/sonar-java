@@ -26,7 +26,10 @@ public class CatchIllegalMonitorStateExceptionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CatchIllegalMonitorStateExceptionCheck.java", new CatchIllegalMonitorStateExceptionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CatchIllegalMonitorStateExceptionCheck.java")
+      .withCheck(new CatchIllegalMonitorStateExceptionCheck())
+      .verifyIssues();
   }
 
 }

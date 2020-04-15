@@ -28,11 +28,18 @@ public class UnderscoreMisplacedOnNumberCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UnderscoreMisplacedOnNumberCheck.java", new UnderscoreMisplacedOnNumberCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UnderscoreMisplacedOnNumberCheck.java")
+      .withCheck(new UnderscoreMisplacedOnNumberCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_java_6() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/UnderscoreMisplacedOnNumberCheck_java6.java"), new UnderscoreMisplacedOnNumberCheck(), 6);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/UnderscoreMisplacedOnNumberCheck_java6.java"))
+      .withCheck(new UnderscoreMisplacedOnNumberCheck())
+      .withJavaVersion(6)
+      .verifyNoIssues();
   }
 }

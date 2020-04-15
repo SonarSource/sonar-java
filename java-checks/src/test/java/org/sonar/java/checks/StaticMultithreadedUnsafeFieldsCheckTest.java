@@ -30,10 +30,12 @@ public class StaticMultithreadedUnsafeFieldsCheckTest {
    */
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StaticMultithreadedUnsafeFields.java",
-      new StaticMultithreadedUnsafeFieldsCheck(),
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StaticMultithreadedUnsafeFields.java")
+      .withCheck(new StaticMultithreadedUnsafeFieldsCheck())
       // FIXME should not requires an empty classpath
-      Collections.emptyList());
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
   }
 
 }

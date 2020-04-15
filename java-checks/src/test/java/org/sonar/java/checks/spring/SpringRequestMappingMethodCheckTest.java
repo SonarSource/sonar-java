@@ -26,8 +26,15 @@ public class SpringRequestMappingMethodCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringRequestMappingMethodCheck.java", new SpringRequestMappingMethodCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringRequestMappingMethodCheck.java", new SpringRequestMappingMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringRequestMappingMethodCheck.java")
+      .withCheck(new SpringRequestMappingMethodCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringRequestMappingMethodCheck.java")
+      .withCheck(new SpringRequestMappingMethodCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

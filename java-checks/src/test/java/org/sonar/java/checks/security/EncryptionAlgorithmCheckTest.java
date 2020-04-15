@@ -28,7 +28,10 @@ public class EncryptionAlgorithmCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/security/EncryptionAlgorithmCheck.java"), new EncryptionAlgorithmCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/EncryptionAlgorithmCheck.java"))
+      .withCheck(new EncryptionAlgorithmCheck())
+      .verifyIssues();
   }
 
 }

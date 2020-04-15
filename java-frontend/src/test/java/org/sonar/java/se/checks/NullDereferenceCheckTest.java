@@ -20,52 +20,89 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.testing.CheckVerifier;
 
 public class NullDereferenceCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/NullDereferenceCheck.java", new NullDereferenceCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/NullDereferenceCheck.java")
+      .withCheck(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void objectsMethodsTest() {
-    JavaCheckVerifier.verify("src/test/files/se/ObjectsMethodsTest.java", new NullDereferenceCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ObjectsMethodsTest.java")
+      .withCheck(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void null_array_access() {
-    JavaCheckVerifier.verify("src/test/files/se/NullArrayAccess.java", new NullDereferenceCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/NullArrayAccess.java")
+      .withCheck(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void chained_method_invocation_issue_order() {
-    JavaCheckVerifier.verify("src/test/files/se/MethodParamInvocationOrder.java", new NullDereferenceCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/MethodParamInvocationOrder.java")
+      .withCheck(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void invocation_leading_to_NPE() {
-    JavaCheckVerifier.verify("src/test/files/se/MethodInvocationLeadingToNPE.java", new NullDereferenceCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/MethodInvocationLeadingToNPE.java")
+      .withCheck(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void reporting_test() {
-    JavaCheckVerifier.verify("src/test/files/se/NPE_reporting.java", new NullDereferenceCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/NPE_reporting.java")
+      .withCheck(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void ruling() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/NPEwithZeroTests.java", new NullDereferenceCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/NPEwithZeroTests.java")
+      .withCheck(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
   }
 
   @Test
   public void test_deferred_reporting() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/NPE_deferred.java", new NullDereferenceCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/NPE_deferred.java")
+      .withCheck(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_npe_transitive() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/NPE_transitive.java", new NullDereferenceCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/NPE_transitive.java")
+      .withCheck(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 }

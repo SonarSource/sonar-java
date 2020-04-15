@@ -26,7 +26,10 @@ public class CustomSerializationMethodCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CustomSerializationMethodCheck.java", new CustomSerializationMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CustomSerializationMethodCheck.java")
+      .withCheck(new CustomSerializationMethodCheck())
+      .verifyIssues();
   }
 
 }

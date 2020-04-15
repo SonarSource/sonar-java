@@ -29,7 +29,10 @@ public class AllBranchesAreIdenticalCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/AllBranchesAreIdentical.java"), new AllBranchesAreIdenticalCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/AllBranchesAreIdentical.java"))
+      .withCheck(new AllBranchesAreIdenticalCheck())
+      .verifyIssues();
   }
 
 }

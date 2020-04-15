@@ -26,7 +26,10 @@ public class AccessibilityChangeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AccessibilityChangeCheck.java", new AccessibilityChangeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AccessibilityChangeCheck.java")
+      .withCheck(new AccessibilityChangeCheck())
+      .verifyIssues();
   }
 
 }

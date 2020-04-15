@@ -19,8 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.io.File;
-import java.util.ArrayList;
+import java.util.Collections;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
@@ -30,24 +29,45 @@ public class NoTestInTestClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NoTestInTestClassCheck.java", new NoTestInTestClassCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/NoTestInTestClassCheck.java", new NoTestInTestClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NoTestInTestClassCheck.java")
+      .withCheck(new NoTestInTestClassCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NoTestInTestClassCheck.java")
+      .withCheck(new NoTestInTestClassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void testEnclosed() {
-    JavaCheckVerifier.verify("src/test/files/checks/NoTestInTestClassCheckEnclosed.java", new NoTestInTestClassCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/NoTestInTestClassCheckEnclosed.java", new NoTestInTestClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NoTestInTestClassCheckEnclosed.java")
+      .withCheck(new NoTestInTestClassCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NoTestInTestClassCheckEnclosed.java")
+      .withCheck(new NoTestInTestClassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void noClasspath() {
-    JavaCheckVerifier.verify("src/test/files/checks/NoTestInTestClassCheckNoClasspath.java", new NoTestInTestClassCheck(), new ArrayList<File>());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NoTestInTestClassCheckNoClasspath.java")
+      .withCheck(new NoTestInTestClassCheck())
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
   }
 
   @Test
   public void archUnit() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/NoTestInTestClassCheckArchUnitTest.java"), new NoTestInTestClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NoTestInTestClassCheckArchUnitTest.java"))
+      .withCheck(new NoTestInTestClassCheck())
+      .verifyIssues();
   }
 
 }

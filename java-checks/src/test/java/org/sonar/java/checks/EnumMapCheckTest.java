@@ -26,7 +26,10 @@ public class EnumMapCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EnumMapCheck.java", new EnumMapCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EnumMapCheck.java")
+      .withCheck(new EnumMapCheck())
+      .verifyIssues();
   }
 
 }

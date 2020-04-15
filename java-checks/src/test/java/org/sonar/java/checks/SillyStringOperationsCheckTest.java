@@ -28,6 +28,9 @@ public class SillyStringOperationsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/SillyStringOperationsCheck.java"), new SillyStringOperationsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SillyStringOperationsCheck.java"))
+      .withCheck(new SillyStringOperationsCheck())
+      .verifyIssues();
   }
 }

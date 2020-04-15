@@ -28,14 +28,20 @@ public class BadInterfaceNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BadInterfaceNameNoncompliant.java"), new BadInterfaceNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/naming/BadInterfaceNameNoncompliant.java"))
+      .withCheck(new BadInterfaceNameCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test2() {
     BadInterfaceNameCheck check = new BadInterfaceNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadInterfaceName.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadInterfaceName.java")
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
 }

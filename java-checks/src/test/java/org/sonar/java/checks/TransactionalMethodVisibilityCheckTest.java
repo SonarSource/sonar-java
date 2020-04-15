@@ -26,11 +26,18 @@ public class TransactionalMethodVisibilityCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/TransactionalMethodVisibilityCheck.java", new TransactionalMethodVisibilityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/TransactionalMethodVisibilityCheck.java")
+      .withCheck(new TransactionalMethodVisibilityCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_wo_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/TransactionalMethodVisibilityCheck.java", new TransactionalMethodVisibilityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/TransactionalMethodVisibilityCheck.java")
+      .withCheck(new TransactionalMethodVisibilityCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

@@ -27,6 +27,9 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class PrimitiveWrappersInTernaryOperatorCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/PrimitiveWrappersInTernaryOperatorCheck.java"), new PrimitiveWrappersInTernaryOperatorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/PrimitiveWrappersInTernaryOperatorCheck.java"))
+      .withCheck(new PrimitiveWrappersInTernaryOperatorCheck())
+      .verifyIssues();
   }
 }

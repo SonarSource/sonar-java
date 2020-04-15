@@ -26,9 +26,19 @@ public class SynchronizedClassUsageCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SynchronizedClassUsageCheck.java", new SynchronizedClassUsageCheck());
-    JavaCheckVerifier.verify("src/test/files/checks/SynchronizedClassUsageCheck.java", new SynchronizedClassUsageCheck());
-    JavaCheckVerifier.verify("src/test/files/checks/SynchronizedClassUsageByAPICheck.java", new SynchronizedClassUsageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SynchronizedClassUsageCheck.java")
+      .withCheck(new SynchronizedClassUsageCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SynchronizedClassUsageCheck.java")
+      .withCheck(new SynchronizedClassUsageCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SynchronizedClassUsageByAPICheck.java")
+      .withCheck(new SynchronizedClassUsageCheck())
+      .verifyIssues();
   }
 
 }

@@ -28,12 +28,18 @@ public class AssertionArgumentOrderCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/AssertionArgumentOrderCheck.java"), new AssertionArgumentOrderCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck.java"))
+      .withCheck(new AssertionArgumentOrderCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_JUnit5() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/AssertionArgumentOrderCheck_JUnit5.java"), new AssertionArgumentOrderCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck_JUnit5.java"))
+      .withCheck(new AssertionArgumentOrderCheck())
+      .verifyIssues();
   }
 
 }

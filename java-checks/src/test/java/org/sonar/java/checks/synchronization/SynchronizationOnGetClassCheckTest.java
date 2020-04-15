@@ -26,8 +26,15 @@ public class SynchronizationOnGetClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SynchronizationOnGetClassCheck.java", new SynchronizationOnGetClassCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SynchronizationOnGetClassCheck.java", new SynchronizationOnGetClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SynchronizationOnGetClassCheck.java")
+      .withCheck(new SynchronizationOnGetClassCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SynchronizationOnGetClassCheck.java")
+      .withCheck(new SynchronizationOnGetClassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

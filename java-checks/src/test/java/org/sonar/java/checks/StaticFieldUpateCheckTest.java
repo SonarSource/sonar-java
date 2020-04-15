@@ -29,7 +29,10 @@ public class StaticFieldUpateCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/StaticFieldUpateCheck.java", new StaticFieldUpateCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StaticFieldUpateCheck.java")
+      .withCheck(new StaticFieldUpateCheck())
+      .verifyIssues();
   }
 
   @Test

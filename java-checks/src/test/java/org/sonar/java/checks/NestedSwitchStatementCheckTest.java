@@ -26,6 +26,9 @@ public class NestedSwitchStatementCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NestedSwitchStatementCheck.java", new NestedSwitchStatementCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NestedSwitchStatementCheck.java")
+      .withCheck(new NestedSwitchStatementCheck())
+      .verifyIssues();
   }
 }

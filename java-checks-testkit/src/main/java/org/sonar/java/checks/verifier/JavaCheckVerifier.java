@@ -206,7 +206,7 @@ public final class JavaCheckVerifier {
    */
   @Deprecated
   public static void verifyIssueOnFile(String filename, String message, JavaFileScanner check) {
-    CheckVerifier.newVerifier()
+    newVerifier()
       .onFile(filename)
       .withCheck(check)
       .verifyIssueOnFile(message);
@@ -217,7 +217,7 @@ public final class JavaCheckVerifier {
    */
   @Deprecated
   public static void verifyIssueOnProject(String filename, String message, JavaFileScanner check) {
-    CheckVerifier.newVerifier()
+    newVerifier()
       .onFile(filename)
       .withCheck(check)
       .verifyIssueOnProject(message);

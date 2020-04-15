@@ -20,13 +20,18 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.testing.CheckVerifier;
 
 public class ParameterNullnessCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/ParameterNullnessCheck.java", new ParameterNullnessCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ParameterNullnessCheck.java")
+      .withCheck(new ParameterNullnessCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
 }

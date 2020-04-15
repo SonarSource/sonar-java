@@ -26,6 +26,9 @@ public class ResultSetIsLastCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ResultSetIsLastCheck.java", new ResultSetIsLastCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ResultSetIsLastCheck.java")
+      .withCheck(new ResultSetIsLastCheck())
+      .verifyIssues();
   }
 }

@@ -26,7 +26,10 @@ public class OctalValuesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/OctalValuesCheck.java", new OctalValuesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OctalValuesCheck.java")
+      .withCheck(new OctalValuesCheck())
+      .verifyIssues();
   }
 
 }

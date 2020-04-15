@@ -28,7 +28,10 @@ public class AssignmentInSubExpressionCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/AssignmentInSubExpressionCheck.java"), new AssignmentInSubExpressionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/AssignmentInSubExpressionCheck.java"))
+      .withCheck(new AssignmentInSubExpressionCheck())
+      .verifyIssues();
   }
 
 }

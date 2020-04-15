@@ -26,12 +26,19 @@ public class MethodIdenticalImplementationsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/MethodIdenticalImplementationsCheck.java", new MethodIdenticalImplementationsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MethodIdenticalImplementationsCheck.java")
+      .withCheck(new MethodIdenticalImplementationsCheck())
+      .verifyIssues();
   }
 
   @Test
   public void noIssueWithoutSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/MethodIdenticalImplementationsCheck.java", new MethodIdenticalImplementationsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MethodIdenticalImplementationsCheck.java")
+      .withCheck(new MethodIdenticalImplementationsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -27,9 +27,15 @@ public class BadTypeParameterNameCheckTest {
   @Test
   public void test() {
     BadTypeParameterNameCheck check = new BadTypeParameterNameCheck();
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadGenericNameNoncompliant.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadGenericNameNoncompliant.java")
+      .withCheck(check)
+      .verifyIssues();
     // verify that pattern was compiled once for the instance.
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadGenericNameNoncompliant.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadGenericNameNoncompliant.java")
+      .withCheck(check)
+      .verifyIssues();
 
   }
 
@@ -37,7 +43,10 @@ public class BadTypeParameterNameCheckTest {
   public void test2() {
     BadTypeParameterNameCheck check = new BadTypeParameterNameCheck();
     check.format = "^[a-zA-Z0-9_]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadGenericName.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadGenericName.java")
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
 }

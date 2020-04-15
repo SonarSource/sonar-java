@@ -26,18 +26,29 @@ public class DiamondOperatorCheckTest {
 
   @Test
   public void test_no_version() {
-    JavaCheckVerifier.verify("src/test/files/checks/DiamondOperatorCheck_no_version.java", new DiamondOperatorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DiamondOperatorCheck_no_version.java")
+      .withCheck(new DiamondOperatorCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_with_java_7() {
-    JavaCheckVerifier.verify("src/test/files/checks/DiamondOperatorCheck_java_7.java", new DiamondOperatorCheck(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DiamondOperatorCheck_java_7.java")
+      .withCheck(new DiamondOperatorCheck())
+      .withJavaVersion(7)
+      .verifyIssues();
   }
 
   @Test
   public void test_with_java_8() {
     // take into account ternary operators
-    JavaCheckVerifier.verify("src/test/files/checks/DiamondOperatorCheck_java_8.java", new DiamondOperatorCheck(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DiamondOperatorCheck_java_8.java")
+      .withCheck(new DiamondOperatorCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 
 }

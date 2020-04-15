@@ -28,17 +28,27 @@ public class UnusedPrivateFieldCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedPrivateFieldCheck.java", new UnusedPrivateFieldCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedPrivateFieldCheck.java")
+      .withCheck(new UnusedPrivateFieldCheck())
+      .verifyIssues();
   }
 
   @Test
   public void testNative() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/unused/UnusedPrivateFieldCheckWithNative.java"), new UnusedPrivateFieldCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/unused/UnusedPrivateFieldCheckWithNative.java"))
+      .withCheck(new UnusedPrivateFieldCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/unused/UnusedPrivateFieldCheck.java", new UnusedPrivateFieldCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedPrivateFieldCheck.java")
+      .withCheck(new UnusedPrivateFieldCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

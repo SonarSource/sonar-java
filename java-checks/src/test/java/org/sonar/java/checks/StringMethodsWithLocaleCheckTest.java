@@ -27,7 +27,10 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class StringMethodsWithLocaleCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/StringMethodsWithLocaleCheck.java"), new StringMethodsWithLocaleCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StringMethodsWithLocaleCheck.java"))
+      .withCheck(new StringMethodsWithLocaleCheck())
+      .verifyIssues();
   }
 
 }

@@ -28,19 +28,34 @@ public class UseSwitchExpressionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UseSwitchExpressionCheck.java", new UseSwitchExpressionCheck(), 13);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UseSwitchExpressionCheck.java")
+      .withCheck(new UseSwitchExpressionCheck())
+      .withJavaVersion(13)
+      .verifyIssues();
   }
 
   @Test
   public void test_no_issue_below_java_13() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/UseSwitchExpressionCheck_java11.java"), new UseSwitchExpressionCheck(), 11);
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/UseSwitchExpressionCheck_java11.java"), new UseSwitchExpressionCheck(), 12);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/UseSwitchExpressionCheck_java11.java"))
+      .withCheck(new UseSwitchExpressionCheck())
+      .withJavaVersion(11)
+      .verifyNoIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/UseSwitchExpressionCheck_java11.java"))
+      .withCheck(new UseSwitchExpressionCheck())
+      .withJavaVersion(12)
+      .verifyNoIssues();
   }
 
   @Test
   public void test_no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UseSwitchExpressionCheck.java", new UseSwitchExpressionCheck(), 13);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UseSwitchExpressionCheck.java")
+      .withCheck(new UseSwitchExpressionCheck())
+      .withJavaVersion(13)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }
-
-

@@ -26,7 +26,10 @@ public class NullDereferenceInConditionalCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NullDereferenceInConditionalCheck.java", new NullDereferenceInConditionalCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NullDereferenceInConditionalCheck.java")
+      .withCheck(new NullDereferenceInConditionalCheck())
+      .verifyIssues();
   }
 
 }

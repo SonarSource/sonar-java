@@ -26,6 +26,9 @@ public class EmptyClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EmptyClass.java", new EmptyClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EmptyClass.java")
+      .withCheck(new EmptyClassCheck())
+      .verifyIssues();
   }
 }

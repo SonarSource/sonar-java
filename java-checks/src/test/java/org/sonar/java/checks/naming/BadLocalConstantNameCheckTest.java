@@ -28,19 +28,29 @@ public class BadLocalConstantNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheck.java", new BadLocalConstantNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheck.java")
+      .withCheck(new BadLocalConstantNameCheck())
+      .verifyIssues();
   }
 
   @Test
   public void otherPattern() {
     BadLocalConstantNameCheck check = new BadLocalConstantNameCheck();
     check.format = "^[A-Z][A-Z0-9]*$";
-    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheckOtherPattern.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheckOtherPattern.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void noIssueWithoutSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheck.java", new BadLocalConstantNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheck.java")
+      .withCheck(new BadLocalConstantNameCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

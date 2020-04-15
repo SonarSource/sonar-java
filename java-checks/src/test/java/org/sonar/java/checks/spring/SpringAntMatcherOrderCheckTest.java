@@ -31,8 +31,15 @@ public class SpringAntMatcherOrderCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringAntMatcherOrderCheck.java", new SpringAntMatcherOrderCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringAntMatcherOrderCheck.java", new SpringAntMatcherOrderCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringAntMatcherOrderCheck.java")
+      .withCheck(new SpringAntMatcherOrderCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringAntMatcherOrderCheck.java")
+      .withCheck(new SpringAntMatcherOrderCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test

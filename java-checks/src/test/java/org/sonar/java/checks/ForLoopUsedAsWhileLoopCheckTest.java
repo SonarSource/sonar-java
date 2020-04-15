@@ -26,7 +26,10 @@ public class ForLoopUsedAsWhileLoopCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ForLoopUsedAsWhileLoopCheck.java", new ForLoopUsedAsWhileLoopCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ForLoopUsedAsWhileLoopCheck.java")
+      .withCheck(new ForLoopUsedAsWhileLoopCheck())
+      .verifyIssues();
   }
 
 }

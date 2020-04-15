@@ -26,6 +26,9 @@ public class EmptyMethodsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EmptyMethodsCheck.java", new EmptyMethodsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EmptyMethodsCheck.java")
+      .withCheck(new EmptyMethodsCheck())
+      .verifyIssues();
   }
 }

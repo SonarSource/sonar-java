@@ -20,7 +20,8 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.testing.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,12 +29,20 @@ public class LocksNotUnlockedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/LocksNotUnlockedCheck.java", new LocksNotUnlockedCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/LocksNotUnlockedCheck.java")
+      .withCheck(new LocksNotUnlockedCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void object_constraint_cache_issues() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/LocksNotUnlockedCheckCache.java", new LocksNotUnlockedCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/LocksNotUnlockedCheckCache.java")
+      .withCheck(new LocksNotUnlockedCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test

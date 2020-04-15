@@ -26,8 +26,15 @@ public class EqualsParametersMarkedNonNullCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/EqualsParametersMarkedNonNullCheck.java", new EqualsParametersMarkedNonNullCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/EqualsParametersMarkedNonNullCheck.java", new EqualsParametersMarkedNonNullCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EqualsParametersMarkedNonNullCheck.java")
+      .withCheck(new EqualsParametersMarkedNonNullCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EqualsParametersMarkedNonNullCheck.java")
+      .withCheck(new EqualsParametersMarkedNonNullCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

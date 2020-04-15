@@ -20,12 +20,17 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.testing.CheckVerifier;
 
 public class InvariantReturnCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/InvariantReturnCheck.java", new InvariantReturnCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/InvariantReturnCheck.java")
+      .withCheck(new InvariantReturnCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 }

@@ -26,8 +26,15 @@ public class DoubleCheckedLockingAssignmentCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DoubleCheckedLockingAssignment.java", new DoubleCheckedLockingAssignmentCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/DoubleCheckedLockingAssignment.java", new DoubleCheckedLockingAssignmentCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DoubleCheckedLockingAssignment.java")
+      .withCheck(new DoubleCheckedLockingAssignmentCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DoubleCheckedLockingAssignment.java")
+      .withCheck(new DoubleCheckedLockingAssignmentCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

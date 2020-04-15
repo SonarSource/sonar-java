@@ -26,14 +26,20 @@ public class BadClassNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadClassNameNoncompliant.java", new BadClassNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadClassNameNoncompliant.java")
+      .withCheck(new BadClassNameCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test2() {
     BadClassNameCheck check = new BadClassNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadClassName.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadClassName.java")
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
 }

@@ -25,7 +25,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class ObjectFinalizeOverridenCallsSuperFinalizeCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java", new ObjectFinalizeOverridenCallsSuperFinalizeCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java", new ObjectFinalizeOverridenCallsSuperFinalizeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java")
+      .withCheck(new ObjectFinalizeOverridenCallsSuperFinalizeCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java")
+      .withCheck(new ObjectFinalizeOverridenCallsSuperFinalizeCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

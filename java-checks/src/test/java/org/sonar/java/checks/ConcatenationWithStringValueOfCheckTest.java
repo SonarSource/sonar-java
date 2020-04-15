@@ -26,7 +26,10 @@ public class ConcatenationWithStringValueOfCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ConcatenationWithStringValueOfCheck.java", new ConcatenationWithStringValueOfCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ConcatenationWithStringValueOfCheck.java")
+      .withCheck(new ConcatenationWithStringValueOfCheck())
+      .verifyIssues();
   }
 
 }

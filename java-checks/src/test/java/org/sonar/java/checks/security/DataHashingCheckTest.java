@@ -26,7 +26,14 @@ public class DataHashingCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/DataHashingCheck.java", new DataHashingCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/DataHashingCheck.java", new DataHashingCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/DataHashingCheck.java")
+      .withCheck(new DataHashingCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/DataHashingCheck.java")
+      .withCheck(new DataHashingCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

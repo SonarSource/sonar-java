@@ -28,31 +28,46 @@ public class StaticImportCountCheckTest {
 
   @Test
   public void static_imports_below_threshold_are_compliant() {
-    JavaCheckVerifier.verifyNoIssue(TEST_FILES_DIR + "CompliantImports.java", new StaticImportCountCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILES_DIR + "CompliantImports.java")
+      .withCheck(new StaticImportCountCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void cu_with_just_static_imports() {
-    JavaCheckVerifier.verify(TEST_FILES_DIR + "StaticImportCountCheck.java", new StaticImportCountCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILES_DIR + "StaticImportCountCheck.java")
+      .withCheck(new StaticImportCountCheck())
+      .verifyIssues();
   }
 
   @Test
   public void cu_with_normal_and_static_imports() {
-    JavaCheckVerifier.verify(TEST_FILES_DIR + "MixedStandardAndStaticImports.java", new StaticImportCountCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILES_DIR + "MixedStandardAndStaticImports.java")
+      .withCheck(new StaticImportCountCheck())
+      .verifyIssues();
   }
 
   @Test
   public void cu_with_custom_threshold_compliant() {
     StaticImportCountCheck check = new StaticImportCountCheck();
     check.setThreshold(5);
-    JavaCheckVerifier.verifyNoIssue(TEST_FILES_DIR + "MixedStandardAndStaticImportsCompliant.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILES_DIR + "MixedStandardAndStaticImportsCompliant.java")
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
   @Test
   public void cu_with_custom_threshold_noncompliant() {
     StaticImportCountCheck check = new StaticImportCountCheck();
     check.setThreshold(3);
-    JavaCheckVerifier.verify(TEST_FILES_DIR + "MixedStandardAndStaticImportsCustomThreshold.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILES_DIR + "MixedStandardAndStaticImportsCustomThreshold.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

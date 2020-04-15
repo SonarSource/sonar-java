@@ -32,10 +32,17 @@ public class LDAPAuthenticatedConnectionCheckTest {
    */
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/security/LDAPAuthenticatedConnectionCheck.java"),
-      new LDAPAuthenticatedConnectionCheck(),
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/LDAPAuthenticatedConnectionCheck.java"))
+      .withCheck(new LDAPAuthenticatedConnectionCheck())
       // FIXME should not requires an empty classpath
-      Collections.emptyList());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/security/LDAPAuthenticatedConnectionCheck.java"), new LDAPAuthenticatedConnectionCheck());
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
+
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/LDAPAuthenticatedConnectionCheck.java"))
+      .withCheck(new LDAPAuthenticatedConnectionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class ScheduledThreadPoolExecutorZeroCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ScheduledThreadPoolExecutorZeroCheck.java", new ScheduledThreadPoolExecutorZeroCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ScheduledThreadPoolExecutorZeroCheck.java")
+      .withCheck(new ScheduledThreadPoolExecutorZeroCheck())
+      .verifyIssues();
   }
 }

@@ -28,11 +28,18 @@ public class UnderscoreOnNumberCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/UnderscoreOnNumberCheck.java"), new UnderscoreOnNumberCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/UnderscoreOnNumberCheck.java"))
+      .withCheck(new UnderscoreOnNumberCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_java_6() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/UnderscoreOnNumberCheck_java6.java"), new UnderscoreOnNumberCheck(), 6);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/UnderscoreOnNumberCheck_java6.java"))
+      .withCheck(new UnderscoreOnNumberCheck())
+      .withJavaVersion(6)
+      .verifyNoIssues();
   }
 }

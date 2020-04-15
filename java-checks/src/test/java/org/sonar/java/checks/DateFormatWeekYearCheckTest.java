@@ -26,6 +26,9 @@ public class DateFormatWeekYearCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DateFormatWeekYearCheck.java", new DateFormatWeekYearCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DateFormatWeekYearCheck.java")
+      .withCheck(new DateFormatWeekYearCheck())
+      .verifyIssues();
   }
 }

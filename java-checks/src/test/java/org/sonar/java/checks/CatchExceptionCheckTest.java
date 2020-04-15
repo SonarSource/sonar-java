@@ -26,7 +26,10 @@ public class CatchExceptionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CatchExceptionCheck.java", new CatchExceptionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CatchExceptionCheck.java")
+      .withCheck(new CatchExceptionCheck())
+      .verifyIssues();
   }
 
 }

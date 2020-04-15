@@ -26,14 +26,20 @@ public class LoggersDeclarationCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/LoggersDeclarationCheck.java", new LoggersDeclarationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LoggersDeclarationCheck.java")
+      .withCheck(new LoggersDeclarationCheck())
+      .verifyIssues();
   }
 
   @Test
   public void custom() {
     LoggersDeclarationCheck check = new LoggersDeclarationCheck();
     check.format = ".*";
-    JavaCheckVerifier.verify("src/test/files/checks/LoggersDeclarationCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LoggersDeclarationCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class ThreadStartedInConstructorCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ThreadStartedInConstructor.java", new ThreadStartedInConstructorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThreadStartedInConstructor.java")
+      .withCheck(new ThreadStartedInConstructorCheck())
+      .verifyIssues();
   }
 
 }

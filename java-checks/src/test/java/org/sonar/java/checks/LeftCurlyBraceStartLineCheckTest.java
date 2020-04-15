@@ -26,6 +26,9 @@ public class LeftCurlyBraceStartLineCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/LeftCurlyBraceStartLineCheck.java", new LeftCurlyBraceStartLineCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LeftCurlyBraceStartLineCheck.java")
+      .withCheck(new LeftCurlyBraceStartLineCheck())
+      .verifyIssues();
   }
 }

@@ -30,10 +30,12 @@ public class SecureXmlTransformerCheckTest {
    */
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/SecureXmlTransformerCheck.java",
-      new SecureXmlTransformerCheck(),
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/SecureXmlTransformerCheck.java")
+      .withCheck(new SecureXmlTransformerCheck())
       // FIXME should not requires an empty classpath
-      Collections.emptyList());
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
   }
 
 }

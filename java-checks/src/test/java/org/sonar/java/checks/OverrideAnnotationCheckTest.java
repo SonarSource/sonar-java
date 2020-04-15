@@ -24,36 +24,62 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class OverrideAnnotationCheckTest {
 
-
   @Test
   public void test_java() {
-    JavaCheckVerifier.verify("src/test/files/checks/OverrideAnnotationCheck.java", new OverrideAnnotationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OverrideAnnotationCheck.java")
+      .withCheck(new OverrideAnnotationCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_java_8() {
-    JavaCheckVerifier.verify("src/test/files/checks/OverrideAnnotationCheck_java8.java", new OverrideAnnotationCheck(), 8);
-    JavaCheckVerifier.verify("src/test/files/checks/OverrideAnnotationCheck.java", new OverrideAnnotationCheck(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OverrideAnnotationCheck_java8.java")
+      .withCheck(new OverrideAnnotationCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OverrideAnnotationCheck.java")
+      .withCheck(new OverrideAnnotationCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 
   @Test
   public void test_java_6() {
-    JavaCheckVerifier.verify("src/test/files/checks/OverrideAnnotationCheck.java", new OverrideAnnotationCheck(), 6);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OverrideAnnotationCheck.java")
+      .withCheck(new OverrideAnnotationCheck())
+      .withJavaVersion(6)
+      .verifyIssues();
   }
 
   @Test
   public void test_java_5() {
-    JavaCheckVerifier.verify("src/test/files/checks/OverrideAnnotationCheck_java5.java", new OverrideAnnotationCheck(), 5);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OverrideAnnotationCheck_java5.java")
+      .withCheck(new OverrideAnnotationCheck())
+      .withJavaVersion(5)
+      .verifyIssues();
   }
 
   @Test
   public void test_java_4() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/OverrideAnnotationCheck_java4.java", new OverrideAnnotationCheck(), 4);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OverrideAnnotationCheck_java4.java")
+      .withCheck(new OverrideAnnotationCheck())
+      .withJavaVersion(4)
+      .verifyNoIssues();
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/OverrideAnnotationCheck.java", new OverrideAnnotationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OverrideAnnotationCheck.java")
+      .withCheck(new OverrideAnnotationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

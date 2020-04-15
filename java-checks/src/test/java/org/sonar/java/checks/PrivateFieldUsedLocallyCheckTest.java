@@ -26,7 +26,10 @@ public class PrivateFieldUsedLocallyCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PrivateFieldUsedLocallyCheck.java", new PrivateFieldUsedLocallyCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PrivateFieldUsedLocallyCheck.java")
+      .withCheck(new PrivateFieldUsedLocallyCheck())
+      .verifyIssues();
   }
 
 }

@@ -28,6 +28,9 @@ public class NotifyCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/NotifyCheck.java"), new NotifyCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NotifyCheck.java"))
+      .withCheck(new NotifyCheck())
+      .verifyIssues();
   }
 }

@@ -26,6 +26,9 @@ public class ThreadSleepCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ThreadSleepCheck.java", new ThreadSleepCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThreadSleepCheck.java")
+      .withCheck(new ThreadSleepCheck())
+      .verifyIssues();
   }
 }

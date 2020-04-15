@@ -26,6 +26,9 @@ public class ClassComparedByNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ClassComparedByNameCheck.java", new ClassComparedByNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ClassComparedByNameCheck.java")
+      .withCheck(new ClassComparedByNameCheck())
+      .verifyIssues();
   }
 }

@@ -26,7 +26,10 @@ public class NestedEnumStaticCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NestedEnumStatic.java", new NestedEnumStaticCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NestedEnumStatic.java")
+      .withCheck(new NestedEnumStaticCheck())
+      .verifyIssues();
   }
 
 }

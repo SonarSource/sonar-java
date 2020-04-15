@@ -25,7 +25,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class StaticFieldInitializationCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StaticFieldInitializationCheck.java", new StaticFieldInitializationCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/StaticFieldInitializationCheck.java", new StaticFieldInitializationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StaticFieldInitializationCheck.java")
+      .withCheck(new StaticFieldInitializationCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StaticFieldInitializationCheck.java")
+      .withCheck(new StaticFieldInitializationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

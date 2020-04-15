@@ -25,11 +25,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class CognitiveComplexityMethodCheckTest {
 
   @Test
-  public void testBasicCalculations(){
+  public void testBasicCalculations() {
 
     CognitiveComplexityMethodCheck check = new CognitiveComplexityMethodCheck();
     check.setMax(0);
-    JavaCheckVerifier.verify("src/test/files/checks/CognitiveComplexityMethodCheckMax0.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CognitiveComplexityMethodCheckMax0.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

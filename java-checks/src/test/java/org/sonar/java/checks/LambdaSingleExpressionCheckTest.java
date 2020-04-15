@@ -26,12 +26,19 @@ public class LambdaSingleExpressionCheckTest {
 
   @Test
   public void no_version() {
-    JavaCheckVerifier.verify("src/test/files/checks/LambdaSingleExpressionCheck_no_version.java", new LambdaSingleExpressionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LambdaSingleExpressionCheck_no_version.java")
+      .withCheck(new LambdaSingleExpressionCheck())
+      .verifyIssues();
   }
 
   @Test
   public void java_8() {
-    JavaCheckVerifier.verify("src/test/files/checks/LambdaSingleExpressionCheck.java", new LambdaSingleExpressionCheck(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LambdaSingleExpressionCheck.java")
+      .withCheck(new LambdaSingleExpressionCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 
 }

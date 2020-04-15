@@ -27,6 +27,9 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class PseudoRandomCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/PseudoRandomCheck.java"), new PseudoRandomCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/PseudoRandomCheck.java"))
+      .withCheck(new PseudoRandomCheck())
+      .verifyIssues();
   }
 }

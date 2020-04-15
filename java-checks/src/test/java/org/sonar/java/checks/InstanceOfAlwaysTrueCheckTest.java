@@ -26,7 +26,10 @@ public class InstanceOfAlwaysTrueCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/InstanceOfAlwaysTrueCheck.java", new InstanceOfAlwaysTrueCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InstanceOfAlwaysTrueCheck.java")
+      .withCheck(new InstanceOfAlwaysTrueCheck())
+      .verifyIssues();
   }
 
 }

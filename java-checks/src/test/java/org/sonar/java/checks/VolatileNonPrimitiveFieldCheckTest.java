@@ -26,7 +26,10 @@ public class VolatileNonPrimitiveFieldCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/VolatileNonPrimitiveFieldCheck.java", new VolatileNonPrimitiveFieldCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/VolatileNonPrimitiveFieldCheck.java")
+      .withCheck(new VolatileNonPrimitiveFieldCheck())
+      .verifyIssues();
   }
 
 }

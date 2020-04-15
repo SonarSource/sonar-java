@@ -28,6 +28,9 @@ public class FloatEqualityCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/FloatEquality.java"), new FloatEqualityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/FloatEquality.java"))
+      .withCheck(new FloatEqualityCheck())
+      .verifyIssues();
   }
 }

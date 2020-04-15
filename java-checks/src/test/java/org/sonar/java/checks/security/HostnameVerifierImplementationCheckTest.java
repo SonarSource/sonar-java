@@ -26,8 +26,15 @@ public class HostnameVerifierImplementationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/HostnameVerifierImplementationCheck.java", new HostnameVerifierImplementationCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/HostnameVerifierImplementationCheck.java", new HostnameVerifierImplementationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/HostnameVerifierImplementationCheck.java")
+      .withCheck(new HostnameVerifierImplementationCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/HostnameVerifierImplementationCheck.java")
+      .withCheck(new HostnameVerifierImplementationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

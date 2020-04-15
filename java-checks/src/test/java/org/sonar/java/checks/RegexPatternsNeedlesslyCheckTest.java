@@ -27,6 +27,9 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class RegexPatternsNeedlesslyCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/RegexPatternsNeedlesslyCheck.java"), new RegexPatternsNeedlesslyCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/RegexPatternsNeedlesslyCheck.java"))
+      .withCheck(new RegexPatternsNeedlesslyCheck())
+      .verifyIssues();
   }
 }

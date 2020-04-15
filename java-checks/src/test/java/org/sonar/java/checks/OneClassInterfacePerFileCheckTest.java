@@ -28,15 +28,18 @@ public class OneClassInterfacePerFileCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/OneClassInterfacePerFileCheck.java", new OneClassInterfacePerFileCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OneClassInterfacePerFileCheck.java")
+      .withCheck(new OneClassInterfacePerFileCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void noncompliant() {
-    JavaCheckVerifier.verifyIssueOnFile(
-      testSourcesPath("checks/OneClassInterfacePerFileCheckNoncompliant.java"),
-      "There are 4 top-level types in this file; move all but one of them to other files.",
-      new OneClassInterfacePerFileCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/OneClassInterfacePerFileCheckNoncompliant.java"))
+      .withCheck(new OneClassInterfacePerFileCheck())
+      .verifyIssueOnFile("There are 4 top-level types in this file; move all but one of them to other files.");
   }
 
 }

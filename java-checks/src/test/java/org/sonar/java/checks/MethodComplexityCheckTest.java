@@ -26,21 +26,30 @@ public class MethodComplexityCheckTest {
 
   @Test
   public void defaults() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/MethodComplexity.java", new MethodComplexityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MethodComplexity.java")
+      .withCheck(new MethodComplexityCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void test() {
     MethodComplexityCheck check = new MethodComplexityCheck();
     check.setMax(1);
-    JavaCheckVerifier.verify("src/test/files/checks/MethodComplexityNoncompliant.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MethodComplexityNoncompliant.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void javaLangPackage() {
     MethodComplexityCheck check = new MethodComplexityCheck();
     check.setMax(1);
-    JavaCheckVerifier.verify("src/test/files/checks/MethodComplexityJavaLangPackage.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MethodComplexityJavaLangPackage.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

@@ -25,11 +25,18 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class SynchronizedFieldAssignmentCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SynchronizedFieldAssignmentCheck.java", new SynchronizedFieldAssignmentCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SynchronizedFieldAssignmentCheck.java")
+      .withCheck(new SynchronizedFieldAssignmentCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SynchronizedFieldAssignmentCheck.java", new SynchronizedFieldAssignmentCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SynchronizedFieldAssignmentCheck.java")
+      .withCheck(new SynchronizedFieldAssignmentCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }
