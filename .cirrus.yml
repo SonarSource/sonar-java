@@ -183,9 +183,5 @@ promote_task:
     ARTIFACTS: org.sonarsource.java:sonar-java-plugin:jar
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  script:
-    - source cirrus-env PROMOTE
-    - source set_maven_build_version $BUILD_NUMBER
-    - curl -sfSL -H "Authorization: Bearer $GCF_ACCESS_TOKEN" "$PROMOTE_URL/$GITHUB_REPO/$GITHUB_BRANCH/$BUILD_NUMBER/$PULL_REQUEST"
-    - burgr-notify-promotion
+  script: cirrus_promote_maven
   cleanup_before_cache_script: cleanup_maven_repository
