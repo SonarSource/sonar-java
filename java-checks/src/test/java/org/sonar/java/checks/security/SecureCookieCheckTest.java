@@ -26,7 +26,14 @@ public class SecureCookieCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/SecureCookieCheck.java", new SecureCookieCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/SecureCookieCheck.java", new SecureCookieCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/SecureCookieCheck.java")
+      .withCheck(new SecureCookieCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/SecureCookieCheck.java")
+      .withCheck(new SecureCookieCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

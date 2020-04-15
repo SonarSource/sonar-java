@@ -28,7 +28,10 @@ public class XxeActiveMQCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/security/XxeActiveMQCheck.java"), new XxeActiveMQCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/XxeActiveMQCheck.java"))
+      .withCheck(new XxeActiveMQCheck())
+      .verifyIssues();
   }
 
 }

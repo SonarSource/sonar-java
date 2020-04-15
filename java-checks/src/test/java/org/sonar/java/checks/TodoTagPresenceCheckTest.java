@@ -28,7 +28,10 @@ public class TodoTagPresenceCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/TodoTagPresenceCheck.java"), new TodoTagPresenceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/TodoTagPresenceCheck.java"))
+      .withCheck(new TodoTagPresenceCheck())
+      .verifyIssues();
   }
 
 }

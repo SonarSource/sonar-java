@@ -28,7 +28,10 @@ public class TooManyParametersCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/TooManyParameters.java", new TooManyParametersCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/TooManyParameters.java")
+      .withCheck(new TooManyParametersCheck())
+      .verifyIssues();
   }
 
   @Test
@@ -36,7 +39,10 @@ public class TooManyParametersCheckTest {
     TooManyParametersCheck check = new TooManyParametersCheck();
     check.maximum = 8;
     check.constructorMax = 5;
-    JavaCheckVerifier.verify(testSourcesPath("checks/TooManyParametersCustom.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/TooManyParametersCustom.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

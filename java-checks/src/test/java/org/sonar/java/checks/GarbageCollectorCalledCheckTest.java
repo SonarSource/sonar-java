@@ -26,7 +26,10 @@ public class GarbageCollectorCalledCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/GarbageCollectorCalledCheck.java", new GarbageCollectorCalledCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/GarbageCollectorCalledCheck.java")
+      .withCheck(new GarbageCollectorCalledCheck())
+      .verifyIssues();
   }
 
 }

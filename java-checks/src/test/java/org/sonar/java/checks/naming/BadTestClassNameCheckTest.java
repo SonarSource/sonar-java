@@ -26,17 +26,30 @@ public class BadTestClassNameCheckTest {
   @Test
   public void test() {
     BadTestClassNameCheck check = new BadTestClassNameCheck();
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadTestClassNameCheck.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadTestClassNameCheck.java")
+      .withCheck(check)
+      .verifyIssues();
     // test with same instance to cover reuse of regexp pattern.
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadTestClassNameCheck.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadTestClassNameCheck.java")
+      .withCheck(check)
+      .verifyIssues();
 
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/naming/BadTestClassNameCheck.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadTestClassNameCheck.java")
+      .withCheck(check)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void test_with_customPattern() {
     BadTestClassNameCheck check = new BadTestClassNameCheck();
     check.format = "^[A-Z][a-zA-Z0-9]*SonarTest$";
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadTestClassNameCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadTestClassNameCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 }

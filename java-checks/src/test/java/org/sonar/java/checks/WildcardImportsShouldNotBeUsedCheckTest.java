@@ -28,7 +28,10 @@ public class WildcardImportsShouldNotBeUsedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/WildcardImportsShouldNotBeUsedCheck.java"), new WildcardImportsShouldNotBeUsedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/WildcardImportsShouldNotBeUsedCheck.java"))
+      .withCheck(new WildcardImportsShouldNotBeUsedCheck())
+      .verifyIssues();
   }
 
 }

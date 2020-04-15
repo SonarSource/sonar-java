@@ -28,17 +28,26 @@ public class DefaultPackageCheckTest {
 
   @Test
   public void without_package() {
-    JavaCheckVerifier.verifyIssueOnFile(testSourcesPath("checks/EmptyFile.java"), "Move this file to a named package.", new DefaultPackageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/EmptyFile.java"))
+      .withCheck(new DefaultPackageCheck())
+      .verifyIssueOnFile("Move this file to a named package.");
   }
 
   @Test
   public void with_package() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/WithPackage.java"), new DefaultPackageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/WithPackage.java"))
+      .withCheck(new DefaultPackageCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void with_module() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/module/module-info.java", new DefaultPackageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/module/module-info.java")
+      .withCheck(new DefaultPackageCheck())
+      .verifyNoIssues();
   }
 
 }

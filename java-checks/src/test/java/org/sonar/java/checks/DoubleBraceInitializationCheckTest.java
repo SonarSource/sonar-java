@@ -28,6 +28,9 @@ public class DoubleBraceInitializationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/DoubleBraceInitializationCheck.java"), new DoubleBraceInitializationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/DoubleBraceInitializationCheck.java"))
+      .withCheck(new DoubleBraceInitializationCheck())
+      .verifyIssues();
   }
 }

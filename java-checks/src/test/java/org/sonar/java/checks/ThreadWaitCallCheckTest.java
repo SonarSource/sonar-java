@@ -26,6 +26,9 @@ public class ThreadWaitCallCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ThreadWaitCallCheck.java", new ThreadWaitCallCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThreadWaitCallCheck.java")
+      .withCheck(new ThreadWaitCallCheck())
+      .verifyIssues();
   }
 }

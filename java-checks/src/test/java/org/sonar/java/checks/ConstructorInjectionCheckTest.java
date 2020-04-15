@@ -28,8 +28,15 @@ public class ConstructorInjectionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/ConstructorInjectionCheck.java"), new ConstructorInjectionCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/ConstructorInjectionCheck.java"), new ConstructorInjectionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ConstructorInjectionCheck.java"))
+      .withCheck(new ConstructorInjectionCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ConstructorInjectionCheck.java"))
+      .withCheck(new ConstructorInjectionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

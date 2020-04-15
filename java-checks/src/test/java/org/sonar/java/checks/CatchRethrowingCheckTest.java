@@ -26,7 +26,10 @@ public class CatchRethrowingCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CatchRethrowingCheck.java", new CatchRethrowingCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CatchRethrowingCheck.java")
+      .withCheck(new CatchRethrowingCheck())
+      .verifyIssues();
   }
 
 }

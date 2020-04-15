@@ -26,6 +26,9 @@ public class OperatorPrecedenceCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/OperatorPrecedence.java", new OperatorPrecedenceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OperatorPrecedence.java")
+      .withCheck(new OperatorPrecedenceCheck())
+      .verifyIssues();
   }
 }

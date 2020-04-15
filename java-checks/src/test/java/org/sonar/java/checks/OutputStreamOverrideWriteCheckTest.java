@@ -26,7 +26,14 @@ public class OutputStreamOverrideWriteCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/OutputStreamOverrideWriteCheck.java", new OutputStreamOverrideWriteCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/OutputStreamOverrideWriteCheck.java", new OutputStreamOverrideWriteCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OutputStreamOverrideWriteCheck.java")
+      .withCheck(new OutputStreamOverrideWriteCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OutputStreamOverrideWriteCheck.java")
+      .withCheck(new OutputStreamOverrideWriteCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

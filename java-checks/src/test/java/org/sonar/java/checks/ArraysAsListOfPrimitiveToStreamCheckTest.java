@@ -26,7 +26,10 @@ public class ArraysAsListOfPrimitiveToStreamCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ArraysAsListOfPrimitiveToStreamCheck.java", new ArraysAsListOfPrimitiveToStreamCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ArraysAsListOfPrimitiveToStreamCheck.java")
+      .withCheck(new ArraysAsListOfPrimitiveToStreamCheck())
+      .verifyIssues();
   }
 
 }

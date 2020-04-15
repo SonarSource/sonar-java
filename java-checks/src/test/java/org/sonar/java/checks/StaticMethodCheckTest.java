@@ -26,7 +26,10 @@ public class StaticMethodCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StaticMethodCheck.java", new StaticMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StaticMethodCheck.java")
+      .withCheck(new StaticMethodCheck())
+      .verifyIssues();
   }
 
 }

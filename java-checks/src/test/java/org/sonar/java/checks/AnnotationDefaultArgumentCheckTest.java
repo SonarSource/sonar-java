@@ -26,6 +26,9 @@ public class AnnotationDefaultArgumentCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AnnotationDefaultArgumentCheck.java", new AnnotationDefaultArgumentCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AnnotationDefaultArgumentCheck.java")
+      .withCheck(new AnnotationDefaultArgumentCheck())
+      .verifyIssues();
   }
 }

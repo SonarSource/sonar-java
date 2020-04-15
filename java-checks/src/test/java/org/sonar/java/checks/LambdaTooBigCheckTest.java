@@ -28,13 +28,19 @@ public class LambdaTooBigCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/LambdaTooBigCheck.java"), new LambdaTooBigCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/LambdaTooBigCheck.java"))
+      .withCheck(new LambdaTooBigCheck())
+      .verifyIssues();
   }
 
   @Test
   public void custom() {
     LambdaTooBigCheck check = new LambdaTooBigCheck();
     check.max = 6;
-    JavaCheckVerifier.verify(testSourcesPath("checks/LambdaTooBigCheckCustom.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/LambdaTooBigCheckCustom.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 }

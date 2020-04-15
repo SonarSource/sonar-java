@@ -26,7 +26,10 @@ public class AESAlgorithmCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/AESAlgorithmCheck.java", new AESAlgorithmCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/AESAlgorithmCheck.java")
+      .withCheck(new AESAlgorithmCheck())
+      .verifyIssues();
   }
 
 }

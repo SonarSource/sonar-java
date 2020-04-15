@@ -28,7 +28,10 @@ public class NoCheckstyleTagPresenceCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/NoCheckstyleTagPresenceCheck.java"), new NoCheckstyleTagPresenceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NoCheckstyleTagPresenceCheck.java"))
+      .withCheck(new NoCheckstyleTagPresenceCheck())
+      .verifyIssues();
   }
 
 }

@@ -26,14 +26,20 @@ public class BadFieldNameStaticNonFinalCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadFieldNameStaticNonFinal.java", new BadFieldNameStaticNonFinalCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadFieldNameStaticNonFinal.java")
+      .withCheck(new BadFieldNameStaticNonFinalCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test2() {
     BadFieldNameStaticNonFinalCheck check = new BadFieldNameStaticNonFinalCheck();
     check.format = "^[a-zA-Z0-9_]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadFieldNameStaticNonFinal2.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadFieldNameStaticNonFinal2.java")
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
 }

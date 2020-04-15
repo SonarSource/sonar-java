@@ -26,14 +26,20 @@ public class UppercaseSuffixesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UppercaseSuffixesCheck.java", new UppercaseSuffixesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UppercaseSuffixesCheck.java")
+      .withCheck(new UppercaseSuffixesCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_only_long() {
     UppercaseSuffixesCheck check = new UppercaseSuffixesCheck();
     check.checkOnlyLong = true;
-    JavaCheckVerifier.verify("src/test/files/checks/UppercaseSuffixesCheckOnlyLong.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UppercaseSuffixesCheckOnlyLong.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

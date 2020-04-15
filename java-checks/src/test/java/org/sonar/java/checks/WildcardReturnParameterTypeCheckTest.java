@@ -26,6 +26,9 @@ public class WildcardReturnParameterTypeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/WildcardReturnParameterTypeCheck.java", new WildcardReturnParameterTypeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/WildcardReturnParameterTypeCheck.java")
+      .withCheck(new WildcardReturnParameterTypeCheck())
+      .verifyIssues();
   }
 }

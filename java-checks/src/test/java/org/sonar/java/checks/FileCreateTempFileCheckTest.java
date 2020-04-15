@@ -26,12 +26,19 @@ public class FileCreateTempFileCheckTest {
 
   @Test
   public void no_version() {
-    JavaCheckVerifier.verify("src/test/files/checks/FileCreateTempFileCheck_no_version.java", new FileCreateTempFileCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FileCreateTempFileCheck_no_version.java")
+      .withCheck(new FileCreateTempFileCheck())
+      .verifyIssues();
   }
 
   @Test
   public void java_7() {
-    JavaCheckVerifier.verify("src/test/files/checks/FileCreateTempFileCheck.java", new FileCreateTempFileCheck(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FileCreateTempFileCheck.java")
+      .withCheck(new FileCreateTempFileCheck())
+      .withJavaVersion(7)
+      .verifyIssues();
   }
 
 }

@@ -26,8 +26,15 @@ public class ServletInstanceFieldCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ServletInstanceFieldCheck.java", new ServletInstanceFieldCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ServletInstanceFieldCheck.java", new ServletInstanceFieldCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ServletInstanceFieldCheck.java")
+      .withCheck(new ServletInstanceFieldCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ServletInstanceFieldCheck.java")
+      .withCheck(new ServletInstanceFieldCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -27,7 +27,14 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class SwitchLastCaseIsDefaultCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/SwitchLastCaseIsDefaultCheck.java"), new SwitchLastCaseIsDefaultCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/SwitchLastCaseIsDefaultCheck.java"), new SwitchLastCaseIsDefaultCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SwitchLastCaseIsDefaultCheck.java"))
+      .withCheck(new SwitchLastCaseIsDefaultCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SwitchLastCaseIsDefaultCheck.java"))
+      .withCheck(new SwitchLastCaseIsDefaultCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

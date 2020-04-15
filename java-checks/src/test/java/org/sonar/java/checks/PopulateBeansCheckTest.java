@@ -26,7 +26,10 @@ public class PopulateBeansCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PopulateBeansCheck.java", new PopulateBeansCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PopulateBeansCheck.java")
+      .withCheck(new PopulateBeansCheck())
+      .verifyIssues();
   }
 
 }

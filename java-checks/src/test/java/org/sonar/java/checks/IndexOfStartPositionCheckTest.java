@@ -26,7 +26,10 @@ public class IndexOfStartPositionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/IndexOfStartPositionCheck.java", new IndexOfStartPositionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IndexOfStartPositionCheck.java")
+      .withCheck(new IndexOfStartPositionCheck())
+      .verifyIssues();
   }
 
 }

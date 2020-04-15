@@ -26,6 +26,9 @@ public class AssertionFailInCatchBlockCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionFailInCatchBlockCheck.java", new AssertionFailInCatchBlockCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AssertionFailInCatchBlockCheck.java")
+      .withCheck(new AssertionFailInCatchBlockCheck())
+      .verifyIssues();
   }
 }

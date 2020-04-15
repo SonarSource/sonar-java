@@ -28,6 +28,9 @@ public class ThreadRunCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/ThreadRunCheck.java"), new ThreadRunCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ThreadRunCheck.java"))
+      .withCheck(new ThreadRunCheck())
+      .verifyIssues();
   }
 }

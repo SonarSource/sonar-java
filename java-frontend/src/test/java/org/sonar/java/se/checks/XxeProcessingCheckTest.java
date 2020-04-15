@@ -20,48 +20,81 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.testing.CheckVerifier;
 
 public class XxeProcessingCheckTest {
 
   @Test
   public void Xml_input_factory() {
-    JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_XmlInputFactory.java", new XxeProcessingCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XxeProcessingCheck_XmlInputFactory.java")
+      .withCheck(new XxeProcessingCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void document_builder_factory() {
-    JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_DocumentBuilderFactory.java", new XxeProcessingCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XxeProcessingCheck_DocumentBuilderFactory.java")
+      .withCheck(new XxeProcessingCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void sax_parser() {
-    JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_SaxParser.java", new XxeProcessingCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XxeProcessingCheck_SaxParser.java")
+      .withCheck(new XxeProcessingCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void schema_factory() {
-    JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_SchemaFactory_Validator.java", new XxeProcessingCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XxeProcessingCheck_SchemaFactory_Validator.java")
+      .withCheck(new XxeProcessingCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void transformer_factory() {
-    JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_TransformerFactory.java", new XxeProcessingCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XxeProcessingCheck_TransformerFactory.java")
+      .withCheck(new XxeProcessingCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void xml_reader() {
-    JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_XmlReader.java", new XxeProcessingCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XxeProcessingCheck_XmlReader.java")
+      .withCheck(new XxeProcessingCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void sax_builder() {
-    JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_SaxBuilder.java", new XxeProcessingCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XxeProcessingCheck_SaxBuilder.java")
+      .withCheck(new XxeProcessingCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void sax_reader() {
-    JavaCheckVerifier.verify("src/test/files/se/XxeProcessingCheck_SaxReader.java", new XxeProcessingCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XxeProcessingCheck_SaxReader.java")
+      .withCheck(new XxeProcessingCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
 }

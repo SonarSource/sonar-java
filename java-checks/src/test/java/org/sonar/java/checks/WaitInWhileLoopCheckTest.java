@@ -26,6 +26,9 @@ public class WaitInWhileLoopCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/WaitInWhileLoopCheck.java", new WaitInWhileLoopCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/WaitInWhileLoopCheck.java")
+      .withCheck(new WaitInWhileLoopCheck())
+      .verifyIssues();
   }
 }

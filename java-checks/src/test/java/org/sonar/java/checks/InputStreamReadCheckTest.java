@@ -28,12 +28,19 @@ public class InputStreamReadCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/InputStreamReadCheck.java"), new InputStreamReadCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/InputStreamReadCheck.java"))
+      .withCheck(new InputStreamReadCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_issues_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/InputStreamReadCheck.java"), new InputStreamReadCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/InputStreamReadCheck.java"))
+      .withCheck(new InputStreamReadCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class EqualsArgumentTypeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EqualsArgumentType.java", new EqualsArgumentTypeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EqualsArgumentType.java")
+      .withCheck(new EqualsArgumentTypeCheck())
+      .verifyIssues();
   }
 
 }

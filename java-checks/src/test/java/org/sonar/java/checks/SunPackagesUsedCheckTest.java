@@ -26,14 +26,20 @@ public class SunPackagesUsedCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/SunPackagesUsedCheck.java", new SunPackagesUsedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SunPackagesUsedCheck.java")
+      .withCheck(new SunPackagesUsedCheck())
+      .verifyIssues();
   }
 
   @Test
   public void check_with_exclusion() {
     SunPackagesUsedCheck check = new SunPackagesUsedCheck();
     check.exclude = "com.sun.imageio,com.sun.jersey,com.sun.org.apache.xml";
-    JavaCheckVerifier.verify("src/test/files/checks/SunPackagesUsedCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SunPackagesUsedCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

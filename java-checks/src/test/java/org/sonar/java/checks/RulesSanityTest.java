@@ -170,8 +170,7 @@ public class RulesSanityTest {
   private static List<InputFile> getJavaInputFiles(File moduleBaseDir) {
     return Stream.concat(
       FilesUtils.getFilesRecursively(new File(CheckTestUtils.testSourcesPath("")).toPath(), "java").stream(),
-      FilesUtils.getFilesRecursively(new File(TEST_FILES_DIRECTORY).toPath(), "java").stream()
-    )
+      FilesUtils.getFilesRecursively(new File(TEST_FILES_DIRECTORY).toPath(), "java").stream())
       .map(File::getAbsolutePath)
       .filter(RulesSanityTest::isNotParsingErrorFile)
       .map(path -> inputFile(moduleBaseDir, path))

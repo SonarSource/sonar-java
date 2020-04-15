@@ -26,7 +26,10 @@ public class LambdaTypeParameterCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/LambdaTypeParameterCheck.java", new LambdaTypeParameterCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LambdaTypeParameterCheck.java")
+      .withCheck(new LambdaTypeParameterCheck())
+      .verifyIssues();
   }
 
 }

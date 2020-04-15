@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class SystemOutOrErrUsageCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SystemOutOrErrUsageCheck.java", new SystemOutOrErrUsageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SystemOutOrErrUsageCheck.java")
+      .withCheck(new SystemOutOrErrUsageCheck())
+      .verifyIssues();
   }
 }

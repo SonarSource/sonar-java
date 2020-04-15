@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class IgnoredOperationStatusCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/IgnoredOperationStatusCheck.java", new IgnoredOperationStatusCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IgnoredOperationStatusCheck.java")
+      .withCheck(new IgnoredOperationStatusCheck())
+      .verifyIssues();
   }
 }

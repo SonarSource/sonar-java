@@ -20,7 +20,8 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.testing.CheckVerifier;
 
 import static org.junit.Assume.assumeTrue;
 
@@ -28,18 +29,30 @@ public class OptionalGetBeforeIsPresentCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/OptionalGetBeforeIsPresentCheck.java", new OptionalGetBeforeIsPresentCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/OptionalGetBeforeIsPresentCheck.java")
+      .withCheck(new OptionalGetBeforeIsPresentCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_with_jdk_more_recent_than_8() {
     assumeTrue(!System.getProperty("java.version").startsWith("1.8"));
-    JavaCheckVerifier.verify("src/test/files/se/OptionalGetBeforeIsPresentCheck_jdk11.java", new OptionalGetBeforeIsPresentCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/OptionalGetBeforeIsPresentCheck_jdk11.java")
+      .withCheck(new OptionalGetBeforeIsPresentCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void invocation_leading_to_NoSuchElementException() {
-    JavaCheckVerifier.verify("src/test/files/se/MethodInvocationLeadingToNSEE.java", new OptionalGetBeforeIsPresentCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/MethodInvocationLeadingToNSEE.java")
+      .withCheck(new OptionalGetBeforeIsPresentCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
 }

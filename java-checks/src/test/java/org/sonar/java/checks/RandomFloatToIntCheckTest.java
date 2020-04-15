@@ -28,7 +28,10 @@ public class RandomFloatToIntCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/RandomFloatToIntCheck.java"), new RandomFloatToIntCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/RandomFloatToIntCheck.java"))
+      .withCheck(new RandomFloatToIntCheck())
+      .verifyIssues();
   }
 
 }

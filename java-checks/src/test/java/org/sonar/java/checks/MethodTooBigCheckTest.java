@@ -36,14 +36,20 @@ public class MethodTooBigCheckTest {
   public void custom_at_4() {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 4;
-    JavaCheckVerifier.verify(testSourcesPath("checks/MethodTooBigCheckCustom4.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/MethodTooBigCheckCustom4.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void custom_at_5() {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 5;
-    JavaCheckVerifier.verify(testSourcesPath("checks/MethodTooBigCheckCustom5.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/MethodTooBigCheckCustom5.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

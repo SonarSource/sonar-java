@@ -26,8 +26,15 @@ public class UnusedThrowableCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedThrowableCheck.java", new UnusedThrowableCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/unused/UnusedThrowableCheck.java", new UnusedThrowableCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedThrowableCheck.java")
+      .withCheck(new UnusedThrowableCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedThrowableCheck.java")
+      .withCheck(new UnusedThrowableCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

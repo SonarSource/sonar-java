@@ -26,8 +26,15 @@ public class DebugFeatureEnabledCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/DebugFeatureEnabledCheck.java", new DebugFeatureEnabledCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/DebugFeatureEnabledCheck.java", new DebugFeatureEnabledCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/DebugFeatureEnabledCheck.java")
+      .withCheck(new DebugFeatureEnabledCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/DebugFeatureEnabledCheck.java")
+      .withCheck(new DebugFeatureEnabledCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class AssertOnBooleanVariableCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertOnBooleanVariableCheck.java", new AssertOnBooleanVariableCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AssertOnBooleanVariableCheck.java")
+      .withCheck(new AssertOnBooleanVariableCheck())
+      .verifyIssues();
   }
 
 }

@@ -26,7 +26,14 @@ public class CookieHttpOnlyCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/CookieHttpOnlyCheck.java", new CookieHttpOnlyCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/CookieHttpOnlyCheck.java", new CookieHttpOnlyCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/CookieHttpOnlyCheck.java")
+      .withCheck(new CookieHttpOnlyCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/CookieHttpOnlyCheck.java")
+      .withCheck(new CookieHttpOnlyCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

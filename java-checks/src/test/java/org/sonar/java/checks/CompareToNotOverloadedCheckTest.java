@@ -27,8 +27,15 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class CompareToNotOverloadedCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/CompareToNotOverloadedCheck.java"), new CompareToNotOverloadedCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/CompareToNotOverloadedCheck.java"), new CompareToNotOverloadedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CompareToNotOverloadedCheck.java"))
+      .withCheck(new CompareToNotOverloadedCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CompareToNotOverloadedCheck.java"))
+      .withCheck(new CompareToNotOverloadedCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
 
   }
 }

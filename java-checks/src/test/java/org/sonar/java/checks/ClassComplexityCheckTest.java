@@ -26,14 +26,20 @@ public class ClassComplexityCheckTest {
 
   @Test
   public void defaults() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ClassComplexity.java", new ClassComplexityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ClassComplexity.java")
+      .withCheck(new ClassComplexityCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void test() {
     ClassComplexityCheck check = new ClassComplexityCheck();
     check.setMax(1);
-    JavaCheckVerifier.verify("src/test/files/checks/ClassComplexityNoncompliant.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ClassComplexityNoncompliant.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

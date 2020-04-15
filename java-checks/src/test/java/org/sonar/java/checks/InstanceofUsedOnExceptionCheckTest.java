@@ -26,7 +26,10 @@ public class InstanceofUsedOnExceptionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/InstanceofUsedOnExceptionCheck.java", new InstanceofUsedOnExceptionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InstanceofUsedOnExceptionCheck.java")
+      .withCheck(new InstanceofUsedOnExceptionCheck())
+      .verifyIssues();
   }
 
 }

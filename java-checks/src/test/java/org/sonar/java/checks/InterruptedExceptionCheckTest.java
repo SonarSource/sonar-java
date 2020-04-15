@@ -26,7 +26,14 @@ public class InterruptedExceptionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/InterruptedExceptionCheck.java", new InterruptedExceptionCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/InterruptedExceptionCheck.java", new InterruptedExceptionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InterruptedExceptionCheck.java")
+      .withCheck(new InterruptedExceptionCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InterruptedExceptionCheck.java")
+      .withCheck(new InterruptedExceptionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

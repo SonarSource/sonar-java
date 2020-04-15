@@ -26,8 +26,15 @@ public class PredictableSeedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PredictableSeedCheck.java", new PredictableSeedCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/PredictableSeedCheck.java", new PredictableSeedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PredictableSeedCheck.java")
+      .withCheck(new PredictableSeedCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PredictableSeedCheck.java")
+      .withCheck(new PredictableSeedCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

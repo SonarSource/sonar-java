@@ -26,9 +26,15 @@ public class LazyArgEvaluationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/LazyArgEvaluationCheck.java", new LazyArgEvaluationCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/LazyArgEvaluationCheck.java", new LazyArgEvaluationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LazyArgEvaluationCheck.java")
+      .withCheck(new LazyArgEvaluationCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LazyArgEvaluationCheck.java")
+      .withCheck(new LazyArgEvaluationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
-
 
 }

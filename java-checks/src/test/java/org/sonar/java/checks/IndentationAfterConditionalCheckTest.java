@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class IndentationAfterConditionalCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/IndentationAfterConditionalCheck.java", new IndentationAfterConditionalCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IndentationAfterConditionalCheck.java")
+      .withCheck(new IndentationAfterConditionalCheck())
+      .verifyIssues();
   }
 }

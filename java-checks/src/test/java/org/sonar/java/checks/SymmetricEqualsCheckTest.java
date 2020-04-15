@@ -26,7 +26,10 @@ public class SymmetricEqualsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SymmetricEqualsCheck.java", new SymmetricEqualsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SymmetricEqualsCheck.java")
+      .withCheck(new SymmetricEqualsCheck())
+      .verifyIssues();
   }
 
 }

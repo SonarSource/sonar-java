@@ -26,7 +26,10 @@ public class ArrayDesignatorOnVariableCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ArrayDesignatorOnVariableCheck.java", new ArrayDesignatorOnVariableCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ArrayDesignatorOnVariableCheck.java")
+      .withCheck(new ArrayDesignatorOnVariableCheck())
+      .verifyIssues();
   }
 
 }

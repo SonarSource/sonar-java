@@ -26,7 +26,10 @@ public class ClassVariableVisibilityCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ClassVariableVisibilityCheck.java", new ClassVariableVisibilityCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ClassVariableVisibilityCheck.java")
+      .withCheck(new ClassVariableVisibilityCheck())
+      .verifyIssues();
   }
 
 }

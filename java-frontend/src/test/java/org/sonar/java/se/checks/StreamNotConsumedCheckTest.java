@@ -20,13 +20,17 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
-
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.testing.CheckVerifier;
 
 public class StreamNotConsumedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/StreamNotConsumedCheck.java", new StreamNotConsumedCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/StreamNotConsumedCheck.java")
+      .withChecks(new StreamNotConsumedCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 }

@@ -26,9 +26,19 @@ public class SpringScanDefaultPackageCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringScanDefaultPackageCheck.java", new SpringScanDefaultPackageCheck());
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringScanDefaultPackageCheckInAPackage.java", new SpringScanDefaultPackageCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringScanDefaultPackageCheck.java", new SpringScanDefaultPackageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringScanDefaultPackageCheck.java")
+      .withCheck(new SpringScanDefaultPackageCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringScanDefaultPackageCheckInAPackage.java")
+      .withCheck(new SpringScanDefaultPackageCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringScanDefaultPackageCheck.java")
+      .withCheck(new SpringScanDefaultPackageCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

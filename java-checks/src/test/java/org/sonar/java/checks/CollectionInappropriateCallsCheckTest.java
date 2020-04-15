@@ -28,11 +28,17 @@ public class CollectionInappropriateCallsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/CollectionInappropriateCallsCheck.java"), new CollectionInappropriateCallsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CollectionInappropriateCallsCheck.java"))
+      .withCheck(new CollectionInappropriateCallsCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_unknown_types() {
-    JavaCheckVerifier.verify("src/test/files/checks/CollectionInappropriateCallsCheckUnknownTypes.java", new CollectionInappropriateCallsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CollectionInappropriateCallsCheckUnknownTypes.java")
+      .withCheck(new CollectionInappropriateCallsCheck())
+      .verifyIssues();
   }
 }

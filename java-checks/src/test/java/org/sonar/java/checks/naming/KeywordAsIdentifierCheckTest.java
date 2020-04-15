@@ -26,8 +26,16 @@ public class KeywordAsIdentifierCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/KeywordAsIdentifierCheck.java", new KeywordAsIdentifierCheck(), 4);
-    JavaCheckVerifier.verify("src/test/files/checks/naming/KeywordAsIdentifierCheck_java1.java", new KeywordAsIdentifierCheck(), 1);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/KeywordAsIdentifierCheck.java")
+      .withCheck(new KeywordAsIdentifierCheck())
+      .withJavaVersion(4)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/KeywordAsIdentifierCheck_java1.java")
+      .withCheck(new KeywordAsIdentifierCheck())
+      .withJavaVersion(1)
+      .verifyIssues();
   }
 
 }

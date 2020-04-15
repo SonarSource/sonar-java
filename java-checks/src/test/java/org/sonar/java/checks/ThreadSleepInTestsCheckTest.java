@@ -26,7 +26,10 @@ public class ThreadSleepInTestsCheckTest {
 
   @Test
   public void test() throws InterruptedException {
-    JavaCheckVerifier.verify("src/test/files/checks/ThreadSleepInTestsCheck.java", new ThreadSleepInTestsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThreadSleepInTestsCheck.java")
+      .withCheck(new ThreadSleepInTestsCheck())
+      .verifyIssues();
   }
 
 }

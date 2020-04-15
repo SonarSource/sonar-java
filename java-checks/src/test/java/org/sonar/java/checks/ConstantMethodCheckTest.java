@@ -26,7 +26,10 @@ public class ConstantMethodCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ConstantMethodCheck.java", new ConstantMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ConstantMethodCheck.java")
+      .withCheck(new ConstantMethodCheck())
+      .verifyIssues();
   }
 
 }

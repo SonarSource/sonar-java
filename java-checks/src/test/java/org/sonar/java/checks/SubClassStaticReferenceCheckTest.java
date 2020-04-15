@@ -25,12 +25,18 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class SubClassStaticReferenceCheckTest {
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/SubClassStaticReferenceCheck.java", new SubClassStaticReferenceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SubClassStaticReferenceCheck.java")
+      .withCheck(new SubClassStaticReferenceCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SubClassStaticReferenceCheck.java",
-      new SubClassStaticReferenceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SubClassStaticReferenceCheck.java")
+      .withCheck(new SubClassStaticReferenceCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

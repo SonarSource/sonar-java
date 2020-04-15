@@ -26,7 +26,10 @@ public class StringConcatenationInLoopCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StringConcatenationInLoopCheck.java", new StringConcatenationInLoopCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StringConcatenationInLoopCheck.java")
+      .withCheck(new StringConcatenationInLoopCheck())
+      .verifyIssues();
   }
 
 }

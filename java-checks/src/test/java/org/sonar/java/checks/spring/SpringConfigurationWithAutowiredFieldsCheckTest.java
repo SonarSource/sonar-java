@@ -26,8 +26,15 @@ public class SpringConfigurationWithAutowiredFieldsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringConfigurationWithAutowiredFieldsCheck.java", new SpringConfigurationWithAutowiredFieldsCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringConfigurationWithAutowiredFieldsCheck.java", new SpringConfigurationWithAutowiredFieldsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringConfigurationWithAutowiredFieldsCheck.java")
+      .withCheck(new SpringConfigurationWithAutowiredFieldsCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringConfigurationWithAutowiredFieldsCheck.java")
+      .withCheck(new SpringConfigurationWithAutowiredFieldsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class CompareToReturnValueCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CompareToReturnValueCheck.java", new CompareToReturnValueCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CompareToReturnValueCheck.java")
+      .withCheck(new CompareToReturnValueCheck())
+      .verifyIssues();
   }
 
 }

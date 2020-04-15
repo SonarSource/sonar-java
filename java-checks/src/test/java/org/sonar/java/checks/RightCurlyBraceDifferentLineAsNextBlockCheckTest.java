@@ -26,7 +26,10 @@ public class RightCurlyBraceDifferentLineAsNextBlockCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/RightCurlyBraceDifferentLineAsNextBlockCheck.java", new RightCurlyBraceDifferentLineAsNextBlockCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RightCurlyBraceDifferentLineAsNextBlockCheck.java")
+      .withCheck(new RightCurlyBraceDifferentLineAsNextBlockCheck())
+      .verifyIssues();
   }
 
 }

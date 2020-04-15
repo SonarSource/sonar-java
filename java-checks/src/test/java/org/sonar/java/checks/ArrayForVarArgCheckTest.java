@@ -26,7 +26,10 @@ public class ArrayForVarArgCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ArrayForVarArgCheck.java", new ArrayForVarArgCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ArrayForVarArgCheck.java")
+      .withCheck(new ArrayForVarArgCheck())
+      .verifyIssues();
   }
 
 }

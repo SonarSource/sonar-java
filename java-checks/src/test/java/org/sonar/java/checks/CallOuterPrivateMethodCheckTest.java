@@ -26,6 +26,9 @@ public class CallOuterPrivateMethodCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CallOuterPrivateMethodCheck.java", new CallOuterPrivateMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CallOuterPrivateMethodCheck.java")
+      .withCheck(new CallOuterPrivateMethodCheck())
+      .verifyIssues();
   }
 }

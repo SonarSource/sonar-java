@@ -28,22 +28,34 @@ public class EmptyFileCheckTest {
 
   @Test
   public void test_empty_file() {
-    JavaCheckVerifier.verifyIssueOnFile(testSourcesPath("checks/EmptyFile.java"), "This file has 0 lines of code.", new EmptyFileCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/EmptyFile.java"))
+      .withCheck(new EmptyFileCheck())
+      .verifyIssueOnFile("This file has 0 lines of code.");
   }
 
   @Test
   public void test_non_empty_file() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/NonEmptyFile.java"), new EmptyFileCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NonEmptyFile.java"))
+      .withCheck(new EmptyFileCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void with_package() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/WithPackage.java"), new EmptyFileCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/WithPackage.java"))
+      .withCheck(new EmptyFileCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void with_module() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/module/module-info.java", new EmptyFileCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/module/module-info.java")
+      .withCheck(new EmptyFileCheck())
+      .verifyNoIssues();
   }
 
 }

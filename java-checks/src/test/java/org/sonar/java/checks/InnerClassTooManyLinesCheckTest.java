@@ -26,7 +26,10 @@ public class InnerClassTooManyLinesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/InnerClassTooManyLinesCheck.java", new InnerClassTooManyLinesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InnerClassTooManyLinesCheck.java")
+      .withCheck(new InnerClassTooManyLinesCheck())
+      .verifyIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class RedundantModifierCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/RedundantModifierCheck.java", new RedundantModifierCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RedundantModifierCheck.java")
+      .withCheck(new RedundantModifierCheck())
+      .verifyIssues();
   }
 
 }

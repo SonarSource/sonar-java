@@ -30,12 +30,24 @@ public class ReplaceLambdaByMethodRefCheckTest {
 
   @Test
   public void java8() {
-    JavaCheckVerifier.verify(FILENAME, new ReplaceLambdaByMethodRefCheck(), 8);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME, new ReplaceLambdaByMethodRefCheck(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(new ReplaceLambdaByMethodRefCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(new ReplaceLambdaByMethodRefCheck())
+      .withJavaVersion(8)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void no_version() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/ReplaceLambdaByMethodRefCheck_no_version.java"), new ReplaceLambdaByMethodRefCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ReplaceLambdaByMethodRefCheck_no_version.java"))
+      .withCheck(new ReplaceLambdaByMethodRefCheck())
+      .verifyIssues();
   }
 }

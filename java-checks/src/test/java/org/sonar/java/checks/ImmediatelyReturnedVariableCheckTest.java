@@ -26,7 +26,10 @@ public class ImmediatelyReturnedVariableCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ImmediatelyReturnedVariableCheck.java", new ImmediatelyReturnedVariableCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ImmediatelyReturnedVariableCheck.java")
+      .withCheck(new ImmediatelyReturnedVariableCheck())
+      .verifyIssues();
   }
 
 }

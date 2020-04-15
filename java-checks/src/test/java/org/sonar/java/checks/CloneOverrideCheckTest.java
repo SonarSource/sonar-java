@@ -25,7 +25,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class CloneOverrideCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CloneOverrideCheck.java", new CloneOverrideCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/CloneOverrideCheck.java", new CloneOverrideCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CloneOverrideCheck.java")
+      .withCheck(new CloneOverrideCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CloneOverrideCheck.java")
+      .withCheck(new CloneOverrideCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

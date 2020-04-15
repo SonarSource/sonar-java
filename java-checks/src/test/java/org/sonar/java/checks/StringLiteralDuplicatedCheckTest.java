@@ -26,14 +26,20 @@ public class StringLiteralDuplicatedCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/StringLiteralDuplicatedCheck.java", new StringLiteralDuplicatedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StringLiteralDuplicatedCheck.java")
+      .withCheck(new StringLiteralDuplicatedCheck())
+      .verifyIssues();
   }
 
   @Test
   public void threshold_at_two() {
     StringLiteralDuplicatedCheck visitor = new StringLiteralDuplicatedCheck();
     visitor.threshold = 2;
-    JavaCheckVerifier.verify("src/test/files/checks/StringLiteralDuplicatedCheckCustom.java", visitor);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StringLiteralDuplicatedCheckCustom.java")
+      .withCheck(visitor)
+      .verifyIssues();
   }
 
 }

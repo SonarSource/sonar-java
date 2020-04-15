@@ -25,7 +25,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class ClassWithoutHashCodeInHashStructureCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ClassWithoutHashCodeInHashStructureCheck.java", new ClassWithoutHashCodeInHashStructureCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ClassWithoutHashCodeInHashStructureCheck.java", new ClassWithoutHashCodeInHashStructureCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ClassWithoutHashCodeInHashStructureCheck.java")
+      .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ClassWithoutHashCodeInHashStructureCheck.java")
+      .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

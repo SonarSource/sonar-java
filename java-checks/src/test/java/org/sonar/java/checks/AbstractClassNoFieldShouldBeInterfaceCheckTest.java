@@ -28,21 +28,36 @@ public class AbstractClassNoFieldShouldBeInterfaceCheckTest {
 
   @Test
   public void test_no_version() {
-    JavaCheckVerifier.verify("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_no_version.java", new AbstractClassNoFieldShouldBeInterfaceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_no_version.java")
+      .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_with_java_7() {
-    JavaCheckVerifier.verifyNoIssue(TEST_FILE, new AbstractClassNoFieldShouldBeInterfaceCheck(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILE)
+      .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
+      .withJavaVersion(7)
+      .verifyNoIssues();
   }
 
   @Test
   public void test_with_java_8() {
-    JavaCheckVerifier.verify(TEST_FILE, new AbstractClassNoFieldShouldBeInterfaceCheck(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILE)
+      .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 
   @Test
   public void test_with_java_9() {
-    JavaCheckVerifier.verify("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_java9.java", new AbstractClassNoFieldShouldBeInterfaceCheck(), 9);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_java9.java")
+      .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
+      .withJavaVersion(9)
+      .verifyIssues();
   }
 }

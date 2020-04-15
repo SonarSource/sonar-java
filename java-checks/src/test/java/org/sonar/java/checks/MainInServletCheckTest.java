@@ -26,7 +26,10 @@ public class MainInServletCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/MainInServletCheck.java", new MainInServletCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MainInServletCheck.java")
+      .withCheck(new MainInServletCheck())
+      .verifyIssues();
   }
 
 }

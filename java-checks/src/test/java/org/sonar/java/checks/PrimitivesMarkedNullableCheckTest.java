@@ -28,12 +28,19 @@ public class PrimitivesMarkedNullableCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/PrimitivesMarkedNullableCheck.java"), new PrimitivesMarkedNullableCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/PrimitivesMarkedNullableCheck.java"))
+      .withCheck(new PrimitivesMarkedNullableCheck())
+      .verifyIssues();
   }
 
   @Test
   public void noSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/PrimitivesMarkedNullableCheck.java"), new PrimitivesMarkedNullableCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/PrimitivesMarkedNullableCheck.java"))
+      .withCheck(new PrimitivesMarkedNullableCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

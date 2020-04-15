@@ -26,7 +26,10 @@ public class SwitchAtLeastThreeCasesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SwitchAtLeastThreeCasesCheck.java", new SwitchAtLeastThreeCasesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SwitchAtLeastThreeCasesCheck.java")
+      .withCheck(new SwitchAtLeastThreeCasesCheck())
+      .verifyIssues();
   }
 
 }

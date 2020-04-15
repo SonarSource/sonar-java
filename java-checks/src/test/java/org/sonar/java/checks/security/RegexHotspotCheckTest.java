@@ -26,7 +26,14 @@ public class RegexHotspotCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/RegexHotspotCheck.java", new RegexHotspotCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/RegexHotspotCheck.java", new RegexHotspotCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/RegexHotspotCheck.java")
+      .withCheck(new RegexHotspotCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/RegexHotspotCheck.java")
+      .withCheck(new RegexHotspotCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

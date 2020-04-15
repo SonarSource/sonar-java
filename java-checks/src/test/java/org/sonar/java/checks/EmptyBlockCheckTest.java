@@ -26,7 +26,10 @@ public class EmptyBlockCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EmptyBlock.java", new EmptyBlockCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EmptyBlock.java")
+      .withCheck(new EmptyBlockCheck())
+      .verifyIssues();
   }
 
 }

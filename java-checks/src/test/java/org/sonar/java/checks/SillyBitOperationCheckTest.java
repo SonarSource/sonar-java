@@ -28,6 +28,9 @@ public class SillyBitOperationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/SillyBitOperationCheck.java"), new SillyBitOperationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SillyBitOperationCheck.java"))
+      .withCheck(new SillyBitOperationCheck())
+      .verifyIssues();
   }
 }

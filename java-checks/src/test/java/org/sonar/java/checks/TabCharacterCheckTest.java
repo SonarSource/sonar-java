@@ -28,12 +28,18 @@ public class TabCharacterCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verifyIssueOnFile(testSourcesPath("checks/TabCharacter.java"), "Replace all tab characters in this file by sequences of white-spaces.", new TabCharacterCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/TabCharacter.java"))
+      .withCheck(new TabCharacterCheck())
+      .verifyIssueOnFile("Replace all tab characters in this file by sequences of white-spaces.");
   }
 
   @Test
   public void test2() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/NonEmptyFile.java"), new TabCharacterCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NonEmptyFile.java"))
+      .withCheck(new TabCharacterCheck())
+      .verifyNoIssues();
   }
 
 }

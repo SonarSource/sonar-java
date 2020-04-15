@@ -28,7 +28,10 @@ public class EscapedUnicodeCharactersCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/EscapedUnicodeCharactersCheck.java"), new EscapedUnicodeCharactersCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/EscapedUnicodeCharactersCheck.java"))
+      .withCheck(new EscapedUnicodeCharactersCheck())
+      .verifyIssues();
   }
 
 }

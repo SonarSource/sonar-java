@@ -26,12 +26,19 @@ public class CompareObjectWithEqualsCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/CompareObjectWithEqualsCheck.java", new CompareObjectWithEqualsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CompareObjectWithEqualsCheck.java")
+      .withCheck(new CompareObjectWithEqualsCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/CompareObjectWithEqualsCheck.java", new CompareObjectWithEqualsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CompareObjectWithEqualsCheck.java")
+      .withCheck(new CompareObjectWithEqualsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

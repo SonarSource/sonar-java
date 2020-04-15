@@ -26,7 +26,10 @@ public class KeySetInsteadOfEntrySetCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/KeySetInsteadOfEntrySet.java", new KeySetInsteadOfEntrySetCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/KeySetInsteadOfEntrySet.java")
+      .withCheck(new KeySetInsteadOfEntrySetCheck())
+      .verifyIssues();
   }
 
 }

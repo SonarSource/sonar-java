@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class RawExceptionCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/RawException.java", new RawExceptionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RawException.java")
+      .withCheck(new RawExceptionCheck())
+      .verifyIssues();
   }
 }

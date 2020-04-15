@@ -26,7 +26,10 @@ public class EnumMutableFieldCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EnumMutableFieldCheck.java", new EnumMutableFieldCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EnumMutableFieldCheck.java")
+      .withCheck(new EnumMutableFieldCheck())
+      .verifyIssues();
   }
 
 }

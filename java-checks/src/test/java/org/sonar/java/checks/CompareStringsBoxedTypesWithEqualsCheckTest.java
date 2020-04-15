@@ -26,12 +26,19 @@ public class CompareStringsBoxedTypesWithEqualsCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/CompareStringsBoxedTypesWithEqualsCheck.java", new CompareStringsBoxedTypesWithEqualsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CompareStringsBoxedTypesWithEqualsCheck.java")
+      .withCheck(new CompareStringsBoxedTypesWithEqualsCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/CompareStringsBoxedTypesWithEqualsCheck.java", new CompareStringsBoxedTypesWithEqualsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CompareStringsBoxedTypesWithEqualsCheck.java")
+      .withCheck(new CompareStringsBoxedTypesWithEqualsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

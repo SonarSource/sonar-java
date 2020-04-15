@@ -26,7 +26,10 @@ public class ConstantMathCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ConstantMath.java", new ConstantMathCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ConstantMath.java")
+      .withCheck(new ConstantMathCheck())
+      .verifyIssues();
   }
 
 }

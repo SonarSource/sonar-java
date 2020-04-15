@@ -26,7 +26,10 @@ public class SwitchCaseWithoutBreakCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SwitchCaseWithoutBreakCheck.java", new SwitchCaseWithoutBreakCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SwitchCaseWithoutBreakCheck.java")
+      .withCheck(new SwitchCaseWithoutBreakCheck())
+      .verifyIssues();
   }
 
 }

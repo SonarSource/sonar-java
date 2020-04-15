@@ -26,16 +26,27 @@ public class AnonymousClassShouldBeLambdaCheckTest {
 
   @Test
   public void java8() {
-    JavaCheckVerifier.verify("src/test/files/checks/AnonymousClassShouldBeLambdaCheck.java", new AnonymousClassShouldBeLambdaCheck(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AnonymousClassShouldBeLambdaCheck.java")
+      .withCheck(new AnonymousClassShouldBeLambdaCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 
   @Test
   public void java7() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/AnonymousClassShouldBeLambdaCheck_java7.java", new AnonymousClassShouldBeLambdaCheck(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AnonymousClassShouldBeLambdaCheck_java7.java")
+      .withCheck(new AnonymousClassShouldBeLambdaCheck())
+      .withJavaVersion(7)
+      .verifyNoIssues();
   }
 
   @Test
   public void unknown_version() {
-    JavaCheckVerifier.verify("src/test/files/checks/AnonymousClassShouldBeLambdaCheck_no_version.java", new AnonymousClassShouldBeLambdaCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AnonymousClassShouldBeLambdaCheck_no_version.java")
+      .withCheck(new AnonymousClassShouldBeLambdaCheck())
+      .verifyIssues();
   }
 }

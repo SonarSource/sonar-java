@@ -26,7 +26,10 @@ public class TransientFieldInNonSerializableCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/TransientFieldInNonSerializableCheck.java", new TransientFieldInNonSerializableCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/TransientFieldInNonSerializableCheck.java")
+      .withCheck(new TransientFieldInNonSerializableCheck())
+      .verifyIssues();
   }
 
 }

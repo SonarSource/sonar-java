@@ -28,11 +28,18 @@ public class CryptographicKeySizeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/security/CryptographicKeySizeCheck.java"), new CryptographicKeySizeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/CryptographicKeySizeCheck.java"))
+      .withCheck(new CryptographicKeySizeCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/security/CryptographicKeySizeCheck.java"), new CryptographicKeySizeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/CryptographicKeySizeCheck.java"))
+      .withCheck(new CryptographicKeySizeCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

@@ -26,7 +26,10 @@ public class MethodNamedHashcodeOrEqualCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/MethodNamedHashcodeOrEqualCheck.java", new MethodNamedHashcodeOrEqualCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/MethodNamedHashcodeOrEqualCheck.java")
+      .withCheck(new MethodNamedHashcodeOrEqualCheck())
+      .verifyIssues();
   }
 
 }

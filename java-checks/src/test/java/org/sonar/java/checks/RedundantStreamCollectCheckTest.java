@@ -26,8 +26,15 @@ public class RedundantStreamCollectCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/RedundantStreamCollectCheck.java", new RedundantStreamCollectCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/RedundantStreamCollectCheck.java", new RedundantStreamCollectCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RedundantStreamCollectCheck.java")
+      .withCheck(new RedundantStreamCollectCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RedundantStreamCollectCheck.java")
+      .withCheck(new RedundantStreamCollectCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

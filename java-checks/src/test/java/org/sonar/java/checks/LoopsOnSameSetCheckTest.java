@@ -26,7 +26,10 @@ public class LoopsOnSameSetCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/LoopsOnSameSetCheck.java", new LoopsOnSameSetCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LoopsOnSameSetCheck.java")
+      .withCheck(new LoopsOnSameSetCheck())
+      .verifyIssues();
   }
 
 }

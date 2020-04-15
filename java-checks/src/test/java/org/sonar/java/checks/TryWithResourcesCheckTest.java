@@ -26,11 +26,18 @@ public class TryWithResourcesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/TryWithResourcesCheck.java", new TryWithResourcesCheck(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/TryWithResourcesCheck.java")
+      .withCheck(new TryWithResourcesCheck())
+      .withJavaVersion(7)
+      .verifyIssues();
   }
 
   @Test
   public void test_no_java_version() {
-    JavaCheckVerifier.verify("src/test/files/checks/TryWithResourcesCheck_no_java_version.java", new TryWithResourcesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/TryWithResourcesCheck_no_java_version.java")
+      .withCheck(new TryWithResourcesCheck())
+      .verifyIssues();
   }
 }

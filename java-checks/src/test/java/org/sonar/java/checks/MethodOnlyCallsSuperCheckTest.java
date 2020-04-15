@@ -28,12 +28,19 @@ public class MethodOnlyCallsSuperCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(FILE, new MethodOnlyCallsSuperCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILE)
+      .withCheck(new MethodOnlyCallsSuperCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILE, new MethodOnlyCallsSuperCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILE)
+      .withCheck(new MethodOnlyCallsSuperCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

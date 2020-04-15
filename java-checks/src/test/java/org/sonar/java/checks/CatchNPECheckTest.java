@@ -26,7 +26,10 @@ public class CatchNPECheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CatchNPECheck.java", new CatchNPECheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CatchNPECheck.java")
+      .withCheck(new CatchNPECheck())
+      .verifyIssues();
   }
 
 }

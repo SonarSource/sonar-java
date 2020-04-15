@@ -24,16 +24,21 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class OverwrittenKeyCheckTest {
 
-
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/OverwrittenKeyCheck.java", new OverwrittenKeyCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OverwrittenKeyCheck.java")
+      .withCheck(new OverwrittenKeyCheck())
+      .verifyIssues();
   }
-
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/OverwrittenKeyCheck.java", new OverwrittenKeyCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OverwrittenKeyCheck.java")
+      .withCheck(new OverwrittenKeyCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

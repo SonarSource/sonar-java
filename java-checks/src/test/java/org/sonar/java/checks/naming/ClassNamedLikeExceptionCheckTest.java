@@ -26,7 +26,14 @@ public class ClassNamedLikeExceptionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/ClassNamedLikeExceptionCheck.java", new ClassNamedLikeExceptionCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/naming/ClassNamedLikeExceptionCheck.java", new ClassNamedLikeExceptionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/ClassNamedLikeExceptionCheck.java")
+      .withCheck(new ClassNamedLikeExceptionCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/ClassNamedLikeExceptionCheck.java")
+      .withCheck(new ClassNamedLikeExceptionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

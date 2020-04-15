@@ -32,17 +32,22 @@ public class HardCodedCredentialsCheckTest {
    */
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/HardCodedCredentialsCheck.java",
-      new HardCodedCredentialsCheck(),
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/HardCodedCredentialsCheck.java")
+      .withCheck(new HardCodedCredentialsCheck())
       // FIXME should not requires an empty classpath
-      Collections.emptyList());
+      .withClassPath(Collections.emptyList())
+      .verifyIssues();
   }
 
   @Test
   public void custom() {
     HardCodedCredentialsCheck check = new HardCodedCredentialsCheck();
     check.credentialWords = "marmalade,bazooka";
-    JavaCheckVerifier.verify(testSourcesPath("checks/HardCodedCredentialsCheckCustom.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/HardCodedCredentialsCheckCustom.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

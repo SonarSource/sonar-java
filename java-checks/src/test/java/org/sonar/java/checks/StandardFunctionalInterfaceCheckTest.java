@@ -26,8 +26,15 @@ public class StandardFunctionalInterfaceCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StandardFunctionalInterfaceCheck.java", new StandardFunctionalInterfaceCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/StandardFunctionalInterfaceCheck.java", new StandardFunctionalInterfaceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StandardFunctionalInterfaceCheck.java")
+      .withCheck(new StandardFunctionalInterfaceCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StandardFunctionalInterfaceCheck.java")
+      .withCheck(new StandardFunctionalInterfaceCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

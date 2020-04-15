@@ -27,12 +27,19 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class NullCheckWithInstanceofCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/NullCheckWithInstanceofCheck.java"), new NullCheckWithInstanceofCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NullCheckWithInstanceofCheck.java"))
+      .withCheck(new NullCheckWithInstanceofCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/NullCheckWithInstanceofCheck.java"), new NullCheckWithInstanceofCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NullCheckWithInstanceofCheck.java"))
+      .withCheck(new NullCheckWithInstanceofCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

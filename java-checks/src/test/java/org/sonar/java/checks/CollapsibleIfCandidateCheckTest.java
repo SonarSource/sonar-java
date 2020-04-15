@@ -26,6 +26,9 @@ public class CollapsibleIfCandidateCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/CollapsibleIfCandidateCheck.java", new CollapsibleIfCandidateCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CollapsibleIfCandidateCheck.java")
+      .withCheck(new CollapsibleIfCandidateCheck())
+      .verifyIssues();
   }
 }

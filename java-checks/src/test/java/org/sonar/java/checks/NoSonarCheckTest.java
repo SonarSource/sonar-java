@@ -26,7 +26,10 @@ public class NoSonarCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NoSonar.java", new NoSonarCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NoSonar.java")
+      .withCheck(new NoSonarCheck())
+      .verifyIssues();
   }
 
 }

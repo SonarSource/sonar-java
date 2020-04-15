@@ -26,7 +26,10 @@ public class DeadStoreCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DeadStoreCheck.java", new DeadStoreCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DeadStoreCheck.java")
+      .withCheck(new DeadStoreCheck())
+      .verifyIssues();
   }
 
 }

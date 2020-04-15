@@ -30,16 +30,27 @@ public class DateUtilsTruncateCheckTest {
 
   @Test
   public void java8() {
-    JavaCheckVerifier.verify(FILENAME, new DateUtilsTruncateCheck(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(new DateUtilsTruncateCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 
   @Test
   public void java7() {
-    JavaCheckVerifier.verifyNoIssue(FILENAME, new DateUtilsTruncateCheck(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(new DateUtilsTruncateCheck())
+      .withJavaVersion(7)
+      .verifyNoIssues();
   }
 
   @Test
   public void unknown_version() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/DateUtilsTruncateCheck_no_version.java"), new DateUtilsTruncateCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/DateUtilsTruncateCheck_no_version.java"))
+      .withCheck(new DateUtilsTruncateCheck())
+      .verifyIssues();
   }
 }

@@ -30,10 +30,26 @@ public class ReplaceGuavaWithJava8CheckTest {
 
   @Test
   public void java8() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/ReplaceGuavaWithJava8Check_java7.java"), new ReplaceGuavaWithJava8Check(), 7);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME, new ReplaceGuavaWithJava8Check(), 8);
-    JavaCheckVerifier.verify(FILENAME, new ReplaceGuavaWithJava8Check(), 8);
-    JavaCheckVerifier.verify(testSourcesPath("checks/ReplaceGuavaWithJava8Check_no_version.java"), new ReplaceGuavaWithJava8Check());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ReplaceGuavaWithJava8Check_java7.java"))
+      .withCheck(new ReplaceGuavaWithJava8Check())
+      .withJavaVersion(7)
+      .verifyNoIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(new ReplaceGuavaWithJava8Check())
+      .withJavaVersion(8)
+      .withoutSemantic()
+      .verifyNoIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(new ReplaceGuavaWithJava8Check())
+      .withJavaVersion(8)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ReplaceGuavaWithJava8Check_no_version.java"))
+      .withCheck(new ReplaceGuavaWithJava8Check())
+      .verifyIssues();
   }
 
 }

@@ -30,27 +30,43 @@ public class ClassFieldCountCheckTest {
 
   @Test
   public void simple_case() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/ClassFieldCountCheck/SimpleDefaultCase.java"), new ClassFieldCountCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/ClassFieldCountCheck/SimpleDefaultCase.java"), new ClassFieldCountCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ClassFieldCountCheck/SimpleDefaultCase.java"))
+      .withCheck(new ClassFieldCountCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ClassFieldCountCheck/SimpleDefaultCase.java"))
+      .withCheck(new ClassFieldCountCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void static_final() {
-    JavaCheckVerifier.verify(TEST_FILES_DIR + "ClassFieldCountCheck.java", new ClassFieldCountCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILES_DIR + "ClassFieldCountCheck.java")
+      .withCheck(new ClassFieldCountCheck())
+      .verifyIssues();
   }
 
   @Test
   public void enums_interfaces_and_anonymous_trees() {
     ClassFieldCountCheck check = new ClassFieldCountCheck();
     check.setThreshold(2);
-    JavaCheckVerifier.verify(TEST_FILES_DIR + "UnusualTrees.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILES_DIR + "UnusualTrees.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void count_only_public_fields() {
     ClassFieldCountCheck check = new ClassFieldCountCheck();
     check.setCountNonPublicFields(false);
-    JavaCheckVerifier.verify(TEST_FILES_DIR + "CountOnlyPublicFields.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(TEST_FILES_DIR + "CountOnlyPublicFields.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

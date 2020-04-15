@@ -26,20 +26,29 @@ public class BadMethodNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadMethodName.java", new BadMethodNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadMethodName.java")
+      .withCheck(new BadMethodNameCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test2() {
     BadMethodNameCheck check = new BadMethodNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadMethodNameCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadMethodNameCustom.java")
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
   @Test
   public void testOverrideWithoutAnnotation() throws Exception {
     BadMethodNameCheck check = new BadMethodNameCheck();
     check.format = "^[A-Z0-9]*$";
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadMethodNameCustomNoncompliant.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadMethodNameCustomNoncompliant.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 }

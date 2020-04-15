@@ -26,7 +26,10 @@ public class NestedBlocksCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NestedBlocksCheck.java", new NestedBlocksCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NestedBlocksCheck.java")
+      .withCheck(new NestedBlocksCheck())
+      .verifyIssues();
   }
 
 }

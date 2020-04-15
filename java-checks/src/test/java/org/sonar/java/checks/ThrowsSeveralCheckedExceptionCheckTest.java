@@ -26,7 +26,10 @@ public class ThrowsSeveralCheckedExceptionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ThrowsSeveralCheckedException.java", new ThrowsSeveralCheckedExceptionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThrowsSeveralCheckedException.java")
+      .withCheck(new ThrowsSeveralCheckedExceptionCheck())
+      .verifyIssues();
   }
 
 }

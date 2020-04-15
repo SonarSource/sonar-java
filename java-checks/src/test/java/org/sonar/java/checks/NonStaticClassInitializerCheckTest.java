@@ -28,7 +28,10 @@ public class NonStaticClassInitializerCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/NonStaticClassInitializerCheck.java"), new NonStaticClassInitializerCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NonStaticClassInitializerCheck.java"))
+      .withCheck(new NonStaticClassInitializerCheck())
+      .verifyIssues();
   }
 
 }

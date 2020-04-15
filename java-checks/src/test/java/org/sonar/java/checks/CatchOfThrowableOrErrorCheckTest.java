@@ -26,6 +26,9 @@ public class CatchOfThrowableOrErrorCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CatchOfThrowableOrErrorCheck.java", new CatchOfThrowableOrErrorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CatchOfThrowableOrErrorCheck.java")
+      .withCheck(new CatchOfThrowableOrErrorCheck())
+      .verifyIssues();
   }
 }

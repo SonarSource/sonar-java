@@ -26,7 +26,10 @@ public class StringToStringCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StringToString.java", new StringToStringCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StringToString.java")
+      .withCheck(new StringToStringCheck())
+      .verifyIssues();
   }
 
 }

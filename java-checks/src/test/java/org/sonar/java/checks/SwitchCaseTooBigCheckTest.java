@@ -26,21 +26,30 @@ public class SwitchCaseTooBigCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/SwitchCaseTooBigCheck.java", new SwitchCaseTooBigCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SwitchCaseTooBigCheck.java")
+      .withCheck(new SwitchCaseTooBigCheck())
+      .verifyIssues();
   }
 
   @Test
   public void custom() {
     SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
     check.max = 6;
-    JavaCheckVerifier.verify("src/test/files/checks/SwitchCaseTooBigCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SwitchCaseTooBigCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void limit() {
     SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
     check.max = 0;
-    JavaCheckVerifier.verify("src/test/files/checks/SwitchCaseTooBigCheck.java", new SwitchCaseTooBigCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SwitchCaseTooBigCheck.java")
+      .withCheck(new SwitchCaseTooBigCheck())
+      .verifyIssues();
   }
 
 }

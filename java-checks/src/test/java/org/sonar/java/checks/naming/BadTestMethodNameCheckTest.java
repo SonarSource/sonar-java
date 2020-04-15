@@ -29,18 +29,31 @@ public class BadTestMethodNameCheckTest {
   @Test
   public void test() {
     BadTestMethodNameCheck check = new BadTestMethodNameCheck();
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadTestMethodNameCheck.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadTestMethodNameCheck.java")
+      .withCheck(check)
+      .verifyIssues();
     // test with same instance to cover reuse of regexp pattern (lazy initialization).
-    JavaCheckVerifier.verify("src/test/files/checks/naming/BadTestMethodNameCheck.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadTestMethodNameCheck.java")
+      .withCheck(check)
+      .verifyIssues();
 
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/naming/BadTestMethodNameCheck.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadTestMethodNameCheck.java")
+      .withCheck(check)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void test_with_customPattern() {
     BadTestMethodNameCheck check = new BadTestMethodNameCheck();
     check.format = "^test_sonar[A-Z][a-zA-Z0-9]*$";
-    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BadTestMethodNameCheckCustom.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/naming/BadTestMethodNameCheckCustom.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

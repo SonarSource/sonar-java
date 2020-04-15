@@ -28,7 +28,10 @@ public class NoPmdTagPresenceCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/NoPmdTagPresenceCheck.java"), new NoPmdTagPresenceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NoPmdTagPresenceCheck.java"))
+      .withCheck(new NoPmdTagPresenceCheck())
+      .verifyIssues();
   }
 
 }

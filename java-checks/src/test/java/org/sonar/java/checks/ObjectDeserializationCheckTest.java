@@ -26,12 +26,19 @@ public class ObjectDeserializationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ObjectDeserialization.java", new ObjectDeserializationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ObjectDeserialization.java")
+      .withCheck(new ObjectDeserializationCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ObjectDeserialization.java", new ObjectDeserializationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ObjectDeserialization.java")
+      .withCheck(new ObjectDeserializationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class EqualsNotOverridenWithCompareToCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EqualsNotOverridenWithCompareToCheck.java", new EqualsNotOverridenWithCompareToCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EqualsNotOverridenWithCompareToCheck.java")
+      .withCheck(new EqualsNotOverridenWithCompareToCheck())
+      .verifyIssues();
   }
 }

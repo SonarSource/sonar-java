@@ -27,6 +27,9 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class SwitchDefaultLastCaseCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/SwitchDefaultLastCaseCheck.java"), new SwitchDefaultLastCaseCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/SwitchDefaultLastCaseCheck.java"))
+      .withCheck(new SwitchDefaultLastCaseCheck())
+      .verifyIssues();
   }
 }

@@ -26,31 +26,50 @@ public class UselessImportCheckTest {
 
   @Test
   public void detected_with_package() {
-    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/WithinPackage.java", new UselessImportCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessImportCheck/WithinPackage.java")
+      .withCheck(new UselessImportCheck())
+      .verifyIssues();
   }
 
   @Test
   public void detected_within_package_info() {
-    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/package-info.java", new UselessImportCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessImportCheck/package-info.java")
+      .withCheck(new UselessImportCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UselessImportCheck/NoSemanticWithPackage.java", new UselessImportCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessImportCheck/NoSemanticWithPackage.java")
+      .withCheck(new UselessImportCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void detected_without_package() {
-    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/WithoutPackage.java", new UselessImportCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessImportCheck/WithoutPackage.java")
+      .withCheck(new UselessImportCheck())
+      .verifyIssues();
   }
 
   @Test
   public void with_module() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/module/module-info.java", new UselessImportCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/module/module-info.java")
+      .withCheck(new UselessImportCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void intersection_type() {
-    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/IntersectionCase.java", new UselessImportCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessImportCheck/IntersectionCase.java")
+      .withCheck(new UselessImportCheck())
+      .verifyIssues();
   }
 }

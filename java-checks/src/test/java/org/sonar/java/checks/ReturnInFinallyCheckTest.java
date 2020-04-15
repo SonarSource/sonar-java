@@ -26,7 +26,10 @@ public class ReturnInFinallyCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ReturnInFinallyCheck.java", new ReturnInFinallyCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ReturnInFinallyCheck.java")
+      .withCheck(new ReturnInFinallyCheck())
+      .verifyIssues();
   }
 
 }

@@ -28,9 +28,20 @@ public class WeakSSLContextCheckTest {
   public void test() {
     WeakSSLContextCheck check = new WeakSSLContextCheck();
     String filename = "src/test/files/checks/WeakSSLContextCheck.java";
-    JavaCheckVerifier.verify(filename, check);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(filename, check);
-    JavaCheckVerifier.verify("src/test/files/checks/WeakSSLContextCheckJava8.java", check, 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile(filename)
+      .withCheck(check)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(filename)
+      .withCheck(check)
+      .withoutSemantic()
+      .verifyNoIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/WeakSSLContextCheckJava8.java")
+      .withCheck(check)
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 
 }

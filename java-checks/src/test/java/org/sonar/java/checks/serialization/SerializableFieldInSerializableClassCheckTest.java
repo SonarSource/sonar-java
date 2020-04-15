@@ -26,8 +26,15 @@ public class SerializableFieldInSerializableClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/serialization/SerializableFieldInSerializableClassCheck.java", new SerializableFieldInSerializableClassCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/serialization/SerializableFieldInSerializableClassCheck.java", new SerializableFieldInSerializableClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/SerializableFieldInSerializableClassCheck.java")
+      .withCheck(new SerializableFieldInSerializableClassCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/SerializableFieldInSerializableClassCheck.java")
+      .withCheck(new SerializableFieldInSerializableClassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

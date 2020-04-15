@@ -26,9 +26,15 @@ public class UnusedPrivateMethodCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UnusedPrivateMethod.java", new UnusedPrivateMethodCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UnusedPrivateMethod.java", new UnusedPrivateMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UnusedPrivateMethod.java")
+      .withCheck(new UnusedPrivateMethodCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UnusedPrivateMethod.java")
+      .withCheck(new UnusedPrivateMethodCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
-
 
 }

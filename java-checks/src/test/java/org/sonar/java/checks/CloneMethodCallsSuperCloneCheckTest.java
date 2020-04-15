@@ -26,7 +26,10 @@ public class CloneMethodCallsSuperCloneCheckTest {
 
   @Test
   public void test() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/checks/CloneMethodCallsSuperCloneCheck.java", new CloneMethodCallsSuperCloneCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CloneMethodCallsSuperCloneCheck.java")
+      .withCheck(new CloneMethodCallsSuperCloneCheck())
+      .verifyIssues();
   }
 
 }

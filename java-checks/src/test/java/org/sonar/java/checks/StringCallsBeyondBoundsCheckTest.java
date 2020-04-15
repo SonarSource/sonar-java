@@ -26,6 +26,9 @@ public class StringCallsBeyondBoundsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StringCallsBeyondBoundsCheck.java", new StringCallsBeyondBoundsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StringCallsBeyondBoundsCheck.java")
+      .withCheck(new StringCallsBeyondBoundsCheck())
+      .verifyIssues();
   }
 }

@@ -32,7 +32,10 @@ public class DisallowedMethodCheckTest {
     disallowedMethodCheck.setClassName("A");
     disallowedMethodCheck.setMethodName("foo");
     disallowedMethodCheck.setArgumentTypes("int, long, java.lang.String[]");
-    JavaCheckVerifier.verify("src/test/files/checks/DisallowedMethodCheck/detected.java", disallowedMethodCheck);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedMethodCheck/detected.java")
+      .withCheck(disallowedMethodCheck)
+      .verifyIssues();
   }
 
   @Test
@@ -41,7 +44,10 @@ public class DisallowedMethodCheckTest {
     disallowedMethodCheck.setClassName("A");
     disallowedMethodCheck.setMethodName("foo");
     disallowedMethodCheck.setAllOverloads(true);
-    JavaCheckVerifier.verify("src/test/files/checks/DisallowedMethodCheck/detected.java", disallowedMethodCheck);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedMethodCheck/detected.java")
+      .withCheck(disallowedMethodCheck)
+      .verifyIssues();
   }
 
   @Test
@@ -49,20 +55,29 @@ public class DisallowedMethodCheckTest {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setClassName("A");
     disallowedMethodCheck.setMethodName("bar");
-    JavaCheckVerifier.verify("src/test/files/checks/DisallowedMethodCheck/empty_parameters.java", disallowedMethodCheck);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedMethodCheck/empty_parameters.java")
+      .withCheck(disallowedMethodCheck)
+      .verifyIssues();
   }
 
   @Test
   public void empty_type_definition() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setMethodName("bar");
-    JavaCheckVerifier.verify("src/test/files/checks/DisallowedMethodCheck/empty_type_definition.java", disallowedMethodCheck);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedMethodCheck/empty_type_definition.java")
+      .withCheck(disallowedMethodCheck)
+      .verifyIssues();
   }
 
   @Test
   public void empty_method_name() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setClassName("A");
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/DisallowedMethodCheck/empty_method_name.java"), disallowedMethodCheck);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/DisallowedMethodCheck/empty_method_name.java"))
+      .withCheck(disallowedMethodCheck)
+      .verifyNoIssues();
   }
 }

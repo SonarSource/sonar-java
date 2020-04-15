@@ -28,6 +28,9 @@ public class DanglingElseStatementsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/DanglingElseStatementsCheck.java"), new DanglingElseStatementsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/DanglingElseStatementsCheck.java"))
+      .withCheck(new DanglingElseStatementsCheck())
+      .verifyIssues();
   }
 }

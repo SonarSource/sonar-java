@@ -26,6 +26,9 @@ public class ReadObjectSynchronizedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ReadObjectSynchronized.java", new ReadObjectSynchronizedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ReadObjectSynchronized.java")
+      .withCheck(new ReadObjectSynchronizedCheck())
+      .verifyIssues();
   }
 }

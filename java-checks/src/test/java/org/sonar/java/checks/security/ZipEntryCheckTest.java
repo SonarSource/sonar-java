@@ -26,12 +26,19 @@ public class ZipEntryCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/ZipEntryCheck.java", new ZipEntryCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/ZipEntryCheck.java")
+      .withCheck(new ZipEntryCheck())
+      .verifyIssues();
   }
 
   @Test
   public void noSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/ZipEntryCheck.java", new ZipEntryCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/ZipEntryCheck.java")
+      .withCheck(new ZipEntryCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -26,6 +26,9 @@ public class ClassWithOnlyStaticMethodsInstantiationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ClassWithOnlyStaticMethodsInstantiationCheck.java", new ClassWithOnlyStaticMethodsInstantiationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ClassWithOnlyStaticMethodsInstantiationCheck.java")
+      .withCheck(new ClassWithOnlyStaticMethodsInstantiationCheck())
+      .verifyIssues();
   }
 }

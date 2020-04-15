@@ -26,7 +26,10 @@ public class NonShortCircuitLogicCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NonShortCircuitLogicCheck.java", new NonShortCircuitLogicCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NonShortCircuitLogicCheck.java")
+      .withCheck(new NonShortCircuitLogicCheck())
+      .verifyIssues();
   }
 
 }

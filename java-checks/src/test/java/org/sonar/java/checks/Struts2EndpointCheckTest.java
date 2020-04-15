@@ -26,8 +26,15 @@ public class Struts2EndpointCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/Struts2EndpointCheck.java", new Struts2EndpointCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/Struts2EndpointCheck.java", new Struts2EndpointCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/Struts2EndpointCheck.java")
+      .withCheck(new Struts2EndpointCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/Struts2EndpointCheck.java")
+      .withCheck(new Struts2EndpointCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

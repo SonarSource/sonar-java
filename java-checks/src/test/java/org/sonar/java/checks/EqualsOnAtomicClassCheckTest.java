@@ -28,7 +28,10 @@ public class EqualsOnAtomicClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/EqualsOnAtomicClassCheck.java"), new EqualsOnAtomicClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/EqualsOnAtomicClassCheck.java"))
+      .withCheck(new EqualsOnAtomicClassCheck())
+      .verifyIssues();
   }
 
 }

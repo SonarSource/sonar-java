@@ -26,7 +26,14 @@ public class MissingBeanValidationCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/MissingBeanValidationCheck.java", new MissingBeanValidationCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/MissingBeanValidationCheck.java", new MissingBeanValidationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MissingBeanValidationCheck.java")
+      .withCheck(new MissingBeanValidationCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MissingBeanValidationCheck.java")
+      .withCheck(new MissingBeanValidationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

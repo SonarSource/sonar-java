@@ -26,7 +26,10 @@ public class RightCurlyBraceSameLineAsNextBlockCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/RightCurlyBraceSameLineAsNextBlockCheck.java", new RightCurlyBraceSameLineAsNextBlockCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RightCurlyBraceSameLineAsNextBlockCheck.java")
+      .withCheck(new RightCurlyBraceSameLineAsNextBlockCheck())
+      .verifyIssues();
   }
 
 }

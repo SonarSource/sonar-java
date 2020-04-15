@@ -26,7 +26,10 @@ public class ForLoopCounterChangedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ForLoopCounterChangedCheck.java", new ForLoopCounterChangedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ForLoopCounterChangedCheck.java")
+      .withCheck(new ForLoopCounterChangedCheck())
+      .verifyIssues();
   }
 
 }

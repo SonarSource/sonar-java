@@ -26,7 +26,10 @@ public class ErrorClassExtendedCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/ErrorClassExtendedCheck.java", new ErrorClassExtendedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ErrorClassExtendedCheck.java")
+      .withCheck(new ErrorClassExtendedCheck())
+      .verifyIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class UnusedLabelCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedLabelCheck.java", new UnusedLabelCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedLabelCheck.java")
+      .withCheck(new UnusedLabelCheck())
+      .verifyIssues();
   }
 
 }

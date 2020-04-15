@@ -26,8 +26,15 @@ public class SpringComponentWithWrongScopeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringComponentWithWrongScopeCheck.java", new SpringComponentWithWrongScopeCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/SpringComponentWithWrongScopeCheck.java", new SpringComponentWithWrongScopeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringComponentWithWrongScopeCheck.java")
+      .withCheck(new SpringComponentWithWrongScopeCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringComponentWithWrongScopeCheck.java")
+      .withCheck(new SpringComponentWithWrongScopeCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

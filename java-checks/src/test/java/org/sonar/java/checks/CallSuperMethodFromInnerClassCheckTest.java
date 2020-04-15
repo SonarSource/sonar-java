@@ -26,6 +26,9 @@ public class CallSuperMethodFromInnerClassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CallSuperMethodFromInnerClassCheck.java", new CallSuperMethodFromInnerClassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CallSuperMethodFromInnerClassCheck.java")
+      .withCheck(new CallSuperMethodFromInnerClassCheck())
+      .verifyIssues();
   }
 }

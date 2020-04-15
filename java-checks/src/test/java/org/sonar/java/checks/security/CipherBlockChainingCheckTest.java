@@ -28,11 +28,18 @@ public class CipherBlockChainingCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/security/CipherBlockChainingCheck.java"), new CipherBlockChainingCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/CipherBlockChainingCheck.java"))
+      .withCheck(new CipherBlockChainingCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/security/CipherBlockChainingCheck.java"), new CipherBlockChainingCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/security/CipherBlockChainingCheck.java"))
+      .withCheck(new CipherBlockChainingCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

@@ -31,7 +31,10 @@ public class DisallowedConstructorCheckTest {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
     disallowedConstructorCheck.setClassName("A");
     disallowedConstructorCheck.setArgumentTypes("int, long, java.lang.String[]");
-    JavaCheckVerifier.verify("src/test/files/checks/DisallowedConstructorCheck/detected.java", disallowedConstructorCheck);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedConstructorCheck/detected.java")
+      .withCheck(disallowedConstructorCheck)
+      .verifyIssues();
   }
 
   @Test
@@ -39,20 +42,29 @@ public class DisallowedConstructorCheckTest {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
     disallowedConstructorCheck.setClassName("checks.DisallowedConstructorCheck.A");
     disallowedConstructorCheck.setAllOverloads(true);
-    JavaCheckVerifier.verify(testSourcesPath("checks/DisallowedConstructorCheck/detected_all_overload.java"), disallowedConstructorCheck);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/DisallowedConstructorCheck/detected_all_overload.java"))
+      .withCheck(disallowedConstructorCheck)
+      .verifyIssues();
   }
 
   @Test
   public void empty_parameters() {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
     disallowedConstructorCheck.setClassName("A");
-    JavaCheckVerifier.verify("src/test/files/checks/DisallowedConstructorCheck/empty_parameters.java", disallowedConstructorCheck);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedConstructorCheck/empty_parameters.java")
+      .withCheck(disallowedConstructorCheck)
+      .verifyIssues();
   }
 
   @Test
   public void empty_type_definition() {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/DisallowedConstructorCheck/empty_type_definition.java", disallowedConstructorCheck);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedConstructorCheck/empty_type_definition.java")
+      .withCheck(disallowedConstructorCheck)
+      .verifyNoIssues();
   }
 
 }

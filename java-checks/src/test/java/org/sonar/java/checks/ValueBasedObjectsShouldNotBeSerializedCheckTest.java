@@ -26,7 +26,10 @@ public class ValueBasedObjectsShouldNotBeSerializedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ValueBasedObjectsShouldNotBeSerializedCheck.java", new ValueBasedObjectsShouldNotBeSerializedCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ValueBasedObjectsShouldNotBeSerializedCheck.java")
+      .withCheck(new ValueBasedObjectsShouldNotBeSerializedCheck())
+      .verifyIssues();
   }
 
 }

@@ -67,7 +67,10 @@ class AssertionsInTestsCheckTest {
     "Custom"
   })
   void test(String framework) {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/" + framework + ".java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AssertionsInTestsCheck/" + framework + ".java")
+      .withCheck(check)
+      .verifyIssues();
     assertThat(logTester.logs(LoggerLevel.WARN)).contains(
       "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'blabla'",
       "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: 'bla# '",
@@ -76,13 +79,21 @@ class AssertionsInTestsCheckTest {
 
   @Test
   void testNoIssuesWithout() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/AssertionsInTestsCheck/Junit3.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AssertionsInTestsCheck/Junit3.java")
+      .withCheck(check)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   void testWithEmptyCustomAssertionMethods() {
     check.customAssertionMethods = "";
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheck/Junit3.java", check);
-    assertThat(logTester.logs(LoggerLevel.WARN)).doesNotContain("Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ''");
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AssertionsInTestsCheck/Junit3.java")
+      .withCheck(check)
+      .verifyIssues();
+    assertThat(logTester.logs(LoggerLevel.WARN))
+      .doesNotContain("Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ''");
   }
 }

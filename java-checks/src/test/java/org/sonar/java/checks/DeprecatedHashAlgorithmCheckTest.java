@@ -26,8 +26,15 @@ public class DeprecatedHashAlgorithmCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DeprecatedHashAlgorithmCheck.java", new DeprecatedHashAlgorithmCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/DeprecatedHashAlgorithmCheck.java", new DeprecatedHashAlgorithmCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DeprecatedHashAlgorithmCheck.java")
+      .withCheck(new DeprecatedHashAlgorithmCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DeprecatedHashAlgorithmCheck.java")
+      .withCheck(new DeprecatedHashAlgorithmCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

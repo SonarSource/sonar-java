@@ -26,7 +26,10 @@ public class ThrowsFromFinallyCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ThrowsFromFinallyCheck.java", new ThrowsFromFinallyCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThrowsFromFinallyCheck.java")
+      .withCheck(new ThrowsFromFinallyCheck())
+      .verifyIssues();
   }
 
 }

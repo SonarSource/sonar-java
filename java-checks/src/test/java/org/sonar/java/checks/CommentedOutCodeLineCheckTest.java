@@ -28,7 +28,10 @@ public class CommentedOutCodeLineCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/CommentedCode.java"), new CommentedOutCodeLineCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CommentedCode.java"))
+      .withCheck(new CommentedOutCodeLineCheck())
+      .verifyIssues();
   }
 
 }

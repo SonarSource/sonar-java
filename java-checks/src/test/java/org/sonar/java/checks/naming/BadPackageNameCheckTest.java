@@ -26,18 +26,27 @@ public class BadPackageNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/PACKAGE/BadPackageNameNoncompliant.java", new BadPackageNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PACKAGE/BadPackageNameNoncompliant.java")
+      .withCheck(new BadPackageNameCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test2() {
     BadPackageNameCheck check = new BadPackageNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/PACKAGE/BadPackageName.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PACKAGE/BadPackageName.java")
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
   @Test
   public void test3() {
-    JavaCheckVerifier.verify("src/test/files/checks/PACKAGE/BadQualifiedIdentifierPackageName.java", new BadPackageNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PACKAGE/BadQualifiedIdentifierPackageName.java")
+      .withCheck(new BadPackageNameCheck())
+      .verifyIssues();
   }
 }

@@ -28,14 +28,20 @@ public class BadFieldNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/naming/BadFieldName.java"), new BadFieldNameCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/naming/BadFieldName.java"))
+      .withCheck(new BadFieldNameCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test2() {
     BadFieldNameCheck check = new BadFieldNameCheck();
     check.format = "^[a-zA-Z0-9_]*$";
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/naming/BadFieldName2.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/naming/BadFieldName2.java"))
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
 }

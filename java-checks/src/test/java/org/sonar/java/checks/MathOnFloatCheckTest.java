@@ -28,7 +28,10 @@ public class MathOnFloatCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/MathOnFloatCheck.java"), new MathOnFloatCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/MathOnFloatCheck.java"))
+      .withCheck(new MathOnFloatCheck())
+      .verifyIssues();
   }
 
 }

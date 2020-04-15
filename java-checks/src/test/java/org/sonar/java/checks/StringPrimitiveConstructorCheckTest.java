@@ -28,6 +28,9 @@ public class StringPrimitiveConstructorCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/StringPrimitiveConstructorCheck.java"), new StringPrimitiveConstructorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StringPrimitiveConstructorCheck.java"))
+      .withCheck(new StringPrimitiveConstructorCheck())
+      .verifyIssues();
   }
 }

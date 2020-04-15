@@ -26,7 +26,10 @@ public class LoopExecutingAtMostOnceCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/LoopExecutingAtMostOnceCheck.java", new LoopExecutingAtMostOnceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LoopExecutingAtMostOnceCheck.java")
+      .withCheck(new LoopExecutingAtMostOnceCheck())
+      .verifyIssues();
   }
 
 }

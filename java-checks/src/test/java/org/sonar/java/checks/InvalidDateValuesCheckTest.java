@@ -26,7 +26,10 @@ public class InvalidDateValuesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/InvalidDateValuesCheck.java", new InvalidDateValuesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InvalidDateValuesCheck.java")
+      .withCheck(new InvalidDateValuesCheck())
+      .verifyIssues();
   }
 
 }

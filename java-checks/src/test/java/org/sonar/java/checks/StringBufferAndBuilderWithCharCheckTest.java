@@ -28,6 +28,9 @@ public class StringBufferAndBuilderWithCharCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/StringBufferAndBuilderWithCharCheck.java"), new StringBufferAndBuilderWithCharCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StringBufferAndBuilderWithCharCheck.java"))
+      .withCheck(new StringBufferAndBuilderWithCharCheck())
+      .verifyIssues();
   }
 }

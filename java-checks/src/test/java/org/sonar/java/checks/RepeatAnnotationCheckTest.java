@@ -28,16 +28,27 @@ public class RepeatAnnotationCheckTest {
 
   @Test
   public void java8() {
-    JavaCheckVerifier.verify(FILENAME, new RepeatAnnotationCheck(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(new RepeatAnnotationCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 
   @Test
   public void java7() {
-    JavaCheckVerifier.verifyNoIssue(FILENAME, new RepeatAnnotationCheck(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(new RepeatAnnotationCheck())
+      .withJavaVersion(7)
+      .verifyNoIssues();
   }
 
   @Test
   public void unknown_version() {
-    JavaCheckVerifier.verify("src/test/files/checks/RepeatAnnotationCheck_no_version.java", new RepeatAnnotationCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RepeatAnnotationCheck_no_version.java")
+      .withCheck(new RepeatAnnotationCheck())
+      .verifyIssues();
   }
 }

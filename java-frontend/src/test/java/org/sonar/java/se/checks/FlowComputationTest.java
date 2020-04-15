@@ -26,7 +26,7 @@ import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.resolve.Result;
 import org.sonar.java.se.FlowComputation;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 import org.sonar.java.testing.InternalCheckVerifier;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -41,29 +41,47 @@ public class FlowComputationTest {
 
   @Test
   public void test() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/FlowComputation.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/FlowComputation.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_catof() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/FlowComputationCATOF.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/FlowComputationCATOF.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_messages_on_method_invocation() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/FlowComputationMIT.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/FlowComputationMIT.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_flow_messages_on_parameter_declaration() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/FlowMessagesParameterDeclaration.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(),
-      new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/FlowMessagesParameterDeclaration.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_flow_messages_on_branch() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/FlowMessagesBranch.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(),
-      new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/FlowMessagesBranch.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
@@ -79,44 +97,76 @@ public class FlowComputationTest {
 
   @Test
   public void test_relational_sv_operands() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/FlowComputationRelSV.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/FlowComputationRelSV.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_unary_sv_operands() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/FlowComputationUnarySV.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/FlowComputationUnarySV.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_multiple_paths() {
-    JavaCheckVerifier.verify("src/test/files/se/FlowComputationMultiplePath.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/FlowComputationMultiplePath.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_multiple_paths_xproc() {
-    JavaCheckVerifier.verify("src/test/files/se/FlowComputationMultiplePathXProc.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/FlowComputationMultiplePathXProc.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_trigger_yield_flow_computation_only_on_relevant_yields() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/UselessFlowComputation.java",  new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/UselessFlowComputation.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void avoid_visiting_equivalent_paths() throws Exception {
     logTester.setLevel(LoggerLevel.DEBUG);
-    JavaCheckVerifier.verify("src/test/files/se/FlowComputationNoOverflowWhenMergingPaths.java",  new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/FlowComputationNoOverflowWhenMergingPaths.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).doesNotContain("Flow was not able to complete");
   }
 
   @Test
   public void xproc_flow_messages() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/XProcFlowMessages.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XProcFlowMessages.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void xproc_flow_messages_constraint_is_VS_can_be() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/XProcFlowMessagesIsCanBe.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/XProcFlowMessagesIsCanBe.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
@@ -139,17 +189,29 @@ public class FlowComputationTest {
 
   @Test
   public void test_method_invocations_without_flows() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/MethodInvocationWithoutFlows.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/MethodInvocationWithoutFlows.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_exception_flows() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/ExceptionFlows.java", new NullDereferenceCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/ExceptionFlows.java")
+      .withCheck(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
   @Test
   public void test_location_should_not_be_created_on_null_tree() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/FlowNullTree.java", new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck(), new DivisionByZeroCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/FlowNullTree.java")
+      .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck(), new DivisionByZeroCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
 }

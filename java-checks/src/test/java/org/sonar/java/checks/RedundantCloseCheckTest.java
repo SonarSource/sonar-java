@@ -26,11 +26,18 @@ public class RedundantCloseCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/RedundantCloseCheck.java", new RedundantCloseCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RedundantCloseCheck.java")
+      .withCheck(new RedundantCloseCheck())
+      .verifyIssues();
   }
 
   @Test
   public void noIssueWithoutSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/RedundantCloseCheck.java", new RedundantCloseCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RedundantCloseCheck.java")
+      .withCheck(new RedundantCloseCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

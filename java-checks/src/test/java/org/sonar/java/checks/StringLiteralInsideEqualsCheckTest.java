@@ -26,7 +26,10 @@ public class StringLiteralInsideEqualsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StringLiteralInsideEqualsCheck.java", new StringLiteralInsideEqualsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StringLiteralInsideEqualsCheck.java")
+      .withCheck(new StringLiteralInsideEqualsCheck())
+      .verifyIssues();
   }
 
 }

@@ -26,7 +26,14 @@ public class ForLoopIncrementAndUpdateCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ForLoopIncrementAndUpdateCheck.java", new ForLoopIncrementAndUpdateCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ForLoopIncrementAndUpdateCheck.java", new ForLoopIncrementAndUpdateCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ForLoopIncrementAndUpdateCheck.java")
+      .withCheck(new ForLoopIncrementAndUpdateCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ForLoopIncrementAndUpdateCheck.java")
+      .withCheck(new ForLoopIncrementAndUpdateCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

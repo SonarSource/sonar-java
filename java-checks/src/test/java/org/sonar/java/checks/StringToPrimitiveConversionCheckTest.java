@@ -26,8 +26,15 @@ public class StringToPrimitiveConversionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StringToPrimitiveConversionCheck.java", new StringToPrimitiveConversionCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/StringToPrimitiveConversionCheck.java", new StringToPrimitiveConversionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StringToPrimitiveConversionCheck.java")
+      .withCheck(new StringToPrimitiveConversionCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StringToPrimitiveConversionCheck.java")
+      .withCheck(new StringToPrimitiveConversionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class SpringSecurityDisableCSRFCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/SpringSecurityDisableCSRFCheck.java", new SpringSecurityDisableCSRFCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringSecurityDisableCSRFCheck.java")
+      .withCheck(new SpringSecurityDisableCSRFCheck())
+      .verifyIssues();
   }
 
 }

@@ -28,12 +28,35 @@ public class StandardCharsetsConstantsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"), new StandardCharsetsConstantsCheck());
-    JavaCheckVerifier.verify(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"), new StandardCharsetsConstantsCheck(), 7);
-    JavaCheckVerifier.verify(testSourcesPath("checks/StandardCharsetsConstantsCheck_java8.java"), new StandardCharsetsConstantsCheck(), 8);
-    JavaCheckVerifier.verify("src/test/files/checks/StandardCharsetsConstantsCheck_java10.java", new StandardCharsetsConstantsCheck(), 10);
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"), new StandardCharsetsConstantsCheck(), 6);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"), new StandardCharsetsConstantsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
+      .withCheck(new StandardCharsetsConstantsCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
+      .withCheck(new StandardCharsetsConstantsCheck())
+      .withJavaVersion(7)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StandardCharsetsConstantsCheck_java8.java"))
+      .withCheck(new StandardCharsetsConstantsCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StandardCharsetsConstantsCheck_java10.java")
+      .withCheck(new StandardCharsetsConstantsCheck())
+      .withJavaVersion(10)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
+      .withCheck(new StandardCharsetsConstantsCheck())
+      .withJavaVersion(6)
+      .verifyNoIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StandardCharsetsConstantsCheck.java"))
+      .withCheck(new StandardCharsetsConstantsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

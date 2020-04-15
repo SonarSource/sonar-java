@@ -26,11 +26,18 @@ public class CombineCatchCheckTest {
 
   @Test
   public void java_version_unset() {
-    JavaCheckVerifier.verify("src/test/files/checks/CombineCatchCheck_no_version.java", new CombineCatchCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CombineCatchCheck_no_version.java")
+      .withCheck(new CombineCatchCheck())
+      .verifyIssues();
   }
 
   @Test
   public void java_version_set() {
-    JavaCheckVerifier.verify("src/test/files/checks/CombineCatchCheck.java", new CombineCatchCheck(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CombineCatchCheck.java")
+      .withCheck(new CombineCatchCheck())
+      .withJavaVersion(7)
+      .verifyIssues();
   }
 }

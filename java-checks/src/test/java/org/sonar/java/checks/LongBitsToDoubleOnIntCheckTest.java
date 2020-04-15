@@ -28,6 +28,9 @@ public class LongBitsToDoubleOnIntCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/LongBitsToDoubleOnIntCheck.java"), new LongBitsToDoubleOnIntCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/LongBitsToDoubleOnIntCheck.java"))
+      .withCheck(new LongBitsToDoubleOnIntCheck())
+      .verifyIssues();
   }
 }

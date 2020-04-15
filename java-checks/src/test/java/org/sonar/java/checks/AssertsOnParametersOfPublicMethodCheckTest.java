@@ -25,7 +25,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class AssertsOnParametersOfPublicMethodCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertsOnParametersOfPublicMethodCheck.java", new AssertsOnParametersOfPublicMethodCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/AssertsOnParametersOfPublicMethodCheck.java", new AssertsOnParametersOfPublicMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AssertsOnParametersOfPublicMethodCheck.java")
+      .withCheck(new AssertsOnParametersOfPublicMethodCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AssertsOnParametersOfPublicMethodCheck.java")
+      .withCheck(new AssertsOnParametersOfPublicMethodCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

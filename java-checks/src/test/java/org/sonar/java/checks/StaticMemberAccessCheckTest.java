@@ -26,8 +26,15 @@ public class StaticMemberAccessCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/StaticMemberAccess.java", new StaticMemberAccessCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/StaticMemberAccess.java", new StaticMemberAccessCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StaticMemberAccess.java")
+      .withCheck(new StaticMemberAccessCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StaticMemberAccess.java")
+      .withCheck(new StaticMemberAccessCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

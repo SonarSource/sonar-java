@@ -28,7 +28,14 @@ public class CallSuperInTestCaseCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/CallSuperInTestCaseCheck.java"), new CallSuperInTestCaseCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/CallSuperInTestCaseCheck.java"), new CallSuperInTestCaseCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CallSuperInTestCaseCheck.java"))
+      .withCheck(new CallSuperInTestCaseCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CallSuperInTestCaseCheck.java"))
+      .withCheck(new CallSuperInTestCaseCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

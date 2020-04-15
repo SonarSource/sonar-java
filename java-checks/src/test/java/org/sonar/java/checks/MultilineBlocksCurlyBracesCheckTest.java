@@ -26,7 +26,10 @@ public class MultilineBlocksCurlyBracesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/MultilineBlocksCurlyBracesCheck.java", new MultilineBlocksCurlyBracesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MultilineBlocksCurlyBracesCheck.java")
+      .withCheck(new MultilineBlocksCurlyBracesCheck())
+      .verifyIssues();
   }
 
 }

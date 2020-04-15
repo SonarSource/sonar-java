@@ -28,7 +28,10 @@ public class CORSCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/CORSCheck.java"), new CORSCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CORSCheck.java"))
+      .withCheck(new CORSCheck())
+      .verifyIssues();
   }
 
 }

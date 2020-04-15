@@ -28,7 +28,10 @@ public class BooleanLiteralCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/BooleanLiteralCheck.java"), new BooleanLiteralCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/BooleanLiteralCheck.java"))
+      .withCheck(new BooleanLiteralCheck())
+      .verifyIssues();
   }
 
 }

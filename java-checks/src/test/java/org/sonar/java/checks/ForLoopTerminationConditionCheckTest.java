@@ -26,7 +26,10 @@ public class ForLoopTerminationConditionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ForLoopTerminationConditionCheck.java", new ForLoopTerminationConditionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ForLoopTerminationConditionCheck.java")
+      .withCheck(new ForLoopTerminationConditionCheck())
+      .verifyIssues();
   }
 
 }

@@ -28,7 +28,10 @@ public class StringReplaceCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/StringReplace.java"), new StringReplaceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StringReplace.java"))
+      .withCheck(new StringReplaceCheck())
+      .verifyIssues();
   }
 
 }

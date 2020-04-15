@@ -28,7 +28,10 @@ public class StrongCipherAlgorithmCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/StrongCipherAlgorithmCheck.java"), new StrongCipherAlgorithmCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StrongCipherAlgorithmCheck.java"))
+      .withCheck(new StrongCipherAlgorithmCheck())
+      .verifyIssues();
   }
 
 }

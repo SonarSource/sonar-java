@@ -26,8 +26,15 @@ public class InterfaceOrSuperclassShadowingCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/InterfaceOrSuperclassShadowingCheck.java", new InterfaceOrSuperclassShadowingCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/InterfaceOrSuperclassShadowingCheck.java", new InterfaceOrSuperclassShadowingCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InterfaceOrSuperclassShadowingCheck.java")
+      .withCheck(new InterfaceOrSuperclassShadowingCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InterfaceOrSuperclassShadowingCheck.java")
+      .withCheck(new InterfaceOrSuperclassShadowingCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

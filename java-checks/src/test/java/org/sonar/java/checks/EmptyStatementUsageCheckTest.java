@@ -26,6 +26,9 @@ public class EmptyStatementUsageCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EmptyStatementUsageCheck.java", new EmptyStatementUsageCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EmptyStatementUsageCheck.java")
+      .withCheck(new EmptyStatementUsageCheck())
+      .verifyIssues();
   }
 }

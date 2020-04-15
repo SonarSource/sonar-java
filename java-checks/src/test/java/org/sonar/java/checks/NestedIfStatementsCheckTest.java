@@ -30,14 +30,20 @@ public class NestedIfStatementsCheckTest {
   public void detected() {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     assertThat(check.max).isEqualTo(3);
-    JavaCheckVerifier.verify("src/test/files/checks/NestedIfStatementsCheck.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NestedIfStatementsCheck.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void custom() {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     check.max = 4;
-    JavaCheckVerifier.verify("src/test/files/checks/NestedIfStatementsCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NestedIfStatementsCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

@@ -26,11 +26,18 @@ public class EqualsNotOverriddenInSubclassCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EqualsNotOverriddenInSubclassCheck.java", new EqualsNotOverriddenInSubclassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EqualsNotOverriddenInSubclassCheck.java")
+      .withCheck(new EqualsNotOverriddenInSubclassCheck())
+      .verifyIssues();
   }
 
   @Test
   public void noSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/EqualsNotOverriddenInSubclassCheck.java", new EqualsNotOverriddenInSubclassCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EqualsNotOverriddenInSubclassCheck.java")
+      .withCheck(new EqualsNotOverriddenInSubclassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

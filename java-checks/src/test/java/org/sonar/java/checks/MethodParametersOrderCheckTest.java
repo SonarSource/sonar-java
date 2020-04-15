@@ -26,6 +26,9 @@ public class MethodParametersOrderCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/MethodParametersOrderCheck.java", new MethodParametersOrderCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MethodParametersOrderCheck.java")
+      .withCheck(new MethodParametersOrderCheck())
+      .verifyIssues();
   }
 }

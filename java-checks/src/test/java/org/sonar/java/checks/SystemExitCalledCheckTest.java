@@ -26,7 +26,10 @@ public class SystemExitCalledCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/SystemExitCalledCheck.java", new SystemExitCalledCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SystemExitCalledCheck.java")
+      .withCheck(new SystemExitCalledCheck())
+      .verifyIssues();
   }
 
 }

@@ -26,6 +26,9 @@ public class IgnoredStreamReturnValueCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/IgnoredStreamReturnValueCheck.java", new IgnoredStreamReturnValueCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IgnoredStreamReturnValueCheck.java")
+      .withCheck(new IgnoredStreamReturnValueCheck())
+      .verifyIssues();
   }
 }

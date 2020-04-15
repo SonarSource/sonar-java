@@ -26,7 +26,10 @@ public class ServletMethodsExceptionsThrownCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ServletMethodsExceptionsThrownCheck.java", new ServletMethodsExceptionsThrownCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ServletMethodsExceptionsThrownCheck.java")
+      .withCheck(new ServletMethodsExceptionsThrownCheck())
+      .verifyIssues();
   }
 
 }

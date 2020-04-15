@@ -29,20 +29,46 @@ public class RunFinalizersCheckTest {
   public void test() {
     int javaVersion = JavaVersionImpl.fromString(System.getProperty("java.specification.version")).asInt();
     if (javaVersion < 11) {
-      JavaCheckVerifier.verify("src/test/files/checks/RunFinalizersCheck.java", new RunFinalizersCheck());
-      JavaCheckVerifier.verify("src/test/files/checks/RunFinalizersCheck.java", new RunFinalizersCheck(), javaVersion);
-      JavaCheckVerifier.verifyNoIssue("src/test/files/checks/RunFinalizersCheck_no_issue.java", new RunFinalizersCheck(), 11);
+      JavaCheckVerifier.newVerifier()
+        .onFile("src/test/files/checks/RunFinalizersCheck.java")
+        .withCheck(new RunFinalizersCheck())
+        .verifyIssues();
+      JavaCheckVerifier.newVerifier()
+        .onFile("src/test/files/checks/RunFinalizersCheck.java")
+        .withCheck(new RunFinalizersCheck())
+        .withJavaVersion(javaVersion)
+        .verifyIssues();
+      JavaCheckVerifier.newVerifier()
+        .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
+        .withCheck(new RunFinalizersCheck())
+        .withJavaVersion(11)
+        .verifyNoIssues();
     } else {
       // No issue raised starting JDK 11 as the related APIs were removed from JDK and cannot be resolved
-      JavaCheckVerifier.verifyNoIssue("src/test/files/checks/RunFinalizersCheck_no_issue.java", new RunFinalizersCheck());
-      JavaCheckVerifier.verifyNoIssue("src/test/files/checks/RunFinalizersCheck_no_issue.java", new RunFinalizersCheck(), javaVersion);
-      JavaCheckVerifier.verifyNoIssue("src/test/files/checks/RunFinalizersCheck_no_issue.java", new RunFinalizersCheck(), 10);
+      JavaCheckVerifier.newVerifier()
+        .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
+        .withCheck(new RunFinalizersCheck())
+        .verifyNoIssues();
+      JavaCheckVerifier.newVerifier()
+        .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
+        .withCheck(new RunFinalizersCheck())
+        .withJavaVersion(javaVersion)
+        .verifyNoIssues();
+      JavaCheckVerifier.newVerifier()
+        .onFile("src/test/files/checks/RunFinalizersCheck_no_issue.java")
+        .withCheck(new RunFinalizersCheck())
+        .withJavaVersion(10)
+        .verifyNoIssues();
     }
   }
 
   @Test
   public void noSemantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/RunFinalizersCheck.java", new RunFinalizersCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RunFinalizersCheck.java")
+      .withCheck(new RunFinalizersCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

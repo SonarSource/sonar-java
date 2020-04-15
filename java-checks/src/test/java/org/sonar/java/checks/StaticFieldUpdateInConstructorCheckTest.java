@@ -27,11 +27,18 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class StaticFieldUpdateInConstructorCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/StaticFieldUpdateInConstructorCheck.java"), new StaticFieldUpdateInConstructorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StaticFieldUpdateInConstructorCheck.java"))
+      .withCheck(new StaticFieldUpdateInConstructorCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_issue_without_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/StaticFieldUpdateInConstructorCheck.java"), new StaticFieldUpdateInConstructorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StaticFieldUpdateInConstructorCheck.java"))
+      .withCheck(new StaticFieldUpdateInConstructorCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

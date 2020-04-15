@@ -27,7 +27,14 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class OptionalAsParameterCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/OptionalAsParameterCheck.java"), new OptionalAsParameterCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(testSourcesPath("checks/OptionalAsParameterCheck.java"), new OptionalAsParameterCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/OptionalAsParameterCheck.java"))
+      .withCheck(new OptionalAsParameterCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/OptionalAsParameterCheck.java"))
+      .withCheck(new OptionalAsParameterCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

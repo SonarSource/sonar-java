@@ -26,6 +26,9 @@ public class WaitOnConditionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/WaitOnConditionCheck.java", new WaitOnConditionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/WaitOnConditionCheck.java")
+      .withCheck(new WaitOnConditionCheck())
+      .verifyIssues();
   }
 }

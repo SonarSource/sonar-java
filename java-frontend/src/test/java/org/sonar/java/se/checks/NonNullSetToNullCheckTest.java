@@ -20,13 +20,18 @@
 package org.sonar.java.se.checks;
 
 import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.SETestUtils;
+import org.sonar.java.testing.CheckVerifier;
 
 public class NonNullSetToNullCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/NonNullSetToNullCheck.java", new NonNullSetToNullCheck());
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/se/NonNullSetToNullCheck.java")
+      .withCheck(new NonNullSetToNullCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyIssues();
   }
 
 }

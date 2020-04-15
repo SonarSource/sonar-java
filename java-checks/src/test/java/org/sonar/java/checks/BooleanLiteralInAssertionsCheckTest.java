@@ -26,6 +26,9 @@ public class BooleanLiteralInAssertionsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/BooleanLiteralInAssertionsCheck.java", new BooleanLiteralInAssertionsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/BooleanLiteralInAssertionsCheck.java")
+      .withCheck(new BooleanLiteralInAssertionsCheck())
+      .verifyIssues();
   }
 }

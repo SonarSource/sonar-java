@@ -26,7 +26,10 @@ public class UnnecessarySemicolonCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UnnecessarySemicolonCheck.java", new UnnecessarySemicolonCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UnnecessarySemicolonCheck.java")
+      .withCheck(new UnnecessarySemicolonCheck())
+      .verifyIssues();
   }
 
 }

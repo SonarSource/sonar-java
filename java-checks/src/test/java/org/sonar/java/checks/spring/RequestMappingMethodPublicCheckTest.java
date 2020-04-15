@@ -26,8 +26,14 @@ public class RequestMappingMethodPublicCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/RequestMappingMethodPublicCheck.java", new RequestMappingMethodPublicCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/RequestMappingMethodPublicCheck.java",
-      new RequestMappingMethodPublicCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/RequestMappingMethodPublicCheck.java")
+      .withCheck(new RequestMappingMethodPublicCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/RequestMappingMethodPublicCheck.java")
+      .withCheck(new RequestMappingMethodPublicCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

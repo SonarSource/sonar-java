@@ -26,7 +26,10 @@ public class EqualsOverridenWithHashCodeCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/EqualsOverridenWithHashCodeCheck.java", new EqualsOverridenWithHashCodeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EqualsOverridenWithHashCodeCheck.java")
+      .withCheck(new EqualsOverridenWithHashCodeCheck())
+      .verifyIssues();
   }
 
 }

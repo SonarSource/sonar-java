@@ -26,7 +26,10 @@ public class DeprecatedTagPresenceCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DeprecatedTagPresenceCheck.java", new DeprecatedTagPresenceCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DeprecatedTagPresenceCheck.java")
+      .withCheck(new DeprecatedTagPresenceCheck())
+      .verifyIssues();
   }
 
 }

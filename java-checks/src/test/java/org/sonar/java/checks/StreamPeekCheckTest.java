@@ -28,6 +28,9 @@ public class StreamPeekCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/StreamPeekCheck.java"), new StreamPeekCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/StreamPeekCheck.java"))
+      .withCheck(new StreamPeekCheck())
+      .verifyIssues();
   }
 }

@@ -26,16 +26,27 @@ public class FilesExistsJDK8CheckTest {
 
   @Test
   public void java8() {
-    JavaCheckVerifier.verify("src/test/files/checks/FilesExistsJDK8Check.java", new FilesExistsJDK8Check(), 8);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FilesExistsJDK8Check.java")
+      .withCheck(new FilesExistsJDK8Check())
+      .withJavaVersion(8)
+      .verifyIssues();
   }
 
   @Test
   public void java7() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/FilesExistsJDK8Check_java7.java", new FilesExistsJDK8Check(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FilesExistsJDK8Check_java7.java")
+      .withCheck(new FilesExistsJDK8Check())
+      .withJavaVersion(7)
+      .verifyNoIssues();
   }
 
   @Test
   public void unknown_version() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/FilesExistsJDK8Check_no_version.java", new FilesExistsJDK8Check());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FilesExistsJDK8Check_no_version.java")
+      .withCheck(new FilesExistsJDK8Check())
+      .verifyNoIssues();
   }
 }

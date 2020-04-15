@@ -28,6 +28,9 @@ public class InappropriateRegexpCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/InappropriateRegexpCheck.java"), new InappropriateRegexpCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/InappropriateRegexpCheck.java"))
+      .withCheck(new InappropriateRegexpCheck())
+      .verifyIssues();
   }
 }

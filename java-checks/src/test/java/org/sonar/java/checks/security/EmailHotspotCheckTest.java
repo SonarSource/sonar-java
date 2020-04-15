@@ -26,8 +26,15 @@ public class EmailHotspotCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/EmailHotspot.java", new EmailHotspotCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/EmailHotspot.java", new EmailHotspotCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/EmailHotspot.java")
+      .withCheck(new EmailHotspotCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/EmailHotspot.java")
+      .withCheck(new EmailHotspotCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

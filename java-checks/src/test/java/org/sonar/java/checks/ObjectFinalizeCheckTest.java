@@ -25,6 +25,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class ObjectFinalizeCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ObjectFinalizeCheck.java", new ObjectFinalizeCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ObjectFinalizeCheck.java")
+      .withCheck(new ObjectFinalizeCheck())
+      .verifyIssues();
   }
 }

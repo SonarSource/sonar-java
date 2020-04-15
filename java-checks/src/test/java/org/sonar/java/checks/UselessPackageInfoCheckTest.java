@@ -26,19 +26,26 @@ public class UselessPackageInfoCheckTest {
 
   @Test
   public void withNoOtherFile() {
-    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java",
-      "Remove this package.",
-      new UselessPackageInfoCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java")
+      .withCheck(new UselessPackageInfoCheck())
+      .verifyIssueOnFile("Remove this package.");
   }
 
   @Test
   public void withOtherFile() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UselessPackageInfoCheck/package-info.java", new UselessPackageInfoCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessPackageInfoCheck/package-info.java")
+      .withCheck(new UselessPackageInfoCheck())
+      .verifyNoIssues();
   }
 
   @Test
   public void notAPackageInfo() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld.java", new UselessPackageInfoCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld.java")
+      .withCheck(new UselessPackageInfoCheck())
+      .verifyNoIssues();
   }
 
 }

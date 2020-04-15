@@ -26,7 +26,10 @@ public class ChangeMethodContractCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ChangeMethodContractCheck.java", new ChangeMethodContractCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ChangeMethodContractCheck.java")
+      .withCheck(new ChangeMethodContractCheck())
+      .verifyIssues();
   }
 
 }

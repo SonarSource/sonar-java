@@ -26,7 +26,10 @@ public class HttpRefererCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/HttpRefererCheck.java", new HttpRefererCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/HttpRefererCheck.java")
+      .withCheck(new HttpRefererCheck())
+      .verifyIssues();
   }
 
 }

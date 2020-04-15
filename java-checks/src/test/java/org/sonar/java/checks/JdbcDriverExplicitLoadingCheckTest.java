@@ -28,17 +28,33 @@ public class JdbcDriverExplicitLoadingCheckTest {
 
   @Test
   public void java6() {
-    JavaCheckVerifier.verify(FILENAME, new JdbcDriverExplicitLoadingCheck(), 6);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME, new JdbcDriverExplicitLoadingCheck(), 6);
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(new JdbcDriverExplicitLoadingCheck())
+      .withJavaVersion(6)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(new JdbcDriverExplicitLoadingCheck())
+      .withJavaVersion(6)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void java5() {
-    JavaCheckVerifier.verifyNoIssue(FILENAME, new JdbcDriverExplicitLoadingCheck(), 5);
+    JavaCheckVerifier.newVerifier()
+      .onFile(FILENAME)
+      .withCheck(new JdbcDriverExplicitLoadingCheck())
+      .withJavaVersion(5)
+      .verifyNoIssues();
   }
 
   @Test
   public void unknownVersion() {
-    JavaCheckVerifier.verify("src/test/files/checks/JdbcDriverExplicitLoadingCheck_no_version.java", new JdbcDriverExplicitLoadingCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/JdbcDriverExplicitLoadingCheck_no_version.java")
+      .withCheck(new JdbcDriverExplicitLoadingCheck())
+      .verifyIssues();
   }
 }

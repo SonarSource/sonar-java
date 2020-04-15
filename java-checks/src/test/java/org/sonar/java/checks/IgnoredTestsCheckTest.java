@@ -26,7 +26,14 @@ public class IgnoredTestsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/IgnoredTestsCheck.java", new IgnoredTestsCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/IgnoredTestsCheck.java", new IgnoredTestsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IgnoredTestsCheck.java")
+      .withCheck(new IgnoredTestsCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IgnoredTestsCheck.java")
+      .withCheck(new IgnoredTestsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

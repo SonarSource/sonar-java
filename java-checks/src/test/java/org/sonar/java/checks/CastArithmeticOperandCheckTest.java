@@ -26,11 +26,18 @@ public class CastArithmeticOperandCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CastArithmeticOperandCheck.java", new CastArithmeticOperandCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CastArithmeticOperandCheck.java")
+      .withCheck(new CastArithmeticOperandCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test_no_semantic() {
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/CastArithmeticOperandCheck.java", new CastArithmeticOperandCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CastArithmeticOperandCheck.java")
+      .withCheck(new CastArithmeticOperandCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

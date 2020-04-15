@@ -25,7 +25,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class ReuseRandomCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ReuseRandomCheck.java", new ReuseRandomCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ReuseRandomCheck.java", new ReuseRandomCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ReuseRandomCheck.java")
+      .withCheck(new ReuseRandomCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ReuseRandomCheck.java")
+      .withCheck(new ReuseRandomCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

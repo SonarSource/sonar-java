@@ -26,7 +26,10 @@ public class ForLoopFalseConditionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ForLoopFalseConditionCheck.java", new ForLoopFalseConditionCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ForLoopFalseConditionCheck.java")
+      .withCheck(new ForLoopFalseConditionCheck())
+      .verifyIssues();
   }
 
 }

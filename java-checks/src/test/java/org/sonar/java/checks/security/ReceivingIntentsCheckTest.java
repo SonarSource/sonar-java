@@ -26,8 +26,15 @@ public class ReceivingIntentsCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/security/ReceivingIntents.java", new ReceivingIntentsCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/security/ReceivingIntents.java", new ReceivingIntentsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/ReceivingIntents.java")
+      .withCheck(new ReceivingIntentsCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/security/ReceivingIntents.java")
+      .withCheck(new ReceivingIntentsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
 }

@@ -28,7 +28,10 @@ public class VarArgCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/VarArgCheck.java"), new VarArgCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/VarArgCheck.java"))
+      .withCheck(new VarArgCheck())
+      .verifyIssues();
   }
 
 }

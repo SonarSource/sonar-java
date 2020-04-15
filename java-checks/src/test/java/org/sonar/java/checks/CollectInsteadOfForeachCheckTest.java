@@ -26,6 +26,9 @@ public class CollectInsteadOfForeachCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CollectInsteadOfForeachCheck.java", new CollectInsteadOfForeachCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CollectInsteadOfForeachCheck.java")
+      .withCheck(new CollectInsteadOfForeachCheck())
+      .verifyIssues();
   }
 }

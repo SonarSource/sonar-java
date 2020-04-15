@@ -27,7 +27,14 @@ public class BlindSerialVersionUidCheckTest {
   public void test() {
     String fixtureFileName = "src/test/files/checks/serialization/BlindSerialVersionUidCheck.java";
     BlindSerialVersionUidCheck check = new BlindSerialVersionUidCheck();
-    JavaCheckVerifier.verify(fixtureFileName, check);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic(fixtureFileName, check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(fixtureFileName)
+      .withCheck(check)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(fixtureFileName)
+      .withCheck(check)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

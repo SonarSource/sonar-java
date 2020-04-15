@@ -26,6 +26,9 @@ public class AvoidDESCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AvoidDESCheck.java", new AvoidDESCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AvoidDESCheck.java")
+      .withCheck(new AvoidDESCheck())
+      .verifyIssues();
   }
 }

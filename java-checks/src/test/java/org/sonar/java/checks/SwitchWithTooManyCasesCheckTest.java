@@ -26,16 +26,20 @@ public class SwitchWithTooManyCasesCheckTest {
 
   @Test
   public void defaultValue() {
-    JavaCheckVerifier.verify("src/test/files/checks/SwitchWithTooManyCasesCheck.java", new SwitchWithTooManyCasesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SwitchWithTooManyCasesCheck.java")
+      .withCheck(new SwitchWithTooManyCasesCheck())
+      .verifyIssues();
   }
 
   @Test
   public void test() {
     SwitchWithTooManyCasesCheck check = new SwitchWithTooManyCasesCheck();
     check.maximumCases = 5;
-    JavaCheckVerifier.verify("src/test/files/checks/SwitchWithTooManyCasesCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SwitchWithTooManyCasesCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
-
-
 
 }

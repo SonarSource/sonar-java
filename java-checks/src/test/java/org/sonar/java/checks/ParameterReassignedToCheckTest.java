@@ -26,6 +26,9 @@ public class ParameterReassignedToCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ParameterReassignedToCheck.java", new ParameterReassignedToCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ParameterReassignedToCheck.java")
+      .withCheck(new ParameterReassignedToCheck())
+      .verifyIssues();
   }
 }

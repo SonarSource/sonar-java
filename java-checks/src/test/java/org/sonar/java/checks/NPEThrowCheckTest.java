@@ -28,7 +28,10 @@ public class NPEThrowCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/NPEThrowCheck.java"), new NPEThrowCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NPEThrowCheck.java"))
+      .withCheck(new NPEThrowCheck())
+      .verifyIssues();
   }
 
 }

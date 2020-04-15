@@ -26,7 +26,10 @@ public class SerializableSuperConstructorCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/serialization/SerializableSuperConstructorCheck.java", new SerializableSuperConstructorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/SerializableSuperConstructorCheck.java")
+      .withCheck(new SerializableSuperConstructorCheck())
+      .verifyIssues();
   }
 
 }

@@ -26,7 +26,10 @@ public class UselessParenthesesCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UselessParenthesesCheck.java", new UselessParenthesesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessParenthesesCheck.java")
+      .withCheck(new UselessParenthesesCheck())
+      .verifyIssues();
   }
 
 }

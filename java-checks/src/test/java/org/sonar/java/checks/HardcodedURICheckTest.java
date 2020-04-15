@@ -27,7 +27,10 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class HardcodedURICheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/HardcodedURICheck.java"), new HardcodedURICheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/HardcodedURICheck.java"))
+      .withCheck(new HardcodedURICheck())
+      .verifyIssues();
   }
 
 }

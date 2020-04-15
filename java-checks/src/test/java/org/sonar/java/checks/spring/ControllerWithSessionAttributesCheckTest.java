@@ -25,7 +25,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class ControllerWithSessionAttributesCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/spring/ControllerWithSessionAttributesCheck.java", new ControllerWithSessionAttributesCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/spring/ControllerWithSessionAttributesCheck.java", new ControllerWithSessionAttributesCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/ControllerWithSessionAttributesCheck.java")
+      .withCheck(new ControllerWithSessionAttributesCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/ControllerWithSessionAttributesCheck.java")
+      .withCheck(new ControllerWithSessionAttributesCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

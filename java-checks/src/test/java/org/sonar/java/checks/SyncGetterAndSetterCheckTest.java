@@ -26,7 +26,14 @@ public class SyncGetterAndSetterCheckTest {
 
   @Test
   public void syncGetterAndSetterCheckTest() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/checks/SyncGetterAndSetterCheck.java", new SyncGetterAndSetterCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/SyncGetterAndSetterCheck.java", new SyncGetterAndSetterCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SyncGetterAndSetterCheck.java")
+      .withCheck(new SyncGetterAndSetterCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SyncGetterAndSetterCheck.java")
+      .withCheck(new SyncGetterAndSetterCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

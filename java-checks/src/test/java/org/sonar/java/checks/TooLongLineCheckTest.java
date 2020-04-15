@@ -33,30 +33,45 @@ public class TooLongLineCheckTest {
   @Test
   public void test() {
     check.maximumLineLength = 40;
-    JavaCheckVerifier.verify(testSourcesPath(BASEDIR + "/LineLength.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath(BASEDIR + "/LineLength.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void test_with_empty_import_on_first_line() {
     check.maximumLineLength = 40;
-    JavaCheckVerifier.verify(testSourcesPath(BASEDIR + "/LineLengthEmptyStatementInImport.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath(BASEDIR + "/LineLengthEmptyStatementInImport.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void test_with_no_import() {
     check.maximumLineLength = 40;
-    JavaCheckVerifier.verify(testSourcesPath(BASEDIR + "/LineLengthNoImport.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath(BASEDIR + "/LineLengthNoImport.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void test_with_noncompliant_link_or_see() {
     check.maximumLineLength = 100;
-    JavaCheckVerifier.verify(testSourcesPath(BASEDIR + "/LineLengthLinkOrSee.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath(BASEDIR + "/LineLengthLinkOrSee.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void test_with_false_positive_link_or_see() {
     check.maximumLineLength = 42;
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath(BASEDIR + "/LineLengthLinkOrSeeFalsePositive.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath(BASEDIR + "/LineLengthLinkOrSeeFalsePositive.java"))
+      .withCheck(check)
+      .verifyNoIssues();
   }
 }

@@ -26,7 +26,14 @@ public class InputStreamOverrideReadCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/InputStreamOverrideReadCheck.java", new InputStreamOverrideReadCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/InputStreamOverrideReadCheck.java", new InputStreamOverrideReadCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InputStreamOverrideReadCheck.java")
+      .withCheck(new InputStreamOverrideReadCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InputStreamOverrideReadCheck.java")
+      .withCheck(new InputStreamOverrideReadCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

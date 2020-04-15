@@ -26,7 +26,10 @@ public class NestedTryCatchCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/NestedTryCatchCheck.java", new NestedTryCatchCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NestedTryCatchCheck.java")
+      .withCheck(new NestedTryCatchCheck())
+      .verifyIssues();
   }
 
 }

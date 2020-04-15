@@ -25,7 +25,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class ArrayCopyLoopCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ArrayCopyLoopCheck.java", new ArrayCopyLoopCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ArrayCopyLoopCheck.java", new ArrayCopyLoopCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ArrayCopyLoopCheck.java")
+      .withCheck(new ArrayCopyLoopCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ArrayCopyLoopCheck.java")
+      .withCheck(new ArrayCopyLoopCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

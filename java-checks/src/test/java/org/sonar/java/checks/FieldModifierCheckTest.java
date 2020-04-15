@@ -26,7 +26,14 @@ public class FieldModifierCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/FieldModifier.java", new FieldModifierCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/FieldModifier.java", new FieldModifierCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FieldModifier.java")
+      .withCheck(new FieldModifierCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FieldModifier.java")
+      .withCheck(new FieldModifierCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

@@ -26,14 +26,20 @@ public class ClassCouplingCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/ClassCouplingCheck.java", new ClassCouplingCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ClassCouplingCheck.java")
+      .withCheck(new ClassCouplingCheck())
+      .verifyIssues();
   }
 
   @Test
   public void custom() {
     ClassCouplingCheck check = new ClassCouplingCheck();
     check.max = 22;
-    JavaCheckVerifier.verify("src/test/files/checks/ClassCouplingCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ClassCouplingCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

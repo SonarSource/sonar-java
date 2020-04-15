@@ -26,7 +26,10 @@ public class TernaryOperatorCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/TernaryOperator.java", new TernaryOperatorCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/TernaryOperator.java")
+      .withCheck(new TernaryOperatorCheck())
+      .verifyIssues();
   }
 
 }

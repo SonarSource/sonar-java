@@ -26,7 +26,10 @@ public class AbstractClassWithoutAbstractMethodCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/AbstractClassWithoutAbstractMethodCheck.java", new AbstractClassWithoutAbstractMethodCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AbstractClassWithoutAbstractMethodCheck.java")
+      .withCheck(new AbstractClassWithoutAbstractMethodCheck())
+      .verifyIssues();
   }
 
 }

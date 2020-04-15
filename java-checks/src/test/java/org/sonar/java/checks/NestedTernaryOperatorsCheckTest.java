@@ -27,7 +27,10 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class NestedTernaryOperatorsCheckTest {
   @Test
   public void detected() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/NestedTernaryOperatorsCheck.java"), new NestedTernaryOperatorsCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/NestedTernaryOperatorsCheck.java"))
+      .withCheck(new NestedTernaryOperatorsCheck())
+      .verifyIssues();
   }
 
 }

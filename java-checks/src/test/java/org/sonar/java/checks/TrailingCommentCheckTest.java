@@ -31,17 +31,26 @@ public class TrailingCommentCheckTest {
   public void detected() {
     TrailingCommentCheck check = new TrailingCommentCheck();
     assertThat(check.legalCommentPattern).isEqualTo("^\\s*+[^\\s]++$");
-    JavaCheckVerifier.verify(testSourcesPath("checks/TrailingCommentCheck.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/TrailingCommentCheck.java"))
+      .withCheck(check)
+      .verifyIssues();
     check.legalCommentPattern = "";
     // parameter has changed but regexp is not recompiled, so we find the same issues.
-    JavaCheckVerifier.verify(testSourcesPath("checks/TrailingCommentCheck.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/TrailingCommentCheck.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
   @Test
   public void custom() {
     TrailingCommentCheck check = new TrailingCommentCheck();
     check.legalCommentPattern = "";
-    JavaCheckVerifier.verify(testSourcesPath("checks/TrailingCommentCheckCustom.java"), check);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/TrailingCommentCheckCustom.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

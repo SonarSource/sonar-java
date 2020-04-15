@@ -28,6 +28,9 @@ public class IfConditionAlwaysTrueOrFalseCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/IfConditionAlwaysTrueOrFalseCheck.java"), new IfConditionAlwaysTrueOrFalseCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/IfConditionAlwaysTrueOrFalseCheck.java"))
+      .withCheck(new IfConditionAlwaysTrueOrFalseCheck())
+      .verifyIssues();
   }
 }

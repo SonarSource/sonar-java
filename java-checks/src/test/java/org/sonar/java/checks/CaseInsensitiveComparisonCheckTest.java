@@ -26,6 +26,9 @@ public class CaseInsensitiveComparisonCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/CaseInsensitiveComparisonCheck.java", new CaseInsensitiveComparisonCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CaseInsensitiveComparisonCheck.java")
+      .withCheck(new CaseInsensitiveComparisonCheck())
+      .verifyIssues();
   }
 }

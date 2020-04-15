@@ -32,23 +32,40 @@ public class DisallowedClassCheckTest {
   public void check() {
     DisallowedClassCheck visitor = new DisallowedClassCheck();
     visitor.disallowedClass = "java.lang.String";
-    JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheck.java", visitor);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/DisallowedClassCheck.java", visitor);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedClassCheck.java")
+      .withCheck(visitor)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedClassCheck.java")
+      .withCheck(visitor)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void check_annotation() {
     DisallowedClassCheck visitor = new DisallowedClassCheck();
     visitor.disallowedClass = "org.foo.MyAnnotation";
-    JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheckAnnotation.java", visitor);
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/DisallowedClassCheckAnnotation.java", visitor);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedClassCheckAnnotation.java")
+      .withCheck(visitor)
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedClassCheckAnnotation.java")
+      .withCheck(visitor)
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 
   @Test
   public void checkRegex() {
     DisallowedClassCheck visitor = new DisallowedClassCheck();
     visitor.disallowedClass = "java.lang\\..*";
-    JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheckRegex.java", visitor);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DisallowedClassCheckRegex.java")
+      .withCheck(visitor)
+      .verifyIssues();
   }
 
   @Test
@@ -58,7 +75,7 @@ public class DisallowedClassCheckTest {
     visitor.disallowedClass = "java.lang(";
 
     AnalysisException e = assertThrows(AnalysisException.class,
-      () -> JavaCheckVerifier.verify("src/test/files/checks/DisallowedClassCheckRegex.java", visitor));
+      () -> JavaCheckVerifier.newVerifier().onFile("src/test/files/checks/DisallowedClassCheckRegex.java").withCheck(visitor).verifyIssues());
     assertThat(e.getCause()).isInstanceOf(IllegalArgumentException.class);
   }
 }

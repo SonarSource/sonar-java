@@ -27,11 +27,18 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class ThreadLocalWithInitialCheckTest {
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/ThreadLocalWithInitialCheck.java", new ThreadLocalWithInitialCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThreadLocalWithInitialCheck.java")
+      .withCheck(new ThreadLocalWithInitialCheck())
+      .verifyIssues();
   }
 
   @Test
   public void no_issue_prior_to_java_8() {
-    JavaCheckVerifier.verifyNoIssue(testSourcesPath("checks/ThreadLocalWithInitialCheck_java7.java"), new ThreadLocalWithInitialCheck(), 7);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/ThreadLocalWithInitialCheck_java7.java"))
+      .withCheck(new ThreadLocalWithInitialCheck())
+      .withJavaVersion(7)
+      .verifyNoIssues();
   }
 }

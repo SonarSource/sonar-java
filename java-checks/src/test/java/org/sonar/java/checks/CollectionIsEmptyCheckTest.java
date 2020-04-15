@@ -28,7 +28,10 @@ public class CollectionIsEmptyCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify(testSourcesPath("checks/CollectionIsEmptyCheck.java"), new CollectionIsEmptyCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/CollectionIsEmptyCheck.java"))
+      .withCheck(new CollectionIsEmptyCheck())
+      .verifyIssues();
   }
 
 }

@@ -26,7 +26,14 @@ public class GettersSettersOnRightFieldCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/GettersSettersOnRightField.java", new GettersSettersOnRightFieldCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/GettersSettersOnRightField.java", new GettersSettersOnRightFieldCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/GettersSettersOnRightField.java")
+      .withCheck(new GettersSettersOnRightFieldCheck())
+      .verifyIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/GettersSettersOnRightField.java")
+      .withCheck(new GettersSettersOnRightFieldCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

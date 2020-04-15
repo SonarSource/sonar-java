@@ -26,14 +26,20 @@ public class AnonymousClassesTooBigCheckTest {
 
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/AnonymousClassesTooBigCheck.java", new AnonymousClassesTooBigCheck());
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AnonymousClassesTooBigCheck.java")
+      .withCheck(new AnonymousClassesTooBigCheck())
+      .verifyIssues();
   }
 
   @Test
   public void custom() {
     AnonymousClassesTooBigCheck check = new AnonymousClassesTooBigCheck();
     check.max = 6;
-    JavaCheckVerifier.verify("src/test/files/checks/AnonymousClassesTooBigCheckCustom.java", check);
+    JavaCheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AnonymousClassesTooBigCheckCustom.java")
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }
