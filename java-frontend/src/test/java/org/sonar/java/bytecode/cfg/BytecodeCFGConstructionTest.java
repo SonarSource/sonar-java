@@ -20,18 +20,17 @@
 package org.sonar.java.bytecode.cfg;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
 import org.sonar.java.bytecode.cfg.Instruction.FieldOrMethod;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.objectweb.asm.Opcodes.ALOAD;
@@ -86,13 +85,11 @@ import static org.objectweb.asm.Opcodes.RET;
 import static org.objectweb.asm.Opcodes.SIPUSH;
 import static org.objectweb.asm.Opcodes.TABLESWITCH;
 
-@RunWith(Parameterized.class)
 public class BytecodeCFGConstructionTest {
 
   public static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
-  @Parameters(name = "{0}")
-  public static Collection<Object[]> data() {
+  private static Stream<Arguments> data() {
     ImmutableList.Builder<Object[]> testData = ImmutableList.builder();
 
     // Instructions without operand
@@ -164,7 +161,9 @@ public class BytecodeCFGConstructionTest {
     testData.add(new Object[] {new TestInput(LOOKUPSWITCH), null});
     testData.add(new Object[] {new TestInput(MULTIANEWARRAY), new Instruction.MultiANewArrayInsn("B", 2)});
 
-    return testData.build();
+    return testData.build()
+      .stream()
+      .map(data -> Arguments.of(data[0], data[1]));
   }
 
   private static TestInput intOp(int opcode, int operand) {
@@ -225,24 +224,17 @@ public class BytecodeCFGConstructionTest {
     }
   }
 
-  private TestInput testInput;
-  private Instruction expected;
-
-  @BeforeClass
+  @BeforeAll
   public static void verifyTestData() {
-    List<Integer> opcodes = data().stream().map(data -> ((TestInput) data[0]).opcode).collect(Collectors.toList());
+    List<Integer> opcodes = data().map(data -> ((TestInput) data.get()[0]).opcode).collect(Collectors.toList());
     assertThat(opcodes).containsAll(Instructions.OPCODES);
   }
 
-  public BytecodeCFGConstructionTest(TestInput testInput, Instruction expected) {
-    this.testInput = testInput;
-    this.expected = expected;
-  }
-
-  @Test
-  public void test() throws Exception {
+  @ParameterizedTest
+  @MethodSource("data")
+  public void test(TestInput testInput, Instruction expected) throws Exception {
     if (isJumpInstruction(testInput.opcode)) {
-      test_jumps();
+      test_jumps(testInput, expected);
       return;
     }
     BytecodeCFG cfg = new Instructions().cfg(testInput.opcode, testInput.operandOrVar, testInput.type, testInput.fieldOrMethod);
@@ -258,7 +250,7 @@ public class BytecodeCFGConstructionTest {
     return Opcodes.IFEQ <= opcode && opcode <= LOOKUPSWITCH && opcode != RET || opcode==IFNULL || opcode==IFNONNULL;
   }
 
-  private void test_jumps() {
+  private void test_jumps(TestInput testInput, Instruction expected) {
     BytecodeCFG cfg = new Instructions().cfg(testInput.opcode);
     assertThat(expected).isNull();
     if(testInput.opcode == TABLESWITCH) {
