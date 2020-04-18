@@ -20,7 +20,7 @@
 package org.sonar.java.cfg;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -47,7 +47,7 @@ public class CFGTestLoader {
       printer.flush();
       compiledTest = JParserTestUtils.parse(buffer.toString());
     } catch (Exception e) {
-      Assert.fail("Unable to compile file " + file.getAbsolutePath());
+      Assertions.fail("Unable to compile file " + file.getAbsolutePath());
     }
   }
 
@@ -67,7 +67,7 @@ public class CFGTestLoader {
         }
       }
     }
-    Assert.fail("Method " + methodName + " of class " + className + " not found!");
+    Assertions.fail("Method " + methodName + " of class " + className + " not found!");
     return null;
   }
 }

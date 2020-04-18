@@ -43,7 +43,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 
 public class ExpressionUtilsTest {

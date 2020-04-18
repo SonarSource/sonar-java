@@ -39,7 +39,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 public class MethodMatchersTest {

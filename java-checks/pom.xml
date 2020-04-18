@@ -105,6 +105,29 @@
           </excludes>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>de.thetaphi</groupId>
+        <artifactId>forbiddenapis</artifactId>
+        <executions>
+          <execution>
+            <id>forbid-junit4</id>
+            <goals>
+              <goal>testCheck</goal>
+            </goals>
+            <configuration>
+              <signatures>
+                <![CDATA[
+                @defaultMessage use JUnit 5 instead
+                org.junit.runner.RunWith
+                org.junit.Ignore @ use JUnit 5 org.junit.jupiter.api.Disabled instead
+                org.junit.Assert @ use JUnit 5 org.junit.jupiter.api.Assertions or org.fest.assertions.Assertions instead
+                ]]>
+              </signatures>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 

@@ -21,7 +21,7 @@ package org.eclipse.jdt.core.dom;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class ASTUtilsTest {
 

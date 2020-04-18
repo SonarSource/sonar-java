@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
@@ -177,7 +177,7 @@ public class MethodMatcherFactoryTest {
       }
       return TestUtils.inputFile(file);
     } catch (IOException e) {
-      Assert.fail("Unable to create inline test file: " + e.getMessage());
+      Assertions.fail("Unable to create inline test file: " + e.getMessage());
       return null;
     }
   }

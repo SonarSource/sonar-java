@@ -26,7 +26,7 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class CheckTestUtils {
   
@@ -38,7 +38,7 @@ public final class CheckTestUtils {
 
   public static String testSourcesPath(String path) {
     File file = new File((TEST_SOURCES_DIR + path).replace('/', File.separatorChar));
-    assertTrue("Path '" + path + "' should exist.", file.exists());
+    assertTrue(file.exists(), "Path '" + path + "' should exist.");
     try {
       return file.getCanonicalPath();
     } catch (IOException e) {
