@@ -27,9 +27,10 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Scanner;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
@@ -42,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@EnableRuleMigrationSupport
 public class GeneratedFileTest {
 
   @Rule
@@ -54,7 +56,7 @@ public class GeneratedFileTest {
   @Rule
   public LogTester logTester = new LogTester();
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     tmp = temporaryFolder.newFolder().toPath();
     expected = tmp.resolve("file.jsp");

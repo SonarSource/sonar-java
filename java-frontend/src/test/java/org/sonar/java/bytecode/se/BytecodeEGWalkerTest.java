@@ -28,9 +28,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
-import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -56,6 +57,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@EnableRuleMigrationSupport
 public class BytecodeEGWalkerTest {
 
   private static SquidClassLoader squidClassLoader;
@@ -64,7 +66,7 @@ public class BytecodeEGWalkerTest {
 
   private static Sema semanticModel;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() throws Exception {
     List<File> files = Lists.newArrayList(new File("target/test-classes"), new File("target/classes"));
     files.addAll(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar"}, false));

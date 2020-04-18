@@ -25,9 +25,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
@@ -46,6 +47,7 @@ import org.sonar.java.model.VisitorsBridge;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+@EnableRuleMigrationSupport
 public class SonarSymbolTableVisitorTest {
 
   @Rule
@@ -54,7 +56,7 @@ public class SonarSymbolTableVisitorTest {
   private SensorContextTester context;
   private SonarComponents sonarComponents;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     context = SensorContextTester.create(temp.getRoot());
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),

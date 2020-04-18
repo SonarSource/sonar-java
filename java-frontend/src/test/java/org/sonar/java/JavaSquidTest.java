@@ -25,7 +25,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
@@ -46,6 +47,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@EnableRuleMigrationSupport
 public class JavaSquidTest {
 
   @Rule
@@ -86,7 +88,7 @@ public class JavaSquidTest {
     assertThat(context.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 8");
   }
 
-  @org.junit.Ignore("new semantic analysis does not throw exception in this case")
+  @org.junit.jupiter.api.Disabled("new semantic analysis does not throw exception in this case")
   @Test
   public void semantic_errors_should_be_reported_to_sonarlint() throws Exception {
     scanForErrors("class A {} class A {}");

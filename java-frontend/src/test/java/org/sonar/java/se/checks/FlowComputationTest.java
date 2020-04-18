@@ -21,7 +21,8 @@ package org.sonar.java.se.checks;
 
 import java.util.List;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.resolve.Result;
@@ -34,6 +35,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@EnableRuleMigrationSupport
 public class FlowComputationTest {
 
   @Rule

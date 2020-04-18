@@ -27,9 +27,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
@@ -39,6 +40,7 @@ import org.sonar.api.utils.log.LoggerLevel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
+@EnableRuleMigrationSupport
 public class SquidClassLoaderTest {
 
   @Rule
@@ -46,7 +48,7 @@ public class SquidClassLoaderTest {
 
   private SquidClassLoader classLoader;
 
-  @After
+  @AfterEach
   public void tearDown() {
     IOUtils.closeQuietly(classLoader);
   }

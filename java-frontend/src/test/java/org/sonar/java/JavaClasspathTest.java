@@ -20,9 +20,10 @@
 package org.sonar.java;
 
 import java.io.File;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
+@EnableRuleMigrationSupport
 public class JavaClasspathTest {
 
   private MapSettings settings;
@@ -48,7 +50,7 @@ public class JavaClasspathTest {
   @Rule
   public LogTester logTester = new LogTester();
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("foo.java"));

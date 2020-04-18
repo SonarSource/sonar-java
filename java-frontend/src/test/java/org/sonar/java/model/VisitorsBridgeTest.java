@@ -30,9 +30,10 @@ import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.assertj.core.api.Fail;
-import org.junit.Ignore;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
@@ -62,6 +63,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+@EnableRuleMigrationSupport
 public class VisitorsBridgeTest {
 
   @Rule
@@ -76,7 +78,7 @@ public class VisitorsBridgeTest {
   private static final NullPointerException NPE = new NullPointerException("BimBadaboum");
 
   @Test
-  @Ignore
+  @Disabled
   public void test_semantic_exclusions() {
     VisitorsBridge visitorsBridgeWithoutSemantic = new VisitorsBridge(Collections.singletonList((JavaFileScanner) context -> {
       assertThat(context.getSemanticModel()).isNull();
@@ -108,7 +110,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  @Ignore
+  @Disabled
   public void log_only_50_elements() {
     DecimalFormat formatter = new DecimalFormat("00");
     IntFunction<String> classNotFoundName = i -> "NotFound" + formatter.format(i);
