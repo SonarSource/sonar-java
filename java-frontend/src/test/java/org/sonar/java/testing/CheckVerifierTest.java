@@ -30,7 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.assertj.core.api.Fail;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;

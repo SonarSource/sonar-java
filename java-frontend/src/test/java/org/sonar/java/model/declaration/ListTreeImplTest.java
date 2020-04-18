@@ -20,7 +20,7 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.collect.Lists;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;

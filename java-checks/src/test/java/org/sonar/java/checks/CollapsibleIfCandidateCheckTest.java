@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CollapsibleIfCandidateCheckTest {
 

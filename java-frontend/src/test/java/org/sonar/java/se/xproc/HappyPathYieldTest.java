@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.xproc;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.se.constraint.ConstraintsByDomain;

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class RedundantModifierCheckTest {

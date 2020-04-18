@@ -35,8 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
@@ -56,7 +56,7 @@ public class CheckListTest {
 
   private static final Set<String> BLACK_LIST = ImmutableSet.of("AbstractXPathBasedCheck.java", "AbstractWebXmlXPathBasedCheck.java");
 
-  @BeforeClass
+  @BeforeAll
   public static void before() throws Exception {
     SE_CHEKS = ClassPath.from(CheckListTest.class.getClassLoader())
       .getTopLevelClasses("org.sonar.java.se.checks")

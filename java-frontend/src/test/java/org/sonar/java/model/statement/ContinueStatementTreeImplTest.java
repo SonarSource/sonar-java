@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.IdentifierTreeImpl;

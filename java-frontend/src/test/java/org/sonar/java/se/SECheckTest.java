@@ -19,7 +19,8 @@
  */
 package org.sonar.java.se;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFGTest;
@@ -32,7 +33,8 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SECheckTest {
-  @Test(timeout = 3000)
+  @Test
+  @Timeout(3)
   public void flow_from_exit_node_should_not_lead_to_infinite_recursion() throws Exception {
     CFG cfg = CFGTest.buildCFG("void foo(boolean a) { if(a) {foo(true);} foo(false); }");
     ExplodedGraph eg = new ExplodedGraph();

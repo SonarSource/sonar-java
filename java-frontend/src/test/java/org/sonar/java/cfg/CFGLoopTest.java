@@ -19,7 +19,7 @@
  */
 package org.sonar.java.cfg;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.plugins.java.api.tree.Tree;
 

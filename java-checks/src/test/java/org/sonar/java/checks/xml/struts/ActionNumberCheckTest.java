@@ -19,15 +19,15 @@
  */
 package org.sonar.java.checks.xml.struts;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class ActionNumberCheckTest {
 
   private ActionNumberCheck check;
 
-  @Before
+  @BeforeEach
   public void setup() {
     check = new ActionNumberCheck();
   }

@@ -20,7 +20,7 @@
 package org.sonar.java.checks.helpers;
 
 import javax.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;

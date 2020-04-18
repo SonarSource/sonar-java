@@ -19,7 +19,7 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

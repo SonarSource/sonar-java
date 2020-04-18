@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -44,7 +44,7 @@ public class JavadocTest {
   private static Javadoc genericExceptionThrownUndocumented;
   private static Javadoc invalidThrownExceptionUndocumented;
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     File file = new File("src/test/files/checks/helpers/JavadocTest.java");
     tree = JParserTestUtils.parse(file);

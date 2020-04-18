@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;

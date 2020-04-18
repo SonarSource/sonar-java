@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.checks.debug;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DebugInterruptedExecutionCheckTest {
 

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Fail;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.testing.Expectations;
 import static org.sonar.java.testing.Expectations.IssueAttribute.END_COLUMN;
 import static org.sonar.java.testing.Expectations.IssueAttribute.END_LINE;

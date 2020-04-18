@@ -19,7 +19,7 @@
  */
 package org.sonar.java.filters;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.CallToDeprecatedCodeMarkedForRemovalCheck;
 import org.sonar.java.checks.CallToDeprecatedMethodCheck;
 import org.sonar.java.checks.EmptyBlockCheck;

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.bytecode.cfg;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.objectweb.asm.Opcodes;
 
 import static org.assertj.core.api.Assertions.assertThat;

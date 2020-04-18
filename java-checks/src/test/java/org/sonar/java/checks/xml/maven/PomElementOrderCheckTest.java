@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.xml.maven;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 public class PomElementOrderCheckTest {

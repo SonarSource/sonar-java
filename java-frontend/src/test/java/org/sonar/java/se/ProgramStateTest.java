@@ -24,7 +24,7 @@ import com.google.common.collect.Iterables;
 import java.util.List;
 import java.util.Set;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.se.ProgramState.Pop;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.BooleanConstraint;

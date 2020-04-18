@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.Instructions;
 import org.sonar.java.cfg.CFG;

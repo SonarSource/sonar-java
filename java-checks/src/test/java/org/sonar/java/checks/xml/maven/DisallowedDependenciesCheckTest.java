@@ -19,8 +19,8 @@
  */
 package org.sonar.java.checks.xml.maven;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +30,7 @@ public class DisallowedDependenciesCheckTest {
 
   private DisallowedDependenciesCheck check;
 
-  @Before
+  @BeforeEach
   public void setup() {
     check = new DisallowedDependenciesCheck();
   }

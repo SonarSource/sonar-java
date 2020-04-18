@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.model.Sema;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;

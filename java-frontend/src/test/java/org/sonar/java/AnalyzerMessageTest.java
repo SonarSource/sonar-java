@@ -20,7 +20,7 @@
 package org.sonar.java;
 
 import org.assertj.core.api.Fail;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.model.JParserTestUtils;

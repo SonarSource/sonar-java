@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.CheckTestUtils;
 import org.sonar.java.SonarComponents;

@@ -22,7 +22,7 @@ package org.sonar.java.model;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.assertj.core.api.AbstractBooleanAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;

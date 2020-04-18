@@ -21,7 +21,7 @@ package org.sonar.java.checks.helpers;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;

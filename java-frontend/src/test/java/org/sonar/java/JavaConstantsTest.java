@@ -19,7 +19,7 @@
  */
 package org.sonar.java;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.model.ExpressionUtils;
 
 import java.lang.reflect.Constructor;

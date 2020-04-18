@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;

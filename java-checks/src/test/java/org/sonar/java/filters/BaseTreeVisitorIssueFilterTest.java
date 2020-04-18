@@ -25,8 +25,8 @@ import java.util.Collections;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.assertj.core.api.AbstractBooleanAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
@@ -55,7 +55,7 @@ public class BaseTreeVisitorIssueFilterTest {
   private AnalyzerMessage issue;
   private RuleKey ruleKey;
 
-  @Before
+  @BeforeEach
   public void setup() {
     issue = mock(AnalyzerMessage.class);
     ruleKey = RuleKey.of(REPOSITORY_KEY, RULE_KEY);

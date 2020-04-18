@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.checks.debug;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;

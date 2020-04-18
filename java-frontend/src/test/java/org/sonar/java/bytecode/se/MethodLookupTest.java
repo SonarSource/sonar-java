@@ -21,7 +21,7 @@ package org.sonar.java.bytecode.se;
 
 import com.google.common.collect.Lists;
 import java.io.File;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;

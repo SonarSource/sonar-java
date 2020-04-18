@@ -22,8 +22,8 @@ package org.sonar.java.filters;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Set;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.AnalyzerMessage;
@@ -43,7 +43,7 @@ public class PostAnalysisIssueFilterTest {
   private static final FakeJavaIssueFilter acceptingIssueFilter = new FakeJavaIssueFilter(true);
   private static final ArrayList<FakeJavaIssueFilter> ISSUE_FILTERS = Lists.newArrayList(acceptingIssueFilter, new FakeJavaIssueFilter(false));
 
-  @Before
+  @BeforeEach
   public void setUp() {
     postAnalysisIssueFilter = new PostAnalysisIssueFilter();
 

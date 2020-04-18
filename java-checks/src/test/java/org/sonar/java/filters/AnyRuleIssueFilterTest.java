@@ -22,8 +22,8 @@ package org.sonar.java.filters;
 import java.util.Collections;
 import javax.annotation.Nullable;
 import org.assertj.core.api.AbstractBooleanAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
@@ -50,7 +50,7 @@ public class AnyRuleIssueFilterTest {
   private RuleKey ruleKey;
   private AnalyzerMessage issue;
 
-  @Before
+  @BeforeEach
   public void setup() {
     issue = mock(AnalyzerMessage.class);
     when(issue.getInputComponent()).thenReturn(INPUT_FILE);

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.filters;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.CommentRegularExpressionCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadLocalVariableNameCheck;
