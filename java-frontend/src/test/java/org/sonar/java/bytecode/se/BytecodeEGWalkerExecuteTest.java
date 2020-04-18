@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.util.Printer;
@@ -110,7 +110,7 @@ public class BytecodeEGWalkerExecuteTest {
   private BytecodeEGWalker walker;
   private static SquidClassLoader squidClassLoader;
 
-  @BeforeClass
+  @BeforeAll
   public static void initializeClassLoaderAndSemanticModel() {
     List<File> files = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[]{"jar", "zip"}, true));
     files.add(new File("target/classes"));
@@ -121,7 +121,7 @@ public class BytecodeEGWalkerExecuteTest {
     semanticModel = tree.sema;
   }
 
-  @Before
+  @BeforeEach
   public void initializeWalker() {
     BehaviorCache behaviorCache = new BehaviorCache(squidClassLoader);
     behaviorCache.setFileContext(null, semanticModel);

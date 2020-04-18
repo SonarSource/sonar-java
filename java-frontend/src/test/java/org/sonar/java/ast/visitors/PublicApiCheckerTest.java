@@ -20,8 +20,8 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.Lists;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -41,7 +41,7 @@ public class PublicApiCheckerTest {
 
   private CompilationUnitTree cut;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     cut = JParserTestUtils.parse(new File("src/test/files/ast/PublicApi.java"));
   }

@@ -21,8 +21,8 @@ package org.sonar.java.ast.visitors;
 
 import java.io.File;
 import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.measures.CoreMetrics;
@@ -41,7 +41,7 @@ public class FileLinesVisitorTest {
 
   private File baseDir;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     baseDir = new File("src/test/files/metrics");
   }

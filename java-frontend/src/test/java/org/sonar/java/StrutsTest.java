@@ -21,7 +21,7 @@ package org.sonar.java;
 
 import java.io.File;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

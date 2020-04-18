@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
@@ -44,7 +44,7 @@ public class NullableAnnotationUtilsTest {
 
   private static Sema semanticModel;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     semanticModel = SETestUtils.getSemanticModel("src/test/files/se/annotations/NullableAnnotationUtils.java");
   }
@@ -60,7 +60,7 @@ public class NullableAnnotationUtilsTest {
   }
 
   @Test
-  @org.junit.Ignore("flickering NPE")
+  @org.junit.jupiter.api.Disabled("flickering NPE")
   public void testEclipseIsGloballyAnnotatedNonNull() {
     List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
     classPath.add(new File("target/test-classes"));
@@ -85,7 +85,7 @@ public class NullableAnnotationUtilsTest {
   }
 
   @Test
-  @org.junit.Ignore("flickering NPE")
+  @org.junit.jupiter.api.Disabled("flickering NPE")
   public void testSpringIsPackageAnnotatedNonNull() {
     List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
     classPath.add(new File("target/test-classes"));

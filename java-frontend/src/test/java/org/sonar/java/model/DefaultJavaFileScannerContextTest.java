@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputDir;
@@ -67,7 +67,7 @@ public class DefaultJavaFileScannerContextTest {
   private DefaultJavaFileScannerContext context;
   private AnalyzerMessage reportedMessage;
 
-  @Before
+  @BeforeEach
   public void setup() {
     sonarComponents = createSonarComponentsMock();
     compilationUnitTree = JParserTestUtils.parse(JAVA_FILE);

@@ -22,8 +22,8 @@ package org.sonar.java;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -38,7 +38,7 @@ public class JavaVersionAwareVisitorTest {
   private JavaCheck[] javaChecks;
   private List<String> messages;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     messages = Lists.newLinkedList();
     javaChecks = new JavaCheck[] {

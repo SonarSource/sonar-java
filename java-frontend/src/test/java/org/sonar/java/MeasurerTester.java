@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -41,7 +41,7 @@ public abstract class MeasurerTester {
 
   private SensorContextTester context;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     context = SensorContextTester.create(projectDir());
 

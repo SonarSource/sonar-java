@@ -24,8 +24,8 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -44,7 +44,7 @@ public class LiteralUtilsTest {
 
   static List<VariableTree> variables;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     File file = new File("src/test/java/org/sonar/java/model/LiteralUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);

@@ -21,8 +21,8 @@ package org.sonar.java;
 
 import java.io.File;
 import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.issue.NoSonarFilter;
@@ -39,7 +39,7 @@ public class MeasurerTest {
   private static final File BASE_DIR = new File("src/test/files/metrics");
   private SensorContextTester context;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     context = SensorContextTester.create(BASE_DIR);
   }

@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.Instruction;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -62,7 +62,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
   private ProgramState nonZeroNonZeroPs;
   private ProgramState noConstraints;
 
-  @BeforeClass
+  @BeforeAll
   public static void initializeWalker() {
     List<File> files = new ArrayList<>();
     files.add(new File("target/test-classes"));
@@ -72,7 +72,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
     walker = getEGWalker();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     sv1 = new SymbolicValue();
     sv2 = new SymbolicValue();

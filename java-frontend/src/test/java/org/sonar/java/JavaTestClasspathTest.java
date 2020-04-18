@@ -20,8 +20,8 @@
 package org.sonar.java;
 
 import java.io.File;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -36,7 +36,7 @@ public class JavaTestClasspathTest {
   private MapSettings settings;
   private JavaTestClasspath javaTestClasspath;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("foo.java", InputFile.Type.TEST));

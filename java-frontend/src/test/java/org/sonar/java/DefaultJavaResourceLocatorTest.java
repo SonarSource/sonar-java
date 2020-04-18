@@ -22,8 +22,8 @@ package org.sonar.java;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.util.Set;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
@@ -36,7 +36,7 @@ public class DefaultJavaResourceLocatorTest {
 
   private static DefaultJavaResourceLocator javaResourceLocator;
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     JavaClasspath javaClasspath = mock(JavaClasspath.class);
     when(javaClasspath.getBinaryDirs()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
