@@ -25,11 +25,11 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -57,7 +57,7 @@ import static org.mockito.Mockito.when;
  * Test {@link DefaultJavaFileScannerContext} with {@link SensorContextTester} in {@link SonarComponents#setSensorContext(SensorContext)}
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestDefaultJavaFileScannerContextWithSensorContextTester {
 
   @Mock private FileLinesContextFactory fileLinesContextFactory;
@@ -75,7 +75,7 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
   private SECheck seCheck = new SECheck() {
   };
 
-  @Before
+  @BeforeEach
   public void setup() throws IOException {
     sensorContext = SensorContextTester.create(Paths.get(""));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory, null);

@@ -29,11 +29,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.InputFile;
@@ -74,7 +75,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SonarComponentsTest {
 
   private static final Version V6_7 = Version.create(6, 7);
@@ -93,11 +94,11 @@ public class SonarComponentsTest {
   @Mock
   private SensorContext context;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     // configure mocks that need verification
-    when(this.checkFactory.<JavaCheck>create(anyString())).thenReturn(this.checks);
-    when(this.checks.addAnnotatedChecks(any(Iterable.class))).thenReturn(this.checks);
+    Mockito.lenient().when(this.checkFactory.<JavaCheck>create(anyString())).thenReturn(this.checks);
+    Mockito.lenient().when(this.checks.addAnnotatedChecks(any(Iterable.class))).thenReturn(this.checks);
   }
 
   public void postTestExecutionChecks() {
