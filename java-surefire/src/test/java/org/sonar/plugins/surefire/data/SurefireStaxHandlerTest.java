@@ -19,8 +19,8 @@
  */
 package org.sonar.plugins.surefire.data;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.sonar.plugins.surefire.StaxParser;
 
@@ -35,7 +35,7 @@ public class SurefireStaxHandlerTest {
 
   private UnitTestIndex index;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     index = new UnitTestIndex();
   }

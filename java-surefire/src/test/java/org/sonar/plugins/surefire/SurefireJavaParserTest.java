@@ -24,9 +24,10 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -42,6 +43,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@EnableRuleMigrationSupport
 public class SurefireJavaParserTest {
 
   private JavaResourceLocator javaResourceLocator;
@@ -50,7 +52,7 @@ public class SurefireJavaParserTest {
   @Rule
   public LogTester logTester = new LogTester();
 
-  @Before
+  @BeforeEach
   public void before() {
     javaResourceLocator = mock(JavaResourceLocator.class);
     when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(invocation -> new TestInputFileBuilder("", (String) invocation.getArguments()[0]).build());

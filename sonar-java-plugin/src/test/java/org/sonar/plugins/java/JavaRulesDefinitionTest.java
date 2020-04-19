@@ -22,8 +22,8 @@ package org.sonar.plugins.java;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.rule.RuleKey;
@@ -47,7 +47,7 @@ public class JavaRulesDefinitionTest {
 
   private static final String REPOSITORY_KEY = "java";
 
-  @Before
+  @BeforeEach
   public void setUp() {
     settings = new MapSettings().asConfig();
   }

@@ -66,8 +66,13 @@
 
     <!-- unit tests -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-migrationsupport</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -212,14 +217,9 @@
               <goal>testCheck</goal>
             </goals>
             <configuration>
-              <signatures>
-                <![CDATA[
-                @defaultMessage use JUnit 5 instead
-                org.junit.runner.RunWith
-                org.junit.Ignore @ use JUnit 5 org.junit.jupiter.api.Disabled instead
-                org.junit.Assert @ use JUnit 5 org.junit.jupiter.api.Assertions or org.fest.assertions.Assertions instead
-                ]]>
-              </signatures>
+              <signaturesFiles>
+                <signaturesFile>../forbid_junit4.txt</signaturesFile>
+              </signaturesFiles>
             </configuration>
           </execution>
         </executions>

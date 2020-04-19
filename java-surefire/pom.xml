@@ -38,8 +38,13 @@
 
     <!-- unit tests -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-migrationsupport</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -79,6 +84,26 @@
         <directory>${basedir}/src/test/resources</directory>
       </testResource>
     </testResources>
+
+    <plugins>
+      <plugin>
+        <groupId>de.thetaphi</groupId>
+        <artifactId>forbiddenapis</artifactId>
+        <executions>
+          <execution>
+            <id>forbid-junit4</id>
+            <goals>
+              <goal>testCheck</goal>
+            </goals>
+            <configuration>
+              <signaturesFiles>
+                <signaturesFile>../forbid_junit4.txt</signaturesFile>
+              </signaturesFiles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

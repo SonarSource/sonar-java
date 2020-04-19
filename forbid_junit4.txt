@@ -1,0 +1,14 @@
+# Signatures for forbiddenapis Maven plugin
+# to prevent accidental use of JUnit 4 for tests
+# in the presence of junit-jupiter-migrationsupport,
+# because they can be executed from IntelliJ IDEA,
+# but won't be executed by maven-surefire-plugin
+# in the absence of junit-jupiter-vintage
+
+@defaultMessage use JUnit 5 instead
+org.junit.runner.RunWith
+org.junit.Before @ use JUnit 5 org.junit.jupiter.api.BeforeEach instead
+org.junit.BeforeClass @ use JUnit 5 org.junit.jupiter.api.BeforeAll instead
+org.junit.Ignore @ use JUnit 5 org.junit.jupiter.api.Disabled instead
+org.junit.Assert @ use JUnit 5 org.junit.jupiter.api.Assertions or org.fest.assertions.Assertions instead
+org.junit.Test @ use JUnit 5 org.junit.jupiter.api.Test instead

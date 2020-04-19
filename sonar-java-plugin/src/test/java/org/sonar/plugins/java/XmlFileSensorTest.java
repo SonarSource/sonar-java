@@ -21,9 +21,10 @@ package org.sonar.plugins.java;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
@@ -45,6 +46,7 @@ import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@EnableRuleMigrationSupport
 public class XmlFileSensorTest {
 
   @Rule
@@ -56,7 +58,7 @@ public class XmlFileSensorTest {
   private static final RuleKey XML_RULE_KEY = RuleKey.of("java", "S3281");
   private SensorContextTester context;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     context = SensorContextTester.create(temporaryFolder.newFolder());
   }

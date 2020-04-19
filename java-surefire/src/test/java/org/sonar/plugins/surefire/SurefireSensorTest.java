@@ -22,8 +22,8 @@ package org.sonar.plugins.surefire;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -49,7 +49,7 @@ public class SurefireSensorTest {
   private DefaultFileSystem fs;
   private PathResolver pathResolver = new PathResolver();
 
-  @Before
+  @BeforeEach
   public void before() {
     fs = new DefaultFileSystem(new File("src/test/resources"));
     DefaultInputFile javaFile = new TestInputFileBuilder("", "src/org/foo/java").setLanguage("java").build();

@@ -22,7 +22,8 @@ package org.sonar.plugins.java;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -33,6 +34,7 @@ import org.sonar.api.utils.log.LoggerLevel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@EnableRuleMigrationSupport
 public class DroppedPropertiesSensorTest {
 
   @Rule

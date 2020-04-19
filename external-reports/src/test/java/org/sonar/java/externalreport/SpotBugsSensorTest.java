@@ -27,7 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.sonar.java.externalreport.ExternalReportTestUtils.onlyOneLogElement;
 
+@EnableRuleMigrationSupport
 public class SpotBugsSensorTest {
 
   private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "spotbugs")

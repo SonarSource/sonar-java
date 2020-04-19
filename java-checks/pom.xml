@@ -58,18 +58,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-migrationsupport</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -116,17 +106,9 @@
               <goal>testCheck</goal>
             </goals>
             <configuration>
-              <signatures>
-                <![CDATA[
-                @defaultMessage use JUnit 5 instead
-                org.junit.runner.RunWith
-                org.junit.Before @ use JUnit 5 org.junit.jupiter.api.BeforeEach instead
-                org.junit.BeforeClass @ use JUnit 5 org.junit.jupiter.api.BeforeAll instead
-                org.junit.Ignore @ use JUnit 5 org.junit.jupiter.api.Disabled instead
-                org.junit.Assert @ use JUnit 5 org.junit.jupiter.api.Assertions or org.fest.assertions.Assertions instead
-                org.junit.Test @ use JUnit 5 org.junit.jupiter.api.Test instead
-                ]]>
-              </signatures>
+              <signaturesFiles>
+                <signaturesFile>../forbid_junit4.txt</signaturesFile>
+              </signaturesFiles>
             </configuration>
           </execution>
         </executions>
