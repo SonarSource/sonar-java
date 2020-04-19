@@ -21,10 +21,7 @@ package org.sonar.plugins.surefire.data;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class UnitTestIndexTest {
 
@@ -34,9 +31,9 @@ public class UnitTestIndexTest {
 
     UnitTestClassReport report = index.index("org.sonar.Foo");
 
-    assertThat(report.getTests(), is(0));
-    assertThat(index.size(), is(1));
-    assertSame(index.get("org.sonar.Foo"), report);
+    assertThat(report.getTests()).isEqualTo(0);
+    assertThat(index.size()).isEqualTo(1);
+    assertThat(report).isSameAs(index.get("org.sonar.Foo"));
   }
 
   @Test
@@ -46,10 +43,10 @@ public class UnitTestIndexTest {
     UnitTestClassReport report1 = index.index("org.sonar.Foo");
     UnitTestClassReport report2 = index.index("org.sonar.Foo");
 
-    assertSame(report1, report2);
-    assertThat(report1.getTests(), is(0));
-    assertThat(index.size(), is(1));
-    assertSame(index.get("org.sonar.Foo"), report1);
+    assertThat(report1).isSameAs(report2);
+    assertThat(report1.getTests()).isEqualTo(0);
+    assertThat(index.size()).isEqualTo(1);
+    assertThat(report1).isSameAs(index.get("org.sonar.Foo"));
   }
 
   @Test
@@ -59,8 +56,8 @@ public class UnitTestIndexTest {
     index.index("org.sonar.Foo");
     index.remove("org.sonar.Foo");
 
-    assertThat(index.size(), is(0));
-    assertThat(index.get("org.sonar.Foo"), nullValue());
+    assertThat(index.size()).isEqualTo(0);
+    assertThat(index.get("org.sonar.Foo")).isNull();
   }
 
   @Test
@@ -75,14 +72,14 @@ public class UnitTestIndexTest {
 
     index.merge("org.sonar.Foo$Bar", "org.sonar.Foo");
 
-    assertThat(index.size(), is(1));
+    assertThat(index.size()).isEqualTo(1);
     UnitTestClassReport report = index.get("org.sonar.Foo");
-    assertThat(report.getTests(), is(4));
-    assertThat(report.getFailures(), is(1));
-    assertThat(report.getErrors(), is(2));
-    assertThat(report.getSkipped(), is(0));
-    assertThat(report.getResults().size(), is(4));
-    assertThat(report.getDurationMilliseconds(), is(500L + 200L + 1000L + 350L));
+    assertThat(report.getTests()).isEqualTo(4);
+    assertThat(report.getFailures()).isEqualTo(1);
+    assertThat(report.getErrors()).isEqualTo(2);
+    assertThat(report.getSkipped()).isEqualTo(0);
+    assertThat(report.getResults().size()).isEqualTo(4);
+    assertThat(report.getDurationMilliseconds()).isEqualTo(500L + 200L + 1000L + 350L);
   }
 
   @Test
@@ -94,14 +91,14 @@ public class UnitTestIndexTest {
 
     index.merge("org.sonar.Foo$Bar", "org.sonar.Foo");
 
-    assertThat(index.size(), is(1));
+    assertThat(index.size()).isEqualTo(1);
     UnitTestClassReport report = index.get("org.sonar.Foo");
-    assertThat(report.getTests(), is(2));
-    assertThat(report.getFailures(), is(0));
-    assertThat(report.getErrors(), is(1));
-    assertThat(report.getSkipped(), is(0));
-    assertThat(report.getResults().size(), is(2));
-    assertThat(report.getDurationMilliseconds(), is(500L + 200L));
+    assertThat(report.getTests()).isEqualTo(2);
+    assertThat(report.getFailures()).isEqualTo(0);
+    assertThat(report.getErrors()).isEqualTo(1);
+    assertThat(report.getSkipped()).isEqualTo(0);
+    assertThat(report.getResults().size()).isEqualTo(2);
+    assertThat(report.getDurationMilliseconds()).isEqualTo(500L + 200L);
   }
 
   @Test
@@ -110,6 +107,6 @@ public class UnitTestIndexTest {
 
     index.merge("org.sonar.Foo$Bar", "org.sonar.Foo");
 
-    assertThat(index.size(), is(0));
+    assertThat(index.size()).isEqualTo(0);
   }
 }

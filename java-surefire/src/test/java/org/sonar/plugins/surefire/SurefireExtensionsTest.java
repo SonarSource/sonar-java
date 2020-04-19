@@ -21,13 +21,12 @@ package org.sonar.plugins.surefire;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SurefireExtensionsTest {
 
   @Test
   public void shouldGetExtensions() {
-    assertThat(SurefireExtensions.getExtensions().size(), equalTo(3));
+    assertThat(SurefireExtensions.getExtensions().size()).isEqualTo(3);
   }
 }

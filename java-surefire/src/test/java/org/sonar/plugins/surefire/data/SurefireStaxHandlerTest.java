@@ -29,9 +29,7 @@ import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.net.URISyntaxException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SurefireStaxHandlerTest {
 
@@ -47,67 +45,67 @@ public class SurefireStaxHandlerTest {
     parse("innerClasses.xml");
 
     UnitTestClassReport publicClass = index.get("org.apache.commons.collections.bidimap.AbstractTestBidiMap");
-    assertThat(publicClass.getTests(), is(2));
+    assertThat(publicClass.getTests()).isEqualTo(2);
 
     UnitTestClassReport innerClass1 = index.get("org.apache.commons.collections.bidimap.AbstractTestBidiMap$TestBidiMapEntrySet");
-    assertThat(innerClass1.getTests(), is(2));
+    assertThat(innerClass1.getTests()).isEqualTo(2);
 
     UnitTestClassReport innerClass2 = index.get("org.apache.commons.collections.bidimap.AbstractTestBidiMap$TestInverseBidiMap");
-    assertThat(innerClass2.getTests(), is(3));
-    assertThat(innerClass2.getDurationMilliseconds(), is(30 + 1L));
-    assertThat(innerClass2.getErrors(), is(1));
+    assertThat(innerClass2.getTests()).isEqualTo(3);
+    assertThat(innerClass2.getDurationMilliseconds()).isEqualTo(30 + 1L);
+    assertThat(innerClass2.getErrors()).isEqualTo(1);
   }
 
   @Test
   public void shouldHaveSkippedTests() throws XMLStreamException {
     parse("skippedTests.xml");
     UnitTestClassReport report = index.get("org.sonar.Foo");
-    assertThat(report.getTests(), is(3));
-    assertThat(report.getSkipped(), is(1));
+    assertThat(report.getTests()).isEqualTo(3);
+    assertThat(report.getSkipped()).isEqualTo(1);
   }
 
   @Test
   public void shouldHaveZeroTests() throws XMLStreamException {
     parse("zeroTests.xml");
-    assertThat(index.size(), is(0));
+    assertThat(index.size()).isEqualTo(0);
   }
 
   @Test
   public void shouldHaveTestOnRootPackage() throws XMLStreamException {
     parse("rootPackage.xml");
-    assertThat(index.size(), is(1));
+    assertThat(index.size()).isEqualTo(1);
     UnitTestClassReport report = index.get("NoPackagesTest");
-    assertThat(report.getTests(), is(2));
+    assertThat(report.getTests()).isEqualTo(2);
   }
 
   @Test
   public void shouldHaveErrorsAndFailures() throws XMLStreamException {
     parse("errorsAndFailures.xml");
     UnitTestClassReport report = index.get("org.sonar.Foo");
-    assertThat(report.getErrors(), is(1));
-    assertThat(report.getFailures(), is(1));
-    assertThat(report.getResults().size(), is(2));
+    assertThat(report.getErrors()).isEqualTo(1);
+    assertThat(report.getFailures()).isEqualTo(1);
+    assertThat(report.getResults().size()).isEqualTo(2);
 
     // failure
     UnitTestResult failure = report.getResults().get(0);
-    assertThat(failure.getDurationMilliseconds(), is(5L));
-    assertThat(failure.getStatus(), is(UnitTestResult.STATUS_FAILURE));
-    assertThat(failure.getName(), is("testOne"));
-    assertThat(failure.getMessage(), startsWith("expected"));
+    assertThat(failure.getDurationMilliseconds()).isEqualTo(5L);
+    assertThat(failure.getStatus()).isEqualTo(UnitTestResult.STATUS_FAILURE);
+    assertThat(failure.getName()).isEqualTo("testOne");
+    assertThat(failure.getMessage()).startsWith("expected");
 
     // error
     UnitTestResult error = report.getResults().get(1);
-    assertThat(error.getDurationMilliseconds(), is(0L));
-    assertThat(error.getStatus(), is(UnitTestResult.STATUS_ERROR));
-    assertThat(error.getName(), is("testTwo"));
+    assertThat(error.getDurationMilliseconds()).isEqualTo(0L);
+    assertThat(error.getStatus()).isEqualTo(UnitTestResult.STATUS_ERROR);
+    assertThat(error.getName()).isEqualTo("testTwo");
   }
 
   @Test
   public void shouldSupportMultipleSuitesInSameReport() throws XMLStreamException {
     parse("multipleSuites.xml");
 
-    assertThat(index.get("org.sonar.JavaNCSSCollectorTest").getTests(), is(11));
-    assertThat(index.get("org.sonar.SecondTest").getTests(), is(4));
+    assertThat(index.get("org.sonar.JavaNCSSCollectorTest").getTests()).isEqualTo(11);
+    assertThat(index.get("org.sonar.SecondTest").getTests()).isEqualTo(4);
   }
 
   @Test
@@ -115,14 +113,14 @@ public class SurefireStaxHandlerTest {
     parse("skippedWithoutTimeAttribute.xml");
 
     UnitTestClassReport publicClass = index.get("TSuite.A");
-    assertThat(publicClass.getSkipped(), is(2));
-    assertThat(publicClass.getTests(), is(4));
+    assertThat(publicClass.getSkipped()).isEqualTo(2);
+    assertThat(publicClass.getTests()).isEqualTo(4);
   }
 
   @Test
   public void output_of_junit_5_2_test_without_display_name() throws XMLStreamException {
     parse("TEST-#29.xml");
-    assertThat(index.get(")").getTests(), is(1));
+    assertThat(index.get(")").getTests()).isEqualTo(1);
   }
 
 

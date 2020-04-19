@@ -21,8 +21,7 @@ package org.sonar.plugins.surefire.data;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class UnitTestClassReportTest {
 
@@ -35,23 +34,23 @@ public class UnitTestClassReportTest {
     report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_OK).setDurationMilliseconds(-200L));
     report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_SKIPPED));
 
-    assertThat(report.getResults().size(), is(4));
-    assertThat(report.getSkipped(), is(1));
-    assertThat(report.getTests(), is(4));
-    assertThat(report.getDurationMilliseconds(), is(500L + 200L));
-    assertThat(report.getErrors(), is(1));
-    assertThat(report.getFailures(), is(0));
-    assertThat(report.getNegativeTimeTestNumber(), is(1L));
+    assertThat(report.getResults().size()).isEqualTo(4);
+    assertThat(report.getSkipped()).isEqualTo(1);
+    assertThat(report.getTests()).isEqualTo(4);
+    assertThat(report.getDurationMilliseconds()).isEqualTo(500L + 200L);
+    assertThat(report.getErrors()).isEqualTo(1);
+    assertThat(report.getFailures()).isEqualTo(0);
+    assertThat(report.getNegativeTimeTestNumber()).isEqualTo(1L);
   }
 
   @Test
   public void shouldHaveEmptyReport() {
     UnitTestClassReport report = new UnitTestClassReport();
-    assertThat(report.getResults().size(), is(0));
-    assertThat(report.getSkipped(), is(0));
-    assertThat(report.getTests(), is(0));
-    assertThat(report.getDurationMilliseconds(), is(0L));
-    assertThat(report.getErrors(), is(0));
-    assertThat(report.getFailures(), is(0));
+    assertThat(report.getResults().size()).isEqualTo(0);
+    assertThat(report.getSkipped()).isEqualTo(0);
+    assertThat(report.getTests()).isEqualTo(0);
+    assertThat(report.getDurationMilliseconds()).isEqualTo(0L);
+    assertThat(report.getErrors()).isEqualTo(0);
+    assertThat(report.getFailures()).isEqualTo(0);
   }
 }
