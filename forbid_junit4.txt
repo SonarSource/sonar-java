@@ -7,6 +7,8 @@
 
 @defaultMessage use JUnit 5 instead
 org.junit.runner.RunWith
+org.junit.After @ use JUnit 5 org.junit.jupiter.api.AfterEach instead
+org.junit.AfterClass @ use JUnit 5 org.junit.jupiter.api.AfterAll instead
 org.junit.Before @ use JUnit 5 org.junit.jupiter.api.BeforeEach instead
 org.junit.BeforeClass @ use JUnit 5 org.junit.jupiter.api.BeforeAll instead
 org.junit.Ignore @ use JUnit 5 org.junit.jupiter.api.Disabled instead
