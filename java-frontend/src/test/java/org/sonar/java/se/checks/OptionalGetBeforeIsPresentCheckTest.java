@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class OptionalGetBeforeIsPresentCheckTest {
 

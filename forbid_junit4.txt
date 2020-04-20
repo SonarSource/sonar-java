@@ -11,4 +11,5 @@ org.junit.Before @ use JUnit 5 org.junit.jupiter.api.BeforeEach instead
 org.junit.BeforeClass @ use JUnit 5 org.junit.jupiter.api.BeforeAll instead
 org.junit.Ignore @ use JUnit 5 org.junit.jupiter.api.Disabled instead
 org.junit.Assert @ use JUnit 5 org.junit.jupiter.api.Assertions or org.fest.assertions.Assertions instead
+org.junit.Assume @ use JUnit 5 org.junit.jupiter.api.Assumptions instead
 org.junit.Test @ use JUnit 5 org.junit.jupiter.api.Test instead
