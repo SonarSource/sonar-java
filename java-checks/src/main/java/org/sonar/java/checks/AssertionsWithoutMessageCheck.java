@@ -51,7 +51,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return MethodMatchers.or(
-      MethodMatchers.create().ofTypes("org.junit.jupiter.api.Assertions").name(name -> name.startsWith(ASSERT)).withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("org.junit.jupiter.api.Assertions").name(name -> name.startsWith(ASSERT) || name.equals("fail")).withAnyParameters().build(),
       MethodMatchers.create().ofTypes("org.junit.Assert").name(name -> name.startsWith(ASSERT) || name.equals("fail")).withAnyParameters().build(),
       MethodMatchers.create().ofTypes("junit.framework.Assert").name(name -> name.startsWith(ASSERT) || name.startsWith("fail")).withAnyParameters().build(),
       MethodMatchers.create().ofTypes("org.fest.assertions.Fail").name(name -> name.startsWith("fail")).withAnyParameters().build(),
@@ -84,6 +84,19 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
       return;
     }
 
+    if (mit.arguments().isEmpty()) {
+      reportIssue(mit, MESSAGE);
+    } else if (methodName.equals("fail")) {
+      if (mit.arguments().size() == 1 && mit.arguments().get(0).symbolType().isSubtypeOf("java.lang.Throwable")) {
+        reportIssue(mit, MESSAGE);
+      }
+    } else {
+      checkJUnit5Assertions(mit);
+    }
+  }
+
+  private void checkJUnit5Assertions(MethodInvocationTree mit) {
+    String methodName = mit.symbol().name();
     if (JUNIT5_ASSERT_METHODS_WITH_ONE_PARAM.contains(methodName)) {
       if (mit.arguments().size() == 1) {
         reportIssue(mit, MESSAGE);
