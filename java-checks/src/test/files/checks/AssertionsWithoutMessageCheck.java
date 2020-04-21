@@ -34,6 +34,8 @@ class A {
 
     org.junit.Assert.fail(); // Noncompliant
     org.junit.Assert.fail("Foo");
+    org.junit.Assert.fail(new java.lang.RuntimeException()); // Noncompliant
+    org.junit.Assert.fail(new java.lang.RuntimeException(), "Foo");
     junit.framework.Assert.fail(); // Noncompliant
     junit.framework.Assert.fail("Foo");
     org.fest.assertions.Fail.fail(); // Noncompliant
@@ -46,7 +48,7 @@ class A {
     org.junit.jupiter.api.Assertions.assertAll(null);
     org.junit.jupiter.api.Assertions.assertLinesMatch(null, null);
     org.junit.jupiter.api.Assertions.fail(() -> "message");
-    org.junit.jupiter.api.Assertions.fail(new java.lang.RuntimeException());
+    org.junit.jupiter.api.Assertions.fail("message", new java.lang.RuntimeException());
 
     org.junit.jupiter.api.Assertions.assertFalse(false); // Noncompliant [[sc=5;ec=56]] {{Add a message to this assertion.}}
     org.junit.jupiter.api.Assertions.assertFalse(false, "message");
@@ -56,6 +58,8 @@ class A {
     org.junit.jupiter.api.Assertions.assertNull(null, "message");
     org.junit.jupiter.api.Assertions.assertNotNull(null); // Noncompliant
     org.junit.jupiter.api.Assertions.assertNotNull(null, "message");
+    org.junit.jupiter.api.Assertions.fail(); // Noncompliant
+    org.junit.jupiter.api.Assertions.fail(new java.lang.RuntimeException()); // Noncompliant
 
     org.junit.jupiter.api.Assertions.assertIterableEquals(null, null); // Noncompliant
     org.junit.jupiter.api.Assertions.assertIterableEquals(null, null, "message");
