@@ -1,0 +1,33 @@
+<p>Usually, assertion methods&nbsp;are throwing a "<code>java.lang.AssertionError</code>". If this call is done within the try block of a try-catch
+cathing a similar error, you should make sure to test some properties of the exception. Otherwise, the assertion will never fail.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Test
+public void should_throw_assertion_error() {
+  try {
+    throwAssertionError();
+    Assert.fail("Expected an AssertionError!"); // Noncompliant, the AssertionError will be caught and the test will never fail.
+  } catch (AssertionError e) {}
+}
+
+private void throwAssertionError() {
+  throw new AssertionError("My assertion error");
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+assertThrows(AssertionError.class, () -&gt; throwAssertionError());
+</pre>
+<pre>
+try {
+   throwAssertionError();
+   Assert.fail("Expected an AssertionError!"); // Compliant, we made sure to test that the correct error is raised
+ } catch (AssertionError e) {
+   Assert.assertThat(e.getMessage(), is("My assertion error"));
+ }
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit 4 exception testing documentation</a> </li>
+</ul>
+

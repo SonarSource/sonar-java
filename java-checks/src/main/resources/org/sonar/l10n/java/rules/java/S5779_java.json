@@ -1,0 +1,13 @@
+{
+  "title": "Assertion methods should not be used within the try block of a try-catch catching an Error",
+  "type": "BUG",
+  "status": "ready",
+  "tags": [
+    "junit",
+    "tests"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5779",
+  "sqKey": "S5779",
+  "scope": "Tests"
+}
