@@ -27,8 +27,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -58,12 +56,11 @@ public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
 
   private void visitMethod(MethodTree methodTree) {
     String name = methodTree.simpleName().name();
-    TypeTree returnType = methodTree.returnType();
     if (JUNIT_SETUP.equals(name) || JUNIT_TEARDOWN.equals(name)) {
       checkSetupTearDownSignature(methodTree);
     } else if (JUNIT_SUITE.equals(name)) {
       checkSuiteSignature(methodTree);
-    } else if ((returnType != null && returnType.symbolType().isSubtypeOf("junit.framework.Test")) || areVerySimilarStrings(JUNIT_SUITE, name)) {
+    } else if (methodTree.symbol().returnType().type().isSubtypeOf("junit.framework.Test") || areVerySimilarStrings(JUNIT_SUITE, name)) {
       addIssueForMethodBadName(methodTree, JUNIT_SUITE, name);
     } else if (areVerySimilarStrings(JUNIT_SETUP, name)) {
       addIssueForMethodBadName(methodTree, JUNIT_SETUP, name);
@@ -87,11 +84,8 @@ public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
       reportIssue(methodTree, "Make this method \"static\".");
     } else if (!methodTree.parameters().isEmpty()) {
       reportIssue(methodTree, "This method does not accept parameters.");
-    } else {
-      TypeTree returnType = methodTree.returnType();
-      if (returnType != null && !returnType.symbolType().isSubtypeOf("junit.framework.Test")) {
-        reportIssue(methodTree, "This method should return either a \"junit.framework.Test\" or a \"junit.framework.TestSuite\".");
-      }
+    } else if (!symbol.returnType().type().isSubtypeOf("junit.framework.Test")) {
+      reportIssue(methodTree, "This method should return either a \"junit.framework.Test\" or a \"junit.framework.TestSuite\".");
     }
   }
 

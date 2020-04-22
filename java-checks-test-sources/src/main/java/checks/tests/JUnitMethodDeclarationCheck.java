@@ -27,6 +27,8 @@ class JUnitMethodDeclarationCheck_Wrong extends TestCase {
 }
 
 class JUnitMethodDeclarationCheck_Compliant extends TestCase {
+  Object field; // for coverage
+
   public static Test suite() { return null; }
   @Override
   public void setUp() { }
