@@ -1,45 +1,44 @@
+package checks.tests;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-class NonPublic extends TestCase {
-  Test suite() {  }  // Noncompliant {{Make this method "public".}}
-  void setUp() {  } // Noncompliant {{Make this method "public".}}
-  void tearDown() {  }  // Noncompliant {{Make this method "public".}}
+class JUnitMethodDeclarationCheck_NonPublic extends TestCase {
+  Test suite() { return null; }  // Noncompliant {{Make this method "public".}}
 }
 
-class WrongName extends TestCase {
-  public static Test a() {  }  // Noncompliant {{This method should be named "suite" not "a".}}
-  public static TestSuite b() {  }  // Noncompliant {{This method should be named "suite" not "b".}}
+class JUnitMethodDeclarationCheck_WrongName extends TestCase {
+  public static Test a() { return null; }  // Noncompliant {{This method should be named "suite" not "a".}}
+  public static TestSuite b() { return null; }  // Noncompliant {{This method should be named "suite" not "b".}}
   public static void suit() {  }  // Noncompliant [[sc=22;ec=26]] {{This method should be named "suite" not "suit".}}
   public void setup() {  } // Noncompliant {{This method should be named "setUp" not "setup".}}
   public void tearDwon() {  }  // Noncompliant {{This method should be named "tearDown" not "tearDwon".}}
-  public static boolean suite() {  }  // Noncompliant {{This method should return either a "junit.framework.Test" or a "junit.framework.TestSuite".}}
+  public static boolean suite() { return false; }  // Noncompliant {{This method should return either a "junit.framework.Test" or a "junit.framework.TestSuite".}}
 }
 
-public class Wrong extends TestCase {
-  public static Test suite(int count) {  } // Noncompliant {{This method does not accept parameters.}}
-  public Test suite() {  } // Noncompliant {{Make this method "static".}}
+class JUnitMethodDeclarationCheck_Wrong extends TestCase {
+  public static Test suite(int count) { return null; } // Noncompliant {{This method does not accept parameters.}}
+  public Test suite() { return null; } // Noncompliant {{Make this method "static".}}
 
   public void setUp(int par) {  } // Noncompliant {{This method does not accept parameters.}}
-  public int setUp() {  } // Noncompliant {{Make this method return "void".}}
 
   public void tearDown(int pat) {  }  // Noncompliant {{This method does not accept parameters.}}
-  public int tearDown() {  }  // Noncompliant {{Make this method return "void".}}
 }
 
-public class Compliant extends TestCase {
-  public static Test suite() { }
+class JUnitMethodDeclarationCheck_Compliant extends TestCase {
+  public static Test suite() { return null; }
+  @Override
   public void setUp() { }
+  @Override
   public void tearDown() { }
 }
 
-public class B {
+class JUnitMethodDeclarationCheck_NotTestCase {
   void tearDown() {  } // Compliant - class B does not extend TestCase
 }
 
-
-public class FpS2391 extends TestCase {
+class JUnitMethodDeclarationCheck_FpS2391 extends TestCase {
   @Override
   protected void setUp() {   // Compliant - protected
     System.out.println("setUp");
@@ -50,6 +49,7 @@ public class FpS2391 extends TestCase {
   }
 
   public static TestSuite suite() { // Compliant - return type is subtype of Test
+    return null;
   }
 
   public void testMe() {

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.tests;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2391")
-public class JunitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
+public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
 
   private static final String JUNIT_SETUP = "setUp";
   private static final String JUNIT_TEARDOWN = "tearDown";
@@ -96,16 +96,8 @@ public class JunitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkSetupTearDownSignature(MethodTree methodTree) {
-    Symbol.MethodSymbol symbol = methodTree.symbol();
-    if (!symbol.isPublic() && !symbol.isProtected()) {
-      reportIssue(methodTree, "Make this method \"public\".");
-    } else if (!methodTree.parameters().isEmpty()) {
+    if (!methodTree.parameters().isEmpty()) {
       reportIssue(methodTree, "This method does not accept parameters.");
-    } else {
-      TypeTree returnType = methodTree.returnType();
-      if (returnType != null && !returnType.symbolType().isVoid()) {
-        reportIssue(methodTree, "Make this method return \"void\".");
-      }
     }
   }
 
