@@ -1,8 +1,14 @@
-<p>If the <code>suite</code> method in a JUnit 3 <code>TestCase</code> is not declared correctly, it will not be used. Such a method must be named
+<p>If the <code>suite()</code> method in a JUnit 3 <code>TestCase</code> is not declared correctly, it will not be used. Such a method must be named
 "suite", have no arguments, be <code>public static</code>, and must return either a <code>junit.framework.Test</code> or a
 <code>junit.framework.TestSuite</code>.</p>
-<p>Similarly, <code>setUp</code> and <code>tearDown</code> methods that aren't properly capitalized will also be ignored.</p>
+<p>Similarly, <code>setUp()</code> and <code>tearDown()</code> methods that aren't properly capitalized will also be ignored.</p>
+<p>Using JUnit4 and JUnit5, however, the <code>suite()</code>&nbsp;methods become obsolete, has the test suite mechanism has been changed to rely on
+class annotations. <code>setUp()</code> and <code>tearDown()</code> methods, on their side, needs to be correctly annotated by the equivalent
+annotation in order to preserve the same behavior.</p>
 <h2>Noncompliant Code Example</h2>
+<ul>
+  <li> JUnit3: </li>
+</ul>
 <pre>
 Test suite() { ... }  // Noncompliant; must be public static
 public static boolean suite() { ... }  // Noncompliant; wrong return type
@@ -12,10 +18,51 @@ public static Test suite(int count) { ... } // Noncompliant; must be no-arg
 public void setup() { ... } // Noncompliant; should be setUp
 public void tearDwon() { ... }  // Noncompliant; should be tearDown
 </pre>
+<ul>
+  <li> JUnit4: </li>
+</ul>
+<pre>
+public static Test suite() { ... }  // Noncompliant; does not make sense anymore
+
+public void setUp() { ... } // Noncompliant; should be annotated with @Before
+public void tearDown() { ... }  // Noncompliant; should be annotated with @After
+</pre>
+<ul>
+  <li> JUnit5: </li>
+</ul>
+<pre>
+public static Test suite() { ... }  // Noncompliant; does not make sense anymore
+
+public void setUp() { ... } // Noncompliant; should be annotated with @BeforeEach
+public void tearDown() { ... }  // Noncompliant; should be annotated with @AfterEach
+</pre>
 <h2>Compliant Solution</h2>
+<ul>
+  <li> JUnit3: </li>
+</ul>
 <pre>
 public static Test suite() { ... }
 public void setUp() { ... }
 public void tearDown() { ... }
+</pre>
+<ul>
+  <li> JUnit4: </li>
+</ul>
+<pre>
+@Before
+public void setUp() { ... }
+
+@After
+public void tearDown() { ... }
+</pre>
+<ul>
+  <li> JUnit5: </li>
+</ul>
+<pre>
+@BeforeEach
+void setUp() { ... }
+
+@AfterEach
+void tearDown() { ... }
 </pre>
 
