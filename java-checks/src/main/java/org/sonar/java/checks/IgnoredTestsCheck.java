@@ -19,9 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -31,6 +28,10 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 @Rule(key = "S1607")
 public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
@@ -53,11 +54,23 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
     }
     MethodTree methodTree = (MethodTree) tree;
     SymbolMetadata symbolMetadata = methodTree.symbol().metadata();
-    if (isSilentlyIgnored(symbolMetadata, "org.junit.Ignore") || isSilentlyIgnored(symbolMetadata, "org.junit.jupiter.api.Disabled")) {
-      reportIssue(methodTree.simpleName(), "Fix or remove this skipped unit test");
+
+    // check for @Ignore or @Disabled annotations
+    boolean hasIgnoreAnnotation = isSilentlyIgnored(symbolMetadata, "org.junit.Ignore");
+    boolean hasDisabledAnnotation = isSilentlyIgnored(symbolMetadata, "org.junit.jupiter.api.Disabled");
+    if (hasIgnoreAnnotation || hasDisabledAnnotation) {
+      reportIssue(
+        methodTree.simpleName(),
+        String.format(
+          "Either add an explanation about why this test is skipped or remove the \"@%s\" annotation.",
+          hasIgnoreAnnotation ? "Ignore" : "Disabled"
+        )
+      );
     }
+
+    // check for "assumeFalse(true)" and "assumeTrue(false)"-calls, which may also result in permanent skipping of the given test
     BlockTree block = methodTree.block();
-    if(block != null) {
+    if (block != null) {
       block.body().stream()
         .filter(s -> s.is(Tree.Kind.EXPRESSION_STATEMENT))
         .map(s -> ((ExpressionStatementTree) s).expression())
@@ -65,12 +78,17 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
         .map(MethodInvocationTree.class::cast)
         .filter(ASSUME_METHODS::matches)
         .filter(IgnoredTestsCheck::hasConstantOppositeArg)
-        .forEach(mit -> reportIssue(mit.methodSelect(), "Fix or remove this skipped unit test"));
+        .forEach(mit -> reportIssue(
+          mit, "Either remove this assumption or use an @Ignore or @Disabled annotation in combination with an explanation about why this test is skipped.")
+        );
     }
   }
 
   private static boolean isSilentlyIgnored(SymbolMetadata symbolMetadata, String annotation) {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbolMetadata.valuesForAnnotation(annotation);
+
+    // check that an annotation of the given type is present and whether that annotation has any values that are passed to it (i.e. an
+    // explanation for why the test is ignored)
     return annotationValues != null && annotationValues.isEmpty();
   }
 

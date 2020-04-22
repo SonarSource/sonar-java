@@ -1,16 +1,18 @@
+package checks;
+
 import org.junit.Ignore;
 import org.junit.Assume;
 import org.junit.jupiter.api.Disabled;
 
-abstract class MyTest {
+abstract class IgnoredTestsCheck {
   @org.junit.Ignore
-  void foo() {} // Noncompliant [[sc=8;ec=11]] {{Fix or remove this skipped unit test}}
+  void foo() {} // Noncompliant [[sc=8;ec=11]] {{Either add an explanation about why this test is skipped or remove the "@Ignore" annotation.}}
 
   @Ignore
   void bar() {} // Noncompliant
 
   @Disabled
-  void disabledJunit5() {} // Noncompliant
+  void disabledJunit5() {} // Noncompliant [[sc=8;ec=22]] {{Either add an explanation about why this test is skipped or remove the "@Disabled" annotation.}}
 
   void qix() {}
 
@@ -21,14 +23,14 @@ abstract class MyTest {
   void disabledJunit5WithComment() {}
 
   void assume1() {
-    Assume.assumeTrue(false); // Noncompliant
+    Assume.assumeTrue(false); // Noncompliant [[sc=5;ec=29]] {{Either remove this assumption or use an @Ignore or @Disabled annotation in combination with an explanation about why this test is skipped.}}
     Assume.assumeTrue(true);
   }
   void assume2() {
     Assume.assumeFalse(true); // Noncompliant
     Assume.assumeFalse(false);
   }
-  void assume3() {
+  void assume3(boolean something) {
     if(something) {
       Assume.assumeFalse(true); // compliant, we only detect basic cases
     }
@@ -38,7 +40,7 @@ abstract class MyTest {
     System.out.println("foo");
     Assume.assumeFalse(true); // Noncompliant
   }
-  void assume5() {
+  void assume5(boolean something) {
     Assume.assumeFalse(something); // compliant, unresolved expression
   }
 
@@ -46,7 +48,7 @@ abstract class MyTest {
     Assume.assumeFalse(Boolean.TRUE); // Noncompliant
   }
 
-  public MyTest() {
+  public IgnoredTestsCheck() {
     Assume.assumeTrue(false); // Noncompliant
   }
 
