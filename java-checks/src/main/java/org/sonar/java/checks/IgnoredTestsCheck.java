@@ -19,6 +19,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -28,10 +31,6 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 @Rule(key = "S1607")
 public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
@@ -59,13 +58,8 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
     boolean hasIgnoreAnnotation = isSilentlyIgnored(symbolMetadata, "org.junit.Ignore");
     boolean hasDisabledAnnotation = isSilentlyIgnored(symbolMetadata, "org.junit.jupiter.api.Disabled");
     if (hasIgnoreAnnotation || hasDisabledAnnotation) {
-      reportIssue(
-        methodTree.simpleName(),
-        String.format(
-          "Either add an explanation about why this test is skipped or remove the \"@%s\" annotation.",
-          hasIgnoreAnnotation ? "Ignore" : "Disabled"
-        )
-      );
+      reportIssue(methodTree.simpleName(), String.format("Either add an explanation about why this test is skipped or remove the " +
+        "\"@%s\" annotation.", hasIgnoreAnnotation ? "Ignore" : "Disabled"));
     }
 
     // check for "assumeFalse(true)" and "assumeTrue(false)"-calls, which may also result in permanent skipping of the given test
@@ -78,9 +72,8 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
         .map(MethodInvocationTree.class::cast)
         .filter(ASSUME_METHODS::matches)
         .filter(IgnoredTestsCheck::hasConstantOppositeArg)
-        .forEach(mit -> reportIssue(
-          mit, "Either remove this assumption or use an @Ignore or @Disabled annotation in combination with an explanation about why this test is skipped.")
-        );
+        .forEach(mit -> reportIssue(mit, "Either remove this assumption or use an @Ignore or @Disabled annotation in combination with " +
+          "an explanation about why this test is skipped."));
     }
   }
 
