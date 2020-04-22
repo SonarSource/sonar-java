@@ -29,9 +29,17 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 public class JUnitMethodDeclarationCheckTest {
 
   @Test
-  public void test() {
+  public void jUnit3() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/JUnitMethodDeclarationCheck.java"))
+      .onFile(testSourcesPath("checks/tests/JUnitMethodDeclarationCheck_JUnit3.java"))
+      .withCheck(new JUnitMethodDeclarationCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  public void jUnit4_and_jUnit5() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/tests/JUnitMethodDeclarationCheck_JUnit45.java"))
       .withCheck(new JUnitMethodDeclarationCheck())
       .verifyIssues();
   }
