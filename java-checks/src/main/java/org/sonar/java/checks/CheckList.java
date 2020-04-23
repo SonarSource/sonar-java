@@ -722,6 +722,7 @@ public final class CheckList {
       CallSuperInTestCaseCheck.class,
       IgnoredTestsCheck.class,
       JunitMethodDeclarationCheck.class,
+      JunitNestedAnnotationCheck.class,
       NoTestInTestClassCheck.class,
       ThreadSleepInTestsCheck.class,
       UnusedTestRuleCheck.class);
