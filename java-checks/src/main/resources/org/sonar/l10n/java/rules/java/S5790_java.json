@@ -1,0 +1,16 @@
+{
+  "title": "JUnit5 inner test classes should be annotated with @Nested",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "tests"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5790",
+  "sqKey": "S5790",
+  "scope": "Tests"
+}
