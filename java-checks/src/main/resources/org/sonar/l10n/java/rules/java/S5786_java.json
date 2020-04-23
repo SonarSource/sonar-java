@@ -1,0 +1,17 @@
+{
+  "title": "JUnit5 test classes and methods should have adequate visibility",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "junit",
+    "tests"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5786",
+  "sqKey": "S5786",
+  "scope": "Tests"
+}
