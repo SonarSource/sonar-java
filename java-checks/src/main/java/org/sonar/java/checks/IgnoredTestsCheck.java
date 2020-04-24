@@ -20,11 +20,13 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -73,8 +75,14 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
         .map(MethodInvocationTree.class::cast)
         .filter(ASSUME_METHODS::matches)
         .filter(IgnoredTestsCheck::hasConstantOppositeArg)
-        .forEach(mit -> reportIssue(ExpressionUtils.methodName(mit), "Either remove this assumption or use an @Ignore or @Disabled " +
-          "annotation in combination with an explanation about why this test is skipped."));
+        .forEach(mit -> {
+          List<JavaFileScannerContext.Location> secondaryLocation = Collections.singletonList(new JavaFileScannerContext.Location(
+            "A constant boolean value is passed as argument, causing this test to always be skipped.", mit.arguments()));
+
+          reportIssue(ExpressionUtils.methodName(mit), "This assumption is called with a constant boolean. Either remove it or, to skip " +
+            "this test, use an @Ignore or @Disabled annotation in combination with an explanation about why this test is skipped.",
+            secondaryLocation, null);
+        });
     }
   }
 
