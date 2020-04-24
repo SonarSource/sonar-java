@@ -8,15 +8,35 @@ class TestClassAndMethodVisibilityCheckTest {
   public void testPublic() {} // Noncompliant [[sc=3;ec=9]] {{Remove this access modifier}}
 
   @Test
-  protected void testProtected() {} // Noncompliant [[sc=3;ec=12]] {{Remove this access modifier}}
+  protected void testProtected() {} // Noncompliant
 
   @Test
-  private void testPrivate() {} // Noncompliant [[sc=3;ec=10]] {{Remove this access modifier}}
+  private void testPrivate() {} // Noncompliant
 
   @Test
   void testDefault() {} // compliant
 
-  public void noTestHere() {} // compliant - this rule only applies to test methods
+  public void notATest() {} // compliant
 
   void noTestHereEither() {} // compliant
+
+  @org.junit.Test
+  public void testWithJUnit4Annotation() {} // Compliant
+
+  @Test
+  static final void staticFinalTestMethod() {} // Compliant
+
+  public static class WithoutTest { // Compliant
+
+  }
+
+  public static class PublicWithOneTest { // Noncompliant [[sc=3;ec=9]] {{Remove this access modifier}}
+    @Test
+    void test() {}
+  }
+
+  static class WithOneTest { // Compliant
+    @Test
+    void test() {}
+  }
 }

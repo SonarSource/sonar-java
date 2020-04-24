@@ -20,10 +20,12 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -33,9 +35,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S5786")
 public class TestClassAndMethodVisibilityCheck extends IssuableSubscriptionVisitor {
 
+  private static final List<Modifier> NON_COMPLIANT_MODIFIERS = Arrays.asList(Modifier.PUBLIC, Modifier.PRIVATE, Modifier.PROTECTED);
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.CLASS);
+    return Collections.singletonList(Tree.Kind.CLASS);
   }
 
   @Override
@@ -44,29 +48,25 @@ public class TestClassAndMethodVisibilityCheck extends IssuableSubscriptionVisit
       return;
     }
 
-    ModifiersTree modifiers;
-    Symbol symbol;
-    if (tree.is(Tree.Kind.METHOD)) {
-      MethodTree methodTree = (MethodTree) tree;
-      symbol = methodTree.symbol();
-      modifiers = methodTree.modifiers();
-    } else {
-      ClassTree classTree = (ClassTree) tree;
-      symbol = classTree.symbol();
-      modifiers = classTree.modifiers();
-    }
+    ClassTree classTree = (ClassTree) tree;
+    List<MethodTree> testMethods = classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .filter(UnitTestUtils::hasJUnit5TestAnnotation)
+      .collect(Collectors.toList());
 
-    if (symbol.metadata().isAnnotatedWith("org.junit.jupiter.api.Test") && !symbol.isPackageVisibility()) {
-      Tree questionableNode = modifiers.modifiers().parallelStream()
-        .filter(keywordTree -> {
-          Modifier modifier = keywordTree.modifier();
-          return modifier.equals(Modifier.PUBLIC) || modifier.equals(Modifier.PRIVATE) || modifier.equals(Modifier.PROTECTED);
-        })
-        .map(modifierKeywordTree -> (Tree) modifierKeywordTree)
-        .findFirst()
-        .orElse(tree);
+    testMethods.stream().map(MethodTree::modifiers).forEach(this::raiseIssueOnPresentAccessModifiers);
 
-      reportIssue(questionableNode, "Remove this access modifier");
+    if (!testMethods.isEmpty()) {
+      raiseIssueOnPresentAccessModifiers(classTree.modifiers());
     }
+  }
+
+  private void raiseIssueOnPresentAccessModifiers(ModifiersTree modifierTree) {
+    modifierTree.modifiers().stream()
+      .filter(modifierKeyword -> NON_COMPLIANT_MODIFIERS.contains(modifierKeyword.modifier()))
+      .map(modifierKeywordTree -> (Tree) modifierKeywordTree)
+      .findFirst()
+      .ifPresent(modifierKeyword -> reportIssue(modifierKeyword, "Remove this access modifier"));
   }
 }
