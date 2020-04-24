@@ -713,6 +713,7 @@ public final class CheckList {
       AssertionArgumentOrderCheck.class,
       AssertionFailInCatchBlockCheck.class,
       AssertionInThreadRunCheck.class,
+      AssertionInTryCatchCheck.class,
       AssertionsCompletenessCheck.class,
       AssertionsInTestsCheck.class,
       AssertionsWithoutMessageCheck.class,
