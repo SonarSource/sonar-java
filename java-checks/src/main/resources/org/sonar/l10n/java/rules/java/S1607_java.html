@@ -1,7 +1,12 @@
 <p>When a test fails due, for example, to infrastructure issues, you might want to ignore it temporarily. But without some kind of notation about why
 the test is being ignored, it may never be reactivated. Such tests are difficult to address without comprehensive knowledge of the project, and end up
 polluting their projects.</p>
-<p>This rule raises an issue for each ignored test that does not have a notation about why it is being skipped.</p>
+<p>This rule raises an issue for each ignored test that does not have any comment about why it is being skipped.</p>
+<ul>
+  <li> For Junit4, this rule targets the @Ignore annotation. </li>
+  <li> For Junit5, this rule targets the @Disabled annotation. </li>
+  <li> Cases where assumeTrue(false) or assumeFalse(true) are used to skip tests are targeted as well. </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 @Ignore  // Noncompliant
@@ -9,12 +14,20 @@ polluting their projects.</p>
 public void testDoTheThing() {
   // ...
 </pre>
+<p>or</p>
+<pre>
+@Test
+public void testDoTheThing() {
+  Assume.assumeFalse(true); // Noncompliant
+  // ...
+</pre>
 <h2>Compliant Solution</h2>
 <pre>
 @Test
+@Ignore("See Ticket #1234")
 public void testDoTheThing() {
   // ...
 </pre>
 <h2>Exceptions</h2>
-<p>The rule doesn't raise an issue if there is a comment in the @Ignore annotation</p>
+<p>None</p>
 

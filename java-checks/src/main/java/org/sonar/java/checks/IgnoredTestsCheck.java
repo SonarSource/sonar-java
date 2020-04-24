@@ -20,10 +20,13 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -53,11 +56,18 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
     }
     MethodTree methodTree = (MethodTree) tree;
     SymbolMetadata symbolMetadata = methodTree.symbol().metadata();
-    if (isSilentlyIgnored(symbolMetadata, "org.junit.Ignore") || isSilentlyIgnored(symbolMetadata, "org.junit.jupiter.api.Disabled")) {
-      reportIssue(methodTree.simpleName(), "Fix or remove this skipped unit test");
+
+    // check for @Ignore or @Disabled annotations
+    boolean hasIgnoreAnnotation = isSilentlyIgnored(symbolMetadata, "org.junit.Ignore");
+    boolean hasDisabledAnnotation = isSilentlyIgnored(symbolMetadata, "org.junit.jupiter.api.Disabled");
+    if (hasIgnoreAnnotation || hasDisabledAnnotation) {
+      reportIssue(methodTree.simpleName(), String.format("Either add an explanation about why this test is skipped or remove the " +
+        "\"@%s\" annotation.", hasIgnoreAnnotation ? "Ignore" : "Disabled"));
     }
+
+    // check for "assumeFalse(true)" and "assumeTrue(false)"-calls, which may also result in permanent skipping of the given test
     BlockTree block = methodTree.block();
-    if(block != null) {
+    if (block != null) {
       block.body().stream()
         .filter(s -> s.is(Tree.Kind.EXPRESSION_STATEMENT))
         .map(s -> ((ExpressionStatementTree) s).expression())
@@ -65,7 +75,14 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
         .map(MethodInvocationTree.class::cast)
         .filter(ASSUME_METHODS::matches)
         .filter(IgnoredTestsCheck::hasConstantOppositeArg)
-        .forEach(mit -> reportIssue(mit.methodSelect(), "Fix or remove this skipped unit test"));
+        .forEach(mit -> {
+          List<JavaFileScannerContext.Location> secondaryLocation = Collections.singletonList(new JavaFileScannerContext.Location(
+            "A constant boolean value is passed as argument, causing this test to always be skipped.", mit.arguments()));
+
+          reportIssue(ExpressionUtils.methodName(mit), "This assumption is called with a constant boolean. Either remove it or, to skip " +
+            "this test, use an @Ignore or @Disabled annotation in combination with an explanation about why this test is skipped.",
+            secondaryLocation, null);
+        });
     }
   }
 
