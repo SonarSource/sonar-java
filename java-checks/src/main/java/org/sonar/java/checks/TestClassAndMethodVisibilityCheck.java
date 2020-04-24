@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -44,28 +44,25 @@ public class TestClassAndMethodVisibilityCheck extends IssuableSubscriptionVisit
       return;
     }
 
-    boolean isPackageVisible;
     ModifiersTree modifiers;
-    SymbolMetadata metadata;
+    Symbol symbol;
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
-      metadata = methodTree.symbol().metadata();
-      isPackageVisible = methodTree.symbol().isPackageVisibility();
+      symbol = methodTree.symbol();
       modifiers = methodTree.modifiers();
     } else {
       ClassTree classTree = (ClassTree) tree;
-      metadata = classTree.symbol().metadata();
-      isPackageVisible = classTree.symbol().isPackageVisibility();
+      symbol = classTree.symbol();
       modifiers = classTree.modifiers();
     }
 
-    if (metadata.isAnnotatedWith("org.junit.jupiter.api.Test") && !isPackageVisible) {
+    if (symbol.metadata().isAnnotatedWith("org.junit.jupiter.api.Test") && !symbol.isPackageVisibility()) {
       Tree questionableNode = modifiers.modifiers().parallelStream()
         .filter(keywordTree -> {
           Modifier modifier = keywordTree.modifier();
           return modifier.equals(Modifier.PUBLIC) || modifier.equals(Modifier.PRIVATE) || modifier.equals(Modifier.PROTECTED);
         })
-        .map(uncastTree -> (Tree) uncastTree)
+        .map(modifierKeywordTree -> (Tree) modifierKeywordTree)
         .findFirst()
         .orElse(tree);
 

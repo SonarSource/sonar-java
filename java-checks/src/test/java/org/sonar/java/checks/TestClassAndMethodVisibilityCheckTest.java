@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class TestClassAndMethodVisibilityCheckTest {
+class TestClassAndMethodVisibilityCheckTest {
   private static final String testSourcePath = testSourcesPath("checks/TestClassAndMethodVisibilityCheckTest.java");
 
   @Test
