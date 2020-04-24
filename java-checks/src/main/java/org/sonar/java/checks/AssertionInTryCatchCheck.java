@@ -30,7 +30,9 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -75,7 +77,7 @@ public class AssertionInTryCatchCheck extends IssuableSubscriptionVisitor {
 
     public TryBodyVisitor(VariableTree catchTree) {
       this.secondaryLocation = Collections.singletonList(new JavaFileScannerContext.Location(
-        "This parameter will catch the AssertionError thrown by fail()",
+        "This parameter will catch the AssertionError",
         catchTree.type()));
     }
 
@@ -88,6 +90,16 @@ public class AssertionInTryCatchCheck extends IssuableSubscriptionVisitor {
           secondaryLocation,
           null);
       }
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // Skip class
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // Skip lambdas
     }
 
   }

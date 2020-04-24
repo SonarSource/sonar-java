@@ -150,6 +150,18 @@ public class AssertionInTryCatchCheck {
     } catch (AssertionError e) {
       System.out.println(e.getMessage());
     }
+
+    try {
+      Runnable r = () -> fail(); // Compliant, nested assertions are not reported
+      class Nested {
+        Void f = fail(); // Compliant
+        void f() {
+          fail(); // Compliant
+        }
+      }
+    } catch (AssertionError e) {
+    }
+
   }
 
   private boolean something() {
