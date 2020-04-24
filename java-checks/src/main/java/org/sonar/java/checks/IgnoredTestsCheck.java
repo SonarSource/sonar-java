@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -72,16 +73,13 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
         .map(MethodInvocationTree.class::cast)
         .filter(ASSUME_METHODS::matches)
         .filter(IgnoredTestsCheck::hasConstantOppositeArg)
-        .forEach(mit -> reportIssue(mit, "Either remove this assumption or use an @Ignore or @Disabled annotation in combination with " +
-          "an explanation about why this test is skipped."));
+        .forEach(mit -> reportIssue(ExpressionUtils.methodName(mit), "Either remove this assumption or use an @Ignore or @Disabled " +
+          "annotation in combination with an explanation about why this test is skipped."));
     }
   }
 
   private static boolean isSilentlyIgnored(SymbolMetadata symbolMetadata, String annotation) {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbolMetadata.valuesForAnnotation(annotation);
-
-    // check that an annotation of the given type is present and whether that annotation has any values that are passed to it (i.e. an
-    // explanation for why the test is ignored)
     return annotationValues != null && annotationValues.isEmpty();
   }
 
