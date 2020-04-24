@@ -20,15 +20,16 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.CheckTestUtils;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class BooleanLiteralInAssertionsCheckTest {
+public class BooleanOrNullLiteralInAssertionsCheckTest {
 
   @Test
   public void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/BooleanLiteralInAssertionsCheck.java")
-      .withCheck(new BooleanLiteralInAssertionsCheck())
+      .onFile(CheckTestUtils.testSourcesPath("checks/BooleanOrNullLiteralInAssertionsCheck.java"))
+      .withCheck(new BooleanOrNullLiteralInAssertionsCheck())
       .verifyIssues();
   }
 }
