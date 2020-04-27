@@ -38,7 +38,12 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
   private static final String MESSAGE_WITH_ALTERNATIVE = "Use %s instead.";
   private static final String ASSERT = "assert";
   private static final String IS = "is";
-  private static final String ASSERT_THAT = "assertThat";
+
+  private static final MethodMatchers FEST_ASSERT_THAT = MethodMatchers.create()
+    .ofTypes("org.fest.assertions.Assertions")
+    .names("assertThat")
+    .addParametersMatcher(MethodMatchers.ANY)
+    .build();
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -50,11 +55,6 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
           "junit.framework.Assert",
           "junit.framework.TestCase")
         .name(name -> name.startsWith(ASSERT))
-        .withAnyParameters()
-        .build(),
-      MethodMatchers.create()
-        .ofTypes("org.fest.assertions.Assertions")
-        .names(ASSERT_THAT)
         .withAnyParameters()
         .build(),
       MethodMatchers.create()
@@ -86,14 +86,6 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
       case "isNotEqualTo":
       case "isNotSameAs":
         checkFestEqualityAsserts(mit, true);
-        break;
-
-      case ASSERT_THAT:
-        // We ignore single-argument calls to assertThat because they will be handled when we get to the
-        // corresponding is* call
-        if (mit.arguments().size() > 1) {
-          checkOtherAsserts(mit);
-        }
         break;
 
       default:
@@ -130,7 +122,7 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
   }
 
   private static ExpressionTree findActualValueForFest(MethodInvocationTree mit) {
-    if (mit.symbol().name().equals(ASSERT_THAT) && !mit.arguments().isEmpty()) {
+    if (FEST_ASSERT_THAT.matches(mit)) {
       return mit.arguments().get(0);
     }
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
