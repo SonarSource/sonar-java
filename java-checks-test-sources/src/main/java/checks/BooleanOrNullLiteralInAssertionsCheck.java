@@ -4,17 +4,17 @@ import static org.hamcrest.core.IsNot.not;
 
 class BooleanOrNullLiteralInAssertionsCheck {
   void booleans() {
-    org.junit.Assert.assertTrue(true); // Noncompliant [[sc=5;ec=38]] {{Remove or correct this assertion.}}
+    org.junit.Assert.assertTrue(true); // Noncompliant [[sc=22;ec=32]] {{Remove or correct this assertion.}}
     org.junit.Assert.assertTrue("message", true); // Noncompliant {{Remove or correct this assertion.}}
     org.junit.Assert.assertTrue(1 > 2);
     org.junit.Assert.assertFalse(false); // Noncompliant
     org.junit.Assert.assertFalse("message", false); // Noncompliant
-    org.junit.jupiter.api.Assertions.assertTrue(true); // Noncompliant [[sc=5;ec=54]] {{Remove or correct this assertion.}}
+    org.junit.jupiter.api.Assertions.assertTrue(true); // Noncompliant [[sc=38;ec=48]] {{Remove or correct this assertion.}}
     org.junit.jupiter.api.Assertions.assertFalse(true); // Noncompliant
     org.junit.jupiter.api.Assertions.assertTrue(getBool());
     org.junit.jupiter.api.Assertions.assertFalse(getBool());
-    org.junit.jupiter.api.Assertions.assertEquals(true, getBool()); // Noncompliant [[sc=5;ec=67]] {{Use assertTrue instead.}}
-    org.junit.jupiter.api.Assertions.assertSame(getBool(), false); // Noncompliant [[sc=5;ec=66]] {{Use assertFalse instead.}}
+    org.junit.jupiter.api.Assertions.assertEquals(true, getBool()); // Noncompliant [[sc=38;ec=50]] {{Use assertTrue instead.}}
+    org.junit.jupiter.api.Assertions.assertSame(getBool(), false); // Noncompliant [[sc=38;ec=48]] {{Use assertFalse instead.}}
     org.junit.jupiter.api.Assertions.assertNotEquals(true, getBool()); // Noncompliant {{Use assertFalse instead.}}
     org.junit.jupiter.api.Assertions.assertNotEquals(false, getBool()); // Noncompliant {{Use assertTrue instead.}}
 

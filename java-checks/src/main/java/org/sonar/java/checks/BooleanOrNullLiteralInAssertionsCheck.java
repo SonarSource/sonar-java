@@ -19,10 +19,16 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -94,14 +100,26 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
     }
   }
 
-  private void checkEqualityAsserts(MethodInvocationTree mit, boolean flipped) {
-    List<ExpressionTree> literals = mit.arguments().stream()
+  private static List<ExpressionTree> findLiterals(List<ExpressionTree> expressions) {
+    return expressions.stream()
       .filter(BooleanOrNullLiteralInAssertionsCheck::isBoolOrNullLiteral)
+      .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  private void reportDefaultMessage(IdentifierTree methodName, List<ExpressionTree> literals) {
+    List<JavaFileScannerContext.Location> literalLocations = literals.stream()
+      .map(literal -> new JavaFileScannerContext.Location("There's no reason to compare literals with each other", literal))
       .collect(Collectors.toList());
+    reportIssue(methodName, DEFAULT_MESSAGE, literalLocations, null);
+  }
+
+  private void checkEqualityAsserts(MethodInvocationTree mit, boolean flipped) {
+    List<ExpressionTree> literals = findLiterals(mit.arguments());
+    IdentifierTree methodName = ExpressionUtils.methodName(mit);
     if (literals.size() > 1) {
-      reportIssue(mit, DEFAULT_MESSAGE);
+      reportDefaultMessage(methodName, literals);
     } else if (literals.size() == 1) {
-      checkEqualityAssertWithOneLiteral(mit, literals.get(0), flipped, ASSERT);
+      checkEqualityAssertWithOneLiteral(methodName, literals.get(0), flipped, ASSERT);
     }
   }
 
@@ -112,12 +130,13 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
     ExpressionTree expected = mit.arguments().get(0);
     ExpressionTree actual = findActualValueForFest(mit);
     boolean actualIsLiteral = actual != null && isBoolOrNullLiteral(actual);
+    IdentifierTree methodName = ExpressionUtils.methodName(mit);
     if (isBoolOrNullLiteral(expected) && actualIsLiteral) {
-      reportIssue(mit, DEFAULT_MESSAGE);
+      reportDefaultMessage(methodName, Arrays.asList(expected, actual));
     } else if (isBoolOrNullLiteral(expected)) {
-      checkEqualityAssertWithOneLiteral(mit, expected, flipped, IS);
+      checkEqualityAssertWithOneLiteral(methodName, expected, flipped, IS);
     } else if (actualIsLiteral) {
-      checkEqualityAssertWithOneLiteral(mit, actual, flipped, IS);
+      checkEqualityAssertWithOneLiteral(methodName, actual, flipped, IS);
     }
   }
 
@@ -134,12 +153,12 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
     return null;
   }
 
-  private void checkEqualityAssertWithOneLiteral(MethodInvocationTree mit, ExpressionTree expr, boolean flipped, String assertOrIs) {
+  private void checkEqualityAssertWithOneLiteral(IdentifierTree methodName, ExpressionTree literal, boolean flipped, String assertOrIs) {
     String predicate;
-    if (isNullLiteral(expr)) {
+    if (isNullLiteral(literal)) {
       predicate = flipped ? "NotNull" : "Null";
     } else {
-      Optional<Boolean> value = expr.asConstant(Boolean.class);
+      Optional<Boolean> value = literal.asConstant(Boolean.class);
       if (!value.isPresent()) {
         return;
       }
@@ -150,7 +169,11 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
       }
     }
     String recommendedAssertMethod = assertOrIs + predicate;
-    reportIssue(mit, String.format(MESSAGE_WITH_ALTERNATIVE, recommendedAssertMethod));
+    String message = String.format(MESSAGE_WITH_ALTERNATIVE, recommendedAssertMethod);
+    List<JavaFileScannerContext.Location> secondaryLocation = Collections.singletonList(
+      new JavaFileScannerContext.Location(message, literal)
+    );
+    reportIssue(methodName, message, secondaryLocation, null);
   }
 
   private static boolean isNullLiteral(ExpressionTree expr) {
@@ -168,15 +191,13 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
   }
 
   private void checkOtherAsserts(MethodInvocationTree mit) {
-    for (ExpressionTree arg : mit.arguments()) {
-      if (isBoolOrNullLiteral(arg)) {
-        reportIssue(mit, DEFAULT_MESSAGE);
-        return;
-      }
-    }
+    List<ExpressionTree> literals = findLiterals(mit.arguments());
     ExpressionTree festActual = findActualValueForFest(mit);
     if (festActual != null && isBoolOrNullLiteral(festActual)) {
-      reportIssue(mit, DEFAULT_MESSAGE);
+      literals.add(festActual);
+    }
+    if (!literals.isEmpty()) {
+      reportDefaultMessage(ExpressionUtils.methodName(mit), literals);
     }
   }
 }
