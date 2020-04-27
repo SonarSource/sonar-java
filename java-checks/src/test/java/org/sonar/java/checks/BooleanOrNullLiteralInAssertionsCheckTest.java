@@ -23,10 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.CheckTestUtils;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class BooleanOrNullLiteralInAssertionsCheckTest {
-
+class BooleanOrNullLiteralInAssertionsCheckTest {
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(CheckTestUtils.testSourcesPath("checks/BooleanOrNullLiteralInAssertionsCheck.java"))
       .withCheck(new BooleanOrNullLiteralInAssertionsCheck())
