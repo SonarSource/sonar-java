@@ -717,6 +717,7 @@ public final class CheckList {
       AssertionsCompletenessCheck.class,
       AssertionsInTestsCheck.class,
       AssertionsWithoutMessageCheck.class,
+      AssertTrueInsteadOfDedicatedAssertCheck.class,
       BadTestClassNameCheck.class,
       BadTestMethodNameCheck.class,
       BooleanLiteralInAssertionsCheck.class,
