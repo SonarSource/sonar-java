@@ -28,9 +28,11 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
@@ -38,6 +40,17 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
 
 @Rule(key = "S5785")
 public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetection {
+
+  private static final String[] assertMethodNames = {"assertTrue", "assertFalse"};
+  private static final String[] assertionClasses = {
+    // JUnit4
+    "org.junit.Assert",
+    "junit.framework.TestCase",
+    // JUnit4 (deprecated)
+    "junit.framework.Assert",
+    // JUnit5
+    "org.junit.jupiter.api.Assertions"
+  };
 
   private enum Assertions {
     NULL("Null", "A null-check"),
@@ -58,26 +71,47 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.create().ofTypes("org.junit.Assert").names("assertTrue").withAnyParameters().build();
+    return MethodMatchers.create().ofTypes(assertionClasses).names(assertMethodNames).withAnyParameters().build();
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     Arguments arguments = mit.arguments();
 
-    // There is assertTrue(boolean) and assertTrue(String, boolean), in both cases the relevant argument is at the last position.
-    ExpressionTree argumentExpression = arguments.get(arguments.size() - 1);
+    ExpressionTree argumentExpression;
+    if (hasBooleanArgumentAtPosition(arguments, 0)) {
+      argumentExpression = arguments.get(0);
+    } else if (hasBooleanArgumentAtPosition(arguments, arguments.size() - 1)) {
+      argumentExpression = arguments.get(arguments.size() - 1);
+    } else {
+      // We encountered a JUnit5 assert[True|False] method that accepts a BooleanSupplier - not supported.
+      return;
+    }
+
     Assertions replacementAssertion = getReplacementAssertion(argumentExpression);
 
     if (replacementAssertion != null) {
+      IdentifierTree problematicAssertionCallIdentifier = ExpressionUtils.methodName(mit);
+      if (problematicAssertionCallIdentifier.name().equals("assertFalse")) {
+        replacementAssertion = complement(replacementAssertion);
+
+        if (replacementAssertion == null) {
+          return;
+        }
+      }
+
       List<JavaFileScannerContext.Location> secondaryLocation = Collections.singletonList(new JavaFileScannerContext.Location(
         String.format("%s is performed here, which is better expressed with %s.",
           replacementAssertion.actionDescription, replacementAssertion.methodName),
         argumentExpression));
       String message = String.format("Use %s instead.", replacementAssertion.methodName);
 
-      reportIssue(ExpressionUtils.methodName(mit), message, secondaryLocation, null);
+      reportIssue(problematicAssertionCallIdentifier, message, secondaryLocation, null);
     }
+  }
+
+  private static boolean hasBooleanArgumentAtPosition(Arguments arguments, int index) {
+    return arguments.size() > index && arguments.get(index).symbolType().isPrimitive(Type.Primitives.BOOLEAN);
   }
 
   /**
