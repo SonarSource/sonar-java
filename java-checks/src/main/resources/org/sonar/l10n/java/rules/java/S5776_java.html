@@ -1,0 +1,46 @@
+<p>When testing exception via <code>org.junit.rules.ExpectedException</code> any code after the raised exception will not be executed, resulting in
+unclear behavior of the test.</p>
+<p> It has been deprecated in JUnit 4.13, and you should avoid it in any version.</p>
+<p>You should consider using <a
+href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a> instead.</p>
+<p> Alternatively, you could use <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a> for JUnit
+version &lt; 4.13 or if your project does not support lambdas.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Rule
+public ExpectedException thrown = ExpectedException.none();
+
+@Test
+public void test() throws IndexOutOfBoundsException {
+  thrown.expect(IndexOutOfBoundsException.class); // Noncompliant
+  Object o = get();
+  // This test pass since execution will never get past this line.
+  Assert.assertEquals(0, 1);
+}
+
+private Object get() {
+  throw new IndexOutOfBoundsException();
+}
+</pre>
+<h2>Compliant Solution</h2>
+<p> * For JUnit &gt;= 4.13, use <a
+href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a>:</p>
+<pre>
+Assert.assertThrows(IndexOutOfBoundsException.class, () -&gt; get());
+// This test correctly fails.
+Assert.assertEquals(0, 1);
+</pre>
+<p> * For JUnit &lt; 4.13, use the <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a>:</p>
+<pre>
+try {
+  get();
+  Assert.fail("Expected an IndexOutOfBoundsException to be thrown");
+} catch (IndexOutOfBoundsException e) {}
+Assert.assertEquals(0, 1); // Correctly fails.
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a> </li>
+</ul>
+<p>&nbsp;</p>
+
