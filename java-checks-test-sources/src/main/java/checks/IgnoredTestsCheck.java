@@ -23,7 +23,7 @@ abstract class IgnoredTestsCheck {
   void disabledJunit5WithComment() {}
 
   void assume1() {
-    Assume.assumeTrue(false); // Noncompliant [[sc=12;ec=22;secondary=26]] {{This assumption is called with a constant boolean. Either remove it or, to skip this test, use an @Ignore or @Disabled annotation in combination with an explanation about why this test is skipped.}}
+    Assume.assumeTrue(false); // Noncompliant [[sc=12;ec=22;secondary=26]] {{This assumption is called with a boolean constant; remove it or, to skip this test use an @Ignore/@Disabled annotation in combination with an explanation about why it is skipped.}}
     Assume.assumeTrue(true);
   }
   void assume2() {
