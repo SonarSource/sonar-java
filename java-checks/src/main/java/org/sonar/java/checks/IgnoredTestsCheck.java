@@ -79,8 +79,8 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
           List<JavaFileScannerContext.Location> secondaryLocation = Collections.singletonList(new JavaFileScannerContext.Location(
             "A constant boolean value is passed as argument, causing this test to always be skipped.", mit.arguments()));
 
-          reportIssue(ExpressionUtils.methodName(mit), "This assumption is called with a constant boolean. Either remove it or, to skip " +
-            "this test, use an @Ignore or @Disabled annotation in combination with an explanation about why this test is skipped.",
+          reportIssue(ExpressionUtils.methodName(mit), "This assumption is called with a boolean constant; remove it or, to skip this " +
+            "test use an @Ignore/@Disabled annotation in combination with an explanation about why it is skipped.",
             secondaryLocation, null);
         });
     }
