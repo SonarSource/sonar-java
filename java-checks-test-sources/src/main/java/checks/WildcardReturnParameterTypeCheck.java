@@ -3,6 +3,7 @@ package checks;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collector;
 
 class WildcardReturnParameterTypeCheck {
 
@@ -28,7 +29,11 @@ class WildcardReturnParameterTypeCheck {
       return super.getAnimals();
     }
 
-    public List<Class<?>> foo() { // Compliant Class is ignored
+    public List<Class<?>> getListOfClass() { // Compliant Class is ignored
+      return null;
+    }
+
+    public Class<List<?>> getClassofList() { // Noncompliant
       return null;
     }
 
@@ -36,8 +41,31 @@ class WildcardReturnParameterTypeCheck {
       return null;
     }
 
+    public List<? // Noncompliant
+      extends List<?>> getSomething() { // Noncompliant
+      return null;
+    }
+
     private List<? extends Cat> getCats() { //Compliant private method are ignored
       return null;
     }
+  }
+
+  public Collector<Integer, ?, Integer> getCollector() { // Compliant Collector second argument is ignored, second parameter is an implementation detail
+    return null;
+  }
+
+  public Collector<?, // Noncompliant
+    Integer,
+    ?> getCollector2() {  // Noncompliant
+    return null;
+  }
+
+  public MyCollector<Integer, ?, Integer>  getMyCollector() {  // Noncompliant
+    return null;
+  }
+
+  class MyCollector<A,B,C> {
+
   }
 }
