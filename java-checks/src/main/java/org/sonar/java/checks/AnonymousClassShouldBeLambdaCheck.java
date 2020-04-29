@@ -128,8 +128,16 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
 
       }
     }
+
+    return methodTree != null && canRefactorMethod(methodTree);
+  }
+
+  private static boolean canRefactorMethod(MethodTree methodTree) {
     // if overriden method declares to throw an exception, refactoring to a lambda might prove tricky
-    return methodTree != null && methodTree.throwsClauses().isEmpty();
+    // if it is annotated with something else than @Override, it is not possible to refactor the code
+    return methodTree.throwsClauses().isEmpty()
+      && methodTree.symbol().metadata().annotations().stream()
+      .allMatch(annotation -> annotation.symbol().type().is("java.lang.Override"));
   }
 
   private static boolean useThisInstance(ClassTree body) {

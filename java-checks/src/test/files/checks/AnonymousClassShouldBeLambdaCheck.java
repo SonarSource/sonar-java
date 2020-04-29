@@ -100,6 +100,21 @@ class A {
         return A.this.toStr();
       }
     };
+
+    new Handler(){ // Compliant, annotation prevent to transform to a lambda
+      @SuppressWarnings("something")
+      public String handle() {
+        return "handled";
+      }
+    }.handle();
+
+    new Handler(){ // Compliant, annotation prevent to transform to a lambda
+      @SuppressWarnings("something")
+      @Override
+      public String handle() {
+        return "handled";
+      }
+    }.handle();
   }
 
   String toStr(){
