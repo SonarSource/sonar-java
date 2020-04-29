@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -100,13 +101,15 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
     }
   }
 
-  private static List<ExpressionTree> findLiterals(List<ExpressionTree> expressions) {
-    return expressions.stream()
-      .filter(BooleanOrNullLiteralInAssertionsCheck::isBoolOrNullLiteral)
-      .collect(Collectors.toCollection(ArrayList::new));
+  private static List<LiteralTree> findLiterals(List<ExpressionTree> expressions) {
+    List<LiteralTree> result = new ArrayList<>();
+    for (ExpressionTree expression : expressions) {
+      getBoolOrNullLiteral(expression).ifPresent(result::add);
+    }
+    return result;
   }
 
-  private void reportDefaultMessage(IdentifierTree methodName, List<ExpressionTree> literals) {
+  private void reportDefaultMessage(IdentifierTree methodName, List<LiteralTree> literals) {
     List<JavaFileScannerContext.Location> literalLocations = literals.stream()
       .map(literal -> new JavaFileScannerContext.Location("There's no reason to compare literals with each other", literal))
       .collect(Collectors.toList());
@@ -114,7 +117,7 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
   }
 
   private void checkEqualityAsserts(MethodInvocationTree mit, boolean flipped) {
-    List<ExpressionTree> literals = findLiterals(mit.arguments());
+    List<LiteralTree> literals = findLiterals(mit.arguments());
     IdentifierTree methodName = ExpressionUtils.methodName(mit);
     if (literals.size() > 1) {
       reportDefaultMessage(methodName, literals);
@@ -127,35 +130,33 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
     if (mit.arguments().isEmpty()) {
       return;
     }
-    ExpressionTree expected = mit.arguments().get(0);
-    ExpressionTree actual = findActualValueForFest(mit);
-    boolean actualIsLiteral = actual != null && isBoolOrNullLiteral(actual);
+    Optional<LiteralTree> expectedLiteral = getBoolOrNullLiteral(mit.arguments().get(0));
+    Optional<LiteralTree> actualLiteral = findActualLiteralForFest(mit);
     IdentifierTree methodName = ExpressionUtils.methodName(mit);
-    if (isBoolOrNullLiteral(expected) && actualIsLiteral) {
-      reportDefaultMessage(methodName, Arrays.asList(expected, actual));
-    } else if (isBoolOrNullLiteral(expected)) {
-      checkEqualityAssertWithOneLiteral(methodName, expected, flipped, IS);
-    } else if (actualIsLiteral) {
-      checkEqualityAssertWithOneLiteral(methodName, actual, flipped, IS);
+    if (expectedLiteral.isPresent() && actualLiteral.isPresent()) {
+      reportDefaultMessage(methodName, Arrays.asList(expectedLiteral.get(), actualLiteral.get()));
+    } else {
+      expectedLiteral.ifPresent(literal -> checkEqualityAssertWithOneLiteral(methodName, literal, flipped, IS));
+      actualLiteral.ifPresent(literal -> checkEqualityAssertWithOneLiteral(methodName, literal, flipped, IS));
     }
   }
 
-  private static ExpressionTree findActualValueForFest(MethodInvocationTree mit) {
+  private static Optional<LiteralTree> findActualLiteralForFest(MethodInvocationTree mit) {
     if (FEST_ASSERT_THAT.matches(mit)) {
-      return mit.arguments().get(0);
+      return getBoolOrNullLiteral(mit.arguments().get(0));
     }
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree member = (MemberSelectExpressionTree) mit.methodSelect();
       if (member.expression().is(Tree.Kind.METHOD_INVOCATION)) {
-        return findActualValueForFest((MethodInvocationTree) member.expression());
+        return findActualLiteralForFest((MethodInvocationTree) member.expression());
       }
     }
-    return null;
+    return Optional.empty();
   }
 
-  private void checkEqualityAssertWithOneLiteral(IdentifierTree methodName, ExpressionTree literal, boolean flipped, String assertOrIs) {
+  private void checkEqualityAssertWithOneLiteral(IdentifierTree methodName, LiteralTree literal, boolean flipped, String assertOrIs) {
     String predicate;
-    if (isNullLiteral(literal)) {
+    if (literal.is(Tree.Kind.NULL_LITERAL)) {
       predicate = flipped ? "NotNull" : "Null";
     } else {
       Optional<Boolean> value = literal.asConstant(Boolean.class);
@@ -176,26 +177,24 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
     reportIssue(methodName, message, secondaryLocation, null);
   }
 
-  private static boolean isNullLiteral(ExpressionTree expr) {
-    // Also recognize null literals inside a cast because null literals often need to be cast to avoid
-    // overloading ambiguities.
+  /**
+   * Tests whether an expression is a boolean or null literal, possibly embedded in a sequence of casts (because null
+   * literals often need to be cast to avoid overloading ambiguities), and return the null literal if so.
+   */
+  private static Optional<LiteralTree> getBoolOrNullLiteral(ExpressionTree expr) {
     if (expr.is(Tree.Kind.TYPE_CAST)) {
-      return isNullLiteral(((TypeCastTree) expr).expression());
+      return getBoolOrNullLiteral(((TypeCastTree) expr).expression());
+    } else if (expr.is(Tree.Kind.NULL_LITERAL) || expr.is(Tree.Kind.BOOLEAN_LITERAL)) {
+      return Optional.of((LiteralTree) expr);
     } else {
-      return expr.is(Tree.Kind.NULL_LITERAL);
+      return Optional.empty();
     }
-  }
-
-  private static boolean isBoolOrNullLiteral(ExpressionTree expr) {
-    return expr.is(Tree.Kind.BOOLEAN_LITERAL) || isNullLiteral(expr);
   }
 
   private void checkOtherAsserts(MethodInvocationTree mit) {
-    List<ExpressionTree> literals = findLiterals(mit.arguments());
-    ExpressionTree festActual = findActualValueForFest(mit);
-    if (festActual != null && isBoolOrNullLiteral(festActual)) {
-      literals.add(festActual);
-    }
+    List<LiteralTree> literals = findLiterals(mit.arguments());
+    Optional<LiteralTree> festActualLiteral = findActualLiteralForFest(mit);
+    festActualLiteral.ifPresent(literals::add);
     if (!literals.isEmpty()) {
       reportDefaultMessage(ExpressionUtils.methodName(mit), literals);
     }
