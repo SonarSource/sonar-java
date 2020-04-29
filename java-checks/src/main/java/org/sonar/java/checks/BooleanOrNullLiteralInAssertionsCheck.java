@@ -111,7 +111,7 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
 
   private void reportDefaultMessage(IdentifierTree methodName, List<LiteralTree> literals) {
     List<JavaFileScannerContext.Location> literalLocations = literals.stream()
-      .map(literal -> new JavaFileScannerContext.Location("There's no reason to compare literals with each other", literal))
+      .map(literal -> new JavaFileScannerContext.Location("There does not seem to be a reason to use a literal here.", literal))
       .collect(Collectors.toList());
     reportIssue(methodName, DEFAULT_MESSAGE, literalLocations, null);
   }
@@ -170,11 +170,11 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
       }
     }
     String recommendedAssertMethod = assertOrIs + predicate;
-    String message = String.format(MESSAGE_WITH_ALTERNATIVE, recommendedAssertMethod);
     List<JavaFileScannerContext.Location> secondaryLocation = Collections.singletonList(
-      new JavaFileScannerContext.Location(message, literal)
+      new JavaFileScannerContext.Location("This literal can be avoided by using a different assertion method.", literal)
     );
-    reportIssue(methodName, message, secondaryLocation, null);
+    String mainMessage = String.format(MESSAGE_WITH_ALTERNATIVE, recommendedAssertMethod);
+    reportIssue(methodName, mainMessage, secondaryLocation, null);
   }
 
   /**
