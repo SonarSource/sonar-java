@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -52,7 +52,7 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
     "org.junit.jupiter.api.Assertions"
   };
 
-  private enum Assertions {
+  private enum Assertion {
     NULL("Null", "A null-check"),
     NOT_NULL("NotNull", "A null-check"),
     SAME("Same", "An object reference comparison"),
@@ -63,7 +63,7 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
     public final String methodName;
     public final String actionDescription;
 
-    Assertions(String namePostfix, String actionDescription) {
+    Assertion(String namePostfix, String actionDescription) {
       methodName = "assert" + namePostfix;
       this.actionDescription = actionDescription;
     }
@@ -92,17 +92,19 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
       return;
     }
 
-    Assertions replacementAssertion = getReplacementAssertion(argumentExpression);
+    Optional<Assertion> replacementAssertionOpt = getReplacementAssertion(argumentExpression);
 
-    if (replacementAssertion != null) {
+    if (replacementAssertionOpt.isPresent()) {
       IdentifierTree problematicAssertionCallIdentifier = ExpressionUtils.methodName(mit);
       if (problematicAssertionCallIdentifier.name().equals("assertFalse")) {
-        replacementAssertion = complement(replacementAssertion);
+        replacementAssertionOpt = complement(replacementAssertionOpt.get());
 
-        if (replacementAssertion == null) {
+        if (!replacementAssertionOpt.isPresent()) {
           return;
         }
       }
+
+      Assertion replacementAssertion = replacementAssertionOpt.get();
 
       List<JavaFileScannerContext.Location> secondaryLocation = Collections.singletonList(new JavaFileScannerContext.Location(
         String.format("%s is performed here, which is better expressed with %s.",
@@ -124,70 +126,80 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
    * @param argumentExpression the boolean expression passed to assertTrue
    * @return the assertion method to be used instead of assertTrue, or {@code null} if no better assertion method was determined
    */
-  @Nullable
-  private static Assertions getReplacementAssertion(@Nullable ExpressionTree argumentExpression) {
+  private static Optional<Assertion> getReplacementAssertion(@Nullable ExpressionTree argumentExpression) {
     if (argumentExpression == null) {
-      return null;
+      return Optional.empty();
     }
+
+    Assertion assertion = null;
 
     switch (argumentExpression.kind()) {
       case EQUAL_TO:
         if (isCheckForNull((BinaryExpressionTree) argumentExpression)) {
-          return Assertions.NULL;
+          assertion = Assertion.NULL;
         } else if (isPrimitiveComparison((BinaryExpressionTree) argumentExpression)) {
-          return Assertions.EQUALS;
+          assertion = Assertion.EQUALS;
         } else {
-          return Assertions.SAME;
+          assertion = Assertion.SAME;
         }
+        break;
       case NOT_EQUAL_TO:
         if (isCheckForNull((BinaryExpressionTree) argumentExpression)) {
-          return Assertions.NOT_NULL;
+          assertion = Assertion.NOT_NULL;
         } else if (isPrimitiveComparison((BinaryExpressionTree) argumentExpression)) {
-          return Assertions.NOT_EQUALS;
+          assertion = Assertion.NOT_EQUALS;
         } else {
-          return Assertions.NOT_SAME;
+          assertion = Assertion.NOT_SAME;
         }
+        break;
       case METHOD_INVOCATION:
         if (ExpressionUtils.methodName((MethodInvocationTree) argumentExpression).name().equals("equals")) {
-          return Assertions.EQUALS;
-        } else {
-          return null;
+          assertion = Assertion.EQUALS;
         }
+        break;
       case LOGICAL_COMPLEMENT:
-        return complement(getReplacementAssertion(((UnaryExpressionTree) argumentExpression).expression()));
+        return complement(getReplacementAssertion(((UnaryExpressionTree) argumentExpression).expression()).orElse(null));
       default:
-        return null;
     }
+
+    return Optional.ofNullable(assertion);
   }
 
-  private static boolean isCheckForNull(@Nonnull BinaryExpressionTree bet) {
+  private static boolean isCheckForNull(BinaryExpressionTree bet) {
     return bet.leftOperand().is(NULL_LITERAL) || bet.rightOperand().is(NULL_LITERAL);
   }
 
-  private static boolean isPrimitiveComparison(@Nonnull BinaryExpressionTree bet) {
+  private static boolean isPrimitiveComparison(BinaryExpressionTree bet) {
     return bet.leftOperand().symbolType().isPrimitive() || bet.rightOperand().symbolType().isPrimitive();
   }
 
-  private static Assertions complement(@Nullable Assertions assertion) {
+  private static Optional<Assertion> complement(@Nullable Assertion assertion) {
     if (assertion == null) {
-      return null;
+      return Optional.empty();
     }
 
+    Assertion complement = null;
     switch (assertion) {
       case NULL:
-        return Assertions.NOT_NULL;
+        complement = Assertion.NOT_NULL;
+        break;
       case NOT_NULL:
-        return Assertions.NULL;
+        complement = Assertion.NULL;
+        break;
       case SAME:
-        return Assertions.NOT_SAME;
+        complement = Assertion.NOT_SAME;
+        break;
       case NOT_SAME:
-        return Assertions.SAME;
+        complement = Assertion.SAME;
+        break;
       case EQUALS:
-        return Assertions.NOT_EQUALS;
+        complement = Assertion.NOT_EQUALS;
+        break;
       case NOT_EQUALS:
-        return Assertions.EQUALS;
-      default:
-        return null;
+        complement = Assertion.EQUALS;
+        break;
     }
+
+    return Optional.of(complement);
   }
 }
