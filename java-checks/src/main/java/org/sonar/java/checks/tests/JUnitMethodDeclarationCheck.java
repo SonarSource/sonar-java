@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -70,9 +71,9 @@ public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
     for (MethodTree methodTree : methods) {
       SymbolMetadata metadata = methodTree.symbol().metadata();
       containsJUnit4Tests |= metadata.isAnnotatedWith("org.junit.Test");
-      if (metadata.isAnnotatedWith("org.junit.jupiter.api.Test")) {
-        // while migrating from JUnit4 to JUnit5, classes might end up in mixed state
-        // of having tests using both versions - assuming 5
+      if (UnitTestUtils.hasJUnit5TestAnnotation(methodTree)) {
+        // While migrating from JUnit4 to JUnit5, classes might end up in mixed state of having tests using both versions.
+        // If it's the case, we consider the test classes as ultimately targeting 5
         return 5;
       }
     }
@@ -131,10 +132,22 @@ public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
       Symbol.MethodSymbol symbol = methodTree.symbol();
       expectedAnnotation(symbol, jUnitVersion)
         .filter(annotation -> !symbol.metadata().isAnnotatedWith(annotation))
-        .ifPresent(annotation -> reportIssue(
-          methodTree.simpleName(),
-          String.format("Annotate this method with JUnit%d '@%s' or remove it.", jUnitVersion, annotation)));
+        .ifPresent(annotation -> reportWrongAnnotation(methodTree, jUnitVersion, annotation));
     }
+  }
+
+  private void reportWrongAnnotation(MethodTree methodTree, int jUnitVersion, String annotation) {
+    String ending = "or remove it";
+    if (jUnitVersion == 5) {
+      SymbolMetadata metadata = methodTree.symbol().metadata();
+      if (metadata.isAnnotatedWith("org.junit.Before")) {
+        ending = "instead of JUnit4 '@Before'";
+      } else if (metadata.isAnnotatedWith("org.junit.After")) {
+        ending = "instead of JUnit4 '@After'";
+      }
+    }
+    String issueMessage = String.format("Annotate this method with JUnit%d '@%s' %s.", jUnitVersion, annotation, ending);
+    reportIssue(methodTree.simpleName(), issueMessage);
   }
 
   private static Optional<String> expectedAnnotation(Symbol.MethodSymbol symbol, int jUnitVersion) {
