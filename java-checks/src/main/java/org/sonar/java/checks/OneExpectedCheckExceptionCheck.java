@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -46,14 +47,22 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 @Rule(key = "S5783")
 public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodMatchers ASSERT_THROWS_MATCHER = MethodMatchers.create()
-    .ofTypes("org.junit.Assert", "org.junit.jupiter.api.Assertions")
+  private static final String JUNIT4_ASSERT = "org.junit.Assert";
+
+  private static final MethodMatchers JUNIT4_ASSERT_THROWS_WITH_MESSAGE = MethodMatchers.create()
+    .ofTypes(JUNIT4_ASSERT)
+    .names("assertThrows")
+    .addParametersMatcher("java.lang.String", MethodMatchers.ANY, MethodMatchers.ANY)
+    .build();
+
+  private static final MethodMatchers ALL_ASSERT_THROWS_MATCHER = MethodMatchers.create()
+    .ofTypes(JUNIT4_ASSERT, "org.junit.jupiter.api.Assertions")
     .names("assertThrows")
     .withAnyParameters()
     .build();
 
   private static final MethodMatchers JUNIT_FAIL_MATCHER = MethodMatchers.create()
-    .ofTypes("org.junit.Assert", "org.junit.jupiter.api.Assertions")
+    .ofTypes(JUNIT4_ASSERT, "org.junit.jupiter.api.Assertions")
     .names("fail")
     .withAnyParameters()
     .build();
@@ -71,14 +80,11 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
 
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
-      if (mit.arguments().size() >= 2 && ASSERT_THROWS_MATCHER.matches(mit)) {
-        Optional<IdentifierTree> expectedException = getExpectedException(mit.arguments().get(0));
-        ExpressionTree executable = mit.arguments().get(1);
-
-        if (expectedException.isPresent() && executable.is(Tree.Kind.LAMBDA_EXPRESSION)) {
-          IdentifierTree expectedIdentifier = expectedException.get();
-          reportMultipleCallThrowingExceptionInTree(expectedIdentifier.symbolType(), ((LambdaExpressionTree) executable).body(), expectedIdentifier);
-        }
+      Arguments arguments = mit.arguments();
+      if (JUNIT4_ASSERT_THROWS_WITH_MESSAGE.matches(mit)) {
+        processAssertThrowsArguments(arguments.get(1), arguments.get(2));
+      } else if (ALL_ASSERT_THROWS_MATCHER.matches(mit)) {
+        processAssertThrowsArguments(arguments.get(0), arguments.get(1));
       }
     } else {
       TryStatementTree tryStatementTree = (TryStatementTree) tree;
@@ -90,6 +96,13 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
     }
   }
 
+  private void processAssertThrowsArguments(ExpressionTree expectedType, ExpressionTree executable) {
+    Optional<IdentifierTree> expectedException = getExpectedException(expectedType);
+    if (expectedException.isPresent() && executable.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      IdentifierTree expectedIdentifier = expectedException.get();
+      reportMultipleCallThrowingExceptionInTree(expectedIdentifier.symbolType(), ((LambdaExpressionTree) executable).body(), expectedIdentifier);
+    }
+  }
 
   private static Optional<IdentifierTree> getExpectedException(ExpressionTree expectedType) {
     if (expectedType.is(Tree.Kind.MEMBER_SELECT)) {

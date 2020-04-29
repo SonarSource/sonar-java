@@ -19,10 +19,14 @@ public class OneExpectedCheckExceptionCheck {
   public void testG() {
     // Do you expect g() or f() throwing the exception?
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)) ); // Noncompliant
-    assertThrows(IOException.class, () -> { // Noncompliant [[sc=18;ec=29;secondary=23,24]] {{The tested checked exception can be raised from multiples call, it is unclear what is really tested.}}
+    assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)), "Message"); // Noncompliant
+    assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)), () -> "message"); // Noncompliant
+    assertThrows(IOException.class, () -> { // Noncompliant [[sc=18;ec=29;secondary=25,26]] {{The tested checked exception can be raised from multiples call, it is unclear what is really tested.}}
         if (throwIOException2(1) ==
           throwIOException(1)) {}
       } );
+    org.junit.Assert.assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)) ); // Noncompliant
+    org.junit.Assert.assertThrows("Message", IOException.class, () -> throwIOException2(throwIOException(1)) ); // Noncompliant
     assertThrows(Exception.class, () -> throwException(throwIOException(1)) ); // Noncompliant
     assertThrows(Exception.class, () -> throwIOAndOtherException(throwIOException(1)) ); // Noncompliant
 
@@ -53,12 +57,12 @@ public class OneExpectedCheckExceptionCheck {
       );
       Assert.fail("Expected an IOException to be thrown");
     } catch (IllegalStateException e) {  // Compliant, unchecked exception
-    } catch (IOException e) { // Noncompliant [[sc=14;ec=25;secondary=51,52]] {{The tested checked exception can be raised from multiples call, it is unclear what is really tested.}}
+    } catch (IOException e) { // Noncompliant [[sc=14;ec=25;secondary=55,56]] {{The tested checked exception can be raised from multiples call, it is unclear what is really tested.}}
     }
 
     try {
       throwIOException(throwException(1));
-      Assert.fail();
+      org.junit.jupiter.api.Assertions.fail();
     } catch (Exception e) { // Noncompliant
       // Test exception message...
     }
