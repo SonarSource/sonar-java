@@ -730,6 +730,7 @@ public final class CheckList {
       NoTestInTestClassCheck.class,
       OneExpectedCheckedExceptionCheck.class,
       OneExpectedRuntimeExceptionCheck.class,
+      TestAnnotationWithExpectedExceptionCheck.class,
       TestClassAndMethodVisibilityCheck.class,
       ThreadSleepInTestsCheck.class,
       UnusedTestRuleCheck.class);
