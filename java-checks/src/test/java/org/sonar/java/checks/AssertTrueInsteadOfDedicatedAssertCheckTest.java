@@ -31,6 +31,10 @@ class AssertTrueInsteadOfDedicatedAssertCheckTest {
       .onFile(testSourcesPath("checks/AssertTrueInsteadOfDedicatedAssertCheckTest.java"))
       .withCheck(new AssertTrueInsteadOfDedicatedAssertCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void testNoSemantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertTrueInsteadOfDedicatedAssertCheckTest.java"))
       .withCheck(new AssertTrueInsteadOfDedicatedAssertCheck())

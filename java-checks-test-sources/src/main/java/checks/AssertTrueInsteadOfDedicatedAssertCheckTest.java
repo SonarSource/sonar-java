@@ -58,6 +58,7 @@ public class AssertTrueInsteadOfDedicatedAssertCheckTest {
     Assert.assertTrue(foo == null || foo == null); // compliant - we only flag simple cases
     assertTrue(predicate()); // compliant
     assertTrue(foo.equals(bar) && bar != null); // compliant
+
   }
 
   void assertFalse_JUnit4_orgJunitAssert() {
@@ -104,5 +105,12 @@ public class AssertTrueInsteadOfDedicatedAssertCheckTest {
     Assertions.assertFalse(bar == foo); // Noncompliant
     Assertions.assertFalse(null != foo, "message"); // Noncompliant
     Assertions.assertFalse(null != foo, () -> "message"); // Noncompliant
+  }
+
+  void testPrimitiveAndBoxedTypesSpecialCases() {
+    assertFalse(2 == 3); // Noncompliant {{Use assertNotEquals instead.}}
+    assertTrue(new Integer(5) == 6); // Noncompliant {{Use assertEquals instead.}}
+    assertTrue(Boolean.valueOf(true) != false); // Noncompliant {{Use assertNotEquals instead.}}
+    assertTrue(new Integer(5) == new Integer(5)); // Noncompliant {{Use assertSame instead.}}
   }
 }

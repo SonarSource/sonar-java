@@ -41,8 +41,8 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
 @Rule(key = "S5785")
 public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetection {
 
-  private static final String[] assertMethodNames = {"assertTrue", "assertFalse"};
-  private static final String[] assertionClasses = {
+  private static final String[] ASSERT_METHOD_NAMES = {"assertTrue", "assertFalse"};
+  private static final String[] ASSERTION_CLASSES = {
     // JUnit4
     "org.junit.Assert",
     "junit.framework.TestCase",
@@ -71,11 +71,15 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.create().ofTypes(assertionClasses).names(assertMethodNames).withAnyParameters().build();
+    return MethodMatchers.create().ofTypes(ASSERTION_CLASSES).names(ASSERT_METHOD_NAMES).withAnyParameters().build();
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    if (!hasSemantic()) {
+      return;
+    }
+
     Arguments arguments = mit.arguments();
 
     ExpressionTree argumentExpression;
@@ -128,14 +132,18 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
 
     switch (argumentExpression.kind()) {
       case EQUAL_TO:
-        if (checksForNull((BinaryExpressionTree) argumentExpression)) {
+        if (isCheckForNull((BinaryExpressionTree) argumentExpression)) {
           return Assertions.NULL;
+        } else if (isPrimitiveComparison((BinaryExpressionTree) argumentExpression)) {
+          return Assertions.EQUALS;
         } else {
           return Assertions.SAME;
         }
       case NOT_EQUAL_TO:
-        if (checksForNull((BinaryExpressionTree) argumentExpression)) {
+        if (isCheckForNull((BinaryExpressionTree) argumentExpression)) {
           return Assertions.NOT_NULL;
+        } else if (isPrimitiveComparison((BinaryExpressionTree) argumentExpression)) {
+          return Assertions.NOT_EQUALS;
         } else {
           return Assertions.NOT_SAME;
         }
@@ -152,8 +160,12 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
     }
   }
 
-  private static boolean checksForNull(@Nonnull BinaryExpressionTree bet) {
+  private static boolean isCheckForNull(@Nonnull BinaryExpressionTree bet) {
     return bet.leftOperand().is(NULL_LITERAL) || bet.rightOperand().is(NULL_LITERAL);
+  }
+
+  private static boolean isPrimitiveComparison(@Nonnull BinaryExpressionTree bet) {
+    return bet.leftOperand().symbolType().isPrimitive() || bet.rightOperand().symbolType().isPrimitive();
   }
 
   private static Assertions complement(@Nullable Assertions assertion) {
