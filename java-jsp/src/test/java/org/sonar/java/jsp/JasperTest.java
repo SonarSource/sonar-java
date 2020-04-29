@@ -144,15 +144,8 @@ class JasperTest {
     SensorContextTester ctx = jspContext("<%=");
     Collection<GeneratedFile> inputFiles = new Jasper().generateFiles(ctx, emptyList());
     assertThat(inputFiles).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Error transpiling " + jspFile.toAbsolutePath());
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp");
     assertThat(logTester.logs(LoggerLevel.WARN)).contains("Some JSP pages failed to transpile. Enable debug log for details.");
-  }
-
-  @Test
-  void test_walk() {
-    assertThatThrownBy(() -> Jasper.walk(Paths.get("nonexistant")))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("Failed to walk nonexistant");
   }
 
   @Test
@@ -225,17 +218,11 @@ class JasperTest {
       "<h2>Hello World!</h2>", webInf.resolve("tags/mytag.tag"));
     Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, singletonList(springJar));
 
-    assertThat(generatedFiles).hasSize(2);
-    GeneratedFile testJspFile = generatedFiles.stream().filter(f -> f.filename().equals("test_jsp.java"))
-      .findAny().get();
+    assertThat(generatedFiles).hasSize(1);
+    GeneratedFile testJspFile = generatedFiles.iterator().next();
     List<String> testJsp = Files.readAllLines(testJspFile.path());
     assertThat(testJsp).contains(
       "    org.apache.jsp.tag.web.mytag_tag _jspx_th_t_005fmytag_005f0 = new org.apache.jsp.tag.web.mytag_tag();");
-    GeneratedFile tagFile = generatedFiles.stream().filter(f -> f.filename().equals("mytag_tag.java"))
-      .findAny().get();
-    List<String> tag = Files.readAllLines(tagFile.path());
-    assertThat(tag).contains("      out.write(\"\\n<h2>Hello World!</h2>\");");
-    assertThat(tag).contains("    org.springframework.web.servlet.tags.UrlTag _jspx_th_spring_005furl_005f0 = new org.springframework.web.servlet.tags.UrlTag();");
   }
 
   @Test
@@ -247,9 +234,8 @@ class JasperTest {
     Map<String, GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, emptyList()).
       stream().collect(Collectors.toMap(GeneratedFile::filename, f -> f));
 
-    assertThat(generatedFiles).hasSize(1);
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Error transpiling " +
-      webInf.resolve("jsp/test.jsp").toAbsolutePath());
+    assertThat(generatedFiles).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp");
   }
 
   private SensorContextTester jspContext(String jspSource) throws IOException {

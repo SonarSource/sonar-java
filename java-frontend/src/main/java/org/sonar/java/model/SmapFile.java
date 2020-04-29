@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,29 +52,18 @@ public class SmapFile {
   private static final Logger LOG = Loggers.get(SmapFile.class);
 
   private final Path generatedFile;
-  private final Path uriRoot;
   private Map<Integer, FileInfo> fileSection;
   private List<LineInfo> lineSection;
   private final Scanner sc;
 
-
-  public static SmapFile fromPath(Path sourceMapPath, Path uriRoot) {
-    try (Scanner sc = new Scanner(sourceMapPath.toFile(), StandardCharsets.UTF_8.toString())) {
-      return new SmapFile(sourceMapPath, uriRoot, sc);
-    } catch (Exception e) {
-      throw new IllegalStateException("Error reading sourcemap " + sourceMapPath, e);
-    }
-  }
-
-  SmapFile(Path sourceMapPath, Path uriRoot, Scanner scanner) {
-    this.uriRoot = uriRoot;
-    this.sc = scanner;
+  public SmapFile(Path rootDir, String smapString) {
+    this.sc = new Scanner(smapString);
     String header = sc.nextLine();
     if (!"SMAP".equals(header)) {
       throw new IllegalStateException("Not a source map");
     }
     String generatedFileName = sc.nextLine();
-    generatedFile = sourceMapPath.resolveSibling(generatedFileName);
+    generatedFile = rootDir.resolve(generatedFileName);
     String defaultStratum = sc.nextLine();
     if (!"JSP".equals(defaultStratum)) {
       throw new IllegalStateException("Not a JSP source map");
@@ -85,10 +73,6 @@ public class SmapFile {
     fileSection = readFileSection();
     findSection("*L");
     lineSection = readLineSection();
-  }
-
-  public Path getUriRoot() {
-    return uriRoot;
   }
 
   public Path getGeneratedFile() {

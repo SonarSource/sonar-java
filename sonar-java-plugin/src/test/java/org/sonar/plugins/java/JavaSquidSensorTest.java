@@ -191,7 +191,7 @@ public class JavaSquidSensorTest {
     Path base = tmp.newFolder().toPath();
     Path generatedFilePath = tmp.newFile("Generated.java").toPath();
     Files.write(generatedFilePath, "class Generated {}".getBytes());
-    GeneratedFile generatedFile = new GeneratedFile(generatedFilePath);
+    GeneratedFile generatedFile = new GeneratedFile(generatedFilePath, TestInputFileBuilder.create("", "file.jsp").build());
 
     SensorContextTester context = SensorContextTester.create(base);
     SonarComponents sonarComponents = createSonarComponentsMock(context);

@@ -73,7 +73,7 @@ public class JspCodeCheck extends IssuableSubscriptionVisitor implements JspCode
         .flatMap(sourceMap -> sourceMap.sourceMapLocationFor(tree))
         .ifPresent(location -> {
           try {
-            String data = format("%s %d:%d%n", location.inputFile().getFileName(), location.startLine(), location.endLine());
+            String data = format("%s %d:%d%n", location.inputFile().filename(), location.startLine(), location.endLine());
             Files.write(path, data.getBytes(), APPEND, CREATE);
           } catch (IOException e) {
             throw new IllegalStateException(e);
