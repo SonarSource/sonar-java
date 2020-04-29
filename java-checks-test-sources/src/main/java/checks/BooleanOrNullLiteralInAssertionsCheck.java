@@ -4,7 +4,13 @@ import static org.hamcrest.core.IsNot.not;
 
 class BooleanOrNullLiteralInAssertionsCheck {
   void booleans() {
-    org.junit.Assert.assertTrue(true); // Noncompliant [[sc=22;ec=32]] {{Remove or correct this assertion.}}
+    org.junit.Assert.assertTrue( // Noncompliant [[sc=22;ec=32;secondary=8]] {{Remove or correct this assertion.}}
+      true
+    );
+    org.junit.Assert.assertEquals( // Noncompliant [[sc=22;ec=34;secondary=11,12]] {{Remove or correct this assertion.}}
+      true,
+      true
+    );
     org.junit.Assert.assertTrue("message", true); // Noncompliant {{Remove or correct this assertion.}}
     org.junit.Assert.assertTrue(1 > 2);
     org.junit.Assert.assertFalse(false); // Noncompliant
@@ -28,7 +34,6 @@ class BooleanOrNullLiteralInAssertionsCheck {
     org.fest.assertions.Assertions.assertThat(1 > 2).isTrue();
     org.fest.assertions.Assertions.assertThat("foo").isNotNull();
     org.junit.Assert.assertTrue(true); // Noncompliant
-    org.junit.Assert.assertEquals(true, true); // Noncompliant {{Remove or correct this assertion.}}
     org.junit.Assert.assertThat(true, null); // Noncompliant
     org.junit.Assert.assertThat("", not(false)); // Compliant
     junit.framework.TestCase.assertTrue(true); // Noncompliant
