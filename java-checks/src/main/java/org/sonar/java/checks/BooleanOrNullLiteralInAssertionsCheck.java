@@ -101,21 +101,6 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
     }
   }
 
-  private static List<LiteralTree> findLiterals(List<ExpressionTree> expressions) {
-    List<LiteralTree> result = new ArrayList<>();
-    for (ExpressionTree expression : expressions) {
-      getBoolOrNullLiteral(expression).ifPresent(result::add);
-    }
-    return result;
-  }
-
-  private void reportDefaultMessage(IdentifierTree methodName, List<LiteralTree> literals) {
-    List<JavaFileScannerContext.Location> literalLocations = literals.stream()
-      .map(literal -> new JavaFileScannerContext.Location("There does not seem to be a reason to use a literal here.", literal))
-      .collect(Collectors.toList());
-    reportIssue(methodName, DEFAULT_MESSAGE, literalLocations, null);
-  }
-
   private void checkEqualityAsserts(MethodInvocationTree mit, boolean flipped) {
     List<LiteralTree> literals = findLiterals(mit.arguments());
     IdentifierTree methodName = ExpressionUtils.methodName(mit);
@@ -141,19 +126,6 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
     }
   }
 
-  private static Optional<LiteralTree> findActualLiteralForFest(MethodInvocationTree mit) {
-    if (FEST_ASSERT_THAT.matches(mit)) {
-      return getBoolOrNullLiteral(mit.arguments().get(0));
-    }
-    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree member = (MemberSelectExpressionTree) mit.methodSelect();
-      if (member.expression().is(Tree.Kind.METHOD_INVOCATION)) {
-        return findActualLiteralForFest((MethodInvocationTree) member.expression());
-      }
-    }
-    return Optional.empty();
-  }
-
   private void checkEqualityAssertWithOneLiteral(IdentifierTree methodName, LiteralTree literal, boolean flipped, String assertOrIs) {
     String predicate;
     if (literal.is(Tree.Kind.NULL_LITERAL)) {
@@ -177,6 +149,36 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
     reportIssue(methodName, mainMessage, secondaryLocation, null);
   }
 
+  private void checkOtherAsserts(MethodInvocationTree mit) {
+    List<LiteralTree> literals = findLiterals(mit.arguments());
+    Optional<LiteralTree> festActualLiteral = findActualLiteralForFest(mit);
+    festActualLiteral.ifPresent(literals::add);
+    if (!literals.isEmpty()) {
+      reportDefaultMessage(ExpressionUtils.methodName(mit), literals);
+    }
+  }
+
+  private static List<LiteralTree> findLiterals(List<ExpressionTree> expressions) {
+    List<LiteralTree> result = new ArrayList<>();
+    for (ExpressionTree expression : expressions) {
+      getBoolOrNullLiteral(expression).ifPresent(result::add);
+    }
+    return result;
+  }
+
+  private static Optional<LiteralTree> findActualLiteralForFest(MethodInvocationTree mit) {
+    if (FEST_ASSERT_THAT.matches(mit)) {
+      return getBoolOrNullLiteral(mit.arguments().get(0));
+    }
+    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree member = (MemberSelectExpressionTree) mit.methodSelect();
+      if (member.expression().is(Tree.Kind.METHOD_INVOCATION)) {
+        return findActualLiteralForFest((MethodInvocationTree) member.expression());
+      }
+    }
+    return Optional.empty();
+  }
+
   /**
    * Tests whether an expression is a boolean or null literal, possibly embedded in a sequence of casts (because null
    * literals often need to be cast to avoid overloading ambiguities), and return the null literal if so.
@@ -191,12 +193,10 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
     }
   }
 
-  private void checkOtherAsserts(MethodInvocationTree mit) {
-    List<LiteralTree> literals = findLiterals(mit.arguments());
-    Optional<LiteralTree> festActualLiteral = findActualLiteralForFest(mit);
-    festActualLiteral.ifPresent(literals::add);
-    if (!literals.isEmpty()) {
-      reportDefaultMessage(ExpressionUtils.methodName(mit), literals);
-    }
+  private void reportDefaultMessage(IdentifierTree methodName, List<LiteralTree> literals) {
+    List<JavaFileScannerContext.Location> literalLocations = literals.stream()
+      .map(literal -> new JavaFileScannerContext.Location("There does not seem to be a reason to use a literal here.", literal))
+      .collect(Collectors.toList());
+    reportIssue(methodName, DEFAULT_MESSAGE, literalLocations, null);
   }
 }
