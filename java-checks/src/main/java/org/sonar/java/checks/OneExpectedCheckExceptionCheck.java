@@ -83,7 +83,7 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
       Arguments arguments = mit.arguments();
       if (JUNIT4_ASSERT_THROWS_WITH_MESSAGE.matches(mit)) {
         processAssertThrowsArguments(arguments.get(1), arguments.get(2));
-      } else if (ALL_ASSERT_THROWS_MATCHER.matches(mit)) {
+      } else if (arguments.size() >= 2 && ALL_ASSERT_THROWS_MATCHER.matches(mit)) {
         processAssertThrowsArguments(arguments.get(0), arguments.get(1));
       }
     } else {
