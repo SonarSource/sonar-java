@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class WildcardReturnParameterTypeCheckTest {
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
+class WildcardReturnParameterTypeCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/WildcardReturnParameterTypeCheck.java")
+      .onFile(testSourcesPath("checks/WildcardReturnParameterTypeCheck.java"))
       .withCheck(new WildcardReturnParameterTypeCheck())
       .verifyIssues();
   }
