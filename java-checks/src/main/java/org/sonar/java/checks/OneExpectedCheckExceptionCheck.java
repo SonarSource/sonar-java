@@ -88,7 +88,7 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
       }
     } else {
       TryStatementTree tryStatementTree = (TryStatementTree) tree;
-      if (isTryCatchIdiom(tryStatementTree)) {
+      if (isTryCatchFail(tryStatementTree)) {
         tryStatementTree.catches().forEach(c ->
           reportMultipleCallThrowingExceptionInTree(c.parameter().type().symbolType(), tryStatementTree.block(), c.parameter().type())
         );
@@ -97,10 +97,10 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
   }
 
   private void processAssertThrowsArguments(ExpressionTree expectedType, ExpressionTree executable) {
-    Optional<IdentifierTree> expectedException = getExpectedException(expectedType);
-    if (expectedException.isPresent() && executable.is(Tree.Kind.LAMBDA_EXPRESSION)) {
-      IdentifierTree expectedIdentifier = expectedException.get();
-      reportMultipleCallThrowingExceptionInTree(expectedIdentifier.symbolType(), ((LambdaExpressionTree) executable).body(), expectedIdentifier);
+    if (executable.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      getExpectedException(expectedType).ifPresent(expectedIdentifier ->
+        reportMultipleCallThrowingExceptionInTree(expectedIdentifier.symbolType(), ((LambdaExpressionTree) executable).body(), expectedIdentifier)
+      );
     }
   }
 
@@ -115,7 +115,7 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
     return Optional.empty();
   }
 
-  private static boolean isTryCatchIdiom(TryStatementTree tree) {
+  private static boolean isTryCatchFail(TryStatementTree tree) {
     List<StatementTree> statementTrees = tree.block().body();
     if (!statementTrees.isEmpty()) {
       StatementTree lastElement = statementTrees.get(statementTrees.size() - 1);
@@ -129,9 +129,9 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
     return false;
   }
 
-  private void reportMultipleCallThrowingExceptionInTree(Type expectedException, Tree tree, Tree reportLocation) {
-    MethodInvocationThrowing visitor = new MethodInvocationThrowing(expectedException); //m.symbolType().isSubtypeOf(expectedType)
-    tree.accept(visitor);
+  private void reportMultipleCallThrowingExceptionInTree(Type expectedException, Tree treeToVisit, Tree reportLocation) {
+    MethodInvocationThrowing visitor = new MethodInvocationThrowing(expectedException);
+    treeToVisit.accept(visitor);
     List<MethodInvocationTree> methodInvocationTrees = visitor.methodInvocationTrees;
     if (methodInvocationTrees.size() > 1) {
       reportIssue(reportLocation,
