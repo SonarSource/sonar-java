@@ -38,6 +38,7 @@ public class OneExpectedCheckExceptionCheck {
     assertThrows(IOException.class, () -> throwIOException(1)); // Compliant, only one method can throw IOException
     assertThrows(IOException.class, () -> throwNothing(throwIOException2(1))); // Compliant, only one method can throw IOException
     assertThrows(IOException.class, () -> throwIOException(throwException(1))); // Compliant, only one method can throw IOException
+    assertThrows(IllegalStateException.class, () -> {throwRuntimeException();throwRuntimeException();}); // Compliant, not a checked exception
 
     assertThrows(myException, () -> throwIOException2(throwIOException(1))); // Compliant, FN
     assertThrows(this.myException, () -> throwIOException2(throwIOException(1))); // Compliant, FN
@@ -48,7 +49,7 @@ public class OneExpectedCheckExceptionCheck {
 
   @Test
   public void testGTryCatchIdiom() {
-    try { // Noncompliant [[sc=5;ec=8;secondary=52,53]] {{Refactor the body of this try/catch in order to have only one invocation throwing an expected exception.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=53,54]] {{Refactor the body of this try/catch in order to have only one invocation throwing an expected exception.}}
       throwIOException2(
         throwIOException(1)
       );
@@ -84,6 +85,20 @@ public class OneExpectedCheckExceptionCheck {
       Assert.fail("Expected an IOException to be thrown");
     } catch (IOException e) {
       // Test exception message...
+    }
+
+    try { // Compliant, not a checked exception
+      throwRuntimeException();
+      throwRuntimeException();
+      Assert.fail("Expected an IOException to be thrown");
+    } catch (IllegalStateException e) { // IllegalStateException is a RuntimeException
+    }
+
+    try { // Compliant, not a checked exception
+      throwError();
+      throwError();
+      Assert.fail("Expected an IOException to be thrown");
+    } catch (Error e) { // Error not checked
     }
 
     try { // Compliant, not a try catch idiom
@@ -144,6 +159,13 @@ public class OneExpectedCheckExceptionCheck {
 
   int throwException(int x) throws Exception {
     return x;
+  }
+
+  void throwRuntimeException() throws IllegalStateException {
+  }
+
+  void throwError() throws Error { // Error are unchecked
+    throw new Error();
   }
 
   class ThrowingIOException {

@@ -133,7 +133,15 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
   }
 
   private void reportMultipleCallThrowingExceptionInTree(List<Type> expectedExceptions, Tree treeToVisit, Tree reportLocation, String placeToRefactor) {
-    MethodInvocationThrowing visitor = new MethodInvocationThrowing(expectedExceptions);
+    List<Type> checkedTypes = expectedExceptions.stream()
+      .filter(OneExpectedCheckExceptionCheck::isChecked)
+      .collect(Collectors.toList());
+
+    if (checkedTypes.isEmpty()) {
+      return;
+    }
+
+    MethodInvocationThrowing visitor = new MethodInvocationThrowing(checkedTypes);
     treeToVisit.accept(visitor);
     List<Tree> invocationTree = visitor.invocationTree;
     if (invocationTree.size() > 1) {
@@ -142,6 +150,10 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
         secondaryLocations(invocationTree),
         null);
     }
+  }
+
+  private static boolean isChecked(Type type) {
+    return !type.isSubtypeOf("java.lang.RuntimeException") && !type.isSubtypeOf("java.lang.Error");
   }
 
   private static List<JavaFileScannerContext.Location> secondaryLocations(List<Tree> methodInvocationTrees) {
