@@ -19,14 +19,22 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S5777")
@@ -34,23 +42,63 @@ public class TestAnnotationWithExpectedExceptionCheck extends IssuableSubscripti
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.ANNOTATION);
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    AnnotationTree annotation = (AnnotationTree) tree;
-    if (annotation.annotationType().symbolType().is("org.junit.Test")) {
-      for (ExpressionTree argument : annotation.arguments()) {
-        if (argument.is(Tree.Kind.ASSIGNMENT)) {
-          AssignmentExpressionTree assignment = (AssignmentExpressionTree) argument;
-          String name = ((IdentifierTree) assignment.variable()).name();
-          if (name.equals("expected")) {
-            reportIssue(assignment.expression(), "Exception testing via JUnit @Test annotation should be avoided.");
+    MethodTree method = (MethodTree) tree;
+    findExpectedException(method.modifiers().annotations()).ifPresent(expected -> {
+      AssertionCollector assertionCollector = new AssertionCollector();
+      method.accept(assertionCollector);
+      if (!assertionCollector.assertions.isEmpty()) {
+        reportIssue(
+          expected,
+          "Expected exceptions should not be used on methods containing assertions.",
+          assertionCollector.assertions,
+          null
+        );
+      }
+    });
+  }
+
+  private static Optional<IdentifierTree> findExpectedException(List<AnnotationTree> annotations) {
+    for (AnnotationTree annotation : annotations) {
+      if (annotation.annotationType().symbolType().is("org.junit.Test")) {
+        for (ExpressionTree argument : annotation.arguments()) {
+          if (argument.is(Tree.Kind.ASSIGNMENT)) {
+            AssignmentExpressionTree assignment = (AssignmentExpressionTree) argument;
+            IdentifierTree identifier = (IdentifierTree) assignment.variable();
+            if (identifier.name().equals("expected")) {
+              return Optional.of(identifier);
+            }
           }
         }
       }
     }
+    return Optional.empty();
+  }
+
+  private static class AssertionCollector extends BaseTreeVisitor {
+
+    private static final MethodMatchers JUNIT_ASSERT_METHOD_MATCHER = MethodMatchers.create()
+      .ofTypes("org.junit.Assert", "org.junit.jupiter.api.Assertions")
+      .name(name -> name.startsWith("assert"))
+      .withAnyParameters()
+      .build();
+
+    private final List<JavaFileScannerContext.Location> assertions = new ArrayList<>();
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
+      if (JUNIT_ASSERT_METHOD_MATCHER.matches(methodInvocation)) {
+        assertions.add(new JavaFileScannerContext.Location(
+          "Assertion in method with expected exception",
+          ExpressionUtils.methodName(methodInvocation)
+        ));
+      }
+    }
+
   }
 
 }
