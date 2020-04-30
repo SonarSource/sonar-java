@@ -22,30 +22,32 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class DiamondOperatorCheckTest {
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
+class DiamondOperatorCheckTest {
 
   @Test
-  public void test_no_version() {
+  void test_no_version() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/DiamondOperatorCheck_no_version.java")
+      .onFile(testSourcesPath("checks/DiamondOperatorCheck_no_version.java"))
       .withCheck(new DiamondOperatorCheck())
       .verifyIssues();
   }
 
   @Test
-  public void test_with_java_7() {
+  void test_with_java_7() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/DiamondOperatorCheck_java_7.java")
+      .onFile(testSourcesPath("checks/DiamondOperatorCheck_java_7.java"))
       .withCheck(new DiamondOperatorCheck())
       .withJavaVersion(7)
       .verifyIssues();
   }
 
   @Test
-  public void test_with_java_8() {
+  void test_with_java_8() {
     // take into account ternary operators
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/DiamondOperatorCheck_java_8.java")
+      .onFile(testSourcesPath("checks/DiamondOperatorCheck_java_8.java"))
       .withCheck(new DiamondOperatorCheck())
       .withJavaVersion(8)
       .verifyIssues();
