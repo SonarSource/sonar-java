@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -158,10 +159,33 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     if (hasTestAnnotation(methodTree)) {
       SoftAssertionsVisitor softAssertionsVisitor = new SoftAssertionsVisitor();
       methodTree.accept(softAssertionsVisitor);
-      if (softAssertionsVisitor.assertThatCalled) {
+      if (softAssertionsVisitor.assertThatCalled && !isSoftAssertionsExtension(methodTree)) {
         context.reportIssue(this, methodTree.block().closeBraceToken(), "Add a call to 'assertAll' after all 'assertThat'.");
       }
     }
+  }
+
+  private static boolean isSoftAssertionsExtension(MethodTree methodTree) {
+    Symbol owner = methodTree.symbol().owner();
+    if (owner != null && owner.isTypeSymbol()) {
+      List<SymbolMetadata.AnnotationValue> annotationValues = owner.metadata().valuesForAnnotation("org.junit.jupiter.api.extension.ExtendWith");
+      if (annotationValues != null) {
+        return annotationValues.stream().anyMatch(av -> isSoftAssertionsExtensionClass(av.value()));
+      }
+    }
+    return false;
+  }
+
+  private static boolean isSoftAssertionsExtensionClass(Object value) {
+    if (value instanceof Object[]) {
+      Object[] values = (Object[]) value;
+      for (Object v : values) {
+        if (v instanceof Symbol && ((Symbol) v).type().is("org.assertj.core.api.junit.jupiter.SoftAssertionsExtension")) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   @Override
