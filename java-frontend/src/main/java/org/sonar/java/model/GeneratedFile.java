@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
@@ -55,7 +54,7 @@ public class GeneratedFile implements InputFile {
 
   private SourceMap sourceMap;
 
-  public GeneratedFile(Path path, @Nullable InputFile jspSourceFile) {
+  public GeneratedFile(Path path, InputFile jspSourceFile) {
     this.path = path;
     this.jspSourceFile = jspSourceFile;
   }
