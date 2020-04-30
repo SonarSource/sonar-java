@@ -105,7 +105,7 @@ public class GeneratedFile implements InputFile {
       if (startLoc == null || endLoc == null) {
         return Optional.empty();
       }
-      return Optional.of(new LocationImpl(startLoc.inputFile(), startLoc.startLine(), endLoc.endLine()));
+      return Optional.of(new LocationImpl(startLoc.file(), startLoc.startLine(), endLoc.endLine()));
     }
   }
 
@@ -123,7 +123,7 @@ public class GeneratedFile implements InputFile {
     }
 
     @Override
-    public InputFile inputFile() {
+    public InputFile file() {
       return inputFile;
     }
 
@@ -138,7 +138,7 @@ public class GeneratedFile implements InputFile {
     }
 
     private static Location mergeLocations(Location loc1, Location loc2) {
-      return new LocationImpl(loc1.inputFile(),
+      return new LocationImpl(loc1.file(),
         min(loc1.startLine(), loc2.startLine()),
         max(loc1.endLine(), loc2.endLine()));
     }
