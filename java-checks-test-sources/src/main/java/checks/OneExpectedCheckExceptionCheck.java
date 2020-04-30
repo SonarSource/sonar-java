@@ -1,7 +1,7 @@
 package checks;
 
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
+import java.util.concurrent.ExecutionException;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -21,11 +21,11 @@ public class OneExpectedCheckExceptionCheck {
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)) ); // Noncompliant
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)), "Message"); // Noncompliant
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)), () -> "message"); // Noncompliant
-    assertThrows(IOException.class, () -> { // Noncompliant [[sc=18;ec=29;secondary=25,26]] {{The tested checked exception can be raised from multiples call, it is unclear what is really tested.}}
+    assertThrows(IOException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=25,26] {{Refactor the code of this assertThrows in order to have only one invocation throwing an expected exception.}}
         if (throwIOException2(1) ==
           throwIOException(1)) {}
       } );
-    assertThrows(IOException.class, () -> // Noncompliant [[sc=18;ec=29;secondary=29,30]]
+    assertThrows(IOException.class, () -> // Noncompliant [[sc=5;ec=17;secondary=29,30]]
       new ThrowingIOException(
         throwIOException(1)
       ) );
@@ -48,60 +48,68 @@ public class OneExpectedCheckExceptionCheck {
 
   @Test
   public void testGTryCatchIdiom() {
-    try {
-      throwIOException2(throwIOException(1));
-      Assert.fail("Expected an IOException to be thrown");
-    } catch (IOException e) { // Noncompliant
-      // Test exception message...
-    }
-
-    try {
+    try { // Noncompliant [[sc=5;ec=8;secondary=52,53]] {{Refactor the body of this try/catch in order to have only one invocation throwing an expected exception.}}
       throwIOException2(
         throwIOException(1)
       );
       Assert.fail("Expected an IOException to be thrown");
-    } catch (IllegalStateException e) {  // Compliant, unchecked exception
-    } catch (IOException e) { // Noncompliant [[sc=14;ec=25;secondary=59,60]] {{The tested checked exception can be raised from multiples call, it is unclear what is really tested.}}
+    } catch (IOException e) {
+      // Test exception message...
     }
 
-    try {
+    try { // Noncompliant
+      throwIOException2(throwIOException(1));
+      Assert.fail("Expected an IOException to be thrown");
+    } catch (IllegalStateException e) { // IllegalStateException is a RuntimeException
+    } catch (IOException e) {
+    }
+
+    try { // Noncompliant
+      throwIOException2(1);
+      throwExecutionException(1);
+      Assert.fail("Expected an IOException to be thrown");
+    } catch (IOException e) {
+    } catch (ExecutionException e) {
+    }
+
+    try { // Noncompliant
       throwIOException(throwException(1));
       org.junit.jupiter.api.Assertions.fail();
-    } catch (Exception e) { // Noncompliant
+    } catch (Exception e) {
       // Test exception message...
     }
 
-    try {
+    try { // Compliant, only one method can throw IOException
       throwNothing(throwIOException2(1));
       Assert.fail("Expected an IOException to be thrown");
-    } catch (IOException e) { // Compliant, only one method can throw IOException
+    } catch (IOException e) {
       // Test exception message...
     }
 
-    try {
+    try { // Compliant, not a try catch idiom
       throwIOException2(throwIOException(1));
-    } catch (IOException e) { // Compliant, not a try catch idiom
+    } catch (IOException e) {
     }
 
-    try {
+    try { // Compliant, not a try catch idiom
       throwIOException2(throwIOException(1));
       boolean fail = true;
-    } catch (IOException e) { // Compliant, not a try catch idiom
+    } catch (IOException e) {
     }
 
-    try {
+    try { // Compliant, not a try catch idiom
       throwIOException2(throwIOException(1));
       boolean fail;
       fail = true;
-    } catch (IOException e) { // Compliant, not a try catch idiom
+    } catch (IOException e) {
     }
 
-    try {
+    try { // Compliant
       // Empty
-    } catch (IllegalStateException e) { // Compliant
+    } catch (IllegalStateException e) {
     }
 
-    try {
+    try { // Compliant, only one method can actually raise the exception.
       throwIOException(1);
       class Nested {
         void f() throws IOException {
@@ -110,7 +118,7 @@ public class OneExpectedCheckExceptionCheck {
       }
       assertNull((Executable)(() -> throwIOException2(throwIOException(1))));
       Assert.fail("Expected an IOException to be thrown");
-    } catch (IOException e) { // Compliant, only one method can actually raise the exception.
+    } catch (IOException e) {
     }
   }
 
@@ -122,7 +130,11 @@ public class OneExpectedCheckExceptionCheck {
     return x;
   }
 
-  int throwIOAndOtherException(int x) throws IOException, AccessDeniedException {
+  int throwExecutionException(int x) throws ExecutionException {
+    return x;
+  }
+
+  int throwIOAndOtherException(int x) throws IOException, ExecutionException {
     return x;
   }
 
