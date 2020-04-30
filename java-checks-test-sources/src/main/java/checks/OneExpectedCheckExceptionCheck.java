@@ -25,6 +25,10 @@ public class OneExpectedCheckExceptionCheck {
         if (throwIOException2(1) ==
           throwIOException(1)) {}
       } );
+    assertThrows(IOException.class, () -> // Noncompliant [[sc=18;ec=29;secondary=29,30]]
+      new ThrowingIOException(
+        throwIOException(1)
+      ) );
     org.junit.Assert.assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)) ); // Noncompliant
     org.junit.Assert.assertThrows("Message", IOException.class, () -> throwIOException2(throwIOException(1)) ); // Noncompliant
     assertThrows(Exception.class, () -> throwException(throwIOException(1)) ); // Noncompliant
@@ -57,7 +61,7 @@ public class OneExpectedCheckExceptionCheck {
       );
       Assert.fail("Expected an IOException to be thrown");
     } catch (IllegalStateException e) {  // Compliant, unchecked exception
-    } catch (IOException e) { // Noncompliant [[sc=14;ec=25;secondary=55,56]] {{The tested checked exception can be raised from multiples call, it is unclear what is really tested.}}
+    } catch (IOException e) { // Noncompliant [[sc=14;ec=25;secondary=59,60]] {{The tested checked exception can be raised from multiples call, it is unclear what is really tested.}}
     }
 
     try {
@@ -128,5 +132,11 @@ public class OneExpectedCheckExceptionCheck {
 
   int throwException(int x) throws Exception {
     return x;
+  }
+
+  class ThrowingIOException {
+    ThrowingIOException(int i) throws IOException {
+
+    }
   }
 }

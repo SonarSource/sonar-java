@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -132,24 +133,23 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
   private void reportMultipleCallThrowingExceptionInTree(Type expectedException, Tree treeToVisit, Tree reportLocation) {
     MethodInvocationThrowing visitor = new MethodInvocationThrowing(expectedException);
     treeToVisit.accept(visitor);
-    List<MethodInvocationTree> methodInvocationTrees = visitor.methodInvocationTrees;
-    if (methodInvocationTrees.size() > 1) {
+    List<Tree> invocationTree = visitor.invocationTree;
+    if (invocationTree.size() > 1) {
       reportIssue(reportLocation,
         "The tested checked exception can be raised from multiples call, it is unclear what is really tested.",
-        secondaryLocations(methodInvocationTrees),
+        secondaryLocations(invocationTree),
         null);
     }
   }
 
-  private static List<JavaFileScannerContext.Location> secondaryLocations(List<MethodInvocationTree> methodInvocationTrees) {
+  private static List<JavaFileScannerContext.Location> secondaryLocations(List<Tree> methodInvocationTrees) {
     return methodInvocationTrees.stream()
-      .map(ExpressionUtils::methodName)
       .map(expr -> new JavaFileScannerContext.Location("Method call", expr))
       .collect(Collectors.toList());
   }
 
   private static class MethodInvocationThrowing extends BaseTreeVisitor {
-    List<MethodInvocationTree> methodInvocationTrees = new ArrayList<>();
+    List<Tree> invocationTree = new ArrayList<>();
     private final Type expectedException;
 
     MethodInvocationThrowing(Type expectedException) {
@@ -158,12 +158,22 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      Symbol symbol = mit.symbol();
-
-      if (symbol.isMethodSymbol() && ((Symbol.MethodSymbol) symbol).thrownTypes().stream().anyMatch(t -> t.isSubtypeOf(expectedException))) {
-        methodInvocationTrees.add(mit);
+      if (throwExpectedException(mit.symbol())) {
+        invocationTree.add(ExpressionUtils.methodName(mit));
       }
       super.visitMethodInvocation(mit);
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      if (throwExpectedException(tree.constructorSymbol())) {
+        invocationTree.add(tree.identifier());
+      }
+      super.visitNewClass(tree);
+    }
+
+    private boolean throwExpectedException(Symbol symbol) {
+      return symbol.isMethodSymbol() && ((Symbol.MethodSymbol) symbol).thrownTypes().stream().anyMatch(t -> t.isSubtypeOf(expectedException));
     }
 
     @Override
