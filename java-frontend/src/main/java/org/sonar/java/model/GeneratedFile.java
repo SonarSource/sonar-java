@@ -37,8 +37,6 @@ import javax.annotation.CheckForNull;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.SourceMap.Location;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -48,17 +46,17 @@ import static java.lang.Math.min;
 
 public class GeneratedFile implements InputFile {
 
-  private static final Logger LOG = Loggers.get(GeneratedFile.class);
-
   private final Path path;
 
   @VisibleForTesting
   final List<SmapFile> smapFiles = new ArrayList<>();
+  private final InputFile jspSourceFile;
 
   private SourceMap sourceMap;
 
-  public GeneratedFile(Path path) {
+  public GeneratedFile(Path path, InputFile jspSourceFile) {
     this.path = path;
+    this.jspSourceFile = jspSourceFile;
   }
 
   public SourceMap sourceMap() {
@@ -69,10 +67,6 @@ public class GeneratedFile implements InputFile {
   }
 
   public void addSmap(SmapFile smap) {
-    if (!smap.getGeneratedFile().equals(path)) {
-      LOG.warn("Invalid smap {} for {}.", smap, path);
-      return;
-    }
     smapFiles.add(smap);
   }
 
@@ -85,8 +79,7 @@ public class GeneratedFile implements InputFile {
         for (SmapFile.LineInfo lineInfo : sm.getLineSection()) {
           for (int i = 0; i < lineInfo.repeatCount; i++) {
             int inputLine = lineInfo.inputStartLine + i;
-            Path inputFile = sm.getUriRoot().resolve(sm.getFileSection().get(lineInfo.lineFileId).sourcePath);
-            LocationImpl location = new LocationImpl(inputFile, inputLine, inputLine);
+            LocationImpl location = new LocationImpl(jspSourceFile, inputLine, inputLine);
             int outputStart = lineInfo.outputStartLine + (i * lineInfo.outputLineIncrement);
             int outputEnd = lineInfo.outputStartLine + ((i + 1) * lineInfo.outputLineIncrement) - 1;
             // when outputLineIncrement == 0, end will be less than start (looks like bug in spec)
@@ -107,39 +100,29 @@ public class GeneratedFile implements InputFile {
     @VisibleForTesting
     Optional<Location> getLocation(int startLine, int endLine) {
       Location startLoc = lines.get(startLine);
-      if (startLoc == null) {
-        return Optional.empty();
-      }
-      int inputStartLine = startLoc.startLine();
-      Path startFile = startLoc.inputFile();
       Location endLoc = lines.get(endLine);
-      if (endLoc == null) {
+      if (startLoc == null || endLoc == null) {
         return Optional.empty();
       }
-      int inputEndLine = endLoc.endLine();
-      Path endFile = endLoc.inputFile();
-      if (!startFile.equals(endFile)) {
-        return Optional.empty();
-      }
-      return Optional.of(new LocationImpl(startFile, inputStartLine, inputEndLine));
+      return Optional.of(new LocationImpl(startLoc.file(), startLoc.startLine(), endLoc.endLine()));
     }
   }
 
 
   private static final class LocationImpl implements Location {
 
-    private final Path inputFile;
+    private final InputFile inputFile;
     private final int startLine;
     private final int endLine;
 
-    private LocationImpl(Path inputFile, int startLine, int endLine) {
+    private LocationImpl(InputFile inputFile, int startLine, int endLine) {
       this.inputFile = inputFile;
       this.startLine = startLine;
       this.endLine = endLine;
     }
 
     @Override
-    public Path inputFile() {
+    public InputFile file() {
       return inputFile;
     }
 
@@ -154,7 +137,7 @@ public class GeneratedFile implements InputFile {
     }
 
     private static Location mergeLocations(Location loc1, Location loc2) {
-      return new LocationImpl(loc1.inputFile(),
+      return new LocationImpl(loc1.file(),
         min(loc1.startLine(), loc2.startLine()),
         max(loc1.endLine(), loc2.endLine()));
     }
