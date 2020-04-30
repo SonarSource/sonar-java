@@ -122,7 +122,9 @@ public class GeneratedFileTest {
     generatedFile.addSmap(smapFile);
 
     GeneratedFile.SourceMapImpl sourceMap = ((GeneratedFile.SourceMapImpl) generatedFile.sourceMap());
-    assertThat(sourceMap.getLocation(116, 116).get().file()).isEqualTo(inputFile);
+    SourceMap.Location location = sourceMap.getLocation(116, 116).get();
+    assertThat(location.file()).isEqualTo(inputFile);
+    assertThat(location.inputFile()).isEqualTo(inputFile.path());
 
     assertLocation(sourceMap.getLocation(116, 116), 1, 6);
     assertLocation(sourceMap.getLocation(207, 207), 123, 123);
