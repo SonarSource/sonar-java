@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class AnonymousClassShouldBeLambdaCheckTest {
+class AnonymousClassShouldBeLambdaCheckTest {
 
   @Test
-  public void java8() {
+  void java8() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/AnonymousClassShouldBeLambdaCheck.java")
       .withCheck(new AnonymousClassShouldBeLambdaCheck())
@@ -34,7 +34,7 @@ public class AnonymousClassShouldBeLambdaCheckTest {
   }
 
   @Test
-  public void java7() {
+  void java7() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/AnonymousClassShouldBeLambdaCheck_java7.java")
       .withCheck(new AnonymousClassShouldBeLambdaCheck())
@@ -43,7 +43,7 @@ public class AnonymousClassShouldBeLambdaCheckTest {
   }
 
   @Test
-  public void unknown_version() {
+  void unknown_version() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/AnonymousClassShouldBeLambdaCheck_no_version.java")
       .withCheck(new AnonymousClassShouldBeLambdaCheck())
