@@ -1,8 +1,9 @@
-<p>When testing exception via <code>org.junit.rules.ExpectedException</code> any code after the raised exception will not be executed, resulting in
-unclear behavior of the test.</p>
-<p> It has been deprecated in JUnit 4.13, and you should avoid it in any version.</p>
+<p>When testing exception via <code>org.junit.rules.ExpectedException</code> any code after the raised exception will not be executed, so adding
+subsequent assertions is wrong and misleading. This rule raises an issue when an assertion is done after the "expect(...)" invocation, only the code
+throwing the expected exception should be after "expect(...)".</p>
 <p>You should consider using <a
-href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a> instead.</p>
+href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a> instead, it's available
+since JUnit 4.13 and it allows additional subsequent assertions.</p>
 <p> Alternatively, you could use <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a> for JUnit
 version &lt; 4.13 or if your project does not support lambdas.</p>
 <h2>Noncompliant Code Example</h2>
@@ -23,14 +24,18 @@ private Object get() {
 }
 </pre>
 <h2>Compliant Solution</h2>
-<p> * For JUnit &gt;= 4.13, use <a
-href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a>:</p>
+<ul>
+  <li> For JUnit &gt;= 4.13, use <a
+  href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a>: </li>
+</ul>
 <pre>
 Assert.assertThrows(IndexOutOfBoundsException.class, () -&gt; get());
 // This test correctly fails.
 Assert.assertEquals(0, 1);
 </pre>
-<p> * For JUnit &lt; 4.13, use the <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a>:</p>
+<ul>
+  <li> For JUnit &lt; 4.13, use the <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a>: </li>
+</ul>
 <pre>
 try {
   get();
@@ -42,5 +47,4 @@ Assert.assertEquals(0, 1); // Correctly fails.
 <ul>
   <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a> </li>
 </ul>
-<p>&nbsp;</p>
 
