@@ -22,9 +22,13 @@ package org.sonar.java.checks;
 import org.apache.commons.lang.ArrayUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -40,7 +44,6 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -79,15 +82,63 @@ public class DiamondOperatorCheck extends IssuableSubscriptionVisitor implements
   public void visitNode(Tree tree) {
     NewClassTree newClassTree = (NewClassTree) tree;
     TypeTree newTypeTree = newClassTree.identifier();
-    if (newClassTree.classBody() == null && isParameterizedType(newTypeTree)) {
-      TypeTree type = getTypeFromExpression(tree.parent(), expressionKindsToCheck);
-      if (type != null && isParameterizedType(type)) {
-        reportIssue(
-          ((ParameterizedTypeTree) newTypeTree).typeArguments(),
-          "Replace the type specification in this constructor call with the diamond operator (\"<>\")." +
-            context.getJavaVersion().java7CompatibilityMessage());
-      }
+    if (!isParameterizedType(newTypeTree) || newClassTree.classBody() != null) {
+      return;
     }
+    TypeTree type = getTypeFromExpression(tree.parent(), expressionKindsToCheck);
+    if ((type != null && isParameterizedType(type))
+      || usedAsArgumentWithoutDiamond(newClassTree)) {
+      reportIssue(
+        ((ParameterizedTypeTree) newTypeTree).typeArguments(),
+        "Replace the type specification in this constructor call with the diamond operator (\"<>\")." +
+          context.getJavaVersion().java7CompatibilityMessage());
+    }
+  }
+
+  private static boolean usedAsArgumentWithoutDiamond(NewClassTree newClassTree) {
+    Tree parent = newClassTree.parent();
+    if (!parent.is(Tree.Kind.ARGUMENTS)) {
+      // not part of an invocation
+      return false;
+    }
+
+    Tree invocation = parent.parent();
+    Symbol symbol = null;
+    // arguments are only used in METHOD_INVOCATION, NEW_CLASS_TREE and ANNOTATION
+    // however annotations values can not store parameterized types
+    if (invocation.is(Tree.Kind.METHOD_INVOCATION)) {
+      symbol = ((MethodInvocationTree) invocation).symbol();
+    } else {
+      symbol = ((NewClassTree) invocation).constructorSymbol();
+    }
+
+    if (!symbol.isMethodSymbol()) {
+      // unresolved invocation
+      return false;
+    }
+
+    Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+    int index = getArgIndex(newClassTree, (Arguments) parent);
+    if (index >= methodSymbol.parameterTypes().size()) {
+      // killing the noise - varargs
+      return false;
+    }
+
+    if (JUtils.isParametrizedMethod(methodSymbol)) {
+      // killing the noise - might be required for inference on nested method calls
+      return false;
+    }
+
+    Type parameterType = methodSymbol.parameterTypes().get(index);
+    return parameterType.isParameterized();
+  }
+
+  private static int getArgIndex(Tree tree, Arguments arguments) {
+    int i = 0;
+    while (!tree.equals(arguments.get(i))) {
+      i++;
+    }
+    return i;
   }
 
   @CheckForNull
@@ -114,7 +165,7 @@ public class DiamondOperatorCheck extends IssuableSubscriptionVisitor implements
     @Nullable
     private TypeTree type = null;
 
-    public TypeTreeLocator(Kind[] kinds) {
+    public TypeTreeLocator(Tree.Kind[] kinds) {
       this.kinds = kinds;
     }
 
