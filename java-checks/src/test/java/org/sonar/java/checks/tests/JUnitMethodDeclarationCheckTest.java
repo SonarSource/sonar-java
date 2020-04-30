@@ -26,10 +26,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class JUnitMethodDeclarationCheckTest {
+class JUnitMethodDeclarationCheckTest {
 
   @Test
-  public void jUnit3() {
+  void jUnit3() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/JUnitMethodDeclarationCheck_JUnit3.java"))
       .withCheck(new JUnitMethodDeclarationCheck())
@@ -37,7 +37,7 @@ public class JUnitMethodDeclarationCheckTest {
   }
 
   @Test
-  public void jUnit4_and_jUnit5() {
+  void jUnit4_and_jUnit5() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/tests/JUnitMethodDeclarationCheck_JUnit45.java"))
       .withCheck(new JUnitMethodDeclarationCheck())
@@ -45,7 +45,7 @@ public class JUnitMethodDeclarationCheckTest {
   }
 
   @Test
-  public void test_string_distance() {
+  void test_string_distance() {
     JUnitMethodDeclarationCheck check = new JUnitMethodDeclarationCheck();
     assertThat(check.areVerySimilarStrings("short", "short")).isTrue();
     assertThat(check.areVerySimilarStrings("short", "abcdf")).isFalse();

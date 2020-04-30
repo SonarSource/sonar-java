@@ -20,6 +20,7 @@
 package org.sonar.java.checks.tests;
 
 import com.google.common.annotations.VisibleForTesting;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2391")
 public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
 
+  private static final String ORG_JUNIT_AFTER = "org.junit.After";
+  private static final String ORG_JUNIT_BEFORE = "org.junit.Before";
   private static final String JUNIT_FRAMEWORK_TEST = "junit.framework.Test";
   private static final String JUNIT_SETUP = "setUp";
   private static final String JUNIT_TEARDOWN = "tearDown";
@@ -82,7 +85,7 @@ public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
 
   private void checkJUnitMethod(MethodTree methodTree, int jUnitVersion) {
     String name = methodTree.simpleName().name();
-    if (JUNIT_SETUP.equals(name) || JUNIT_TEARDOWN.equals(name)) {
+    if (isSetupTearDown(name) || (jUnitVersion == 5 && isAnnotated(methodTree, ORG_JUNIT_BEFORE, ORG_JUNIT_AFTER))) {
       checkSetupTearDownSignature(methodTree, jUnitVersion);
     } else if (JUNIT_SUITE.equals(name)) {
       checkSuiteSignature(methodTree, jUnitVersion);
@@ -98,6 +101,15 @@ public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  private static boolean isSetupTearDown(String name) {
+    return JUNIT_SETUP.equals(name) || JUNIT_TEARDOWN.equals(name);
+  }
+
+  private static boolean isAnnotated(MethodTree methodTree, String... annotations) {
+    SymbolMetadata methodMetadata = methodTree.symbol().metadata();
+    return Arrays.stream(annotations).anyMatch(methodMetadata::isAnnotatedWith);
+  }
+
   @VisibleForTesting
   protected boolean areVerySimilarStrings(String expected, String actual) {
     // cut complexity when the strings length difference is bigger than the accepted threshold
@@ -110,7 +122,7 @@ public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
     if (jUnitVersion > 3) {
       if (symbol.returnType().type().isSubtypeOf(JUNIT_FRAMEWORK_TEST)) {
         // ignore modifiers and parameters, whatever they are, "suite():Test" should be dropped in a JUnit4/5 context
-        reportIssue(methodTree.simpleName(), String.format("Remove this method, JUnit%d test suites are not relying on it anymore.", jUnitVersion));
+        reportIssue(methodTree, String.format("Remove this method, JUnit%d test suites are not relying on it anymore.", jUnitVersion));
       }
       return;
     }
@@ -140,21 +152,21 @@ public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
     String ending = "or remove it";
     if (jUnitVersion == 5) {
       SymbolMetadata metadata = methodTree.symbol().metadata();
-      if (metadata.isAnnotatedWith("org.junit.Before")) {
+      if (metadata.isAnnotatedWith(ORG_JUNIT_BEFORE)) {
         ending = "instead of JUnit4 '@Before'";
-      } else if (metadata.isAnnotatedWith("org.junit.After")) {
+      } else if (metadata.isAnnotatedWith(ORG_JUNIT_AFTER)) {
         ending = "instead of JUnit4 '@After'";
       }
     }
     String issueMessage = String.format("Annotate this method with JUnit%d '@%s' %s.", jUnitVersion, annotation, ending);
-    reportIssue(methodTree.simpleName(), issueMessage);
+    reportIssue(methodTree, issueMessage);
   }
 
   private static Optional<String> expectedAnnotation(Symbol.MethodSymbol symbol, int jUnitVersion) {
-    if (JUNIT_SETUP.equals(symbol.name())) {
-      return Optional.of(jUnitVersion == 4 ? "org.junit.Before" : "org.junit.jupiter.api.BeforeEach");
+    if (JUNIT_SETUP.equals(symbol.name()) || symbol.metadata().isAnnotatedWith(ORG_JUNIT_BEFORE)) {
+      return Optional.of(jUnitVersion == 4 ? ORG_JUNIT_BEFORE : "org.junit.jupiter.api.BeforeEach");
     }
-    return Optional.of(jUnitVersion == 4 ? "org.junit.After" : "org.junit.jupiter.api.AfterEach");
+    return Optional.of(jUnitVersion == 4 ? ORG_JUNIT_AFTER : "org.junit.jupiter.api.AfterEach");
   }
 
   private void addIssueForMethodBadName(MethodTree methodTree, String expected, String actual) {

@@ -41,7 +41,10 @@ class JUnitMethodDeclarationCheck_JUnit4_5_mixed {
   @org.junit.Test void junit4() { }
   @org.junit.jupiter.api.Test void junit5() { }
 
-  // use JUnit 4 annoations
+  // use JUnit 4 annotations
   @org.junit.Before public void setUp() { } // Noncompliant {{Annotate this method with JUnit5 '@org.junit.jupiter.api.BeforeEach' instead of JUnit4 '@Before'.}}
   @org.junit.After public void tearDown() { } // Noncompliant {{Annotate this method with JUnit5 '@org.junit.jupiter.api.AfterEach' instead of JUnit4 '@After'.}}
+
+  @org.junit.Before public void before() { } // Noncompliant {{Annotate this method with JUnit5 '@org.junit.jupiter.api.BeforeEach' instead of JUnit4 '@Before'.}}
+  @org.junit.After public void after() { } // Noncompliant {{Annotate this method with JUnit5 '@org.junit.jupiter.api.AfterEach' instead of JUnit4 '@After'.}}
 }
