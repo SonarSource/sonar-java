@@ -1,6 +1,7 @@
 package checks;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -65,6 +66,31 @@ class DiamondOperatorCheck_java_8 {
 
   interface MyInterface { }
   static class GenericClass<X, Y, Z> implements MyInterface { }
+
+  static class A<X> {
+
+    public A(X x) { }
+
+    public void tst() {
+      bar(0, new ArrayList<String>()); // Noncompliant [[sc=27;ec=35]]
+      foo(0, new ArrayList<String>()); // Compliant
+      qix(new ArrayList<String>()); // Compliant
+      gul(new ArrayList<String>()); // Compliant
+
+      A<List<String>> als =
+        new A<List<String>>( // Noncompliant [[sc=14;ec=28]]
+          new ArrayList<String>()); // Noncompliant [[sc=24;ec=32]]
+
+      List<String> values = Arrays.asList("Stop", "pointing", "fingers", "steve");
+      new ArrayList<String>(values); // FN - based on type inference
+      new ArrayList<>(values);
+    }
+
+    static void bar(int i, List<String> strings) {}
+    static void foo(Object... objects) {}
+    static void qix(Object o) {}
+    static <T> void gul(T t) {}
+  }
 }
 
 enum SonarProblemCase {
