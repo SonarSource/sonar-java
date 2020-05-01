@@ -722,6 +722,7 @@ public final class CheckList {
       BadTestMethodNameCheck.class,
       BooleanOrNullLiteralInAssertionsCheck.class,
       CallSuperInTestCaseCheck.class,
+      ExpectedExceptionCheck.class,
       IgnoredTestsCheck.class,
       JUnitMethodDeclarationCheck.class,
       JunitNestedAnnotationCheck.class,
