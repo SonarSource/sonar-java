@@ -24,13 +24,13 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-class OneExpectedCheckExceptionCheckTest {
+class OneExpectedCheckedExceptionCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/OneExpectedCheckExceptionCheck.java"))
-      .withCheck(new OneExpectedCheckExceptionCheck())
+      .onFile(testSourcesPath("checks/OneExpectedCheckedExceptionCheck.java"))
+      .withCheck(new OneExpectedCheckedExceptionCheck())
       .verifyIssues();
   }
 

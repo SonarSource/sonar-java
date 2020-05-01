@@ -1,0 +1,46 @@
+<p>When verifying that code raises a runtime exception, a good practice is to avoid having multiple method calls inside the tested code, to be
+explicit about which method call is expected to raise the exception.</p>
+<p>It increases the clarity of the test, and avoid incorrect testing when another method is actually raising the exception.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Test
+public void testToString() {
+  // Do you expect get() or toString() throwing the exception?
+  org.junit.Assert.assertThrows(IndexOutOfBoundsException.class, () -&gt; get().toString());
+}
+
+@Test
+public void testToStringTryCatchIdiom() {
+  try {
+    // Do you expect get() or toString() throwing the exception?
+    get().toString();
+    Assert.fail("Expected an IndexOutOfBoundsException to be thrown");
+  } catch (IndexOutOfBoundsException e) {
+    // Test exception message...
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@Test
+public void testToString() {
+   Object obj = get();
+   Assert.assertThrows(IndexOutOfBoundsException.class, () -&gt; obj.toString());
+}
+
+@Test
+public void testToStringTryCatchIdiom() {
+  Object obj = get();
+  try {
+    obj.toString();
+    Assert.fail("Expected an IndexOutOfBoundsException to be thrown");
+  } catch (IndexOutOfBoundsException e) {
+    // Test exception message...
+  }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a> </li>
+</ul>
+

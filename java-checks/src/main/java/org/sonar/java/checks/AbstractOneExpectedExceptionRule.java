@@ -24,8 +24,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -46,8 +46,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
-@Rule(key = "S5783")
-public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor {
+public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscriptionVisitor {
 
   private static final String JUNIT4_ASSERT = "org.junit.Assert";
 
@@ -63,7 +62,7 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
     .withAnyParameters()
     .build();
 
-  private static final MethodMatchers JUNIT_FAIL_MATCHER = MethodMatchers.create()
+  static final MethodMatchers JUNIT_FAIL_MATCHER = MethodMatchers.create()
     .ofTypes(JUNIT4_ASSERT, "org.junit.jupiter.api.Assertions")
     .names("fail")
     .withAnyParameters()
@@ -89,7 +88,7 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
       TryStatementTree tryStatementTree = (TryStatementTree) tree;
       if (isTryCatchFail(tryStatementTree)) {
         List<Type> expectedTypes = tryStatementTree.catches().stream().map(c -> c.parameter().type().symbolType()).collect(Collectors.toList());
-        reportMultipleCallThrowingExceptionInTree(expectedTypes, tryStatementTree.block(), tryStatementTree.tryKeyword(), "body of this try/catch");
+        reportMultipleCallInTree(expectedTypes, tryStatementTree.block(), tryStatementTree.tryKeyword(), "body of this try/catch");
       }
     }
   }
@@ -97,7 +96,7 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
   private void processAssertThrowsArguments(IdentifierTree assertThrowsIdentifier, ExpressionTree expectedType, ExpressionTree executable) {
     if (executable.is(Tree.Kind.LAMBDA_EXPRESSION)) {
       getExpectedException(expectedType).ifPresent(expectedIdentifier ->
-        reportMultipleCallThrowingExceptionInTree(Collections.singletonList(expectedIdentifier.symbolType()),
+        reportMultipleCallInTree(Collections.singletonList(expectedIdentifier.symbolType()),
           ((LambdaExpressionTree) executable).body(), assertThrowsIdentifier, "code of this assertThrows")
       );
     }
@@ -128,47 +127,29 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
     return false;
   }
 
-  private void reportMultipleCallThrowingExceptionInTree(List<Type> expectedExceptions, Tree treeToVisit, Tree reportLocation, String placeToRefactor) {
-    List<Type> checkedTypes = expectedExceptions.stream()
-      .filter(OneExpectedCheckExceptionCheck::isChecked)
-      .collect(Collectors.toList());
+  abstract void reportMultipleCallInTree(List<Type> expectedExceptions, Tree treeToVisit, Tree reportLocation, String placeToRefactor);
 
-    if (checkedTypes.isEmpty()) {
-      return;
-    }
-
-    MethodInvocationThrowing visitor = new MethodInvocationThrowing(checkedTypes);
-    treeToVisit.accept(visitor);
-    List<Tree> invocationTree = visitor.invocationTree;
-    if (invocationTree.size() > 1) {
-      reportIssue(reportLocation,
-        String.format("Refactor the %s in order to have only one invocation throwing an expected exception.", placeToRefactor),
-        secondaryLocations(invocationTree),
-        null);
-    }
-  }
-
-  private static boolean isChecked(Type type) {
+  static boolean isChecked(Type type) {
     return !type.isSubtypeOf("java.lang.RuntimeException") && !type.isSubtypeOf("java.lang.Error");
   }
 
-  private static List<JavaFileScannerContext.Location> secondaryLocations(List<Tree> methodInvocationTrees) {
+  static List<JavaFileScannerContext.Location> secondaryLocations(List<Tree> methodInvocationTrees) {
     return methodInvocationTrees.stream()
       .map(expr -> new JavaFileScannerContext.Location("This call can throw an expected exception", expr))
       .collect(Collectors.toList());
   }
 
-  private static class MethodInvocationThrowing extends BaseTreeVisitor {
+  static class MethodInvocationCollector extends BaseTreeVisitor {
     List<Tree> invocationTree = new ArrayList<>();
-    private final List<Type> expectedExceptions;
+    private final Predicate<Symbol> collectPredicate;
 
-    MethodInvocationThrowing(List<Type> expectedException) {
-      this.expectedExceptions = expectedException;
+    MethodInvocationCollector(Predicate<Symbol> collectPredicate) {
+      this.collectPredicate = collectPredicate;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (throwExpectedException(mit.symbol())) {
+      if (collectPredicate.test(mit.symbol())) {
         invocationTree.add(ExpressionUtils.methodName(mit));
       }
       super.visitMethodInvocation(mit);
@@ -176,16 +157,10 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
 
     @Override
     public void visitNewClass(NewClassTree tree) {
-      if (throwExpectedException(tree.constructorSymbol())) {
+      if (collectPredicate.test(tree.constructorSymbol())) {
         invocationTree.add(tree.identifier());
       }
       super.visitNewClass(tree);
-    }
-
-    private boolean throwExpectedException(Symbol symbol) {
-      return symbol.isMethodSymbol()
-        && ((Symbol.MethodSymbol) symbol).thrownTypes().stream()
-        .anyMatch(t -> expectedExceptions.stream().anyMatch(t::isSubtypeOf));
     }
 
     @Override
