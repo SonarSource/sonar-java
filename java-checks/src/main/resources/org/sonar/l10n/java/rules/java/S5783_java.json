@@ -1,0 +1,13 @@
+{
+  "title": "Only one method invocation is expected when testing checked exceptions",
+  "type": "BUG",
+  "status": "ready",
+  "tags": [
+    "junit",
+    "tests"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5783",
+  "sqKey": "S5783",
+  "scope": "Tests"
+}
