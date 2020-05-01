@@ -31,13 +31,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public final class CheckTestUtils {
   
   private static final String TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/java/";
+  private static final String NON_COMPILING_TEST_SOURCES_DIR = "../java-checks-test-sources/src/main/files/non-compiling/";
 
   private CheckTestUtils() {
     // Utility class
   }
 
   public static String testSourcesPath(String path) {
-    File file = new File((TEST_SOURCES_DIR + path).replace('/', File.separatorChar));
+    return getFileFrom(path, TEST_SOURCES_DIR);
+  }
+
+  public static String nonCompilingTestSourcesPath(String path) {
+    return getFileFrom(path, NON_COMPILING_TEST_SOURCES_DIR);
+  }
+
+  private static String getFileFrom(String path, String relocated) {
+    File file = new File((relocated + path).replace('/', File.separatorChar));
     assertTrue(file.exists(), "Path '" + path + "' should exist.");
     try {
       return file.getCanonicalPath();

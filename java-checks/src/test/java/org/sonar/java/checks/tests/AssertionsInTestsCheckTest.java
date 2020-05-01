@@ -30,6 +30,8 @@ import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 
 @EnableRuleMigrationSupport
 class AssertionsInTestsCheckTest {
@@ -50,7 +52,6 @@ class AssertionsInTestsCheckTest {
     "Junit3",
     "Junit4",
     "Junit5",
-    "AssertJ",
     "Hamcrest",
     "Spring",
     "EasyMock",
@@ -63,12 +64,11 @@ class AssertionsInTestsCheckTest {
     "WireMock",
     "VertX",
     "Selenide",
-    "JMockit",
-    "Custom"
+    "JMockit"
   })
   void test(String framework) {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AssertionsInTestsCheck/" + framework + ".java")
+      .onFile(testSourcesPath("checks/tests/AssertionsInTestsCheck/" + framework + ".java"))
       .withCheck(check)
       .verifyIssues();
     assertThat(logTester.logs(LoggerLevel.WARN)).contains(
@@ -77,10 +77,23 @@ class AssertionsInTestsCheckTest {
       "Unable to create a corresponding matcher for custom assertion method, please check the format of the following symbol: ' #bla'");
   }
 
-  @Test
-  void testNoIssuesWithout() {
+  @ParameterizedTest
+  @ValueSource(strings = {
+    "AssertJ",
+    "Custom"
+  })
+  void testNonCompilingCode(String framework) {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AssertionsInTestsCheck/Junit3.java")
+      .onFile(nonCompilingTestSourcesPath("checks/tests/AssertionsInTestsCheck/" + framework +
+        ".java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
+  void testNoIssuesWithoutSemantic() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/tests/AssertionsInTestsCheck/Junit3.java"))
       .withCheck(check)
       .withoutSemantic()
       .verifyNoIssues();
@@ -90,7 +103,7 @@ class AssertionsInTestsCheckTest {
   void testWithEmptyCustomAssertionMethods() {
     check.customAssertionMethods = "";
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AssertionsInTestsCheck/Junit3.java")
+      .onFile(testSourcesPath("checks/tests/AssertionsInTestsCheck/Junit3.java"))
       .withCheck(check)
       .verifyIssues();
     assertThat(logTester.logs(LoggerLevel.WARN))

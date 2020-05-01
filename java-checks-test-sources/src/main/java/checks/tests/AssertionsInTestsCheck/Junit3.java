@@ -1,8 +1,10 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import junit.framework.TestCase;
 
 import javax.annotation.Nullable;
 
-public class AssertionsInTestsCheckJunit3 extends TestCase {
+class Junit3Test extends TestCase {
 
   public void test_contains_no_assertions() { // Noncompliant
   }

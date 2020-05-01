@@ -1,9 +1,11 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import org.junit.Test;
 
-public class AssertionsInTestsCheck2Test {
+class JMockitTest {
 
   class ObjectToBeMocked {
     public int doSomething(String anyString) {

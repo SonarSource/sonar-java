@@ -1,12 +1,15 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import com.google.common.truth.Truth;
 import com.google.common.truth.Truth8;
-import static com.google.common.truth.Truth8.*;
 import org.junit.Test;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class AssertionsInTestsCheckTest {
-  
+import static com.google.common.truth.Truth8.*;
+
+class TruthTest {
+
   @Test
   public void test() { // Noncompliant
     boolean b = true;
