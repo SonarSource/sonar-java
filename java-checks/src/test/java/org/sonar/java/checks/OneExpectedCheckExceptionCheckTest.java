@@ -34,13 +34,4 @@ class OneExpectedCheckExceptionCheckTest {
       .verifyIssues();
   }
 
-  @Test
-  void test_no_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/OneExpectedCheckExceptionCheck.java"))
-      .withCheck(new OneExpectedCheckExceptionCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
 }

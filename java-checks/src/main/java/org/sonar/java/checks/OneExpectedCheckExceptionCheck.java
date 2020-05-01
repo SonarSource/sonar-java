@@ -76,10 +76,6 @@ public class OneExpectedCheckExceptionCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       Arguments arguments = mit.arguments();
