@@ -1,9 +1,11 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import org.junit.Test;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.ResultMatcher;
 
-public class AssertionsInTestsCheckTest {
+class SpringTest {
 
   @Test
   public void testWithNoAssertion1() { // Noncompliant

@@ -1,17 +1,18 @@
-import java.util.Arrays;
+package checks.tests.AssertionsInTestsCheck;
+
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 import org.junit.Test;
 
-import rx.Observable;
-import rx.observers.TestObserver;
-import rx.observers.TestSubscriber;
-
-public class ReactiveX1 {
+public class ReactiveX2 {
 
   @Test
   public void noAssert() { // Noncompliant
     Observable<String> observable = Observable.just("string");
     observable.test();
-    observable.test(10L);
+    observable.test(true);
   }
 
   @Test
@@ -19,7 +20,7 @@ public class ReactiveX1 {
     Observable<String> observable = Observable.just("string");
     observable
       .test()
-      .assertCompleted();
+      .assertSubscribed();
   }
 
   @Test
@@ -29,18 +30,17 @@ public class ReactiveX1 {
 
     observable.subscribe(observer);
 
-    observer.assertTerminalEvent();
-    observer.assertReceivedOnNext(Arrays.asList("string"));
+    observer.assertResult("string");
   }
 
   @Test
   public void assertWithTestSubscriber() {
     TestSubscriber<String> subscriber = new TestSubscriber<>();
-    Observable<String> observable = Observable.just("string");
+    Flowable<String> flowable = Flowable.just("string");
 
-    observable.subscribe(subscriber);
+    flowable.subscribe(subscriber);
 
-    subscriber.assertCompleted();
+    subscriber.assertSubscribed();
     subscriber.assertValue("string");
   }
 

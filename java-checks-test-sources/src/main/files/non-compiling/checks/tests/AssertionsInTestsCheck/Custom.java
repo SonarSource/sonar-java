@@ -1,6 +1,8 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import org.junit.Test;
 
-public abstract class CustomTest extends UnknownAbstractSuperClassTest {
+abstract class CustomTest extends UnknownAbstractSuperClassTest {
 
   @Test
   public void method_called_match1() {

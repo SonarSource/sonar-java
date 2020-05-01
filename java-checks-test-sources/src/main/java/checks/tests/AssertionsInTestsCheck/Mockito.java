@@ -1,8 +1,10 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import org.junit.Test;
 
 import org.mockito.InOrder;
+import org.mockito.Mockito;
 
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -53,7 +55,7 @@ class MockitoTest {
   public void inOrder() {
     A firstMock = mock(A.class);
     A secondMock = mock(A.class);
-    InOrder inOrder = inOrder(firstMock, secondMock);
+    InOrder inOrder = Mockito.inOrder(firstMock, secondMock);
 
     inOrder.verify(firstMock).add("was called first");
     inOrder.verify(secondMock).add("was called second");
@@ -61,7 +63,7 @@ class MockitoTest {
   }
 
   static class A {
-    void add(Object o);
+    void add(Object o) { }
   }
 
 }

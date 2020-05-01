@@ -1,9 +1,11 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public class AssertionsInTestsCheckHamcrest {
+class HamcrestTest {
 
   @Test
   public void noncompliant1() { // Noncompliant

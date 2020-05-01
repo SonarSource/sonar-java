@@ -1,3 +1,5 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.ext.unit.Async;
