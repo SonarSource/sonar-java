@@ -36,6 +36,7 @@ public class OneExpectedCheckedExceptionCheck {
 
     assertThrows(Exception.class, () -> throwIOAndOtherException(1) ); // Compliant, only one method can throw
     assertThrows(IOException.class, () -> throwIOException(1)); // Compliant, only one method can throw IOException
+    assertThrows(IOException.class, () -> new ThrowingNothing(throwIOException(1))); // Compliant
     assertThrows(IOException.class, () -> throwNothing(throwIOException2(1))); // Compliant, only one method can throw IOException
     assertThrows(IOException.class, () -> throwIOException(throwException(1))); // Compliant, only one method can throw IOException
     assertThrows(IllegalStateException.class, () -> {throwRuntimeException();throwRuntimeException();}); // Compliant, not a checked exception
@@ -49,7 +50,7 @@ public class OneExpectedCheckedExceptionCheck {
 
   @Test
   public void testGTryCatchIdiom() {
-    try { // Noncompliant [[sc=5;ec=8;secondary=53,54]] {{Refactor the body of this try/catch in order to have only one invocation throwing an expected exception.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=54,55]] {{Refactor the body of this try/catch in order to have only one invocation throwing an expected exception.}}
       throwIOException2(
         throwIOException(1)
       );
@@ -170,6 +171,12 @@ public class OneExpectedCheckedExceptionCheck {
 
   class ThrowingIOException {
     ThrowingIOException(int i) throws IOException {
+
+    }
+  }
+
+  class ThrowingNothing {
+    ThrowingNothing(int i) {
 
     }
   }
