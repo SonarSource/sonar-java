@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 @Rule(key = "S5776")
 public class ExpectedExceptionCheck extends AbstractMethodDetection {
 
-  private static final String MESSAGE = "Do not test exceptions via ExpectedException before other assertions.";
+  private static final String MESSAGE = "Consider using org.junit.Assert.assertThrows before other assertions.";
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
