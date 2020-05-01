@@ -1,6 +1,6 @@
 {
-  "title": "Changing or bypassing accessibility is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Reflection should not be used to increase accessibility of classes, methods, or fields",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,7 +10,7 @@
     "cert",
     "owasp-a3"
   ],
-  "defaultSeverity": "Critical",
+  "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-3011",
   "sqKey": "S3011",
   "scope": "Main",
