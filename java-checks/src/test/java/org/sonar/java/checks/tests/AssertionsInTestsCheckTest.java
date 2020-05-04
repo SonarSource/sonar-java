@@ -64,7 +64,8 @@ class AssertionsInTestsCheckTest {
     "WireMock",
     "VertX",
     "Selenide",
-    "JMockit"
+    "JMockit",
+    "Awaitility"
   })
   void test(String framework) {
     JavaCheckVerifier.newVerifier()

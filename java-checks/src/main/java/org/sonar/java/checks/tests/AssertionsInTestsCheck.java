@@ -79,7 +79,9 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     // JMockit
     MethodMatchers.create().ofTypes("mockit.Verifications").constructor().withAnyParameters().build(),
     // Eclipse Vert.x
-    MethodMatchers.create().ofTypes("io.vertx.ext.unit.TestContext").name(name -> name.startsWith("asyncAssert")).addWithoutParametersMatcher().build());
+    MethodMatchers.create().ofTypes("io.vertx.ext.unit.TestContext").name(name -> name.startsWith("asyncAssert")).addWithoutParametersMatcher().build(),
+    // Awaitility
+    MethodMatchers.create().ofTypes("org.awaitility.core.ConditionFactory").name(name -> name.startsWith("until")).withAnyParameters().build());
 
   private static final MethodMatchers REACTIVE_X_TEST_METHODS =
     MethodMatchers.create().ofSubTypes("rx.Observable", "io.reactivex.Observable").names("test").withAnyParameters().build();
