@@ -62,7 +62,7 @@ public class TestAnnotationWithExpectedExceptionCheck extends IssuableSubscripti
     });
   }
 
-  private static Optional<IdentifierTree> findExpectedException(List<AnnotationTree> annotations) {
+  private static Optional<ExpressionTree> findExpectedException(List<AnnotationTree> annotations) {
     for (AnnotationTree annotation : annotations) {
       if (annotation.annotationType().symbolType().is("org.junit.Test")) {
         for (ExpressionTree argument : annotation.arguments()) {
@@ -70,7 +70,7 @@ public class TestAnnotationWithExpectedExceptionCheck extends IssuableSubscripti
             AssignmentExpressionTree assignment = (AssignmentExpressionTree) argument;
             IdentifierTree identifier = (IdentifierTree) assignment.variable();
             if (identifier.name().equals("expected")) {
-              return Optional.of(identifier);
+              return Optional.of(assignment);
             }
           }
         }
