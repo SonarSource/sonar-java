@@ -21,6 +21,7 @@ package org.sonar.java.checks.helpers;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -28,6 +29,20 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import static java.util.Arrays.asList;
 
 public final class UnitTestUtils {
+
+  public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.create()
+    .ofTypes(
+      // JUnit 5
+      "org.junit.jupiter.api.Assertions",
+      // JUnit 4
+      "org.junit.Assert",
+      // JUnit 3
+      "junit.framework.Assert",
+      // Fest assert
+      "org.fest.assertions.Fail",
+      // AssertJ
+      "org.assertj.core.api.Fail"
+    ).names("fail").withAnyParameters().build();
 
   private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList("org.junit.Test", "org.testng.annotations.Test"));
   private static final Set<String> JUNIT5_TEST_ANNOTATIONS = new HashSet<>(asList(

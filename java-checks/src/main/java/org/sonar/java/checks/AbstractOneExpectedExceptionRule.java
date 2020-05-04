@@ -46,6 +46,8 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
+import static org.sonar.java.checks.helpers.UnitTestUtils.FAIL_METHOD_MATCHER;
+
 public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscriptionVisitor {
 
   private static final String JUNIT4_ASSERT = "org.junit.Assert";
@@ -59,12 +61,6 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
   private static final MethodMatchers ALL_ASSERT_THROWS_MATCHER = MethodMatchers.create()
     .ofTypes(JUNIT4_ASSERT, "org.junit.jupiter.api.Assertions")
     .names("assertThrows")
-    .withAnyParameters()
-    .build();
-
-  static final MethodMatchers JUNIT_FAIL_MATCHER = MethodMatchers.create()
-    .ofTypes(JUNIT4_ASSERT, "org.junit.jupiter.api.Assertions")
-    .names("fail")
     .withAnyParameters()
     .build();
 
@@ -120,7 +116,7 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
       if (lastElement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
         ExpressionTree expressionTree = ((ExpressionStatementTree) lastElement).expression();
         if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-          return JUNIT_FAIL_MATCHER.matches((MethodInvocationTree) expressionTree);
+          return FAIL_METHOD_MATCHER.matches((MethodInvocationTree) expressionTree);
         }
       }
     }

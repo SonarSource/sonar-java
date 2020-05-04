@@ -25,6 +25,8 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.java.checks.helpers.UnitTestUtils.FAIL_METHOD_MATCHER;
+
 @Rule(key = "S5778")
 public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExceptionRule {
 
@@ -38,7 +40,7 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
       return;
     }
 
-    MethodInvocationCollector visitor = new MethodInvocationCollector(symbol -> !JUNIT_FAIL_MATCHER.matches(symbol));
+    MethodInvocationCollector visitor = new MethodInvocationCollector(symbol -> !FAIL_METHOD_MATCHER.matches(symbol));
     treeToVisit.accept(visitor);
     List<Tree> invocationTree = visitor.invocationTree;
     if (invocationTree.size() > 1) {
