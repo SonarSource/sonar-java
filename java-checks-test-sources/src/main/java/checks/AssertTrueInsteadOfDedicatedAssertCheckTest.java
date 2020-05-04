@@ -105,6 +105,7 @@ public class AssertTrueInsteadOfDedicatedAssertCheckTest {
     Assertions.assertFalse(bar == foo); // Noncompliant
     Assertions.assertFalse(null != foo, "message"); // Noncompliant
     Assertions.assertFalse(null != foo, () -> "message"); // Noncompliant
+    Assertions.assertTrue(() -> foo == bar); // false-negative because BooleanSupplier is not supported by this rule
   }
 
   void testPrimitiveAndBoxedTypesSpecialCases() {

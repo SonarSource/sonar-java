@@ -19,17 +19,16 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -40,6 +39,13 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
 
 @Rule(key = "S5785")
 public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetection {
+
+  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
+
+  private static final MethodMatchers EQUALS_METHODS = MethodMatchers.or(
+    MethodMatchers.create().ofAnyType().names("equals").addParametersMatcher(JAVA_LANG_OBJECT).build(),
+    MethodMatchers.create().ofTypes("java.util.Objects").names("equals").addParametersMatcher(JAVA_LANG_OBJECT, JAVA_LANG_OBJECT)
+      .build());
 
   private static final String[] ASSERT_METHOD_NAMES = {"assertTrue", "assertFalse"};
   private static final String[] ASSERTION_CLASSES = {
@@ -52,6 +58,15 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
     "org.junit.jupiter.api.Assertions"
   };
 
+  private static final Map<Assertion, Assertion> COMPLEMENTS = ImmutableMap.<Assertion, Assertion>builder()
+    .put(Assertion.NULL, Assertion.NOT_NULL)
+    .put(Assertion.NOT_NULL, Assertion.NULL)
+    .put(Assertion.SAME, Assertion.NOT_SAME)
+    .put(Assertion.NOT_SAME, Assertion.SAME)
+    .put(Assertion.EQUALS, Assertion.NOT_EQUALS)
+    .put(Assertion.NOT_EQUALS, Assertion.EQUALS)
+    .build();
+
   private enum Assertion {
     NULL("Null", "A null-check"),
     NOT_NULL("NotNull", "A null-check"),
@@ -62,10 +77,15 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
 
     public final String methodName;
     public final String actionDescription;
+    public final String useInsteadMessage;
+    public final String secondaryExplanationMessage;
 
     Assertion(String namePostfix, String actionDescription) {
-      methodName = "assert" + namePostfix;
+      this.methodName = "assert" + namePostfix;
       this.actionDescription = actionDescription;
+      this.useInsteadMessage = String.format("Use %s instead.", methodName);
+      this.secondaryExplanationMessage =
+        String.format("%s is performed here, which is better expressed with %s.", actionDescription, methodName);
     }
   }
 
@@ -76,48 +96,23 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (!hasSemantic()) {
-      return;
-    }
-
-    Arguments arguments = mit.arguments();
-
-    ExpressionTree argumentExpression;
-    if (hasBooleanArgumentAtPosition(arguments, 0)) {
-      argumentExpression = arguments.get(0);
-    } else if (hasBooleanArgumentAtPosition(arguments, arguments.size() - 1)) {
-      argumentExpression = arguments.get(arguments.size() - 1);
-    } else {
-      // We encountered a JUnit5 assert[True|False] method that accepts a BooleanSupplier - not supported.
-      return;
-    }
-
-    Optional<Assertion> replacementAssertionOpt = getReplacementAssertion(argumentExpression);
-
-    if (replacementAssertionOpt.isPresent()) {
-      IdentifierTree problematicAssertionCallIdentifier = ExpressionUtils.methodName(mit);
-      if (problematicAssertionCallIdentifier.name().equals("assertFalse")) {
-        replacementAssertionOpt = complement(replacementAssertionOpt.get());
-
-        if (!replacementAssertionOpt.isPresent()) {
-          return;
-        }
-      }
-
-      Assertion replacementAssertion = replacementAssertionOpt.get();
-
-      List<JavaFileScannerContext.Location> secondaryLocation = Collections.singletonList(new JavaFileScannerContext.Location(
-        String.format("%s is performed here, which is better expressed with %s.",
-          replacementAssertion.actionDescription, replacementAssertion.methodName),
-        argumentExpression));
-      String message = String.format("Use %s instead.", replacementAssertion.methodName);
-
-      reportIssue(problematicAssertionCallIdentifier, message, secondaryLocation, null);
-    }
+    mit.arguments().stream()
+      .filter(argument -> argument.symbolType().isPrimitive(Type.Primitives.BOOLEAN))
+      .findFirst()
+      .ifPresent(argument -> checkBooleanExpressionInAssertMethod(ExpressionUtils.methodName(mit), argument));
   }
 
-  private static boolean hasBooleanArgumentAtPosition(Arguments arguments, int index) {
-    return arguments.size() > index && arguments.get(index).symbolType().isPrimitive(Type.Primitives.BOOLEAN);
+  private void checkBooleanExpressionInAssertMethod(IdentifierTree problematicAssertionCallIdentifier, ExpressionTree argumentExpression) {
+    Optional<Assertion> replacementAssertionOpt = getReplacementAssertion(argumentExpression);
+    if (problematicAssertionCallIdentifier.name().equals("assertFalse")) {
+      replacementAssertionOpt = replacementAssertionOpt.map(COMPLEMENTS::get);
+    }
+
+    replacementAssertionOpt.ifPresent(replacementAssertion -> reportIssue(
+      problematicAssertionCallIdentifier,
+      replacementAssertion.useInsteadMessage,
+      Collections.singletonList(new JavaFileScannerContext.Location(replacementAssertion.secondaryExplanationMessage, argumentExpression)),
+      null));
   }
 
   /**
@@ -126,11 +121,7 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
    * @param argumentExpression the boolean expression passed to assertTrue
    * @return the assertion method to be used instead of assertTrue, or {@code null} if no better assertion method was determined
    */
-  private static Optional<Assertion> getReplacementAssertion(@Nullable ExpressionTree argumentExpression) {
-    if (argumentExpression == null) {
-      return Optional.empty();
-    }
-
+  private static Optional<Assertion> getReplacementAssertion(ExpressionTree argumentExpression) {
     Assertion assertion = null;
 
     switch (argumentExpression.kind()) {
@@ -153,12 +144,12 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
         }
         break;
       case METHOD_INVOCATION:
-        if (ExpressionUtils.methodName((MethodInvocationTree) argumentExpression).name().equals("equals")) {
+        if (EQUALS_METHODS.matches((MethodInvocationTree) argumentExpression)) {
           assertion = Assertion.EQUALS;
         }
         break;
       case LOGICAL_COMPLEMENT:
-        return complement(getReplacementAssertion(((UnaryExpressionTree) argumentExpression).expression()).orElse(null));
+        return getReplacementAssertion(((UnaryExpressionTree) argumentExpression).expression()).map(COMPLEMENTS::get);
       default:
     }
 
@@ -171,35 +162,5 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
 
   private static boolean isPrimitiveComparison(BinaryExpressionTree bet) {
     return bet.leftOperand().symbolType().isPrimitive() || bet.rightOperand().symbolType().isPrimitive();
-  }
-
-  private static Optional<Assertion> complement(@Nullable Assertion assertion) {
-    if (assertion == null) {
-      return Optional.empty();
-    }
-
-    Assertion complement = null;
-    switch (assertion) {
-      case NULL:
-        complement = Assertion.NOT_NULL;
-        break;
-      case NOT_NULL:
-        complement = Assertion.NULL;
-        break;
-      case SAME:
-        complement = Assertion.NOT_SAME;
-        break;
-      case NOT_SAME:
-        complement = Assertion.SAME;
-        break;
-      case EQUALS:
-        complement = Assertion.NOT_EQUALS;
-        break;
-      case NOT_EQUALS:
-        complement = Assertion.EQUALS;
-        break;
-    }
-
-    return Optional.of(complement);
   }
 }
