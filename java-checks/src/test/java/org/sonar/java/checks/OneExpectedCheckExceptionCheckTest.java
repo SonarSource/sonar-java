@@ -22,31 +22,16 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-class AnonymousClassShouldBeLambdaCheckTest {
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
+class OneExpectedCheckExceptionCheckTest {
 
   @Test
-  void java8() {
+  void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AnonymousClassShouldBeLambdaCheck.java")
-      .withCheck(new AnonymousClassShouldBeLambdaCheck())
-      .withJavaVersion(8)
+      .onFile(testSourcesPath("checks/OneExpectedCheckExceptionCheck.java"))
+      .withCheck(new OneExpectedCheckExceptionCheck())
       .verifyIssues();
   }
 
-  @Test
-  void java7() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AnonymousClassShouldBeLambdaCheck_java7.java")
-      .withCheck(new AnonymousClassShouldBeLambdaCheck())
-      .withJavaVersion(7)
-      .verifyNoIssues();
-  }
-
-  @Test
-  void unknown_version() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AnonymousClassShouldBeLambdaCheck_no_version.java")
-      .withCheck(new AnonymousClassShouldBeLambdaCheck())
-      .verifyIssues();
-  }
 }

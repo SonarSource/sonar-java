@@ -1,0 +1,52 @@
+<p>When verifying that code raises an exception, a good practice is to avoid having multiple method calls inside the tested code, to be explicit about
+what is exactly tested.</p>
+<p>When two of the methods can raise the same <strong>checked</strong> exception, not respecting this good practice is a bug, since it is not possible
+to know what is really tested.</p>
+<p>You should make sure that only one method can raise the expected checked exception in the tested code.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Test
+public void testG() {
+  // Do you expect g() or f() throwing the exception?
+  assertThrows(IOException.class, () -&gt; g(f(1)) ); // Noncompliant
+}
+
+@Test
+public void testGTryCatchIdiom() {
+  try {
+    g(f(1)); // Noncompliant
+    Assert.fail("Expected an IOException to be thrown");
+  } catch (IOException e) {
+    // Test exception message...
+  }
+}
+
+int f(int x) throws IOException {
+  // ...
+}
+
+int g(int x) throws IOException {
+  // ...
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+@Test
+public void testG() {
+  int y = f(1);
+  // It is explicit that we expect an exception from g() and not f()
+  assertThrows(IOException.class, () -&gt; g(y) );
+}
+
+@Test
+public void testGTryCatchIdiom() {
+  int y = f(1);
+  try {
+    g(y);
+    Assert.fail("Expected an IOException to be thrown");
+  } catch (IOException e) {
+    // Test exception message...
+  }
+}
+</pre>
+

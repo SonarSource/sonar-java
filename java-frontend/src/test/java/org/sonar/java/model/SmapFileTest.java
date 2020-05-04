@@ -19,18 +19,14 @@
  */
 package org.sonar.java.model;
 
-import java.io.FileNotFoundException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
-import java.util.Scanner;
 import java.util.Set;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.junit.rules.TemporaryFolder;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 
@@ -44,8 +40,8 @@ public class SmapFileTest {
   @Rule
   public LogTester logTester = new LogTester();
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir
+  public Path temporaryFolder;
 
   @Test
   public void test() throws Exception {
@@ -66,10 +62,8 @@ public class SmapFileTest {
       "160#2,3:300,2\n" +
       "160,3:300,2\n" +
       "*E\n";
-    Path path = temporaryFolder.newFile("test_jsp.class.smap").toPath();
-    Files.write(path, sourceMap.getBytes(StandardCharsets.UTF_8));
-    SmapFile smap = SmapFile.fromPath(path, Paths.get(""));
-    assertThat(smap.getGeneratedFile()).isEqualTo(path.resolveSibling("test_jsp.java"));
+    SmapFile smap = new SmapFile(temporaryFolder, sourceMap);
+    assertThat(smap.getGeneratedFile()).isEqualTo(temporaryFolder.resolve("test_jsp.java"));
     assertThat(smap.getFileSection()).containsExactly(
       entry(0, new SmapFile.FileInfo(0, "test.jsp", "WEB-INF/test.jsp")),
       entry(2, new SmapFile.FileInfo(2, "Incl.xyz", null))
@@ -89,45 +83,36 @@ public class SmapFileTest {
   public void invalid_file() {
     Path uriRoot = Paths.get("");
     Path p = Paths.get("file.class.smap");
-    assertThatThrownBy(() -> new SmapFile(p, uriRoot, new Scanner("not a smap file")))
+    assertThatThrownBy(() -> new SmapFile(p, "not a smap file"))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Not a source map");
 
-    assertThatThrownBy(() -> new SmapFile(p, uriRoot, new Scanner("SMAP\ntest.groovy\nGroovy\n\n")))
+    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.groovy\nGroovy\n\n"))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Not a JSP source map");
 
-    assertThatThrownBy(() -> new SmapFile(p, uriRoot, new Scanner("SMAP\ntest.jsp\nJSP\n*E")))
+    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*E"))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Section *S JSP not found");
 
-    assertThatThrownBy(() -> new SmapFile(p, uriRoot, new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*E")))
+    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*S JSP\n*E"))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Section *F not found");
 
-    assertThatThrownBy(() -> new SmapFile(p, uriRoot, new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n")))
+    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n"))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Section *L not found");
   }
 
   @Test
   public void invalid_line_info() {
-    Path uriRoot = Paths.get("");
     Path p = Paths.get("file.class.smap");
 
-    new SmapFile(p, uriRoot, new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n" +
+    new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n" +
       "invalid line info\n"
-      ));
+      );
 
     assertThat(logTester.logs(LoggerLevel.WARN)).contains("Invalid line info invalid line info");
-  }
-
-  @Test
-  public void nonexisting_path() {
-    assertThatThrownBy(() -> SmapFile.fromPath(Paths.get("nonexisting.java"), Paths.get("")))
-      .isInstanceOf(IllegalStateException.class)
-      .hasCauseInstanceOf(FileNotFoundException.class)
-      .hasMessage("Error reading sourcemap nonexisting.java");
   }
 
   @Test
@@ -169,8 +154,8 @@ public class SmapFileTest {
 
   @Test
   public void smapfile_tostring() {
-    SmapFile smapFile = new SmapFile(Paths.get("nonexisting.java"), Paths.get(""), new Scanner("SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n"));
-    assertThat(smapFile.toString()).isEqualTo("test.jsp");
+    SmapFile smapFile = new SmapFile(Paths.get("dir"), "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n");
+    assertThat(smapFile.toString()).isEqualTo(Paths.get("dir/test.jsp").toString());
   }
 
 }

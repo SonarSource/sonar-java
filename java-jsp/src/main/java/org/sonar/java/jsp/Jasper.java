@@ -35,13 +35,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.servlet.jsp.JspFactory;
 import org.apache.jasper.JasperException;
 import org.apache.jasper.JspCompilationContext;
 import org.apache.jasper.compiler.Compiler;
 import org.apache.jasper.compiler.JspRuntimeContext;
+import org.apache.jasper.compiler.SmapStratum;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.jasper.servlet.JspCServletContext;
 import org.sonar.api.batch.fs.FilePredicates;
@@ -60,7 +60,7 @@ public class Jasper {
   private static final Logger LOG = Loggers.get(Jasper.class);
 
   public Collection<GeneratedFile> generateFiles(SensorContext sensorContext, List<File> javaClasspath) {
-    List<Path> jspFiles = jspFiles(sensorContext.fileSystem());
+    List<InputFile> jspFiles = jspFiles(sensorContext.fileSystem());
     LOG.debug("Found {} JSP files.", jspFiles.size());
     if (jspFiles.isEmpty()) {
       return Collections.emptyList();
@@ -82,9 +82,11 @@ public class Jasper {
       JspRuntimeContext runtimeContext = new JspRuntimeContext(servletContext, options);
 
       boolean errorTranspiling = false;
-      for (Path jsp : jspFiles) {
+      Map<Path, GeneratedFile> generatedJavaFiles = new HashMap<>();
+      for (InputFile jsp : jspFiles) {
         try {
-          transpileJsp(jsp, uriRoot, classLoader, servletContext, options, runtimeContext);
+          Path generatedFile = transpileJsp(jsp.path(), uriRoot, classLoader, servletContext, options, runtimeContext);
+          generatedJavaFiles.put(generatedFile, new GeneratedFile(generatedFile, jsp));
         } catch (Exception e) {
           errorTranspiling = true;
           LOG.debug("Error transpiling " + jsp, e);
@@ -93,7 +95,14 @@ public class Jasper {
       if (errorTranspiling) {
         LOG.warn("Some JSP pages failed to transpile. Enable debug log for details.");
       }
-      return findGeneratedFiles(outputDir, uriRoot);
+      runtimeContext.getSmaps().values().forEach(smap -> {
+        SmapFile smapFile = createSmapFile(smap);
+        GeneratedFile generatedFile = generatedJavaFiles.get(smapFile.getGeneratedFile());
+        if (generatedFile != null) {
+          generatedFile.addSmap(smapFile);
+        }
+      });
+      return generatedJavaFiles.values();
     } catch (Exception e) {
       LOG.warn("Failed to transpile JSP files.", e);
       return Collections.emptyList();
@@ -102,7 +111,13 @@ public class Jasper {
     }
   }
 
-  private static void transpileJsp(Path jsp, Path uriRoot, ClassLoader classLoader, JspCServletContext servletContext,
+  private static SmapFile createSmapFile(SmapStratum smapStratum) {
+    Path smapRoot = Paths.get(smapStratum.getClassFileName()).getParent();
+    return new SmapFile(smapRoot, smapStratum.getSmapString());
+  }
+
+
+  private static Path transpileJsp(Path jsp, Path uriRoot, ClassLoader classLoader, JspCServletContext servletContext,
                                    JasperOptions options, JspRuntimeContext runtimeContext) throws Exception {
     LOG.debug("Transpiling JSP: {}", jsp);
     // on windows we need to replace \ in path to / to form uri (see org.apache.jasper.JspC#processFile)
@@ -112,6 +127,7 @@ public class Jasper {
     compilationContext.setClassLoader(classLoader);
     Compiler compiler = compilationContext.createCompiler();
     compiler.compile(false, true);
+    return Paths.get(compilationContext.getServletJavaFileName());
   }
 
   JasperOptions getJasperOptions(Path outputDir, JspCServletContext servletContext) {
@@ -136,10 +152,9 @@ public class Jasper {
     return Optional.empty();
   }
 
-  private static List<Path> jspFiles(FileSystem fs) {
+  private static List<InputFile> jspFiles(FileSystem fs) {
     Iterable<InputFile> inputFiles = fs.inputFiles(fs.predicates().hasLanguage("jsp"));
     return StreamSupport.stream(inputFiles.spliterator(), false)
-      .map(InputFile::path)
       .collect(Collectors.toList());
   }
 
@@ -173,20 +188,6 @@ public class Jasper {
     }
   }
 
-  private static Collection<GeneratedFile> findGeneratedFiles(Path outputDir, Path uriRoot) {
-    Map<Path, GeneratedFile> generatedFiles = new HashMap<>();
-    try (Stream<Path> fileStream = walk(outputDir)) {
-      fileStream
-        .filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".smap"))
-        .map(p -> SmapFile.fromPath(p, uriRoot))
-        .forEach(smap -> {
-          GeneratedFile generatedFile = generatedFiles.computeIfAbsent(smap.getGeneratedFile(), p -> new GeneratedFile(smap.getGeneratedFile()));
-          generatedFile.addSmap(smap);
-        });
-      LOG.debug("Generated {} Java files.", generatedFiles.size());
-      return generatedFiles.values();
-    }
-  }
 
   static Path outputDir(SensorContext sensorContext) {
     Path path = sensorContext.fileSystem().workDir().toPath().resolve("jsp");
@@ -196,14 +197,6 @@ public class Jasper {
       throw new IllegalStateException("Failed to create output dir for jsp files", ex);
     }
     return path;
-  }
-
-  static Stream<Path> walk(Path dir) {
-    try {
-      return Files.walk(dir);
-    } catch (IOException e) {
-      throw new IllegalArgumentException("Failed to walk " + dir, e);
-    }
   }
 
   /**

@@ -109,6 +109,7 @@ import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
 import org.sonar.java.checks.synchronization.ValueBasedObjectUsedForLockCheck;
 import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
+import org.sonar.java.checks.tests.JUnitMethodDeclarationCheck;
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
 import org.sonar.java.checks.unused.UnusedMethodParameterCheck;
@@ -720,12 +721,14 @@ public final class CheckList {
       AssertTrueInsteadOfDedicatedAssertCheck.class,
       BadTestClassNameCheck.class,
       BadTestMethodNameCheck.class,
-      BooleanLiteralInAssertionsCheck.class,
+      BooleanOrNullLiteralInAssertionsCheck.class,
       CallSuperInTestCaseCheck.class,
+      ExpectedExceptionCheck.class,
       IgnoredTestsCheck.class,
-      JunitMethodDeclarationCheck.class,
+      JUnitMethodDeclarationCheck.class,
       JunitNestedAnnotationCheck.class,
       NoTestInTestClassCheck.class,
+      OneExpectedCheckExceptionCheck.class,
       TestClassAndMethodVisibilityCheck.class,
       ThreadSleepInTestsCheck.class,
       UnusedTestRuleCheck.class);

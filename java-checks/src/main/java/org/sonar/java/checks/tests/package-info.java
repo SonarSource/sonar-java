@@ -17,24 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+@ParametersAreNonnullByDefault
+package org.sonar.java.checks.tests;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
-
-class AssertionsCompletenessCheckTest {
-
-  @Test
-  void test() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AssertionsCompletenessCheck.java")
-      .withCheck(new AssertionsCompletenessCheck())
-      .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AssertionsCompletenessCheck.java")
-      .withCheck(new AssertionsCompletenessCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
-  }
-
-}
+import javax.annotation.ParametersAreNonnullByDefault;

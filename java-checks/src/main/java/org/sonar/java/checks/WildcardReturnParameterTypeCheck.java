@@ -24,11 +24,13 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 @Rule(key = "S1452")
@@ -57,19 +59,24 @@ public class WildcardReturnParameterTypeCheck extends IssuableSubscriptionVisito
 
   private class CheckWildcard extends BaseTreeVisitor {
 
-    private boolean classType = false;
-
     @Override
     public void visitParameterizedType(ParameterizedTypeTree tree) {
-      classType = tree.type().symbolType().is("java.lang.Class");
+      Type symbolType = tree.type().symbolType();
+      TypeArguments typeArguments = tree.typeArguments();
+
+      if (typeArguments.size() == 3 && symbolType.is("java.util.stream.Collector")) {
+        // Second type parameter of Collector is ignored as it is an implementation detail
+        reportIfWildcard(typeArguments.get(0));
+        reportIfWildcard(typeArguments.get(2));
+      } else if (!symbolType.is("java.lang.Class")) {
+        typeArguments.forEach(this::reportIfWildcard);
+      }
       super.visitParameterizedType(tree);
-      classType = false;
     }
 
-    @Override
-    public void visitWildcard(WildcardTree tree) {
-      if (!classType) {
-        reportIssue(tree.queryToken(), "Remove usage of generic wildcard type.");
+    private void reportIfWildcard(Tree tree) {
+      if (tree.is(Tree.Kind.EXTENDS_WILDCARD, Tree.Kind.UNBOUNDED_WILDCARD, Tree.Kind.SUPER_WILDCARD)) {
+        reportIssue(((WildcardTree) tree).queryToken(), "Remove usage of generic wildcard type.");
       }
     }
   }
