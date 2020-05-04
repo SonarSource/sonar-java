@@ -26,16 +26,14 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import static org.sonar.java.checks.helpers.UnitTestUtils.FAIL_METHOD_MATCHER;
+
 @Rule(key = "S3658")
 public class AssertionFailInCatchBlockCheck extends AbstractMethodDetection {
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.or(
-      MethodMatchers.create().ofTypes("org.junit.Assert").names("fail").withAnyParameters().build(),
-      MethodMatchers.create().ofTypes("org.junit.jupiter.api.Assertions").names("fail").withAnyParameters().build(),
-      MethodMatchers.create().ofTypes("junit.framework.Assert").name(name -> name.startsWith("fail")).withAnyParameters().build(),
-      MethodMatchers.create().ofTypes("org.fest.assertions.Fail").names("fail").withAnyParameters().build());
+    return FAIL_METHOD_MATCHER;
   }
 
   @Override
