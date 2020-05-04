@@ -54,7 +54,7 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
     if(mit.symbol().name().equals("setAccessible")) {
       checkAccessibilityUpdate(mit);
     } else {
-      reportIssue(mit, "Make sure that this accessibility bypass is safe here.");
+      reportIssue(mit, "This accessibility bypass should be removed.");
     }
   }
 
@@ -65,7 +65,7 @@ public class AccessibilityChangeCheck extends AbstractMethodDetection {
       arg = arguments.get(1);
     }
     if (Boolean.TRUE.equals(ExpressionsHelper.getConstantValueAsBoolean(arg).value())) {
-      reportIssue(mit, "Make sure that this accessibility update is safe here.");
+      reportIssue(mit, "This accessibility update should be removed.");
     }
   }
 }
