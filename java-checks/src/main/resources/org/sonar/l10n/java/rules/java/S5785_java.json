@@ -1,0 +1,13 @@
+{
+  "title": "JUnit assertTrue\/assertFalse should be simplified to the corresponding dedicated assertion",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "tags": [
+    "junit",
+    "tests"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5785",
+  "sqKey": "S5785",
+  "scope": "Tests"
+}
