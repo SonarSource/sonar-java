@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -32,12 +30,10 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-@Rule(key = "S5786")
-public class TestClassAndMethodVisibilityCheck extends IssuableSubscriptionVisitor {
+public abstract class AbstractJUnit5NotCompliantModifierChecker extends IssuableSubscriptionVisitor {
 
-  private static final List<Modifier> NON_COMPLIANT_MODIFIERS = Arrays.asList(Modifier.PUBLIC, Modifier.PRIVATE, Modifier.PROTECTED);
+  protected abstract boolean isNotCompliant(Modifier modifier);
 
-  @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
   }
@@ -55,18 +51,18 @@ public class TestClassAndMethodVisibilityCheck extends IssuableSubscriptionVisit
       .filter(UnitTestUtils::hasJUnit5TestAnnotation)
       .collect(Collectors.toList());
 
-    testMethods.stream().map(MethodTree::modifiers).forEach(this::raiseIssueOnPresentAccessModifiers);
+    testMethods.stream().map(MethodTree::modifiers).forEach(this::raiseIssueOnNotCompliantModifiers);
 
     if (!testMethods.isEmpty()) {
-      raiseIssueOnPresentAccessModifiers(classTree.modifiers());
+      raiseIssueOnNotCompliantModifiers(classTree.modifiers());
     }
   }
 
-  private void raiseIssueOnPresentAccessModifiers(ModifiersTree modifierTree) {
+  private void raiseIssueOnNotCompliantModifiers(ModifiersTree modifierTree) {
     modifierTree.modifiers().stream()
-      .filter(modifierKeyword -> NON_COMPLIANT_MODIFIERS.contains(modifierKeyword.modifier()))
-      .map(modifierKeywordTree -> (Tree) modifierKeywordTree)
+      .filter(modifier -> isNotCompliant(modifier.modifier()))
       .findFirst()
-      .ifPresent(modifierKeyword -> reportIssue(modifierKeyword, "Remove this access modifier"));
+      .ifPresent(modifier -> reportIssue(modifier, "Remove this '" + modifier.keyword().text() + "' modifier."));
   }
+
 }

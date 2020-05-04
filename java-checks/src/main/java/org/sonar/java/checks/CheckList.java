@@ -725,12 +725,13 @@ public final class CheckList {
       CallSuperInTestCaseCheck.class,
       ExpectedExceptionCheck.class,
       IgnoredTestsCheck.class,
+      JUnit5DefaultPackageClassAndMethodCheck.class,
+      JUnit5PrivateClassAndMethodCheck.class,
       JUnitMethodDeclarationCheck.class,
       JunitNestedAnnotationCheck.class,
       NoTestInTestClassCheck.class,
       OneExpectedCheckedExceptionCheck.class,
       OneExpectedRuntimeExceptionCheck.class,
-      TestClassAndMethodVisibilityCheck.class,
       ThreadSleepInTestsCheck.class,
       UnusedTestRuleCheck.class);
   }

@@ -1,15 +1,11 @@
-<p>JUnit5 is more tolerant regarding the visibilities of Test classes than JUnit4, which required everything to be \<code>public</code>.</p>
+<p>JUnit5 is more tolerant regarding the visibilities of Test classes than JUnit4, which required everything to be <code>public</code>.</p>
 <p>In this context, JUnit5 test classes can have any visibility but <code>private</code>, however, it is recommended to use the default package
 visibility, which improves readability of code.</p>
-<p>Similarly, simply annotating a method with <code>@Test</code> is not enough to make it executed as a test, it also needs adequate
-visibility.&nbsp;With JUnit5, while technically a test method can be anything but <code>private</code>&nbsp;to be executed, it is recommended to not
-add any modifiers and let it with the default package visibility, for simplicity. However, note that a private test method is systematically ignored,
-without proper warning.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
 import org.junit.jupiter.api.Test;
 
-public class MyClassTest { // Noncompliant
+public class MyClassTest { // Noncompliant - modifier can be removed
   @Test
   protected void test() { // Noncompliant - modifier can be removed
     // ...
@@ -27,6 +23,9 @@ class MyClassTest {
   }
 }
 </pre>
+<h2>Exceptions</h2>
+<p>This rule does not raise an issue about <code>private</code> visibility, because <code>private</code> test methods and classes are systematically
+ignored by JUnit5, without a proper warning. It's not a <code>Code Smell</code> but a <code>Bug</code> handled by the rule S5810.</p>
 <h2>See</h2>
 <ul>
   <li> <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-classes-and-methods">JUnit 5 Test Classes and Methods</a> </li>

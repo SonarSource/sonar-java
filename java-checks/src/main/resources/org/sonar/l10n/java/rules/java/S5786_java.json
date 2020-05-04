@@ -1,5 +1,5 @@
 {
-  "title": "JUnit5 test classes and methods should have adequate visibility",
+  "title": "JUnit5 test classes and methods should have default package visibility",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -10,7 +10,7 @@
     "junit",
     "tests"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Info",
   "ruleSpecification": "RSPEC-5786",
   "sqKey": "S5786",
   "scope": "Tests"
