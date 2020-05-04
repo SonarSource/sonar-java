@@ -21,7 +21,7 @@ public class OneExpectedCheckedExceptionCheck {
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)) ); // Noncompliant
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)), "Message"); // Noncompliant
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)), () -> "message"); // Noncompliant
-    assertThrows(IOException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=25,26] {{Refactor the code of this assertThrows in order to have only one invocation throwing an expected exception.}}
+    assertThrows(IOException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=25,26] {{Refactor the code of this assertThrows to have only one invocation throwing an exception.}}
         if (throwIOException2(1) ==
           throwIOException(1)) {}
       } );
@@ -50,7 +50,7 @@ public class OneExpectedCheckedExceptionCheck {
 
   @Test
   public void testGTryCatchIdiom() {
-    try { // Noncompliant [[sc=5;ec=8;secondary=54,55]] {{Refactor the body of this try/catch in order to have only one invocation throwing an expected exception.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=54,55]] {{Refactor the body of this try/catch to have only one invocation throwing an exception.}}
       throwIOException2(
         throwIOException(1)
       );

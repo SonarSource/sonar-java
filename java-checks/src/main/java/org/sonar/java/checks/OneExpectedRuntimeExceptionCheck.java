@@ -43,7 +43,7 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
     List<Tree> invocationTree = visitor.invocationTree;
     if (invocationTree.size() > 1) {
       reportIssue(reportLocation,
-        String.format("Refactor the %s in order to have only one invocation throwing an expected exception.", placeToRefactor),
+        String.format("Refactor the %s to have only one invocation throwing an exception.", placeToRefactor),
         secondaryLocations(invocationTree),
         null);
     }

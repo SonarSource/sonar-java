@@ -19,7 +19,7 @@ public class OneExpectedRuntimeExceptionCheck {
     assertThrows(IllegalStateException.class, () -> foo(foo(1)) ); // Noncompliant
     assertThrows(IllegalStateException.class, () -> foo(foo(1)), "Message"); // Noncompliant
     assertThrows(IllegalStateException.class, () -> foo(foo(1)), () -> "message"); // Noncompliant
-    assertThrows(IllegalStateException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=23,24] {{Refactor the code of this assertThrows in order to have only one invocation throwing an expected exception.}}
+    assertThrows(IllegalStateException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=23,24] {{Refactor the code of this assertThrows to have only one invocation throwing an exception.}}
       if (foo(1) ==
         foo(1)) {}
     } );
@@ -44,7 +44,7 @@ public class OneExpectedRuntimeExceptionCheck {
 
   @Test
   public void testGTryCatchIdiom() {
-    try { // Noncompliant [[sc=5;ec=8;secondary=48,49]] {{Refactor the body of this try/catch in order to have only one invocation throwing an expected exception.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=48,49]] {{Refactor the body of this try/catch to have only one invocation throwing an exception.}}
       foo(
         foo(1)
       );

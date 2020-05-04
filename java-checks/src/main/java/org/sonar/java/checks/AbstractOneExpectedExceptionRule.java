@@ -135,7 +135,7 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
 
   static List<JavaFileScannerContext.Location> secondaryLocations(List<Tree> methodInvocationTrees) {
     return methodInvocationTrees.stream()
-      .map(expr -> new JavaFileScannerContext.Location("This call can throw an expected exception", expr))
+      .map(expr -> new JavaFileScannerContext.Location("Throws an exception", expr))
       .collect(Collectors.toList());
   }
 
