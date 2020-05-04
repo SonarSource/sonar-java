@@ -1,0 +1,16 @@
+{
+  "title": "Vararg method arguments should not be confusing",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5669",
+  "sqKey": "S5669",
+  "scope": "All"
+}
