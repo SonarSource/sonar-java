@@ -6,7 +6,7 @@ public class TestAnnotationWithExpectedExceptionCheck {
     throwingMethod();
   }
 
-  @org.junit.Test(expected = ArrayIndexOutOfBoundsException.class) // Noncompliant [[sc=19;ec=27;secondary=12,13]] {{Expected exceptions should not be used on methods containing assertions.}}
+  @org.junit.Test(expected = ArrayIndexOutOfBoundsException.class) // Noncompliant [[sc=19;ec=27;secondary=12,13]] {{Move assertions into separate method or use assertThrows or try-catch instead.}}
   public void testException2() {
     throwingMethod();
     org.junit.Assert.assertTrue(true);

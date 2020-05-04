@@ -1,8 +1,9 @@
-<p>When testing exception via <code>@Test</code> annotation, any code after the raised exception will not be executed. It will prevent you to test the
-state of the program after the raised exception and, at worst, make you&nbsp;misleadingly think that it is executed.</p>
+<p>When testing exception via <code>@Test</code> annotation, having additional assertions inside that test method can be problematic because any code
+after the raised exception will not be executed. It will prevent you to test the state of the program after the raised exception and, at worst, make
+you&nbsp;misleadingly think that it is executed.</p>
 <p>You should consider moving any assertions into a separate test method where possible, or using <a
 href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a> instead.</p>
-<p> Alternatively, you could use <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a> for JUnit
+<p>Alternatively, you could use <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a> for JUnit
 version &lt; 4.13 or if your project does not support lambdas.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
@@ -18,8 +19,10 @@ private Object get() {
 }
 </pre>
 <h2>Compliant Solution</h2>
-<p> * For JUnit &gt;= 4.13, use <a
-href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a>:</p>
+<ul>
+  <li> For JUnit &gt;= 4.13, use <a
+  href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a>: </li>
+</ul>
 <pre>
 // This test correctly fails.
 @Test
@@ -29,7 +32,7 @@ public void testToString() {
     Assert.assertEquals(0, 1);
 } {code}
 
- * For JUnit &lt; 4.13, use the [try-catch idiom|https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom]:
+* For JUnit &lt; 4.13, use the [try-catch idiom|https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom]:
 {code:java}
 <p>@Test</p>
 <p>public void testShouldFail() {</p>
@@ -44,6 +47,10 @@ public void testToString() {
 </pre>
 
 <h2>See</h2>
-<p> * <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a></p>
+
+  <ul>
+
+    <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a> </li>
+  </ul>
 </pre>
 

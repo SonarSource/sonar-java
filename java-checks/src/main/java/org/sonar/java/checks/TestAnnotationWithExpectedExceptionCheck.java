@@ -54,7 +54,7 @@ public class TestAnnotationWithExpectedExceptionCheck extends IssuableSubscripti
       if (!assertionCollector.assertions.isEmpty()) {
         reportIssue(
           expected,
-          "Expected exceptions should not be used on methods containing assertions.",
+          "Move assertions into separate method or use assertThrows or try-catch instead.",
           assertionCollector.assertions,
           null
         );
