@@ -1,0 +1,13 @@
+{
+  "title": "Exception testing via JUnit @Test annotation should be avoided",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "tags": [
+    "junit",
+    "tests"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-5777",
+  "sqKey": "S5777",
+  "scope": "Tests"
+}
