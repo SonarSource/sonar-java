@@ -23,13 +23,13 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SecureXmlTransformerCheckTest {
+class SecureXmlTransformerCheckTest {
 
   /**
    * @see org.sonar.java.checks.eclipsebug.EclipseBugTest#javax_conflict()
    */
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/security/SecureXmlTransformerCheck.java")
       .withCheck(new SecureXmlTransformerCheck())

@@ -32,7 +32,7 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class SymbolicValueFactoryTest {
+class SymbolicValueFactoryTest {
 
   private static class TestSymbolicValue extends SymbolicValue {
 
@@ -47,7 +47,7 @@ public class SymbolicValueFactoryTest {
   }
 
   @Test
-  public void testFactory() {
+  void testFactory() {
     final IdentifierTree tree = new IdentifierTreeImpl(new InternalSyntaxToken(1, 1, "id", Collections.<SyntaxTrivia>emptyList(), false));
     final ConstraintManager manager = new ConstraintManager();
     SymbolicValue symbolicValue = manager.createSymbolicValue(tree);

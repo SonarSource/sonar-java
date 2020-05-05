@@ -40,12 +40,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-public class TreeTokenCompletenessTest {
+class TreeTokenCompletenessTest {
 
   private static final String EOL = System.getProperty("line.separator");
 
   @Test
-  public void test() {
+  void test() {
     // test itself
     File file = new File("src/test/java/org/sonar/java/model/TreeTokenCompletenessTest.java");
 

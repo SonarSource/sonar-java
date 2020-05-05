@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Junit5ParameterizedTest {
+class Junit5ParameterizedTest {
 
   static class A {
     public String bar(String s) {
@@ -22,7 +22,7 @@ public class Junit5ParameterizedTest {
   }
 
   @Test
-  public void myNormalJunit5Test() {
+  void myNormalJunit5Test() {
     assertThat(new A()).isNotNull();
   }
 
@@ -45,7 +45,7 @@ public class Junit5ParameterizedTest {
   class RunTest {
 
     @Test
-    public void myNormalJunit5Test() {
+    void myNormalJunit5Test() {
       assertThat(new A()).isNotNull();
     }
 

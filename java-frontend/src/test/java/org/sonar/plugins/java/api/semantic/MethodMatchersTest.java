@@ -42,10 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
-public class MethodMatchersTest {
+class MethodMatchersTest {
 
   @Test
-  public void test_types() {
+  void test_types() {
     String source = "" +
       /* 01 */ "interface A {\n" +
       /* 02 */ "  void f(int x);\n" +
@@ -96,7 +96,7 @@ public class MethodMatchersTest {
   }
 
   @Test
-  public void test_names() {
+  void test_names() {
     String source = "" +
       /* 01 */ "interface A {\n" +
       /* 02 */ "  void a(int x);\n" +
@@ -144,7 +144,7 @@ public class MethodMatchersTest {
   }
 
   @Test
-  public void test_parameters() {
+  void test_parameters() {
     String source = "" +
       /* 01 */ "interface A { \n" +
       /* 02 */ "  void f();\n" +
@@ -202,7 +202,7 @@ public class MethodMatchersTest {
   }
 
   @Test
-  public void test_tree_and_symbol_and_or() {
+  void test_tree_and_symbol_and_or() {
     String source = "" +
       /* 01 */ "package pkg;\n" +
       /* 02 */ "import java.util.function.*;\n" +
@@ -245,7 +245,7 @@ public class MethodMatchersTest {
   }
 
   @Test
-  public void test_inheritance() {
+  void test_inheritance() {
     String source = "" +
       /* 01 */ "package pkg;\n" +
       /* 02 */ "class A { }\n" +
@@ -337,67 +337,67 @@ public class MethodMatchersTest {
   }
 
   @Test
-  public void no_types() {
+  void no_types() {
     assertThrows(IllegalStateException.class,
       () -> MethodMatchers.create().ofTypes().anyName().withAnyParameters().build());
   }
 
   @Test
-  public void null_type_predicate() {
+  void null_type_predicate() {
     assertThrows(IllegalStateException.class,
       () -> MethodMatchers.create().ofType(null).anyName().withAnyParameters().build());
   }
 
   @Test
-  public void no_subtypes() {
+  void no_subtypes() {
     assertThrows(IllegalStateException.class,
       () -> MethodMatchers.create().ofSubTypes().anyName().withAnyParameters().build());
   }
 
   @Test
-  public void invalid_any_type() {
+  void invalid_any_type() {
     assertThrows(IllegalStateException.class,
       () -> MethodMatchers.create().ofTypes("A", ANY).anyName().withAnyParameters().build());
   }
 
   @Test
-  public void no_name() {
+  void no_name() {
     assertThrows(IllegalStateException.class,
       () -> MethodMatchers.create().ofAnyType().names().withAnyParameters().build());
   }
 
   @Test
-  public void null_name_predicate() {
+  void null_name_predicate() {
     assertThrows(IllegalStateException.class,
       () -> MethodMatchers.create().ofAnyType().name(null).withAnyParameters().build());
   }
 
   @Test
-  public void invalid_any_name() {
+  void invalid_any_name() {
     assertThrows(IllegalStateException.class,
       () -> MethodMatchers.create().ofAnyType().names("A", ANY).withAnyParameters().build());
   }
 
   @Test
-  public void invalid_any_parameters() {
+  void invalid_any_parameters() {
     assertThrows(IllegalStateException.class,
       () -> MethodMatchers.create().ofAnyType().anyName().addParametersMatcher("int").withAnyParameters().build());
   }
 
   @Test
-  public void null_parameter_predicate() {
+  void null_parameter_predicate() {
     assertThrows(IllegalStateException.class,
       () -> MethodMatchers.create().ofAnyType().anyName().addParametersMatcher((Predicate<List<Type>>) null).build());
   }
 
   @Test
-  public void invalid_matcher_without_parameters() {
+  void invalid_matcher_without_parameters() {
     assertThrows(IllegalStateException.class,
       () -> MethodMatchers.create().ofAnyType().anyName().build());
   }
 
   @Test
-  public void test_method_selector_and_method_identifier() {
+  void test_method_selector_and_method_identifier() {
     String source = "" +
       /* 01 */ "class A {\n" +
       /* 02 */ "  void f(A a) {\n" +

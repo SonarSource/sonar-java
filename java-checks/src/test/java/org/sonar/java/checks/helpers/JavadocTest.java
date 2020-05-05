@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavadocTest {
+class JavadocTest {
   private static CompilationUnitTree tree;
   private static Javadoc fooJavadoc;
   private static Javadoc barJavadoc;
@@ -70,7 +70,7 @@ public class JavadocTest {
   }
 
   @Test
-  public void test_no_main_description() {
+  void test_no_main_description() {
     assertThat(fooJavadoc.noMainDescription()).isFalse();
     assertThat(barJavadoc.noMainDescription()).isTrue();
     assertThat(emptyDescriptionJavadoc.noMainDescription()).isTrue();
@@ -81,7 +81,7 @@ public class JavadocTest {
   }
 
   @Test
-  public void test_no_return_description() {
+  void test_no_return_description() {
     assertThat(fooJavadoc.noReturnDescription()).isFalse();
     assertThat(barJavadoc.noReturnDescription()).isFalse();
     assertThat(emptyDescriptionJavadoc.noReturnDescription()).isTrue();
@@ -92,7 +92,7 @@ public class JavadocTest {
   }
 
   @Test
-  public void test_undocumented_parameters() {
+  void test_undocumented_parameters() {
     assertThat(fooJavadoc.undocumentedParameters()).containsExactlyInAnyOrder("c", "e");
     assertThat(barJavadoc.undocumentedParameters()).containsExactlyInAnyOrder("a");
     assertThat(emptyDescriptionJavadoc.undocumentedParameters()).containsExactlyInAnyOrder("a", "b", "c", "d", "e");
@@ -103,7 +103,7 @@ public class JavadocTest {
   }
 
   @Test
-  public void test_undocumented_thrown_exceptions() {
+  void test_undocumented_thrown_exceptions() {
     assertThat(fooJavadoc.undocumentedThrownExceptions()).containsExactlyInAnyOrder("IOException", "IllegalStateException", "B");
     assertThat(barJavadoc.undocumentedThrownExceptions()).isEmpty();
     assertThat(emptyDescriptionJavadoc.undocumentedThrownExceptions()).containsExactlyInAnyOrder("NullPointerException");
@@ -115,7 +115,7 @@ public class JavadocTest {
   }
 
   @Test
-  public void test_no_exception_on_invalid_type() {
+  void test_no_exception_on_invalid_type() {
     Javadoc invalidJavadoc = new Javadoc(tree);
     assertThat(invalidJavadoc.undocumentedParameters()).isEmpty();
     assertThat(invalidJavadoc.undocumentedThrownExceptions()).isEmpty();
@@ -124,7 +124,7 @@ public class JavadocTest {
   }
 
   @Test
-  public void test_class_javadoc() {
+  void test_class_javadoc() {
     Javadoc classJavadoc = new Javadoc(tree.types().get(0));
     assertThat(classJavadoc.noMainDescription()).isFalse();
     assertThat(classJavadoc.noReturnDescription()).isTrue();

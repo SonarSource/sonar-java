@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnableRuleMigrationSupport
-public class GeneratedFileTest {
+class GeneratedFileTest {
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -67,7 +67,7 @@ public class GeneratedFileTest {
   }
 
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     assertEquals(expected.toAbsolutePath().toString(), actual.absolutePath());
     assertEquals(expected.toString(), actual.relativePath());
     assertEquals(expected, actual.path());
@@ -88,7 +88,7 @@ public class GeneratedFileTest {
   }
 
   @Test
-  public void test_not_implemented() throws Exception {
+  void test_not_implemented() throws Exception {
     assertThrows(UnsupportedOperationException.class, () -> actual.type());
     assertThrows(UnsupportedOperationException.class, () -> actual.status());
     assertThrows(UnsupportedOperationException.class, () -> actual.lines());
@@ -100,7 +100,7 @@ public class GeneratedFileTest {
   }
 
   @Test
-  public void test_source_map() {
+  void test_source_map() {
     String smap = "SMAP\n" +
       "index_jsp.java\n" +
       "JSP\n" +
@@ -148,7 +148,7 @@ public class GeneratedFileTest {
   }
 
   @Test
-  public void sourcemap_should_be_instantiated_lazily() throws Exception {
+  void sourcemap_should_be_instantiated_lazily() throws Exception {
     String smap = "SMAP\n" +
       "index_jsp.java\n" +
       "JSP\n" +

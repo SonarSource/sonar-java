@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SimpleClassNameCheckTest {
+class SimpleClassNameCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SimpleClassNameCheck.java")
       .withCheck(new SimpleClassNameCheck())
@@ -33,7 +33,7 @@ public class SimpleClassNameCheckTest {
   }
 
   @Test
-  public void test_file_with_wildcard_import() {
+  void test_file_with_wildcard_import() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SimpleClassNameCheckWithWildCard.java")
       .withCheck(new SimpleClassNameCheck())
@@ -41,7 +41,7 @@ public class SimpleClassNameCheckTest {
   }
 
   @Test
-  public void test_without_semantic() throws Exception {
+  void test_without_semantic() throws Exception {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SimpleClassNameCheck.java")
       .withCheck(new SimpleClassNameCheck())

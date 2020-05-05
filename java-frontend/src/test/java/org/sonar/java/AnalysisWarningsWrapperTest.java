@@ -25,9 +25,9 @@ import org.sonar.api.notifications.AnalysisWarnings;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class AnalysisWarningsWrapperTest {
+class AnalysisWarningsWrapperTest {
   @Test
-  public void delegate_to_analysisWarnings() {
+  void delegate_to_analysisWarnings() {
     AnalysisWarnings analysisWarnings = mock(AnalysisWarnings.class);
 
     AnalysisWarningsWrapper wrapper = new AnalysisWarningsWrapper(analysisWarnings);

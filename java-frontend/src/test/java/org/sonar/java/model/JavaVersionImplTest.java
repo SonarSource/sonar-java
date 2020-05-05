@@ -24,10 +24,10 @@ import org.sonar.plugins.java.api.JavaVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaVersionImplTest {
+class JavaVersionImplTest {
 
   @Test
-  public void no_version_set() throws Exception {
+  void no_version_set() throws Exception {
     JavaVersion version = new JavaVersionImpl();
     assertThat(version.isJava7Compatible()).isTrue();
     assertThat(version.isJava8Compatible()).isTrue();
@@ -35,7 +35,7 @@ public class JavaVersionImplTest {
   }
 
   @Test
-  public void java_5() throws Exception {
+  void java_5() throws Exception {
     JavaVersion version = new JavaVersionImpl(5);
     assertThat(version.isJava6Compatible()).isFalse();
     assertThat(version.isJava7Compatible()).isFalse();
@@ -44,7 +44,7 @@ public class JavaVersionImplTest {
   }
 
   @Test
-  public void java_6() throws Exception {
+  void java_6() throws Exception {
     JavaVersion version = new JavaVersionImpl(6);
     assertThat(version.isJava6Compatible()).isTrue();
     assertThat(version.isJava7Compatible()).isFalse();
@@ -53,7 +53,7 @@ public class JavaVersionImplTest {
   }
 
   @Test
-  public void java_7() throws Exception {
+  void java_7() throws Exception {
     JavaVersion version = new JavaVersionImpl(7);
     assertThat(version.isJava6Compatible()).isTrue();
     assertThat(version.isJava7Compatible()).isTrue();
@@ -62,7 +62,7 @@ public class JavaVersionImplTest {
   }
 
   @Test
-  public void java_8() throws Exception {
+  void java_8() throws Exception {
     JavaVersion version = new JavaVersionImpl(8);
     assertThat(version.isJava6Compatible()).isTrue();
     assertThat(version.isJava7Compatible()).isTrue();
@@ -71,7 +71,7 @@ public class JavaVersionImplTest {
   }
 
   @Test
-  public void java_12() {
+  void java_12() {
     JavaVersion version = new JavaVersionImpl(12);
     assertThat(version.isJava6Compatible()).isTrue();
     assertThat(version.isJava7Compatible()).isTrue();
@@ -81,7 +81,7 @@ public class JavaVersionImplTest {
   }
 
   @Test
-  public void compatibilityMesssages() throws Exception {
+  void compatibilityMesssages() throws Exception {
     JavaVersion version;
     version = new JavaVersionImpl();
     assertThat(version.java6CompatibilityMessage()).isEqualTo(" (sonar.java.source not set. Assuming 6 or greater.)");
@@ -95,7 +95,7 @@ public class JavaVersionImplTest {
   }
 
   @Test
-  public void test_toString() throws Exception {
+  void test_toString() throws Exception {
     JavaVersion version;
     version = new JavaVersionImpl();
     assertThat(version.toString()).isEqualTo("none");
@@ -105,7 +105,7 @@ public class JavaVersionImplTest {
   }
 
   @Test
-  public void test_fromString() throws Exception {
+  void test_fromString() throws Exception {
     JavaVersion version;
     version = JavaVersionImpl.fromString(null);
     assertThat(version.isNotSet()).isTrue();

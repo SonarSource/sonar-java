@@ -29,10 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class SinglyLinkedListTest {
+class SinglyLinkedListTest {
 
   @Test
-  public void test() {
+  void test() {
     PStack<Object> empty = PCollections.emptyStack();
     assertThat(empty.isEmpty()).isTrue();
     assertThat(empty.toString()).isEqualTo("[]");
@@ -63,7 +63,7 @@ public class SinglyLinkedListTest {
   }
 
   @Test
-  public void forEach() {
+  void forEach() {
     List<Object> consumer = new ArrayList<>();
     PCollections.emptyStack().forEach(consumer::add);
     assertThat(consumer).isEmpty();
@@ -76,7 +76,7 @@ public class SinglyLinkedListTest {
   }
 
   @Test
-  public void equality() {
+  void equality() {
     Object a = new Object();
     Object b = new Object();
     Object c = new Object();
@@ -98,19 +98,19 @@ public class SinglyLinkedListTest {
   }
 
   @Test
-  public void empty_pop() {
+  void empty_pop() {
     assertThrows(IllegalStateException.class,
       () -> PCollections.emptyStack().pop());
   }
 
   @Test
-  public void empty_peek() {
+  void empty_peek() {
     assertThrows(IllegalStateException.class,
       () -> PCollections.emptyStack().peek());
   }
 
   @Test
-  public void anyMatch() {
+  void anyMatch() {
     PStack<Object> s = PCollections.emptyStack();
     Object a = new Object();
     Object b = new Object();
@@ -122,7 +122,7 @@ public class SinglyLinkedListTest {
   }
 
   @Test
-  public void size() {
+  void size() {
     PStack<Object> s = PCollections.emptyStack();
     assertThat(s.size()).isEqualTo(0);
     s = s.push(new Object());
@@ -134,7 +134,7 @@ public class SinglyLinkedListTest {
   }
 
   @Test
-  public void peek() {
+  void peek() {
     assertThatThrownBy(() -> PCollections.emptyStack().peek(0)).isInstanceOf(IllegalStateException.class);
 
     Object a = new Object();

@@ -25,10 +25,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class TrailingCommentCheckTest {
+class TrailingCommentCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     TrailingCommentCheck check = new TrailingCommentCheck();
     assertThat(check.legalCommentPattern).isEqualTo("^\\s*+[^\\s]++$");
     JavaCheckVerifier.newVerifier()
@@ -44,7 +44,7 @@ public class TrailingCommentCheckTest {
   }
 
   @Test
-  public void custom() {
+  void custom() {
     TrailingCommentCheck check = new TrailingCommentCheck();
     check.legalCommentPattern = "";
     JavaCheckVerifier.newVerifier()

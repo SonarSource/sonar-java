@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PostAnalysisIssueFilterTest {
+class PostAnalysisIssueFilterTest {
 
   private static final InputFile INPUT_FILE = CheckTestUtils.inputFile("src/test/files/filters/PostAnalysisIssueFilter.java");
   private static JavaFileScannerContext context;
@@ -52,24 +52,24 @@ public class PostAnalysisIssueFilterTest {
   }
 
   @Test
-  public void number_of_issue_filters() {
+  void number_of_issue_filters() {
     assertThat(postAnalysisIssueFilter.getIssueFilters()).hasSize(4);
   }
 
   @Test
-  public void issue_filter_should_accept_issue() {
+  void issue_filter_should_accept_issue() {
     postAnalysisIssueFilter.setIssueFilters(Lists.newArrayList(acceptingIssueFilter));
     assertThat(postAnalysisIssueFilter.accept(null, null)).isTrue();
   }
 
   @Test
-  public void issue_filter_should_reject_issue_if_any_issue_filter_reject_the_issue() {
+  void issue_filter_should_reject_issue_if_any_issue_filter_reject_the_issue() {
     postAnalysisIssueFilter.setIssueFilters(ISSUE_FILTERS);
     assertThat(postAnalysisIssueFilter.accept(null, null)).isFalse();
   }
 
   @Test
-  public void issue_filter_should_set_componentKey_and_scan_every_filter() {
+  void issue_filter_should_set_componentKey_and_scan_every_filter() {
     postAnalysisIssueFilter.setIssueFilters(ISSUE_FILTERS);
     postAnalysisIssueFilter.scanFile(context);
 

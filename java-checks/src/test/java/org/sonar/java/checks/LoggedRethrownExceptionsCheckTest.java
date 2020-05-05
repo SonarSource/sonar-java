@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class LoggedRethrownExceptionsCheckTest {
+class LoggedRethrownExceptionsCheckTest {
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/LoggedRethrownExceptionsCheck.java")
       .withCheck(new LoggedRethrownExceptionsCheck())

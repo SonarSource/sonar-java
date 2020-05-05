@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExportsDirectiveTreeImplTest {
+class ExportsDirectiveTreeImplTest {
 
   private static ExportsDirectiveTree exportsDirective(String exportsDirective) {
     CompilationUnitTree compilationUnitTree = JParserTestUtils.parseModule("module org.foo {\n  " + exportsDirective + "\n}");
@@ -44,7 +44,7 @@ public class ExportsDirectiveTreeImplTest {
   }
 
   @Test
-  public void simple_exports() {
+  void simple_exports() {
     ExportsDirectiveTree exports = exportsDirective("exports foo;");
 
     assertThat(exports.kind()).isEqualTo(Tree.Kind.EXPORTS_DIRECTIVE);
@@ -56,7 +56,7 @@ public class ExportsDirectiveTreeImplTest {
   }
 
   @Test
-  public void exports_with_modules() {
+  void exports_with_modules() {
     ExportsDirectiveTree exports = exportsDirective("exports org.foo to com.module1, module2;");
 
     assertThat(exports.kind()).isEqualTo(Tree.Kind.EXPORTS_DIRECTIVE);
@@ -79,7 +79,7 @@ public class ExportsDirectiveTreeImplTest {
   }
 
   @Test
-  public void test_BaseTreeVisitor() {
+  void test_BaseTreeVisitor() {
     CompilationUnitTree cut = JParserTestUtils.parseModule(
       "@org.foo.Bar",
       "open module com.greetings {",

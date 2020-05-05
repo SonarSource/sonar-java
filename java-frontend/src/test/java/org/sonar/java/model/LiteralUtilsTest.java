@@ -45,7 +45,7 @@ class LiteralUtilsTest {
   static List<VariableTree> variables;
 
   @BeforeAll
-  public static void setUp() {
+  static void beforeAll() {
     File file = new File("src/test/java/org/sonar/java/model/LiteralUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     ClassTree classTree = (ClassTree) tree.types().get(0);

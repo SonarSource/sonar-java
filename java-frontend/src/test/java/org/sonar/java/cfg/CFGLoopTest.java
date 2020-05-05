@@ -31,7 +31,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CFGLoopTest {
+class CFGLoopTest {
 
   private static final CFGTestLoader loader = new CFGTestLoader("src/test/files/cfg/CFGLoopTest.java");
 
@@ -45,7 +45,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void simpleWhileLoop() {
+  void simpleWhileLoop() {
     String methodName = "simpleWhileLoop";
     final CFG cfg = buildCFG(methodName);
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
@@ -62,7 +62,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void simpleWhileLoopWithBreak() {
+  void simpleWhileLoopWithBreak() {
     final CFG cfg = buildCFG("simpleWhileLoopWithBreak");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
@@ -74,7 +74,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void simpleForLoop() {
+  void simpleForLoop() {
     final CFG cfg = buildCFG("simpleForLoop");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
@@ -86,7 +86,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void embeddedMixedLoops() {
+  void embeddedMixedLoops() {
     final CFG cfg = buildCFG("embeddedMixedLoops");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(2);
@@ -102,7 +102,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void mixedWithForEach() {
+  void mixedWithForEach() {
     final CFG cfg = buildCFG("mixedWithForEach");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     // ForEach loops are not identified as loops!
@@ -114,7 +114,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void doWhile() {
+  void doWhile() {
     final CFG cfg = buildCFG("doWhile");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
@@ -125,7 +125,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void minimalForLoop() {
+  void minimalForLoop() {
     final CFG cfg = buildCFG("minimalForLoop");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
@@ -137,7 +137,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void emptyFor() {
+  void emptyFor() {
     final CFG cfg = buildCFG("emptyFor");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
@@ -147,7 +147,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void forWithOnlyInitializer() {
+  void forWithOnlyInitializer() {
     final CFG cfg = buildCFG("forWithOnlyInitializer");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
@@ -157,7 +157,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void emptyConditionFor() {
+  void emptyConditionFor() {
     final CFG cfg = buildCFG("emptyConditionFor");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
@@ -168,7 +168,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void almostEmptyConditionFor() {
+  void almostEmptyConditionFor() {
     final CFG cfg = buildCFG("almostEmptyConditionFor");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(1);
@@ -179,7 +179,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void embeddedLoops() {
+  void embeddedLoops() {
     final CFG cfg = buildCFG("embeddedLoops");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(2);
@@ -193,7 +193,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void embeddedLoopsReturnInInnermost() {
+  void embeddedLoopsReturnInInnermost() {
     final CFG cfg = buildCFG("embeddedLoopsReturnInInnermost");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(2);
@@ -207,7 +207,7 @@ public class CFGLoopTest {
   }
 
   @Test
-  public void doubleReturnWhileLoop() {
+  void doubleReturnWhileLoop() {
     final CFG cfg = buildCFG("doubleReturnWhileLoop");
     Map<Tree, CFGLoop> loops = CFGLoop.getCFGLoops(cfg);
     assertThat(loops).hasSize(2);

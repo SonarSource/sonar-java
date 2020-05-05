@@ -31,10 +31,10 @@ import org.sonar.api.utils.ValidationMessages;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaSonarWayProfileTest {
+class JavaSonarWayProfileTest {
 
   @Test
-  public void should_create_sonar_way_profile() {
+  void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
 
     JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
@@ -60,7 +60,7 @@ public class JavaSonarWayProfileTest {
   }
 
   @Test
-  public void should_activate_hotspots_when_supported() {
+  void should_activate_hotspots_when_supported() {
     JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
@@ -70,7 +70,7 @@ public class JavaSonarWayProfileTest {
   }
 
   @Test
-  public void should_contains_security_rules_if_present() {
+  void should_contains_security_rules_if_present() {
     // no security rules available
     JavaRules.ruleKeys = new HashSet<>();
     assertThat(JavaSonarWayProfile.getSecurityRuleKeys(true)).isEmpty();

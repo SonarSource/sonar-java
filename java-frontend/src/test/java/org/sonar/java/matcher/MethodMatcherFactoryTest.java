@@ -44,10 +44,10 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-public class MethodMatcherFactoryTest {
+class MethodMatcherFactoryTest {
 
   @Test
-  public void fail_arg() throws Exception {
+  void fail_arg() throws Exception {
     try {
       MethodMatcherFactory.methodMatchers("org.sonar.test.Test$match");
       fail("Argument should not be accepted.");
@@ -84,7 +84,7 @@ public class MethodMatcherFactoryTest {
   }
 
   @Test
-  public void inner_classes() throws Exception {
+  void inner_classes() throws Exception {
     MethodMatchers anyArg = MethodMatcherFactory.methodMatchers("org.sonar.test.Outer$Inner#foo");
     MethodVisitor visitor = new MethodVisitor();
     visitor.add(anyArg);
@@ -93,7 +93,7 @@ public class MethodMatcherFactoryTest {
   }
 
   @Test
-  public void methodFactoryMatching() {
+  void methodFactoryMatching() {
     MethodMatchers anyArg = MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match");
     MethodMatchers stringOnly = MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String)");
     MethodMatchers stringInt = MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String,int)");
@@ -132,7 +132,7 @@ public class MethodMatcherFactoryTest {
   }
 
   @Test
-  public void constructorFactoryMatching() {
+  void constructorFactoryMatching() {
     MethodMatchers anyArg = MethodMatcherFactory.constructorMatcher("java.lang.String");
     MethodMatchers noArg = MethodMatcherFactory.constructorMatcher("java.lang.String()");
     MethodMatchers stringBuilder = MethodMatcherFactory.constructorMatcher("java.lang.String(java.lang.StringBuilder)");

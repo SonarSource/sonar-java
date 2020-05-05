@@ -22,10 +22,10 @@ package org.sonar.java.checks.unused;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class UnusedLocalVariableCheckTest {
+class UnusedLocalVariableCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/unused/UnusedLocalVariableCheck.java")
       .withCheck(new UnusedLocalVariableCheck())

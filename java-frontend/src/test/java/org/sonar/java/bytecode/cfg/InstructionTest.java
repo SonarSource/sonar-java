@@ -24,10 +24,10 @@ import org.objectweb.asm.Opcodes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InstructionTest {
+class InstructionTest {
 
   @Test
-  public void test_instruction_equals() throws Exception {
+  void test_instruction_equals() throws Exception {
     Instruction nop1 = new Instruction(Opcodes.NOP);
     Instruction nop2 = new Instruction(Opcodes.NOP);
     Instruction.MultiANewArrayInsn mana = new Instruction.MultiANewArrayInsn("java/lang/Object", 1);
@@ -46,7 +46,7 @@ public class InstructionTest {
   }
 
   @Test
-  public void test_multianewarray() throws Exception {
+  void test_multianewarray() throws Exception {
     Instruction.MultiANewArrayInsn mana1 = new Instruction.MultiANewArrayInsn("java/lang/Object", 1);
     Instruction.MultiANewArrayInsn mana2 = new Instruction.MultiANewArrayInsn("java/lang/Object", 1);
     Instruction.MultiANewArrayInsn mana3 = new Instruction.MultiANewArrayInsn("java/lang/Object", 2);
@@ -62,7 +62,7 @@ public class InstructionTest {
   }
 
   @Test
-  public void test_invoke_dynamic_equals() throws Exception {
+  void test_invoke_dynamic_equals() throws Exception {
     Instruction.InvokeDynamicInsn indy1 = new Instruction.InvokeDynamicInsn("()V");
     assertThat(indy1.equals(indy1)).isTrue();
     assertThat(indy1.equals(null)).isFalse();
@@ -77,7 +77,7 @@ public class InstructionTest {
   }
 
   @Test
-  public void test_ldc_equals() throws Exception {
+  void test_ldc_equals() throws Exception {
     Instruction nop = new Instruction(Opcodes.NOP);
     Instruction.LdcInsn ldc1 = new Instruction.LdcInsn("a");
     Instruction.LdcInsn ldc2 = new Instruction.LdcInsn("a");
@@ -91,7 +91,7 @@ public class InstructionTest {
   }
 
   @Test
-  public void test_instruction_tostring() throws Exception {
+  void test_instruction_tostring() throws Exception {
     Instruction nop = new Instruction(Opcodes.NOP);
     assertThat(nop).hasToString("NOP");
   }

@@ -22,10 +22,10 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class BadTypeParameterNameCheckTest {
+class BadTypeParameterNameCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     BadTypeParameterNameCheck check = new BadTypeParameterNameCheck();
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadGenericNameNoncompliant.java")
@@ -40,7 +40,7 @@ public class BadTypeParameterNameCheckTest {
   }
 
   @Test
-  public void test2() {
+  void test2() {
     BadTypeParameterNameCheck check = new BadTypeParameterNameCheck();
     check.format = "^[a-zA-Z0-9_]*$";
     JavaCheckVerifier.newVerifier()

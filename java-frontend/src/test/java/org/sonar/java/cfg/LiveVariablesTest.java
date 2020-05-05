@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LiveVariablesTest {
+class LiveVariablesTest {
 
   private static CFG buildCFG(String methodCode) {
     CompilationUnitTree cut = JParserTestUtils.parse("class A { int field1; int field2; static int staticField; " + methodCode + " }");
@@ -39,7 +39,7 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void test_simple_live() {
+  void test_simple_live() {
     CFG cfg = buildCFG("void foo(int a) {  int i; /* should be live here */ if (false) ; foo(i); }");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).hasSize(1);
@@ -47,7 +47,7 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void test_try_finally_liveness() throws Exception {
+  void test_try_finally_liveness() throws Exception {
     CFG cfg = buildCFG("void foo() {   Object object = null;\n" +
       "    try {\n" +
       "      object = new Object();\n" +
@@ -61,14 +61,14 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void test_simple_death()  {
+  void test_simple_death()  {
     CFG cfg = buildCFG("void foo(int a) {  int i; /* should not be live here */ if (false) ; i = 0; }");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).isEmpty();
   }
 
   @Test
-  public void test_field_not_tracked()  {
+  void test_field_not_tracked()  {
     CFG cfg = buildCFG("void foo(int a) { field = 0; /* fields should not be tracked */ if (false) ; foo(field); }");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).isEmpty();
@@ -79,7 +79,7 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void test_while_loop()  {
+  void test_while_loop()  {
     CFG cfg = buildCFG("void foo(boolean condition) { while (condition) { int x = 0; use(x); x = 1; /* x should not be live here*/}}");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(1))).hasSize(1);
@@ -87,7 +87,7 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void in_of_first_block_should_be_empty()  {
+  void in_of_first_block_should_be_empty()  {
     CFG cfg = buildCFG("boolean foo(int a) { foo(a);}");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
@@ -95,7 +95,7 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void lambdas_read_liveness() {
+  void lambdas_read_liveness() {
     CFG cfg = buildCFG("void foo(int a) { if (true) { System.out.println(); } bar(x -> a + 1); } void bar(java.util.function.IntFunction<Integer> func) {}");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
@@ -104,7 +104,7 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void method_ref_liveness() throws Exception {
+  void method_ref_liveness() throws Exception {
     CFG cfg = buildCFG("void foo(Object a) { if(true) { System.out.println(); } bar(a::toString);} void bar(java.util.function.Supplier<String> func) {}");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
@@ -113,7 +113,7 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void anonymous_class_liveness()  {
+  void anonymous_class_liveness()  {
     CFG cfg = buildCFG("boolean foo(int a) { if(true) { System.out.println(); } new Object() { String toString(){return a;} }; }");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
@@ -128,7 +128,7 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void test_fields_live() {
+  void test_fields_live() {
     assertFieldsByMethodEntry("void foo(int a) {  foo(field1); foo(); field2 = 1;}", "field1");
     assertFieldsByMethodEntry("void foo(int a) {  foo(this.field1); this.foo(); this.field2 = 1; }", "field1");
     assertFieldsByMethodEntry("void foo(int a) { A that = new A(); foo(that.field1); foo(that.staticField); }", "staticField");

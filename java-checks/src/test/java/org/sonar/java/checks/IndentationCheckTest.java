@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class IndentationCheckTest {
+class IndentationCheckTest {
 
   @Test
-  public void detected_default_indentation_level() {
+  void detected_default_indentation_level() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/IndentationCheck_default.java")
       .withCheck(new IndentationCheck())
@@ -35,7 +35,7 @@ public class IndentationCheckTest {
   }
 
   @Test
-  public void detected_custom_level() {
+  void detected_custom_level() {
     IndentationCheck check = new IndentationCheck();
     check.indentationLevel = 4;
     JavaCheckVerifier.newVerifier()
@@ -45,7 +45,7 @@ public class IndentationCheckTest {
   }
 
   @Test
-  public void assume_tab_is_indentation_level() {
+  void assume_tab_is_indentation_level() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/IndentationCheck_tab.java"))
       .withCheck(new IndentationCheck())

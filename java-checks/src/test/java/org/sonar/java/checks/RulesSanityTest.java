@@ -61,7 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 @EnableRuleMigrationSupport
-public class RulesSanityTest {
+class RulesSanityTest {
 
   private static final Logger LOG = Loggers.get(RulesSanityTest.class);
 
@@ -95,7 +95,7 @@ public class RulesSanityTest {
    * It does not prevent other rules to fail if similar construct of the language, but not yet encountered. 
    */
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     logTester.setLevel(LoggerLevel.WARN);
 
     List<JavaCheck> checks = getJavaCheckInstances();

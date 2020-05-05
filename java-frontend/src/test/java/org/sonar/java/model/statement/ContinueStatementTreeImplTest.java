@@ -29,13 +29,13 @@ import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ContinueStatementTreeImplTest {
+class ContinueStatementTreeImplTest {
 
   private static InternalSyntaxToken CONTINUE_TOKEN = createToken(JavaKeyword.CONTINUE.getValue());
   private static InternalSyntaxToken SEMICOLON_TOKEN = createToken(":");
 
   @Test
-  public void test_no_label() {
+  void test_no_label() {
     ContinueStatementTreeImpl continueStatementTree = new ContinueStatementTreeImpl(CONTINUE_TOKEN, null, SEMICOLON_TOKEN);
 
     assertThat(continueStatementTree.continueKeyword()).isEqualTo(CONTINUE_TOKEN);
@@ -46,7 +46,7 @@ public class ContinueStatementTreeImplTest {
   }
 
   @Test
-  public void test_with_label() {
+  void test_with_label() {
     IdentifierTreeImpl label = new IdentifierTreeImpl(createToken("label"));
     ContinueStatementTreeImpl continueStatementTree = new ContinueStatementTreeImpl(CONTINUE_TOKEN, label, SEMICOLON_TOKEN);
 

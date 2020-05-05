@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class BooleanMethodNameCheckTest {
+class BooleanMethodNameCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/naming/BooleanMethodNameCheck.java"))
       .withCheck(new BooleanMethodNameCheck())
@@ -35,7 +35,7 @@ public class BooleanMethodNameCheckTest {
   }
 
   @Test
-  public void test_no_issue_without_semantic() {
+  void test_no_issue_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/naming/BooleanMethodNameCheck.java"))
       .withCheck(new BooleanMethodNameCheck())

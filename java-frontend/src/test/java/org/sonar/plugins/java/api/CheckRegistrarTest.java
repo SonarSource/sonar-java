@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-public class CheckRegistrarTest {
+class CheckRegistrarTest {
 
   @Test
-  public void repository_key_is_mandatory() throws Exception {
+  void repository_key_is_mandatory() throws Exception {
     try {
       new CheckRegistrar.RegistrarContext().registerClassesForRepository("  ", new ArrayList<>(), new ArrayList<>());
       fail("");

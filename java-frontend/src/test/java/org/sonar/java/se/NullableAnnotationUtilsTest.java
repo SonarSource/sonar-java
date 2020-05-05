@@ -28,29 +28,31 @@ import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.isAnnotatedNullable;
 import static org.sonar.java.se.NullableAnnotationUtils.isGloballyAnnotatedParameterNonNull;
 import static org.sonar.java.se.NullableAnnotationUtils.nonNullAnnotation;
 
-public class NullableAnnotationUtilsTest {
+class NullableAnnotationUtilsTest {
 
   private static Sema semanticModel;
 
   @BeforeAll
-  public static void setUp() {
+  static void beforeAll() {
     semanticModel = SETestUtils.getSemanticModel("src/test/files/se/annotations/NullableAnnotationUtils.java");
   }
 
   @Test
-  public void private_constructor() throws Exception {
+  void private_constructor() throws Exception {
     assertThat(Modifier.isFinal(NullableAnnotationUtils.class.getModifiers())).isTrue();
     Constructor<NullableAnnotationUtils> constructor = NullableAnnotationUtils.class.getDeclaredConstructor();
     assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
@@ -60,8 +62,8 @@ public class NullableAnnotationUtilsTest {
   }
 
   @Test
-  @org.junit.jupiter.api.Disabled("flickering NPE")
-  public void testEclipseIsGloballyAnnotatedNonNull() {
+  @Disabled("flickering NPE")
+  void testEclipseIsGloballyAnnotatedNonNull() {
     List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
     classPath.add(new File("target/test-classes"));
     // adding the class corresponding to package-info having @NonNullByDefault annotation
@@ -85,8 +87,8 @@ public class NullableAnnotationUtilsTest {
   }
 
   @Test
-  @org.junit.jupiter.api.Disabled("flickering NPE")
-  public void testSpringIsPackageAnnotatedNonNull() {
+  @Disabled("flickering NPE")
+  void testSpringIsPackageAnnotatedNonNull() {
     List<File> classPath = new ArrayList<>(FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true));
     classPath.add(new File("target/test-classes"));
     // adding the class corresponding to package-info having @NonNullApi and @NonNullFields annotations
@@ -130,7 +132,7 @@ public class NullableAnnotationUtilsTest {
   }
 
   @Test
-  public void testIsAnnotatedNullable() {
+  void testIsAnnotatedNullable() {
     Symbol foo = getSymbol("foo");
     assertThat(isAnnotatedNullable(foo.metadata())).isFalse();
 
@@ -141,7 +143,7 @@ public class NullableAnnotationUtilsTest {
   }
 
   @Test
-  public void testIsAnnotatedNonNull() {
+  void testIsAnnotatedNonNull() {
     Symbol foo = getSymbol("foo");
     assertThat(isAnnotatedNonNull(foo)).isFalse();
 

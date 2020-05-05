@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SunPackagesUsedCheckTest {
+class SunPackagesUsedCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SunPackagesUsedCheck.java")
       .withCheck(new SunPackagesUsedCheck())
@@ -33,7 +33,7 @@ public class SunPackagesUsedCheckTest {
   }
 
   @Test
-  public void check_with_exclusion() {
+  void check_with_exclusion() {
     SunPackagesUsedCheck check = new SunPackagesUsedCheck();
     check.exclude = "com.sun.imageio,com.sun.jersey,com.sun.org.apache.xml";
     JavaCheckVerifier.newVerifier()

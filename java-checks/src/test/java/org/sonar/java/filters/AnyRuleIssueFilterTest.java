@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class AnyRuleIssueFilterTest {
+class AnyRuleIssueFilterTest {
 
   private static final InputFile INPUT_FILE = CheckTestUtils.inputFile(testSourcesPath("filters/AnyRuleIssueFilter.java"));
   private static final String REPOSITORY_KEY = "walrus";
@@ -62,13 +62,13 @@ public class AnyRuleIssueFilterTest {
   }
 
   @Test
-  public void any_rule_filter_does_not_requires_rules() {
+  void any_rule_filter_does_not_requires_rules() {
     assertThat(new AnyRuleIssueFilter() {
     }.filteredRules()).isEmpty();
   }
 
   @Test
-  public void issue_on_other_component_are_ignored() {
+  void issue_on_other_component_are_ignored() {
     InputComponent inputComponent = mock(InputComponent.class);
     when(inputComponent.key()).thenReturn("tesT:test.MyOtherTest");
     when(issue.getInputComponent()).thenReturn(inputComponent);
@@ -76,7 +76,7 @@ public class AnyRuleIssueFilterTest {
   }
 
   @Test
-  public void invalid_tree_does_not_exclude_lines() {
+  void invalid_tree_does_not_exclude_lines() {
 
     // by default, any issue oin line 7 is accepted
     assertThatIssueWillBeAccepted(7).isTrue();
@@ -102,7 +102,7 @@ public class AnyRuleIssueFilterTest {
   }
 
   @Test
-  public void issues_from_any_rules_are_accepted() {
+  void issues_from_any_rules_are_accepted() {
     // issue on file accepted
     ruleKey = RuleKey.of(REPOSITORY_KEY, "OtherRule1");
     assertThatIssueWillBeAccepted(null).isTrue();

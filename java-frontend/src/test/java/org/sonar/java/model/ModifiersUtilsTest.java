@@ -31,10 +31,10 @@ import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ModifiersUtilsTest {
+class ModifiersUtilsTest {
 
   @Test
-  public void private_constructor() throws Exception {
+  void private_constructor() throws Exception {
     assertThat(isFinal(ModifiersUtils.class.getModifiers())).isTrue();
     Constructor constructor = ModifiersUtils.class.getDeclaredConstructor();
     assertThat(isPrivate(constructor.getModifiers())).isTrue();
@@ -44,7 +44,7 @@ public class ModifiersUtilsTest {
   }
 
   @Test
-  public void test_int_and_long_value() throws Exception {
+  void test_int_and_long_value() throws Exception {
     File file = new File("src/test/files/model/ModifiersUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     ClassTree classTree = (ClassTree) tree.types().get(0);
@@ -55,7 +55,7 @@ public class ModifiersUtilsTest {
   }
 
   @Test
-  public void test_find_modifier() {
+  void test_find_modifier() {
     File file = new File("src/test/files/model/ModifiersUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     ClassTree classTree = (ClassTree) tree.types().get(0);

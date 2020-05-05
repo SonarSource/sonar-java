@@ -52,7 +52,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DefaultJavaFileScannerContextTest {
+class DefaultJavaFileScannerContextTest {
 
   private static final File JAVA_FILE = new File("src/test/files/api/JavaFileScannerContext.java");
   private static final InputFile JAVA_INPUT_FILE = TestUtils.inputFile(JAVA_FILE);
@@ -76,17 +76,17 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void get_complexity_nodes() {
+  void get_complexity_nodes() {
     assertThat(context.getComplexityNodes(compilationUnitTree)).isEmpty();
   }
 
   @Test
-  public void get_tree() {
+  void get_tree() {
     assertThat(context.getTree()).isEqualTo(compilationUnitTree);
   }
 
   @Test
-  public void get_file_parsed() {
+  void get_file_parsed() {
     assertThat(context.fileParsed()).isTrue();
   }
 
@@ -95,32 +95,32 @@ public class DefaultJavaFileScannerContextTest {
    * in order to guarantee compatibility with SonarSecurity 7.9 LTS
    */
   @Test
-  public void get_file_key() {
+  void get_file_key() {
     assertThat(context.getFileKey()).isEqualTo(JAVA_INPUT_FILE.file().getAbsolutePath());
   }
 
   @Test
-  public void get_java_version() {
+  void get_java_version() {
     assertThat(context.getJavaVersion()).isNotNull();
   }
 
   @Test
-  public void get_file_content() {
+  void get_file_content() {
     assertThat(context.getFileContent()).isEqualTo("content");
   }
 
   @Test
-  public void get_file_lines() {
+  void get_file_lines() {
     assertThat(context.getFileLines()).isEmpty();
   }
 
   @Test
-  public void get_semantic_model() {
+  void get_semantic_model() {
     assertThat(context.getSemanticModel()).isNull();
   }
 
   @Test
-  public void add_issue_on_file() {
+  void add_issue_on_file() {
     context.addIssueOnFile(CHECK, "file");
 
     assertThat(reportedMessage.getMessage()).isEqualTo("file");
@@ -128,7 +128,7 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void add_issue_on_project() {
+  void add_issue_on_project() {
     context.addIssueOnProject(CHECK, "msg");
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
@@ -136,7 +136,7 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void add_issue_no_file() {
+  void add_issue_no_file() {
     context.addIssue(10, CHECK, "msg2");
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg2");
@@ -144,7 +144,7 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void add_issue_no_file_with_cost() {
+  void add_issue_no_file_with_cost() {
     context.addIssue(10, CHECK, "msg3", 2);
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg3");
@@ -153,7 +153,7 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void report_issue_on_tree() {
+  void report_issue_on_tree() {
     context.reportIssue(CHECK, compilationUnitTree, "msg");
 
     assertThat(reportedMessage.getMessage()).isEqualTo("msg");
@@ -164,13 +164,13 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void working_directory() {
+  void working_directory() {
     assertThat(context.getWorkingDirectory()).isNotNull();
     assertThat(context.getBaseDirectory()).isNotNull();
   }
 
   @Test
-  public void report_issue_with_message() {
+  void report_issue_with_message() {
     AnalyzerMessage message = context.createAnalyzerMessage(CHECK, compilationUnitTree, "msg");
 
     context.reportIssue(message);
@@ -183,14 +183,14 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void report_issue_on_tree_with_cross_file_scanner_throws() {
+  void report_issue_on_tree_with_cross_file_scanner_throws() {
     assertThatExceptionOfType(UnsupportedOperationException.class)
         .isThrownBy(() -> context.reportIssue(END_OF_ANALYSIS_CHECK, compilationUnitTree, "msg"))
         .withMessage("EndOfAnalysisCheck must only call reportIssue with AnalyzerMessage and must never pass a Tree reference.");
   }
 
   @Test
-  public void report_issue_on_tree_with_no_secondary() {
+  void report_issue_on_tree_with_no_secondary() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
 
     context.reportIssue(CHECK, tree.simpleName(), "msg", new ArrayList<>(), null);
@@ -203,7 +203,7 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void report_issue_on_tree_with_cost() {
+  void report_issue_on_tree_with_cost() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
 
     context.reportIssue(CHECK, tree.simpleName(), "msg", new ArrayList<>(), COST);
@@ -216,7 +216,7 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void report_issue_on_tree_with_secondary() {
+  void report_issue_on_tree_with_secondary() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
     Tree firstMember = tree.members().get(0);
     Tree secondMember = tree.members().get(1);
@@ -239,7 +239,7 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void report_issue_between_two_trees() {
+  void report_issue_between_two_trees() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
     VariableTree firstMember = (VariableTree) tree.members().get(0);
     VariableTree secondMember = (VariableTree) tree.members().get(1);
@@ -254,7 +254,7 @@ public class DefaultJavaFileScannerContextTest {
   }
 
   @Test
-  public void test_source_map() {
+  void test_source_map() {
     GeneratedFile file = mock(GeneratedFile.class);
     SourceMap sourceMap = mock(SourceMap.class);
     when(file.sourceMap()).thenReturn(sourceMap);

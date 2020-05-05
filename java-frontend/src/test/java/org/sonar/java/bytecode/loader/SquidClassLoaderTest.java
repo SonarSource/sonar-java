@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @EnableRuleMigrationSupport
-public class SquidClassLoaderTest {
+class SquidClassLoaderTest {
 
   @Rule
   public LogTester logTester = new LogTester();
@@ -59,7 +59,7 @@ public class SquidClassLoaderTest {
    * thus it shouldn't be able to load his class.
    */
   @Test
-  public void shouldBeIsolated() throws Exception {
+  void shouldBeIsolated() throws Exception {
     classLoader = new SquidClassLoader(Collections.emptyList());
     assertThat(classLoader.loadClass("java.lang.Integer")).isNotNull();
     assertThat(classLoader.getResource("java/lang/Integer.class")).isNotNull();
@@ -68,14 +68,14 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void should_read_child_classes_first() throws Exception {
+  void should_read_child_classes_first() throws Exception {
     classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/lib/likeJdkJar.jar")));
     URL resource = classLoader.getResource("java/lang/String.class");
     assertThat(resource).isNotNull();
     assertThat(resource.getFile()).contains("likeJdkJar.jar!");
   }
   @Test
-  public void createFromJar() throws Exception {
+  void createFromJar() throws Exception {
     File jar = new File("src/test/files/bytecode/lib/hello.jar");
     classLoader = new SquidClassLoader(Arrays.asList(jar));
 
@@ -87,7 +87,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void createFromAar() throws Exception {
+  void createFromAar() throws Exception {
     File jar = new File("src/test/files/classpath/lib/oklog-1.0.1.aar");
     classLoader = new SquidClassLoader(Arrays.asList(jar));
 
@@ -99,7 +99,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void unknownJarIsIgnored() throws Exception {
+  void unknownJarIsIgnored() throws Exception {
     File jar = new File("src/test/files/bytecode/lib/unknown.jar");
     classLoader = new SquidClassLoader(Arrays.asList(jar));
 
@@ -112,13 +112,13 @@ public class SquidClassLoaderTest {
    * SONAR-3693
    */
   @Test
-  public void not_jar_is_ignored() throws Exception {
+  void not_jar_is_ignored() throws Exception {
     File jar = new File("src/test/files/bytecode/src/tags/TagName.java");
     classLoader = new SquidClassLoader(Arrays.asList(jar));
   }
 
   @Test
-  public void empty_archive_should_not_fail() throws Exception {
+  void empty_archive_should_not_fail() throws Exception {
     File jar = new File("src/test/files/bytecode/lib/emptyArchive.jar");
     classLoader = new SquidClassLoader(Arrays.asList(jar));
 
@@ -130,7 +130,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void empty_file_should_not_fail_but_log_warning() {
+  void empty_file_should_not_fail_but_log_warning() {
     File jar = new File("src/test/files/bytecode/lib/emptyFile.jar");
     classLoader = new SquidClassLoader(Arrays.asList(jar));
 
@@ -152,7 +152,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void createFromDirectory() throws Exception {
+  void createFromDirectory() throws Exception {
     File dir = new File("src/test/files/bytecode/bin/");
     classLoader = new SquidClassLoader(Arrays.asList(dir));
 
@@ -164,7 +164,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void testFindResource() throws Exception {
+  void testFindResource() throws Exception {
     File dir = new File("src/test/files/bytecode/bin/");
     classLoader = new SquidClassLoader(Arrays.asList(dir, dir));
     assertThat(classLoader.findResource("tags/TagName.class")).isNotNull();
@@ -172,7 +172,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void testFindResources() throws Exception {
+  void testFindResources() throws Exception {
     File dir = new File("src/test/files/bytecode/bin/");
     classLoader = new SquidClassLoader(Arrays.asList(dir, dir));
 
@@ -181,7 +181,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void closeCanBeCalledMultipleTimes() throws Exception {
+  void closeCanBeCalledMultipleTimes() throws Exception {
     File jar = new File("src/test/files/bytecode/lib/hello.jar");
     classLoader = new SquidClassLoader(Arrays.asList(jar));
     classLoader.close();
@@ -189,7 +189,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void exceptionThrownWhenAlreadyClosed() {
+  void exceptionThrownWhenAlreadyClosed() {
     File jar = new File("src/test/files/bytecode/lib/hello.jar");
     classLoader = new SquidClassLoader(Arrays.asList(jar));
     classLoader.close();
@@ -200,7 +200,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void test_loading_class() {
+  void test_loading_class() {
     SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("target/test-classes")));
     String className = getClass().getCanonicalName();
     byte[] bytes = classLoader.getBytesForClass(className);
@@ -212,7 +212,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void empty_classloader_should_not_find_bytes() {
+  void empty_classloader_should_not_find_bytes() {
     SquidClassLoader classLoader = new SquidClassLoader(Collections.emptyList());
     String className = getClass().getCanonicalName();
     byte[] bytes = classLoader.getBytesForClass(className);
@@ -220,7 +220,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void test_loading_java9_class() throws Exception {
+  void test_loading_java9_class() throws Exception {
     SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/java9/bin")));
     byte[] bytes = classLoader.getBytesForClass("org.test.Hello9");
     assertThat(bytes).isNotNull();
@@ -232,7 +232,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void test_loading_java10_class() throws Exception {
+  void test_loading_java10_class() throws Exception {
     SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/java10/bin")));
     byte[] bytes = classLoader.getBytesForClass("org.foo.A");
     assertThat(bytes).isNotNull();
@@ -244,7 +244,7 @@ public class SquidClassLoaderTest {
   }
 
   @Test
-  public void test_loading_java11_class() throws Exception {
+  void test_loading_java11_class() throws Exception {
     SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/files/bytecode/java11/bin")));
     byte[] bytes = classLoader.getBytesForClass("org.foo.A");
     assertThat(bytes).isNotNull();

@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
  *
  */
 @ExtendWith(MockitoExtension.class)
-public class TestDefaultJavaFileScannerContextWithSensorContextTester {
+class TestDefaultJavaFileScannerContextWithSensorContextTester {
 
   @Mock private FileLinesContextFactory fileLinesContextFactory;
   @Mock private JavaClasspath javaClasspath;
@@ -76,7 +76,7 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
   };
 
   @BeforeEach
-  public void setup() throws IOException {
+  void setup() throws IOException {
     sensorContext = SensorContextTester.create(Paths.get(""));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, checkFactory, null);
     sonarComponents.setSensorContext(sensorContext);
@@ -92,7 +92,7 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
   }
 
   @Test
-  public void test_report_issue_with_secondary_locations() throws Exception {
+  void test_report_issue_with_secondary_locations() throws Exception {
     ImmutableList<JavaFileScannerContext.Location> secondary = ImmutableList.of(
       new JavaFileScannerContext.Location("+1", tree),
       new JavaFileScannerContext.Location("+1", tree)
@@ -103,7 +103,7 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
   }
 
   @Test
-  public void test_report_issue_with_flow() throws Exception {
+  void test_report_issue_with_flow() throws Exception {
     List<JavaFileScannerContext.Location> flow1 = Collections.singletonList(new JavaFileScannerContext.Location("flow1", tree));
     List<JavaFileScannerContext.Location> flow2 = Collections.singletonList(new JavaFileScannerContext.Location("flow2", tree));
     ImmutableSet<List<JavaFileScannerContext.Location>> flows = ImmutableSet.of(flow1, flow2);
@@ -113,7 +113,7 @@ public class TestDefaultJavaFileScannerContextWithSensorContextTester {
   }
 
   @Test
-  public void test_report_se_issue_with_flow() throws Exception {
+  void test_report_se_issue_with_flow() throws Exception {
     List<JavaFileScannerContext.Location> flow1 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow1", tree));
     List<JavaFileScannerContext.Location> flow2 = Collections.singletonList(new JavaFileScannerContext.Location("SE flow2", tree));
     ImmutableSet<List<JavaFileScannerContext.Location>> flows = ImmutableSet.of(flow1, flow2);

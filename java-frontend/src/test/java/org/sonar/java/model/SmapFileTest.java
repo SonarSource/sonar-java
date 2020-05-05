@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 
 @EnableRuleMigrationSupport
-public class SmapFileTest {
+class SmapFileTest {
 
   @Rule
   public LogTester logTester = new LogTester();
@@ -44,7 +44,7 @@ public class SmapFileTest {
   public Path temporaryFolder;
 
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     String sourceMap = "SMAP\n" +
       "test_jsp.java\n" +
       "JSP\n" +
@@ -80,7 +80,7 @@ public class SmapFileTest {
   }
 
   @Test
-  public void invalid_file() {
+  void invalid_file() {
     Path uriRoot = Paths.get("");
     Path p = Paths.get("file.class.smap");
     assertThatThrownBy(() -> new SmapFile(p, "not a smap file"))
@@ -105,7 +105,7 @@ public class SmapFileTest {
   }
 
   @Test
-  public void invalid_line_info() {
+  void invalid_line_info() {
     Path p = Paths.get("file.class.smap");
 
     new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n" +
@@ -116,7 +116,7 @@ public class SmapFileTest {
   }
 
   @Test
-  public void lineinfo_hashcode_equals_tostring() {
+  void lineinfo_hashcode_equals_tostring() {
     SmapFile.LineInfo lineInfo = new SmapFile.LineInfo(1, 0, 1, 1, 1);
     assertThat(lineInfo.toString()).isEqualTo("LineInfo{inputStartLine=1, lineFileId=0, repeatCount=1, outputStartLine=1, outputLineIncrement=1}");
 
@@ -136,7 +136,7 @@ public class SmapFileTest {
   }
 
   @Test
-  public void fileinfo_hashcode_equals_tostring() {
+  void fileinfo_hashcode_equals_tostring() {
     SmapFile.FileInfo fileInfo = new SmapFile.FileInfo(0, "file.jsp", "path/file.jsp");
     SmapFile.FileInfo fileInfo2 = new SmapFile.FileInfo(0, "file.jsp", "path/file.jsp");
     assertThat(fileInfo).isEqualTo(fileInfo);
@@ -153,7 +153,7 @@ public class SmapFileTest {
   }
 
   @Test
-  public void smapfile_tostring() {
+  void smapfile_tostring() {
     SmapFile smapFile = new SmapFile(Paths.get("dir"), "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n");
     assertThat(smapFile.toString()).isEqualTo(Paths.get("dir/test.jsp").toString());
   }

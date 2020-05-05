@@ -32,11 +32,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ListTreeImplTest {
+class ListTreeImplTest {
 
 
   @Test
-  public void separators_order_in_children_iteration() throws Exception {
+  void separators_order_in_children_iteration() throws Exception {
     Tree tree1 = new EmptyStatementTreeImpl(null);
     Tree tree2 = new EmptyStatementTreeImpl(null);
     Tree tree3 = new EmptyStatementTreeImpl(null);
@@ -50,7 +50,7 @@ public class ListTreeImplTest {
   }
 
   @Test
-  public void emptySeparators() throws Exception {
+  void emptySeparators() throws Exception {
     Tree tree1 = new EmptyStatementTreeImpl(null);
     List<Tree> trees = Lists.newArrayList(tree1);
     List<SyntaxToken> separators = new ArrayList<>();

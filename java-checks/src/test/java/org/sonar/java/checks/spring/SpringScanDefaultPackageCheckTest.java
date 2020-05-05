@@ -22,10 +22,10 @@ package org.sonar.java.checks.spring;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SpringScanDefaultPackageCheckTest {
+class SpringScanDefaultPackageCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/spring/SpringScanDefaultPackageCheck.java")
       .withCheck(new SpringScanDefaultPackageCheck())

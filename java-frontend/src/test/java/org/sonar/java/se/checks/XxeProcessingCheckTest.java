@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 
-public class XxeProcessingCheckTest {
+class XxeProcessingCheckTest {
 
   @Test
-  public void Xml_input_factory() {
+  void Xml_input_factory() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XxeProcessingCheck_XmlInputFactory.java")
       .withCheck(new XxeProcessingCheck())
@@ -35,7 +35,7 @@ public class XxeProcessingCheckTest {
   }
 
   @Test
-  public void document_builder_factory() {
+  void document_builder_factory() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XxeProcessingCheck_DocumentBuilderFactory.java")
       .withCheck(new XxeProcessingCheck())
@@ -44,7 +44,7 @@ public class XxeProcessingCheckTest {
   }
 
   @Test
-  public void sax_parser() {
+  void sax_parser() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XxeProcessingCheck_SaxParser.java")
       .withCheck(new XxeProcessingCheck())
@@ -53,7 +53,7 @@ public class XxeProcessingCheckTest {
   }
 
   @Test
-  public void schema_factory() {
+  void schema_factory() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XxeProcessingCheck_SchemaFactory_Validator.java")
       .withCheck(new XxeProcessingCheck())
@@ -62,7 +62,7 @@ public class XxeProcessingCheckTest {
   }
 
   @Test
-  public void transformer_factory() {
+  void transformer_factory() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XxeProcessingCheck_TransformerFactory.java")
       .withCheck(new XxeProcessingCheck())
@@ -71,7 +71,7 @@ public class XxeProcessingCheckTest {
   }
 
   @Test
-  public void xml_reader() {
+  void xml_reader() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XxeProcessingCheck_XmlReader.java")
       .withCheck(new XxeProcessingCheck())
@@ -80,7 +80,7 @@ public class XxeProcessingCheckTest {
   }
 
   @Test
-  public void sax_builder() {
+  void sax_builder() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XxeProcessingCheck_SaxBuilder.java")
       .withCheck(new XxeProcessingCheck())
@@ -89,7 +89,7 @@ public class XxeProcessingCheckTest {
   }
 
   @Test
-  public void sax_reader() {
+  void sax_reader() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XxeProcessingCheck_SaxReader.java")
       .withCheck(new XxeProcessingCheck())

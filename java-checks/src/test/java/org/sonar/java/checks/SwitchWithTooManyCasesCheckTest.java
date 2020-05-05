@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SwitchWithTooManyCasesCheckTest {
+class SwitchWithTooManyCasesCheckTest {
 
   @Test
-  public void defaultValue() {
+  void defaultValue() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SwitchWithTooManyCasesCheck.java")
       .withCheck(new SwitchWithTooManyCasesCheck())
@@ -33,7 +33,7 @@ public class SwitchWithTooManyCasesCheckTest {
   }
 
   @Test
-  public void test() {
+  void test() {
     SwitchWithTooManyCasesCheck check = new SwitchWithTooManyCasesCheck();
     check.maximumCases = 5;
     JavaCheckVerifier.newVerifier()

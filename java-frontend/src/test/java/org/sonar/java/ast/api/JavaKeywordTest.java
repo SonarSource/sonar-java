@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaKeywordTest {
+class JavaKeywordTest {
 
   @Test
-  public void test() {
+  void test() {
     assertThat(JavaKeyword.values()).hasSize(51);
     assertThat(JavaKeyword.keywordValues()).hasSize(JavaKeyword.values().length);
 

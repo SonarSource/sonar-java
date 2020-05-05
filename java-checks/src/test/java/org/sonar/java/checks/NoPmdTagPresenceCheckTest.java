@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class NoPmdTagPresenceCheckTest {
+class NoPmdTagPresenceCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NoPmdTagPresenceCheck.java"))
       .withCheck(new NoPmdTagPresenceCheck())

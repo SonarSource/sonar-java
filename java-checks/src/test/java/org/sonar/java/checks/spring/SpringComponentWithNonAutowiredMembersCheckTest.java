@@ -24,13 +24,13 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class SpringComponentWithNonAutowiredMembersCheckTest {
+class SpringComponentWithNonAutowiredMembersCheckTest {
 
   private String basePath = "checks/SpringComponentWithNonAutowiredMembersCheck/";
   private SpringComponentWithNonAutowiredMembersCheck check = new SpringComponentWithNonAutowiredMembersCheck();
 
   @Test
-  public void default_annotations() {
+  void default_annotations() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath(basePath + "DefaultAnnotations.java"))
       .withCheck(check)
@@ -44,7 +44,7 @@ public class SpringComponentWithNonAutowiredMembersCheckTest {
   }
 
   @Test
-  public void custom_annotations() {
+  void custom_annotations() {
     check.customInjectionAnnotations = "com.mycompany.myproject.MyController$MyInjectionAnnotation ,,";
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath(basePath + "CustomAnnotations.java"))

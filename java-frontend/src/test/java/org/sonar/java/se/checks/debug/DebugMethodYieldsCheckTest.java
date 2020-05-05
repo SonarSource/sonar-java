@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 
-public class DebugMethodYieldsCheckTest {
+class DebugMethodYieldsCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/debug/DebugMethodYieldsCheck.java")
       .withCheck(new DebugMethodYieldsCheck())
@@ -35,7 +35,7 @@ public class DebugMethodYieldsCheckTest {
   }
 
   @Test
-  public void test_max_steps() {
+  void test_max_steps() {
     DebugCheckTestUtils.verifyIssuesWithMaxSteps("src/test/files/se/debug/DebugMethodYieldsCheckMaxSteps.java", new DebugMethodYieldsCheck(), 20);
   }
 

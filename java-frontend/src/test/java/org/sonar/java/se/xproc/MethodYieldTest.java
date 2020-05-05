@@ -69,9 +69,9 @@ import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
 import static org.sonar.java.se.SETestUtils.variable;;
 
-public class MethodYieldTest {
+class MethodYieldTest {
   @Test
-  public void test_creation_of_states() throws Exception {
+  void test_creation_of_states() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYields.java");
     MethodBehavior mb = getMethodBehavior(sev, "foo");
 
@@ -88,7 +88,7 @@ public class MethodYieldTest {
   }
 
   @Test
-  public void test_creation_of_flows() throws Exception {
+  void test_creation_of_flows() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsFlows.java");
     MethodBehavior mb = getMethodBehavior(sev, "foo");
 
@@ -103,7 +103,7 @@ public class MethodYieldTest {
   }
 
   @Test
-  public void test_yield_on_reassignments() throws Exception {
+  void test_yield_on_reassignments() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsReassignments.java");
     MethodBehavior mb = getMethodBehavior(sev, "foo");
     assertThat(mb.happyPathYields())
@@ -111,13 +111,13 @@ public class MethodYieldTest {
   }
 
   @Test
-  public void flow_is_empty_when_yield_has_no_node() {
+  void flow_is_empty_when_yield_has_no_node() {
     MethodYield methodYield = new HappyPathYield(null, mockMethodBehavior(1, false));
     assertThat(methodYield.flow(Collections.singletonList(0), Lists.newArrayList(ObjectConstraint.class, BooleanConstraint.class))).isEmpty();
   }
 
   @Test
-  public void flow_should_fail_if_no_parameters_are_passed() throws Exception {
+  void flow_should_fail_if_no_parameters_are_passed() throws Exception {
     MethodYield methodYield = new HappyPathYield(null, mockMethodBehavior(1, false));
     try {
       methodYield.flow(Collections.emptyList(), Collections.singletonList(ObjectConstraint.class));
@@ -132,7 +132,7 @@ public class MethodYieldTest {
   }
 
   @Test
-  public void yields_are_not_generated_by_check() {
+  void yields_are_not_generated_by_check() {
     MethodYield yield = newMethodYield(mockMethodBehavior(1, false));
 
     assertThat(yield.generatedByCheck(null)).isFalse();
@@ -141,7 +141,7 @@ public class MethodYieldTest {
   }
 
   @Test
-  public void test_yield_equality() {
+  void test_yield_equality() {
     MethodBehavior methodBehavior = mockMethodBehavior(1, false);
     MethodYield yield = newMethodYield(methodBehavior);
     MethodYield otherYield;
@@ -202,7 +202,7 @@ public class MethodYieldTest {
   }
 
   @Test
-  public void test_pmapToStream() {
+  void test_pmapToStream() {
     assertThat(MethodYield.pmapToStream(null)).isEmpty();
 
     PMap<Class<? extends Constraint>, Constraint> pmap = PCollections.emptyMap();
@@ -213,7 +213,7 @@ public class MethodYieldTest {
   }
 
   @Test
-  public void calling_varargs_method_with_no_arg() throws Exception {
+  void calling_varargs_method_with_no_arg() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/VarArgsWithNoArgYield.java");
     MethodBehavior mb = getMethodBehavior(sev, "toArr");
     List<MethodYield> yields = mb.yields();
@@ -222,7 +222,7 @@ public class MethodYieldTest {
   }
 
   @Test
-  public void constraints_on_varargs() throws Exception {
+  void constraints_on_varargs() throws Exception {
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(new File("src/test/files/se/VarArgsYields.java"));
     Sema semanticModel = cut.sema;
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(new SECheck[]{}), new BehaviorCache(new SquidClassLoader(new ArrayList<>())));
@@ -306,13 +306,13 @@ public class MethodYieldTest {
   }
 
   @Test
-  public void native_methods_behavior_should_not_be_used() throws Exception {
+  void native_methods_behavior_should_not_be_used() throws Exception {
     Map<String, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcNativeMethods.java").behaviorCache.behaviors;
     behaviorCache.entrySet().stream().filter(e -> "foo".contains(e.getKey())).forEach(e -> assertThat(e.getValue().yields()).hasSize(2));
   }
 
   @Test
-  public void catch_class_cast_exception() throws Exception {
+  void catch_class_cast_exception() throws Exception {
     Map<String, MethodBehavior> behaviorCache = createSymbolicExecutionVisitor("src/test/files/se/XProcCatchClassCastException.java").behaviorCache.behaviors;
     assertThat(behaviorCache.values()).hasSize(1);
     MethodBehavior methodBehavior = behaviorCache.values().iterator().next();

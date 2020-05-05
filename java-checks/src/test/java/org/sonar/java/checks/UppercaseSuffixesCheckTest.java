@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class UppercaseSuffixesCheckTest {
+class UppercaseSuffixesCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UppercaseSuffixesCheck.java")
       .withCheck(new UppercaseSuffixesCheck())
@@ -33,7 +33,7 @@ public class UppercaseSuffixesCheckTest {
   }
 
   @Test
-  public void test_only_long() {
+  void test_only_long() {
     UppercaseSuffixesCheck check = new UppercaseSuffixesCheck();
     check.checkOnlyLong = true;
     JavaCheckVerifier.newVerifier()

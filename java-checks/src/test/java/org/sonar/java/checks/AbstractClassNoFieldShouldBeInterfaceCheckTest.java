@@ -22,12 +22,12 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class AbstractClassNoFieldShouldBeInterfaceCheckTest {
+class AbstractClassNoFieldShouldBeInterfaceCheckTest {
 
   private static final String TEST_FILE = "src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck.java";
 
   @Test
-  public void test_no_version() {
+  void test_no_version() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_no_version.java")
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
@@ -35,7 +35,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   }
 
   @Test
-  public void test_with_java_7() {
+  void test_with_java_7() {
     JavaCheckVerifier.newVerifier()
       .onFile(TEST_FILE)
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
@@ -44,7 +44,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   }
 
   @Test
-  public void test_with_java_8() {
+  void test_with_java_8() {
     JavaCheckVerifier.newVerifier()
       .onFile(TEST_FILE)
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
@@ -53,7 +53,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheckTest {
   }
 
   @Test
-  public void test_with_java_9() {
+  void test_with_java_9() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_java9.java")
       .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())

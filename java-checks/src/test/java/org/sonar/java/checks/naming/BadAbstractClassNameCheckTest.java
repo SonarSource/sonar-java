@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class BadAbstractClassNameCheckTest {
+class BadAbstractClassNameCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     BadAbstractClassNameCheck check = new BadAbstractClassNameCheck();
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/naming/BadAbstractClassName.java"))

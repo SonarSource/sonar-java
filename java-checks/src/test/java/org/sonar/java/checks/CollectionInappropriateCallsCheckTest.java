@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class CollectionInappropriateCallsCheckTest {
+class CollectionInappropriateCallsCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/CollectionInappropriateCallsCheck.java"))
       .withCheck(new CollectionInappropriateCallsCheck())
@@ -35,7 +35,7 @@ public class CollectionInappropriateCallsCheckTest {
   }
 
   @Test
-  public void test_unknown_types() {
+  void test_unknown_types() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CollectionInappropriateCallsCheckUnknownTypes.java")
       .withCheck(new CollectionInappropriateCallsCheck())

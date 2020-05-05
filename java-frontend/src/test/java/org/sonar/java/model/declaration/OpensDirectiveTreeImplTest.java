@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OpensDirectiveTreeImplTest {
+class OpensDirectiveTreeImplTest {
 
   private static OpensDirectiveTree moduleDirective(String exportsDirective) {
     CompilationUnitTree compilationUnitTree = JParserTestUtils.parseModule("module org.foo {\n  " + exportsDirective + "\n}");
@@ -45,7 +45,7 @@ public class OpensDirectiveTreeImplTest {
   }
 
   @Test
-  public void simple_opens() {
+  void simple_opens() {
     OpensDirectiveTree exports = moduleDirective("opens foo;");
 
     assertThat(exports.kind()).isEqualTo(Tree.Kind.OPENS_DIRECTIVE);
@@ -57,7 +57,7 @@ public class OpensDirectiveTreeImplTest {
   }
 
   @Test
-  public void opens_with_modules() {
+  void opens_with_modules() {
     OpensDirectiveTree exports = moduleDirective("opens org.foo to com.module1, module2;");
 
     assertThat(exports.kind()).isEqualTo(Tree.Kind.OPENS_DIRECTIVE);
@@ -80,7 +80,7 @@ public class OpensDirectiveTreeImplTest {
   }
 
   @Test
-  public void test_BaseTreeVisitor() {
+  void test_BaseTreeVisitor() {
     CompilationUnitTree cut = JParserTestUtils.parseModule(
       "@org.foo.Bar",
       "open module com.greetings {",

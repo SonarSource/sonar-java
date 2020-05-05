@@ -25,13 +25,13 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class HardCodedCredentialsCheckTest {
+class HardCodedCredentialsCheckTest {
 
   /**
    * @see org.sonar.java.checks.eclipsebug.EclipseBugTest#javax_conflict()
    */
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/HardCodedCredentialsCheck.java")
       .withCheck(new HardCodedCredentialsCheck())
@@ -41,7 +41,7 @@ public class HardCodedCredentialsCheckTest {
   }
 
   @Test
-  public void custom() {
+  void custom() {
     HardCodedCredentialsCheck check = new HardCodedCredentialsCheck();
     check.credentialWords = "marmalade,bazooka";
     JavaCheckVerifier.newVerifier()

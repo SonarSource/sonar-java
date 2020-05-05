@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SubClassStaticReferenceCheckTest {
+class SubClassStaticReferenceCheckTest {
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SubClassStaticReferenceCheck.java")
       .withCheck(new SubClassStaticReferenceCheck())
@@ -32,7 +32,7 @@ public class SubClassStaticReferenceCheckTest {
   }
 
   @Test
-  public void no_issue_without_semantic() {
+  void no_issue_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SubClassStaticReferenceCheck.java")
       .withCheck(new SubClassStaticReferenceCheck())

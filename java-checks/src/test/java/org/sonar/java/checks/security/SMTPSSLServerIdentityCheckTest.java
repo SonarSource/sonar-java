@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class SMTPSSLServerIdentityCheckTest {
+class SMTPSSLServerIdentityCheckTest {
 
   @Test
-  public void test_apache_email() {
+  void test_apache_email() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/SMTPSSLServerIdentityCheck/ApacheEmail.java"))
       .withCheck(new SMTPSSLServerIdentityCheck())
@@ -35,7 +35,7 @@ public class SMTPSSLServerIdentityCheckTest {
   }
 
   @Test
-  public void test_java_mail_session() {
+  void test_java_mail_session() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/security/SMTPSSLServerIdentityCheck/JavaMailSession.java")
       .withCheck(new SMTPSSLServerIdentityCheck())
@@ -43,7 +43,7 @@ public class SMTPSSLServerIdentityCheckTest {
   }
 
   @Test
-  public void test_no_semantic() {
+  void test_no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/SMTPSSLServerIdentityCheck/ApacheEmail.java"))
       .withCheck(new SMTPSSLServerIdentityCheck())

@@ -31,7 +31,7 @@ import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SurefireStaxHandlerTest {
+class SurefireStaxHandlerTest {
 
   private UnitTestIndex index;
 
@@ -41,7 +41,7 @@ public class SurefireStaxHandlerTest {
   }
 
   @Test
-  public void shouldLoadInnerClasses() throws XMLStreamException {
+  void shouldLoadInnerClasses() throws XMLStreamException {
     parse("innerClasses.xml");
 
     UnitTestClassReport publicClass = index.get("org.apache.commons.collections.bidimap.AbstractTestBidiMap");
@@ -57,7 +57,7 @@ public class SurefireStaxHandlerTest {
   }
 
   @Test
-  public void shouldHaveSkippedTests() throws XMLStreamException {
+  void shouldHaveSkippedTests() throws XMLStreamException {
     parse("skippedTests.xml");
     UnitTestClassReport report = index.get("org.sonar.Foo");
     assertThat(report.getTests()).isEqualTo(3);
@@ -65,13 +65,13 @@ public class SurefireStaxHandlerTest {
   }
 
   @Test
-  public void shouldHaveZeroTests() throws XMLStreamException {
+  void shouldHaveZeroTests() throws XMLStreamException {
     parse("zeroTests.xml");
     assertThat(index.size()).isEqualTo(0);
   }
 
   @Test
-  public void shouldHaveTestOnRootPackage() throws XMLStreamException {
+  void shouldHaveTestOnRootPackage() throws XMLStreamException {
     parse("rootPackage.xml");
     assertThat(index.size()).isEqualTo(1);
     UnitTestClassReport report = index.get("NoPackagesTest");
@@ -79,7 +79,7 @@ public class SurefireStaxHandlerTest {
   }
 
   @Test
-  public void shouldHaveErrorsAndFailures() throws XMLStreamException {
+  void shouldHaveErrorsAndFailures() throws XMLStreamException {
     parse("errorsAndFailures.xml");
     UnitTestClassReport report = index.get("org.sonar.Foo");
     assertThat(report.getErrors()).isEqualTo(1);
@@ -101,7 +101,7 @@ public class SurefireStaxHandlerTest {
   }
 
   @Test
-  public void shouldSupportMultipleSuitesInSameReport() throws XMLStreamException {
+  void shouldSupportMultipleSuitesInSameReport() throws XMLStreamException {
     parse("multipleSuites.xml");
 
     assertThat(index.get("org.sonar.JavaNCSSCollectorTest").getTests()).isEqualTo(11);
@@ -109,7 +109,7 @@ public class SurefireStaxHandlerTest {
   }
 
   @Test
-  public void shouldSupportSkippedTestWithoutTimeAttribute() throws XMLStreamException {
+  void shouldSupportSkippedTestWithoutTimeAttribute() throws XMLStreamException {
     parse("skippedWithoutTimeAttribute.xml");
 
     UnitTestClassReport publicClass = index.get("TSuite.A");
@@ -118,7 +118,7 @@ public class SurefireStaxHandlerTest {
   }
 
   @Test
-  public void output_of_junit_5_2_test_without_display_name() throws XMLStreamException {
+  void output_of_junit_5_2_test_without_display_name() throws XMLStreamException {
     parse("TEST-#29.xml");
     assertThat(index.get(")").getTests()).isEqualTo(1);
   }

@@ -32,10 +32,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SyntacticEquivalenceTest {
+class SyntacticEquivalenceTest {
 
   @Test
-  public void null_equivalence() throws Exception {
+  void null_equivalence() throws Exception {
     assertThat(SyntacticEquivalence.areEquivalent((Tree) null, null)).isTrue();
     assertThat(SyntacticEquivalence.areEquivalent(null, compilationUnitTree("class A{}"))).isFalse();
     assertThat(SyntacticEquivalence.areEquivalent(compilationUnitTree("class A{}"), null)).isFalse();
@@ -43,14 +43,14 @@ public class SyntacticEquivalenceTest {
   }
 
   @Test
-  public void statement_list_equivalence() {
+  void statement_list_equivalence() {
     assertAreEquivalent(Lists.newArrayList("foo()", "bar()"), Lists.newArrayList("foo()", "bar()"));
     assertAreNotEquivalent(Lists.newArrayList("foo()", "bar()"), Lists.newArrayList("foo()", "foo()"));
     assertAreNotEquivalent(Lists.newArrayList("foo()"), Lists.newArrayList("foo()", "foo()"));
   }
 
   @Test
-  public void test_equivalence() {
+  void test_equivalence() {
     assertAreEquivalent("foo()", "foo()");
     assertAreNotEquivalent("foo()", "bar()");
     assertAreEquivalent("int a", "int a");
@@ -61,13 +61,13 @@ public class SyntacticEquivalenceTest {
   }
 
   @Test
-  public void lambda_equivalence() {
+  void lambda_equivalence() {
     assertAreEquivalent("foo(bar->0)", "foo(bar->0)");
     assertAreNotEquivalent("foo(qix->0)", "foo(bar->0)");
   }
 
   @Test
-  public void not_implemented_tree() {
+  void not_implemented_tree() {
     JavaTree.NotImplementedTreeImpl notImplementedTree = new JavaTree.NotImplementedTreeImpl();
     assertThat(SyntacticEquivalence.areEquivalent(notImplementedTree, notImplementedTree)).isTrue();
     assertThat(SyntacticEquivalence.areEquivalent(notImplementedTree, new JavaTree.NotImplementedTreeImpl())).isFalse();

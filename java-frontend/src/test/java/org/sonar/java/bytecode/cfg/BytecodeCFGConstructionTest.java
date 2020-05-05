@@ -85,7 +85,7 @@ import static org.objectweb.asm.Opcodes.RET;
 import static org.objectweb.asm.Opcodes.SIPUSH;
 import static org.objectweb.asm.Opcodes.TABLESWITCH;
 
-public class BytecodeCFGConstructionTest {
+class BytecodeCFGConstructionTest {
 
   public static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
@@ -225,14 +225,14 @@ public class BytecodeCFGConstructionTest {
   }
 
   @BeforeAll
-  public static void verifyTestData() {
+  static void verifyTestData() {
     List<Integer> opcodes = data().map(data -> ((TestInput) data.get()[0]).opcode).collect(Collectors.toList());
     assertThat(opcodes).containsAll(Instructions.OPCODES);
   }
 
   @ParameterizedTest
   @MethodSource("data")
-  public void test(TestInput testInput, Instruction expected) throws Exception {
+  void test(TestInput testInput, Instruction expected) throws Exception {
     if (isJumpInstruction(testInput.opcode)) {
       test_jumps(testInput, expected);
       return;

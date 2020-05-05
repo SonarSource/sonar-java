@@ -26,10 +26,10 @@ import org.sonar.java.model.VisitorsBridge;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaFilesCacheTest {
+class JavaFilesCacheTest {
 
   @Test
-  public void resource_file_mapping() {
+  void resource_file_mapping() {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/resources/JavaFilesCacheTestFile.java"), new VisitorsBridge(javaFilesCache));
 

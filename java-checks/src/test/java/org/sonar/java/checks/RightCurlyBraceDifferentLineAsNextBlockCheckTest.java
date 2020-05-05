@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class RightCurlyBraceDifferentLineAsNextBlockCheckTest {
+class RightCurlyBraceDifferentLineAsNextBlockCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/RightCurlyBraceDifferentLineAsNextBlockCheck.java")
       .withCheck(new RightCurlyBraceDifferentLineAsNextBlockCheck())

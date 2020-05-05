@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UnitTestIndexTest {
+class UnitTestIndexTest {
 
   @Test
-  public void shouldIndexNewClassname() {
+  void shouldIndexNewClassname() {
     UnitTestIndex index = new UnitTestIndex();
 
     UnitTestClassReport report = index.index("org.sonar.Foo");
@@ -37,7 +37,7 @@ public class UnitTestIndexTest {
   }
 
   @Test
-  public void shouldNotReIndex() {
+  void shouldNotReIndex() {
     UnitTestIndex index = new UnitTestIndex();
 
     UnitTestClassReport report1 = index.index("org.sonar.Foo");
@@ -50,7 +50,7 @@ public class UnitTestIndexTest {
   }
 
   @Test
-  public void shouldRemoveClassname() {
+  void shouldRemoveClassname() {
     UnitTestIndex index = new UnitTestIndex();
 
     index.index("org.sonar.Foo");
@@ -61,7 +61,7 @@ public class UnitTestIndexTest {
   }
 
   @Test
-  public void shouldMergeClasses() {
+  void shouldMergeClasses() {
     UnitTestIndex index = new UnitTestIndex();
     UnitTestClassReport innerClass = index.index("org.sonar.Foo$Bar");
     innerClass.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_ERROR).setDurationMilliseconds(500L));
@@ -83,7 +83,7 @@ public class UnitTestIndexTest {
   }
 
   @Test
-  public void shouldRenameClassWhenMergingToNewClass() {
+  void shouldRenameClassWhenMergingToNewClass() {
     UnitTestIndex index = new UnitTestIndex();
     UnitTestClassReport innerClass = index.index("org.sonar.Foo$Bar");
     innerClass.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_ERROR).setDurationMilliseconds(500L));
@@ -102,7 +102,7 @@ public class UnitTestIndexTest {
   }
 
   @Test
-  public void shouldNotFailWhenMergingUnknownClass() {
+  void shouldNotFailWhenMergingUnknownClass() {
     UnitTestIndex index = new UnitTestIndex();
 
     index.merge("org.sonar.Foo$Bar", "org.sonar.Foo");

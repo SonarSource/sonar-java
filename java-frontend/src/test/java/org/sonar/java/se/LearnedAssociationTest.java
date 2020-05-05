@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LearnedAssociationTest {
+class LearnedAssociationTest {
 
   @Test
-  public void test_toString() throws Exception {
+  void test_toString() throws Exception {
     SymbolicValue sv = new SymbolicValue() {
       @Override
       public String toString() {

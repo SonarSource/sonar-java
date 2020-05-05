@@ -19,24 +19,22 @@
  */
 package org.sonar.java.se;
 
+import java.util.Collections;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.CFGTest;
+import org.sonar.java.cfg.CFGTestUtils;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
-import java.util.Collections;
-import java.util.Set;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SECheckTest {
+class SECheckTest {
   @Test
   @Timeout(3)
-  public void flow_from_exit_node_should_not_lead_to_infinite_recursion() throws Exception {
-    CFG cfg = CFGTest.buildCFG("void foo(boolean a) { if(a) {foo(true);} foo(false); }");
+  void flow_from_exit_node_should_not_lead_to_infinite_recursion() throws Exception {
+    CFG cfg = CFGTestUtils.buildCFG("void foo(boolean a) { if(a) {foo(true);} foo(false); }");
     ExplodedGraph eg = new ExplodedGraph();
     ExplodedGraph.Node node = eg.node(new ProgramPoint(cfg.blocks().get(3)), ProgramState.EMPTY_STATE);
     node.addParent(eg.node(new ProgramPoint(cfg.blocks().get(2)).next().next(), ProgramState.EMPTY_STATE), null);

@@ -38,10 +38,10 @@ import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.GREA
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.LESS_THAN;
 import static org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind.NOT_EQUAL;
 
-public class DivisionByZeroCheckTest {
+class DivisionByZeroCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/DivisionByZeroCheck.java")
       .withCheck(new DivisionByZeroCheck())
@@ -50,7 +50,7 @@ public class DivisionByZeroCheckTest {
   }
 
   @Test
-  public void invocation_leading_to_ArithmeticException() {
+  void invocation_leading_to_ArithmeticException() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/MethodInvocationLeadingToArithmeticException.java")
       .withCheck(new DivisionByZeroCheck())
@@ -59,7 +59,7 @@ public class DivisionByZeroCheckTest {
   }
 
   @Test
-  public void test_zero_constraint_copy() throws Exception {
+  void test_zero_constraint_copy() throws Exception {
     SymbolicValue a = new SymbolicValue();
     SymbolicValue b = new SymbolicValue();
     DivisionByZeroCheck.ZeroConstraint bConstraint = copyConstraint(a, b, EQUAL, ZERO);

@@ -30,17 +30,17 @@ import java.net.URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class JarLoaderTest {
+class JarLoaderTest {
 
   @Test
-  public void shouldThrowIllegalArgumentException() throws Exception {
+  void shouldThrowIllegalArgumentException() throws Exception {
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
       () -> new JarLoader(null));
     assertThat(e.getMessage()).isEqualTo("file can't be null");
   }
 
   @Test
-  public void testFindResource() throws Exception {
+  void testFindResource() throws Exception {
     File jar = new File("src/test/files/bytecode/lib/hello.jar");
     JarLoader loader = new JarLoader(jar);
 
@@ -66,7 +66,7 @@ public class JarLoaderTest {
   }
 
   @Test
-  public void testLoadBytes() throws Exception {
+  void testLoadBytes() throws Exception {
     File jar = new File("src/test/files/bytecode/lib/hello.jar");
     JarLoader loader = new JarLoader(jar);
 
@@ -85,7 +85,7 @@ public class JarLoaderTest {
   }
 
   @Test
-  public void closeCanBeCalledMultipleTimes() throws Exception {
+  void closeCanBeCalledMultipleTimes() throws Exception {
     File jar = new File("src/test/files/bytecode/lib/hello.jar");
     JarLoader loader = new JarLoader(jar);
     loader.close();
@@ -93,7 +93,7 @@ public class JarLoaderTest {
   }
 
   @Test
-  public void testCorruptedJar() {
+  void testCorruptedJar() {
     File jar = new File("src/test/files/bytecode/src/tags/TagName.java");
     IllegalStateException e = assertThrows(IllegalStateException.class,
       () -> new JarLoader(jar));

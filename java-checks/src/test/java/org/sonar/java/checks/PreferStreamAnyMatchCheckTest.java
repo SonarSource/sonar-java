@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class PreferStreamAnyMatchCheckTest {
+class PreferStreamAnyMatchCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/PreferStreamAnyMatch.java")
       .withCheck(new PreferStreamAnyMatchCheck())

@@ -33,12 +33,12 @@ import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
 
-public class HappyPathYieldTest {
+class HappyPathYieldTest {
 
   ConstraintsByDomain NOT_NULL_CONSTRAINT = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
 
   @Test
-  public void test_equals() {
+  void test_equals() {
     MethodBehavior mb = mockMethodBehavior(1, false);
 
     HappyPathYield yield = new HappyPathYield(mb);
@@ -68,7 +68,7 @@ public class HappyPathYieldTest {
   }
 
   @Test
-  public void test_hashCode() {
+  void test_hashCode() {
     MethodBehavior mb = mockMethodBehavior(0, false);
 
     HappyPathYield methodYield = new HappyPathYield(mb);
@@ -86,7 +86,7 @@ public class HappyPathYieldTest {
   }
 
   @Test
-  public void test_toString() throws Exception {
+  void test_toString() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/HappyPathYields.java");
     Set<String> yieldsToString = getMethodBehavior(sev, "bar").yields().stream().map(MethodYield::toString).collect(Collectors.toSet());
     assertThat(yieldsToString).contains(

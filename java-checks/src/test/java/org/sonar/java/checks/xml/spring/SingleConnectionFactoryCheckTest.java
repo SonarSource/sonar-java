@@ -23,17 +23,17 @@ import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class SingleConnectionFactoryCheckTest {
+class SingleConnectionFactoryCheckTest {
 
   private static final SonarXmlCheck CHECK = new SingleConnectionFactoryCheck();
 
   @Test
-  public void beans() {
+  void beans() {
     SonarXmlCheckVerifier.verifyIssues("beans.xml", CHECK);
   }
 
   @Test
-  public void not_beans() {
+  void not_beans() {
     SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", CHECK);
   }
 }

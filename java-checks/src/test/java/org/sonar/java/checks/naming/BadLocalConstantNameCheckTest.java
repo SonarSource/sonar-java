@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class BadLocalConstantNameCheckTest {
+class BadLocalConstantNameCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheck.java")
       .withCheck(new BadLocalConstantNameCheck())
@@ -35,7 +35,7 @@ public class BadLocalConstantNameCheckTest {
   }
 
   @Test
-  public void otherPattern() {
+  void otherPattern() {
     BadLocalConstantNameCheck check = new BadLocalConstantNameCheck();
     check.format = "^[A-Z][A-Z0-9]*$";
     JavaCheckVerifier.newVerifier()
@@ -45,7 +45,7 @@ public class BadLocalConstantNameCheckTest {
   }
 
   @Test
-  public void noIssueWithoutSemantic() {
+  void noIssueWithoutSemantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadLocalConstantNameCheck/BadLocalConstantNameCheck.java")
       .withCheck(new BadLocalConstantNameCheck())

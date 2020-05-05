@@ -36,10 +36,10 @@ import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSemantic;
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 
-public class MethodBehaviorTest {
+class MethodBehaviorTest {
 
   @Test
-  public void method_behavior_signature() {
+  void method_behavior_signature() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodYields.java");
 
     MethodBehavior mb = getMethodBehavior(sev, "method");
@@ -49,7 +49,7 @@ public class MethodBehaviorTest {
   }
 
   @Test
-  public void method_behavior_yields() {
+  void method_behavior_yields() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodYields.java");
 
     MethodBehavior mb = getMethodBehavior(sev, "method");
@@ -80,7 +80,7 @@ public class MethodBehaviorTest {
   }
 
   @Test
-  public void method_behavior_handling_finally() {
+  void method_behavior_handling_finally() {
     Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/resources/se/ReturnAndFinally.java");
     SymbolicExecutionVisitor sev = visitorAndSemantic.a;
     Sema semanticModel = visitorAndSemantic.b;
@@ -125,7 +125,7 @@ public class MethodBehaviorTest {
   }
 
   @Test
-  public void test_reducing_of_yields_on_arguments() {
+  void test_reducing_of_yields_on_arguments() {
     MethodBehavior mb = new MethodBehavior("foo(Ljava/lang/Object;)V");
     addYield(mb, null, ObjectConstraint.NOT_NULL);
     addYield(mb, null, ObjectConstraint.NULL);
@@ -142,7 +142,7 @@ public class MethodBehaviorTest {
   }
 
   @Test
-  public void result_with_boolean_constraint_should_be_reduced() {
+  void result_with_boolean_constraint_should_be_reduced() {
     MethodBehavior mb = new MethodBehavior("foo()Z");
     addYield(mb, BooleanConstraint.TRUE);
     addYield(mb, BooleanConstraint.FALSE);
@@ -160,7 +160,7 @@ public class MethodBehaviorTest {
   }
 
   @Test
-  public void result_with_unreducible_constraint_should_not_be_reduced() {
+  void result_with_unreducible_constraint_should_not_be_reduced() {
     MethodBehavior mb = new MethodBehavior("foo()Ljava/lang/Object;");
     addYield(mb, ObjectConstraint.NOT_NULL);
     addYield(mb, ObjectConstraint.NULL);
@@ -171,7 +171,7 @@ public class MethodBehaviorTest {
   }
 
   @Test
-  public void anonymous_classes_used_as_exception_should_be_resolved_to_supertype() {
+  void anonymous_classes_used_as_exception_should_be_resolved_to_supertype() {
     Pair<SymbolicExecutionVisitor, Sema> visitorAndSemantic = createSymbolicExecutionVisitorAndSemantic(
       "src/test/java/org/sonar/java/resolve/targets/TestExceptionSupertypeResolution.java");
     SymbolicExecutionVisitor sev = visitorAndSemantic.a;

@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaVersionAwareVisitorTest {
+class JavaVersionAwareVisitorTest {
 
   private JavaCheck[] javaChecks;
   private List<String> messages;
@@ -50,19 +50,19 @@ public class JavaVersionAwareVisitorTest {
   }
 
   @Test
-  public void all_check_executed_when_no_java_version() {
+  void all_check_executed_when_no_java_version() {
     checkIssues(new JavaVersionImpl());
     assertThat(messages).containsExactly("JavaVersionCheck_7", "JavaVersionCheck_8", "SimpleCheck", "ContextualCheck");
   }
 
   @Test
-  public void all_check_executed_when_invalid_java_version() {
+  void all_check_executed_when_invalid_java_version() {
     checkIssues(new JavaVersionImpl());
     assertThat(messages).containsExactly("JavaVersionCheck_7", "JavaVersionCheck_8", "SimpleCheck", "ContextualCheck");
   }
 
   @Test
-  public void only_checks_with_adequate_java_version_higher_than_configuration_version_are_executed() {
+  void only_checks_with_adequate_java_version_higher_than_configuration_version_are_executed() {
     checkIssues(new JavaVersionImpl(7));
     assertThat(messages).containsExactly("JavaVersionCheck_7", "SimpleCheck", "ContextualCheck_7");
 
@@ -71,7 +71,7 @@ public class JavaVersionAwareVisitorTest {
   }
 
   @Test
-  public void no_java_version_matching() {
+  void no_java_version_matching() {
     checkIssues(new JavaVersionImpl(6));
     assertThat(messages).containsExactly("SimpleCheck", "ContextualCheck_6");
   }

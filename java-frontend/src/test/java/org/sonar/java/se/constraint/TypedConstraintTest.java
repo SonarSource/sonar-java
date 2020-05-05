@@ -24,10 +24,10 @@ import org.sonar.java.resolve.Symbols;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TypedConstraintTest {
+class TypedConstraintTest {
 
   @Test
-  public void test_equals_hashcode() {
+  void test_equals_hashcode() {
     TypedConstraint object1 = new TypedConstraint("java.lang.String");
     TypedConstraint object2 = new TypedConstraint("java.lang.String");
     assertThat(object1.equals(object1)).isTrue();

@@ -24,19 +24,19 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class PatternMatcherTest {
+class PatternMatcherTest {
 
   private PatternMatcher matcher;
 
   @Test
-  public void should_match_patterns() {
+  void should_match_patterns() {
     matcher = new PatternMatcher("[a-z]*");
     assertThat(matcher.test("test")).isTrue();
     assertThat(matcher.test("012")).isFalse();
   }
 
   @Test
-  public void should_fail_on_invalid_regex() {
+  void should_fail_on_invalid_regex() {
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
       () -> new PatternMatcher("*"));
     assertThat(e.getMessage()).isEqualTo("Unable to compile the regular expression: *");

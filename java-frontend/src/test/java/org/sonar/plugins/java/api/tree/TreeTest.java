@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TreeTest {
+class TreeTest {
 
   @Test
-  public void test() {
+  void test() {
     assertThat(Tree.Kind.values()).hasSize(119);
   }
 

@@ -32,10 +32,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ParsingErrorCheckTest {
+class ParsingErrorCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.inputFileContents(any())).thenCallRealMethod();
 

@@ -22,10 +22,10 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class StandardInputReadCheckTest {
+class StandardInputReadCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/security/StandardInputReadCheck.java")
       .withCheck(new StandardInputReadCheck())
@@ -33,7 +33,7 @@ public class StandardInputReadCheckTest {
   }
 
   @Test
-  public void noSemantic() {
+  void noSemantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/security/StandardInputReadCheck.java")
       .withCheck(new StandardInputReadCheck())

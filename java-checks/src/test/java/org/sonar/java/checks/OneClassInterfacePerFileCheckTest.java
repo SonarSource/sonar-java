@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class OneClassInterfacePerFileCheckTest {
+class OneClassInterfacePerFileCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/OneClassInterfacePerFileCheck.java")
       .withCheck(new OneClassInterfacePerFileCheck())
@@ -35,7 +35,7 @@ public class OneClassInterfacePerFileCheckTest {
   }
 
   @Test
-  public void noncompliant() {
+  void noncompliant() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/OneClassInterfacePerFileCheckNoncompliant.java"))
       .withCheck(new OneClassInterfacePerFileCheck())

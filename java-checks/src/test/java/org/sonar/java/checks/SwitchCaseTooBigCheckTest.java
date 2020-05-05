@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SwitchCaseTooBigCheckTest {
+class SwitchCaseTooBigCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SwitchCaseTooBigCheck.java")
       .withCheck(new SwitchCaseTooBigCheck())
@@ -33,7 +33,7 @@ public class SwitchCaseTooBigCheckTest {
   }
 
   @Test
-  public void custom() {
+  void custom() {
     SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
     check.max = 6;
     JavaCheckVerifier.newVerifier()
@@ -43,7 +43,7 @@ public class SwitchCaseTooBigCheckTest {
   }
 
   @Test
-  public void limit() {
+  void limit() {
     SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
     check.max = 0;
     JavaCheckVerifier.newVerifier()

@@ -33,10 +33,10 @@ import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AbstractMethodDetectionTest {
+class AbstractMethodDetectionTest {
 
   @Test
-  public void detected() {
+  void detected() {
     Visitor visitor = new Visitor(
       MethodMatchers.create().ofTypes("A").names("method")
         .addParametersMatcher("int")
@@ -49,7 +49,7 @@ public class AbstractMethodDetectionTest {
   }
 
   @Test
-  public void withAnyParameters() throws Exception {
+  void withAnyParameters() throws Exception {
     Visitor visitor = new Visitor(
       MethodMatchers.create().ofTypes("A").names("method").withAnyParameters().build());
     JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
@@ -58,7 +58,7 @@ public class AbstractMethodDetectionTest {
   }
 
   @Test
-  public void withoutParameter() throws Exception {
+  void withoutParameter() throws Exception {
     Visitor visitor = new Visitor(
       MethodMatchers.create().ofTypes("A").names("method").addWithoutParametersMatcher().build());
     JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));

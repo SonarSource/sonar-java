@@ -22,16 +22,16 @@ package org.sonar.java.checks.xml.maven;
 import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class DeprecatedPomPropertiesCheckTest {
+class DeprecatedPomPropertiesCheckTest {
   private static final DeprecatedPomPropertiesCheck CHECK = new DeprecatedPomPropertiesCheck();
 
   @Test
-  public void pom() {
+  void pom() {
     SonarXmlCheckVerifier.verifyIssues("pom.xml", CHECK);
   }
 
   @Test
-  public void not_a_pom() {
+  void not_a_pom() {
     SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", CHECK);
   }
 }

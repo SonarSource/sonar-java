@@ -28,10 +28,10 @@ import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaConstantsTest {
+class JavaConstantsTest {
 
   @Test
-  public void private_constructor() throws Exception {
+  void private_constructor() throws Exception {
     assertThat(isFinal(ExpressionUtils.class.getModifiers())).isTrue();
     Constructor<JavaConstants> constructor = JavaConstants.class.getDeclaredConstructor();
     assertThat(isPrivate(constructor.getModifiers())).isTrue();

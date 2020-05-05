@@ -36,13 +36,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @EnableRuleMigrationSupport
-public class FlowComputationTest {
+class FlowComputationTest {
 
   @Rule
   public LogTester logTester = new LogTester();
 
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputation.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -51,7 +51,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_catof() throws Exception {
+  void test_catof() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationCATOF.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -60,7 +60,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_messages_on_method_invocation() throws Exception {
+  void test_messages_on_method_invocation() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationMIT.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -69,7 +69,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_flow_messages_on_parameter_declaration() throws Exception {
+  void test_flow_messages_on_parameter_declaration() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowMessagesParameterDeclaration.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -78,7 +78,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_flow_messages_on_branch() throws Exception {
+  void test_flow_messages_on_branch() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowMessagesBranch.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -87,7 +87,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_getArgumentIdentifier() throws Exception {
+  void test_getArgumentIdentifier() throws Exception {
     MethodInvocationTree mit = (MethodInvocationTree) Result.createForJavaFile("src/test/files/se/FlowComputationGetArgumentIdentifier").referenceTree(6, 5).parent();
 
     assertThatThrownBy(() -> FlowComputation.getArgumentIdentifier(mit, -1)).isInstanceOf(IllegalArgumentException.class).hasMessage("index must be within arguments range.");
@@ -98,7 +98,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_relational_sv_operands() throws Exception {
+  void test_relational_sv_operands() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationRelSV.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -107,7 +107,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_unary_sv_operands() throws Exception {
+  void test_unary_sv_operands() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationUnarySV.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -116,7 +116,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_multiple_paths() {
+  void test_multiple_paths() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationMultiplePath.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -125,7 +125,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_multiple_paths_xproc() {
+  void test_multiple_paths_xproc() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationMultiplePathXProc.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -134,7 +134,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_trigger_yield_flow_computation_only_on_relevant_yields() throws Exception {
+  void test_trigger_yield_flow_computation_only_on_relevant_yields() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/UselessFlowComputation.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck())
@@ -143,7 +143,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void avoid_visiting_equivalent_paths() throws Exception {
+  void avoid_visiting_equivalent_paths() throws Exception {
     logTester.setLevel(LoggerLevel.DEBUG);
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowComputationNoOverflowWhenMergingPaths.java")
@@ -154,7 +154,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void xproc_flow_messages() throws Exception {
+  void xproc_flow_messages() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XProcFlowMessages.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck())
@@ -163,7 +163,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void xproc_flow_messages_constraint_is_VS_can_be() throws Exception {
+  void xproc_flow_messages_constraint_is_VS_can_be() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XProcFlowMessagesIsCanBe.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck())
@@ -172,7 +172,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_flows_with_single_msg_not_reported() throws Exception {
+  void test_flows_with_single_msg_not_reported() throws Exception {
     ((InternalCheckVerifier) CheckVerifier.newVerifier())
       .withCustomIssueVerifier(issues -> {
         assertThat(issues).hasSize(4);
@@ -190,7 +190,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_method_invocations_without_flows() throws Exception {
+  void test_method_invocations_without_flows() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/MethodInvocationWithoutFlows.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new DivisionByZeroCheck())
@@ -199,7 +199,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_exception_flows() throws Exception {
+  void test_exception_flows() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/ExceptionFlows.java")
       .withCheck(new NullDereferenceCheck())
@@ -208,7 +208,7 @@ public class FlowComputationTest {
   }
 
   @Test
-  public void test_location_should_not_be_created_on_null_tree() throws Exception {
+  void test_location_should_not_be_created_on_null_tree() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/FlowNullTree.java")
       .withChecks(new NullDereferenceCheck(), new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck(), new DivisionByZeroCheck())

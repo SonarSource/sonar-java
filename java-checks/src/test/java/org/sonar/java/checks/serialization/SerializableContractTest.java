@@ -25,10 +25,10 @@ import java.lang.reflect.Constructor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SerializableContractTest {
+class SerializableContractTest {
 
   @Test
-  public void private_constructor() throws Exception {
+  void private_constructor() throws Exception {
     Constructor constructor = SerializableContract.class.getDeclaredConstructor();
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);

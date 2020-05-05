@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class MismatchPackageDirectoryCheckTest {
+class MismatchPackageDirectoryCheckTest {
 
   @Test
-  public void correctMatch() {
+  void correctMatch() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/mismatchPackage/Matching.java"))
       .withCheck(new MismatchPackageDirectoryCheck())
@@ -35,7 +35,7 @@ public class MismatchPackageDirectoryCheckTest {
   }
 
   @Test
-  public void defaultPackage() {
+  void defaultPackage() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/mismatchPackage/DefaultPackage.java")
       .withCheck(new MismatchPackageDirectoryCheck())
@@ -43,7 +43,7 @@ public class MismatchPackageDirectoryCheckTest {
   }
 
   @Test
-  public void mismatch() {
+  void mismatch() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/mismatchPackage/Mismatch.java")
       .withCheck(new MismatchPackageDirectoryCheck())
@@ -51,7 +51,7 @@ public class MismatchPackageDirectoryCheckTest {
   }
 
   @Test
-  public void mismatchWithDots() {
+  void mismatchWithDots() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/mismatchPackage/with.dots/PackageWithDots.java")
       .withCheck(new MismatchPackageDirectoryCheck())

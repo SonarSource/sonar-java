@@ -33,13 +33,13 @@ import org.sonar.api.utils.log.LoggerLevel;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @EnableRuleMigrationSupport
-public class SurefireUtilsTest {
+class SurefireUtilsTest {
 
   @Rule
   public LogTester logTester = new LogTester();
 
   @Test
-  public void should_get_report_paths_from_property() {
+  void should_get_report_paths_from_property() {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.junit.reportPaths", "target/surefire,submodule/target/surefire");
 
@@ -61,7 +61,7 @@ public class SurefireUtilsTest {
   }
 
   @Test
-  public void return_default_value_if_property_unset() throws Exception {
+  void return_default_value_if_property_unset() throws Exception {
     MapSettings settings = new MapSettings();
     DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/resources/org/sonar/plugins/surefire/api/SurefireUtilsTest"));
     PathResolver pathResolver = new PathResolver();

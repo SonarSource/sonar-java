@@ -22,10 +22,10 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class MethodNamedEqualsCheckTest {
+class MethodNamedEqualsCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/MethodNamedEqualsCheck.java")
       .withCheck(new MethodNamedEqualsCheck())

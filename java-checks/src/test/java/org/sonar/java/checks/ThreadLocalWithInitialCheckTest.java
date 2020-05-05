@@ -24,9 +24,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class ThreadLocalWithInitialCheckTest {
+class ThreadLocalWithInitialCheckTest {
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/ThreadLocalWithInitialCheck.java")
       .withCheck(new ThreadLocalWithInitialCheck())
@@ -34,7 +34,7 @@ public class ThreadLocalWithInitialCheckTest {
   }
 
   @Test
-  public void no_issue_prior_to_java_8() {
+  void no_issue_prior_to_java_8() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ThreadLocalWithInitialCheck_java7.java"))
       .withCheck(new ThreadLocalWithInitialCheck())

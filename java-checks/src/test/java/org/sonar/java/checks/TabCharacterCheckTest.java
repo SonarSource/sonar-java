@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class TabCharacterCheckTest {
+class TabCharacterCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/TabCharacter.java"))
       .withCheck(new TabCharacterCheck())
@@ -35,7 +35,7 @@ public class TabCharacterCheckTest {
   }
 
   @Test
-  public void test2() {
+  void test2() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NonEmptyFile.java"))
       .withCheck(new TabCharacterCheck())

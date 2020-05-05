@@ -27,10 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SymbolicValueTest {
+class SymbolicValueTest {
 
   @Test
-  public void exceptional_SV_should_contain_exception_type_in_toString() {
+  void exceptional_SV_should_contain_exception_type_in_toString() {
     SymbolicValue.ExceptionalSymbolicValue unknownException = new SymbolicValue.ExceptionalSymbolicValue(null);
     // contains the exception
     assertThat(unknownException.toString()).contains("!unknownException!");
@@ -43,7 +43,7 @@ public class SymbolicValueTest {
   }
 
   @Test
-  public void exceptional_SV_equals() {
+  void exceptional_SV_equals() {
     Type exceptionType = type("MyException", "org.foo.bar");
 
     SymbolicValue.ExceptionalSymbolicValue sv = new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
@@ -59,7 +59,7 @@ public class SymbolicValueTest {
   }
 
   @Test
-  public void test_computed_from() throws Exception {
+  void test_computed_from() throws Exception {
     SymbolicValue symbolicValue = new SymbolicValue();
     assertThat(symbolicValue.computedFrom()).isEmpty();
 
@@ -73,7 +73,7 @@ public class SymbolicValueTest {
   }
 
   @Test
-  public void test_toString() throws Exception {
+  void test_toString() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue.NotSymbolicValue notSV = new SymbolicValue.NotSymbolicValue();
@@ -94,7 +94,7 @@ public class SymbolicValueTest {
   }
 
   @Test
-  public void caughtException() {
+  void caughtException() {
     SymbolicValue.ExceptionalSymbolicValue thrownSV = new SymbolicValue.ExceptionalSymbolicValue(null);
     SymbolicValue.CaughtExceptionSymbolicValue caughtSV = new SymbolicValue.CaughtExceptionSymbolicValue(thrownSV);
 
@@ -102,7 +102,7 @@ public class SymbolicValueTest {
   }
 
   @Test
-  public void test_hashCode_equals() throws Exception {
+  void test_hashCode_equals() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     assertThat(sv1.equals(sv1)).isTrue();
     assertThat(sv1.equals(null)).isFalse();

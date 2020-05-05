@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class DisallowedThreadGroupCheckTest {
+class DisallowedThreadGroupCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/DisallowedThreadGroupCheck.java")
       .withCheck(new DisallowedThreadGroupCheck())
@@ -33,7 +33,7 @@ public class DisallowedThreadGroupCheckTest {
   }
 
   @Test
-  public void no_issue_without_semantic() {
+  void no_issue_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/DisallowedThreadGroupCheck.java")
       .withCheck(new DisallowedThreadGroupCheck())

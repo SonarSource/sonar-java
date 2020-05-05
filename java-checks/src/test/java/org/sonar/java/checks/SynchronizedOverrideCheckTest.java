@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SynchronizedOverrideCheckTest {
+class SynchronizedOverrideCheckTest {
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SynchronizedOverrideCheck.java")
       .withCheck(new SynchronizedOverrideCheck())
@@ -32,7 +32,7 @@ public class SynchronizedOverrideCheckTest {
   }
 
   @Test
-  public void no_semantic() {
+  void no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SynchronizedOverrideCheck.java")
       .withCheck(new SynchronizedOverrideCheck())

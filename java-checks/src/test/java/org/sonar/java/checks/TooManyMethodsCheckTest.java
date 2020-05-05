@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class TooManyMethodsCheckTest {
+class TooManyMethodsCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     TooManyMethodsCheck check = new TooManyMethodsCheck();
     check.maximumMethodThreshold = 4;
     JavaCheckVerifier.newVerifier()
@@ -42,7 +42,7 @@ public class TooManyMethodsCheckTest {
   }
 
   @Test
-  public void only_public() {
+  void only_public() {
     TooManyMethodsCheck check = new TooManyMethodsCheck();
     check.maximumMethodThreshold = 4;
     check.countNonPublic = false;

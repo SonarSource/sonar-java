@@ -48,7 +48,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @EnableRuleMigrationSupport
-public class JavaSquidTest {
+class JavaSquidTest {
 
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
@@ -61,7 +61,7 @@ public class JavaSquidTest {
   private SensorContextTester context;
 
   @Test
-  public void number_of_visitors_in_sonarLint_context_LTS() throws Exception {
+  void number_of_visitors_in_sonarLint_context_LTS() throws Exception {
 
     String code = "/***/\nclass A {\n String foo() {\n  return foo();\n }\n}";
 
@@ -81,7 +81,7 @@ public class JavaSquidTest {
   }
 
   @Test
-  public void parsing_errors_should_be_reported_to_sonarlint() throws Exception {
+  void parsing_errors_should_be_reported_to_sonarlint() throws Exception {
     scanForErrors("class A {");
 
     assertThat(context.allAnalysisErrors()).hasSize(1);
@@ -90,7 +90,7 @@ public class JavaSquidTest {
 
   @org.junit.jupiter.api.Disabled("new semantic analysis does not throw exception in this case")
   @Test
-  public void semantic_errors_should_be_reported_to_sonarlint() throws Exception {
+  void semantic_errors_should_be_reported_to_sonarlint() throws Exception {
     scanForErrors("class A {} class A {}");
 
     assertThat(context.allAnalysisErrors()).hasSize(1);

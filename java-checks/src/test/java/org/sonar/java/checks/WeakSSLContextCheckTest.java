@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class WeakSSLContextCheckTest {
+class WeakSSLContextCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     WeakSSLContextCheck check = new WeakSSLContextCheck();
     String filename = "src/test/files/checks/WeakSSLContextCheck.java";
     JavaCheckVerifier.newVerifier()

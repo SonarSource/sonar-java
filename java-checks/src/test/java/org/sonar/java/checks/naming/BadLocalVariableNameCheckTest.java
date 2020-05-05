@@ -22,10 +22,10 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class BadLocalVariableNameCheckTest {
+class BadLocalVariableNameCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadLocalVariableNameNoncompliant.java")
       .withCheck(new BadLocalVariableNameCheck())
@@ -33,7 +33,7 @@ public class BadLocalVariableNameCheckTest {
   }
 
   @Test
-  public void test2() {
+  void test2() {
     BadLocalVariableNameCheck check = new BadLocalVariableNameCheck();
     check.format = "^[a-zA-Z0-9_][a-zA-Z0-9_][a-zA-Z0-9_][a-zA-Z0-9_]*$";
     JavaCheckVerifier.newVerifier()

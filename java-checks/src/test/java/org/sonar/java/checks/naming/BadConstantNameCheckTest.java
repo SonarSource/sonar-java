@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class BadConstantNameCheckTest {
+class BadConstantNameCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadConstantNameNoncompliant.java")
       .withCheck(new BadConstantNameCheck())
@@ -35,7 +35,7 @@ public class BadConstantNameCheckTest {
   }
 
   @Test
-  public void no_semantic() {
+  void no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/naming/BadConstantNameNoIssueWithoutSemantic.java"))
       .withCheck(new BadConstantNameCheck())
@@ -44,7 +44,7 @@ public class BadConstantNameCheckTest {
   }
 
   @Test
-  public void test2() {
+  void test2() {
     BadConstantNameCheck check = new BadConstantNameCheck();
     check.format = "^[a-zA-Z0-9_]*$";
     JavaCheckVerifier.newVerifier()

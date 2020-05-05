@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class TooManyParametersCheckTest {
+class TooManyParametersCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/TooManyParameters.java")
       .withCheck(new TooManyParametersCheck())
@@ -35,7 +35,7 @@ public class TooManyParametersCheckTest {
   }
 
   @Test
-  public void custom() {
+  void custom() {
     TooManyParametersCheck check = new TooManyParametersCheck();
     check.maximum = 8;
     check.constructorMax = 5;

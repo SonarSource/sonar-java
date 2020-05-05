@@ -24,12 +24,12 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class IntegerToHexStringCheckTest {
+class IntegerToHexStringCheckTest {
 
   public static final String TEST_FILE = testSourcesPath("checks/security/IntegerToHexStringCheck.java");
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(TEST_FILE)
       .withCheck(new IntegerToHexStringCheck())
@@ -37,7 +37,7 @@ public class IntegerToHexStringCheckTest {
   }
 
   @Test
-  public void test_no_semantic() {
+  void test_no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(TEST_FILE)
       .withCheck(new IntegerToHexStringCheck())

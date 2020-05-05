@@ -22,9 +22,9 @@ package org.sonar.java.checks.xml.maven;
 import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class DependencyWithSystemScopeCheckTest {
+class DependencyWithSystemScopeCheckTest {
   @Test
-  public void test() {
+  void test() {
     DependencyWithSystemScopeCheck check = new DependencyWithSystemScopeCheck();
     SonarXmlCheckVerifier.verifyIssues("pom.xml", check);
     SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", check);

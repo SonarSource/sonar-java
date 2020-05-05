@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class BaseTreeVisitorIssueFilterTest {
+class BaseTreeVisitorIssueFilterTest {
 
   private static final InputFile INPUT_FILE = CheckTestUtils.inputFile(testSourcesPath("filters/BaseTreeVisitorIssueFilter.java"));
   private static final String REPOSITORY_KEY = "octopus";
@@ -67,7 +67,7 @@ public class BaseTreeVisitorIssueFilterTest {
   }
 
   @Test
-  public void issues_by_targeted_rule_should_be_filtered() {
+  void issues_by_targeted_rule_should_be_filtered() {
     // issue on file
     assertThatIssueWillBeAccepted(null).isTrue();
 
@@ -81,7 +81,7 @@ public class BaseTreeVisitorIssueFilterTest {
   }
 
   @Test
-  public void issues_from_non_targeted_rules_are_accepted() {
+  void issues_from_non_targeted_rules_are_accepted() {
     // other rule
     ruleKey = RuleKey.of(REPOSITORY_KEY, "OtherRule");
 
@@ -98,7 +98,7 @@ public class BaseTreeVisitorIssueFilterTest {
   }
 
   @Test
-  public void excluded_lines_are_correct() {
+  void excluded_lines_are_correct() {
     Multimap<String, Integer> excludedLinesByRule = filter.excludedLinesByRule();
     assertThat(excludedLinesByRule).isNotNull();
     assertThat(excludedLinesByRule.isEmpty()).isFalse();
@@ -107,7 +107,7 @@ public class BaseTreeVisitorIssueFilterTest {
   }
 
   @Test
-  public void excluded_lines_by_rule_never_returns_null() {
+  void excluded_lines_by_rule_never_returns_null() {
     // no effect filter
     filter = new BaseTreeVisitorIssueFilter() {
       @Override
@@ -124,7 +124,7 @@ public class BaseTreeVisitorIssueFilterTest {
   }
 
   @Test
-  public void issues_from_other_component_are_accepted() {
+  void issues_from_other_component_are_accepted() {
     InputComponent inputComponent = mock(InputComponent.class);
     when(inputComponent.key()).thenReturn("UnknownComponent");
     // targeted rule

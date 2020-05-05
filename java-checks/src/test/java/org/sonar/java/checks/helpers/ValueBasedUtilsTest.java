@@ -31,10 +31,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ValueBasedUtilsTest {
+class ValueBasedUtilsTest {
 
   @Test
-  public void testIsValueBased() throws Exception {
+  void testIsValueBased() throws Exception {
     File file = new File("src/test/files/checks/helpers/ValueBasedUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
 

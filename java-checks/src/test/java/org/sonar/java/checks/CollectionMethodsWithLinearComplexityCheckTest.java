@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class CollectionMethodsWithLinearComplexityCheckTest {
+class CollectionMethodsWithLinearComplexityCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CollectionMethodsWithLinearComplexity.java")
       .withCheck(new CollectionMethodsWithLinearComplexityCheck())

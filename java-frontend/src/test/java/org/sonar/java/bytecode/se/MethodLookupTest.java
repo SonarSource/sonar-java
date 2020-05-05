@@ -26,7 +26,7 @@ import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MethodLookupTest {
+class MethodLookupTest {
 
   private static final String TESTCLASS = "org.sonar.java.bytecode.cfg.testdata.MethodLookupTestData#";
   private static final MethodLookup.LookupMethodVisitor NOP_VISITOR = new MethodLookup.LookupMethodVisitor();
@@ -34,13 +34,13 @@ public class MethodLookupTest {
   SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
 
   @Test
-  public void lookup_should_contain_throws_declaration() {
+  void lookup_should_contain_throws_declaration() {
     MethodLookup lookup = MethodLookup.lookup(TESTCLASS + "throwing()V", squidClassLoader, NOP_VISITOR);
     assertThat(lookup.declaredExceptions).containsExactly("java.io.IOException");
   }
 
   @Test
-  public void lookup_method_from_superclass() {
+  void lookup_method_from_superclass() {
     MethodLookup lookup = MethodLookup.lookup(TESTCLASS + "methodDefinedInSuperClass()V", squidClassLoader, NOP_VISITOR);
     assertThat(lookup.declaredExceptions).containsExactly("java.util.NoSuchElementException");
 

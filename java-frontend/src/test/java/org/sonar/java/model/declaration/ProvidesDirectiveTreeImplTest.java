@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ProvidesDirectiveTreeImplTest {
+class ProvidesDirectiveTreeImplTest {
 
   private static ProvidesDirectiveTree providesDirective(String exportsDirective) {
     CompilationUnitTree compilationUnitTree = JParserTestUtils.parseModule("module org.foo {\n  " + exportsDirective + "\n}");
@@ -43,7 +43,7 @@ public class ProvidesDirectiveTreeImplTest {
   }
 
   @Test
-  public void provides_with_modules() {
+  void provides_with_modules() {
     ProvidesDirectiveTree exports = providesDirective("provides org.MyInterface with com.MyInterface, MyInterface2;");
 
     assertThat(exports.kind()).isEqualTo(Tree.Kind.PROVIDES_DIRECTIVE);
@@ -66,7 +66,7 @@ public class ProvidesDirectiveTreeImplTest {
   }
 
   @Test
-  public void test_BaseTreeVisitor() {
+  void test_BaseTreeVisitor() {
     CompilationUnitTree cut = JParserTestUtils.parseModule(
       "import org.foo.Bar;",
       "",

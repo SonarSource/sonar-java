@@ -30,10 +30,10 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MethodTreeImplTest {
+class MethodTreeImplTest {
 
   @Test
-  public void override_without_annotation_should_be_detected() {
+  void override_without_annotation_should_be_detected() {
     CompilationUnitTree cut = createTree("interface T { int m(); } class A implements T { public int m(){return 0;}}");
     ClassTree interfaze = (ClassTree) cut.types().get(0);
     MethodTreeImpl methodInterface = (MethodTreeImpl) interfaze.members().get(0);
@@ -44,7 +44,7 @@ public class MethodTreeImplTest {
   }
 
   @Test
-  public void override_with_generic_parameters_should_be_detected() throws Exception {
+  void override_with_generic_parameters_should_be_detected() throws Exception {
     CompilationUnitTree cut = createTree("public class ReferenceQueue<T> {\n" +
         "\n" +
         "    private static class Null extends ReferenceQueue {\n" +
@@ -63,7 +63,7 @@ public class MethodTreeImplTest {
   }
 
   @Test
-  public void hiding_of_static_methods() {
+  void hiding_of_static_methods() {
     CompilationUnitTree cut = createTree("class A { static void foo() {} } class B extends A { void foo(){} } ");
     ClassTree clazz = (ClassTree) cut.types().get(1);
     MethodTreeImpl methodTree = (MethodTreeImpl) clazz.members().get(0);
@@ -72,29 +72,29 @@ public class MethodTreeImplTest {
   }
 
   @Test
-  public void override_from_object_should_be_detected() {
+  void override_from_object_should_be_detected() {
     MethodTreeImpl method = getUniqueMethod("class A { public String toString(){return \"\";}}");
     assertThat(method.isOverriding()).isTrue();
   }
 
   @Test
-  public void override_unknown() {
+  void override_unknown() {
     MethodTreeImpl method = getUniqueMethod("class A extends Unknown { void foo(){}}");
     assertThat(method.isOverriding()).isFalse();
   }
 
   @Test
-  public void static_method_cannot_be_overriden() {
+  void static_method_cannot_be_overriden() {
     assertThat(getUniqueMethod("class A{ static void m(){}}").isOverriding()).isFalse();
   }
 
   @Test
-  public void private_method_cannot_be_overriden() {
+  void private_method_cannot_be_overriden() {
     assertThat(getUniqueMethod("class A{ private void m(){}}").isOverriding()).isFalse();
   }
 
   @Test
-  public void override_annotated_method_should_be_overriden() {
+  void override_annotated_method_should_be_overriden() {
     assertThat(getUniqueMethod("class A{ @Override void m(){}}").isOverriding()).isTrue();
     assertThat(getUniqueMethod("class A{ @Foo @Override void m(){}}").isOverriding()).isTrue();
     assertThat(getUniqueMethod("class A{ @java.lang.Override void m(){}}").isOverriding()).isTrue();
@@ -105,7 +105,7 @@ public class MethodTreeImplTest {
   }
 
   @Test
-  public void compute_cfg() {
+  void compute_cfg() {
     MethodTree methodWithoutBody = getUniqueMethod("interface A { void foo(int arg) throws Exception; }");
     ControlFlowGraph cfg = methodWithoutBody.cfg();
     assertThat(cfg).isNull();
@@ -117,7 +117,7 @@ public class MethodTreeImplTest {
   }
 
   @Test
-  public void has_all_syntax_token() {
+  void has_all_syntax_token() {
     MethodTreeImpl method = getUniqueMethod("class A { public void foo(int arg) throws Exception {} }");
     assertThat(method.openParenToken()).isNotNull();
     assertThat(method.closeParenToken()).isNotNull();
@@ -132,7 +132,7 @@ public class MethodTreeImplTest {
   }
 
   @Test
-  public void varargs_flag() {
+  void varargs_flag() {
     Symbol.MethodSymbol methodSymbol = getUniqueMethod("class A { public static void main(String[] args){} }").symbol();
     assertThat(JUtils.isVarArgsMethod(methodSymbol)).isFalse();
     methodSymbol = getUniqueMethod("class A { public static void main(String... args){} }").symbol();

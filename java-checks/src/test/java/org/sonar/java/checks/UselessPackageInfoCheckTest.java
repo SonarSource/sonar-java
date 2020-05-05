@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class UselessPackageInfoCheckTest {
+class UselessPackageInfoCheckTest {
 
   @Test
-  public void withNoOtherFile() {
+  void withNoOtherFile() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java")
       .withCheck(new UselessPackageInfoCheck())
@@ -33,7 +33,7 @@ public class UselessPackageInfoCheckTest {
   }
 
   @Test
-  public void withOtherFile() {
+  void withOtherFile() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UselessPackageInfoCheck/package-info.java")
       .withCheck(new UselessPackageInfoCheck())
@@ -41,7 +41,7 @@ public class UselessPackageInfoCheckTest {
   }
 
   @Test
-  public void notAPackageInfo() {
+  void notAPackageInfo() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UselessPackageInfoCheck/packageWithNoOtherFilesButNotPackageInfo/HelloWorld.java")
       .withCheck(new UselessPackageInfoCheck())

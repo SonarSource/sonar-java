@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class DynamicClassLoadCheckTest {
+class DynamicClassLoadCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/DynamicClassLoadCheck.java"))
       .withCheck(new DynamicClassLoadCheck())

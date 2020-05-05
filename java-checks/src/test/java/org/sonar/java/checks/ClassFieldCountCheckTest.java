@@ -24,12 +24,12 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class ClassFieldCountCheckTest {
+class ClassFieldCountCheckTest {
 
   private static final String TEST_FILES_DIR = "src/test/files/checks/ClassFieldCountCheck/";
 
   @Test
-  public void simple_case() {
+  void simple_case() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ClassFieldCountCheck/SimpleDefaultCase.java"))
       .withCheck(new ClassFieldCountCheck())
@@ -42,7 +42,7 @@ public class ClassFieldCountCheckTest {
   }
 
   @Test
-  public void static_final() {
+  void static_final() {
     JavaCheckVerifier.newVerifier()
       .onFile(TEST_FILES_DIR + "ClassFieldCountCheck.java")
       .withCheck(new ClassFieldCountCheck())
@@ -50,7 +50,7 @@ public class ClassFieldCountCheckTest {
   }
 
   @Test
-  public void enums_interfaces_and_anonymous_trees() {
+  void enums_interfaces_and_anonymous_trees() {
     ClassFieldCountCheck check = new ClassFieldCountCheck();
     check.setThreshold(2);
     JavaCheckVerifier.newVerifier()
@@ -60,7 +60,7 @@ public class ClassFieldCountCheckTest {
   }
 
   @Test
-  public void count_only_public_fields() {
+  void count_only_public_fields() {
     ClassFieldCountCheck check = new ClassFieldCountCheck();
     check.setCountNonPublicFields(false);
     JavaCheckVerifier.newVerifier()

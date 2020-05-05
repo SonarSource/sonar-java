@@ -25,10 +25,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class LocationTest {
+class LocationTest {
 
   @Test
-  public void testLocation() throws Exception {
+  void testLocation() throws Exception {
     String message = "message";
     Tree node = mock(Tree.class);
     JavaFileScannerContext.Location location = new JavaFileScannerContext.Location(message, node);
@@ -37,7 +37,7 @@ public class LocationTest {
   }
 
   @Test
-  public void testEquality() {
+  void testEquality() {
     String message = "message";
     Tree node = mock(Tree.class);
     JavaFileScannerContext.Location location = new JavaFileScannerContext.Location(message, node);
@@ -54,7 +54,7 @@ public class LocationTest {
   }
 
   @Test
-  public void testHashCode() {
+  void testHashCode() {
     String message = "message";
     Tree node = mock(Tree.class);
     JavaFileScannerContext.Location location = new JavaFileScannerContext.Location(message, node);

@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UndocumentedApiCheckTest {
+class UndocumentedApiCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     assertThat(check.forClasses).isEqualTo("**.api.**");
     assertThat(check.exclusion).isEqualTo("**.internal.**");
@@ -38,7 +38,7 @@ public class UndocumentedApiCheckTest {
   }
 
   @Test
-  public void testMissingConfiguration() {
+  void testMissingConfiguration() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = null;
     check.exclusion = null;
@@ -49,7 +49,7 @@ public class UndocumentedApiCheckTest {
   }
 
   @Test
-  public void no_issue_without_Semantic() {
+  void no_issue_without_Semantic() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java")
@@ -59,7 +59,7 @@ public class UndocumentedApiCheckTest {
   }
 
   @Test
-  public void custom() {
+  void custom() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "**.open.**";
     check.exclusion = "";
@@ -70,7 +70,7 @@ public class UndocumentedApiCheckTest {
   }
 
   @Test
-  public void testExclusion() {
+  void testExclusion() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
     check.exclusion = "**.internal.**";
@@ -81,7 +81,7 @@ public class UndocumentedApiCheckTest {
   }
 
   @Test
-  public void testIncompleteJavadoc() {
+  void testIncompleteJavadoc() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
     JavaCheckVerifier.newVerifier()
@@ -91,7 +91,7 @@ public class UndocumentedApiCheckTest {
   }
 
   @Test
-  public void testInvalidDeclaredException() {
+  void testInvalidDeclaredException() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
     JavaCheckVerifier.newVerifier()

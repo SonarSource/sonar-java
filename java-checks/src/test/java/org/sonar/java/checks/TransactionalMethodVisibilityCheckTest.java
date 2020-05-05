@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class TransactionalMethodVisibilityCheckTest {
+class TransactionalMethodVisibilityCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/TransactionalMethodVisibilityCheck.java")
       .withCheck(new TransactionalMethodVisibilityCheck())
@@ -33,7 +33,7 @@ public class TransactionalMethodVisibilityCheckTest {
   }
 
   @Test
-  public void test_wo_semantic() {
+  void test_wo_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/TransactionalMethodVisibilityCheck.java")
       .withCheck(new TransactionalMethodVisibilityCheck())

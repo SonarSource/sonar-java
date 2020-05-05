@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaPunctuatorTest {
+class JavaPunctuatorTest {
 
   @Test
-  public void test() {
+  void test() {
     assertThat(JavaPunctuator.values()).hasSize(52);
 
     for (JavaPunctuator punctuator : JavaPunctuator.values()) {

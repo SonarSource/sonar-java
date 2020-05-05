@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 
-public class NonNullSetToNullCheckTest {
+class NonNullSetToNullCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/NonNullSetToNullCheck.java")
       .withCheck(new NonNullSetToNullCheck())

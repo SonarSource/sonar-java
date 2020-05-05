@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 
-public class ExpressionUtilsTest {
+class ExpressionUtilsTest {
 
   private boolean parenthesis(boolean b1, boolean b2) {
     return (((b1 && (b2))));
@@ -63,7 +63,7 @@ public class ExpressionUtilsTest {
   }
 
   @Test
-  public void test_skip_parenthesis() throws Exception {
+  void test_skip_parenthesis() throws Exception {
     File file = new File("src/test/java/org/sonar/java/model/ExpressionUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(0);
@@ -76,7 +76,7 @@ public class ExpressionUtilsTest {
   }
 
   @Test
-  public void test_simple_assignments() throws Exception {
+  void test_simple_assignments() throws Exception {
     File file = new File("src/test/java/org/sonar/java/model/ExpressionUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
@@ -90,7 +90,7 @@ public class ExpressionUtilsTest {
   }
 
   @Test
-  public void method_name() throws Exception {
+  void method_name() throws Exception {
     File file = new File("src/test/files/model/ExpressionUtilsMethodNameTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(0);
@@ -103,7 +103,7 @@ public class ExpressionUtilsTest {
   }
 
   @Test
-  public void private_constructor() throws Exception {
+  void private_constructor() throws Exception {
     assertThat(isFinal(ExpressionUtils.class.getModifiers())).isTrue();
     Constructor<ExpressionUtils> constructor = ExpressionUtils.class.getDeclaredConstructor();
     assertThat(isPrivate(constructor.getModifiers())).isTrue();
@@ -113,7 +113,7 @@ public class ExpressionUtilsTest {
   }
 
   @Test
-  public void test_extract_identifier_mixed_access() throws Exception {
+  void test_extract_identifier_mixed_access() throws Exception {
     File file = new File("src/test/files/model/ExpressionUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
@@ -135,7 +135,7 @@ public class ExpressionUtilsTest {
   }
 
   @Test
-  public void test_cannot_extract_identifier() throws Exception {
+  void test_cannot_extract_identifier() throws Exception {
     File file = new File("src/test/files/model/ExpressionUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
@@ -145,7 +145,7 @@ public class ExpressionUtilsTest {
   }
 
   @Test
-  public void test_get_assigned_symbol() throws Exception {
+  void test_get_assigned_symbol() throws Exception {
     File file = new File("src/test/files/model/ExpressionUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
@@ -171,7 +171,7 @@ public class ExpressionUtilsTest {
   }
 
   @Test
-  public void test_invocation_on_same_variable() {
+  void test_invocation_on_same_variable() {
     CompilationUnitTree tree = JParserTestUtils.parse(
       "class A {\n" +
         "  static {\n" +
@@ -225,7 +225,7 @@ public class ExpressionUtilsTest {
 
 
   @Test
-  public void securing_byte() {
+  void securing_byte() {
     CompilationUnitTree tree = JParserTestUtils.parse(
       "class A {\n" +
         "  static {\n" +
@@ -266,7 +266,7 @@ public class ExpressionUtilsTest {
   }
 
   @Test
-  public void enclosing_method_test() {
+  void enclosing_method_test() {
     File file = new File("src/test/files/model/ExpressionEnclosingMethodTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     FindAssignment findAssignment = new FindAssignment();

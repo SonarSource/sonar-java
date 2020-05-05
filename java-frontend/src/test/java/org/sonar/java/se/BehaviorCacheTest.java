@@ -52,14 +52,14 @@ import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSem
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 
 @EnableRuleMigrationSupport
-public class BehaviorCacheTest {
+class BehaviorCacheTest {
 
   @Rule
   public LogTester logTester  = new LogTester();
   private static NullDereferenceCheck nullDereferenceCheck = new NullDereferenceCheck();
 
   @Test
-  public void method_behavior_cache_should_be_filled_and_cleanup() {
+  void method_behavior_cache_should_be_filled_and_cleanup() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/MethodBehavior.java");
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(4);
     assertThat(sev.behaviorCache.behaviors.values().stream().filter(mb -> mb != null).count()).isEqualTo(4);
@@ -82,7 +82,7 @@ public class BehaviorCacheTest {
   }
 
   @Test
-  public void compute_beahvior_only_once() throws Exception {
+  void compute_beahvior_only_once() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/ComputeBehaviorOnce.java");
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(5);
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsOnlyOnce("Could not complete symbolic execution: ");
@@ -90,14 +90,14 @@ public class BehaviorCacheTest {
   }
 
   @Test
-  public void explore_method_with_recursive_call() throws Exception {
+  void explore_method_with_recursive_call() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/resources/se/RecursiveCall.java");
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(1);
     assertThat(sev.behaviorCache.behaviors.keySet().iterator().next()).contains("#foo");
   }
 
   @Test
-  public void interrupted_exploration_does_not_create_method_yields() throws Exception {
+  void interrupted_exploration_does_not_create_method_yields() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/PartialMethodYieldMaxStep.java");
     assertThat(sev.behaviorCache.behaviors.entrySet()).hasSize(2);
 
@@ -111,7 +111,7 @@ public class BehaviorCacheTest {
   }
 
   @Test
-  public void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
+  void clear_stack_when_taking_exceptional_path_from_method_invocation() throws Exception {
     Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/CleanStackWhenRaisingException.java");
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
     Sema semanticModel = sevAndSemantic.b;
@@ -127,63 +127,63 @@ public class BehaviorCacheTest {
   }
 
   @Test
-  public void java_lang_math_methods_should_be_handled() throws Exception {
+  void java_lang_math_methods_should_be_handled() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/JavaLangMathMethods.java");
   }
 
   @Test
-  public void commons_lang3_string_utils_method_should_be_handled() throws Exception {
+  void commons_lang3_string_utils_method_should_be_handled() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/CommonsLang3StringUtilsMethods.java");
   }
 
   @Test
-  public void commons_lang2_string_utils_method_should_be_handled() throws Exception {
+  void commons_lang2_string_utils_method_should_be_handled() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/CommonsLang2StringUtilsMethods.java");
   }
 
   @Test
-  public void guava_preconditions_methods_should_be_handled() throws Exception {
+  void guava_preconditions_methods_should_be_handled() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/GuavaPreconditionsMethods.java");
   }
 
   @Test
-  public void guava_common_Strings() throws Exception {
+  void guava_common_Strings() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/GuavaCommonStrings.java");
   }
 
   @Test
-  public void guava_verify() throws Exception {
+  void guava_verify() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/GuavaVerifyMethods.java");
   }
 
 
   @Test
-  public void collections_utils_is_empty_method() throws Exception {
+  void collections_utils_is_empty_method() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/CollectionUtilsIsEmpty.java");
   }
 
   @Test
-  public void apache_lang_validate() throws Exception {
+  void apache_lang_validate() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/CommonsLangValidate.java");
   }
 
   @Test
-  public void log4j_assert() throws Exception {
+  void log4j_assert() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/Log4jAssert.java");
   }
 
   @Test
-  public void spring_assert() throws Exception {
+  void spring_assert() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/SpringAssert.java");
   }
 
   @Test
-  public void eclipse_aspectj_assert() throws Exception {
+  void eclipse_aspectj_assert() throws Exception {
     verifyNoIssueOnFile("src/test/files/se/EclipseAssert.java");
   }
 
   @Test
-  public void test_blacklist() throws Exception {
+  void test_blacklist() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/BehaviorCacheBlacklist.java");
     assertThat(sev.behaviorCache.get("java.lang.Class#getClassLoader()Ljava/lang/ClassLoader;").isComplete()).isFalse();
     assertThat(sev.behaviorCache.get("java.lang.Object#wait()V;").isComplete()).isFalse();
@@ -193,7 +193,7 @@ public class BehaviorCacheTest {
   }
 
   @Test
-  public void test_peek() throws Exception {
+  void test_peek() throws Exception {
     Set<String> testedPre = new HashSet<>();
     Set<String> testedPost = new HashSet<>();
 

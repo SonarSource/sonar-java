@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExternalRulesDefinitionTest {
+class ExternalRulesDefinitionTest {
 
   @Test
-  public void toString_should_exist_and_contains_linter_name() {
+  void toString_should_exist_and_contains_linter_name() {
     // to string is used by compute engine logs and should return a unique key
     assertThat(new ExternalRulesDefinition(SpotBugsSensor.RULE_LOADER, "someLinterKey").toString()).isEqualTo("someLinterKey-rules-definition");
   }

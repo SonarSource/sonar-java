@@ -22,9 +22,9 @@ package org.sonar.java.checks.spring;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SpringAutoConfigurationCheckTest {
+class SpringAutoConfigurationCheckTest {
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/spring/SpringAutoConfigurationCheck.java")
       .withCheck(new SpringAutoConfigurationCheck())

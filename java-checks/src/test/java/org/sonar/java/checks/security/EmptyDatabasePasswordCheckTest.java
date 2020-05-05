@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
-public class EmptyDatabasePasswordCheckTest {
+class EmptyDatabasePasswordCheckTest {
   /**
    * Constants used inside "src/test/files/checks/security/EmptyDatabasePasswordCheck.java" file
    * in order to test {@link EmptyDatabasePasswordCheck#getStringValue(ExpressionTree)} resolution
@@ -33,7 +33,7 @@ public class EmptyDatabasePasswordCheckTest {
   public final static String NON_EMPTY_PASSWORD = "foo";
 
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/security/EmptyDatabasePasswordCheck.java")
       .withCheck(new EmptyDatabasePasswordCheck())

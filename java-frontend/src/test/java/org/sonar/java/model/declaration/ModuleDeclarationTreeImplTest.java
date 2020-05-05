@@ -32,16 +32,16 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ModuleDeclarationTreeImplTest {
+class ModuleDeclarationTreeImplTest {
 
   @Test
-  public void no_module() {
+  void no_module() {
     CompilationUnitTree cut = JParserTestUtils.parseModule("package org.foo;");
     assertThat(cut.moduleDeclaration()).isNull();
   }
 
   @Test
-  public void with_module() {
+  void with_module() {
     CompilationUnitTree cut = JParserTestUtils.parseModule("module org.foo { }");
     ModuleDeclarationTree moduleDeclaration = cut.moduleDeclaration();
     assertThat(moduleDeclaration).isNotNull();
@@ -60,7 +60,7 @@ public class ModuleDeclarationTreeImplTest {
   }
 
   @Test
-  public void test_BaseTreeVisitor() {
+  void test_BaseTreeVisitor() {
     CompilationUnitTree cut = JParserTestUtils.parseModule(
       "import org.foo.Bar;",
       "",

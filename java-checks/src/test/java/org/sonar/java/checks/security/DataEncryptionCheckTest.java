@@ -22,10 +22,10 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class DataEncryptionCheckTest {
+class DataEncryptionCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/security/DataEncryptionCheck.java")
       .withCheck(new DataEncryptionCheck())

@@ -25,10 +25,10 @@ import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ArtifactIdNamingConventionCheckTest {
+class ArtifactIdNamingConventionCheckTest {
 
   @Test
-  public void test_default() {
+  void test_default() {
     ArtifactIdNamingConventionCheck check = new ArtifactIdNamingConventionCheck();
     SonarXmlCheckVerifier.verifyIssues("defaultNOK/pom.xml", check);
     SonarXmlCheckVerifier.verifyIssues("emptyArtifactId/pom.xml", check);
@@ -37,7 +37,7 @@ public class ArtifactIdNamingConventionCheckTest {
   }
 
   @Test
-  public void test_custom() {
+  void test_custom() {
     ArtifactIdNamingConventionCheck check = new ArtifactIdNamingConventionCheck();
     check.regex = "[a-z]+";
     SonarXmlCheckVerifier.verifyIssues("customNOK/pom.xml", check);
@@ -47,7 +47,7 @@ public class ArtifactIdNamingConventionCheckTest {
   }
 
   @Test
-  public void invalid_regex() {
+  void invalid_regex() {
     ArtifactIdNamingConventionCheck check = new ArtifactIdNamingConventionCheck();
     check.regex = "*";
 
@@ -57,7 +57,7 @@ public class ArtifactIdNamingConventionCheckTest {
   }
 
   @Test
-  public void not_a_pom() {
+  void not_a_pom() {
     ArtifactIdNamingConventionCheck check = new ArtifactIdNamingConventionCheck();
     SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", check);
   }

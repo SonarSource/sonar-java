@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ConstantsShouldBeStaticFinalCheckTest {
+class ConstantsShouldBeStaticFinalCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/ConstantsShouldBeStaticFinalCheck.java")
       .withCheck(new ConstantsShouldBeStaticFinalCheck())

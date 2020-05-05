@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ReturnEmptyArrayNotNullCheckTest {
+class ReturnEmptyArrayNotNullCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/ReturnEmptyArrayNotNullCheck.java")
       .withCheck(new ReturnEmptyArrayNotNullCheck())
@@ -33,7 +33,7 @@ public class ReturnEmptyArrayNotNullCheckTest {
   }
 
   @Test
-  public void noIssueWithoutSemantic() {
+  void noIssueWithoutSemantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/ReturnEmptyArrayNotNullCheck.java")
       .withCheck(new ReturnEmptyArrayNotNullCheck())

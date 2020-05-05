@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ClassWithOnlyStaticMethodsInstantiationCheckTest {
+class ClassWithOnlyStaticMethodsInstantiationCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/ClassWithOnlyStaticMethodsInstantiationCheck.java")
       .withCheck(new ClassWithOnlyStaticMethodsInstantiationCheck())

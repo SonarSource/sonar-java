@@ -40,13 +40,13 @@ import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSem
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
 
-public class ExceptionalCheckBasedYieldTest {
+class ExceptionalCheckBasedYieldTest {
 
   private static final String FILENAME = "src/test/files/se/ExceptionalCheckBasedYields.java";
   private static final SymbolicValue SV_CAUSING_EXCEPTION = new SymbolicValue();
 
   @Test
-  public void creation_of_new_yield() {
+  void creation_of_new_yield() {
     String methodName = "method";
     SymbolicExecutionVisitor sev;
     MethodBehavior mb;
@@ -124,7 +124,7 @@ public class ExceptionalCheckBasedYieldTest {
   }
 
   @Test
-  public void exceptionType_is_required() {
+  void exceptionType_is_required() {
     final Class<? extends SECheck> seCheckClass = new SECheck() {
     }.getClass();
     String exceptionType = null;
@@ -135,7 +135,7 @@ public class ExceptionalCheckBasedYieldTest {
   }
 
   @Test
-  public void exceptionType_cannot_be_changed() {
+  void exceptionType_cannot_be_changed() {
     final Class<? extends SECheck> seCheckClass = new SECheck() {
     }.getClass();
     String exceptionType = "someException";
@@ -146,7 +146,7 @@ public class ExceptionalCheckBasedYieldTest {
   }
 
   @Test
-  public void test_toString() {
+  void test_toString() {
     String exceptionType = "org.foo.MyException";
     ExceptionalCheckBasedYield yield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, exceptionType, SECheck.class, null, mockMethodBehavior());
 
@@ -154,7 +154,7 @@ public class ExceptionalCheckBasedYieldTest {
   }
 
   @Test
-  public void test_equals() {
+  void test_equals() {
     final Class<? extends SECheck> seCheckClass1 = new SECheck() {
     }.getClass();
     final Class<? extends SECheck> seCheckClass2 = (new SECheck() {

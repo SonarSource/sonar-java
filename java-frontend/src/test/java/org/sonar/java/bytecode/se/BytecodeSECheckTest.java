@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BytecodeSECheckTest implements BytecodeSECheck {
+class BytecodeSECheckTest implements BytecodeSECheck {
 
   private static SquidClassLoader squidClassLoader;
   private static BytecodeEGWalker walker;
@@ -97,7 +97,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
   }
 
   @Test
-  public void zeroness_check_add() {
+  void zeroness_check_add() {
     int[] opCodes = {Opcodes.DADD, Opcodes.FADD, Opcodes.IADD, Opcodes.LADD};
 
     for (int addOpCode : opCodes) {
@@ -133,7 +133,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
   }
 
   @Test
-  public void zeroness_check_mul() {
+  void zeroness_check_mul() {
     int[] opCodes = {Opcodes.DMUL, Opcodes.FMUL, Opcodes.IMUL, Opcodes.LMUL};
 
     for (int mulOpCode : opCodes) {
@@ -176,7 +176,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
   }
 
   @Test
-  public void zeroness_check_div_rem() {
+  void zeroness_check_div_rem() {
     int[] opCodes = {
       Opcodes.DDIV, Opcodes.FDIV, Opcodes.IDIV, Opcodes.LDIV,
       Opcodes.DREM, Opcodes.FREM, Opcodes.IREM, Opcodes.LREM
@@ -220,7 +220,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
   }
 
   @Test
-  public void zeroness_check_negations() {
+  void zeroness_check_negations() {
     SymbolicValue sv1 = new SymbolicValue();
 
     int[] opCodes = {Opcodes.DNEG, Opcodes.FNEG, Opcodes.INEG, Opcodes.LNEG};
@@ -259,7 +259,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
   }
 
   @Test
-  public void zeroness_check_shifts() {
+  void zeroness_check_shifts() {
     int[] opCodes = {Opcodes.ISHL, Opcodes.LSHL, Opcodes.ISHR, Opcodes.LSHR, Opcodes.IUSHR, Opcodes.LUSHR};
 
     for (int shiftOpCode : opCodes) {
@@ -295,7 +295,7 @@ public class BytecodeSECheckTest implements BytecodeSECheck {
   }
 
   @Test
-  public void method_with_numerical_operations() throws Exception {
+  void method_with_numerical_operations() throws Exception {
     BytecodeEGWalker walker = getEGWalker();
     MethodBehavior behavior = walker.getMethodBehavior("org.sonar.java.bytecode.se.BytecodeSECheckTest#foo(II)I", squidClassLoader);
 

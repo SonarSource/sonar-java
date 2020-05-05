@@ -25,10 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ExplodedGraphTest {
+class ExplodedGraphTest {
 
   @Test
-  public void test_node_parents() {
+  void test_node_parents() {
     ExplodedGraph eg = new ExplodedGraph();
     ExplodedGraph.Node child = eg.node(mockProgramPoint("child"), null);
     assertThat(child.edges()).isEmpty();

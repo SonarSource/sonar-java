@@ -38,10 +38,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class AnalyzerMessageTest {
+class AnalyzerMessageTest {
 
   @Test
-  public void testAnalyzerMessage() {
+  void testAnalyzerMessage() {
     JavaCheck javaCheck = mock(JavaCheck.class);
     InputFile file = TestUtils.emptyInputFile("a");
     int line = 5;
@@ -64,7 +64,7 @@ public class AnalyzerMessageTest {
   }
 
   @Test
-  public void testAnalyzerMessageOnFile2() {
+  void testAnalyzerMessageOnFile2() {
     JavaCheck javaCheck = mock(JavaCheck.class);
     InputFile file = TestUtils.emptyInputFile("a");
     String message = "analyzer message";
@@ -79,7 +79,7 @@ public class AnalyzerMessageTest {
   }
 
   @Test
-  public void emptyTextSpan() {
+  void emptyTextSpan() {
     // same line, same offset
     assertThat(new AnalyzerMessage.TextSpan(42, 2, 42, 2).isEmpty()).isTrue();
     // different offset
@@ -91,14 +91,14 @@ public class AnalyzerMessageTest {
   }
 
   @Test
-  public void textSpanOnLine() {
+  void textSpanOnLine() {
     assertThat(new AnalyzerMessage.TextSpan(42).onLine()).isTrue();
     assertThat(new AnalyzerMessage.TextSpan(0, -1, 0, 5).onLine()).isTrue();
     assertThat(new AnalyzerMessage.TextSpan(0, 2, 0, 2).onLine()).isFalse();
   }
 
   @Test
-  public void textSpanForTrees() {
+  void textSpanForTrees() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {\n}\n");
     ClassTree classTree = (ClassTree) cut.types().get(0);
 
@@ -118,7 +118,7 @@ public class AnalyzerMessageTest {
   }
 
   @Test
-  public void shouldFailOnEmptySpans() {
+  void shouldFailOnEmptySpans() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {\n}\n");
 
     try {
@@ -131,7 +131,7 @@ public class AnalyzerMessageTest {
   }
 
   @Test
-  public void shouldNotFailOnEmptyTrees() {
+  void shouldNotFailOnEmptyTrees() {
     CompilationUnitTree cut = JParserTestUtils.parse(
       "class A {\n" +
         "  void foo(java.util.List l) {\n" +
@@ -159,7 +159,7 @@ public class AnalyzerMessageTest {
   }
 
   @Test
-  public void testAnalyzerMessageOnFile() {
+  void testAnalyzerMessageOnFile() {
     JavaCheck javaCheck = mock(JavaCheck.class);
     InputFile file = TestUtils.emptyInputFile("a");
     String message = "analyzer message";
@@ -174,7 +174,7 @@ public class AnalyzerMessageTest {
   }
 
   @Test
-  public void testAnalyzerMessageWithoutCost() {
+  void testAnalyzerMessageWithoutCost() {
     JavaCheck javaCheck = mock(JavaCheck.class);
     InputFile file = TestUtils.emptyInputFile("a");
     String message = "analyzer message";
@@ -189,7 +189,7 @@ public class AnalyzerMessageTest {
   }
 
   @Test
-  public void toString_test() throws Exception {
+  void toString_test() throws Exception {
     JavaCheck javaCheck = mock(JavaCheck.class);
     InputFile file = TestUtils.emptyInputFile("file");
     String message = "analyzer message";

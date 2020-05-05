@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AVLTreeTest {
+class AVLTreeTest {
 
   private static final class Key {
     private final int hashCode;
@@ -55,7 +55,7 @@ public class AVLTreeTest {
   }
 
   @Test
-  public void buckets() {
+  void buckets() {
     Object k1 = new Key(42, "k1");
     Object k2 = new Key(42, "k2");
     Object k3 = new Key(42, "k3");
@@ -136,7 +136,7 @@ public class AVLTreeTest {
   }
 
   @Test
-  public void balancing_should_preserve_buckets() {
+  void balancing_should_preserve_buckets() {
     Object k1 = new Key(1, "k1");
     Object k2 = new Key(2, "k2");
     Object k3 = new Key(3, "k3");
@@ -159,7 +159,7 @@ public class AVLTreeTest {
    * this for example will be the case for sequence below, which was generated using random number generator.
    */
   @Test
-  public void do_not_use_subtraction_for_comparison_of_keys() {
+  void do_not_use_subtraction_for_comparison_of_keys() {
     Key[] keys = {
       new Key(2043979982, ""),
       new Key(-36348207, ""),
@@ -180,7 +180,7 @@ public class AVLTreeTest {
   }
 
   @Test
-  public void hashCode_and_equals_should_not_depend_on_order_of_construction() {
+  void hashCode_and_equals_should_not_depend_on_order_of_construction() {
     Object o1 = new Key(21, "o1");
     Object o2 = new Key(45, "o2");
     AVLTree<Object, Object> t1 = AVLTree.create().add(o1).add(o2);
@@ -199,7 +199,7 @@ public class AVLTreeTest {
   }
 
   @Test
-  public void test_empty() {
+  void test_empty() {
     AVLTree<String, String> t = AVLTree.create();
     assertThat(t).as("singleton").isSameAs(AVLTree.create());
     assertThat(t.get("anything")).isNull();
@@ -209,7 +209,7 @@ public class AVLTreeTest {
   }
 
   @Test
-  public void test_one_element() {
+  void test_one_element() {
     AVLTree<String, String> t0 = AVLTree.create();
     AVLTree<String, String> t1 = t0.put("1", "a");
     AVLTree<String, String> t2 = t0.put("2", "b");
@@ -231,7 +231,7 @@ public class AVLTreeTest {
   }
 
   @Test
-  public void test_replace_root() {
+  void test_replace_root() {
     AVLTree<String, String> t0 = AVLTree.create();
     AVLTree<String, String> t1 = t0.put("1", "a");
     AVLTree<String, String> t2 = t1.put("1", "b");
@@ -242,7 +242,7 @@ public class AVLTreeTest {
   }
 
   @Test
-  public void no_change() {
+  void no_change() {
     AVLTree<String, String> t0 = AVLTree.create();
     AVLTree<String, String> t1 = t0.put("1", "1");
     assertThat(t1.put("1", "1")).isSameAs(t1);
@@ -253,7 +253,7 @@ public class AVLTreeTest {
   }
 
   @Test
-  public void test() {
+  void test() {
     List<Integer> keys = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
       keys.add(i);

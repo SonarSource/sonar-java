@@ -24,10 +24,10 @@ import org.sonar.api.config.internal.MapSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaTest {
+class JavaTest {
 
   @Test
-  public void should_return_java_file_suffixes() {
+  void should_return_java_file_suffixes() {
 
     MapSettings settings = new MapSettings();
     Java language = new Java(settings.asConfig());

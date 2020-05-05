@@ -22,10 +22,10 @@ package org.sonar.java.checks.serialization;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SerializableSuperConstructorCheckTest {
+class SerializableSuperConstructorCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/serialization/SerializableSuperConstructorCheck.java")
       .withCheck(new SerializableSuperConstructorCheck())

@@ -25,10 +25,10 @@ import java.lang.reflect.Constructor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ConvertTest {
+class ConvertTest {
 
   @Test
-  public void private_constructor() throws Exception {
+  void private_constructor() throws Exception {
     Constructor constructor = Convert.class.getDeclaredConstructor();
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
@@ -36,32 +36,32 @@ public class ConvertTest {
   }
 
   @Test
-  public void packagePart() {
+  void packagePart() {
     assertThat(Convert.packagePart("org")).isEqualTo("");
     assertThat(Convert.packagePart("org.example")).isEqualTo("org");
   }
 
   @Test
-  public void shortName() {
+  void shortName() {
     assertThat(Convert.shortName("org")).isEqualTo("org");
     assertThat(Convert.shortName("org.example")).isEqualTo("example");
     assertThat(Convert.shortName("org.example.MyClass$InnerClass")).isEqualTo("MyClass$InnerClass");
   }
 
   @Test
-  public void flatName() {
+  void flatName() {
     assertThat(Convert.flatName("org/example/MyClass")).isEqualTo("org.example.MyClass");
     assertThat(Convert.flatName("org/example/MyClass$InnerClass")).isEqualTo("org.example.MyClass$InnerClass");
   }
 
   @Test
-  public void bytecodeName() {
+  void bytecodeName() {
     assertThat(Convert.bytecodeName("org.example.MyClass")).isEqualTo("org/example/MyClass");
     assertThat(Convert.bytecodeName("org.example.MyClass$InnerClass")).isEqualTo("org/example/MyClass$InnerClass");
   }
 
   @Test
-  public void enclosingClassName() throws Exception {
+  void enclosingClassName() throws Exception {
     assertThat(Convert.enclosingClassName("MyClass")).isEqualTo("");
     assertThat(Convert.enclosingClassName("MyClass$InnerClass")).isEqualTo("MyClass");
     assertThat(Convert.enclosingClassName("MyClass$$InnerClass$class")).isEqualTo("MyClass$");
@@ -69,7 +69,7 @@ public class ConvertTest {
   }
 
   @Test
-  public void innerClassName() throws Exception {
+  void innerClassName() throws Exception {
     String enclosingClassName = "MyClass";
     assertThat(Convert.innerClassName(enclosingClassName, "MyClass$InnerClass")).isEqualTo("InnerClass");
     assertThat(Convert.innerClassName(enclosingClassName, "MyClass$InnerClass$")).isEqualTo("InnerClass$");
@@ -80,7 +80,7 @@ public class ConvertTest {
   }
 
   @Test
-  public void fullName() throws Exception {
+  void fullName() throws Exception {
     assertThat(Convert.fullName(null, "MyClass")).isEqualTo("MyClass");
     assertThat(Convert.fullName("","MyClass")).isEqualTo("MyClass");
     assertThat(Convert.fullName("org.example", "MyClass")).isEqualTo("org.example.MyClass");

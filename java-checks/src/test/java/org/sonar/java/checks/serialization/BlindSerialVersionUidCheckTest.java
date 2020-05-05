@@ -22,9 +22,9 @@ package org.sonar.java.checks.serialization;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class BlindSerialVersionUidCheckTest {
+class BlindSerialVersionUidCheckTest {
   @Test
-  public void test() {
+  void test() {
     String fixtureFileName = "src/test/files/checks/serialization/BlindSerialVersionUidCheck.java";
     BlindSerialVersionUidCheck check = new BlindSerialVersionUidCheck();
     JavaCheckVerifier.newVerifier()

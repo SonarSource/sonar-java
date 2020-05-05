@@ -65,10 +65,10 @@ import static org.sonar.java.bytecode.cfg.Instructions.NO_OPERAND_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.TYPE_INSN;
 import static org.sonar.java.bytecode.cfg.Instructions.VAR_INSN;
 
-public class BytecodeCFGBuilderTest {
+class BytecodeCFGBuilderTest {
 
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     BytecodeCFG cfg = getCFGForMethod("fun");
     StringBuilder sb = new StringBuilder();
     cfg.blocks.forEach(b-> sb.append(b.printBlock()));
@@ -111,7 +111,7 @@ public class BytecodeCFGBuilderTest {
   }
 
   @Test
-  public void label_goto_successors() throws Exception {
+  void label_goto_successors() throws Exception {
     BytecodeCFG cfg = getCFGForMethod("label_goto");
     StringBuilder sb = new StringBuilder();
     cfg.blocks.forEach(b-> sb.append(b.printBlock()));
@@ -140,7 +140,7 @@ public class BytecodeCFGBuilderTest {
   }
 
   @Test
-  public void test_all_instructions_are_part_of_CFG() throws Exception {
+  void test_all_instructions_are_part_of_CFG() throws Exception {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     File file = new File("src/test/java/org/sonar/java/bytecode/cfg/testdata/CFGTestData.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
@@ -172,7 +172,7 @@ public class BytecodeCFGBuilderTest {
   }
 
   @Test
-  public void all_opcodes_should_be_visited() throws Exception {
+  void all_opcodes_should_be_visited() throws Exception {
     Instructions ins = new Instructions();
     Predicate<Integer> filterReturnAndThrow = opcode -> !((Opcodes.IRETURN <= opcode && opcode <= Opcodes.RETURN) || opcode == Opcodes.ATHROW);
     NO_OPERAND_INSN.stream().filter(filterReturnAndThrow).forEach(ins::visitInsn);
@@ -212,7 +212,7 @@ public class BytecodeCFGBuilderTest {
   }
 
   @Test
-  public void visited_label_should_be_assigned_to_true_successor() throws Exception {
+  void visited_label_should_be_assigned_to_true_successor() throws Exception {
     Label label0 = new Label();
     Label label1 = new Label();
     BytecodeCFG cfg = new Instructions()
@@ -235,7 +235,7 @@ public class BytecodeCFGBuilderTest {
     assertThat(block3.successors()).hasSize(2);
   }
   @Test
-  public void goto_successors() throws Exception {
+  void goto_successors() throws Exception {
     Label label0 = new Label();
     Label label1 = new Label();
     BytecodeCFG cfg = new Instructions()
@@ -257,7 +257,7 @@ public class BytecodeCFGBuilderTest {
   }
 
   @Test
-  public void isNotBlank_goto_followed_by_label() throws Exception {
+  void isNotBlank_goto_followed_by_label() throws Exception {
     SquidClassLoader classLoader = new SquidClassLoader(Lists.newArrayList(new File("src/test/commons-lang-2.1")));
     // apache commons 2.1 isNotBlank has a goto followed by an unreferenced label : see SONARJAVA-2461
     BytecodeCFG bytecodeCFG = SETestUtils.bytecodeCFG("org.apache.commons.lang.StringUtils#isNotBlank(Ljava/lang/String;)Z", classLoader);
@@ -267,7 +267,7 @@ public class BytecodeCFGBuilderTest {
   }
 
   @Test
-  public void supportJSRandRET() throws Exception {
+  void supportJSRandRET() throws Exception {
     SquidClassLoader classLoader = new SquidClassLoader(Lists.newArrayList(new File("src/test/JsrRet")));
     BytecodeCFG bytecodeCFG = SETestUtils.bytecodeCFG("jdk3.AllInstructions#jsrAndRetInstructions(I)I", classLoader);
     assertThat(bytecodeCFG).isNotNull();
@@ -275,7 +275,7 @@ public class BytecodeCFGBuilderTest {
   }
 
   @Test
-  public void try_catch_finally() throws Exception {
+  void try_catch_finally() throws Exception {
     String methodName = "tryCatch";
     String expectedCFG = "B0(Exit)\n" +
       "B1\n" +
@@ -316,7 +316,7 @@ public class BytecodeCFGBuilderTest {
   }
 
   @Test
-  public void try_catch_finally_with_multiplePaths_in_try() throws Exception {
+  void try_catch_finally_with_multiplePaths_in_try() throws Exception {
     String methodName = "tryCatchWithMultiplePaths";
     assertCFGforMethod(methodName, "B0(Exit)\n" +
       "B1\n" +
@@ -368,7 +368,7 @@ public class BytecodeCFGBuilderTest {
   }
 
   @Test
-  public void last_block_is_ends_with_GOTO() throws Exception {
+  void last_block_is_ends_with_GOTO() throws Exception {
     assertCFGforMethod("loopWithoutStopCondition", "B0(Exit)\n" +
       "B1\n" +
       "0: ICONST_0\n" +
@@ -392,7 +392,7 @@ public class BytecodeCFGBuilderTest {
   }
 
   @Test
-  public void test_class_not_found_logs() throws Exception {
+  void test_class_not_found_logs() throws Exception {
     SquidClassLoader squidClassLoader = new SquidClassLoader(Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     BytecodeCFG cfg = SETestUtils.bytecodeCFG("nonsense#foo", squidClassLoader);
     assertThat(cfg).isNull();

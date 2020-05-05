@@ -97,7 +97,7 @@ import static org.objectweb.asm.Opcodes.LUSHR;
 import static org.objectweb.asm.Opcodes.LXOR;
 import static org.objectweb.asm.Opcodes.RETURN;
 
-public class BytecodeEGWalkerExecuteTest {
+class BytecodeEGWalkerExecuteTest {
 
   private static final Set<Integer> LONG_OPCODE = ImmutableSet.of(LADD, LSUB, LMUL, LDIV, LAND, LOR, LXOR, LREM, LSHL, LSHR, LUSHR,
     DADD, DSUB, DMUL, DDIV, DREM);
@@ -129,7 +129,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void athrow_should_not_be_linked_to_next_label() throws Exception {
+  void athrow_should_not_be_linked_to_next_label() throws Exception {
     CompilationUnitTree tree = JParserTestUtils.parse("class A {int field;}");
     SquidClassLoader classLoader = new SquidClassLoader(Collections.singletonList(new File("src/test/JsrRet")));
     BehaviorCache behaviorCache = new BehaviorCache(classLoader);
@@ -141,7 +141,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void behavior_with_no_yield_should_stack_value() throws Exception {
+  void behavior_with_no_yield_should_stack_value() throws Exception {
     BehaviorCache behaviorCache = new BehaviorCache(squidClassLoader);
     MethodBehavior methodBehavior = behaviorCache.get("org.mypackage.MyClass#MyMethod()Ljava/lang/Exception;");
     methodBehavior.completed();
@@ -156,13 +156,13 @@ public class BytecodeEGWalkerExecuteTest {
     assertThat(walker.workList.getFirst().programState.peekValue()).isNotNull();
   }
   @Test
-  public void test_nop() throws Exception {
+  void test_nop() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.NOP));
     assertThat(programState).isEqualTo(ProgramState.EMPTY_STATE);
   }
 
   @Test
-  public void test_ldc() throws Exception {
+  void test_ldc() throws Exception {
     ProgramState programState = execute(new Instruction.LdcInsn("a"));
     assertStack(programState, ObjectConstraint.NOT_NULL);
     SymbolicValue sv = programState.peekValue();
@@ -176,13 +176,13 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_aconst_null() throws Exception {
+  void test_aconst_null() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.ACONST_NULL));
     assertStack(programState, ObjectConstraint.NULL);
   }
 
   @Test
-  public void test_xReturn() throws Exception {
+  void test_xReturn() throws Exception {
     SymbolicValue returnValue = new SymbolicValue();
     int[] opcodes = {Opcodes.IRETURN, Opcodes.LRETURN, Opcodes.FRETURN, Opcodes.DRETURN, Opcodes.ARETURN};
     for (int opcode : opcodes) {
@@ -193,14 +193,14 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_return() throws Exception {
+  void test_return() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.RETURN), ProgramState.EMPTY_STATE);
     assertThat(programState.peekValue()).isNull();
     assertThat(programState.exitValue()).isNull();
   }
 
   @Test
-  public void test_iconst() throws Exception {
+  void test_iconst() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.ICONST_0));
     assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, BooleanConstraint.FALSE, ObjectConstraint.NOT_NULL}});
 
@@ -215,7 +215,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_lconst() throws Exception {
+  void test_lconst() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.LCONST_0));
     assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, BooleanConstraint.FALSE, ObjectConstraint.NOT_NULL}});
 
@@ -224,7 +224,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_fconst() throws Exception {
+  void test_fconst() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.FCONST_0));
     assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, BooleanConstraint.FALSE, ObjectConstraint.NOT_NULL}});
 
@@ -236,7 +236,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_bipush() throws Exception {
+  void test_bipush() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.BIPUSH, 42));
     assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, ObjectConstraint.NOT_NULL}});
 
@@ -248,7 +248,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_sipush() throws Exception {
+  void test_sipush() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.SIPUSH, 42));
     assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.NON_ZERO, ObjectConstraint.NOT_NULL}});
 
@@ -260,7 +260,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_array_load() throws Exception {
+  void test_array_load() throws Exception {
     int[] loadRefOpcodes = new int[] {Opcodes.IALOAD, Opcodes.LALOAD, Opcodes.FALOAD, Opcodes.DALOAD, Opcodes.AALOAD, Opcodes.BALOAD, Opcodes.CALOAD, Opcodes.SALOAD};
     SymbolicValue array = new SymbolicValue();
     SymbolicValue index = new SymbolicValue();
@@ -281,7 +281,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_array_store() throws Exception {
+  void test_array_store() throws Exception {
     int[] storeArrayOpcodes = new int[] {Opcodes.IASTORE, Opcodes.LASTORE, Opcodes.FASTORE, Opcodes.DASTORE, Opcodes.AASTORE, Opcodes.BASTORE, Opcodes.CASTORE, Opcodes.SASTORE};
     SymbolicValue array = new SymbolicValue();
     SymbolicValue index = new SymbolicValue();
@@ -294,7 +294,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_dconst() throws Exception {
+  void test_dconst() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.DCONST_0));
     assertStack(programState, new Constraint[][] {{DivisionByZeroCheck.ZeroConstraint.ZERO, BooleanConstraint.FALSE, ObjectConstraint.NOT_NULL}});
 
@@ -303,7 +303,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_load() throws Exception {
+  void test_load() throws Exception {
     int[] loadRefOpcodes = new int[] {Opcodes.ILOAD, Opcodes.LLOAD, Opcodes.FLOAD, Opcodes.DLOAD, Opcodes.ALOAD};
     for (int loadRefOpcode : loadRefOpcodes) {
       SymbolicValue loadRef = new SymbolicValue();
@@ -315,7 +315,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_pop() throws Exception {
+  void test_pop() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.POP), ProgramState.EMPTY_STATE.stackValue(sv1).stackValue(sv2));
@@ -325,7 +325,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_pop2() throws Exception {
+  void test_pop2() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue sv3 = new SymbolicValue();
@@ -336,7 +336,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_pop2_long_double() throws Exception {
+  void test_pop2_long_double() throws Exception {
     SymbolicValue normalSv = new SymbolicValue();
     SymbolicValue longSv = new SymbolicValue();
     ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(normalSv).stackValue(longSv);
@@ -346,13 +346,13 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_new() throws Exception {
+  void test_new() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.NEW, "java.lang.Object"));
     assertStack(programState, new Constraint[][] {{ ObjectConstraint.NOT_NULL, new TypedConstraint("java.lang.Object")}});
   }
 
   @Test
-  public void test_dup() throws Exception {
+  void test_dup() throws Exception {
     SymbolicValue sv = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.DUP), ProgramState.EMPTY_STATE.stackValue(sv));
     ProgramState.Pop pop = programState.unstackValue(2);
@@ -364,7 +364,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_dup_x1() throws Exception {
+  void test_dup_x1() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue sv3 = new SymbolicValue();
@@ -378,7 +378,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_dup_x2() throws Exception {
+  void test_dup_x2() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue sv3 = new SymbolicValue();
@@ -392,7 +392,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_dup_x2_long_double() throws Exception {
+  void test_dup_x2_long_double() throws Exception {
     SymbolicValue normalSv = new SymbolicValue();
     SymbolicValue longSv = new SymbolicValue();
     SymbolicValue another = new SymbolicValue();
@@ -404,7 +404,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_dup2() throws Exception {
+  void test_dup2() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.DUP2), ProgramState.EMPTY_STATE.stackValue(sv2).stackValue(sv1));
@@ -417,7 +417,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_dup2_long_double() throws Exception {
+  void test_dup2_long_double() throws Exception {
     SymbolicValue longSv = new SymbolicValue();
     SymbolicValue another = new SymbolicValue();
     ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(another).stackValue(longSv);
@@ -428,7 +428,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_dup2_x1() throws Exception {
+  void test_dup2_x1() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue sv3 = new SymbolicValue();
@@ -442,7 +442,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_dup2_x1_long_double() throws Exception {
+  void test_dup2_x1_long_double() throws Exception {
     SymbolicValue normalSv = new SymbolicValue();
     SymbolicValue longSv = new SymbolicValue();
     SymbolicValue another = new SymbolicValue();
@@ -454,7 +454,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_swap() throws Exception {
+  void test_swap() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.SWAP), ProgramState.EMPTY_STATE.stackValue(sv1).stackValue(sv2));
@@ -467,7 +467,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_dup2_x2() throws Exception {
+  void test_dup2_x2() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue sv3 = new SymbolicValue();
@@ -483,7 +483,7 @@ public class BytecodeEGWalkerExecuteTest {
 
   // see https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-6.html#jvms-6.5.dup2_x2
   @Test
-  public void test_dup2_x2_form2() throws Exception {
+  void test_dup2_x2_form2() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue sv3 = new SymbolicValue();
@@ -496,7 +496,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_dup2_x2_form3() throws Exception {
+  void test_dup2_x2_form3() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue sv3 = new SymbolicValue();
@@ -509,7 +509,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_dup2_x2_form4() throws Exception {
+  void test_dup2_x2_form4() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue sv3 = new SymbolicValue();
@@ -523,7 +523,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_add_sub_mul_div_rem() throws Exception {
+  void test_add_sub_mul_div_rem() throws Exception {
     int[] opcodes = new int[] {
       Opcodes.IADD, Opcodes.LADD, Opcodes.FADD, Opcodes.DADD,
       Opcodes.ISUB, Opcodes.LSUB, Opcodes.FSUB, Opcodes.DSUB,
@@ -537,7 +537,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_neg() throws Exception {
+  void test_neg() throws Exception {
     SymbolicValue sv = new SymbolicValue();
 
     int[] negOpcodes = new int[] {Opcodes.INEG, Opcodes.LNEG, Opcodes.FNEG, Opcodes.DNEG};
@@ -555,7 +555,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_shift() throws Exception {
+  void test_shift() throws Exception {
     int[] shiftOpcodes = new int[] {Opcodes.ISHL, Opcodes.LSHL, Opcodes.ISHR, Opcodes.LSHR, Opcodes.IUSHR, Opcodes.LUSHR};
     assertConsume2produceNotNull(shiftOpcodes);
 
@@ -563,7 +563,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_and() throws Exception {
+  void test_and() throws Exception {
     int[] opcodes = new int[] {Opcodes.IAND, Opcodes.LAND};
     assertBinarySymbolicValue(opcodes, SymbolicValue.AndSymbolicValue.class);
 
@@ -597,7 +597,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_or() throws Exception {
+  void test_or() throws Exception {
     int[] opcodes = new int[] {Opcodes.IOR, Opcodes.LOR};
     assertBinarySymbolicValue(opcodes, SymbolicValue.OrSymbolicValue.class);
 
@@ -605,14 +605,14 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_xor() throws Exception {
+  void test_xor() throws Exception {
     int[] opcodes = new int[] {Opcodes.IXOR, Opcodes.LXOR};
     assertBinarySymbolicValue(opcodes, SymbolicValue.XorSymbolicValue.class);
     assertThrowWhenInvalidStack(opcodes, " needs 2 values on stack");
   }
 
   @Test
-  public void test_iinc() throws Exception {
+  void test_iinc() throws Exception {
     SymbolicValue sv = new SymbolicValue();
     ProgramState programState = ProgramState.EMPTY_STATE.put(2, sv);
     programState = execute(new Instruction(Opcodes.IINC, 2), programState);
@@ -626,7 +626,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_cmp() throws Exception {
+  void test_cmp() throws Exception {
     int[] opcodes = new int[] {Opcodes.LCMP, Opcodes.FCMPG, Opcodes.FCMPL, Opcodes.DCMPG, Opcodes.FCMPL};
     assertConsume2produceNotNull(opcodes);
 
@@ -649,7 +649,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_invoke_instance_method() throws Exception {
+  void test_invoke_instance_method() throws Exception {
     int[] opcodes = new int[] {Opcodes.INVOKESPECIAL, Opcodes.INVOKEVIRTUAL, Opcodes.INVOKEINTERFACE};
     for (int opcode : opcodes) {
       SymbolicValue thisSv = new SymbolicValue();
@@ -684,7 +684,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_invoke_static() throws Exception {
+  void test_invoke_static() throws Exception {
     ProgramState programState = execute(invokeStatic("staticMethod", "()V"));
     assertEmptyStack(programState);
 
@@ -715,7 +715,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_athrow() throws Exception {
+  void test_athrow() throws Exception {
     SymbolicValue sv = new SymbolicValue();
     Type exceptionType = semanticModel.getClassType("java.lang.RuntimeException");
     ProgramState initialState = ProgramState.EMPTY_STATE.stackValue(sv)
@@ -728,7 +728,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_nullness_check() throws Exception {
+  void test_nullness_check() throws Exception {
     SymbolicValue thisSv = new SymbolicValue();
     ProgramState startingState = ProgramState.EMPTY_STATE.stackValue(thisSv);
     ProgramState programState = execute(invokeMethod(Opcodes.INVOKESPECIAL, "methodWithoutArgument", "()V"), startingState);
@@ -742,7 +742,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_store() throws Exception {
+  void test_store() throws Exception {
     int[] storeOpcodes = new int[] {Opcodes.ISTORE, Opcodes.LSTORE, Opcodes.FSTORE, Opcodes.DSTORE, Opcodes.ASTORE};
     SymbolicValue sv = new SymbolicValue();
     ProgramState startState = ProgramState.EMPTY_STATE.stackValue(sv);
@@ -753,7 +753,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_tableswitch() throws Exception {
+  void test_tableswitch() throws Exception {
     Instructions instr = new Instructions();
     instr.visitVarInsn(ILOAD, 0);
     Label l0 = new Label();
@@ -790,7 +790,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_lookupswitch() throws Exception {
+  void test_lookupswitch() throws Exception {
     Instructions instr = new Instructions();
     instr.visitVarInsn(ILOAD, 0);
     Label l0 = new Label();
@@ -828,7 +828,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_getstatic() throws Exception {
+  void test_getstatic() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.GETSTATIC, new Instruction.FieldOrMethod("", "", "D", false)));
     assertThat(programState.peekValue()).isNotNull();
     assertThat(isDoubleOrLong(programState, programState.peekValue())).isTrue();
@@ -838,13 +838,13 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_putstatic() throws Exception {
+  void test_putstatic() throws Exception {
     ProgramState programState = execute(new Instruction(Opcodes.PUTSTATIC), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()));
     assertThat(programState.peekValue()).isNull();
   }
 
   @Test
-  public void test_getfield() throws Exception {
+  void test_getfield() throws Exception {
     SymbolicValue objectRef = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.GETFIELD, new Instruction.FieldOrMethod("", "", "D", false)), ProgramState.EMPTY_STATE.stackValue(objectRef));
     SymbolicValue fieldValue = programState.peekValue();
@@ -861,7 +861,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_putfield() throws Exception {
+  void test_putfield() throws Exception {
     SymbolicValue objectRef = new SymbolicValue();
     SymbolicValue value = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.PUTFIELD), ProgramState.EMPTY_STATE.stackValue(objectRef).stackValue(value));
@@ -871,7 +871,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_newarray() throws Exception {
+  void test_newarray() throws Exception {
     SymbolicValue size = new SymbolicValue();
     int[] opcodes = {Opcodes.NEWARRAY, Opcodes.ANEWARRAY};
     for (int opcode : opcodes) {
@@ -884,7 +884,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_arraylength() throws Exception {
+  void test_arraylength() throws Exception {
     SymbolicValue arrayRef = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.ARRAYLENGTH), ProgramState.EMPTY_STATE.stackValue(arrayRef));
     SymbolicValue length = programState.peekValue();
@@ -895,7 +895,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_checkcast() throws Exception {
+  void test_checkcast() throws Exception {
     SymbolicValue objectRef = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.CHECKCAST), ProgramState.EMPTY_STATE.stackValue(objectRef));
     assertThat(programState.peekValue()).isEqualTo(objectRef);
@@ -904,7 +904,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_instanceof() throws Exception {
+  void test_instanceof() throws Exception {
     SymbolicValue sv = new SymbolicValue();
     ProgramState programState = execute(new Instruction(Opcodes.INSTANCEOF), ProgramState.EMPTY_STATE.stackValue(sv));
     SymbolicValue result = programState.peekValue();
@@ -915,7 +915,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_monitor_enter_exit() throws Exception {
+  void test_monitor_enter_exit() throws Exception {
     int opcodes[] = {Opcodes.MONITORENTER, Opcodes.MONITOREXIT};
 
     for (int opcode : opcodes) {
@@ -927,7 +927,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_multianewarray() throws Exception {
+  void test_multianewarray() throws Exception {
     ProgramState programState = execute(new Instruction.MultiANewArrayInsn("B", 1), ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()));
     assertStack(programState, ObjectConstraint.NOT_NULL);
     programState = execute(new Instruction.MultiANewArrayInsn("B", 2), ProgramState.EMPTY_STATE
@@ -939,7 +939,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_invoke_dynamic() throws Exception {
+  void test_invoke_dynamic() throws Exception {
     SymbolicValue lambdaArg = new SymbolicValue();
     ProgramState programState = execute(new Instruction.InvokeDynamicInsn("(I)Ljava/util/function/Supplier;"), ProgramState.EMPTY_STATE.stackValue(lambdaArg));
     assertStack(programState, ObjectConstraint.NOT_NULL);
@@ -954,7 +954,7 @@ public class BytecodeEGWalkerExecuteTest {
 
 
   @Test
-  public void test_compare_with_zero() {
+  void test_compare_with_zero() {
     SymbolicValue sv = new SymbolicValue();
     int[] opcodes = {Opcodes.IFEQ, Opcodes.IFNE, Opcodes.IFLT, Opcodes.IFGE};
     for (int opcode : opcodes) {
@@ -977,7 +977,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_compare_with_null() {
+  void test_compare_with_null() {
     SymbolicValue sv = new SymbolicValue();
     int[] opcodes = {Opcodes.IFNULL, Opcodes.IFNONNULL};
     for (int opcode : opcodes) {
@@ -989,7 +989,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_compare_instructions() {
+  void test_compare_instructions() {
     int[] opcodes = {Opcodes.IF_ICMPEQ, Opcodes.IF_ICMPNE, Opcodes.IF_ICMPLT, Opcodes.IF_ICMPGE, Opcodes.IF_ACMPEQ, Opcodes.IF_ACMPNE};
     SymbolicValue left = new SymbolicValue();
     SymbolicValue right = new SymbolicValue();
@@ -1011,14 +1011,14 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_invalid_branch_instruction() {
+  void test_invalid_branch_instruction() {
     assertThatThrownBy(() -> walker.branchingState(new Instruction(Opcodes.GOTO), ProgramState.EMPTY_STATE))
         .isInstanceOf(IllegalStateException.class);
   }
 
 
   @Test
-  public void test_conversion() throws Exception {
+  void test_conversion() throws Exception {
     int[] toLongOrDouble = {Opcodes.I2D, Opcodes.I2L, Opcodes.F2D, Opcodes.F2L};
     for (int opcode : toLongOrDouble) {
       SymbolicValue sv = new SymbolicValue();
@@ -1125,7 +1125,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_enqueuing_only_happy_path() {
+  void test_enqueuing_only_happy_path() {
     BytecodeCFG cfg = SETestUtils.bytecodeCFG(TRY_CATCH_SIGNATURE, squidClassLoader);
     BytecodeCFG.Block b2 = cfg.blocks().get(2);
     walker.workList.clear();
@@ -1136,7 +1136,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_enqueuing_exceptional_yields() {
+  void test_enqueuing_exceptional_yields() {
     BytecodeCFG cfg = SETestUtils.bytecodeCFG(TRY_CATCH_SIGNATURE, squidClassLoader);
     BytecodeCFG.Block b2 = cfg.blocks().get(2);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()).stackValue(new SymbolicValue());
@@ -1147,7 +1147,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_enqueuing_exceptional_yields2() {
+  void test_enqueuing_exceptional_yields2() {
     BytecodeCFG cfg = SETestUtils.bytecodeCFG(TRY_WRONG_CATCH_SIGNATURE, squidClassLoader);
     BytecodeCFG.Block b2 = cfg.blocks().get(2);
     walker.programState = ProgramState.EMPTY_STATE.stackValue(new SymbolicValue()).stackValue(new SymbolicValue());
@@ -1162,7 +1162,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_switch_enqueuing_in_trycatch() throws Exception {
+  void test_switch_enqueuing_in_trycatch() throws Exception {
     Instructions mv = new Instructions();
     Label l0 = new Label();
     Label l1 = new Label();
@@ -1189,7 +1189,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_goto_enqueuing_in_trycatch() throws Exception {
+  void test_goto_enqueuing_in_trycatch() throws Exception {
     Instructions mv = new Instructions();
     /*
      void test_goto(int i) {
@@ -1248,7 +1248,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void test_analysis_failure() throws Exception {
+  void test_analysis_failure() throws Exception {
     BytecodeEGWalker walkerSpy = spy(walker);
     IllegalStateException ex = new IllegalStateException();
     doThrow(ex).when(walkerSpy).executeInstruction(any());
@@ -1260,7 +1260,7 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void method_returning_new_should_have_not_null_result() {
+  void method_returning_new_should_have_not_null_result() {
     MethodBehavior mb = walker.getMethodBehavior(BytecodeEGWalkerExecuteTest.class.getCanonicalName() + "#newObject()Ljava/lang/Object;", squidClassLoader);
     List<MethodYield> yields = mb.yields();
     assertThat(yields).hasSize(1);
@@ -1274,14 +1274,14 @@ public class BytecodeEGWalkerExecuteTest {
   }
 
   @Test
-  public void behavior_should_have_declared_exceptions() {
+  void behavior_should_have_declared_exceptions() {
     MethodBehavior mb = walker.getMethodBehavior(BytecodeEGWalkerExecuteTest.class.getCanonicalName() + "#throwing()V", squidClassLoader);
     assertThat(mb.isComplete()).isFalse();
     assertThat(mb.getDeclaredExceptions()).containsExactly("java.io.IOException");
   }
 
   @Test
-  public void exceptional_paths_should_be_enqueued() {
+  void exceptional_paths_should_be_enqueued() {
     MethodBehavior mb = walker.getMethodBehavior(BytecodeEGWalkerExecuteTest.class.getCanonicalName() + "#enqueue_exceptional_paths(Lorg/sonar/java/bytecode/se/BytecodeEGWalkerExecuteTest;)Ljava/lang/Object;", squidClassLoader);
     assertThat(mb.yields()).hasSize(2);
     List<Constraint> resultConstraints = mb.yields().stream().map(y -> ((HappyPathYield) y).resultConstraint()).map(c -> c.get(ObjectConstraint.class)).collect(Collectors.toList());

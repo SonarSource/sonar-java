@@ -24,12 +24,12 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class ReplaceLambdaByMethodRefCheckTest {
+class ReplaceLambdaByMethodRefCheckTest {
 
   private static final String FILENAME = "src/test/files/checks/ReplaceLambdaByMethodRefCheck.java";
 
   @Test
-  public void java8() {
+  void java8() {
     JavaCheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(new ReplaceLambdaByMethodRefCheck())
@@ -44,7 +44,7 @@ public class ReplaceLambdaByMethodRefCheckTest {
   }
 
   @Test
-  public void no_version() {
+  void no_version() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ReplaceLambdaByMethodRefCheck_no_version.java"))
       .withCheck(new ReplaceLambdaByMethodRefCheck())

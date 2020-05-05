@@ -22,12 +22,12 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class StaticImportCountCheckTest {
+class StaticImportCountCheckTest {
 
   private static final String TEST_FILES_DIR = "src/test/files/checks/StaticImportCountCheck/";
 
   @Test
-  public void static_imports_below_threshold_are_compliant() {
+  void static_imports_below_threshold_are_compliant() {
     JavaCheckVerifier.newVerifier()
       .onFile(TEST_FILES_DIR + "CompliantImports.java")
       .withCheck(new StaticImportCountCheck())
@@ -35,7 +35,7 @@ public class StaticImportCountCheckTest {
   }
 
   @Test
-  public void cu_with_just_static_imports() {
+  void cu_with_just_static_imports() {
     JavaCheckVerifier.newVerifier()
       .onFile(TEST_FILES_DIR + "StaticImportCountCheck.java")
       .withCheck(new StaticImportCountCheck())
@@ -43,7 +43,7 @@ public class StaticImportCountCheckTest {
   }
 
   @Test
-  public void cu_with_normal_and_static_imports() {
+  void cu_with_normal_and_static_imports() {
     JavaCheckVerifier.newVerifier()
       .onFile(TEST_FILES_DIR + "MixedStandardAndStaticImports.java")
       .withCheck(new StaticImportCountCheck())
@@ -51,7 +51,7 @@ public class StaticImportCountCheckTest {
   }
 
   @Test
-  public void cu_with_custom_threshold_compliant() {
+  void cu_with_custom_threshold_compliant() {
     StaticImportCountCheck check = new StaticImportCountCheck();
     check.setThreshold(5);
     JavaCheckVerifier.newVerifier()
@@ -61,7 +61,7 @@ public class StaticImportCountCheckTest {
   }
 
   @Test
-  public void cu_with_custom_threshold_noncompliant() {
+  void cu_with_custom_threshold_noncompliant() {
     StaticImportCountCheck check = new StaticImportCountCheck();
     check.setThreshold(3);
     JavaCheckVerifier.newVerifier()

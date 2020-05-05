@@ -36,10 +36,10 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class JParserTest {
+class JParserTest {
 
   @Test
-  public void should_throw_RecognitionException_in_case_of_syntax_error() {
+  void should_throw_RecognitionException_in_case_of_syntax_error() {
     try { // Note that without check for syntax errors will cause IndexOutOfBoundsException
       test("class C");
       fail("exception expected");
@@ -57,7 +57,7 @@ public class JParserTest {
   }
 
   @Test
-  public void should_recover_if_parser_fails() {
+  void should_recover_if_parser_fails() {
     assertThrows(
       RecognitionException.class,
       () -> JParser.parse(
@@ -68,7 +68,7 @@ public class JParserTest {
   }
 
   @Test
-  public void should_throw_RecognitionException_in_case_of_lexical_error() {
+  void should_throw_RecognitionException_in_case_of_lexical_error() {
     try { // Note that without check for errors will cause InvalidInputException
       testExpression("''");
       fail("exception expected");
@@ -78,7 +78,7 @@ public class JParserTest {
   }
 
   @Test
-  public void err() {
+  void err() {
     try {
       // ASTNode.METHOD_DECLARATION with flag ASTNode.MALFORMED
       test("interface Foo { public foo(); // comment\n }");
@@ -88,7 +88,7 @@ public class JParserTest {
   }
 
   @Test
-  public void eof() {
+  void eof() {
     {
       CompilationUnitTree t = test("");
       assertEquals("", t.eofToken().text());
@@ -110,7 +110,7 @@ public class JParserTest {
   }
 
   @Test
-  public void declaration_enum() {
+  void declaration_enum() {
     CompilationUnitTree cu = test("enum E { C }");
     ClassTree t = (ClassTree) cu.types().get(0);
     EnumConstantTree c = (EnumConstantTree) t.members().get(0);
@@ -121,7 +121,7 @@ public class JParserTest {
   }
 
   @Test
-  public void statement_variable_declaration() {
+  void statement_variable_declaration() {
     CompilationUnitTree t = test("class C { void m() { int a, b; } }");
     ClassTree c = (ClassTree) t.types().get(0);
     MethodTree m = (MethodTree) c.members().get(0);

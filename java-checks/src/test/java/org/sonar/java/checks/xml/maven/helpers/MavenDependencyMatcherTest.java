@@ -25,46 +25,46 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class MavenDependencyMatcherTest {
+class MavenDependencyMatcherTest {
 
   private MavenDependencyMatcher matcher;
 
   @Test
-  public void no_name_should_fail() {
+  void no_name_should_fail() {
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
       () -> new MavenDependencyMatcher("", ""));
     assertThat(e.getMessage()).isEqualTo("Invalid dependency name. Should match '[groupId]:[artifactId]' use '*' as wildcard");
   }
 
   @Test
-  public void invalid_format_should_fail() {
+  void invalid_format_should_fail() {
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
       () -> new MavenDependencyMatcher(":", ""));
     assertThat(e.getMessage()).isEqualTo("Invalid dependency name. Should match '[groupId]:[artifactId]' use '*' as wildcard");
   }
 
   @Test
-  public void empty_dependencies_never_match() {
+  void empty_dependencies_never_match() {
     matcher = new MavenDependencyMatcher("*:log", "");
     assertNotMatch("", "", "");
   }
 
   @Test
-  public void should_handle_wildcards_for_groupId() {
+  void should_handle_wildcards_for_groupId() {
     matcher = new MavenDependencyMatcher("*:log", "");
     assertMatches("a.b.c", "log");
     assertNotMatch("log", "d");
   }
 
   @Test
-  public void should_handle_wildcards_for_artifactId() {
+  void should_handle_wildcards_for_artifactId() {
     matcher = new MavenDependencyMatcher("log:*", "");
     assertNotMatch("a.b.c", "log");
     assertMatches("log", "d");
   }
 
   @Test
-  public void should_handle_exact_values() {
+  void should_handle_exact_values() {
     matcher = new MavenDependencyMatcher("log:log", "");
     assertNotMatch("log", "a");
     assertNotMatch("a.b.c", "log");
@@ -72,7 +72,7 @@ public class MavenDependencyMatcherTest {
   }
 
   @Test
-  public void should_handle_fixed_versions() {
+  void should_handle_fixed_versions() {
     matcher = new MavenDependencyMatcher("log:log", "1.3");
     assertNotMatch("log", "a");
     assertNotMatch("a.b.c", "log");
@@ -82,7 +82,7 @@ public class MavenDependencyMatcherTest {
   }
 
   @Test
-  public void should_handle_pattern_version() {
+  void should_handle_pattern_version() {
     matcher = new MavenDependencyMatcher("log:log", "1.3.*");
     assertNotMatch("log", "a");
     assertNotMatch("a.b.c", "log");
@@ -93,7 +93,7 @@ public class MavenDependencyMatcherTest {
   }
 
   @Test
-  public void should_handle_ranged_versions() {
+  void should_handle_ranged_versions() {
     matcher = new MavenDependencyMatcher("log:log", "1.2.5-2");
     assertNotMatch("log", "a");
     assertNotMatch("a.b.c", "log");

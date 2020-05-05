@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class NullShouldNotBeUsedWithOptionalCheckTest {
+class NullShouldNotBeUsedWithOptionalCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     NullShouldNotBeUsedWithOptionalCheck check = new NullShouldNotBeUsedWithOptionalCheck();
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NullShouldNotBeUsedWithOptionalCheck_jdk.java"))

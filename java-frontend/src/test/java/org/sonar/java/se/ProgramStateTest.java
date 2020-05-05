@@ -39,10 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.se.SETestUtils.variable;
 
-public class ProgramStateTest {
+class ProgramStateTest {
 
   @Test
-  public void testing_equals() {
+  void testing_equals() {
     SymbolicValue sv1 = new SymbolicValue();
     ProgramState state = ProgramState.EMPTY_STATE.addConstraint(sv1, ObjectConstraint.NOT_NULL);
     assertThat(state.equals(null)).isFalse();
@@ -52,7 +52,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void testStackUnstack() {
+  void testStackUnstack() {
     SymbolicValue sv1 = new SymbolicValue();
     ProgramState state = ProgramState.EMPTY_STATE.stackValue(sv1);
     assertThat(state.peekValue()).isSameAs(sv1);
@@ -75,7 +75,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void testToString() {
+  void testToString() {
     SymbolicValue sv3 = new SymbolicValue() {
       @Override
       public String toString() {
@@ -104,7 +104,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void testAddingSameConstraintTwice() {
+  void testAddingSameConstraintTwice() {
     ProgramState state = ProgramState.EMPTY_STATE;
     SymbolicValue sv3 = new SymbolicValue();
     assertThat(state.getConstraint(sv3, ObjectConstraint.class)).isNull();
@@ -115,7 +115,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void test_learned_constraint() {
+  void test_learned_constraint() {
     ProgramState parent = ProgramState.EMPTY_STATE;
     ProgramState child = ProgramState.EMPTY_STATE;
     assertThat(child.learnedConstraints(parent)).isEmpty();
@@ -129,7 +129,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void test_learned_constraint_binary_SV() {
+  void test_learned_constraint_binary_SV() {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     RelationalSymbolicValue relation = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.EQUAL);
@@ -143,7 +143,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void test_learned_associations() throws Exception {
+  void test_learned_associations() throws Exception {
     ProgramState parent = ProgramState.EMPTY_STATE;
     ProgramState child = ProgramState.EMPTY_STATE;
     assertThat(child.learnedAssociations(parent)).isEmpty();
@@ -162,7 +162,7 @@ public class ProgramStateTest {
 
 
   @Test
-  public void test_peek_nth_value() {
+  void test_peek_nth_value() {
     ProgramState state = ProgramState.EMPTY_STATE;
     ProgramState finalState = state;
     assertThatThrownBy(() -> finalState.peekValue(0)).isInstanceOf(IllegalStateException.class);
@@ -175,7 +175,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void test_setting_constraint_on_relational_sv() throws Exception {
+  void test_setting_constraint_on_relational_sv() throws Exception {
     RelationalSymbolicValue rel = new RelationalSymbolicValue(RelationalSymbolicValue.Kind.EQUAL);
     SymbolicValueTestUtil.computedFrom(rel, new SymbolicValue(), new SymbolicValue());
     assertThatThrownBy(() -> ProgramState.EMPTY_STATE.addConstraint(rel, BooleanConstraint.FALSE))
@@ -184,7 +184,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void assignment_order_should_not_lead_to_different_state() throws Exception {
+  void assignment_order_should_not_lead_to_different_state() throws Exception {
     SymbolicValue sv = new SymbolicValue();
     Symbol var1 = variable("var1");
     Symbol var2 = variable("var2");
@@ -199,7 +199,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void test_symbols_on_stack() {
+  void test_symbols_on_stack() {
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue sv = new SymbolicValue();
     Symbol.VariableSymbol symbol = variable("a");
@@ -212,7 +212,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void test_symbol_should_not_change_equals() throws Exception {
+  void test_symbol_should_not_change_equals() throws Exception {
     ProgramState ps1 = ProgramState.EMPTY_STATE;
     ProgramState ps2 = ProgramState.EMPTY_STATE;
     SymbolicValue sv = new SymbolicValue();
@@ -224,7 +224,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void test_adding_constraint_transitively() throws Exception {
+  void test_adding_constraint_transitively() throws Exception {
     ProgramState ps = ProgramState.EMPTY_STATE;
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
@@ -237,7 +237,7 @@ public class ProgramStateTest {
   }
 
   @Test
-  public void test_put_by_index() throws Exception {
+  void test_put_by_index() throws Exception {
     SymbolicValue sv = new SymbolicValue();
     ProgramState ps = ProgramState.EMPTY_STATE;
     ProgramState ps2 = ps.put(2, sv);

@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class FileLinesVisitorTest {
+class FileLinesVisitorTest {
 
   private File baseDir;
 
@@ -58,7 +58,7 @@ public class FileLinesVisitorTest {
   }
 
   @Test
-  public void lines_of_code_data() {
+  void lines_of_code_data() {
     FileLinesContext context = mock(FileLinesContext.class);
     checkLines("LinesOfCode.java", context);
 
@@ -73,7 +73,7 @@ public class FileLinesVisitorTest {
   }
 
   @Test
-  public void executable_lines_should_be_counted() {
+  void executable_lines_should_be_counted() {
     FileLinesContext context = mock(FileLinesContext.class);
     checkLines("ExecutableLines.java", context);
     int[] expected = new int[] {0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1,

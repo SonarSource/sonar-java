@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class NestedIfStatementsCheckTest {
+class NestedIfStatementsCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     assertThat(check.max).isEqualTo(3);
     JavaCheckVerifier.newVerifier()
@@ -37,7 +37,7 @@ public class NestedIfStatementsCheckTest {
   }
 
   @Test
-  public void custom() {
+  void custom() {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     check.max = 4;
     JavaCheckVerifier.newVerifier()

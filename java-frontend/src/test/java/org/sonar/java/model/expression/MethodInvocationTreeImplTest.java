@@ -32,10 +32,10 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MethodInvocationTreeImplTest {
+class MethodInvocationTreeImplTest {
 
   @Test
-  public void symbol_should_be_set() {
+  void symbol_should_be_set() {
     CompilationUnitTree cut = createTree("class A { void foo(){} void bar(){foo();} }");
     ClassTree classTree = (ClassTree) cut.types().get(0);
     Symbol.MethodSymbol declaration = ((MethodTree) classTree.members().get(0)).symbol();
@@ -48,7 +48,7 @@ public class MethodInvocationTreeImplTest {
   }
 
   @Test
-  public void first_token() {
+  void first_token() {
     CompilationUnitTree cut = createTree("class A {\n"
       + "  void bar(){\n"
       + "    foo();\n"
@@ -62,7 +62,7 @@ public class MethodInvocationTreeImplTest {
   }
 
   @Test
-  public void first_token_with_type_arguments() {
+  void first_token_with_type_arguments() {
     CompilationUnitTree cut = createTree("class A {\n"
       + "  void bar(){\n"
       + "    new A().<String>foo();\n"

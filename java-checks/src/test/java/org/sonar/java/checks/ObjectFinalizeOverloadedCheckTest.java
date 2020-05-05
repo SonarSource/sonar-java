@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ObjectFinalizeOverloadedCheckTest {
+class ObjectFinalizeOverloadedCheckTest {
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/ObjectFinalizeOverloadedCheck.java")
       .withCheck(new ObjectFinalizeOverloadedCheck())

@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UnitTestResultTest {
+class UnitTestResultTest {
 
   @Test
-  public void shouldBeError() {
+  void shouldBeError() {
     UnitTestResult result = new UnitTestResult().setStatus(UnitTestResult.STATUS_ERROR);
     assertThat(result.getStatus()).isEqualTo(UnitTestResult.STATUS_ERROR);
     assertThat(result.isError()).isEqualTo(true);
@@ -34,7 +34,7 @@ public class UnitTestResultTest {
   }
 
   @Test
-  public void shouldBeFailure() {
+  void shouldBeFailure() {
     UnitTestResult result = new UnitTestResult().setStatus(UnitTestResult.STATUS_FAILURE);
     assertThat(result.getStatus()).isEqualTo(UnitTestResult.STATUS_FAILURE);
     assertThat(result.isError()).isEqualTo(false);
@@ -42,7 +42,7 @@ public class UnitTestResultTest {
   }
 
   @Test
-  public void shouldBeSuccess() {
+  void shouldBeSuccess() {
     UnitTestResult result = new UnitTestResult().setStatus(UnitTestResult.STATUS_OK);
     assertThat(result.getStatus()).isEqualTo(UnitTestResult.STATUS_OK);
     assertThat(result.isError()).isEqualTo(false);

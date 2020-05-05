@@ -26,7 +26,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class FilterVerifierTest {
+class FilterVerifierTest {
 
   @Test
   void filterVerifierShouldFailInCaseOfInvalidFile() {

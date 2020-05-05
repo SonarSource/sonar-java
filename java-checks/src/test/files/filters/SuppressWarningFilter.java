@@ -1,3 +1,6 @@
+// place itself in the same package as the filter to access the constant
+package org.sonar.java.filters;
+
 import java.io.Serializable;
 
 /**

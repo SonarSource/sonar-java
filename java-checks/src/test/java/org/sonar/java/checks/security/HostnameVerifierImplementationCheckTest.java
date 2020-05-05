@@ -22,10 +22,10 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class HostnameVerifierImplementationCheckTest {
+class HostnameVerifierImplementationCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/security/HostnameVerifierImplementationCheck.java")
       .withCheck(new HostnameVerifierImplementationCheck())

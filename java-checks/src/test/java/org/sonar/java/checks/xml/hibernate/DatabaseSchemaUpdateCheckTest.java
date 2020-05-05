@@ -23,19 +23,19 @@ import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class DatabaseSchemaUpdateCheckTest {
+class DatabaseSchemaUpdateCheckTest {
 
   private static final SonarXmlCheck CHECK = new DatabaseSchemaUpdateCheck();
 
   @Test
-  public void test() {
+  void test() {
     SonarXmlCheckVerifier.verifyIssues("hibernate11.cfg.xml", CHECK);
     SonarXmlCheckVerifier.verifyIssues("hibernate20.cfg.xml", CHECK);
     SonarXmlCheckVerifier.verifyIssues("hibernate30.cfg.xml", CHECK);
   }
 
   @Test
-  public void no_issue() {
+  void no_issue() {
     SonarXmlCheckVerifier.verifyNoIssue("hibernate30NoProperty.cfg.xml", CHECK);
     SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", CHECK);
   }

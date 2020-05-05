@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class MissingDeprecatedCheckTest {
+class MissingDeprecatedCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/MissingDeprecatedCheck.java")
       .withCheck(new MissingDeprecatedCheck())
@@ -33,7 +33,7 @@ public class MissingDeprecatedCheckTest {
   }
 
   @Test
-  public void test_java9() {
+  void test_java9() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/MissingDeprecatedCheckJava9.java")
       .withCheck(new MissingDeprecatedCheck())

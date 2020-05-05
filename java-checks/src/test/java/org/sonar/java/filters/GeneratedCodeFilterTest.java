@@ -25,10 +25,10 @@ import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadLocalVariableNameCheck;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 
-public class GeneratedCodeFilterTest {
+class GeneratedCodeFilterTest {
 
   @Test
-  public void test() {
+  void test() {
     CommentRegularExpressionCheck commentRegularExpressionCheck = new CommentRegularExpressionCheck();
     commentRegularExpressionCheck.regularExpression = ".*alpha.*";
     FilterVerifier.verify("src/test/files/filters/GeneratedCodeFilter.java", new GeneratedCodeFilter(),

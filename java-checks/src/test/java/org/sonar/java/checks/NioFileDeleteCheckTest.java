@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class NioFileDeleteCheckTest {
+class NioFileDeleteCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/NioFileDeleteCheck.java")
       .withCheck(new NioFileDeleteCheck())
@@ -33,7 +33,7 @@ public class NioFileDeleteCheckTest {
   }
 
   @Test
-  public void no_issue_with_version_6() {
+  void no_issue_with_version_6() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/NioFileDeleteCheck.java")
       .withCheck(new NioFileDeleteCheck())

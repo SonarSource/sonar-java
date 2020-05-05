@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class CipherBlockChainingCheckTest {
+class CipherBlockChainingCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/CipherBlockChainingCheck.java"))
       .withCheck(new CipherBlockChainingCheck())
@@ -35,7 +35,7 @@ public class CipherBlockChainingCheckTest {
   }
 
   @Test
-  public void test_no_semantic() {
+  void test_no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/CipherBlockChainingCheck.java"))
       .withCheck(new CipherBlockChainingCheck())

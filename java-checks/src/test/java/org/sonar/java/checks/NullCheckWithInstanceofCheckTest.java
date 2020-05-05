@@ -24,9 +24,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class NullCheckWithInstanceofCheckTest {
+class NullCheckWithInstanceofCheckTest {
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NullCheckWithInstanceofCheck.java"))
       .withCheck(new NullCheckWithInstanceofCheck())
@@ -34,7 +34,7 @@ public class NullCheckWithInstanceofCheckTest {
   }
 
   @Test
-  public void test_no_semantic() {
+  void test_no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NullCheckWithInstanceofCheck.java"))
       .withCheck(new NullCheckWithInstanceofCheck())

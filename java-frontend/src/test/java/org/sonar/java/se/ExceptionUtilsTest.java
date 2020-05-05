@@ -26,10 +26,10 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class ExceptionUtilsTest {
+class ExceptionUtilsTest {
 
   @Test
-  public void test_is_unchecked_exception() {
+  void test_is_unchecked_exception() {
     assertThat(ExceptionUtils.isUncheckedException(null)).isFalse();
     assertThat(ExceptionUtils.isUncheckedException(Symbols.unknownType)).isFalse();
     Sema semanticModel = SETestUtils.getSemanticModel("src/test/java/org/sonar/java/se/ExceptionUtilsTest.java");

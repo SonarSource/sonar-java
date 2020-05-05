@@ -22,10 +22,10 @@ package org.sonar.java.checks.xml.struts;
 import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class FormNameDuplicationCheckTest {
+class FormNameDuplicationCheckTest {
 
   @Test
-  public void web_xml_without_filter() {
+  void web_xml_without_filter() {
     SonarXmlCheckVerifier.verifyIssues("form-validation.xml", new FormNameDuplicationCheck());
   }
 }

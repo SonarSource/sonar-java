@@ -23,13 +23,13 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class StaticMultithreadedUnsafeFieldsCheckTest {
+class StaticMultithreadedUnsafeFieldsCheckTest {
 
   /**
    * @see org.sonar.java.checks.eclipsebug.EclipseBugTest#javax_conflict()
    */
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/StaticMultithreadedUnsafeFields.java")
       .withCheck(new StaticMultithreadedUnsafeFieldsCheck())

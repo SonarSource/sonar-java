@@ -27,17 +27,17 @@ import java.net.URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class FileSystemLoaderTest {
+class FileSystemLoaderTest {
 
   @Test
-  public void shouldThrowIllegalArgumentException() throws Exception {
+  void shouldThrowIllegalArgumentException() throws Exception {
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
       () -> new FileSystemLoader(null));
     assertThat(e.getMessage()).isEqualTo("baseDir can't be null");
   }
 
   @Test
-  public void testFindResource() throws Exception {
+  void testFindResource() throws Exception {
     File dir = new File("src/test/files/bytecode/bin/");
     FileSystemLoader loader = new FileSystemLoader(dir);
 
@@ -58,7 +58,7 @@ public class FileSystemLoaderTest {
   }
 
   @Test
-  public void testLoadBytes() throws Exception {
+  void testLoadBytes() throws Exception {
     File dir = new File("src/test/files/bytecode/bin/");
     FileSystemLoader loader = new FileSystemLoader(dir);
 
@@ -74,7 +74,7 @@ public class FileSystemLoaderTest {
   }
 
   @Test
-  public void closeCanBeCalledMultipleTimes() throws Exception {
+  void closeCanBeCalledMultipleTimes() throws Exception {
     File dir = new File("src/test/files/bytecode/bin/");
     FileSystemLoader loader = new FileSystemLoader(dir);
     loader.close();

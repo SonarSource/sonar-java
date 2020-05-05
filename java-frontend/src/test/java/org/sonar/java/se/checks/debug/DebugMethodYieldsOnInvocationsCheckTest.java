@@ -24,10 +24,10 @@ import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
-public class DebugMethodYieldsOnInvocationsCheckTest {
+class DebugMethodYieldsOnInvocationsCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaFileScanner[] check = {new DebugMethodYieldsOnInvocationsCheck()};
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/debug/DebugMethodYieldsOnInvocationsCheck.java")
@@ -37,7 +37,7 @@ public class DebugMethodYieldsOnInvocationsCheckTest {
   }
 
   @Test
-  public void test_max_steps() {
+  void test_max_steps() {
     DebugCheckTestUtils.verifyIssuesWithMaxSteps("src/test/files/se/debug/DebugMethodYieldsOnInvocationsCheckMaxSteps.java", new DebugMethodYieldsOnInvocationsCheck(), 40);
   }
 

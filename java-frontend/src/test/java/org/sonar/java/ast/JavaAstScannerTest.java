@@ -67,7 +67,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @EnableRuleMigrationSupport
-public class JavaAstScannerTest {
+class JavaAstScannerTest {
 
   @Rule
   public LogTester logTester = new LogTester();
@@ -79,7 +79,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void comments() {
+  void comments() {
     InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/Comments.java");
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new Measurer(context, noSonarFilter)));
@@ -87,7 +87,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void noSonarLines() throws Exception {
+  void noSonarLines() throws Exception {
     InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(inputFile, new VisitorsBridge(new Measurer(context, noSonarFilter)));
@@ -99,19 +99,19 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void scan_single_file_with_dumb_file_should_not_fail() throws Exception {
+  void scan_single_file_with_dumb_file_should_not_fail() throws Exception {
     String filename = "!!dummy";
     JavaAstScanner.scanSingleFileForTests(TestUtils.emptyInputFile(filename), new VisitorsBridge(null));
   }
 
   @Test
-  public void scan_single_file_with_dumb_file_should_not_fail_when_not_fail_fast() {
+  void scan_single_file_with_dumb_file_should_not_fail_when_not_fail_fast() {
     String filename = "!!dummy";
     scanSingleFile(TestUtils.emptyInputFile(filename), false);
   }
 
   @Test
-  public void scan_single_file_with_dumb_file_should_fail_when_fail_fast() throws Exception {
+  void scan_single_file_with_dumb_file_should_fail_when_fail_fast() throws Exception {
     String filename = "!!dummy";
     InputFile inputFile = TestUtils.emptyInputFile(filename);
     AnalysisException e = assertThrows(AnalysisException.class,
@@ -120,7 +120,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_not_fail_whole_analysis_upon_parse_error_and_notify_audit_listeners() {
+  void should_not_fail_whole_analysis_upon_parse_error_and_notify_audit_listeners() {
     FakeAuditListener listener = spy(new FakeAuditListener());
     JavaAstScanner scanner = new JavaAstScanner(null);
     scanner.setVisitorBridge(new VisitorsBridge(listener));
@@ -130,7 +130,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_handle_analysis_cancellation() throws Exception {
+  void should_handle_analysis_cancellation() throws Exception {
     JavaFileScanner visitor = spy(new JavaFileScanner() {
       @Override
       public void scanFile(JavaFileScannerContext context) {
@@ -152,7 +152,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_interrupt_analysis_when_InterruptedException_is_thrown() {
+  void should_interrupt_analysis_when_InterruptedException_is_thrown() {
     InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
     VisitorsBridge visitorsBridge = new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedException())));
     AnalysisException e = assertThrows(AnalysisException.class,
@@ -162,7 +162,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_interrupt_analysis_when_InterruptedIOException_is_thrown() {
+  void should_interrupt_analysis_when_InterruptedIOException_is_thrown() {
     InputFile inputFile = TestUtils.inputFile("src/test/files/metrics/NoSonar.java");
     VisitorsBridge visitorsBridge = new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedIOException())));
     AnalysisException e = assertThrows(AnalysisException.class,
@@ -172,7 +172,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_swallow_log_and_report_checks_exceptions() {
+  void should_swallow_log_and_report_checks_exceptions() {
     JavaAstScanner scanner = new JavaAstScanner(null);
     SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponent.setSensorContext(context);
@@ -193,7 +193,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_swallow_log_and_report_checks_exceptions_for_symbolic_execution() {
+  void should_swallow_log_and_report_checks_exceptions_for_symbolic_execution() {
     JavaAstScanner scanner = new JavaAstScanner(null);
     logTester.clear();
     SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null, null);
@@ -211,7 +211,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_propagate_SOError() {
+  void should_propagate_SOError() {
     JavaAstScanner scanner = new JavaAstScanner(null);
     scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingSOError()));
     try {
@@ -227,7 +227,7 @@ public class JavaAstScannerTest {
   }
 
   @Test
-  public void should_report_analysis_error_in_sonarLint_context_withSQ_6_0() {
+  void should_report_analysis_error_in_sonarLint_context_withSQ_6_0() {
     JavaAstScanner scanner = new JavaAstScanner(null);
     FakeAuditListener listener = spy(new FakeAuditListener());
     SonarComponents sonarComponents = mock(SonarComponents.class);
