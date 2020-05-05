@@ -726,6 +726,7 @@ public final class CheckList {
       CallSuperInTestCaseCheck.class,
       ExpectedExceptionCheck.class,
       IgnoredTestsCheck.class,
+      JUnit4AnnotationsCheck.class,
       JUnitMethodDeclarationCheck.class,
       JunitNestedAnnotationCheck.class,
       NoTestInTestClassCheck.class,
