@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class JUnit4AnnotationsCheckTest {
+class JUnit4AnnotationsCheckTest {
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()

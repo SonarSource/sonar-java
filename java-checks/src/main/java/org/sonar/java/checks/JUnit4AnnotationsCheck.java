@@ -51,10 +51,6 @@ public class JUnit4AnnotationsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-
     String qualifiedName = ((AnnotationTree) tree).annotationType().symbolType().fullyQualifiedName();
     if (OLD_NEW_ANNOTATIONS_MAP.containsKey(qualifiedName)) {
       reportIssue(tree, String.format("Change this JUnit4 %s to the equivalent JUnit5 %s annotation.",
