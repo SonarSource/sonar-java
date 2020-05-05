@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class ConstraintManagerTest {
+class ConstraintManagerTest {
 
   private static Stream<Arguments> data() {
     ImmutableList.Builder<Object[]> b = ImmutableList.builder();
@@ -69,7 +69,7 @@ public class ConstraintManagerTest {
 
   @ParameterizedTest
   @MethodSource("data")
-  public void test_binary_sv_from_bytecode_inst(int opcode, RelationalSymbolicValue.Kind relKind, boolean reversed) throws Exception {
+  void test_binary_sv_from_bytecode_inst(int opcode, RelationalSymbolicValue.Kind relKind, boolean reversed) throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue binarySV = createBinarySV(opcode, sv1, sv2);
@@ -91,7 +91,7 @@ public class ConstraintManagerTest {
   }
 
   @Test
-  public void illegalBinarySvCode() throws Exception {
+  void illegalBinarySvCode() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
     SymbolicValue sv2 = new SymbolicValue();
     assertThatThrownBy(() -> createBinarySV(Opcodes.GOTO, sv1, sv2))

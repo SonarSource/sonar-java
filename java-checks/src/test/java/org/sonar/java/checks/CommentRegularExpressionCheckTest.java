@@ -22,15 +22,16 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.testing.CheckVerifier;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class CommentRegularExpressionCheckTest {
+class CommentRegularExpressionCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
     check.regularExpression = "(?i).*TODO.*";
     check.message = "Avoid TODO";
@@ -41,7 +42,7 @@ public class CommentRegularExpressionCheckTest {
   }
 
   @Test
-  public void should_not_fail_with_empty_regular_expression() {
+  void should_not_fail_with_empty_regular_expression() {
     CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
     check.regularExpression = "";
     JavaCheckVerifier.newVerifier()
@@ -51,11 +52,11 @@ public class CommentRegularExpressionCheckTest {
   }
 
   @Test
-  public void bad_regex() {
+  void bad_regex() {
     CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
     check.regularExpression = "[[";
-    assertThrows(AnalysisException.class,
-      () -> JavaCheckVerifier.newVerifier().onFile("src/test/files/checks/CommentRegularExpressionCheck.java").withCheck(check).verifyIssues());
+    CheckVerifier verifier = JavaCheckVerifier.newVerifier().onFile("src/test/files/checks/CommentRegularExpressionCheck.java").withCheck(check);
+    assertThrows(AnalysisException.class, verifier::verifyIssues);
   }
 
 }
