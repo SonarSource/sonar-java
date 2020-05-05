@@ -14,7 +14,7 @@ class ConfusingVarargCheck {
 
     vararg(null); // Noncompliant [[sc=12;ec=16]] {{Cast this argument to 'Object' to pass a single element to the vararg method.}}
     vararg((null)); // Noncompliant
-    vararg(arr); // Noncompliant [[sc=12;ec=15]] {{Cast this argument to 'Object' to pass a single element to the vararg method.}}
+    vararg(arr); // Noncompliant [[sc=12;ec=15]] {{Use an array of 'Integer' instead of an array of 'int'.}}
 
     vararg((Object) null);
     vararg(arrWrapper);

@@ -73,7 +73,7 @@ public class ConfusingVarargCheck extends IssuableSubscriptionVisitor {
     Type varargParameter = parameterTypes.get(parameterTypes.size() - 1);
     if (varargArgument.is(Tree.Kind.NULL_LITERAL)
       || (isPrimitiveArray(varargArgument.symbolType()) && !isPrimitiveArray(varargParameter))) {
-      reportIssue(varargArgument, message(varargParameter));
+      reportIssue(varargArgument, message(varargParameter, varargArgument.symbolType()));
     }
   }
 
@@ -81,13 +81,16 @@ public class ConfusingVarargCheck extends IssuableSubscriptionVisitor {
     return type.isArray() && ((Type.ArrayType) type).elementType().isPrimitive();
   }
 
-  private static String message(Type varargParameter) {
+  private static String message(Type varargParameter, Type varargArgument) {
     String message = "Cast this argument to '%s' to pass a single element to the vararg method.";
-    Type elementType = ((Type.ArrayType) varargParameter).elementType();
-    if (elementType.isPrimitive()) {
+    Type parameterType = ((Type.ArrayType) varargParameter).elementType();
+    if (parameterType.isPrimitive()) {
       message = "Remove this argument or pass an empty '%s' array to the vararg method.";
+    } else if (isPrimitiveArray(varargArgument)) {
+      Type argumentType = ((Type.ArrayType) varargArgument).elementType();
+      return String.format("Use an array of '%s' instead of an array of '%s'.", JUtils.primitiveWrapperType(argumentType).name(), argumentType.name());
     }
-    return String.format(message, elementType.name());
+    return String.format(message, parameterType.name());
   }
 
 }
