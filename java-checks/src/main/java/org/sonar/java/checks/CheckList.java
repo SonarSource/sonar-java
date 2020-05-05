@@ -276,6 +276,7 @@ public final class CheckList {
       ConstantsShouldBeStaticFinalCheck.class,
       ConstructorCallingOverridableCheck.class,
       ConstructorInjectionCheck.class,
+      ControlCharacterInLiteralCheck.class,
       ControllerWithSessionAttributesCheck.class,
       ControllingPermissionsCheck.class,
       CookieDomainCheck.class,
