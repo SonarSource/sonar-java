@@ -13,6 +13,7 @@ class A extends Thread {
     junit.framework.Assert.assertEquals(true, true); // Noncompliant {{Remove this assertion.}}
     junit.framework.Assert.fail("message"); // Noncompliant {{Remove this assertion.}}
     org.fest.assertions.Assertions.assertThat(true).isTrue();// Noncompliant {{Remove this assertion.}}
+    org.assertj.core.api.Assertions.assertThat(true).isTrue();// Noncompliant {{Remove this assertion.}}
   }
   public void foo() {}
   public void run(int i){}
