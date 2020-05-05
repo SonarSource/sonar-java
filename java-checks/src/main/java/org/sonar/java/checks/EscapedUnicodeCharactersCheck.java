@@ -19,6 +19,13 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -26,21 +33,14 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Rule(key = "S2973")
 public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
 
+  private static final Set<String> UNICODE_WHITESPACES = ImmutableSet.of(
+    "1680", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "200A",
+    "2028", "2029", "202F", "205F", "3000", "180E", "200B", "200C", "200D", "2060", "FEFF");
+
   private static final Pattern UNICODE_ESCAPED_CHAR = Pattern.compile("\\\\u+[a-fA-F0-9]{4}");
-  private static final Predicate<String> IS_PRINTABLE_ESCAPED_UNICODE = input -> {
-    int unicodePointDecimal = Integer.parseInt(input.substring(input.length() - 4), 16);
-    return (31 < unicodePointDecimal && unicodePointDecimal < 127) || 160 < unicodePointDecimal ;
-  };
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -58,7 +58,7 @@ public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
     List<String> matches = getAllMatches(matcher);
     if (!matches.isEmpty()) {
       boolean notOnlyUnicodeEscaped = !matcher.replaceAll("").isEmpty();
-      if (notOnlyUnicodeEscaped && matches.stream().anyMatch(IS_PRINTABLE_ESCAPED_UNICODE)) {
+      if (notOnlyUnicodeEscaped && matches.stream().anyMatch(EscapedUnicodeCharactersCheck::isPrintableEscapedUnicode)) {
         reportIssue(node, "Remove this Unicode escape sequence and use the character instead.");
       }
     }
@@ -70,6 +70,15 @@ public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
       matches.add(matcher.group());
     }
     return matches;
+  }
+
+  private static boolean isPrintableEscapedUnicode(String input) {
+    String hexValue = input.substring(input.length() - 4);
+    if (UNICODE_WHITESPACES.contains(hexValue)) {
+      return false;
+    }
+    int unicodePointDecimal = Integer.parseInt(hexValue, 16);
+    return (31 < unicodePointDecimal && unicodePointDecimal < 127) || 160 < unicodePointDecimal ;
   }
 
 }
