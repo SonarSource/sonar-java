@@ -100,7 +100,12 @@ public class LiteralUtils {
   }
 
   public static String trimQuotes(String value) {
-    return value.substring(1, value.length() - 1);
+    int delimiterLength = isTextBlock(value) ? 3 : 1;
+    return value.substring(delimiterLength, value.length() - delimiterLength);
+  }
+
+  public static boolean isTextBlock(String value) {
+    return value.startsWith("\"\"\"");
   }
 
   public static String trimLongSuffix(String longString) {
