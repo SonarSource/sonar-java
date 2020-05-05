@@ -37,7 +37,6 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
-import org.sonar.java.testing.CheckVerifier;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -47,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class CheckVerifierTest {
+class CheckVerifierTest {
 
   private static final String FILENAME_ISSUES = "src/test/files/JavaCheckVerifier.java";
   private static final String FILENAME_NO_ISSUE = "src/test/files/JavaCheckVerifierNoIssue.java";
@@ -59,7 +58,7 @@ public class CheckVerifierTest {
   };
 
   @Test
-  public void verify_line_issues() {
+  void verify_line_issues() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     CheckVerifier.newVerifier()
       .onFile("src/test/files/JavaCheckVerifier.java")
@@ -68,7 +67,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_unexpected_issue() {
+  void verify_unexpected_issue() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withIssue(4, "extra message");
 
     try {
@@ -83,7 +82,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_combined_missing_expected_and_unexpected_issues() {
+  void verify_combined_missing_expected_and_unexpected_issues() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withIssue(4, "extra message").withoutIssue(1);
 
     try {
@@ -98,7 +97,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_missing_expected_issue() {
+  void verify_missing_expected_issue() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withoutIssue(1);
 
     try {
@@ -113,7 +112,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_issue_on_file() {
+  void verify_issue_on_file() {
     String expectedMessage = "messageOnFile";
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withIssueOnFile(expectedMessage);
     CheckVerifier.newVerifier()
@@ -123,13 +122,13 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_issue_on_file_incorrect() {
-    assertThrows(AssertionError.class,
-      () -> CheckVerifier.newVerifier().onFile(FILENAME_ISSUES).withCheck(new FakeVisitor().withDefaultIssues()).onFile("messageOnFile"));
+  void verify_issue_on_file_incorrect() {
+    CheckVerifier verifier = CheckVerifier.newVerifier().onFile(FILENAME_ISSUES).withCheck(new FakeVisitor().withDefaultIssues());
+    assertThrows(AssertionError.class, () -> verifier.onFile("messageOnFile"));
   }
 
   @Test
-  public void verify_no_issue() {
+  void verify_no_issue() {
     CheckVerifier.newVerifier()
       .onFile(FILENAME_NO_ISSUE)
       .withCheck(NO_EFFECT_VISITOR)
@@ -137,7 +136,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_with_provided_classes() {
+  void verify_with_provided_classes() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
 
     CheckVerifier.newVerifier()
@@ -148,7 +147,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_with_default_test_jar() throws IOException {
+  void verify_with_default_test_jar() throws IOException {
     // This path is the actual test-jars path for this project, as the currently supplied jar doesn't cause any issues in the test file
     // retain the actual folder with contents. This will prevent other tests to fail which rely on the supplied bytecode.
     CheckVerifier.newVerifier()
@@ -158,7 +157,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_shift() throws IOException {
+  void verify_should_fail_when_using_incorrect_shift() throws IOException {
     try {
       CheckVerifier.newVerifier()
         .onFile("src/test/files/JavaCheckVerifierIncorrectShift.java")
@@ -171,7 +170,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_attribute() throws IOException {
+  void verify_should_fail_when_using_incorrect_attribute() throws IOException {
     try {
       CheckVerifier.newVerifier()
         .onFile("src/test/files/JavaCheckVerifierIncorrectAttribute.java")
@@ -184,7 +183,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_attribute2() throws IOException {
+  void verify_should_fail_when_using_incorrect_attribute2() throws IOException {
     try {
       CheckVerifier.newVerifier()
         .onFile("src/test/files/JavaCheckVerifierIncorrectAttribute2.java")
@@ -197,7 +196,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_endLine() throws IOException {
+  void verify_should_fail_when_using_incorrect_endLine() throws IOException {
     try {
       CheckVerifier.newVerifier()
         .onFile("src/test/files/JavaCheckVerifierIncorrectEndLine.java")
@@ -210,7 +209,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_secondaryLocation() throws IOException {
+  void verify_should_fail_when_using_incorrect_secondaryLocation() throws IOException {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     try {
       CheckVerifier.newVerifier()
@@ -224,7 +223,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_secondaryLocation2() throws IOException {
+  void verify_should_fail_when_using_incorrect_secondaryLocation2() throws IOException {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     try {
       CheckVerifier.newVerifier()
@@ -238,7 +237,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_flows() {
+  void verify_flows() {
     FakeVisitor fakeVisitor = new FakeVisitor()
       .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here", 5, 11, 15)
       .flow()
@@ -268,7 +267,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_unexpected_flows() {
+  void verify_unexpected_flows() {
     FakeVisitor fakeVisitor = new FakeVisitor()
       .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here", 5, 11, 15)
       .flow()
@@ -292,7 +291,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_missing_flows() {
+  void verify_missing_flows() {
     FakeVisitor fakeVisitor = new FakeVisitor()
       .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here", 5, 11, 15)
       .flow()
@@ -313,7 +312,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_flow_messages() {
+  void verify_flow_messages() {
     FakeVisitor fakeVisitor = new FakeVisitor()
       .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here", 5, 11, 15)
       .flow()
@@ -332,7 +331,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_flow_locations() {
+  void verify_flow_locations() {
     FakeVisitor fakeVisitor = new FakeVisitor()
       .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here", 5, 11, 15)
       .flow()
@@ -351,7 +350,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_superfluous_flows() {
+  void verify_superfluous_flows() {
     FakeVisitor fakeVisitor = new FakeVisitor()
       .issueWithFlow(11, "A \"NullPointerException\" could be thrown; \"b\" is nullable here.", 5, 11, 15)
       .flow()
@@ -370,7 +369,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_flow_messages_explicit_order() {
+  void verify_flow_messages_explicit_order() {
     FakeVisitor fakeVisitor = new FakeVisitor()
       .issueWithFlow(4, "error", 5, 11, 15)
       .flow()
@@ -385,7 +384,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_flow_messages_implicit_order() {
+  void verify_flow_messages_implicit_order() {
     FakeVisitor fakeVisitor = new FakeVisitor()
       .issueWithFlow(4, "error", 5, 11, 15)
       .flow()
@@ -402,7 +401,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_fail_when_same_explicit_order_is_provided() {
+  void verify_fail_when_same_explicit_order_is_provided() {
     Throwable throwable = catchThrowable(() -> CheckVerifier.newVerifier().onFile("src/test/files/JavaCheckVerifierFlowsDuplicateExplicitOrder.java").withCheck(new FakeVisitor()).verifyIssues());
     assertThat(throwable)
       .isInstanceOf(AssertionError.class)
@@ -412,7 +411,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_fail_when_mixing_explicit_and_implicit_order() {
+  void verify_fail_when_mixing_explicit_and_implicit_order() {
     Throwable throwable = catchThrowable(() -> CheckVerifier.newVerifier().onFile("src/test/files/JavaCheckVerifierFlowsMixedExplicitOrder.java").withCheck(new FakeVisitor()).verifyIssues());
     assertThat(throwable)
       .isInstanceOf(AssertionError.class)
@@ -422,7 +421,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_two_flows_with_same_lines() {
+  void verify_two_flows_with_same_lines() {
     FakeVisitor fakeVisitor = new FakeVisitor()
       .issueWithFlow(4, "error", 5, 11, 15)
       .flow()
@@ -451,7 +450,7 @@ public class CheckVerifierTest {
   }
 
   @Test
-  public void verify_two_flows_with_same_lines_wrong_msg() {
+  void verify_two_flows_with_same_lines_wrong_msg() {
     FakeVisitor fakeVisitor = new FakeVisitor()
       .issueWithFlow(4, "error", 5, 11, 15)
       .flow()
