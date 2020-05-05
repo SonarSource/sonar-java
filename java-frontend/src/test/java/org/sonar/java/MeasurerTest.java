@@ -33,54 +33,54 @@ import org.sonar.plugins.java.api.JavaCheck;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class MeasurerTest {
+class MeasurerTest {
 
   private static final int NB_OF_METRICS = 7;
   private static final File BASE_DIR = new File("src/test/files/metrics");
   private SensorContextTester context;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() throws Exception {
     context = SensorContextTester.create(BASE_DIR);
   }
 
   @Test
-  public void verify_methods_metric() {
+  void verify_methods_metric() {
     checkMetric("Methods.java", "functions", 7);
   }
 
   @Test
-  public void verify_class_metric() {
+  void verify_class_metric() {
     checkMetric("Classes.java", "classes", 8);
   }
 
   @Test
-  public void verify_complexity_metric() {
+  void verify_complexity_metric() {
     checkMetric("Complexity.java", "complexity", 15);
   }
 
   @Test
-  public void verify_cognitive_complexity_metric() {
+  void verify_cognitive_complexity_metric() {
     checkMetric("CognitiveComplexity.java", "cognitive_complexity", 25);
   }
 
   @Test
-  public void verify_function_metric() {
+  void verify_function_metric() {
     checkMetric("Complexity.java", "functions", 8);
   }
 
   @Test
-  public void verify_comments_metric() {
+  void verify_comments_metric() {
     checkMetric("Comments.java", "comment_lines", 3);
   }
 
   @Test
-  public void verify_statements_metric() {
+  void verify_statements_metric() {
     checkMetric("Statements.java", "statements", 18);
   }
 
   @Test
-  public void verify_ncloc_metric() {
+  void verify_ncloc_metric() {
     checkMetric("LinesOfCode.java", "ncloc", 2);
     checkMetric("CommentedOutFile.java", "ncloc", 0);
     checkMetric("EmptyFile.java", "ncloc", 0);

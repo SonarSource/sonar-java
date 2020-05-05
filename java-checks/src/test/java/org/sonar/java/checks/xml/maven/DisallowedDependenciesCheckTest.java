@@ -26,7 +26,7 @@ import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class DisallowedDependenciesCheckTest {
+class DisallowedDependenciesCheckTest {
 
   private DisallowedDependenciesCheck check;
 
@@ -36,27 +36,27 @@ public class DisallowedDependenciesCheckTest {
   }
 
   @Test
-  public void without_version() {
+  void without_version() {
     check.dependencyName = "*:log4j";
     SonarXmlCheckVerifier.verifyIssues("noVersion/pom.xml", check);
   }
 
   @Test
-  public void with_simple_version() {
+  void with_simple_version() {
     check.dependencyName = "*:log4j";
     check.version = "1.2.*";
     SonarXmlCheckVerifier.verifyIssues("regexVersion/pom.xml", check);
   }
 
   @Test
-  public void with_range_version() {
+  void with_range_version() {
     check.dependencyName = "*:log4j";
     check.version = "1.1.0-1.2.15";
     SonarXmlCheckVerifier.verifyIssues("rangeVersion/pom.xml", check);
   }
 
   @Test
-  public void should_fail_with_invalid_name_provided() {
+  void should_fail_with_invalid_name_provided() {
     check.dependencyName = "org.sonar";
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
       () -> SonarXmlCheckVerifier.verifyIssues("noVersion/pom.xml", check));
@@ -64,7 +64,7 @@ public class DisallowedDependenciesCheckTest {
   }
 
   @Test
-  public void should_fail_with_invalid_version_provided() {
+  void should_fail_with_invalid_version_provided() {
     check.dependencyName = "org.sonar.*:*";
     check.version = "version-0";
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,

@@ -76,7 +76,7 @@ import static org.mockito.Mockito.when;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
 @ExtendWith(MockitoExtension.class)
-public class SonarComponentsTest {
+class SonarComponentsTest {
 
   private static final Version V6_7 = Version.create(6, 7);
 
@@ -110,7 +110,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void base_and_work_directories() {
+  void base_and_work_directories() {
     File baseDir = new File("");
     File workDir = new File("target");
     SensorContextTester context = SensorContextTester.create(baseDir);
@@ -124,7 +124,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void test_sonar_components() {
+  void test_sonar_components() {
     SensorContextTester sensorContextTester = spy(SensorContextTester.create(new File("")));
     DefaultFileSystem fs = sensorContextTester.fileSystem();
     JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
@@ -160,7 +160,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void creation_of_custom_checks() {
+  void creation_of_custom_checks() {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
@@ -180,7 +180,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void creation_of_custom_test_checks() {
+  void creation_of_custom_test_checks() {
     JavaCheck expectedCheck = new CustomTestCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
@@ -200,7 +200,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void creation_of_both_types_test_checks() {
+  void creation_of_both_types_test_checks() {
     JavaCheck expectedCheck = new CustomCheck();
     JavaCheck expectedTestCheck = new CustomTestCheck();
     CheckRegistrar expectedRegistrar = registrarContext -> registrarContext.registerClassesForRepository(
@@ -226,7 +226,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void no_issue_when_check_not_found() throws Exception {
+  void no_issue_when_check_not_found() throws Exception {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
@@ -241,7 +241,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void add_issue_or_parse_error() throws Exception {
+  void add_issue_or_parse_error() throws Exception {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
     SensorContextTester context = SensorContextTester.create(new File("."));
@@ -277,7 +277,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void test_filtered_issue_are_not_reported() throws Exception {
+  void test_filtered_issue_are_not_reported() throws Exception {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
     SensorContextTester context = SensorContextTester.create(new File("."));
@@ -315,7 +315,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void fail_on_empty_location() {
+  void fail_on_empty_location() {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
     RuleKey ruleKey = RuleKey.of("MyRepo", "CustomCheck");
@@ -345,7 +345,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void cancellation() {
+  void cancellation() {
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     SensorContextTester context = SensorContextTester.create(new File(""));
     sonarComponents.setSensorContext(context);
@@ -360,7 +360,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void readFileContentFromInputFile() throws Exception {
+  void readFileContentFromInputFile() throws Exception {
     // read a file containing kanji set with correct encoding and expecting proper length of read input.
     InputFile inputFile = spy(TestUtils.inputFile("src/test/files/Kanji.java"));
 
@@ -384,7 +384,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void io_error_when_reading_file_should_fail_analysis() {
+  void io_error_when_reading_file_should_fail_analysis() {
     SensorContextTester context = SensorContextTester.create(new File(""));
     DefaultFileSystem fileSystem = context.fileSystem();
     InputFile unknownInputFile = TestUtils.emptyInputFile("unknown_file.java");
@@ -412,7 +412,7 @@ public class SonarComponentsTest {
   }
 
   @Test
-  public void jsp_classpath_should_include_plugin() throws Exception {
+  void jsp_classpath_should_include_plugin() throws Exception {
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     DefaultFileSystem fs = sensorContextTester.fileSystem();
 
@@ -436,7 +436,7 @@ public class SonarComponentsTest {
   private static class CustomTestCheck implements JavaCheck { }
 
   @Test
-  public void should_return_generated_code_visitors() throws Exception {
+  void should_return_generated_code_visitors() throws Exception {
     ActiveRules activeRules = new ActiveRulesBuilder()
       .addRule(new NewActiveRule.Builder().setRuleKey(RuleKey.of("custom", "jsp")).build())
       .build();

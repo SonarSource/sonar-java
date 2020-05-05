@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class BadTestMethodNameCheckTest {
+class BadTestMethodNameCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     BadTestMethodNameCheck check = new BadTestMethodNameCheck();
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadTestMethodNameCheck.java")
@@ -47,7 +47,7 @@ public class BadTestMethodNameCheckTest {
   }
 
   @Test
-  public void test_with_customPattern() {
+  void test_with_customPattern() {
     BadTestMethodNameCheck check = new BadTestMethodNameCheck();
     check.format = "^test_sonar[A-Z][a-zA-Z0-9]*$";
     JavaCheckVerifier.newVerifier()

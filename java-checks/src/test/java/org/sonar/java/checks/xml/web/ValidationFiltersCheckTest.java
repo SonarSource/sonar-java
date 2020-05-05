@@ -23,27 +23,27 @@ import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class ValidationFiltersCheckTest {
+class ValidationFiltersCheckTest {
 
   private static final SonarXmlCheck CHECK = new ValidationFiltersCheck();
 
   @Test
-  public void web_xml_without_filter() {
+  void web_xml_without_filter() {
     SonarXmlCheckVerifier.verifyNoIssue("withoutFilters/web.xml", CHECK);
   }
 
   @Test
-  public void web_xml_incomplete_filter() {
+  void web_xml_incomplete_filter() {
     SonarXmlCheckVerifier.verifyIssues("incompleteFilters/web.xml", CHECK);
   }
 
   @Test
-  public void web_xml_incoherent_filters() {
+  void web_xml_incoherent_filters() {
     SonarXmlCheckVerifier.verifyIssues("incoherentFilters/web.xml", CHECK);
   }
 
   @Test
-  public void web_xml_with_filter() {
+  void web_xml_with_filter() {
     SonarXmlCheckVerifier.verifyNoIssue("withFilters/web.xml", CHECK);
   }
 }

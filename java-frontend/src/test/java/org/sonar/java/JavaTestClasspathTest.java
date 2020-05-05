@@ -30,7 +30,7 @@ import org.sonar.api.config.internal.MapSettings;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class JavaTestClasspathTest {
+class JavaTestClasspathTest {
 
   private DefaultFileSystem fs;
   private MapSettings settings;
@@ -49,14 +49,14 @@ public class JavaTestClasspathTest {
    * Accessing the filesystem before the Sensor phase is not supported by SonarQube.
    */
   @Test
-  public void no_interaction_with_FileSystem_at_initialization() {
+  void no_interaction_with_FileSystem_at_initialization() {
     fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
     javaTestClasspath = new JavaTestClasspath(settings.asConfig(), fs);
     Mockito.verifyZeroInteractions(fs);
   }
 
   @Test
-  public void libraries_should_accept_path_ending_with_wildcard() {
+  void libraries_should_accept_path_ending_with_wildcard() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "lib/*");
     javaTestClasspath = createJavaClasspath();
     assertThat(javaTestClasspath.getElements()).hasSize(3);
@@ -67,14 +67,14 @@ public class JavaTestClasspathTest {
   }
 
   @Test
-  public void empty_libraries() throws Exception {
+  void empty_libraries() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "");
     javaTestClasspath = createJavaClasspath();
     assertThat(javaTestClasspath.getElements()).isEmpty();
   }
 
   @Test
-  public void empty_libraries_if_only_main_files() throws Exception {
+  void empty_libraries_if_only_main_files() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("plop.java"));
     javaTestClasspath = createJavaClasspath();
@@ -82,7 +82,7 @@ public class JavaTestClasspathTest {
   }
 
   @Test
-  public void libraries_without_dir() throws Exception {
+  void libraries_without_dir() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES, "bin");
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "hello.jar");
     checkIllegalStateException("No files nor directories matching 'hello.jar'");

@@ -29,17 +29,17 @@ import java.net.URL;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class AarLoaderTest {
+class AarLoaderTest {
 
   @Test
-  public void shouldThrowIllegalArgumentException() throws Exception {
+  void shouldThrowIllegalArgumentException() throws Exception {
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
       () -> new AarLoader(null));
     assertThat(e.getMessage()).isEqualTo("file can't be null");
   }
 
   @Test
-  public void testCorruptedAar() {
+  void testCorruptedAar() {
     File aar = new File("src/test/files/bytecode/src/tags/TagName.java");
     IllegalStateException e = assertThrows(IllegalStateException.class,
       () -> new AarLoader(aar));
@@ -47,7 +47,7 @@ public class AarLoaderTest {
   }
   
   @Test
-  public void testAarWithoutClasses() {
+  void testAarWithoutClasses() {
     File jar = new File("src/test/files/bytecode/lib/hello.jar");
     AarLoader loader = new AarLoader(jar);
 
@@ -56,7 +56,7 @@ public class AarLoaderTest {
   }
   
   @Test
-  public void testFindResource() throws Exception {
+  void testFindResource() throws Exception {
     File jar = new File("src/test/files/classpath/lib/oklog-1.0.1.aar");
     AarLoader loader = new AarLoader(jar);
 
@@ -82,7 +82,7 @@ public class AarLoaderTest {
   }
 
   @Test
-  public void testLoadBytes() throws Exception {
+  void testLoadBytes() throws Exception {
     File jar = new File("src/test/files/classpath/lib/oklog-1.0.1.aar");
     AarLoader loader = new AarLoader(jar);
 
@@ -99,7 +99,7 @@ public class AarLoaderTest {
   }
 
   @Test
-  public void closeCanBeCalledMultipleTimes() throws Exception {
+  void closeCanBeCalledMultipleTimes() throws Exception {
     File jar = new File("src/test/files/classpath/lib/oklog-1.0.1.aar");
     AarLoader loader = new AarLoader(jar);
     loader.close();

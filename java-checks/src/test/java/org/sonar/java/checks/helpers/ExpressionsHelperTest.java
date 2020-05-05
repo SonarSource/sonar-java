@@ -28,10 +28,10 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExpressionsHelperTest extends JParserTestUtils {
+class ExpressionsHelperTest extends JParserTestUtils {
 
   @Test
-  public void private_constructor() throws Exception {
+  void private_constructor() throws Exception {
     Constructor constructor = ExpressionsHelper.class.getDeclaredConstructor();
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
@@ -39,7 +39,7 @@ public class ExpressionsHelperTest extends JParserTestUtils {
   }
 
   @Test
-  public void simpleAssignment() {
+  void simpleAssignment() {
     String code = newCode( "int foo() {",
       "boolean a;",
       "a = true;",
@@ -49,7 +49,7 @@ public class ExpressionsHelperTest extends JParserTestUtils {
   }
 
   @Test
-  public void initializerAndAssignment() {
+  void initializerAndAssignment() {
     String code = newCode( "int foo() {",
       "boolean a = false;",
       "a = true;",
@@ -59,7 +59,7 @@ public class ExpressionsHelperTest extends JParserTestUtils {
   }
 
   @Test
-  public void simpleInitializer() {
+  void simpleInitializer() {
     String code = newCode( "int foo() {",
       "boolean a = true;",
       "return a;",
@@ -68,7 +68,7 @@ public class ExpressionsHelperTest extends JParserTestUtils {
   }
 
   @Test
-  public void andAssignement() {
+  void andAssignement() {
     String code = newCode( "int foo() {",
       "boolean a;",
       "a &= false;",
@@ -78,7 +78,7 @@ public class ExpressionsHelperTest extends JParserTestUtils {
   }
 
   @Test
-  public void selfAssigned() {
+  void selfAssigned() {
     String code = newCode( "int foo() {",
       "boolean a = a;",
       "return a;",
@@ -87,7 +87,7 @@ public class ExpressionsHelperTest extends JParserTestUtils {
   }
 
   @Test
-  public void unknownValue() {
+  void unknownValue() {
     String code = newCode( "int foo(boolean a) {",
       "return a;",
       "}");
@@ -95,7 +95,7 @@ public class ExpressionsHelperTest extends JParserTestUtils {
   }
 
   @Test
-  public void notAnIdentifier() {
+  void notAnIdentifier() {
     String code = newCode( "int foo() {",
       "boolean a = bar();",
       "return a;",
@@ -107,7 +107,7 @@ public class ExpressionsHelperTest extends JParserTestUtils {
   }
 
   @Test
-  public void moreThanOneAssignment() {
+  void moreThanOneAssignment() {
     String code = newCode( "int foo() {",
       "boolean a;",
       "a = true;",
@@ -118,7 +118,7 @@ public class ExpressionsHelperTest extends JParserTestUtils {
   }
 
   @Test
-  public void variableSwapSOE() {
+  void variableSwapSOE() {
     String code = newCode("String foo(String a, String b) {",
       "String c = a;",
       "a = b;",

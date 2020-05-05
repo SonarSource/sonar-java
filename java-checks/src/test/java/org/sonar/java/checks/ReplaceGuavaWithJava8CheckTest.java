@@ -24,12 +24,12 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class ReplaceGuavaWithJava8CheckTest {
+class ReplaceGuavaWithJava8CheckTest {
 
   private static final String FILENAME = testSourcesPath("checks/ReplaceGuavaWithJava8Check.java");
 
   @Test
-  public void java8() {
+  void java8() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/ReplaceGuavaWithJava8Check_java7.java"))
       .withCheck(new ReplaceGuavaWithJava8Check())

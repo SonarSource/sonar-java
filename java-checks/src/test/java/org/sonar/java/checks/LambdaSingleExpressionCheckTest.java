@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class LambdaSingleExpressionCheckTest {
+class LambdaSingleExpressionCheckTest {
 
   @Test
-  public void no_version() {
+  void no_version() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/LambdaSingleExpressionCheck_no_version.java")
       .withCheck(new LambdaSingleExpressionCheck())
@@ -33,7 +33,7 @@ public class LambdaSingleExpressionCheckTest {
   }
 
   @Test
-  public void java_8() {
+  void java_8() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/LambdaSingleExpressionCheck.java")
       .withCheck(new LambdaSingleExpressionCheck())

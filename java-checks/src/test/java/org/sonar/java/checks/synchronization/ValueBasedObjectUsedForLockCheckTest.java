@@ -22,10 +22,10 @@ package org.sonar.java.checks.synchronization;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ValueBasedObjectUsedForLockCheckTest {
+class ValueBasedObjectUsedForLockCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/synchronization/ValueBasedObjectUsedForLockCheck.java")
       .withCheck(new ValueBasedObjectUsedForLockCheck())
@@ -33,7 +33,7 @@ public class ValueBasedObjectUsedForLockCheckTest {
   }
 
   @Test
-  public void no_issue_if_not_java8() {
+  void no_issue_if_not_java8() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/synchronization/ValueBasedObjectUsedForLockCheck.java")
       .withCheck(new ValueBasedObjectUsedForLockCheck())

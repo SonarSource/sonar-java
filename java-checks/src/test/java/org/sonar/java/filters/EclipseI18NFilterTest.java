@@ -21,10 +21,10 @@ package org.sonar.java.filters;
 
 import org.junit.jupiter.api.Test;
 
-public class EclipseI18NFilterTest {
+class EclipseI18NFilterTest {
 
   @Test
-  public void test() {
+  void test() {
     FilterVerifier.verify("src/test/files/filters/EclipseI18NFilter.java", new EclipseI18NFilter());
   }
 

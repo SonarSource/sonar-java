@@ -27,10 +27,10 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MethodTreeUtilsTest {
+class MethodTreeUtilsTest {
 
   @Test
-  public void is_main_method() {
+  void is_main_method() {
     assertTrue(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void main(String[] args){} }")));
     assertTrue(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void main(String... args){} }")));
     assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { public void main(String[] args){} }")));
@@ -42,7 +42,7 @@ public class MethodTreeUtilsTest {
   }
 
   @Test
-  public void is_equals_method() {
+  void is_equals_method() {
     assertTrue(MethodTreeUtils.isEqualsMethod(parseMethod("class A { public boolean equals(Object o){} }")));
     assertFalse(MethodTreeUtils.isEqualsMethod(parseMethod("class A { private boolean equals(Object o){} }")));
     assertFalse(MethodTreeUtils.isEqualsMethod(parseMethod("class A { public static boolean equals(Object o){} }")));
@@ -54,7 +54,7 @@ public class MethodTreeUtilsTest {
   }
 
   @Test
-  public void is_hashcode_method() {
+  void is_hashcode_method() {
     assertTrue(MethodTreeUtils.isHashCodeMethod(parseMethod("class A { public int hashCode(){} }")));
     assertFalse(MethodTreeUtils.isHashCodeMethod(parseMethod("class A { public static int hashCode(){} }")));
     assertFalse(MethodTreeUtils.isHashCodeMethod(parseMethod("class A { private int hashCode(){} }")));

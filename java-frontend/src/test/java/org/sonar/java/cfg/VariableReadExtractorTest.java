@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class VariableReadExtractorTest {
+class VariableReadExtractorTest {
 
   private static MethodTree buildMethodTree(String methodCode) {
     CompilationUnitTree cut = JParserTestUtils.parse("class A { int field1; int field2; " + methodCode + " }");
@@ -36,7 +36,7 @@ public class VariableReadExtractorTest {
   }
 
   @Test
-  public void should_extract_local_vars_read() {
+  void should_extract_local_vars_read() {
     MethodTree methodTree = buildMethodTree("void foo(boolean a) { new Object() { void foo() { System.out.println(a);} };  }");
     StatementTree statementTree = methodTree.block().body().get(0);
     VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), false);
@@ -45,7 +45,7 @@ public class VariableReadExtractorTest {
   }
 
   @Test
-  public void should_not_extract_local_vars_written() throws Exception {
+  void should_not_extract_local_vars_written() throws Exception {
     MethodTree methodTree = buildMethodTree("void foo(boolean a) { new Object() { void foo() { new A().field1 = 0; a = false;} };  }");
     StatementTree statementTree = methodTree.block().body().get(0);
     VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), false);
@@ -59,7 +59,7 @@ public class VariableReadExtractorTest {
   }
 
   @Test
-  public void should_extract_fields_read() {
+  void should_extract_fields_read() {
     MethodTree methodTree = buildMethodTree(
       "void foo(int a) { bar(p -> { System.out.println(a + field1); foo(this.field2); }); } " +
       "void bar(java.util.function.Consumer<Object> consumer) {}"
@@ -72,7 +72,7 @@ public class VariableReadExtractorTest {
   }
 
   @Test
-  public void should_not_extract_fields_written() throws Exception {
+  void should_not_extract_fields_written() throws Exception {
     MethodTree methodTree = buildMethodTree("void foo(boolean a) { new Object() { void foo() { new A().field1 = 0; a = false;} };  }");
     StatementTree statementTree = methodTree.block().body().get(0);
     VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), true);
@@ -82,7 +82,7 @@ public class VariableReadExtractorTest {
   }
 
   @Test
-  public void should_not_extract_variable_declared() throws Exception {
+  void should_not_extract_variable_declared() throws Exception {
     MethodTree methodTree = buildMethodTree("void foo(boolean a) { boolean b = a; }");
     StatementTree statementTree = methodTree.block().body().get(0);
     VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), true);
@@ -92,7 +92,7 @@ public class VariableReadExtractorTest {
   }
 
   @Test
-  public void should_return_symbol_once() {
+  void should_return_symbol_once() {
     MethodTree methodTree = buildMethodTree("void foo(boolean a) { new Object() { void foo() { foo(a); bar(a); } }; }");
     StatementTree statementTree = methodTree.block().body().get(0);
     VariableReadExtractor extractor = new VariableReadExtractor(methodTree.symbol(), false);

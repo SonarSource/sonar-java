@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DefaultJavaResourceLocatorTest {
+class DefaultJavaResourceLocatorTest {
 
   private static DefaultJavaResourceLocator javaResourceLocator;
 
@@ -48,7 +48,7 @@ public class DefaultJavaResourceLocatorTest {
   }
 
   @Test
-  public void resource_by_class() throws Exception {
+  void resource_by_class() throws Exception {
     Set<String> classNames = javaResourceLocator.resourcesByClass.keySet();
     assertThat(classNames).hasSize(5);
     assertThat(classNames).contains("org/sonar/java/DefaultJavaResourceLocatorTest");
@@ -59,18 +59,18 @@ public class DefaultJavaResourceLocatorTest {
   }
 
   @Test
-  public void resource_by_class_name() throws Exception {
+  void resource_by_class_name() throws Exception {
     assertThat(javaResourceLocator.findResourceByClassName("org.sonar.java.DefaultJavaResourceLocatorTest")).isNotNull();
     assertThat(javaResourceLocator.findResourceByClassName("org.sonar.java.DumbClassName")).isNull();
   }
 
   @Test
-  public void classpath() throws Exception {
+  void classpath() throws Exception {
     assertThat(javaResourceLocator.classpath()).hasSize(1);
   }
 
   @Test
-  public void classFilesToAnalyze() throws Exception {
+  void classFilesToAnalyze() throws Exception {
     assertThat(javaResourceLocator.classFilesToAnalyze()).hasSize(5);
   }
 

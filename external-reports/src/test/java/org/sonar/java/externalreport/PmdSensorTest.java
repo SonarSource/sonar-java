@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.externalreport.ExternalReportTestUtils.onlyOneLogElement;
 
 @EnableRuleMigrationSupport
-public class PmdSensorTest {
+class PmdSensorTest {
 
   private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "pmd");
   private static final String PROJECT_ID = "pmd-test";
@@ -60,7 +60,7 @@ public class PmdSensorTest {
   public LogTester logTester = new LogTester();
 
   @Test
-  public void test_descriptor() {
+  void test_descriptor() {
     DefaultSensorDescriptor sensorDescriptor = new DefaultSensorDescriptor();
     sensor.describe(sensorDescriptor);
     assertThat(sensorDescriptor.name()).isEqualTo("Import of PMD issues");
@@ -71,7 +71,7 @@ public class PmdSensorTest {
   }
 
   @Test
-  public void pmd_rules_definition() {
+  void pmd_rules_definition() {
     RulesDefinition.Context context = new RulesDefinition.Context();
     new ExternalRulesDefinition(PmdSensor.RULE_LOADER, PmdSensor.LINTER_KEY).define(context);
 
@@ -93,14 +93,14 @@ public class PmdSensorTest {
   }
 
   @Test
-  public void no_report_path_set() throws IOException {
+  void no_report_path_set() throws IOException {
     List<ExternalIssue> externalIssues = execute(null);
     assertThat(externalIssues).isEmpty();
     assertThat(logTester.logs()).isEmpty();
   }
 
   @Test
-  public void invalid_report_path() throws IOException {
+  void invalid_report_path() throws IOException {
     List<ExternalIssue> externalIssues = execute("invalid-path.txt");
     assertThat(externalIssues).isEmpty();
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
@@ -110,14 +110,14 @@ public class PmdSensorTest {
   }
 
   @Test
-  public void not_xml_report() throws IOException {
+  void not_xml_report() throws IOException {
     List<ExternalIssue> externalIssues = execute("hello.txt");
     assertThat(externalIssues).isEmpty();
     assertThat(logTester.logs(LoggerLevel.ERROR).get(0)).startsWith("Failed to import external issues report:");
   }
 
   @Test
-  public void skip_issue_on_invalid_priority() throws IOException {
+  void skip_issue_on_invalid_priority() throws IOException {
     List<ExternalIssue> externalIssues = execute("invalid-severity.xml");
     assertThat(externalIssues).hasSize(1);
     assertThat(logTester.logs(LoggerLevel.WARN).get(0))
@@ -129,7 +129,7 @@ public class PmdSensorTest {
   }
 
   @Test
-  public void invalid_text_range() throws IOException {
+  void invalid_text_range() throws IOException {
     List<ExternalIssue> externalIssues = execute("invalid-text-range.xml");
     assertThat(externalIssues).hasSize(2);
     TextRange secondIssueRange = externalIssues.get(1).primaryLocation().textRange();
@@ -143,7 +143,7 @@ public class PmdSensorTest {
 
 
   @Test
-  public void issues() throws IOException {
+  void issues() throws IOException {
     List<ExternalIssue> externalIssues = execute("pmd-report.xml");
     assertThat(externalIssues).hasSize(3);
 

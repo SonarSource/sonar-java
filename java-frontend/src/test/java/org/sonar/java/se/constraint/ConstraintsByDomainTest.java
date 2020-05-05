@@ -25,10 +25,10 @@ import java.util.function.BiConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ConstraintsByDomainTest {
+class ConstraintsByDomainTest {
 
   @Test
-  public void test_isEmpty() throws Exception {
+  void test_isEmpty() throws Exception {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty();
     assertThat(constraints.isEmpty()).isTrue();
     constraints = constraints.put(ObjectConstraint.NULL);
@@ -36,7 +36,7 @@ public class ConstraintsByDomainTest {
   }
 
   @Test
-  public void test_remove() throws Exception {
+  void test_remove() throws Exception {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
     assertThat(constraints.get(ObjectConstraint.class)).isEqualTo(ObjectConstraint.NULL);
     constraints = constraints.remove(ObjectConstraint.class);
@@ -48,7 +48,7 @@ public class ConstraintsByDomainTest {
   }
 
   @Test
-  public void test_domains() throws Exception {
+  void test_domains() throws Exception {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty();
     assertThat(constraints.domains()).isEmpty();
     constraints = constraints.put(ObjectConstraint.NOT_NULL).put(BooleanConstraint.TRUE);
@@ -56,7 +56,7 @@ public class ConstraintsByDomainTest {
   }
 
   @Test
-  public void test_constraints_stream() throws Exception {
+  void test_constraints_stream() throws Exception {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty();
     assertThat(constraints.stream()).isEmpty();
     constraints = constraints.put(ObjectConstraint.NOT_NULL).put(BooleanConstraint.TRUE);
@@ -64,14 +64,14 @@ public class ConstraintsByDomainTest {
   }
 
   @Test
-  public void test_put() throws Exception {
+  void test_put() throws Exception {
     ConstraintsByDomain c1 = ConstraintsByDomain.empty().put(ObjectConstraint.NOT_NULL);
     ConstraintsByDomain c2 = c1.put(ObjectConstraint.NOT_NULL);
     assertThat(c1).isSameAs(c2);
   }
 
   @Test
-  public void test_forEach() {
+  void test_forEach() {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty();
     Counter counter = new Counter();
     constraints.forEach(counter);
@@ -83,7 +83,7 @@ public class ConstraintsByDomainTest {
   }
 
   @Test
-  public void test_toString() {
+  void test_toString() {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty();
     assertThat(constraints.toString()).isEqualTo("[]");
 
@@ -110,7 +110,7 @@ public class ConstraintsByDomainTest {
   }
 
   @Test
-  public void test_equals_hashcode() throws Exception {
+  void test_equals_hashcode() throws Exception {
     ConstraintsByDomain c1 = ConstraintsByDomain.empty();
     assertThat(c1.equals(null)).isFalse();
     ConstraintsByDomain c2 = c1.put(ObjectConstraint.NOT_NULL);
@@ -119,7 +119,7 @@ public class ConstraintsByDomainTest {
   }
 
   @Test
-  public void test_has_constraint() {
+  void test_has_constraint() {
     ConstraintsByDomain c = ConstraintsByDomain.empty();
     assertThat(c.hasConstraint(ObjectConstraint.NULL)).isFalse();
     c = c.put(ObjectConstraint.NULL);

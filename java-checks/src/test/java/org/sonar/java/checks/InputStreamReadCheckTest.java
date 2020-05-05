@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class InputStreamReadCheckTest {
+class InputStreamReadCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/InputStreamReadCheck.java"))
       .withCheck(new InputStreamReadCheck())
@@ -35,7 +35,7 @@ public class InputStreamReadCheckTest {
   }
 
   @Test
-  public void no_issues_without_semantic() {
+  void no_issues_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/InputStreamReadCheck.java"))
       .withCheck(new InputStreamReadCheck())

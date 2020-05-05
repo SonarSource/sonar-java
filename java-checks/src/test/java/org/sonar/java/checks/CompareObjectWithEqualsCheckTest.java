@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class CompareObjectWithEqualsCheckTest {
+class CompareObjectWithEqualsCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CompareObjectWithEqualsCheck.java")
       .withCheck(new CompareObjectWithEqualsCheck())
@@ -33,7 +33,7 @@ public class CompareObjectWithEqualsCheckTest {
   }
 
   @Test
-  public void no_issue_without_semantic() {
+  void no_issue_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CompareObjectWithEqualsCheck.java")
       .withCheck(new CompareObjectWithEqualsCheck())

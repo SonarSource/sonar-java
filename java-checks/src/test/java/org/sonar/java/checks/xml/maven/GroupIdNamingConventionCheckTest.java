@@ -25,10 +25,10 @@ import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class GroupIdNamingConventionCheckTest {
+class GroupIdNamingConventionCheckTest {
 
   @Test
-  public void test_default() {
+  void test_default() {
     GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
     SonarXmlCheckVerifier.verifyIssues("defaultNOK/pom.xml", check);
     SonarXmlCheckVerifier.verifyIssues("emptyGroupId/pom.xml", check);
@@ -37,7 +37,7 @@ public class GroupIdNamingConventionCheckTest {
   }
 
   @Test
-  public void test_custom() {
+  void test_custom() {
     GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
     check.regex = "[a-z][a-z-0-9]*";
     SonarXmlCheckVerifier.verifyIssues("customNOK/pom.xml", check);
@@ -47,7 +47,7 @@ public class GroupIdNamingConventionCheckTest {
   }
 
   @Test
-  public void invalid_regex() {
+  void invalid_regex() {
     GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
     check.regex = "*";
 
@@ -57,7 +57,7 @@ public class GroupIdNamingConventionCheckTest {
   }
 
   @Test
-  public void not_a_pom() {
+  void not_a_pom() {
     GroupIdNamingConventionCheck check = new GroupIdNamingConventionCheck();
     SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", check);
   }

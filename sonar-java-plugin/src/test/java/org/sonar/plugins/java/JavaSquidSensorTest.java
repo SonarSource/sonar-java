@@ -72,7 +72,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @EnableRuleMigrationSupport
-public class JavaSquidSensorTest {
+class JavaSquidSensorTest {
 
   private static final CheckFactory checkFactory = mock(CheckFactory.class);
   private static final Checks<Object> checks = mock(Checks.class);
@@ -87,17 +87,17 @@ public class JavaSquidSensorTest {
   public final TemporaryFolder tmp = new TemporaryFolder();
 
   @Test
-  public void test_toString() {
+  void test_toString() {
     assertThat(new JavaSquidSensor(null, null, null, null, null, null).toString()).isEqualTo("JavaSquidSensor");
   }
 
   @Test
-  public void test_issues_creation_on_main_file() throws IOException {
+  void test_issues_creation_on_main_file() throws IOException {
     testIssueCreation(InputFile.Type.MAIN, 4);
   }
 
   @Test
-  public void test_issues_creation_on_test_file() throws IOException { // NOSONAR required to test NOSONAR reporting on test files
+  void test_issues_creation_on_test_file() throws IOException { // NOSONAR required to test NOSONAR reporting on test files
     testIssueCreation(InputFile.Type.TEST, 0);
   }
 
@@ -187,7 +187,7 @@ public class JavaSquidSensorTest {
   }
 
   @Test
-  public void should_invoke_visitors_on_generated_code() throws Exception {
+  void should_invoke_visitors_on_generated_code() throws Exception {
     Path base = tmp.newFolder().toPath();
     Path generatedFilePath = tmp.newFile("Generated.java").toPath();
     Files.write(generatedFilePath, "class Generated {}".getBytes());

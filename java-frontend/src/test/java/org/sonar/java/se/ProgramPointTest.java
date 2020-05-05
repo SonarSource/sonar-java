@@ -23,15 +23,15 @@ import org.junit.jupiter.api.Test;
 import org.objectweb.asm.Opcodes;
 import org.sonar.java.bytecode.cfg.Instructions;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.cfg.CFGTest;
+import org.sonar.java.cfg.CFGTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ProgramPointTest {
+class ProgramPointTest {
   @Test
-  public void test_to_string_method() throws Exception {
+  void test_to_string_method() throws Exception {
     // ToString method of program point is used by viewer.
-    CFG cfg = CFGTest.buildCFG("void foo() {foo();}");
+    CFG cfg = CFGTestUtils.buildCFG("void foo() {foo();}");
     ProgramPoint pp = new ProgramPoint(cfg.blocks().get(0));
     assertThat(pp.toString()).isEqualTo("B1.0  IDENTIFIER1");
     pp = pp.next().next();
@@ -39,7 +39,7 @@ public class ProgramPointTest {
   }
 
   @Test
-  public void test_program_point_on_bytecode_cfg() throws Exception {
+  void test_program_point_on_bytecode_cfg() throws Exception {
     ProgramPoint pp = new ProgramPoint(new Instructions().visitInsn(Opcodes.NOP).cfg().entry());
     assertThat(pp.toString()).isEqualTo("B1.0  ");
     assertThat(pp.syntaxTree()).isNull();

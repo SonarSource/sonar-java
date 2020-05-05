@@ -21,10 +21,10 @@ package org.sonar.java.filters;
 
 import org.junit.jupiter.api.Test;
 
-public class LombokFilterTest {
+class LombokFilterTest {
 
   @Test
-  public void test() {
+  void test() {
     FilterVerifier.verify("src/test/files/filters/LombokFilter.java", new LombokFilter());
   }
 }

@@ -22,9 +22,9 @@ package org.sonar.java.checks.serialization;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SerialVersionUidCheckTest {
+class SerialVersionUidCheckTest {
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/serialization/SerialVersionUidCheck.java")
       .withCheck(new SerialVersionUidCheck())

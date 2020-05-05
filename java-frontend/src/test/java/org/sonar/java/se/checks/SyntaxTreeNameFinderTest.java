@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SyntaxTreeNameFinderTest {
+class SyntaxTreeNameFinderTest {
 
   private static MethodTree buildSyntaxTree(String methodCode) {
     CompilationUnitTree cut = JParserTestUtils.parse("class A { " + methodCode + " }");
@@ -41,7 +41,7 @@ public class SyntaxTreeNameFinderTest {
   }
 
   @Test
-  public void testClassCast() {
+  void testClassCast() {
     MethodTree tree = buildSyntaxTree("public boolean equals(Object obj) {((String) obj).length();}");
     BlockTree block = tree.block();
     StatementTree statementTree = block.body().get(0);
@@ -51,7 +51,7 @@ public class SyntaxTreeNameFinderTest {
   }
 
   @Test
-  public void testSwitch() {
+  void testSwitch() {
     MethodTree tree = buildSyntaxTree("public void test() {int i; switch (i) { case 0: break;}}");
     BlockTree block = tree.block();
     StatementTree statementTree = block.body().get(1);
@@ -59,7 +59,7 @@ public class SyntaxTreeNameFinderTest {
   }
 
   @Test
-  public void testMethodInvocationOnIdentifier() {
+  void testMethodInvocationOnIdentifier() {
     MethodTree tree = buildSyntaxTree("public void test() {String s; s.length();}");
     BlockTree block = tree.block();
     StatementTree statementTree = block.body().get(1);
@@ -67,7 +67,7 @@ public class SyntaxTreeNameFinderTest {
   }
 
   @Test
-  public void testMethodInvocationOnOtherInvocation() {
+  void testMethodInvocationOnOtherInvocation() {
     MethodTree tree = buildSyntaxTree("public void test() {int i = checkForNullMethod().length();}");
     BlockTree block = tree.block();
     StatementTree statementTree = block.body().get(0);
@@ -75,7 +75,7 @@ public class SyntaxTreeNameFinderTest {
   }
 
   @Test
-  public void testMemberSelectOnMethodInvocation() {
+  void testMemberSelectOnMethodInvocation() {
     MethodTree tree = buildSyntaxTree("public void test() {int i = checkForNullMethod().length;}");
     BlockTree block = tree.block();
     StatementTree statementTree = block.body().get(0);
@@ -83,19 +83,19 @@ public class SyntaxTreeNameFinderTest {
   }
 
   @Test
-  public void testCatchParameter() {
+  void testCatchParameter() {
     MethodTree tree = buildSyntaxTree("public void test() {try {} catch (Exception ex) {} }");
     assertThat(SyntaxTreeNameFinder.getName(tree)).isEqualTo("ex");
   }
 
   @Test
-  public void testVariableWithInitializer() {
+  void testVariableWithInitializer() {
     MethodTree tree = buildSyntaxTree("public void test() {int i = length;}");
     assertThat(SyntaxTreeNameFinder.getName(tree)).isEqualTo("length");
   }
 
   @Test
-  public void testFieldAccess() {
+  void testFieldAccess() {
     MethodTree tree = buildSyntaxTree("public void test() {this.field = value;} Object field;");
     BlockTree block = tree.block();
     AssignmentExpressionTree assignmentTree = (AssignmentExpressionTree) ((ExpressionStatementTree) block.body().get(0)).expression();

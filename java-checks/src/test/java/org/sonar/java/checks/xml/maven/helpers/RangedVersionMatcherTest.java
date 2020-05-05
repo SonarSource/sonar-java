@@ -26,39 +26,39 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class RangedVersionMatcherTest {
+class RangedVersionMatcherTest {
 
   private RangedVersionMatcher matcher;
 
   @Test
-  public void no_version_never_match() {
+  void no_version_never_match() {
     matcher = new RangedVersionMatcher("1.2", "1.5.6");
     assertNotMatch(null);
     assertNotMatch("");
   }
 
   @Test
-  public void invalid_version_never_match() {
+  void invalid_version_never_match() {
     matcher = new RangedVersionMatcher("1.2", "1.5.6");
     assertNotMatch("invalid.0");
     assertNotMatch("1.invalid");
   }
 
   @Test
-  public void fail_with_double_wildcard() {
+  void fail_with_double_wildcard() {
     assertThrows(IllegalArgumentException.class,
       () -> new RangedVersionMatcher("*", "*"));
   }
 
   @Test
-  public void fail_with_invalid_version() {
+  void fail_with_invalid_version() {
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
       () -> new RangedVersionMatcher("1.2.3", "invalid"));
     assertThat(e.getMessage()).isEqualTo("Provided version does not match expected pattern: <major version>.<minor version>.<incremental version> (recieved: invalid)");
   }
 
   @Test
-  public void version_after_range_never_match() {
+  void version_after_range_never_match() {
     matcher = new RangedVersionMatcher("1.2", "1.5.6");
     assertNotMatch("1.5.7-SNAPSHOT");
     assertNotMatch("1.5.7");
@@ -67,7 +67,7 @@ public class RangedVersionMatcherTest {
   }
 
   @Test
-  public void version_before_range_never_match() {
+  void version_before_range_never_match() {
     matcher = new RangedVersionMatcher("1.2", "1.5.6");
     assertNotMatch("1.1.9-SNAPSHOT");
     assertNotMatch("1.1.9");
@@ -77,7 +77,7 @@ public class RangedVersionMatcherTest {
   }
 
   @Test
-  public void version_in_range_always_match() {
+  void version_in_range_always_match() {
     matcher = new RangedVersionMatcher("1.2", "1.5.6");
     assertMatches("1.2.1.1");
     assertMatches("1.2.1-SNAPSHOT");
@@ -90,7 +90,7 @@ public class RangedVersionMatcherTest {
   }
 
   @Test
-  public void version_with_wildcard_for_lower_bound() {
+  void version_with_wildcard_for_lower_bound() {
     matcher = new RangedVersionMatcher("*", "1.5.6");
     assertNotMatch("1.5.7");
     assertNotMatch("1.6");
@@ -103,7 +103,7 @@ public class RangedVersionMatcherTest {
   }
 
   @Test
-  public void version_with_wildcard_for_upper_bound() {
+  void version_with_wildcard_for_upper_bound() {
     matcher = new RangedVersionMatcher("1.5.6", "*");
     assertNotMatch("1.5");
     assertNotMatch("1.5.5");

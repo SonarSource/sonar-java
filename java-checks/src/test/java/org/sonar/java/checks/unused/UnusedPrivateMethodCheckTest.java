@@ -22,10 +22,10 @@ package org.sonar.java.checks.unused;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class UnusedPrivateMethodCheckTest {
+class UnusedPrivateMethodCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UnusedPrivateMethod.java")
       .withCheck(new UnusedPrivateMethodCheck())

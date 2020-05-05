@@ -23,22 +23,22 @@ import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class DefaultInterceptorsLocationCheckTest {
+class DefaultInterceptorsLocationCheckTest {
 
   private static final SonarXmlCheck CHECK = new DefaultInterceptorsLocationCheck();
 
   @Test
-  public void interceptors_in_ejb_jar() {
+  void interceptors_in_ejb_jar() {
     SonarXmlCheckVerifier.verifyNoIssue("ejb-jar.xml", CHECK);
   }
 
   @Test
-  public void interceptors_not_in_ejb_jar() {
+  void interceptors_not_in_ejb_jar() {
     SonarXmlCheckVerifier.verifyIssues("ejb-interceptors.xml", CHECK);
   }
 
   @Test
-  public void not_an_ejb_jar() {
+  void not_an_ejb_jar() {
     SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", CHECK);
   }
 }

@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InstructionsTest {
+class InstructionsTest {
 
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     assertThat(Instructions.ALL).isEqualTo(Instructions.OPCODES);
   }
 }

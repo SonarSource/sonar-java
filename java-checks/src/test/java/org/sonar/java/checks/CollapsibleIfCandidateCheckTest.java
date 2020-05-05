@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.junit.jupiter.api.Test;
 
-public class CollapsibleIfCandidateCheckTest {
+class CollapsibleIfCandidateCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CollapsibleIfCandidateCheck.java")
       .withCheck(new CollapsibleIfCandidateCheck())

@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class CryptographicKeySizeCheckTest {
+class CryptographicKeySizeCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/CryptographicKeySizeCheck.java"))
       .withCheck(new CryptographicKeySizeCheck())
@@ -35,7 +35,7 @@ public class CryptographicKeySizeCheckTest {
   }
 
   @Test
-  public void test_no_semantic() {
+  void test_no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/CryptographicKeySizeCheck.java"))
       .withCheck(new CryptographicKeySizeCheck())

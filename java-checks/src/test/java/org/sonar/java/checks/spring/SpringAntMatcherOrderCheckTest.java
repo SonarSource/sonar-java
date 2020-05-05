@@ -27,10 +27,10 @@ import static org.sonar.java.checks.spring.SpringAntMatcherOrderCheck.antMatcher
 import static org.sonar.java.checks.spring.SpringAntMatcherOrderCheck.escapeRegExpChars;
 import static org.sonar.java.checks.spring.SpringAntMatcherOrderCheck.matches;
 
-public class SpringAntMatcherOrderCheckTest {
+class SpringAntMatcherOrderCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/spring/SpringAntMatcherOrderCheck.java")
       .withCheck(new SpringAntMatcherOrderCheck())
@@ -43,7 +43,7 @@ public class SpringAntMatcherOrderCheckTest {
   }
 
   @Test
-  public void escape_regexp_characters() {
+  void escape_regexp_characters() {
     assertThat(escapeRegExpChars("")).isEqualTo("");
     assertThat(escapeRegExpChars("abc")).isEqualTo("abc");
     assertThat(escapeRegExpChars("a(b)c")).isEqualTo("a\\(b\\)c");
@@ -55,14 +55,14 @@ public class SpringAntMatcherOrderCheckTest {
   }
 
   @Test
-  public void does_not_escape_ant_matcher_special_characters() {
+  void does_not_escape_ant_matcher_special_characters() {
     assertThat(escapeRegExpChars("a?c")).isEqualTo("a?c");
     assertThat(escapeRegExpChars("a*c")).isEqualTo("a*c");
     assertThat(escapeRegExpChars("a**c")).isEqualTo("a**c");
   }
 
   @Test
-  public void ant_matcher_to_regex() {
+  void ant_matcher_to_regex() {
     assertThat(antMatcherToRegEx("abc")).isEqualTo("abc");
     assertThat(antMatcherToRegEx("a?c")).isEqualTo("a[^/]c");
     assertThat(antMatcherToRegEx("a*c")).isEqualTo("a[^/]*c");
@@ -71,7 +71,7 @@ public class SpringAntMatcherOrderCheckTest {
   }
 
   @Test
-  public void should_match() {
+  void should_match() {
     assertThat(matches("", "")).isTrue();
     assertThat(matches("/abc", "/abc")).isTrue();
     assertThat(matches("/abc/**", "/abc/def")).isTrue();
@@ -81,7 +81,7 @@ public class SpringAntMatcherOrderCheckTest {
   }
 
   @Test
-  public void should_not_match() {
+  void should_not_match() {
     assertThat(matches("", "/def")).isFalse();
     assertThat(matches("/abc", "/def")).isFalse();
     assertThat(matches("/abc/**", "/def/abc")).isFalse();

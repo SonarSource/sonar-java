@@ -25,10 +25,10 @@ import org.sonar.plugins.java.api.semantic.Type.Primitives;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SymbolsTest {
+class SymbolsTest {
 
   @Test
-  public void unknown_type() {
+  void unknown_type() {
     Type unknownType = Symbols.unknownType;
 
     assertThat(unknownType.isUnknown()).isTrue();

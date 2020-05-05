@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class ASTUtilsTest {
+class ASTUtilsTest {
 
   @Test
   void type_resolution_should_recover() {

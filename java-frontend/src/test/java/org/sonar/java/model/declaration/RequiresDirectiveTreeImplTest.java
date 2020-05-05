@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RequiresDirectiveTreeImplTest {
+class RequiresDirectiveTreeImplTest {
 
   private static RequiresDirectiveTree requireDirective(String requiresDirective) {
     CompilationUnitTree compilationUnitTree = JParserTestUtils.parseModule("module org.foo {\n  " + requiresDirective + "\n}");
@@ -44,7 +44,7 @@ public class RequiresDirectiveTreeImplTest {
   }
 
   @Test
-  public void transitive_as_name() {
+  void transitive_as_name() {
     RequiresDirectiveTree requires = requireDirective("requires transitive;");
 
     assertThat(requires.kind()).isEqualTo(Tree.Kind.REQUIRES_DIRECTIVE);
@@ -58,7 +58,7 @@ public class RequiresDirectiveTreeImplTest {
   }
 
   @Test
-  public void transitive_as_name_with_static() {
+  void transitive_as_name_with_static() {
     RequiresDirectiveTree requires = requireDirective("requires static transitive;");
 
     assertThat(requires.kind()).isEqualTo(Tree.Kind.REQUIRES_DIRECTIVE);
@@ -72,7 +72,7 @@ public class RequiresDirectiveTreeImplTest {
   }
 
   @Test
-  public void requires() {
+  void requires() {
     RequiresDirectiveTree requires = requireDirective("requires static transitive foo.bar;");
 
     assertThat(requires.kind()).isEqualTo(Tree.Kind.REQUIRES_DIRECTIVE);
@@ -89,7 +89,7 @@ public class RequiresDirectiveTreeImplTest {
   }
 
   @Test
-  public void test_BaseTreeVisitor() {
+  void test_BaseTreeVisitor() {
     CompilationUnitTree cut = JParserTestUtils.parseModule(
       "@org.foo.Bar",
       "open module com.greetings {",

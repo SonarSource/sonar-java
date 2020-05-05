@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ConstraintTest {
+class ConstraintTest {
 
   @Test
-  public void ObjectConstraint_should_be_valid_with_correct_constraints() throws Exception {
+  void ObjectConstraint_should_be_valid_with_correct_constraints() throws Exception {
     assertThat(ObjectConstraint.NULL.isValidWith(null)).isTrue();
     assertThat(ObjectConstraint.NOT_NULL.isValidWith(null)).isTrue();
     assertThat(ObjectConstraint.NULL.isValidWith(ObjectConstraint.NULL)).isTrue();
@@ -37,7 +37,7 @@ public class ConstraintTest {
   }
 
   @Test
-  public void default_methods_result() {
+  void default_methods_result() {
     Constraint c = new Constraint() {};
     assertThat(c.hasPreciseValue()).isFalse();
     assertThat(c.valueAsString()).isEmpty();

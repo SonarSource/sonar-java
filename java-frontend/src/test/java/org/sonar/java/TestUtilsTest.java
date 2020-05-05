@@ -24,9 +24,9 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
-public class TestUtilsTest {
+class TestUtilsTest {
   @Test
-  public void verify_computeLineEndOffsets() {
+  void verify_computeLineEndOffsets() {
     assertThat(computeLineEndOffsets(new int[]{0, 10, 15}, 100)).containsExactly(9, 14, 99);
   }
 }

@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.sonar.java.cfg.CFGTestUtils.buildCFG;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.ASSERT_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.BREAK_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CONTINUE_STATEMENT;
@@ -66,7 +67,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.TRY_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.VARIABLE;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.WHILE_STATEMENT;
 
-public class CFGTest {
+class CFGTest {
 
   static CFGChecker checker(BlockChecker... checkers) {
     return new CFGChecker(checkers);
@@ -432,21 +433,8 @@ public class CFGTest {
 
   }
 
-  public static CFG buildCFG(String methodCode) {
-    return buildCFGFromCUT(JParserTestUtils.parse("class A { " + methodCode + " }"));
-  }
-
-  public static CFG buildCFG(File file) {
-    return buildCFGFromCUT(JParserTestUtils.parse(file));
-  }
-
-  private static CFG buildCFGFromCUT(CompilationUnitTree cut) {
-    final MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
-    return CFG.build(tree);
-  }
-
   @Test
-  public void empty_cfg() {
+  void empty_cfg() {
     final CFG cfg = buildCFG("void fun() {}");
     final CFGChecker cfgChecker = checker();
     cfgChecker.check(cfg);
@@ -454,7 +442,7 @@ public class CFGTest {
   }
 
   @Test
-  public void simplest_cfg() {
+  void simplest_cfg() {
     final CFG cfg = buildCFG("void fun() { bar();}");
     final CFGChecker cfgChecker = checker(
       block(
@@ -469,7 +457,7 @@ public class CFGTest {
   }
 
   @Test
-  public void straight_method_calls() {
+  void straight_method_calls() {
     final CFG cfg = buildCFG("void fun() { bar();qix();baz();}");
     final CFGChecker cfgChecker = checker(
       block(
@@ -483,7 +471,7 @@ public class CFGTest {
   }
 
   @Test
-  public void single_declaration() {
+  void single_declaration() {
     final CFG cfg = buildCFG("void fun() {Object o;}");
     final CFGChecker cfgChecker = checker(
       block(
@@ -492,7 +480,7 @@ public class CFGTest {
   }
 
   @Test
-  public void if_then() {
+  void if_then() {
     final CFG cfg = buildCFG("void fun() {if(a) { foo(); } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -505,7 +493,7 @@ public class CFGTest {
   }
 
   @Test
-  public void if_then_else() {
+  void if_then_else() {
     final CFG cfg = buildCFG("void fun() {if(a) { foo(); } else { bar(); } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -522,7 +510,7 @@ public class CFGTest {
   }
 
   @Test
-  public void if_then_elseif() {
+  void if_then_elseif() {
     final CFG cfg = buildCFG("void fun() {\nif(a) {\n foo(); \n } else if(b) {\n bar();\n } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -543,7 +531,7 @@ public class CFGTest {
   }
 
   @Test
-  public void conditionalOR() {
+  void conditionalOR() {
     final CFG cfg = buildCFG("void fun() {if(a || b) { foo(); } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -560,7 +548,7 @@ public class CFGTest {
   }
 
   @Test
-  public void conditionalAND() {
+  void conditionalAND() {
     final CFG cfg = buildCFG("void fun() {if((a && b)) { foo(); } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -577,7 +565,7 @@ public class CFGTest {
   }
 
   @Test
-  public void assignmentAND() {
+  void assignmentAND() {
     final CFG cfg = buildCFG("void fun() {boolean bool = a && b;}");
     final CFGChecker cfgChecker = checker(
       block(
@@ -590,7 +578,7 @@ public class CFGTest {
   }
 
   @Test
-  public void ternary_operator() {
+  void ternary_operator() {
     final CFG cfg = buildCFG("void fun() { Object c = foo ? a : b; a.toString();}");
     final CFGChecker cfgChecker = checker(
       block(
@@ -607,7 +595,7 @@ public class CFGTest {
   }
 
   @Test
-  public void switch_statement() {
+  void switch_statement() {
     CFG cfg = buildCFG("void foo(int i, int j, int k) {\n" +
         "    switch (i==-1 ? j:k) {\n" +
         "      default:;\n" +
@@ -657,7 +645,7 @@ public class CFGTest {
   }
 
   @Test
-  public void switch_statement_with_piledUpCases_againstDefault() {
+  void switch_statement_with_piledUpCases_againstDefault() {
     final CFG cfg = buildCFG("void fun(int foo) {\n" +
       "    int a;\n" +
       "    switch (foo) {\n" +
@@ -699,7 +687,7 @@ public class CFGTest {
   }
 
   @Test
-  public void switch_statement_without_default() {
+  void switch_statement_without_default() {
     final CFG cfg = buildCFG("void fun(int foo) {\n" +
       "    int a;\n" +
       "    switch (foo) {\n" +
@@ -738,7 +726,7 @@ public class CFGTest {
    * Introduced with Java 12
    */
   @Test
-  public void switch_statement_without_fallthrough() {
+  void switch_statement_without_fallthrough() {
     final CFG cfg = buildCFG("void fun(int foo) throws Exception {\n" +
       "    int a;\n" +
       "    switch (foo) {\n" +
@@ -793,7 +781,7 @@ public class CFGTest {
   }
 
   @Test
-  public void switch_expression_without_fallthrough() {
+  void switch_expression_without_fallthrough() {
     final CFG cfg = buildCFG("int fun(int foo) throws Exception {\n" +
       "    int a = switch (foo) {\n" +
       "      case 1 -> fun(bar1) + fun(bar2);\n" +
@@ -838,7 +826,7 @@ public class CFGTest {
   }
 
   @Test
-  public void switch_expression_with_fallthrough() {
+  void switch_expression_with_fallthrough() {
     final CFG cfg = buildCFG("int fun(int foo) throws Exception {\n" +
       "    int a = switch (foo) {\n" +
       "      case 1:\n" +
@@ -894,7 +882,7 @@ public class CFGTest {
   }
 
   @Test
-  public void return_statement() {
+  void return_statement() {
     final CFG cfg = buildCFG("void fun(Object foo) { if(foo == null) return; }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -907,7 +895,7 @@ public class CFGTest {
   }
 
   @Test
-  public void array_loop() {
+  void array_loop() {
     final CFG cfg = buildCFG("void fun(Object foo) {System.out.println('c'); for(int i =0;i<10;i++) { System.out.println(i); } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -937,7 +925,7 @@ public class CFGTest {
   }
 
   @Test
-  public void array_loop_with_break() {
+  void array_loop_with_break() {
     final CFG cfg = buildCFG("void fun(Object foo) { for(int i =0;i<10;i++) { if(i == 5) break; } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -963,7 +951,7 @@ public class CFGTest {
   }
 
   @Test
-  public void array_loop_with_continue() {
+  void array_loop_with_continue() {
     final CFG cfg = buildCFG("void fun(Object foo) { for(int i =0;i<10;i++) { if(i == 5) continue; } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -989,7 +977,7 @@ public class CFGTest {
   }
 
   @Test
-  public void foreach_loop_continue() {
+  void foreach_loop_continue() {
     final CFG cfg = buildCFG("void fun(){ System.out.println(\"start\"); for(String foo:list) {System.out.println(foo); if(foo.length()> 2) {continue;}  System.out.println('c');} System.out.println(\"end\"); }");
     final CFGChecker cfgChecker = checker(
         block(
@@ -1026,7 +1014,7 @@ public class CFGTest {
   }
 
   @Test
-  public void foreach_loop() {
+  void foreach_loop() {
     CFG cfg = buildCFG("void fun(){ System.out.println('c'); for(String foo:list) {System.out.println(foo);} System.out.println('d'); }");
     CFGChecker cfgChecker = checker(
         block(
@@ -1075,7 +1063,7 @@ public class CFGTest {
   }
 
   @Test
-  public void while_loop() {
+  void while_loop() {
     final CFG cfg = buildCFG("void fun() {int i = 0; while(i < 10) {i++; System.out.println(i); } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1099,7 +1087,7 @@ public class CFGTest {
   }
 
   @Test
-  public void while_loop_with_break() {
+  void while_loop_with_break() {
     final CFG cfg = buildCFG("void fun() {int i = 0; while(i < 10) {i++; if(i == 5) break; } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1123,7 +1111,7 @@ public class CFGTest {
   }
 
   @Test
-  public void while_loop_with_continue() {
+  void while_loop_with_continue() {
     final CFG cfg = buildCFG("void fun() {int i = 0; while(i < 10) {i++; if(i == 5) continue; } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1147,7 +1135,7 @@ public class CFGTest {
   }
 
   @Test
-  public void continue_in_try_finally() {
+  void continue_in_try_finally() {
     final CFG cfg = buildCFG("void fun() { while (foo()) {\n" +
       "      try {\n" +
       "        bar(\"try\");\n" +
@@ -1177,7 +1165,7 @@ public class CFGTest {
   }
 
   @Test
-  public void break_in_try_finally() {
+  void break_in_try_finally() {
     final CFG cfg = buildCFG("void fun() { while (foo()) {\n" +
       "      try {\n" +
       "        bar(\"try\");\n" +
@@ -1207,7 +1195,7 @@ public class CFGTest {
   }
 
   @Test
-  public void do_while_loop() {
+  void do_while_loop() {
     final CFG cfg = buildCFG("void fun() {int i = 0; do {i++; System.out.println(i); }while(i < 10); }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1231,7 +1219,7 @@ public class CFGTest {
   }
 
   @Test
-  public void do_while_loop_with_break() {
+  void do_while_loop_with_break() {
     final CFG cfg = buildCFG("void fun() {int i = 0; do { i++; if(i == 5) break; }while(i < 10); }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1255,7 +1243,7 @@ public class CFGTest {
   }
 
   @Test
-  public void do_while_loop_with_continue() {
+  void do_while_loop_with_continue() {
     final CFG cfg = buildCFG("void fun() {int i = 0; do{i++; if(i == 5) continue; }while(i < 10); }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1279,7 +1267,7 @@ public class CFGTest {
   }
 
   @Test
-  public void break_on_label() {
+  void break_on_label() {
     final CFG cfg = buildCFG("void fun() {\n" +
       "    foo: for (int i = 0; i < 10; i++) {\n" +
       "      if (i == 5)\n" +
@@ -1310,7 +1298,7 @@ public class CFGTest {
   }
 
   @Test
-  public void continue_on_label() {
+  void continue_on_label() {
     final CFG cfg = buildCFG("void fun() {\n" +
       "    foo: for (int i = 0; i < 10; i++) {\n" +
       "      plop();\n" +
@@ -1349,7 +1337,7 @@ public class CFGTest {
   }
 
   @Test
-  public void assignement_order_of_evaluation() throws Exception {
+  void assignement_order_of_evaluation() throws Exception {
     CFG cfg = buildCFG("  void foo() {\n" +
       "    int[] a = {4,4};\n" +
       "    int b = 1;\n" +
@@ -1373,7 +1361,7 @@ public class CFGTest {
   }
 
   @Test
-  public void compound_assignment() throws Exception {
+  void compound_assignment() throws Exception {
     CFG cfg = buildCFG("void foo() {\n" +
       "  myField *= 0;\n" +
       "}\n" +
@@ -1390,7 +1378,7 @@ public class CFGTest {
   }
 
   @Test
-  public void compound_assignment_member_select() throws Exception {
+  void compound_assignment_member_select() throws Exception {
     CFG cfg = buildCFG("void foo() {\n" +
       "  this.myField *= 0;\n" +
       "}\n" +
@@ -1408,7 +1396,7 @@ public class CFGTest {
   }
 
   @Test
-  public void prefix_operators() {
+  void prefix_operators() {
     final CFG cfg = buildCFG("void fun() { ++i;i++; }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1419,7 +1407,7 @@ public class CFGTest {
     cfgChecker.check(cfg);
   }
   @Test
-  public void exit_block_for_finally_with_if_statement() throws Exception {
+  void exit_block_for_finally_with_if_statement() throws Exception {
     CFG cfg = buildCFG(" void test(boolean fooCalled) {\n" +
       "      Object bar;\n" +
       "      try {\n" +
@@ -1459,7 +1447,7 @@ public class CFGTest {
   }
 
   @Test
-  public void catch_thrown_in_exception() throws Exception {
+  void catch_thrown_in_exception() throws Exception {
     CFG cfg = buildCFG("  void  foo() throws MyException {\n"+
       "    try {\n"+
       "      try {\n"+
@@ -1500,7 +1488,7 @@ public class CFGTest {
   }
 
   @Test
-  public void nested_try_finally() throws Exception {
+  void nested_try_finally() throws Exception {
 
     CFG cfg = buildCFG("  void  foo() {\n"+
       "    try {\n"+
@@ -1543,7 +1531,7 @@ public class CFGTest {
   }
 
   @Test
-  public void catch_throwable() throws Exception {
+  void catch_throwable() throws Exception {
     CFG cfg = buildCFG(" public void reschedule() {\n" +
       "        try {\n" +
       "          getNextSchedule();\n" +
@@ -1569,7 +1557,7 @@ public class CFGTest {
   }
 
   @Test
-  public void catch_error() throws Exception {
+  void catch_error() throws Exception {
     CFG cfg = buildCFG(" public void foo() {\n" +
       "        try {\n" +
       "          doSomething();\n" +
@@ -1590,7 +1578,7 @@ public class CFGTest {
   }
 
   @Test
-  public void try_statement() {
+  void try_statement() {
     CFG cfg = buildCFG("void fun() {try {System.out.println('c');} finally { System.out.println('c'); }}");
     CFGChecker cfgChecker = checker(
         block(
@@ -1681,7 +1669,7 @@ public class CFGTest {
   }
 
   @Test
-  public void throw_statement() {
+  void throw_statement() {
     final CFG cfg = buildCFG("void fun(Object a) {if(a==null) { throw new Exception();} System.out.println('c'); }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1700,7 +1688,7 @@ public class CFGTest {
   }
 
   @Test
-  public void synchronized_statement() {
+  void synchronized_statement() {
     final CFG cfg = buildCFG("void fun(Object a) {if(a==null) { synchronized(a) { foo();bar();} } System.out.println('c'); }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1723,7 +1711,7 @@ public class CFGTest {
   }
 
   @Test
-  public void multiple_constructions() {
+  void multiple_constructions() {
     final CFG cfg = buildCFG("void fun(Object a) {if(a instanceof String) { Supplier<String> s = a::toString;foo(y -> y+1); a += (String) a;  } }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1745,7 +1733,7 @@ public class CFGTest {
   }
 
   @Test
-  public void catching_class_cast_exception() {
+  void catching_class_cast_exception() {
     CFG cfg = buildCFG("String fun(Object a) {try {return (String) a;} catch(ClassCastException cce) { return null;} }");
     CFGChecker cfgChecker = checker(
       block(
@@ -1766,7 +1754,7 @@ public class CFGTest {
   }
 
   @Test
-  public void array_access_expression() {
+  void array_access_expression() {
     final CFG cfg = buildCFG("void fun(int[] array) { array[0] = 1; array[3+2] = 4; }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1786,7 +1774,7 @@ public class CFGTest {
   }
 
   @Test
-  public void try_with_resource() throws Exception {
+  void try_with_resource() throws Exception {
     final CFG cfg = buildCFG("void fun() { String path = \"\"; try (BufferedReader br = new BufferedReader(new FileReader(path))) {} }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1804,7 +1792,7 @@ public class CFGTest {
   }
 
   @Test
-  public void try_with_resource_java9() throws Exception {
+  void try_with_resource_java9() throws Exception {
     final CFG cfg = buildCFG("void fun() { final Resource r = new Resource(); try (r) {} }");
     final CFGChecker cfgChecker = checker(
       block(
@@ -1818,7 +1806,7 @@ public class CFGTest {
   }
 
   @Test
-  public void returnCascadedAnd() throws Exception {
+  void returnCascadedAnd() throws Exception {
     final CFG cfg = buildCFG(
       "boolean andAll(boolean a, boolean b, boolean c) { return a && b && c;}");
     final CFGChecker cfgChecker = checker(
@@ -1831,7 +1819,7 @@ public class CFGTest {
   }
 
   @Test
-  public void returnCascadedOr() throws Exception {
+  void returnCascadedOr() throws Exception {
     final CFG cfg = buildCFG(
       "boolean orAll(boolean a, boolean b, boolean c) { return a || b || c;}");
     final CFGChecker cfgChecker = checker(
@@ -1844,7 +1832,7 @@ public class CFGTest {
   }
 
   @Test
-  public void complex_boolean_expression() throws Exception {
+  void complex_boolean_expression() throws Exception {
     final CFG cfg = buildCFG(" private boolean fun(boolean bool, boolean a, boolean b) {\n" +
         "    return (!bool && a) || (bool && b);\n" +
         "  }");
@@ -1863,7 +1851,7 @@ public class CFGTest {
   }
 
   @Test
-  public void method_reference() throws Exception {
+  void method_reference() throws Exception {
     final CFG cfg = buildCFG("void fun() { foo(Object::toString); }");
     final CFGChecker cfgChecker = checker(
         block(
@@ -1875,7 +1863,7 @@ public class CFGTest {
   }
 
   @Test
-  public void try_statement_with_CFG_blocks() {
+  void try_statement_with_CFG_blocks() {
     // method invocation after if
     CFG cfg = buildCFG(
       "  private void f(boolean action) {\n" +
@@ -1964,7 +1952,7 @@ public class CFGTest {
   }
 
   @Test
-  public void try_statement_with_checked_exceptions() {
+  void try_statement_with_checked_exceptions() {
     CFG cfg = buildCFG(
       " void foo(Object result) {" +
         "  try { " +
@@ -2010,7 +1998,7 @@ public class CFGTest {
   }
 
   @Test
-  public void try_statement_with_runtime_exceptions() {
+  void try_statement_with_runtime_exceptions() {
     CFG cfg = buildCFG(new File("src/test/files/cfg/CFGRuntimeExceptions.java"));
     CFGChecker cfgChecker = checker(
       block(
@@ -2063,7 +2051,7 @@ public class CFGTest {
   }
 
   @Test
-  public void catch_block_correctly_flagged_in_CFG() {
+  void catch_block_correctly_flagged_in_CFG() {
     CFG cfg = buildCFG(new File("src/test/files/cfg/CFGCatchBlocks.java"));
 
     CFGChecker cfgChecker = checker(
@@ -2102,7 +2090,7 @@ public class CFGTest {
   }
 
   @Test
-  public void successor_of_labeled_break_statement() throws Exception {
+  void successor_of_labeled_break_statement() throws Exception {
     CFG cfg = buildCFG("private static void test(long toRevision, boolean inverted, Object visitor) {\n" +
       "\n" +
       "    testBlock: {\n" +
@@ -2142,7 +2130,7 @@ public class CFGTest {
   }
 
   @Test
-  public void test_chained_method_invocation() {
+  void test_chained_method_invocation() {
     CFG cfg = buildCFG("private void foo(Object p) {\n" +
       "    if(p == null) {\n" +
       "      NullArrayAccess\n" +
@@ -2172,7 +2160,7 @@ public class CFGTest {
 
 
   @Test
-  public void constructor_arguments_order() throws Exception {
+  void constructor_arguments_order() throws Exception {
     CFG cfg = buildCFG("private void foo(Exception e) {\n" +
       "throw new IllegalArgumentException(\"iae\", e);\n" +
       "} "
@@ -2188,7 +2176,7 @@ public class CFGTest {
   }
 
   @Test
-  public void array_dim_initializer_order() throws Exception {
+  void array_dim_initializer_order() throws Exception {
     CFG cfg = buildCFG("private void fun() {\n" +
       "String[] plop = {foo(), bar()};\n" +
       "String[][] plop2 = new String[qix()][baz()];\n" +
@@ -2214,7 +2202,7 @@ public class CFGTest {
   }
 
   @Test
-  public void assert_statement() throws Exception {
+  void assert_statement() throws Exception {
     CFG cfg = buildCFG("private void fun(boolean x) {\n" +
       "assert x;\n" +
       "} "
@@ -2228,7 +2216,7 @@ public class CFGTest {
   }
 
   @Test
-  public void exception_raised_in_catch() throws Exception {
+  void exception_raised_in_catch() throws Exception {
     CFG cfg = buildCFG("private void fun() {\n" +
       "     try {\n" +
       "      try {\n" +
@@ -2270,7 +2258,7 @@ public class CFGTest {
   }
 
   @Test
-  public void break_in_nested_catch() {
+  void break_in_nested_catch() {
     CFG cfg = buildCFG(
       "  void foo(boolean a) {\n" +
       "    String[] types = new String[12];\n" +
@@ -2383,7 +2371,7 @@ public class CFGTest {
   }
 
   @Test
-  public void break_in_try_finally_within_while() {
+  void break_in_try_finally_within_while() {
     CFG cfg = buildCFG("void run1() {\n" +
       "    while (true) {\n" +
       "      try {\n" +
@@ -2433,7 +2421,7 @@ public class CFGTest {
       "B0 (Exit):\n\n");
   }
   @Test
-  public void continue_in_try_finally_within_while() {
+  void continue_in_try_finally_within_while() {
     CFG cfg = buildCFG("void run2() {\n" +
       "    while (true) {\n" +
       "      try {\n" +
@@ -2481,7 +2469,7 @@ public class CFGTest {
   }
 
   @Test
-  public void break_in_try_finally_within_for() {
+  void break_in_try_finally_within_for() {
     CFG cfg = buildCFG(" void run3() {\n" +
       "    for (int i = 0; i < 5; i++) {\n" +
       "      try {\n" +
@@ -2542,7 +2530,7 @@ public class CFGTest {
       "B0 (Exit):\n\n");
   }
   @Test
-  public void break_in_try_and_complex_finally_within_while() {
+  void break_in_try_and_complex_finally_within_while() {
     CFG cfg = buildCFG(" void run4() {\n" +
       "    while (true) {\n" +
       "      try {\n" +
@@ -2596,7 +2584,7 @@ public class CFGTest {
   }
 
   @Test
-  public void break_without_finally() {
+  void break_without_finally() {
     CFG cfg = buildCFG("void fun(int highestLevel) {       while (highestLevel >= lowestOddLevel) {\n" +
       "            int i = levelStart;\n" +
       "\n" +
@@ -2755,7 +2743,7 @@ public class CFGTest {
   }
 
   @Test
-  public void break_in_try_finally_within_loop_do_not_always_lead_to_exit() {
+  void break_in_try_finally_within_loop_do_not_always_lead_to_exit() {
     CFG cfg = buildCFG("void test() {\n" +
       "    RuntimeException e = null;\n" +
       "    for (int i = 0; i < 2; ) {\n" +
@@ -2798,7 +2786,7 @@ public class CFGTest {
   }
 
   @Test
-  public void break_in_try_finally_in_for_without_condition() {
+  void break_in_try_finally_in_for_without_condition() {
     CFG cfg = buildCFG("void test() {\n" +
       "    RuntimeException e = null;\n" +
       "    for (;;) {\n" +
@@ -2835,7 +2823,7 @@ public class CFGTest {
   }
 
   @Test
-  public void throw_statement_within_try_catch() {
+  void throw_statement_within_try_catch() {
     CFG cfg = buildCFG("void fun() { try {throw new MyException();} catch(MyException me){foo();} bar();} class MyException extends Exception{}");
     CFGChecker cfgChecker = checker(
       block(element(TRY_STATEMENT)).successors(4),
@@ -2873,17 +2861,17 @@ public class CFGTest {
   }
 
   @Test
-  public void build_partial_cfg_with_break() throws Exception {
+  void build_partial_cfg_with_break() throws Exception {
     build_partial_cfg("break");
   }
 
   @Test
-  public void build_partial_cfg_with_continue() throws Exception {
+  void build_partial_cfg_with_continue() throws Exception {
     build_partial_cfg("continue");
   }
 
   @Test
-  public void connect_catch_blocks_with_unknown_exception_types() throws Exception {
+  void connect_catch_blocks_with_unknown_exception_types() throws Exception {
     CFG cfg = buildCFG("void fun() { " +
       " try {" +
       "   foo();" +
@@ -2905,7 +2893,7 @@ public class CFGTest {
   }
 
   @Test
-  public void connect_catch_blocks_with_unknown_exception_types2() throws Exception {
+  void connect_catch_blocks_with_unknown_exception_types2() throws Exception {
     CFG cfg = buildCFG("void fun() { " +
       " try {" +
       "   foo();" +

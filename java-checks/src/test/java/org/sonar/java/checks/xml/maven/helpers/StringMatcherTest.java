@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class StringMatcherTest {
+class StringMatcherTest {
 
   @Test
-  public void matcher_always_matching_always_match() {
+  void matcher_always_matching_always_match() {
     StringMatcher matcher = StringMatcher.any();
     assertThat(matcher.test(null)).isTrue();
     assertThat(matcher.test("test")).isTrue();

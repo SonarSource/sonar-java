@@ -25,13 +25,13 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class LDAPAuthenticatedConnectionCheckTest {
+class LDAPAuthenticatedConnectionCheckTest {
 
   /**
    * @see org.sonar.java.checks.eclipsebug.EclipseBugTest#javax_conflict()
    */
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/LDAPAuthenticatedConnectionCheck.java"))
       .withCheck(new LDAPAuthenticatedConnectionCheck())

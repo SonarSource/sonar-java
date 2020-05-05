@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class InternalCheckVerifierTest {
+class InternalCheckVerifierTest {
 
   private static final String TEST_FILE = "src/test/files/testing/Compliant.java";
   private static final String TEST_FILE_PARSE_ERROR = "src/test/files/testing/ParsingError.java";
@@ -217,7 +217,7 @@ public class InternalCheckVerifierTest {
     }
 
     @Test
-    public void rule_with_constant_remediation_function_should_not_provide_cost() {
+    void rule_with_constant_remediation_function_should_not_provide_cost() {
       @Rule(key = "ConstantJSON")
       class ConstantCostCheck implements JavaFileScanner {
         @Override
@@ -237,7 +237,7 @@ public class InternalCheckVerifierTest {
     }
 
     @Test
-    public void absent_rule_matadata_does_not_make_verifier_fail() {
+    void absent_rule_matadata_does_not_make_verifier_fail() {
       @Rule(key = "DoesntExists")
       class DoesntExistsMetadata implements JavaFileScanner {
         @Override
@@ -253,7 +253,7 @@ public class InternalCheckVerifierTest {
     }
 
     @Test
-    public void borken_rule_metadata_does_not_make_verifier_fail() {
+    void borken_rule_metadata_does_not_make_verifier_fail() {
       @Rule(key = "BrokenJSON")
       class BorkenMetadata implements JavaFileScanner {
         @Override
@@ -269,7 +269,7 @@ public class InternalCheckVerifierTest {
     }
 
     @Test
-    public void rule_metadata_unknown_remediation_function() {
+    void rule_metadata_unknown_remediation_function() {
       @Rule(key = "ExponentialRemediationFunc")
       class ExponentialRemediationFunctionCheck implements JavaFileScanner {
         @Override
@@ -285,7 +285,7 @@ public class InternalCheckVerifierTest {
     }
 
     @Test
-    public void rule_metadata_undefined_remediation_function() {
+    void rule_metadata_undefined_remediation_function() {
       @Rule(key = "UndefinedRemediationFunc")
       class UndefinedRemediationFunctionCheck implements JavaFileScanner {
         @Override
@@ -301,7 +301,7 @@ public class InternalCheckVerifierTest {
     }
 
     @Test
-    public void should_fail_when_no_cost() throws Exception {
+    void should_fail_when_no_cost() throws Exception {
       @Rule(key = "LinearJSON")
       class LinearRemediationFunctionCheck implements JavaFileScanner {
         @Override
@@ -321,7 +321,7 @@ public class InternalCheckVerifierTest {
     }
 
     @Test
-    public void test_rspec_key_with_no_metadata_should_not_fail() throws Exception {
+    void test_rspec_key_with_no_metadata_should_not_fail() throws Exception {
       @RspecKey("Dummy_fake_JSON")
       class DoesntExistsMetadataCheck implements JavaFileScanner {
         @Override

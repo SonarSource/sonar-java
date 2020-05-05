@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CommonsCollectionsTest extends MeasurerTester {
+class CommonsCollectionsTest extends MeasurerTester {
 
   private static final File PROJECT_DIR = new File("target/test-projects/commons-collections-3.2.1");
   private static final File SOURCE_DIR = new File(PROJECT_DIR, "src");
@@ -41,7 +41,7 @@ public class CommonsCollectionsTest extends MeasurerTester {
   }
 
   @Test
-  public void measures_on_project() throws Exception {
+  void measures_on_project() throws Exception {
     Map<String, Double> metrics = getMetrics();
 
     assertThat(metrics.get("classes").intValue()).isEqualTo(412);

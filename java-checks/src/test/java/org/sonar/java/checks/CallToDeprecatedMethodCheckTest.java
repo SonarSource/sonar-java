@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class CallToDeprecatedMethodCheckTest {
+class CallToDeprecatedMethodCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/CallToDeprecatedMethod.java"))
       .withCheck(new CallToDeprecatedMethodCheck())
@@ -38,7 +38,7 @@ public class CallToDeprecatedMethodCheckTest {
    * See {@link CallToDeprecatedCodeMarkedForRemovalCheck}
    */
   @Test
-  public void flagged_for_removal_should_not_raise_issue() {
+  void flagged_for_removal_should_not_raise_issue() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CallToDeprecatedMethod_java9.java")
       .withJavaVersion(9)
@@ -47,7 +47,7 @@ public class CallToDeprecatedMethodCheckTest {
   }
 
   @Test
-  public void without_semantic() {
+  void without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CallToDeprecatedMethod_noSemantic.java")
       .withCheck(new CallToDeprecatedMethodCheck())

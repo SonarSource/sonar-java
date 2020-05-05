@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class AssertionArgumentOrderCheckTest {
+class AssertionArgumentOrderCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck.java"))
       .withCheck(new AssertionArgumentOrderCheck())
@@ -35,7 +35,7 @@ public class AssertionArgumentOrderCheckTest {
   }
 
   @Test
-  public void test_JUnit5() {
+  void test_JUnit5() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionArgumentOrderCheck_JUnit5.java"))
       .withCheck(new AssertionArgumentOrderCheck())

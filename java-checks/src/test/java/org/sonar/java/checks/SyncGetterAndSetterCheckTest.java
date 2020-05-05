@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SyncGetterAndSetterCheckTest {
+class SyncGetterAndSetterCheckTest {
 
   @Test
-  public void syncGetterAndSetterCheckTest() throws Exception {
+  void syncGetterAndSetterCheckTest() throws Exception {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SyncGetterAndSetterCheck.java")
       .withCheck(new SyncGetterAndSetterCheck())

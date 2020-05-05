@@ -31,10 +31,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ComplexityVisitorTest {
+class ComplexityVisitorTest {
 
   @Test
-  public void lambda_complexity() throws Exception {
+  void lambda_complexity() throws Exception {
     CompilationUnitTree cut = JParserTestUtils.parse("class A { Function f = s -> {if(s.isEmpty()) return s; return new MyClass(){ void foo(){if(a) return;} };};}");
     ExpressionTree lambda = ((VariableTree) ((ClassTree) cut.types().get(0)).members().get(0)).initializer();
     List<Tree> nodes = new ComplexityVisitor().getNodes(lambda);
@@ -42,7 +42,7 @@ public class ComplexityVisitorTest {
   }
 
   @Test
-  public void method_complexity() throws Exception {
+  void method_complexity() throws Exception {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" +
         " Object foo(){" +
         " if(a) { " +
@@ -59,7 +59,7 @@ public class ComplexityVisitorTest {
   }
 
   @Test
-  public void switch_handling() throws Exception {
+  void switch_handling() throws Exception {
     CompilationUnitTree cut = JParserTestUtils.parse(
       "class A {" +
         "  String foo(int a) {" +

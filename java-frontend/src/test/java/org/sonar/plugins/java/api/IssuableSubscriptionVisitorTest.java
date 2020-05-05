@@ -36,10 +36,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-public class IssuableSubscriptionVisitorTest {
+class IssuableSubscriptionVisitorTest {
 
   @Test
-  public void test_custom_rules_report_issues() throws Exception {
+  void test_custom_rules_report_issues() throws Exception {
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(new CustomRule()), new ArrayList<>(), null);
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
@@ -47,7 +47,7 @@ public class IssuableSubscriptionVisitorTest {
   }
 
   @Test
-  public void check_issuable_subscription_visitor_does_not_visit_tree_on_its_own() {
+  void check_issuable_subscription_visitor_does_not_visit_tree_on_its_own() {
     try {
       new CustomRule().scanTree(Mockito.mock(CompilationUnitTree.class));
       fail("Analysis should have failed");

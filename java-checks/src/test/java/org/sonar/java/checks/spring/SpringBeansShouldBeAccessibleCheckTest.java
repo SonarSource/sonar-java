@@ -24,10 +24,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SpringBeansShouldBeAccessibleCheckTest {
+class SpringBeansShouldBeAccessibleCheckTest {
 
   @Test
-  public void testComponentScan() {
+  void testComponentScan() {
     List<String> files = Arrays.asList(
       "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/A.java",
       "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/ComponentScan/B.java",
@@ -50,7 +50,7 @@ public class SpringBeansShouldBeAccessibleCheckTest {
   }
 
   @Test
-  public void testSpringBootApplication() {
+  void testSpringBootApplication() {
     List<String> files = Arrays.asList(
       "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/SpringBootApplication/Ko.java",
       "src/test/files/checks/spring/SpringBeansShouldBeAccessibleCheck/SpringBootApplication/SpringBoot.java",

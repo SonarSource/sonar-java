@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class PrintfMisuseCheckTest {
+class PrintfMisuseCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/PrintfMisuseCheck.java"))
       .withCheck(new PrintfMisuseCheck())
@@ -35,7 +35,7 @@ public class PrintfMisuseCheckTest {
   }
 
   @Test
-  public void test_lambda_in_unknown_method_invocation() {
+  void test_lambda_in_unknown_method_invocation() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/PrintfMisuseCheckLambda.java")
       .withCheck(new PrintfMisuseCheck())

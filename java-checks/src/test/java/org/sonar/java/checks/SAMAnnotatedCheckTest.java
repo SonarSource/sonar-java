@@ -24,12 +24,12 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class SAMAnnotatedCheckTest {
+class SAMAnnotatedCheckTest {
 
   private static final String FILE = "src/test/files/checks/SAMAnnotatedCheck.java";
 
   @Test
-  public void no_issue_with_no_java_version() {
+  void no_issue_with_no_java_version() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SAMAnnotatedCheck_no_version.java")
       .withCheck(new SAMAnnotatedCheck())
@@ -42,7 +42,7 @@ public class SAMAnnotatedCheckTest {
   }
 
   @Test
-  public void test_java_8() {
+  void test_java_8() {
     JavaCheckVerifier.newVerifier()
       .onFile(FILE)
       .withCheck(new SAMAnnotatedCheck())
@@ -51,7 +51,7 @@ public class SAMAnnotatedCheckTest {
   }
 
   @Test
-  public void test_java_9() {
+  void test_java_9() {
     JavaCheckVerifier.newVerifier()
       .onFile(FILE)
       .withCheck(new SAMAnnotatedCheck())
@@ -65,7 +65,7 @@ public class SAMAnnotatedCheckTest {
   }
 
   @Test
-  public void no_issue_with_java_7() {
+  void no_issue_with_java_7() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SAMAnnotatedCheck_java7.java"))
       .withCheck(new SAMAnnotatedCheck())

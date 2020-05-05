@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class PrimitivesMarkedNullableCheckTest {
+class PrimitivesMarkedNullableCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/PrimitivesMarkedNullableCheck.java"))
       .withCheck(new PrimitivesMarkedNullableCheck())
@@ -35,7 +35,7 @@ public class PrimitivesMarkedNullableCheckTest {
   }
 
   @Test
-  public void noSemantic() {
+  void noSemantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/PrimitivesMarkedNullableCheck.java"))
       .withCheck(new PrimitivesMarkedNullableCheck())

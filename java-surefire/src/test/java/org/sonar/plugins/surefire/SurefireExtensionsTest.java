@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SurefireExtensionsTest {
+class SurefireExtensionsTest {
 
   @Test
-  public void shouldGetExtensions() {
+  void shouldGetExtensions() {
     assertThat(SurefireExtensions.getExtensions().size()).isEqualTo(3);
   }
 }

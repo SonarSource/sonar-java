@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class UselessImportCheckTest {
+class UselessImportCheckTest {
 
   @Test
-  public void detected_with_package() {
+  void detected_with_package() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UselessImportCheck/WithinPackage.java")
       .withCheck(new UselessImportCheck())
@@ -33,7 +33,7 @@ public class UselessImportCheckTest {
   }
 
   @Test
-  public void detected_within_package_info() {
+  void detected_within_package_info() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UselessImportCheck/package-info.java")
       .withCheck(new UselessImportCheck())
@@ -41,7 +41,7 @@ public class UselessImportCheckTest {
   }
 
   @Test
-  public void no_semantic() {
+  void no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UselessImportCheck/NoSemanticWithPackage.java")
       .withCheck(new UselessImportCheck())
@@ -50,7 +50,7 @@ public class UselessImportCheckTest {
   }
 
   @Test
-  public void detected_without_package() {
+  void detected_without_package() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UselessImportCheck/WithoutPackage.java")
       .withCheck(new UselessImportCheck())
@@ -58,7 +58,7 @@ public class UselessImportCheckTest {
   }
 
   @Test
-  public void with_module() {
+  void with_module() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/module/module-info.java")
       .withCheck(new UselessImportCheck())
@@ -66,7 +66,7 @@ public class UselessImportCheckTest {
   }
 
   @Test
-  public void intersection_type() {
+  void intersection_type() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UselessImportCheck/IntersectionCase.java")
       .withCheck(new UselessImportCheck())

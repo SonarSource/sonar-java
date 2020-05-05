@@ -26,17 +26,17 @@ import java.lang.reflect.Modifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PCollectionsTest {
+class PCollectionsTest {
 
   @Test
-  public void test() {
+  void test() {
     assertThat(PCollections.emptySet()).isSameAs(AVLTree.create());
     assertThat(PCollections.emptyMap()).isSameAs(AVLTree.create());
     assertThat(PCollections.emptyStack()).isSameAs(SinglyLinkedList.EMPTY);
   }
 
   @Test
-  public void private_constructor() throws Exception {
+  void private_constructor() throws Exception {
     assertThat(Modifier.isFinal(PCollections.class.getModifiers())).isTrue();
     Constructor constructor = PCollections.class.getDeclaredConstructor();
     assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();

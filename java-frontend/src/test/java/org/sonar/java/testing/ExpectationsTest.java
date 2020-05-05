@@ -37,24 +37,24 @@ import static org.sonar.java.testing.Expectations.IssueAttribute.START_COLUMN;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExpectationsTest {
+class ExpectationsTest {
 
   private static final int LINE = 42;
 
   @Test
-  public void issue_without_details() {
+  void issue_without_details() {
     Map<Expectations.IssueAttribute, Object> issue = new Expectations().parser().parseIssue("// Noncompliant", LINE).issue;
     assertThat(issue.get(Expectations.IssueAttribute.LINE)).isEqualTo(LINE);
   }
 
   @Test
-  public void issue_with_message() {
+  void issue_with_message() {
     Map<Expectations.IssueAttribute, Object> issue = new Expectations().parser().parseIssue("// Noncompliant {{message}}", LINE).issue;
     assertThat(issue.get(MESSAGE)).isEqualTo("message");
   }
 
   @Test
-  public void issue_with_attributes() {
+  void issue_with_attributes() {
     Map<Expectations.IssueAttribute, Object> issue = new Expectations().parser().parseIssue("// Noncompliant [[flows=f1,f2,f3;sc=3;ec=7;el=4;secondary=5]]", LINE).issue;
     assertThat(issue.get(FLOWS)).isEqualTo(ImmutableList.of("f1", "f2", "f3"));
     assertThat(issue.get(START_COLUMN)).isEqualTo(3);
@@ -65,13 +65,13 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void relative_end_line_attribute() {
+  void relative_end_line_attribute() {
     Map<Expectations.IssueAttribute, Object> issue = new Expectations().parser().parseIssue("// Noncompliant [[el=+1]]", LINE).issue;
     assertThat(issue.get(END_LINE)).isEqualTo(Expectations.Parser.LineRef.fromString(String.valueOf(LINE + 1)));
   }
 
   @Test
-  public void invalid_attribute_name() {
+  void invalid_attribute_name() {
     try {
       new Expectations().parser().parseIssue("// Noncompliant [[invalid]]", LINE);
       Fail.fail("exception expected");
@@ -81,7 +81,7 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void issue_with_attributes_and_comment() {
+  void issue_with_attributes_and_comment() {
     Map<Expectations.IssueAttribute, Object> issue = new Expectations().parser().parseIssue("// Noncompliant [[sc=1;ec=6]] {{message}}", LINE).issue;
     assertThat(issue.get(MESSAGE)).isEqualTo("message");
     assertThat(issue.get(START_COLUMN)).isEqualTo(1);
@@ -89,7 +89,7 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void issue_with_attributes_and_comment_switched() {
+  void issue_with_attributes_and_comment_switched() {
     Expectations.Issue issue = new Expectations().parser().parseIssue("// Noncompliant {{message}} [[sc=1;ec=6]]", LINE).issue;
     assertThat(issue.get(MESSAGE)).isEqualTo("message");
     assertThat(issue.get(START_COLUMN)).isEqualTo(1);
@@ -97,7 +97,7 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void end_line_attribute() {
+  void end_line_attribute() {
     try {
       new Expectations().parser().parseIssue("// Noncompliant [[endLine=-1]] {{message}}", 0);
       Fail.fail("exception expected");
@@ -107,19 +107,19 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void line_shifting() {
+  void line_shifting() {
     Map<Expectations.IssueAttribute, Object> issue = new Expectations().parser().parseIssue("// Noncompliant@-1", LINE).issue;
     assertThat(issue.get(Expectations.IssueAttribute.LINE)).isEqualTo(41);
   }
 
   @Test
-  public void no_flows() {
+  void no_flows() {
     List<Expectations.FlowComment> flows = Expectations.Parser.parseFlows(null, 0);
     assertThat(flows).isEmpty();
   }
 
   @Test
-  public void flow_without_details() {
+  void flow_without_details() {
     List<Expectations.FlowComment> flows = Expectations.Parser.parseFlows("// flow@npe1", LINE);
     assertThat(flows).hasSize(1);
     Expectations.FlowComment flow = flows.iterator().next();
@@ -128,7 +128,7 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void flow_with_message() throws Exception {
+  void flow_with_message() throws Exception {
     List<Expectations.FlowComment> flows = Expectations.Parser.parseFlows("// flow@npe1 {{message}}", LINE);
     assertThat(flows).hasSize(1);
     Expectations.FlowComment flow = flows.iterator().next();
@@ -138,7 +138,7 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void flow_with_attributes_and_message() throws Exception {
+  void flow_with_attributes_and_message() throws Exception {
     List<Expectations.FlowComment> flows = Expectations.Parser.parseFlows("// flow@npe1 [[sc=1;ec=6]] {{message}}", LINE);
     assertThat(flows).hasSize(1);
     Expectations.FlowComment flow = flows.iterator().next();
@@ -150,7 +150,7 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void issue_and_flow_on_the_same_line() {
+  void issue_and_flow_on_the_same_line() {
     Expectations.Parser.ParsedComment iaf = new Expectations().parser().parseIssue("// Noncompliant [[flows=id]] flow@id", LINE);
     assertThat(iaf.issue.get(Expectations.IssueAttribute.LINE)).isEqualTo(LINE);
     assertThat((List) iaf.issue.get(FLOWS)).contains("id");
@@ -161,7 +161,7 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void issue_and_flow_message() {
+  void issue_and_flow_message() {
     Expectations.Parser.ParsedComment iaf = new Expectations().parser().parseIssue("// Noncompliant {{issue msg}} flow@id {{flow msg}}", LINE);
     assertThat(iaf.issue.get(Expectations.IssueAttribute.MESSAGE)).isEqualTo("issue msg");
     assertThat(iaf.flows).hasSize(1);
@@ -170,7 +170,7 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void issue_and_flow_message2() {
+  void issue_and_flow_message2() {
     Expectations.Parser.ParsedComment iaf = new Expectations().parser().parseIssue("// Noncompliant flow@id {{flow msg}}", LINE);
     assertThat(iaf.issue.get(Expectations.IssueAttribute.MESSAGE)).isNull();
     assertThat(iaf.flows).hasSize(1);
@@ -179,7 +179,7 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void issue_and_flow_attr() {
+  void issue_and_flow_attr() {
     Expectations.Parser.ParsedComment iaf = new Expectations().parser().parseIssue("// Noncompliant [[sc=1;ec=2]] bla bla flow@id [[sc=3;ec=4]] bla bla", LINE);
     assertThat(iaf.issue.get(Expectations.IssueAttribute.START_COLUMN)).isEqualTo(1);
     assertThat(iaf.issue.get(Expectations.IssueAttribute.END_COLUMN)).isEqualTo(2);
@@ -190,7 +190,7 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void issue_and_flow_all_options() {
+  void issue_and_flow_all_options() {
     Expectations.Parser.ParsedComment iaf = new Expectations().parser()
       .parseIssue("// Noncompliant [[flows;sc=1;ec=2]] bla {{issue msg}} bla flow@id [[sc=3;ec=4]] bla {{flow msg}} bla", LINE);
     assertThat(iaf.issue).isEqualTo(ImmutableMap.of(
@@ -211,7 +211,7 @@ public class ExpectationsTest {
   }
 
   @Test
-  public void issue_and_multiple_flows_on_the_same_line() {
+  void issue_and_multiple_flows_on_the_same_line() {
     Expectations.Parser.ParsedComment iaf = new Expectations().parser().parseIssue("// Noncompliant [[flows=id]] {{issue msg}} flow@id1,id2 {{flow msg12}} flow@id3 {{flow msg3}}",
       LINE);
     assertThat(iaf.issue.get(Expectations.IssueAttribute.MESSAGE)).isEqualTo("issue msg");

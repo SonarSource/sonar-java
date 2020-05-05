@@ -25,10 +25,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class NoTestInTestClassCheckTest {
+class NoTestInTestClassCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/NoTestInTestClassCheck.java")
       .withCheck(new NoTestInTestClassCheck())
@@ -41,7 +41,7 @@ public class NoTestInTestClassCheckTest {
   }
 
   @Test
-  public void testEnclosed() {
+  void testEnclosed() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/NoTestInTestClassCheckEnclosed.java")
       .withCheck(new NoTestInTestClassCheck())
@@ -54,7 +54,7 @@ public class NoTestInTestClassCheckTest {
   }
 
   @Test
-  public void noClasspath() {
+  void noClasspath() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/NoTestInTestClassCheckNoClasspath.java")
       .withCheck(new NoTestInTestClassCheck())
@@ -63,7 +63,7 @@ public class NoTestInTestClassCheckTest {
   }
 
   @Test
-  public void archUnit() {
+  void archUnit() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NoTestInTestClassCheckArchUnitTest.java"))
       .withCheck(new NoTestInTestClassCheck())

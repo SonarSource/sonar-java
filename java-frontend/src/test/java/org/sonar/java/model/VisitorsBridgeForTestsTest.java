@@ -34,10 +34,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class VisitorsBridgeForTestsTest {
+class VisitorsBridgeForTestsTest {
 
   @Test
-  public void test_semantic_disabled() {
+  void test_semantic_disabled() {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponents.setSensorContext(context);
@@ -56,7 +56,7 @@ public class VisitorsBridgeForTestsTest {
   }
 
   @Test
-  public void test_report_with_analysis_message() {
+  void test_report_with_analysis_message() {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponents.setSensorContext(context);

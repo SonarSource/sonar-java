@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class SerializableObjectInSessionCheckTest {
+class SerializableObjectInSessionCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/serialization/SerializableObjectInSessionCheck.java"))
       .withCheck(new SerializableObjectInSessionCheck())
@@ -35,7 +35,7 @@ public class SerializableObjectInSessionCheckTest {
   }
 
   @Test
-  public void unresolved() {
+  void unresolved() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/serialization/SerializableObjectInSessionCheckUnresolved.java")
       .withCheck(new SerializableObjectInSessionCheck())

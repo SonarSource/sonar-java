@@ -23,12 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class SecurityConstraintsInWebXmlCheckTest {
+class SecurityConstraintsInWebXmlCheckTest {
 
   private static final SonarXmlCheck CHECK = new SecurityConstraintsInWebXmlCheck();
 
   @Test
-  public void web_xml_without_constraints() {
+  void web_xml_without_constraints() {
     SonarXmlCheckVerifier.verifyIssueOnFile(
       "withoutSecurityConstraints/web.xml",
       CHECK,
@@ -36,12 +36,12 @@ public class SecurityConstraintsInWebXmlCheckTest {
   }
 
   @Test
-  public void web_xml_with_constraints() {
+  void web_xml_with_constraints() {
     SonarXmlCheckVerifier.verifyNoIssue("withSecurityConstraints/web.xml", CHECK);
   }
 
   @Test
-  public void not_a_web_xml() {
+  void not_a_web_xml() {
     SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", CHECK);
   }
 

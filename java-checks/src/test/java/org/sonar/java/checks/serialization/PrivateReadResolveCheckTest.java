@@ -22,10 +22,10 @@ package org.sonar.java.checks.serialization;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class PrivateReadResolveCheckTest {
+class PrivateReadResolveCheckTest {
 
   @Test
-  public void private_read_resolve_check_test() {
+  void private_read_resolve_check_test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/serialization/PrivateReadResolveCheck.java")
       .withCheck(new PrivateReadResolveCheck())
@@ -33,7 +33,7 @@ public class PrivateReadResolveCheckTest {
   }
 
   @Test
-  public void private_read_resolve_check_no_semantic() {
+  void private_read_resolve_check_no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/serialization/PrivateReadResolveCheck.java")
       .withCheck(new PrivateReadResolveCheck())

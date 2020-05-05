@@ -23,7 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class ActionNumberCheckTest {
+class ActionNumberCheckTest {
 
   private ActionNumberCheck check;
 
@@ -33,18 +33,18 @@ public class ActionNumberCheckTest {
   }
 
   @Test
-  public void struts_config_with_too_many_forwards() {
+  void struts_config_with_too_many_forwards() {
     SonarXmlCheckVerifier.verifyIssues("tooManyActionsDefault/struts-config.xml", check);
   }
 
   @Test
-  public void struts_config_with_too_many_forwards_custom() {
+  void struts_config_with_too_many_forwards_custom() {
     check.maximumForwards = 3;
     SonarXmlCheckVerifier.verifyIssues("tooManyActionsCustom/struts-config.xml", check);
   }
 
   @Test
-  public void not_a_struts_config_xml() {
+  void not_a_struts_config_xml() {
     SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", check);
   }
 }

@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class UnderscoreOnNumberCheckTest {
+class UnderscoreOnNumberCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UnderscoreOnNumberCheck.java"))
       .withCheck(new UnderscoreOnNumberCheck())
@@ -35,7 +35,7 @@ public class UnderscoreOnNumberCheckTest {
   }
 
   @Test
-  public void test_java_6() {
+  void test_java_6() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UnderscoreOnNumberCheck_java6.java"))
       .withCheck(new UnderscoreOnNumberCheck())

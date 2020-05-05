@@ -40,10 +40,10 @@ import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ReassignmentFinderTest extends JParserTestUtils {
+class ReassignmentFinderTest extends JParserTestUtils {
 
   @Test
-  public void private_constructor() throws Exception {
+  void private_constructor() throws Exception {
     assertThat(isFinal(ReassignmentFinder.class.getModifiers())).isTrue();
     Constructor<ReassignmentFinder> constructor = ReassignmentFinder.class.getDeclaredConstructor();
     assertThat(isPrivate(constructor.getModifiers())).isTrue();
@@ -53,7 +53,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void parameter() throws Exception {
+  void parameter() throws Exception {
     String code = newCode(
       "int foo(int a) {",
       "  return a;",
@@ -65,7 +65,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void parameter_with_usage() throws Exception {
+  void parameter_with_usage() throws Exception {
     String code = newCode(
       "int foo(boolean test) {",
       "  if (test) {}",
@@ -78,7 +78,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void declaration() throws Exception {
+  void declaration() throws Exception {
     String code = newCode(
       "int foo() {",
       "  int a = 0;",
@@ -91,7 +91,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void unknown_variable() throws Exception {
+  void unknown_variable() throws Exception {
     String code = newCode(
       "int foo() {",
       "  return a;",
@@ -102,7 +102,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void array_declaration() throws Exception {
+  void array_declaration() throws Exception {
     String code = newCode(
       "int foo() {",
       "  int a[] = new int[42];",
@@ -116,7 +116,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void assignement() throws Exception {
+  void assignement() throws Exception {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -130,7 +130,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void assignement_with_other_variable() throws Exception {
+  void assignement_with_other_variable() throws Exception {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -146,7 +146,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void assignement_with_parenthesis() throws Exception {
+  void assignement_with_parenthesis() throws Exception {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -161,7 +161,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void last_assignement() throws Exception {
+  void last_assignement() throws Exception {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -176,7 +176,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void last_assignement_on_same_line() throws Exception {
+  void last_assignement_on_same_line() throws Exception {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -190,7 +190,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void outside_method() throws Exception {
+  void outside_method() throws Exception {
     String code = newCode(
       "int b;",
       "int foo() {",
@@ -204,7 +204,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void in_enum() {
+  void in_enum() {
     String code = newCode(
       "enum E { E1 {} }",
       "E foo() {",
@@ -220,7 +220,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void ignore_assignation_after_starting_point() throws Exception {
+  void ignore_assignation_after_starting_point() throws Exception {
     String code = newCode(
       "int foo() {",
       "  int b = 0;",
@@ -236,7 +236,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void ignore_assignation_after_starting_point_same_line() throws Exception {
+  void ignore_assignation_after_starting_point_same_line() throws Exception {
     String code = newCode(
       "int foo() {",
       "  int b = 0;",
@@ -255,7 +255,7 @@ public class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  public void known_limitation() throws Exception {
+  void known_limitation() throws Exception {
     String code = newCode(
       "int foo(boolean test) {",
       "  int a;",

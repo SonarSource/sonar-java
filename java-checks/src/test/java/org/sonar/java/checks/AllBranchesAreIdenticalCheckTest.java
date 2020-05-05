@@ -25,10 +25,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class AllBranchesAreIdenticalCheckTest {
+class AllBranchesAreIdenticalCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AllBranchesAreIdentical.java"))
       .withCheck(new AllBranchesAreIdenticalCheck())

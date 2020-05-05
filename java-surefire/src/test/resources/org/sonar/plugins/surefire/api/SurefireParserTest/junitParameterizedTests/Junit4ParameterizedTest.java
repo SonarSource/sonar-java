@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class Junit4ParameterizedTest {
+class Junit4ParameterizedTest {
 
   @Parameters(name = "{index}: {0}+{1} = {2}")
   public static Collection<Object[]> data() {
@@ -32,12 +32,12 @@ public class Junit4ParameterizedTest {
   public int c;
 
   @Test
-  public void test() {
+  void test() {
     assertEquals(a + b, c);
   }
 
   @Test
-  public void myNormalJunit4Test() {
+  void myNormalJunit4Test() {
     assertThat(new Object()).isNotNull();
   }
 }

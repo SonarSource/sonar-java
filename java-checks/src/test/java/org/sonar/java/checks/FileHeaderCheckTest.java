@@ -28,10 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class FileHeaderCheckTest {
+class FileHeaderCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     FileHeaderCheck check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2005";
     JavaCheckVerifier.newVerifier()
@@ -104,7 +104,7 @@ public class FileHeaderCheckTest {
   }
 
   @Test
-  public void regex() {
+  void regex() {
     FileHeaderCheck check = new FileHeaderCheck();
     check.headerFormat = "^// copyright \\d\\d\\d";
     check.isRegularExpression = true;
@@ -145,7 +145,7 @@ public class FileHeaderCheckTest {
   }
 
   @Test
-  public void should_fail_with_bad_regular_expression() {
+  void should_fail_with_bad_regular_expression() {
     FileHeaderCheck check = new FileHeaderCheck();
     check.headerFormat = "**";
     check.isRegularExpression = true;

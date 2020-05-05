@@ -21,10 +21,10 @@ package org.sonar.java.se.checks.debug;
 
 import org.junit.jupiter.api.Test;
 
-public class DebugInterruptedExecutionCheckTest {
+class DebugInterruptedExecutionCheckTest {
 
   @Test
-  public void test_max_steps() {
+  void test_max_steps() {
     DebugCheckTestUtils.verifyIssuesWithMaxSteps("src/test/files/se/debug/DebugInterruptedExecutionCheck.java", new DebugInterruptedExecutionCheck(), 20);
   }
 

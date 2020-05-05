@@ -22,10 +22,10 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ControllingPermissionsCheckTest {
+class ControllingPermissionsCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/security/ControllingPermissionsCheck.java")
       .withCheck(new ControllingPermissionsCheck())
@@ -33,7 +33,7 @@ public class ControllingPermissionsCheckTest {
   }
 
   @Test
-  public void no_issue_without_semantic() {
+  void no_issue_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/security/ControllingPermissionsCheck.java")
       .withCheck(new ControllingPermissionsCheck())

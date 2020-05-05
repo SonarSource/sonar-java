@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class NonSerializableWriteCheckTest {
+class NonSerializableWriteCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/serialization/NonSerializableWriteCheck.java"))
       .withCheck(new NonSerializableWriteCheck())
@@ -35,7 +35,7 @@ public class NonSerializableWriteCheckTest {
   }
 
   @Test
-  public void unresolved() {
+  void unresolved() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/serialization/NonSerializableWriteCheckUnresolved.java")
       .withCheck(new NonSerializableWriteCheck())

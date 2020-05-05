@@ -26,11 +26,11 @@ import org.sonar.java.se.symbolicvalues.SymbolicValue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LearnedConstraintTest {
+class LearnedConstraintTest {
 
 
   @Test
-  public void test_toString() throws Exception {
+  void test_toString() throws Exception {
     SymbolicValue sv = new SymbolicValue() {
       @Override
       public String toString() {

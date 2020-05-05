@@ -24,25 +24,25 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PackageUtilsTest {
+class PackageUtilsTest {
 
   @Test
-  public void no_package_empty_string() {
+  void no_package_empty_string() {
     assertThat(packageName("class A{}")).isEqualTo("");
   }
 
   @Test
-  public void identifier_package() {
+  void identifier_package() {
     assertThat(packageName("package foo; class A{}")).isEqualTo("foo");
   }
 
   @Test
-  public void member_select_package() {
+  void member_select_package() {
     assertThat(packageName("package foo.bar.plop; class A{}")).isEqualTo("foo.bar.plop");
   }
 
   @Test
-  public void different_separator() {
+  void different_separator() {
     assertThat(packageName("package foo.bar.plop; class A{}", "/")).isEqualTo("foo/bar/plop");
   }
 

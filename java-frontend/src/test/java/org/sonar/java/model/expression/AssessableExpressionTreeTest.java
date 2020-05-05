@@ -36,49 +36,49 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AssessableExpressionTreeTest {
+class AssessableExpressionTreeTest {
 
   private final ClassTree classTree = parse();
 
   @Test
-  public void literals() {
+  void literals() {
     assertThat(resolveAsStrings("literals")).containsExactly("hello", null, null, null, null, null, null, null, null, null, null);
     assertThat(resolveAsInts("literals")).containsExactly(null, null, 43, +43, -43, null, null, null, null, 1000, null);
     assertThat(resolveAsBooleans("literals")).containsExactly(null, true, null, null, null, null, null, null, null, null, null);
   }
 
   @Test
-  public void identifiers() {
+  void identifiers() {
     assertThat(resolveAsStrings("identifiers")).containsExactly("abc", "abcdef", null, null, null, null);
     assertThat(resolveAsInts("identifiers")).containsExactly(null, null, 42, null, null, null);
     assertThat(resolveAsBooleans("identifiers")).containsExactly(null, null, null, null, true, false);
   }
 
   @Test
-  public void parentheses() {
+  void parentheses() {
     assertThat(resolveAsStrings("parentheses")).containsExactly("abc", null);
     assertThat(resolveAsInts("parentheses")).containsExactly(null, 42);
   }
 
   @Test
-  public void memberSelect() {
+  void memberSelect() {
     assertThat(resolveAsStrings("memberSelect")).containsExactly("abc", null, null);
     assertThat(resolveAsBooleans("memberSelect")).containsExactly(null, true, false);
   }
 
   @Test
-  public void plus() {
+  void plus() {
     assertThat(resolveAsStrings("plus")).containsExactly("hello abc", null, null, "hello42", "42hello", null, null, null, null);
     assertThat(resolveAsInts("plus")).containsExactly(null, null, null, null, null, 43, null, null, null);
   }
 
   @Test
-  public void other() {
+  void other() {
     assertThat(resolveAsStrings("other")).containsExactly(null, null);
   }
 
   @Test
-  public void uncompilable_expressions() {
+  void uncompilable_expressions() {
     assertThat(expression("42 + 1").asConstant(Integer.class)).isPresent().contains(43);
     assertThat(expression("42 + true").asConstant()).isEmpty();
     assertThat(expression("42L + true").asConstant()).isEmpty();

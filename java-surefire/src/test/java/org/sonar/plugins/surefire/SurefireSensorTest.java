@@ -42,7 +42,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SurefireSensorTest {
+class SurefireSensorTest {
 
   private JavaResourceLocator javaResourceLocator;
   private SurefireSensor surefireSensor;
@@ -66,7 +66,7 @@ public class SurefireSensorTest {
   }
 
   @Test
-  public void should_execute_if_filesystem_contains_java_files() {
+  void should_execute_if_filesystem_contains_java_files() {
     surefireSensor = new SurefireSensor(new SurefireJavaParser(javaResourceLocator), new MapSettings().asConfig(), fs, pathResolver);
     DefaultSensorDescriptor defaultSensorDescriptor = new DefaultSensorDescriptor();
     surefireSensor.describe(defaultSensorDescriptor);
@@ -74,7 +74,7 @@ public class SurefireSensorTest {
   }
 
   @Test
-  public void shouldNotFailIfReportsNotFound() {
+  void shouldNotFailIfReportsNotFound() {
     MapSettings settings = new MapSettings();
     settings.setProperty(SurefireUtils.SUREFIRE_REPORT_PATHS_PROPERTY, "unknown");
 
@@ -83,7 +83,7 @@ public class SurefireSensorTest {
   }
 
   @Test
-  public void shouldHandleTestSuiteDetails() throws URISyntaxException {
+  void shouldHandleTestSuiteDetails() throws URISyntaxException {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("org.sonar.core.ExtensionsFinderTest"))
@@ -117,7 +117,7 @@ public class SurefireSensorTest {
   }
 
   @Test
-  public void shouldSaveErrorsAndFailuresInXML() throws URISyntaxException {
+  void shouldSaveErrorsAndFailuresInXML() throws URISyntaxException {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("org.sonar.core.ExtensionsFinderTest"))
@@ -133,14 +133,14 @@ public class SurefireSensorTest {
   }
 
   @Test
-  public void shouldSupportLongAttributeValues() throws URISyntaxException {
+  void shouldSupportLongAttributeValues() throws URISyntaxException {
     SensorContextTester context = SensorContextTester.create(new File(""));
     collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/should_support_long_attribute_values/");
     assertThat(context.allAnalysisErrors()).hasSize(0);
   }
 
   @Test
-  public void shouldManageClassesWithDefaultPackage() throws URISyntaxException {
+  void shouldManageClassesWithDefaultPackage() throws URISyntaxException {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("NoPackagesTest"));
@@ -151,7 +151,7 @@ public class SurefireSensorTest {
   }
 
   @Test
-  public void successRatioIsZeroWhenAllTestsFail() throws URISyntaxException {
+  void successRatioIsZeroWhenAllTestsFail() throws URISyntaxException {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("org.sonar.Foo"));
@@ -164,7 +164,7 @@ public class SurefireSensorTest {
   }
 
   @Test
-  public void measuresShouldNotIncludeSkippedTests() throws URISyntaxException {
+  void measuresShouldNotIncludeSkippedTests() throws URISyntaxException {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("org.sonar.Foo"));
@@ -178,7 +178,7 @@ public class SurefireSensorTest {
   }
 
   @Test
-  public void noSuccessRatioIfNoTests() throws URISyntaxException {
+  void noSuccessRatioIfNoTests() throws URISyntaxException {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("org.sonar.Foo"));
@@ -192,7 +192,7 @@ public class SurefireSensorTest {
   }
 
   @Test
-  public void should_support_reportNameSuffix() throws URISyntaxException {
+  void should_support_reportNameSuffix() throws URISyntaxException {
     SensorContextTester context = SensorContextTester.create(new File(""));
     context.fileSystem()
       .add(resource("org.sonar.Foo"));

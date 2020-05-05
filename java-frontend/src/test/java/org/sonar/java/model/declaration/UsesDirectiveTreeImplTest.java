@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.UsesDirectiveTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UsesDirectiveTreeImplTest {
+class UsesDirectiveTreeImplTest {
 
   private static UsesDirectiveTree moduleDirective(String exportsDirective) {
     CompilationUnitTree compilationUnitTree = JParserTestUtils.parseModule("module org.foo {\n  " + exportsDirective + "\n}");
@@ -41,7 +41,7 @@ public class UsesDirectiveTreeImplTest {
   }
 
   @Test
-  public void simple_uses() {
+  void simple_uses() {
     UsesDirectiveTree exports = moduleDirective("uses foo.MyInterface;");
 
     assertThat(exports.kind()).isEqualTo(Tree.Kind.USES_DIRECTIVE);
@@ -53,7 +53,7 @@ public class UsesDirectiveTreeImplTest {
   }
 
   @Test
-  public void test_BaseTreeVisitor() {
+  void test_BaseTreeVisitor() {
     CompilationUnitTree cut = JParserTestUtils.parseModule(
       "open module com.greetings {",
       "  uses org.bar.MyInterface;",

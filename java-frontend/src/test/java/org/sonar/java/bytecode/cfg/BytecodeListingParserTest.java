@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class BytecodeListingParserTest {
+class BytecodeListingParserTest {
 
   private static void assertCFG(String listing, String expected) {
     BytecodeCFG cfg = BytecodeListingParser.getCFG(listing);
@@ -33,7 +33,7 @@ public class BytecodeListingParserTest {
   }
 
   @Test
-  public void test_no_operand() throws Exception {
+  void test_no_operand() throws Exception {
     assertCFG("L0\n" +
       "ICONST_0\n",
       "B0(Exit)\n" +
@@ -43,7 +43,7 @@ public class BytecodeListingParserTest {
   }
 
   @Test
-  public void copy_paste_from_asm_output() throws Exception {
+  void copy_paste_from_asm_output() throws Exception {
     String listing = "L0\n" +
       "    LINENUMBER 465 L0\n" +
       "    ICONST_0\n" +

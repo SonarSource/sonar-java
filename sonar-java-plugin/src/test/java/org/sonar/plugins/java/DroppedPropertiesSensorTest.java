@@ -35,7 +35,7 @@ import org.sonar.api.utils.log.LoggerLevel;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @EnableRuleMigrationSupport
-public class DroppedPropertiesSensorTest {
+class DroppedPropertiesSensorTest {
 
   @Rule
   public TemporaryFolder tmp = new TemporaryFolder();
@@ -44,7 +44,7 @@ public class DroppedPropertiesSensorTest {
   public LogTester logTester = new LogTester();
 
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     SensorContextTester contextTester = SensorContextTester.create(tmp.newFolder());
     MapSettings mapSettings = new MapSettings().setProperty("sonar.jacoco.reportPaths", "/path");
     contextTester.setSettings(mapSettings);
@@ -58,7 +58,7 @@ public class DroppedPropertiesSensorTest {
   }
 
   @Test
-  public void test_two_reportPaths_property() throws Exception {
+  void test_two_reportPaths_property() throws Exception {
     SensorContextTester contextTester = SensorContextTester.create(tmp.newFolder());
     MapSettings mapSettings = new MapSettings().setProperty("sonar.jacoco.reportPaths", "/path")
       .setProperty("sonar.jacoco.reportPath", "/path");
@@ -72,7 +72,7 @@ public class DroppedPropertiesSensorTest {
   }
 
   @Test
-  public void test_two_reportPaths_property_plus_another() throws Exception {
+  void test_two_reportPaths_property_plus_another() throws Exception {
     SensorContextTester contextTester = SensorContextTester.create(tmp.newFolder());
     MapSettings mapSettings = new MapSettings().setProperty("sonar.jacoco.reportPaths", "/path")
       .setProperty("sonar.jacoco.reportPath", "/path")
@@ -88,7 +88,7 @@ public class DroppedPropertiesSensorTest {
   }
 
   @Test
-  public void test_empty() throws Exception {
+  void test_empty() throws Exception {
     SensorContextTester contextTester = SensorContextTester.create(tmp.newFolder());
     List<String> analysisWarnings = new ArrayList<>();
     DroppedPropertiesSensor sensor = new DroppedPropertiesSensor(analysisWarnings::add);
@@ -99,7 +99,7 @@ public class DroppedPropertiesSensorTest {
   }
 
   @Test
-  public void test_descriptor() throws Exception {
+  void test_descriptor() throws Exception {
     DroppedPropertiesSensor sensor = new DroppedPropertiesSensor(w -> {
     });
     DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();

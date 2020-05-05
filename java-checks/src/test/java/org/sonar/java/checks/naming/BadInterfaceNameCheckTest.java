@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class BadInterfaceNameCheckTest {
+class BadInterfaceNameCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/naming/BadInterfaceNameNoncompliant.java"))
       .withCheck(new BadInterfaceNameCheck())
@@ -35,7 +35,7 @@ public class BadInterfaceNameCheckTest {
   }
 
   @Test
-  public void test2() {
+  void test2() {
     BadInterfaceNameCheck check = new BadInterfaceNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
     JavaCheckVerifier.newVerifier()

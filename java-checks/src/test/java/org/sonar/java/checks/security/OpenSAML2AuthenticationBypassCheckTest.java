@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class OpenSAML2AuthenticationBypassCheckTest {
+class OpenSAML2AuthenticationBypassCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/security/OpenSAML2AuthenticationBypassCheck.java"))
       .withCheck(new OpenSAML2AuthenticationBypassCheck())

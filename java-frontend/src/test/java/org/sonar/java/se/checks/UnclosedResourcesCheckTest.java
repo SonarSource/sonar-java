@@ -25,10 +25,10 @@ import org.sonar.java.testing.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UnclosedResourcesCheckTest {
+class UnclosedResourcesCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnclosedResourcesCheck.java")
       .withCheck(new UnclosedResourcesCheck())
@@ -37,7 +37,7 @@ public class UnclosedResourcesCheckTest {
   }
 
   @Test
-  public void jdbcTests() {
+  void jdbcTests() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/JdbcResourcesTestFile.java")
       .withCheck(new UnclosedResourcesCheck())
@@ -46,7 +46,7 @@ public class UnclosedResourcesCheckTest {
   }
 
   @Test
-  public void spring() {
+  void spring() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/SpringResource.java")
       .withCheck(new UnclosedResourcesCheck())
@@ -55,7 +55,7 @@ public class UnclosedResourcesCheckTest {
   }
 
   @Test
-  public void streams() {
+  void streams() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/StreamResource.java")
       .withCheck(new UnclosedResourcesCheck())
@@ -64,7 +64,7 @@ public class UnclosedResourcesCheckTest {
   }
 
   @Test
-  public void testWithExcludedTypes() {
+  void testWithExcludedTypes() {
     UnclosedResourcesCheck unclosedResourcesCheck = new UnclosedResourcesCheck();
     unclosedResourcesCheck.excludedTypes = "java.io.FileInputStream, java.sql.Statement";
     CheckVerifier.newVerifier()
@@ -75,7 +75,7 @@ public class UnclosedResourcesCheckTest {
   }
 
   @Test
-  public void try_with_resources() {
+  void try_with_resources() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnclosedResourcesCheckARM.java")
       .withCheck(new UnclosedResourcesCheck())
@@ -84,13 +84,13 @@ public class UnclosedResourcesCheckTest {
   }
 
   @Test
-  public void test_value_as_string_for_open_resource_constraints() throws Exception {
+  void test_value_as_string_for_open_resource_constraints() throws Exception {
     assertThat(UnclosedResourcesCheck.ResourceConstraint.OPEN.valueAsString()).isSameAs("open");
     assertThat(UnclosedResourcesCheck.ResourceConstraint.CLOSED.valueAsString()).isSameAs("closed");
   }
 
   @Test
-  public void test_streams() throws Exception {
+  void test_streams() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnclosedResourcesCheckStreams.java")
       .withCheck(new UnclosedResourcesCheck())
@@ -99,7 +99,7 @@ public class UnclosedResourcesCheckTest {
   }
 
   @Test
-  public void skip_exception_messages() throws Exception {
+  void skip_exception_messages() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnclosedResourcesCheckWithoutExceptionMessages.java")
       .withCheck(new UnclosedResourcesCheck())

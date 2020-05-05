@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class StringLiteralDuplicatedCheckTest {
+class StringLiteralDuplicatedCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/StringLiteralDuplicatedCheck.java")
       .withCheck(new StringLiteralDuplicatedCheck())
@@ -33,7 +33,7 @@ public class StringLiteralDuplicatedCheckTest {
   }
 
   @Test
-  public void threshold_at_two() {
+  void threshold_at_two() {
     StringLiteralDuplicatedCheck visitor = new StringLiteralDuplicatedCheck();
     visitor.threshold = 2;
     JavaCheckVerifier.newVerifier()

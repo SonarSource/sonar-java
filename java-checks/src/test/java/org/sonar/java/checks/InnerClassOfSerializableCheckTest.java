@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class InnerClassOfSerializableCheckTest {
+class InnerClassOfSerializableCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/InnerClassOfSerializableCheck.java"))
       .withCheck(new InnerClassOfSerializableCheck())

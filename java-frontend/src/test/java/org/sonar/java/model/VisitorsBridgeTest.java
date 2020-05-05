@@ -64,7 +64,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @EnableRuleMigrationSupport
-public class VisitorsBridgeTest {
+class VisitorsBridgeTest {
 
   @Rule
   public LogTester logTester = new LogTester();
@@ -78,8 +78,8 @@ public class VisitorsBridgeTest {
   private static final NullPointerException NPE = new NullPointerException("BimBadaboum");
 
   @Test
-  @Disabled
-  public void test_semantic_exclusions() {
+  @Disabled("Unable to reproduce since ECJ migration")
+  void test_semantic_exclusions() {
     VisitorsBridge visitorsBridgeWithoutSemantic = new VisitorsBridge(Collections.singletonList((JavaFileScanner) context -> {
       assertThat(context.getSemanticModel()).isNull();
       assertThat(context.fileParsed()).isTrue();
@@ -110,8 +110,8 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  @Disabled
-  public void log_only_50_elements() {
+  @Disabled("Missing classes are not logged anymore since ECJ migration")
+  void log_only_50_elements() {
     DecimalFormat formatter = new DecimalFormat("00");
     IntFunction<String> classNotFoundName = i -> "NotFound" + formatter.format(i);
     VisitorsBridge visitorsBridge = new VisitorsBridge(Collections.singletonList((JavaFileScanner) context -> {
@@ -140,7 +140,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void rethrow_exception_when_hidden_property_set_to_true_with_JavaFileScanner() {
+  void rethrow_exception_when_hidden_property_set_to_true_with_JavaFileScanner() {
     try {
       visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), true)
         .visitFile(COMPILATION_UNIT_TREE);
@@ -158,7 +158,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void swallow_exception_when_hidden_property_set_to_false_with_JavaFileScanner() {
+  void swallow_exception_when_hidden_property_set_to_false_with_JavaFileScanner() {
     try {
       visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), false)
         .visitFile(COMPILATION_UNIT_TREE);
@@ -172,7 +172,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void rethrow_exception_when_hidden_property_set_to_true_with_SubscriptionVisitor() {
+  void rethrow_exception_when_hidden_property_set_to_true_with_SubscriptionVisitor() {
     try {
       visitorsBridge(new SV1_ThrowingNPEVisitingClass(), true)
         .visitFile(COMPILATION_UNIT_TREE);
@@ -190,7 +190,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void swallow_exception_when_hidden_property_set_to_false_with_SubscriptionVisitor() {
+  void swallow_exception_when_hidden_property_set_to_false_with_SubscriptionVisitor() {
     try {
       visitorsBridge(Arrays.asList(
         new SV1_ThrowingNPEVisitingClass(),
@@ -213,7 +213,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void swallow_exception_when_hidden_property_set_to_false_with_IssuableSubscriptionVisitor() {
+  void swallow_exception_when_hidden_property_set_to_false_with_IssuableSubscriptionVisitor() {
     try {
       visitorsBridge(Arrays.asList(
         new IV1_ThrowingNPEVisitingClass(),
@@ -230,7 +230,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void swallow_exception_when_hidden_property_set_to_false_with_all_kinds_of_visisitors() {
+  void swallow_exception_when_hidden_property_set_to_false_with_all_kinds_of_visisitors() {
     try {
       visitorsBridge(Arrays.asList(
         new SE1_ThrowingNPEPreStatement(),
@@ -251,7 +251,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void rethrow_exception_when_hidden_property_set_to_true_with_SECheck() {
+  void rethrow_exception_when_hidden_property_set_to_true_with_SECheck() {
     try {
       visitorsBridge(Arrays.asList(
         new SE1_ThrowingNPEPreStatement(),
@@ -271,7 +271,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void swallow_exception_when_hidden_property_set_to_false_with_SECheck() {
+  void swallow_exception_when_hidden_property_set_to_false_with_SECheck() {
     try {
       visitorsBridge(Arrays.asList(
         new SE1_ThrowingNPEPreStatement(),
@@ -287,7 +287,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void swallow_exception_when_hidden_property_set_to_false_with_Filter() {
+  void swallow_exception_when_hidden_property_set_to_false_with_Filter() {
     try {
       visitorsBridge(Arrays.asList(), false, new Filter_ThrowingNPE())
         .visitFile(COMPILATION_UNIT_TREE);
@@ -301,7 +301,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void rethrow_exception_when_hidden_property_set_to_true_with_Filter() {
+  void rethrow_exception_when_hidden_property_set_to_true_with_Filter() {
     try {
       visitorsBridge(Arrays.asList(), true, new Filter_ThrowingNPE())
         .visitFile(COMPILATION_UNIT_TREE);
@@ -319,7 +319,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void no_log_when_filter_execute_fine() {
+  void no_log_when_filter_execute_fine() {
     try {
       visitorsBridge(Arrays.asList(), true, new FilterNothing())
         .visitFile(COMPILATION_UNIT_TREE);
@@ -331,7 +331,7 @@ public class VisitorsBridgeTest {
   }
 
   @Test
-  public void should_not_create_symbol_table_for_generated() {
+  void should_not_create_symbol_table_for_generated() {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     VisitorsBridge bridge = new VisitorsBridge(Collections.emptySet(), Collections.emptyList(), sonarComponents);
     bridge.setCurrentFile(new GeneratedFile(null, null));

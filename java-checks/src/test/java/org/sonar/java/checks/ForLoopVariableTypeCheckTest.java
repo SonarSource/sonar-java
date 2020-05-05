@@ -22,13 +22,13 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ForLoopVariableTypeCheckTest {
+class ForLoopVariableTypeCheckTest {
 
   private static final String FILENAME = "src/test/files/checks/ForLoopVariableTypeCheck.java";
   private static final ForLoopVariableTypeCheck CHECK = new ForLoopVariableTypeCheck();
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(CHECK)

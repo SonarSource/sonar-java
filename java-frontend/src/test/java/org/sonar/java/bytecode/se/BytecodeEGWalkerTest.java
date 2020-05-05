@@ -58,7 +58,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @EnableRuleMigrationSupport
-public class BytecodeEGWalkerTest {
+class BytecodeEGWalkerTest {
 
   private static SquidClassLoader squidClassLoader;
   @Rule
@@ -75,7 +75,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void generateMethodBehavior() throws Exception {
+  void generateMethodBehavior() throws Exception {
     MethodBehavior methodBehavior = getMethodBehavior("fun(ZLjava/lang/Object;)Ljava/lang/Object;");
     assertThat(methodBehavior.yields()).hasSize(2);
 
@@ -104,7 +104,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void verify_behavior_of_fun2_method() throws Exception {
+  void verify_behavior_of_fun2_method() throws Exception {
     MethodBehavior methodBehavior = getMethodBehavior("fun2(Z)Ljava/lang/Object;");
     assertThat(methodBehavior.yields()).hasSize(2);
 
@@ -138,7 +138,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void test_int_comparator() throws Exception {
+  void test_int_comparator() throws Exception {
     MethodBehavior methodBehavior = getMethodBehavior("int_comparison(II)Ljava/lang/Object;");
     assertThat(methodBehavior.yields()).hasSize(1);
     HappyPathYield methodYield = ((HappyPathYield) methodBehavior.yields().get(0));
@@ -146,13 +146,13 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void goto_terminator() throws Exception {
+  void goto_terminator() throws Exception {
     MethodBehavior methodBehavior = getMethodBehavior("gotoTerminator(Ljava/lang/Object;)Z");
     assertThat(methodBehavior.yields()).hasSize(2);
   }
 
   @Test
-  public void test_method_throwing_exception() throws Exception {
+  void test_method_throwing_exception() throws Exception {
     MethodBehavior methodBehavior = getMethodBehavior("throw_exception()V");
     assertThat(methodBehavior.yields()).hasSize(1);
     MethodYield methodYield = methodBehavior.yields().get(0);
@@ -160,7 +160,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void test_method_is_complete() {
+  void test_method_is_complete() {
     String desc = "(Ljava/lang/String;)Z";
     MethodBehavior nativeMethod = getMethodBehavior("nativeMethod" + desc);
     assertThat(nativeMethod.isComplete()).isFalse();
@@ -182,14 +182,14 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void method_array() throws Exception {
+  void method_array() throws Exception {
     BytecodeEGWalker walker = getBytecodeEGWalker(squidClassLoader);
     MethodBehavior behavior = walker.getMethodBehavior("java.lang.Class[]#clone()Ljava/lang/Object;", squidClassLoader);
     assertThat(behavior).isNull();
   }
 
   @Test
-  public void test_starting_states() throws Exception {
+  void test_starting_states() throws Exception {
     BytecodeEGWalker walker = new BytecodeEGWalker(null, semanticModel);
 
     String signature = "type#foo()V";
@@ -216,7 +216,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void max_step_exception_should_log_warning_and_generate_behavior() {
+  void max_step_exception_should_log_warning_and_generate_behavior() {
     BytecodeEGWalker bytecodeEGWalker = new BytecodeEGWalker(new BehaviorCache(squidClassLoader), semanticModel) {
       @Override
       int maxSteps() {
@@ -232,7 +232,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void unchecked_exceptions_should_be_enqueued() {
+  void unchecked_exceptions_should_be_enqueued() {
     MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "test(Lorg/sonar/java/bytecode/se/testdata/ExceptionEnqueue;)Ljava/lang/Object;");
     List<Constraint> resultConstraint = mb.happyPathYields().map(y -> y.resultConstraint().get(ObjectConstraint.class)).collect(Collectors.toList());
     assertThat(resultConstraint).contains(ObjectConstraint.NOT_NULL, ObjectConstraint.NULL);
@@ -243,7 +243,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void test_enqueueing_of_catch_blocks() {
+  void test_enqueueing_of_catch_blocks() {
     MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "testCatchBlockEnqueue(Lorg/sonar/java/bytecode/se/testdata/ExceptionEnqueue;)Z");
     List<HappyPathYield> happyPathYields = mb.happyPathYields().collect(Collectors.toList());
     assertThat(happyPathYields).hasSize(1);
@@ -254,7 +254,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void test_enqueueing_of_catch_blocks2() {
+  void test_enqueueing_of_catch_blocks2() {
     MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "testCatchBlockEnqueue2()Z");
     List<MethodYield> yields = mb.yields();
     assertThat(yields).hasSize(1);
@@ -265,7 +265,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void test_enqueueing_of_exit_block() {
+  void test_enqueueing_of_exit_block() {
     MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "enqueueExitBlock()Z");
     List<MethodYield> yields = mb.yields();
     assertThat(yields).hasSize(1);
@@ -276,7 +276,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void test_enqueueing_of_exit_block2() {
+  void test_enqueueing_of_exit_block2() {
     MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "enqueueExitBlock2(Lorg/sonar/java/bytecode/se/testdata/ExceptionEnqueue;)Z");
     List<HappyPathYield> happyPathYields = mb.happyPathYields().collect(Collectors.toList());
     assertThat(happyPathYields).hasSize(1);
@@ -287,7 +287,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void test_enqueueing_of_exit_block3() {
+  void test_enqueueing_of_exit_block3() {
     MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "enqueueExitBlock3()Z");
     assertThat(mb.happyPathYields().findFirst().isPresent()).isFalse();
     List<ExceptionalYield> exceptionalYields = mb.exceptionalPathYields().collect(Collectors.toList());
@@ -296,7 +296,7 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void test_enqueueing_of_exit_block4() {
+  void test_enqueueing_of_exit_block4() {
     MethodBehavior mb = getMethodBehavior(ExceptionEnqueue.class, "enqueueExitBlock4()Z");
     List<HappyPathYield> happyPathYields = mb.happyPathYields().collect(Collectors.toList());
     assertThat(happyPathYields.get(0).resultConstraint().hasConstraint(BooleanConstraint.TRUE)).isTrue();
@@ -304,13 +304,13 @@ public class BytecodeEGWalkerTest {
   }
 
   @Test
-  public void propagation_of_bytecode_analysis_exception() throws Exception {
+  void propagation_of_bytecode_analysis_exception() throws Exception {
     MethodBehavior methodBehavior = getMethodBehavior(MaxRelationBytecode.class, "isXMLLetter(C)Z");
     assertThat(methodBehavior.isComplete()).isFalse();
   }
 
   @Test
-  public void test_guava() throws Exception {
+  void test_guava() throws Exception {
     MethodBehavior methodBehavior = getMethodBehavior(ByteStreams.class, "read(Ljava/io/InputStream;[BII)I");
     assertThat(methodBehavior.happyPathYields().anyMatch(y -> y.resultConstraint() == null)).isTrue();
   }

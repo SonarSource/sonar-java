@@ -47,7 +47,7 @@ import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @EnableRuleMigrationSupport
-public class XmlFileSensorTest {
+class XmlFileSensorTest {
 
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -64,7 +64,7 @@ public class XmlFileSensorTest {
   }
 
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     CheckFactory checkFactory = new CheckFactory(activeRules());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
@@ -88,7 +88,7 @@ public class XmlFileSensorTest {
   }
 
   @Test
-  public void testDoNothingIfNoXmlFile() throws Exception {
+  void testDoNothingIfNoXmlFile() throws Exception {
     CheckFactory checkFactory = new CheckFactory(activeRules());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
@@ -99,7 +99,7 @@ public class XmlFileSensorTest {
   }
 
   @Test
-  public void testDoNothingIfNoXmlRule() throws Exception {
+  void testDoNothingIfNoXmlRule() throws Exception {
     CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().build());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
@@ -111,7 +111,7 @@ public class XmlFileSensorTest {
   }
 
   @Test
-  public void testHandleAnalysisCancellation() throws Exception {
+  void testHandleAnalysisCancellation() throws Exception {
     CheckFactory checkFactory = new CheckFactory(new ActiveRulesBuilder().build());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
@@ -125,7 +125,7 @@ public class XmlFileSensorTest {
   }
 
   @Test
-  public void testDoNothingIfParsingError() throws Exception {
+  void testDoNothingIfParsingError() throws Exception {
     CheckFactory checkFactory = new CheckFactory(activeRules());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
@@ -143,7 +143,7 @@ public class XmlFileSensorTest {
   }
 
   @Test
-  public void testDoNotFailAnalysisIfUnexpectedIssue() throws Exception {
+  void testDoNotFailAnalysisIfUnexpectedIssue() throws Exception {
     CheckFactory checkFactory = new CheckFactory(activeRules());
     XmlFileSensor sensor = new XmlFileSensor(checkFactory);
 
@@ -166,7 +166,7 @@ public class XmlFileSensorTest {
   }
 
   @Test
-  public void testDescriptor() throws Exception {
+  void testDescriptor() throws Exception {
     XmlFileSensor sensor = new XmlFileSensor(new CheckFactory(new ActiveRulesBuilder().build()));
     DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
     sensor.describe(descriptor);
@@ -187,7 +187,7 @@ public class XmlFileSensorTest {
   }
 
   @Test
-  public void testCheckFailure() throws Exception {
+  void testCheckFailure() throws Exception {
     XmlFileSensor sensor = new XmlFileSensor(new CheckFactory(new ActiveRulesBuilder().build()));
     InputFile inputFile = addFileWithIssue("xml");
     XmlFile xmlFile = XmlFile.create(inputFile);

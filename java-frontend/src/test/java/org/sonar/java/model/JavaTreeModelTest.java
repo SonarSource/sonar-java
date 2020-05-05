@@ -90,10 +90,10 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaTreeModelTest {
+class JavaTreeModelTest {
 
   @Test
-  public void line_of_tree() throws Exception {
+  void line_of_tree() throws Exception {
     CompilationUnitTree empty = compilationUnit("");
     assertThat(((JavaTree) empty).getLine()).isEqualTo(1);
     ClassTree classTree = firstType("class A {}");
@@ -102,7 +102,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void basic_type() {
+  void basic_type() {
     PrimitiveTypeTree tree = (PrimitiveTypeTree) ((MethodTree) firstTypeMember("class T { int m() { return null; } }")).returnType();
     assertThat(tree.keyword().text()).isEqualTo("int");
     assertThatChildrenIteratorHasSize(tree, 1);
@@ -113,13 +113,13 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void type() {
+  void type() {
     ArrayTypeTree tree = (ArrayTypeTree) ((MethodTree) firstTypeMember("class T { int[] m() { return null; } }")).returnType();
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
   }
 
   @Test
-  public void literal() {
+  void literal() {
     LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { int m() { return 1; } }");
     assertThat(tree.is(Tree.Kind.INT_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1");
@@ -208,7 +208,7 @@ public class JavaTreeModelTest {
    * @see org.eclipse.jdt.core.dom.TextBlock
    */
   @Test
-  public void expression_text_block() {
+  void expression_text_block() {
     LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { Object m() { return \"\"\"\ntext block\"\"\"; } }");
     assertThat(tree.kind()).isEqualTo(Tree.Kind.STRING_LITERAL);
     assertThat(tree.value()).isEqualTo("\"\"\"\ntext block\"\"\"");
@@ -225,7 +225,7 @@ public class JavaTreeModelTest {
    * @see org.eclipse.jdt.core.dom.YieldStatement
    */
   @Test
-  public void expression_switch() {
+  void expression_switch() {
     SwitchExpressionTree tree = (SwitchExpressionTree) expressionOfReturnStatement("class T { Object m() { return switch (0) { default -> 0; case 0 -> 0; }; } }");
     assertThat(tree.kind()).isEqualTo(Tree.Kind.SWITCH_EXPRESSION);
     assertThat(tree.cases()).hasSize(2);
@@ -241,7 +241,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void compilation_unit() {
+  void compilation_unit() {
     CompilationUnitTree tree = compilationUnit("import foo; import bar; class Foo {} class Bar {}");
     assertThat(tree.is(Tree.Kind.COMPILATION_UNIT)).isTrue();
     assertThat(tree.packageDeclaration()).isNull();
@@ -266,7 +266,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void package_declaration() {
+  void package_declaration() {
     PackageDeclarationTree tree = JParserTestUtils.parsePackage("package myPackage;").packageDeclaration();
     assertThat(tree.is(Tree.Kind.PACKAGE)).isTrue();
     assertThat(tree.annotations()).isEmpty();
@@ -287,7 +287,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void import_declaration() {
+  void import_declaration() {
     ImportClauseTree tree = compilationUnit(";").imports().get(0);
     assertThat(tree.is(Kind.EMPTY_STATEMENT)).isTrue();
     assertThat(tree.is(Kind.IMPORT)).isFalse();
@@ -325,7 +325,7 @@ public class JavaTreeModelTest {
    * 4.5.1. Type Arguments and Wildcards
    */
   @Test
-  public void type_arguments() {
+  void type_arguments() {
     VariableTree variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }");
     assertThatChildrenIteratorHasSize(variableTree, 4);
     ParameterizedTypeTree parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
@@ -395,7 +395,7 @@ public class JavaTreeModelTest {
    */
 
   @Test
-  public void class_declaration() {
+  void class_declaration() {
     ClassTree tree = firstType("public class T<U> extends C implements I1, I2 { }");
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     List<ModifierKeywordTree> modifiers = tree.modifiers().modifiers();
@@ -444,7 +444,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void annotations() {
+  void annotations() {
     ClassTree tree = firstType("@SuppressWarnings(\"unchecked\") class T { }");
     List<AnnotationTree> annotations = tree.modifiers().annotations();
     assertThat(annotations).hasSize(1);
@@ -658,13 +658,13 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void annotations_in_for_each_statements() {
+  void annotations_in_for_each_statements() {
     ForEachStatement tree = (ForEachStatement) firstMethodFirstStatement("class C { void foo(Object[] values) { for(@Nullable Object value : values) { } } }");
     assertThat(tree.variable().modifiers().annotations()).hasSize(1);
   }
 
   @Test
-  public void class_init_declaration() {
+  void class_init_declaration() {
     BlockTree tree = (BlockTree) firstTypeMember("class T { { ; ; } }");
     assertThat(tree.is(Tree.Kind.INITIALIZER)).isTrue();
     assertThat(tree.body()).hasSize(2);
@@ -683,7 +683,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void class_constructor() {
+  void class_constructor() {
     MethodTree tree = (MethodTree) firstTypeMember("class T { T(int p1, int... p2) throws Exception1, Exception2 {} }");
     assertThat(tree.is(Tree.Kind.CONSTRUCTOR)).isTrue();
     assertThat(tree.returnType()).isNull();
@@ -699,7 +699,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void class_field() {
+  void class_field() {
     List<Tree> declarations = firstType("class T { public int f1 = 42, f2[]; }").members();
     assertThat(declarations).hasSize(2);
 
@@ -728,7 +728,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void class_method() {
+  void class_method() {
     MethodTree tree = (MethodTree) firstTypeMember("class T { public int m(int p[][]){} }");
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.parameters()).hasSize(1);
@@ -800,7 +800,7 @@ public class JavaTreeModelTest {
    */
 
   @Test
-  public void enum_declaration() {
+  void enum_declaration() {
     ClassTree tree = firstType("public enum T implements I1, I2 { }");
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
@@ -825,7 +825,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void enum_constant() {
+  void enum_constant() {
     List<Tree> declarations = firstType("enum T { C1, C2(2) { }; }").members();
     assertThat(declarations).hasSize(2);
 
@@ -856,7 +856,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void enum_field() {
+  void enum_field() {
     List<Tree> declarations = firstType("enum T { ; public int f1 = 42, f2[]; }").members();
     assertThat(declarations).hasSize(3);
 
@@ -882,7 +882,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void enum_constructor() {
+  void enum_constructor() {
     MethodTree tree = (MethodTree) firstType("enum T { ; T(int p1, int... p2) throws Exception1, Exception2 {} }").members().get(1);
     assertThat(tree.is(Tree.Kind.CONSTRUCTOR)).isTrue();
     assertThat(tree.returnType()).isNull();
@@ -898,7 +898,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void enum_method() {
+  void enum_method() {
     MethodTree tree = (MethodTree) firstType("enum T { ; int m(int p1, int... p2) throws Exception1, Exception2 {} }").members().get(1);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
@@ -930,7 +930,7 @@ public class JavaTreeModelTest {
    */
 
   @Test
-  public void interface_declaration() {
+  void interface_declaration() {
     ClassTree tree = firstType("public interface T<U> extends I1, I2 { }");
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
@@ -960,7 +960,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void interface_field() {
+  void interface_field() {
     List<Tree> declarations = firstType("interface T { public int f1 = 42, f2[] = { 13 }; }").members();
     assertThat(declarations).hasSize(2);
 
@@ -985,7 +985,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void interface_method() {
+  void interface_method() {
     MethodTree tree = (MethodTree) firstTypeMember("interface T { <T> int m(int p1, int... p2) throws Exception1, Exception2; }");
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.typeParameters()).isNotEmpty();
@@ -1019,7 +1019,7 @@ public class JavaTreeModelTest {
    */
 
   @Test
-  public void annotation_declaration() {
+  void annotation_declaration() {
     ClassTree tree = firstType("public @interface T { }");
     assertThat(tree.is(Tree.Kind.ANNOTATION_TYPE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
@@ -1034,7 +1034,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void annotation_method() {
+  void annotation_method() {
     MethodTree tree = (MethodTree) firstTypeMember("@interface T { int m() default 0; }");
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
@@ -1053,7 +1053,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void annotation_constant() {
+  void annotation_constant() {
     List<Tree> members = firstType("@interface T { int c1 = 1, c2[] = { 2 }; }").members();
     assertThat(members).hasSize(2);
 
@@ -1081,7 +1081,7 @@ public class JavaTreeModelTest {
    * 14.2. Blocks
    */
   @Test
-  public void blocks() {
+  void blocks() {
     BlockTree tree = ((MethodTree) firstTypeMember("class T { void m() { ; ; } }")).block();
     assertThat(tree.is(Tree.Kind.BLOCK)).isTrue();
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
@@ -1094,7 +1094,7 @@ public class JavaTreeModelTest {
    * 14.3. Local Class Declarations
    */
   @Test
-  public void local_class_declaration() {
+  void local_class_declaration() {
     BlockTree block = ((MethodTree) firstTypeMember("class T { void m() { abstract class Local { } } }")).block();
     ClassTree tree = (ClassTree) block.body().get(0);
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
@@ -1109,7 +1109,7 @@ public class JavaTreeModelTest {
    * 14.4. Local Variable Declaration Statements
    */
   @Test
-  public void local_variable_declaration() {
+  void local_variable_declaration() {
     BlockTree block = ((MethodTree) firstTypeMember("class T { void m() { int a = 42, b[]; final @Nullable int c = 42; } }")).block();
     List<StatementTree> declarations = block.body();
     assertThat(declarations).hasSize(3);
@@ -1153,7 +1153,7 @@ public class JavaTreeModelTest {
    * 14.6. The Empty Statement
    */
   @Test
-  public void empty_statement() {
+  void empty_statement() {
     EmptyStatementTree tree = (EmptyStatementTree) firstMethodFirstStatement("class T { void m() { ; } }");
     assertThat(tree.is(Tree.Kind.EMPTY_STATEMENT)).isTrue();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
@@ -1164,7 +1164,7 @@ public class JavaTreeModelTest {
    * 14.7. Labeled Statements
    */
   @Test
-  public void labeled_statement() {
+  void labeled_statement() {
     LabeledStatementTree tree = (LabeledStatementTree) firstMethodFirstStatement("class T { void m() { label: ; } }");
     assertThat(tree.is(Tree.Kind.LABELED_STATEMENT)).isTrue();
     assertThat(tree.label().name()).isEqualTo("label");
@@ -1177,7 +1177,7 @@ public class JavaTreeModelTest {
    * 14.8. Expression Statements
    */
   @Test
-  public void expression_statement() {
+  void expression_statement() {
     ExpressionStatementTree tree = (ExpressionStatementTree) firstMethodFirstStatement("class T { void m() { i++; } }");
     assertThat(tree.is(Tree.Kind.EXPRESSION_STATEMENT)).isTrue();
     assertThat(tree.expression()).isNotNull();
@@ -1189,7 +1189,7 @@ public class JavaTreeModelTest {
    * 14.9. The if Statement
    */
   @Test
-  public void if_statement() {
+  void if_statement() {
     IfStatementTree tree = (IfStatementTree) firstMethodFirstStatement("class T { void m() { if (true) { } } }");
     assertThat(tree.is(Tree.Kind.IF_STATEMENT)).isTrue();
     assertThat(tree.ifKeyword().text()).isEqualTo("if");
@@ -1217,7 +1217,7 @@ public class JavaTreeModelTest {
    * 14.10. The assert Statement
    */
   @Test
-  public void assert_statement() {
+  void assert_statement() {
     AssertStatementTree tree = (AssertStatementTree) firstMethodFirstStatement("class T { void m() { assert true; } }");
     assertThat(tree.is(Tree.Kind.ASSERT_STATEMENT)).isTrue();
     assertThat(tree.assertKeyword().text()).isEqualTo("assert");
@@ -1241,7 +1241,7 @@ public class JavaTreeModelTest {
    * 14.11. The switch Statement
    */
   @Test
-  public void switch_statement_and_expression() {
+  void switch_statement_and_expression() {
     SwitchStatementTree tree = (SwitchStatementTree) firstMethodFirstStatement("class T { void m(int e) { switch (e) { case 1: case 2, 3: ; default: ; } } }");
     assertThat(tree.is(Tree.Kind.SWITCH_STATEMENT)).isTrue();
     assertThat(tree.switchKeyword().text()).isEqualTo("switch");
@@ -1332,7 +1332,7 @@ public class JavaTreeModelTest {
    * 14.12. The while Statement
    */
   @Test
-  public void while_statement() {
+  void while_statement() {
     WhileStatementTree tree = (WhileStatementTree) firstMethodFirstStatement("class T { void m() { while (true) ; } }");
     assertThat(tree.is(Tree.Kind.WHILE_STATEMENT)).isTrue();
     assertThat(tree.whileKeyword().text()).isEqualTo("while");
@@ -1347,7 +1347,7 @@ public class JavaTreeModelTest {
    * 14.13. The do Statement
    */
   @Test
-  public void do_statement() {
+  void do_statement() {
     DoWhileStatementTree tree = (DoWhileStatementTree) firstMethodFirstStatement("class T { void m() { do ; while (true); } }");
     assertThat(tree.is(Tree.Kind.DO_STATEMENT)).isTrue();
     assertThat(tree.doKeyword().text()).isEqualTo("do");
@@ -1364,7 +1364,7 @@ public class JavaTreeModelTest {
    * 14.14. The for Statement
    */
   @Test
-  public void for_statement() {
+  void for_statement() {
     ForStatementTree tree = (ForStatementTree) firstMethodFirstStatement("class T { void m() { for (int i = 0; i < 42; i ++) ; } }");
     assertThat(tree.is(Tree.Kind.FOR_STATEMENT)).isTrue();
     assertThat(tree.forKeyword().text()).isEqualTo("for");
@@ -1419,7 +1419,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void enhanced_for_statement() {
+  void enhanced_for_statement() {
     ForEachStatement tree = (ForEachStatement) firstMethodFirstStatement("class T { void m() { for (Object o : objects) ; } }");
     assertThat(tree.is(Tree.Kind.FOR_EACH_STATEMENT)).isTrue();
     assertThat(tree.forKeyword().text()).isEqualTo("for");
@@ -1436,7 +1436,7 @@ public class JavaTreeModelTest {
    * 14.15. The break Statement
    */
   @Test
-  public void break_statement() {
+  void break_statement() {
     BreakStatementTree tree = (BreakStatementTree) firstMethodFirstStatement("class T { void m() { break ; } }");
     assertThat(tree.is(Tree.Kind.BREAK_STATEMENT)).isTrue();
     assertThat(tree.breakKeyword().text()).isEqualTo("break");
@@ -1457,7 +1457,7 @@ public class JavaTreeModelTest {
    * 14.16. The continue Statement
    */
   @Test
-  public void continue_statement() {
+  void continue_statement() {
     ContinueStatementTree tree = (ContinueStatementTree) firstMethodFirstStatement("class T { void m() { continue ; } }");
     assertThat(tree.is(Tree.Kind.CONTINUE_STATEMENT)).isTrue();
     assertThat(tree.continueKeyword().text()).isEqualTo("continue");
@@ -1477,7 +1477,7 @@ public class JavaTreeModelTest {
    * 14.17. The return Statement
    */
   @Test
-  public void return_statement() {
+  void return_statement() {
     ReturnStatementTree tree = (ReturnStatementTree) firstMethodFirstStatement("class T { boolean m() { return ; } }");
     assertThat(tree.is(Tree.Kind.RETURN_STATEMENT)).isTrue();
     assertThat(tree.returnKeyword().text()).isEqualTo("return");
@@ -1497,7 +1497,7 @@ public class JavaTreeModelTest {
    * 14.18. The throw Statement
    */
   @Test
-  public void throw_statement() {
+  void throw_statement() {
     ThrowStatementTree tree = (ThrowStatementTree) firstMethodFirstStatement("class T { void m() { throw e; } }");
     assertThat(tree.is(Tree.Kind.THROW_STATEMENT)).isTrue();
     assertThat(tree.throwKeyword().text()).isEqualTo("throw");
@@ -1510,7 +1510,7 @@ public class JavaTreeModelTest {
    * 14.19. The synchronized Statement
    */
   @Test
-  public void synchronized_statement() {
+  void synchronized_statement() {
     SynchronizedStatementTree tree = (SynchronizedStatementTree) firstMethodFirstStatement("class T { void m() { synchronized(e) { } } }");
     assertThat(tree.is(Tree.Kind.SYNCHRONIZED_STATEMENT)).isTrue();
     assertThat(tree.synchronizedKeyword().text()).isEqualTo("synchronized");
@@ -1525,7 +1525,7 @@ public class JavaTreeModelTest {
    * 14.20. The try statement
    */
   @Test
-  public void try_statement() {
+  void try_statement() {
     TryStatementTree tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try { } finally { } } }");
     assertThat(tree.is(Tree.Kind.TRY_STATEMENT)).isTrue();
     assertThat(tree.resourceList()).isEmpty();
@@ -1669,7 +1669,7 @@ public class JavaTreeModelTest {
    * 15.8.2. Class Literals
    */
   @Test
-  public void class_literal() {
+  void class_literal() {
     MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { m() { return void.class; } }");
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isNotNull();
@@ -1717,7 +1717,7 @@ public class JavaTreeModelTest {
    * 15.8.3. this
    */
   @Test
-  public void this_expression() {
+  void this_expression() {
     IdentifierTree tree = (IdentifierTree) expressionOfReturnStatement("class T { Object m() { return this; } }");
     assertThat(tree.is(Tree.Kind.IDENTIFIER)).isTrue();
     assertThat(tree).isNotNull();
@@ -1730,7 +1730,7 @@ public class JavaTreeModelTest {
    * 15.8.4. Qualified this
    */
   @Test
-  public void qualified_this() {
+  void qualified_this() {
     MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { Object m() { return ClassName.this; } }");
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isNotNull();
@@ -1743,7 +1743,7 @@ public class JavaTreeModelTest {
    * 15.8.5. Parenthesized Expressions
    */
   @Test
-  public void parenthesized_expression() {
+  void parenthesized_expression() {
     ParenthesizedTree tree = (ParenthesizedTree) expressionOfReturnStatement("class T { boolean m() { return (true); } }");
     assertThat(tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)).isTrue();
     assertThat(tree.openParenToken().text()).isEqualTo("(");
@@ -1756,7 +1756,7 @@ public class JavaTreeModelTest {
    * 15.9. Class Instance Creation Expressions
    */
   @Test
-  public void class_instance_creation_expression() {
+  void class_instance_creation_expression() {
     NewClassTree tree = (NewClassTree) expressionOfReturnStatement("class T { T m() { return new T(true, false) {}; } }");
     assertThat(tree.is(Tree.Kind.NEW_CLASS)).isTrue();
     assertThat(tree.enclosingExpression()).isNull();
@@ -1808,7 +1808,7 @@ public class JavaTreeModelTest {
    * 15.10. Array Creation Expressions
    */
   @Test
-  public void array_creation_expression() {
+  void array_creation_expression() {
     {
       NewArrayTree tree = (NewArrayTree) expressionOfReturnStatement("class T { int[][] m() { return new int[][]{{1}, {2, 3}}; } }");
       assertThat(tree.is(Tree.Kind.NEW_ARRAY)).isTrue();
@@ -1936,7 +1936,7 @@ public class JavaTreeModelTest {
    * 15.11. Field Access Expressions
    */
   @Test
-  public void field_access_expression() {
+  void field_access_expression() {
     MemberSelectExpressionTree tree;
 
     tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { int m() { return super.identifier; } }");
@@ -1958,7 +1958,7 @@ public class JavaTreeModelTest {
    * 15.12. Method Invocation Expressions
    */
   @Test
-  public void method_invocation_expression() {
+  void method_invocation_expression() {
     // TODO test NonWildTypeArguments
     {
       MethodInvocationTree tree = (MethodInvocationTree) expressionOfFirstStatement("class T { void m() { identifier(true, false); } }");
@@ -2042,7 +2042,7 @@ public class JavaTreeModelTest {
    * 8.8.7.1. Explicit Constructor Invocations
    */
   @Test
-  public void explicit_constructor_invocation() {
+  void explicit_constructor_invocation() {
     // TODO test NonWildTypeArguments
 
     MethodInvocationTree tree = (MethodInvocationTree) expressionOfFirstStatement("class T { T() { this(true, false); } }");
@@ -2085,7 +2085,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void array_field() {
+  void array_field() {
     VariableTree field;
     ArrayTypeTree arrayTypeTree, childArrayTypeTree;
 
@@ -2168,7 +2168,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void array_method_return_type() {
+  void array_method_return_type() {
     MethodTree method;
     ArrayTypeTree arrayTypeTree, childArrayTypeTree;
 
@@ -2232,7 +2232,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void array_formal_parameter() {
+  void array_formal_parameter() {
     MethodTree method;
     VariableTree variable;
     ArrayTypeTree arrayTypeTree, childArrayTypeTree;
@@ -2344,7 +2344,7 @@ public class JavaTreeModelTest {
    * 15.13. Array Access Expressions
    */
   @Test
-  public void array_access_expression() {
+  void array_access_expression() {
     String code = "class T { T() { return a[42]; } }";
     ArrayAccessExpressionTree tree = (ArrayAccessExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)).isTrue();
@@ -2362,7 +2362,7 @@ public class JavaTreeModelTest {
    * 15.14. Postfix Expressions
    */
   @Test
-  public void postfix_expression() {
+  void postfix_expression() {
     UnaryExpressionTree tree;
     tree = (UnaryExpressionTree) ((ExpressionStatementTree) firstMethodFirstStatement(("class T { void m() { i++; } }"))).expression();
     assertThat(tree.is(Tree.Kind.POSTFIX_INCREMENT)).isTrue();
@@ -2381,7 +2381,7 @@ public class JavaTreeModelTest {
    * 15.15. Unary Operators
    */
   @Test
-  public void unary_operators() {
+  void unary_operators() {
     UnaryExpressionTree tree;
     tree = (UnaryExpressionTree) ((ExpressionStatementTree) firstMethodFirstStatement(("class T { void m() { ++i; } }"))).expression();
     assertThat(tree.is(Tree.Kind.PREFIX_INCREMENT)).isTrue();
@@ -2400,7 +2400,7 @@ public class JavaTreeModelTest {
    * 15.16. Cast Expressions
    */
   @Test
-  public void type_cast() {
+  void type_cast() {
     TypeCastTree tree = (TypeCastTree) expressionOfReturnStatement("class T { boolean m() { return (Boolean) true; } }");
     assertThat(tree.is(Tree.Kind.TYPE_CAST)).isTrue();
     assertThat(tree.openParenToken().text()).isEqualTo("(");
@@ -2446,7 +2446,7 @@ public class JavaTreeModelTest {
    * 15.17. Multiplicative Operators
    */
   @Test
-  public void multiplicative_expression() {
+  void multiplicative_expression() {
     String code = "class T { int m() { return 1 * 2 / 3 % 4; } }";
     BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Kind.REMAINDER)).isTrue();
@@ -2472,7 +2472,7 @@ public class JavaTreeModelTest {
    * 15.18. Additive Operators
    */
   @Test
-  public void additive_expression() {
+  void additive_expression() {
     String code = "class T { int m() { return 1 + 2 - 3; } }";
     BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Kind.MINUS)).isTrue();
@@ -2493,7 +2493,7 @@ public class JavaTreeModelTest {
    * 15.19. Shift Operators
    */
   @Test
-  public void shift_expression() {
+  void shift_expression() {
     String code = "class T { int m() { return 1 >> 2 << 3 >>> 4; } }";
     BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.UNSIGNED_RIGHT_SHIFT)).isTrue();
@@ -2519,7 +2519,7 @@ public class JavaTreeModelTest {
    * 15.20. Relational Operators
    */
   @Test
-  public void relational_expression() {
+  void relational_expression() {
     String code = "class T { boolean m() { return 1 < 2 > 3; } }";
     BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.GREATER_THAN)).isTrue();
@@ -2539,7 +2539,7 @@ public class JavaTreeModelTest {
    * 15.20.2. Type Comparison Operator instanceof
    */
   @Test
-  public void instanceof_expression() {
+  void instanceof_expression() {
     InstanceOfTree tree = (InstanceOfTree) expressionOfReturnStatement("class T { boolean m() { return null instanceof Object; } }");
     assertThat(tree.is(Tree.Kind.INSTANCE_OF)).isTrue();
     assertThat(tree.expression()).isNotNull();
@@ -2552,7 +2552,7 @@ public class JavaTreeModelTest {
    * 15.21. Equality Operators
    */
   @Test
-  public void equality_expression() {
+  void equality_expression() {
     String code = "class T { boolean m() { return false == false != true; } }";
     BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.NOT_EQUAL_TO)).isTrue();
@@ -2572,7 +2572,7 @@ public class JavaTreeModelTest {
    * 15.22. Bitwise and Logical Operators
    */
   @Test
-  public void bitwise_and_logical_operators() {
+  void bitwise_and_logical_operators() {
     String code = "class T { int m() { return 1 & 2 & 3; } }";
     BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.AND)).isTrue();
@@ -2620,7 +2620,7 @@ public class JavaTreeModelTest {
    * 15.23. Conditional-And Operator &&
    */
   @Test
-  public void conditional_and_expression() {
+  void conditional_and_expression() {
     String code = "class T { boolean m() { return false && false && true; } }";
     BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.CONDITIONAL_AND)).isTrue();
@@ -2640,7 +2640,7 @@ public class JavaTreeModelTest {
    * 15.24. Conditional-Or Operator ||
    */
   @Test
-  public void conditional_or_expression() {
+  void conditional_or_expression() {
     String code = "class T { boolean m() { return false || false || true; } }";
     BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.CONDITIONAL_OR)).isTrue();
@@ -2660,7 +2660,7 @@ public class JavaTreeModelTest {
    * 15.25. Conditional Operator ? :
    */
   @Test
-  public void conditional_expression() {
+  void conditional_expression() {
     ConditionalExpressionTree tree;
     tree = (ConditionalExpressionTree) expressionOfReturnStatement("class T { boolean m() { return true ? true : false; } }");
     assertThat(tree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
@@ -2689,7 +2689,7 @@ public class JavaTreeModelTest {
    * 15.26. Assignment Operators
    */
   @Test
-  public void assignment_expression() {
+  void assignment_expression() {
     String code = "class T { void m() { a += 42; } }";
     AssignmentExpressionTree tree = (AssignmentExpressionTree) ((ExpressionStatementTree) firstMethodFirstStatement(code)).expression();
     assertThat(tree.is(Tree.Kind.PLUS_ASSIGNMENT)).isTrue();
@@ -2700,7 +2700,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void method_reference_expression_should_not_break_AST() throws Exception {
+  void method_reference_expression_should_not_break_AST() throws Exception {
     String code = "class T { public void meth(){IntStream.range(1,12).map(new MethodReferences()::<String>square).map(super::myMethod).map(int[]::new).forEach(System.out::println);}}";
     MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) firstMethodFirstStatement(code)).expression();
 
@@ -2733,7 +2733,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void lambda_expressions() {
+  void lambda_expressions() {
     String code = "class T { public void meth(){IntStream.range(1,12).map(x->x*x).map((int a)-> {return a*a;});}}";
     ExpressionTree expressionTree = ((ExpressionStatementTree) firstMethodFirstStatement(code)).expression();
     
@@ -2759,7 +2759,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void type_parameters_tokens() {
+  void type_parameters_tokens() {
     ParameterizedTypeTree tree = (ParameterizedTypeTree) firstType("class Foo<E> extends List<E> {}").superClass();
     assertThat(tree).isNotNull();
     assertThatChildrenIteratorHasSize(tree, 2);
@@ -2784,7 +2784,7 @@ public class JavaTreeModelTest {
   }
 
   @Test
-  public void type_parameters_and_bounds() {
+  void type_parameters_and_bounds() {
     TypeParameterListTreeImpl tree = (TypeParameterListTreeImpl) firstType("class Foo<T, U extends Object & Number> {}").typeParameters();
     assertThat(tree.openBracketToken().text()).isEqualTo("<");
     assertThat(tree.closeBracketToken().text()).isEqualTo(">");

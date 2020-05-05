@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class FileCreateTempFileCheckTest {
+class FileCreateTempFileCheckTest {
 
   @Test
-  public void no_version() {
+  void no_version() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/FileCreateTempFileCheck_no_version.java")
       .withCheck(new FileCreateTempFileCheck())
@@ -33,7 +33,7 @@ public class FileCreateTempFileCheckTest {
   }
 
   @Test
-  public void java_7() {
+  void java_7() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/FileCreateTempFileCheck.java")
       .withCheck(new FileCreateTempFileCheck())

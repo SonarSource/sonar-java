@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class CollectionSizeAndArrayLengthCheckTest {
+class CollectionSizeAndArrayLengthCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/CollectionSizeAndArrayLengthCheck.java"))
       .withCheck(new CollectionSizeAndArrayLengthCheck())
@@ -35,7 +35,7 @@ public class CollectionSizeAndArrayLengthCheckTest {
   }
 
   @Test
-  public void noIssueWithoutSemantic() {
+  void noIssueWithoutSemantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/CollectionSizeAndArrayLengthCheck.java"))
       .withCheck(new CollectionSizeAndArrayLengthCheck())

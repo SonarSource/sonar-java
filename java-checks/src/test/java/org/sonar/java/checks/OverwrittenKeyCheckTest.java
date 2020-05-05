@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class OverwrittenKeyCheckTest {
+class OverwrittenKeyCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/OverwrittenKeyCheck.java")
       .withCheck(new OverwrittenKeyCheck())
@@ -33,7 +33,7 @@ public class OverwrittenKeyCheckTest {
   }
 
   @Test
-  public void test_no_semantic() {
+  void test_no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/OverwrittenKeyCheck.java")
       .withCheck(new OverwrittenKeyCheck())

@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class EmptyFileCheckTest {
+class EmptyFileCheckTest {
 
   @Test
-  public void test_empty_file() {
+  void test_empty_file() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/EmptyFile.java"))
       .withCheck(new EmptyFileCheck())
@@ -35,7 +35,7 @@ public class EmptyFileCheckTest {
   }
 
   @Test
-  public void test_non_empty_file() {
+  void test_non_empty_file() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/NonEmptyFile.java"))
       .withCheck(new EmptyFileCheck())
@@ -43,7 +43,7 @@ public class EmptyFileCheckTest {
   }
 
   @Test
-  public void with_package() {
+  void with_package() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/WithPackage.java"))
       .withCheck(new EmptyFileCheck())
@@ -51,7 +51,7 @@ public class EmptyFileCheckTest {
   }
 
   @Test
-  public void with_module() {
+  void with_module() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/module/module-info.java")
       .withCheck(new EmptyFileCheck())

@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class LambdaTooBigCheckTest {
+class LambdaTooBigCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/LambdaTooBigCheck.java"))
       .withCheck(new LambdaTooBigCheck())
@@ -35,7 +35,7 @@ public class LambdaTooBigCheckTest {
   }
 
   @Test
-  public void custom() {
+  void custom() {
     LambdaTooBigCheck check = new LambdaTooBigCheck();
     check.max = 6;
     JavaCheckVerifier.newVerifier()

@@ -22,10 +22,10 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class BadMethodNameCheckTest {
+class BadMethodNameCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/naming/BadMethodName.java")
       .withCheck(new BadMethodNameCheck())
@@ -33,7 +33,7 @@ public class BadMethodNameCheckTest {
   }
 
   @Test
-  public void test2() {
+  void test2() {
     BadMethodNameCheck check = new BadMethodNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
     JavaCheckVerifier.newVerifier()
@@ -43,7 +43,7 @@ public class BadMethodNameCheckTest {
   }
 
   @Test
-  public void testOverrideWithoutAnnotation() throws Exception {
+  void testOverrideWithoutAnnotation() throws Exception {
     BadMethodNameCheck check = new BadMethodNameCheck();
     check.format = "^[A-Z0-9]*$";
     JavaCheckVerifier.newVerifier()

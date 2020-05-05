@@ -22,10 +22,10 @@ package org.sonar.java.checks.synchronization;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class WriteObjectTheOnlySynchronizedMethodCheckTest {
+class WriteObjectTheOnlySynchronizedMethodCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/WriteObjectTheOnlySynchronizedMethodCheck.java")
       .withCheck(new WriteObjectTheOnlySynchronizedMethodCheck())

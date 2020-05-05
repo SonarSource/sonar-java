@@ -36,10 +36,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ConstantTest {
+class ConstantTest {
 
   @Test
-  public void constant() {
+  void constant() {
     File bytecodeDir = new File("target/test-classes");
     Map<String,Object> valuesByFieldName = new HashMap<>();
     JavaAstScanner.scanSingleFileForTests(

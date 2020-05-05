@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UnitTestClassReportTest {
+class UnitTestClassReportTest {
 
   @Test
-  public void shouldIncrementCounters() {
+  void shouldIncrementCounters() {
     UnitTestClassReport report = new UnitTestClassReport();
     report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_ERROR).setDurationMilliseconds(500L));
     report.add(new UnitTestResult().setStatus(UnitTestResult.STATUS_OK).setDurationMilliseconds(200L));
@@ -44,7 +44,7 @@ public class UnitTestClassReportTest {
   }
 
   @Test
-  public void shouldHaveEmptyReport() {
+  void shouldHaveEmptyReport() {
     UnitTestClassReport report = new UnitTestClassReport();
     assertThat(report.getResults().size()).isEqualTo(0);
     assertThat(report.getSkipped()).isEqualTo(0);

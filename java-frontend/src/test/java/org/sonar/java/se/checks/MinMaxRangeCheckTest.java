@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 
-public class MinMaxRangeCheckTest {
+class MinMaxRangeCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     CheckVerifier.newVerifier()
       .onFile("src/test/java/org/sonar/java/resolve/targets/se/MinMaxRangeCheck.java")
       .withCheck(new MinMaxRangeCheck())

@@ -1394,7 +1394,7 @@ class JParserSemanticTest {
   }
 
   @Test
-  public void constructor_with_type_arguments() {
+  void constructor_with_type_arguments() {
     String source =
       "class MyClass {\n" +
         "  <T extends I> MyClass(T t) {}\n" +

@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 @EnableRuleMigrationSupport
-public class JavaCheckVerifierTest {
+class JavaCheckVerifierTest {
 
   @org.junit.Rule
   public LogTester logTester = new LogTester().setLevel(LoggerLevel.INFO);
@@ -65,19 +65,19 @@ public class JavaCheckVerifierTest {
   };
 
   @Test
-  public void verify_line_issues() {
+  void verify_line_issues() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
   }
 
   @Test
-  public void verify_line_issues_with_java_version() {
+  void verify_line_issues_with_java_version() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     JavaCheckVerifier.verify(FILENAME_ISSUES, visitor, 7);
   }
 
   @Test
-  public void verify_unexpected_issue() {
+  void verify_unexpected_issue() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withIssue(4, "extra message");
 
     try {
@@ -89,7 +89,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_combined_missing_expected_and_unexpected_issues() {
+  void verify_combined_missing_expected_and_unexpected_issues() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withIssue(4, "extra message").withoutIssue(1);
 
     try {
@@ -101,7 +101,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_missing_expected_issue() {
+  void verify_missing_expected_issue() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withoutIssue(1);
 
     try {
@@ -113,21 +113,21 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_issue_on_file() {
+  void verify_issue_on_file() {
     String expectedMessage = "messageOnFile";
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withIssueOnFile(expectedMessage);
     JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, expectedMessage, visitor);
   }
 
   @Test
-  public void verify_issue_on_project() {
+  void verify_issue_on_project() {
     String expectedMessage = "messageOnProject";
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withIssueOnProject(expectedMessage);
     JavaCheckVerifier.verifyIssueOnProject(FILENAME_ISSUES, expectedMessage, visitor);
   }
 
   @Test
-  public void verify_issue_on_file_incorrect() {
+  void verify_issue_on_file_incorrect() {
     try {
       JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", new FakeVisitor().withDefaultIssues());
       Fail.fail("Should have failed");
@@ -137,24 +137,24 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_no_issue() {
+  void verify_no_issue() {
     JavaCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, NO_EFFECT_VISITOR);
   }
 
   @Test
-  public void verify_no_issue_with_version() {
+  void verify_no_issue_with_version() {
     JavaCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, NO_EFFECT_VISITOR, 8);
   }
 
   @Test
-  public void verify_with_provided_classes() {
+  void verify_with_provided_classes() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
 
     JavaCheckVerifier.verify(FILENAME_ISSUES, visitor, new ArrayList<File>());
   }
 
   @Test
-  public void verify_with_default_test_jar() throws IOException {
+  void verify_with_default_test_jar() throws IOException {
     File file = new File("target/test-jars");
     if (file.exists()) {
       file.delete();
@@ -168,7 +168,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_with_provided_test_jar() throws IOException {
+  void verify_with_provided_test_jar() throws IOException {
     String testJarsPathname = "target/my-test-jars";
     File file = new File(testJarsPathname);
     if (file.exists()) {
@@ -185,7 +185,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_with_unknown_directory_should_fail() throws IOException {
+  void verify_with_unknown_directory_should_fail() throws IOException {
     try {
       JavaCheckVerifier.verify(FILENAME_ISSUES, NO_EFFECT_VISITOR, "unknown/test-jars");
       Fail.fail("Should have failed");
@@ -198,7 +198,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_shift() throws IOException {
+  void verify_should_fail_when_using_incorrect_shift() throws IOException {
     try {
       JavaCheckVerifier.verifyNoIssue("src/test/files/JavaCheckVerifierIncorrectShift.java", NO_EFFECT_VISITOR);
       Fail.fail("Should have failed");
@@ -208,7 +208,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_attribute() throws IOException {
+  void verify_should_fail_when_using_incorrect_attribute() throws IOException {
     try {
       JavaCheckVerifier.verifyNoIssue("src/test/files/JavaCheckVerifierIncorrectAttribute.java", NO_EFFECT_VISITOR);
       Fail.fail("Should have failed");
@@ -218,7 +218,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_attribute2() throws IOException {
+  void verify_should_fail_when_using_incorrect_attribute2() throws IOException {
     try {
       JavaCheckVerifier.verifyNoIssue("src/test/files/JavaCheckVerifierIncorrectAttribute2.java", NO_EFFECT_VISITOR);
       Fail.fail("Should have failed");
@@ -228,7 +228,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_endLine() throws IOException {
+  void verify_should_fail_when_using_incorrect_endLine() throws IOException {
     try {
       JavaCheckVerifier.verifyNoIssue("src/test/files/JavaCheckVerifierIncorrectEndLine.java", NO_EFFECT_VISITOR);
       Fail.fail("Should have failed");
@@ -238,7 +238,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_secondaryLocation() throws IOException {
+  void verify_should_fail_when_using_incorrect_secondaryLocation() throws IOException {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java", visitor);
@@ -249,7 +249,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_when_using_incorrect_secondaryLocation2() throws IOException {
+  void verify_should_fail_when_using_incorrect_secondaryLocation2() throws IOException {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
     try {
       JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java", visitor);
@@ -260,7 +260,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void test_with_no_semantic() throws Exception {
+  void test_with_no_semantic() throws Exception {
     IssuableSubscriptionVisitor noIssueVisitor = new FakeVisitor();
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, noIssueVisitor);
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_NO_ISSUE, noIssueVisitor);
@@ -273,7 +273,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void test_with_no_semantic_and_java_version() throws Exception {
+  void test_with_no_semantic_and_java_version() throws Exception {
     int java_8 = 8;
     IssuableSubscriptionVisitor noIssueVisitor = new FakeVisitor();
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, noIssueVisitor, java_8);
@@ -287,7 +287,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void rule_without_annotation_should_fail_with_a_clear_message() {
+  void rule_without_annotation_should_fail_with_a_clear_message() {
     class NotAnnotatedCheck extends IssuableSubscriptionVisitor {
       @Override
       public List<Tree.Kind> nodesToVisit() {
@@ -307,7 +307,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_should_fail_if_files_does_not_parse() {
+  void verify_should_fail_if_files_does_not_parse() {
     try {
       JavaCheckVerifier.verify(FILENAME_PARSING_ISSUE, NO_EFFECT_VISITOR);
       Fail.fail("Should have failed");
@@ -318,7 +318,7 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verifyNoIssue_should_fail_if_files_does_not_parse() {
+  void verifyNoIssue_should_fail_if_files_does_not_parse() {
     try {
       JavaCheckVerifier.verifyNoIssue(FILENAME_PARSING_ISSUE, NO_EFFECT_VISITOR);
       Fail.fail("Should have failed");

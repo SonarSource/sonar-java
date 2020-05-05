@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SETestUtils;
 import org.sonar.java.testing.CheckVerifier;
 
-public class CustomUnclosedResourcesCheckTest {
+class CustomUnclosedResourcesCheckTest {
 
   @Test
-  public void constructorClosed() {
+  void constructorClosed() {
     CustomUnclosedResourcesCheck check = new CustomUnclosedResourcesCheck();
     check.constructor = "org.sonar.custom.GenericResource(java.lang.String)";
     check.closingMethod = "org.sonar.custom.GenericResource#closeResource(java.lang.String)";
@@ -38,7 +38,7 @@ public class CustomUnclosedResourcesCheckTest {
   }
 
   @Test
-  public void constructorClosedAny() {
+  void constructorClosedAny() {
     CustomUnclosedResourcesCheck check = new CustomUnclosedResourcesCheck();
     check.constructor = "org.sonar.custom.GenericResource";
     check.closingMethod = "org.sonar.custom.GenericResource#closeResource";
@@ -50,7 +50,7 @@ public class CustomUnclosedResourcesCheckTest {
   }
 
   @Test
-  public void factoryClosed() {
+  void factoryClosed() {
     CustomUnclosedResourcesCheck check = new CustomUnclosedResourcesCheck();
     check.factoryMethod = "org.sonar.custom.ResourceFactory#createResource(java.lang.String)";
     check.closingMethod = "org.sonar.custom.GenericResource#closeResource(java.lang.String)";
@@ -62,7 +62,7 @@ public class CustomUnclosedResourcesCheckTest {
   }
 
   @Test
-  public void factoryClosedAny() {
+  void factoryClosedAny() {
     CustomUnclosedResourcesCheck check = new CustomUnclosedResourcesCheck();
     check.factoryMethod = "org.sonar.custom.ResourceFactory#createResource";
     check.closingMethod = "org.sonar.custom.GenericResource#closeResource";
@@ -74,7 +74,7 @@ public class CustomUnclosedResourcesCheckTest {
   }
 
   @Test
-  public void openedClosed() {
+  void openedClosed() {
     CustomUnclosedResourcesCheck check = new CustomUnclosedResourcesCheck();
     check.openingMethod = "org.sonar.custom.GenericResource#open(java.lang.String)";
     check.closingMethod = "org.sonar.custom.GenericResource#closeResource(java.lang.String)";
@@ -86,7 +86,7 @@ public class CustomUnclosedResourcesCheckTest {
   }
 
   @Test
-  public void openedClosedAny() {
+  void openedClosedAny() {
     CustomUnclosedResourcesCheck check = new CustomUnclosedResourcesCheck();
     check.openingMethod = "org.sonar.custom.GenericResource#open";
     check.closingMethod = "org.sonar.custom.GenericResource#closeResource";
@@ -101,7 +101,7 @@ public class CustomUnclosedResourcesCheckTest {
    * {@link CustomUnclosedResourcesCheck.CustomResourceConstraint} class needs to be different, otherwise issued will be duplicated. See SONARJAVA-1624
    */
   @Test
-  public void check_status_is_different_instance() {
+  void check_status_is_different_instance() {
     CustomUnclosedResourcesCheck check1 = new CustomUnclosedResourcesCheck();
     check1.constructor = "org.sonar.custom.GenericResource(java.lang.String)";
     check1.closingMethod = "org.sonar.custom.GenericResource#closeResource(java.lang.String)";

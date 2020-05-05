@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class CatchIllegalMonitorStateExceptionCheckTest {
+class CatchIllegalMonitorStateExceptionCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CatchIllegalMonitorStateExceptionCheck.java")
       .withCheck(new CatchIllegalMonitorStateExceptionCheck())

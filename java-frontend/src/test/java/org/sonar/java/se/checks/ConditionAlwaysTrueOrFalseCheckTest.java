@@ -31,10 +31,10 @@ import org.sonar.java.testing.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ConditionAlwaysTrueOrFalseCheckTest {
+class ConditionAlwaysTrueOrFalseCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java")
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -43,7 +43,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  public void test_without_jsr305() {
+  void test_without_jsr305() {
     List<File> classpath = FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar"}, true).stream()
       .filter(file -> file.getName().startsWith("spring-core-") || file.getName().startsWith("spring-web-"))
       .collect(Collectors.toList());
@@ -56,7 +56,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  public void test_unreachable_vs_gratuitous() {
+  void test_unreachable_vs_gratuitous() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/UnreachableOrGratuitous.java")
       .withCheck(new ConditionalUnreachableCodeCheck())
@@ -65,7 +65,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  public void whole_stack_required_for_ps_equality() throws Exception {
+  void whole_stack_required_for_ps_equality() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/PsEqualityRequiresFullStack.java")
       .withCheck(new AssertNoAlwaysTrueOrFalseExpression())
@@ -74,7 +74,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  public void condition_always_true_with_optional() {
+  void condition_always_true_with_optional() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/ConditionAlwaysTrueWithOptional.java")
       .withCheck(new AssertNoAlwaysTrueOrFalseExpression())
@@ -83,7 +83,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  public void resetFields_ThreadSleepCalls() throws Exception {
+  void resetFields_ThreadSleepCalls() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/ThreadSleepCall.java")
       .withCheck(new AssertNoAlwaysTrueOrFalseExpression())
@@ -92,7 +92,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  public void reporting() {
+  void reporting() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheckReporting.java")
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -101,7 +101,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  public void reporting_getting_wrong_parent() {
+  void reporting_getting_wrong_parent() {
     // Checks flow iterating through the correct parent
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/ConditionAlwaysTrueOrFalseCheckParentLoop.java")
@@ -111,7 +111,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  public void test_transitivity() throws Exception {
+  void test_transitivity() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/Transitivity.java")
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())
@@ -129,7 +129,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  public void test_constraint_is_not_lost_after_copying() throws Exception {
+  void test_constraint_is_not_lost_after_copying() throws Exception {
     // see also SONARJAVA-2351
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/ConstraintCopy.java")
@@ -139,7 +139,7 @@ public class ConditionAlwaysTrueOrFalseCheckTest {
   }
 
   @Test
-  public void test_binary_expressions_always_not_null() throws Exception {
+  void test_binary_expressions_always_not_null() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/BinaryExpressionNotNull.java")
       .withChecks(new ConditionalUnreachableCodeCheck(), new BooleanGratuitousExpressionsCheck())

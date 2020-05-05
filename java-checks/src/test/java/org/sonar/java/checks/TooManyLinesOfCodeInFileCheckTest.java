@@ -26,15 +26,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class TooManyLinesOfCodeInFileCheckTest {
+class TooManyLinesOfCodeInFileCheckTest {
 
   @Test
-  public void testDefault() {
+  void testDefault() {
     assertThat(new TooManyLinesOfCodeInFileCheck().maximum).isEqualTo(750);
   }
 
   @Test
-  public void test() {
+  void test() {
     TooManyLinesOfCodeInFileCheck check = new TooManyLinesOfCodeInFileCheck();
     check.maximum = 1;
     JavaCheckVerifier.newVerifier()
@@ -44,7 +44,7 @@ public class TooManyLinesOfCodeInFileCheckTest {
   }
 
   @Test
-  public void test2() {
+  void test2() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/TooManyLinesOfCode.java"))
       .withCheck(new TooManyLinesOfCodeInFileCheck())

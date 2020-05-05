@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class CFGLoopTest {
+class CFGLoopTest {
 
   private Object a;
   private List<Foo> foos;

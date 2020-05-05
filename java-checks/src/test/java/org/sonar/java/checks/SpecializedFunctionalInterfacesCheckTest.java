@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class SpecializedFunctionalInterfacesCheckTest {
+class SpecializedFunctionalInterfacesCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SpecializedFunctionalInterfacesCheck.java"))
       .withCheck(new SpecializedFunctionalInterfacesCheck())
@@ -40,7 +40,7 @@ public class SpecializedFunctionalInterfacesCheckTest {
   }
 
   @Test
-  public void test_unknown_types() {
+  void test_unknown_types() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SpecializedFunctionalInterfacesCheckUnknownTypes.java")
       .withCheck(new SpecializedFunctionalInterfacesCheck())

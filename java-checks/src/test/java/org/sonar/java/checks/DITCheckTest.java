@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class DITCheckTest {
+class DITCheckTest {
 
   @Test
-  public void defaults() {
+  void defaults() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/DitOk.java")
       .withCheck(new DITCheck())
@@ -35,7 +35,7 @@ public class DITCheckTest {
   }
 
   @Test
-  public void max_level_is_2() {
+  void max_level_is_2() {
     DITCheck check = new DITCheck();
     check.setMax(2);
 
@@ -52,7 +52,7 @@ public class DITCheckTest {
   }
 
   @Test
-  public void max_level_is_2_and_filtered() {
+  void max_level_is_2_and_filtered() {
     DITCheck check = new DITCheck();
     check.setMax(2);
     check.setFilteredClasses("java.lang.Object");
@@ -64,7 +64,7 @@ public class DITCheckTest {
   }
 
   @Test
-  public void intermediate_match() {
+  void intermediate_match() {
     DITCheck check = new DITCheck();
     check.setMax(2);
     check.setFilteredClasses("checks.Dit_C");

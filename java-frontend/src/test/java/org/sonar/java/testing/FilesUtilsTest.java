@@ -31,12 +31,12 @@ import org.junit.rules.TemporaryFolder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @EnableRuleMigrationSupport
-public class FilesUtilsTest {
+class FilesUtilsTest {
   @org.junit.Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
   @Test
-  public void verify_get_classpath_files() throws IOException {
+  void verify_get_classpath_files() throws IOException {
     Path tmp = temp.newFolder().toPath();
     Path jar = tmp.resolve("test.jar");
     Path zip = tmp.resolve("test.zip");

@@ -22,9 +22,9 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SystemOutOrErrUsageCheckTest {
+class SystemOutOrErrUsageCheckTest {
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SystemOutOrErrUsageCheck.java")
       .withCheck(new SystemOutOrErrUsageCheck())

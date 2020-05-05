@@ -37,7 +37,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PublicApiCheckerTest {
+class PublicApiCheckerTest {
 
   private CompilationUnitTree cut;
 
@@ -47,7 +47,7 @@ public class PublicApiCheckerTest {
   }
 
   @Test
-  public void isPublicApiAccessorsHandledAsMethods() {
+  void isPublicApiAccessorsHandledAsMethods() {
     SubscriptionVisitor visitor = getPublicApiVisitor();
     visitor.scanTree(cut);
   }
@@ -104,7 +104,7 @@ public class PublicApiCheckerTest {
   }
 
   @Test
-  public void retrieveJavadoc() {
+  void retrieveJavadoc() {
     new SubscriptionVisitor() {
 
       @Override

@@ -41,7 +41,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class JavaRulesDefinitionTest {
+class JavaRulesDefinitionTest {
 
   private Configuration settings;
 
@@ -53,7 +53,7 @@ public class JavaRulesDefinitionTest {
   }
 
   @Test
-  public void test_creation_of_rules() {
+  void test_creation_of_rules() {
     JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
@@ -85,7 +85,7 @@ public class JavaRulesDefinitionTest {
   }
 
   @Test
-  public void rules_definition_should_be_locale_independent() {
+  void rules_definition_should_be_locale_independent() {
     Locale defaultLocale = Locale.getDefault();
     Locale trlocale = Locale.forLanguageTag("tr-TR");
     Locale.setDefault(trlocale);
@@ -101,7 +101,7 @@ public class JavaRulesDefinitionTest {
   }
 
   @Test
-  public void debug_rules() {
+  void debug_rules() {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.debug", true);
     JavaRulesDefinition definition = new JavaRulesDefinition(settings.asConfig());
@@ -115,7 +115,7 @@ public class JavaRulesDefinitionTest {
   }
 
   @Test
-  public void test_invalid_checks() throws Exception {
+  void test_invalid_checks() throws Exception {
     RulesDefinition.Context context = new RulesDefinition.Context();
     RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
     newRepository.createRule("correctRule");
@@ -145,7 +145,7 @@ public class JavaRulesDefinitionTest {
   }
 
   @Test
-  public void test_security_hotspot() throws Exception {
+  void test_security_hotspot() throws Exception {
     JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
@@ -158,7 +158,7 @@ public class JavaRulesDefinitionTest {
   }
 
   @Test
-  public void test_security_standards() throws Exception {
+  void test_security_standards() throws Exception {
     JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
@@ -170,7 +170,7 @@ public class JavaRulesDefinitionTest {
   }
 
   @Test
-  public void test_deprecated_key() {
+  void test_deprecated_key() {
     JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
@@ -182,7 +182,7 @@ public class JavaRulesDefinitionTest {
   }
 
   @Test
-  public void rules_should_not_have_legacy_key() {
+  void rules_should_not_have_legacy_key() {
     JavaRulesDefinition definition = new JavaRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     definition.define(context);
@@ -197,7 +197,7 @@ public class JavaRulesDefinitionTest {
   }
 
   @Test
-  public void test_security_standards_not_set_when_unsupported() throws Exception {
+  void test_security_standards_not_set_when_unsupported() throws Exception {
     JavaRulesDefinition definition = new JavaRulesDefinition(settings);
     RulesDefinition.NewRepository repository = mock(RulesDefinition.NewRepository.class);
     RulesDefinition.NewRule newRule = mock(RulesDefinition.NewRule.class);

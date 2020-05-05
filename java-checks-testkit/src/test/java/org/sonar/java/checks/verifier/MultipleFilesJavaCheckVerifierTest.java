@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MultipleFilesJavaCheckVerifierTest {
+class MultipleFilesJavaCheckVerifierTest {
 
   private static final String FILENAME_ISSUES_FIRST = "src/test/files/JavaCheckVerifier.java";
   private static final String FILENAME_ISSUES_SECOND = "src/test/files/MultipleFilesJavaCheckVerifier.java";
@@ -42,7 +42,7 @@ public class MultipleFilesJavaCheckVerifierTest {
   };
 
   @Test
-  public void verify_unexpected_issue() {
+  void verify_unexpected_issue() {
     IssuableSubscriptionVisitor visitor = new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues().withIssue(4, "extra message");
     try {
       MultipleFilesJavaCheckVerifier.verify(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE), visitor);
@@ -53,7 +53,7 @@ public class MultipleFilesJavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_combined_missing_expected_and_unexpected_issues() {
+  void verify_combined_missing_expected_and_unexpected_issues() {
     IssuableSubscriptionVisitor visitor = new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues().withIssue(4, "extra message").withoutIssue(1);
     try {
       MultipleFilesJavaCheckVerifier.verify(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE), visitor);
@@ -64,13 +64,13 @@ public class MultipleFilesJavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_issues_in_multiple_files() {
+  void verify_issues_in_multiple_files() {
     MultipleFilesJavaCheckVerifier.verify(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_ISSUES_SECOND),
         new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues().withIssue(2, "message B"));
   }
 
   @Test
-  public void test_issues_with_no_semantic() {
+  void test_issues_with_no_semantic() {
     try {
       MultipleFilesJavaCheckVerifier.verifyNoIssueWithoutSemantic(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE),
         new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues());
@@ -81,13 +81,13 @@ public class MultipleFilesJavaCheckVerifierTest {
   }
 
   @Test
-  public void test_with_no_semantic() {
+  void test_with_no_semantic() {
     MultipleFilesJavaCheckVerifier.verifyNoIssueWithoutSemantic(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE),
       new JavaCheckVerifierTest.FakeVisitor());
   }
 
   @Test
-  public void verify_no_issue() {
+  void verify_no_issue() {
     MultipleFilesJavaCheckVerifier.verifyNoIssue(Collections.singletonList(FILENAME_NO_ISSUE), NO_EFFECT_VISITOR);
   }
 

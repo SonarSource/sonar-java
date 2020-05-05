@@ -22,10 +22,10 @@ package org.sonar.java.checks.naming;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class BadPackageNameCheckTest {
+class BadPackageNameCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/PACKAGE/BadPackageNameNoncompliant.java")
       .withCheck(new BadPackageNameCheck())
@@ -33,7 +33,7 @@ public class BadPackageNameCheckTest {
   }
 
   @Test
-  public void test2() {
+  void test2() {
     BadPackageNameCheck check = new BadPackageNameCheck();
     check.format = "^[a-zA-Z0-9]*$";
     JavaCheckVerifier.newVerifier()
@@ -43,7 +43,7 @@ public class BadPackageNameCheckTest {
   }
 
   @Test
-  public void test3() {
+  void test3() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/PACKAGE/BadQualifiedIdentifierPackageName.java")
       .withCheck(new BadPackageNameCheck())

@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ThreadSleepInTestsCheckTest {
+class ThreadSleepInTestsCheckTest {
 
   @Test
-  public void test() throws InterruptedException {
+  void test() throws InterruptedException {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/ThreadSleepInTestsCheck.java")
       .withCheck(new ThreadSleepInTestsCheck())

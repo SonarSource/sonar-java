@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class SuppressWarningsCheckTest {
+class SuppressWarningsCheckTest {
 
   @Test
-  public void empty_list_of_warnings_then_any_suppressWarnings_is_an_issue() throws Exception {
+  void empty_list_of_warnings_then_any_suppressWarnings_is_an_issue() throws Exception {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SuppressWarningsCheck/test1.java")
       .withCheck(getCheck(""))
@@ -35,7 +35,7 @@ public class SuppressWarningsCheckTest {
   }
 
   @Test
-  public void list_of_warnings_with_syntax_error_then_any_suppressWarnings_is_an_issue() throws Exception {
+  void list_of_warnings_with_syntax_error_then_any_suppressWarnings_is_an_issue() throws Exception {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SuppressWarningsCheck/test1.java")
       .withCheck(getCheck("   ,   , ,,"))
@@ -43,7 +43,7 @@ public class SuppressWarningsCheckTest {
   }
 
   @Test
-  public void only_one_warning_is_not_allowed() throws Exception {
+  void only_one_warning_is_not_allowed() throws Exception {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SuppressWarningsCheck/only_one_warning_is_not_allowed.java")
       .withCheck(getCheck("all"))
@@ -51,7 +51,7 @@ public class SuppressWarningsCheckTest {
   }
 
   @Test
-  public void warning_based_on_constants_are_ignored() throws Exception {
+  void warning_based_on_constants_are_ignored() throws Exception {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SuppressWarningsCheck/warning_based_on_constants_are_ignored.java")
       .withCheck(getCheck("boxing"))
@@ -59,7 +59,7 @@ public class SuppressWarningsCheckTest {
   }
 
   @Test
-  public void two_warnings_from_different_lines_are_not_allowed() throws Exception {
+  void two_warnings_from_different_lines_are_not_allowed() throws Exception {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SuppressWarningsCheck/two_warnings_from_different_lines_are_not_allowed.java")
       .withCheck(getCheck("unused, cast"))
@@ -67,7 +67,7 @@ public class SuppressWarningsCheckTest {
   }
 
   @Test
-  public void former_squid_repository_keys_are_still_supported() throws Exception {
+  void former_squid_repository_keys_are_still_supported() throws Exception {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/SuppressWarningsCheck/former_squid_rule_keys.java"))
       .withCheck(getCheck("squid:S1068, java:S115"))

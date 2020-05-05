@@ -31,14 +31,14 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClassTreeImplTest {
+class ClassTreeImplTest {
 
   private static CompilationUnitTree createTree(String code) {
     return JParserTestUtils.parse(code);
   }
 
   @Test
-  public void getLine() {
+  void getLine() {
     CompilationUnitTree tree = createTree("class A {\n" +
         "A a = new A() {};" +
         "\n}");
@@ -50,7 +50,7 @@ public class ClassTreeImplTest {
   }
 
   @Test
-  public void at_token() {
+  void at_token() {
     List<Tree> types = createTree("interface A {}\n @interface B {}").types();
     ClassTreeImpl interfaceType = (ClassTreeImpl) types.get(0);
     assertThat(interfaceType.atToken()).isNull();

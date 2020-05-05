@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.externalreport.ExternalReportTestUtils.onlyOneLogElement;
 
 @EnableRuleMigrationSupport
-public class CheckstyleSensorTest {
+class CheckstyleSensorTest {
 
   private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "checkstyle")
     .toAbsolutePath().normalize();
@@ -57,7 +57,7 @@ public class CheckstyleSensorTest {
   public LogTester logTester = new LogTester();
 
   @Test
-  public void checkstyle_rules_definition() {
+  void checkstyle_rules_definition() {
     RulesDefinition.Context context = new RulesDefinition.Context();
     new ExternalRulesDefinition(CheckstyleSensor.RULE_LOADER, CheckstyleSensor.LINTER_KEY).define(context);
 
@@ -82,7 +82,7 @@ public class CheckstyleSensorTest {
   }
 
   @Test
-  public void test_descriptor() {
+  void test_descriptor() {
     DefaultSensorDescriptor sensorDescriptor = new DefaultSensorDescriptor();
     checkstyleSensor.describe(sensorDescriptor);
     assertThat(sensorDescriptor.name()).isEqualTo("Import of Checkstyle issues");
@@ -91,7 +91,7 @@ public class CheckstyleSensorTest {
   }
 
   @Test
-  public void issues_with_sonarqube_72() throws IOException {
+  void issues_with_sonarqube_72() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting("checkstyle-result.xml");
     assertThat(externalIssues).hasSize(3);
 
@@ -128,14 +128,14 @@ public class CheckstyleSensorTest {
   }
 
   @Test
-  public void no_issues_without_report_paths_property() throws IOException {
+  void no_issues_without_report_paths_property() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting(null);
     assertThat(externalIssues).isEmpty();
     ExternalReportTestUtils.assertNoErrorWarnDebugLogs(logTester);
   }
 
   @Test
-  public void no_issues_with_invalid_report_path() throws IOException {
+  void no_issues_with_invalid_report_path() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting("invalid-path.txt");
     assertThat(externalIssues).isEmpty();
     assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
@@ -145,7 +145,7 @@ public class CheckstyleSensorTest {
   }
 
   @Test
-  public void no_issues_with_invalid_checkstyle_file() throws IOException {
+  void no_issues_with_invalid_checkstyle_file() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting("not-checkstyle-file.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
@@ -154,7 +154,7 @@ public class CheckstyleSensorTest {
   }
 
   @Test
-  public void no_issues_with_invalid_line_number() throws IOException {
+  void no_issues_with_invalid_line_number() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting("checkstyle-with-invalid-line.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
@@ -163,7 +163,7 @@ public class CheckstyleSensorTest {
   }
 
   @Test
-  public void no_issues_with_invalid_xml_report() throws IOException {
+  void no_issues_with_invalid_xml_report() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting("invalid-file.xml");
     assertThat(externalIssues).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(LoggerLevel.ERROR)))
@@ -172,7 +172,7 @@ public class CheckstyleSensorTest {
   }
 
   @Test
-  public void issues_when_xml_file_has_errors() throws IOException {
+  void issues_when_xml_file_has_errors() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting("checkstyle-with-errors.xml");
     assertThat(externalIssues).hasSize(1);
 

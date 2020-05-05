@@ -22,10 +22,10 @@ package org.sonar.java.checks.synchronization;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SynchronizationOnGetClassCheckTest {
+class SynchronizationOnGetClassCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/SynchronizationOnGetClassCheck.java")
       .withCheck(new SynchronizationOnGetClassCheck())

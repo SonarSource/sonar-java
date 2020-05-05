@@ -30,10 +30,10 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class FlowTest {
+class FlowTest {
 
   @Test
-  public void test_first_flow_location() {
+  void test_first_flow_location() {
     Flow flow1 = Flow.builder()
       .add(locationWithMockTree("last"))
       .add(locationWithMockTree("first"))
@@ -47,7 +47,7 @@ public class FlowTest {
   }
 
   @Test
-  public void testEquals() {
+  void testEquals() {
 
     Flow flow = Flow.builder()
       .add(locationWithMockTree("first"))

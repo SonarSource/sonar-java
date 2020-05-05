@@ -22,9 +22,9 @@ package org.sonar.java.checks.spring;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ControllerWithSessionAttributesCheckTest {
+class ControllerWithSessionAttributesCheckTest {
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/spring/ControllerWithSessionAttributesCheck.java")
       .withCheck(new ControllerWithSessionAttributesCheck())

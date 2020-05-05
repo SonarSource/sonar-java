@@ -23,17 +23,17 @@ import org.junit.jupiter.api.Test;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheck;
 import org.sonarsource.analyzer.commons.xml.checks.SonarXmlCheckVerifier;
 
-public class InterceptorExclusionsCheckTest {
+class InterceptorExclusionsCheckTest {
 
   private static final SonarXmlCheck CHECK = new InterceptorExclusionsCheck();
 
   @Test
-  public void ejb_jar() {
+  void ejb_jar() {
     SonarXmlCheckVerifier.verifyIssues("ejb-jar.xml", CHECK);
   }
 
   @Test
-  public void not_an_ejb_jar() {
+  void not_an_ejb_jar() {
     SonarXmlCheckVerifier.verifyNoIssue("../irrelevant.xml", CHECK);
   }
 }

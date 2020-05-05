@@ -25,15 +25,15 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class MethodTooBigCheckTest {
+class MethodTooBigCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     assertThat(new MethodTooBigCheck().max).isEqualTo(75);
   }
 
   @Test
-  public void custom_at_4() {
+  void custom_at_4() {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 4;
     JavaCheckVerifier.newVerifier()
@@ -43,7 +43,7 @@ public class MethodTooBigCheckTest {
   }
 
   @Test
-  public void custom_at_5() {
+  void custom_at_5() {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 5;
     JavaCheckVerifier.newVerifier()

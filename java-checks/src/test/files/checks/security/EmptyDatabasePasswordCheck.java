@@ -1,3 +1,6 @@
+// place itself in the same package as the test to access the constants
+package org.sonar.java.checks.security;
+
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import static org.sonar.java.checks.security.EmptyDatabasePasswordCheckTest.EMPTY_PASSWORD;
@@ -9,7 +12,7 @@ class S2115 {
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", "Foo");
 
     String pwd = "";
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd); // Noncompliant [[secondary=11]]
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd); // Noncompliant [[secondary=14]]
 
     String pwd2 = "foo";
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd2);
@@ -17,7 +20,7 @@ class S2115 {
     String pRef = "";
     String pwd3 = pRef;
 
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd3); // Noncompliant [[secondary=17,18]]
+    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd3); // Noncompliant [[secondary=20,21]]
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", getPassword());
 

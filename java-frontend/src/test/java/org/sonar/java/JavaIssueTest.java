@@ -39,12 +39,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
-public class JavaIssueTest {
+class JavaIssueTest {
 
   private DefaultInputProject project = mock(DefaultInputProject.class);
 
   @Test
-  public void testIssueCreation() {
+  void testIssueCreation() {
     InputFile inputFile = inputFile();
     RuleKey ruleKey = RuleKey.of("java", "ruleKey");
     SensorContext sensorContext = mock(SensorContext.class);
@@ -91,7 +91,7 @@ public class JavaIssueTest {
   }
 
   @Test
-  public void test_addFlow() throws Exception {
+  void test_addFlow() throws Exception {
     InputFile inputFile = inputFile();
     RuleKey ruleKey = RuleKey.of("java", "ruleKey");
     SensorContext sensorContext = mock(SensorContext.class);

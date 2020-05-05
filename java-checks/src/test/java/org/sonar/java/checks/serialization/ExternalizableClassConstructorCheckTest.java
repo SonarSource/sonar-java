@@ -22,9 +22,9 @@ package org.sonar.java.checks.serialization;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ExternalizableClassConstructorCheckTest {
+class ExternalizableClassConstructorCheckTest {
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/serialization/ExternalizableClassConstructorCheck.java")
       .withCheck(new ExternalizableClassConstructorCheck())
@@ -32,7 +32,7 @@ public class ExternalizableClassConstructorCheckTest {
   }
 
   @Test
-  public void no_semantic() {
+  void no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/serialization/ExternalizableClassConstructorCheck.java")
       .withCheck(new ExternalizableClassConstructorCheck())

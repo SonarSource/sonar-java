@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ClassCouplingCheckTest {
+class ClassCouplingCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/ClassCouplingCheck.java")
       .withCheck(new ClassCouplingCheck())
@@ -33,7 +33,7 @@ public class ClassCouplingCheckTest {
   }
 
   @Test
-  public void custom() {
+  void custom() {
     ClassCouplingCheck check = new ClassCouplingCheck();
     check.max = 22;
     JavaCheckVerifier.newVerifier()

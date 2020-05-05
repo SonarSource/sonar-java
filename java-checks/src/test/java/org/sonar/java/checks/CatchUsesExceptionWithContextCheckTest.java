@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class CatchUsesExceptionWithContextCheckTest {
+class CatchUsesExceptionWithContextCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CatchUsesExceptionWithContextCheck.java")
       .withCheck(new CatchUsesExceptionWithContextCheck())
@@ -36,7 +36,7 @@ public class CatchUsesExceptionWithContextCheckTest {
   }
 
   @Test
-  public void no_semantic() {
+  void no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/CatchUsesExceptionWithContextCheck.java")
       .withCheck(new CatchUsesExceptionWithContextCheck())
@@ -45,7 +45,7 @@ public class CatchUsesExceptionWithContextCheckTest {
   }
 
   @Test
-  public void empty_whitelist() {
+  void empty_whitelist() {
     CatchUsesExceptionWithContextCheck check = new CatchUsesExceptionWithContextCheck();
     check.exceptionsCommaSeparated = "-";
     JavaCheckVerifier.newVerifier()

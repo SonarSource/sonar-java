@@ -22,12 +22,12 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class RepeatAnnotationCheckTest {
+class RepeatAnnotationCheckTest {
 
   private static final String FILENAME = "src/test/files/checks/RepeatAnnotationCheck.java";
 
   @Test
-  public void java8() {
+  void java8() {
     JavaCheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(new RepeatAnnotationCheck())
@@ -36,7 +36,7 @@ public class RepeatAnnotationCheckTest {
   }
 
   @Test
-  public void java7() {
+  void java7() {
     JavaCheckVerifier.newVerifier()
       .onFile(FILENAME)
       .withCheck(new RepeatAnnotationCheck())
@@ -45,7 +45,7 @@ public class RepeatAnnotationCheckTest {
   }
 
   @Test
-  public void unknown_version() {
+  void unknown_version() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/RepeatAnnotationCheck_no_version.java")
       .withCheck(new RepeatAnnotationCheck())

@@ -24,12 +24,12 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class VerifiedServerHostnamesCheckTest {
+class VerifiedServerHostnamesCheckTest {
 
   public static final String TEST_FOLDER = "checks/security/VerifiedServerHostnamesCheck/";
 
   @Test
-  public void hostname_verifier() {
+  void hostname_verifier() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath(TEST_FOLDER + "HostnameVerifier.java"))
       .withCheck(new VerifiedServerHostnamesCheck())
@@ -37,7 +37,7 @@ public class VerifiedServerHostnamesCheckTest {
   }
 
   @Test
-  public void java_mail_session() {
+  void java_mail_session() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath(TEST_FOLDER + "JavaMailSession.java"))
       .withCheck(new VerifiedServerHostnamesCheck())
@@ -45,7 +45,7 @@ public class VerifiedServerHostnamesCheckTest {
   }
 
   @Test
-  public void apache_common_email() {
+  void apache_common_email() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath(TEST_FOLDER + "ApacheCommonEmail.java"))
       .withCheck(new VerifiedServerHostnamesCheck())

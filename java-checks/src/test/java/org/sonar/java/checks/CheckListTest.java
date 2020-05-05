@@ -47,7 +47,7 @@ import org.sonar.java.se.checks.SECheck;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
-public class CheckListTest {
+class CheckListTest {
 
   private static final String ARTIFICIAL_DESCRIPTION = "-1";
 
@@ -70,7 +70,7 @@ public class CheckListTest {
    * Enforces that each check declared in list.
    */
   @Test
-  public void count() {
+  void count() {
     int count = 0;
     List<File> files = (List<File>) FileUtils.listFiles(new File("src/main/java/org/sonar/java/checks/"), new String[] {"java"}, true);
     for (File file : files) {
@@ -107,7 +107,7 @@ public class CheckListTest {
   }
 
   @Test
-  public void debugTests() {
+  void debugTests() {
     assertThat(CheckList.getDebugChecks()).hasSize(3);
   }
 
@@ -115,7 +115,7 @@ public class CheckListTest {
    * Enforces that each check has test, name and description.
    */
   @Test
-  public void test() {
+  void test() {
     List<Class> checks = CheckList.getChecks();
     Map<String, String> keyMap = new HashMap<>();
     for (Class cls : checks) {
@@ -169,7 +169,7 @@ public class CheckListTest {
   }
 
   @Test
-  public void enforce_CheckList_registration() {
+  void enforce_CheckList_registration() {
     List<File> files = (List<File>) FileUtils.listFiles(new File("src/main/java/org/sonar/java/checks/"), new String[] {"java"}, false);
     List<Class> checks = CheckList.getChecks();
     for (File file : files) {
@@ -187,7 +187,7 @@ public class CheckListTest {
   }
 
   @Test
-  public void rules_targeting_tests_should_have_tests_tag() throws Exception {
+  void rules_targeting_tests_should_have_tests_tag() throws Exception {
     Set<Class> testChecks = new HashSet<>(CheckList.getJavaTestChecks());
 
     for (Class cls : CheckList.getChecks()) {
@@ -212,7 +212,7 @@ public class CheckListTest {
   }
 
   @Test
-  public void private_constructor() throws Exception {
+  void private_constructor() throws Exception {
     Constructor constructor = CheckList.class.getDeclaredConstructor();
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);

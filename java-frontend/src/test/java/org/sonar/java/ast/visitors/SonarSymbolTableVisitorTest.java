@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @EnableRuleMigrationSupport
-public class SonarSymbolTableVisitorTest {
+class SonarSymbolTableVisitorTest {
 
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
@@ -65,7 +65,7 @@ public class SonarSymbolTableVisitorTest {
   }
 
   @Test
-  public void sonar_symbol_table() throws Exception {
+  void sonar_symbol_table() throws Exception {
     File source = new File("src/test/files/highlighter/SonarSymTable.java");
     File target = temp.newFile().getAbsoluteFile();
 

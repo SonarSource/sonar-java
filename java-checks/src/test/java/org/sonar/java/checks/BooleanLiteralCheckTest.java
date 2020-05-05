@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class BooleanLiteralCheckTest {
+class BooleanLiteralCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/BooleanLiteralCheck.java"))
       .withCheck(new BooleanLiteralCheck())

@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
 
-public class RunFinalizersCheckTest {
+class RunFinalizersCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     int javaVersion = JavaVersionImpl.fromString(System.getProperty("java.specification.version")).asInt();
     if (javaVersion < 11) {
       JavaCheckVerifier.newVerifier()
@@ -63,7 +63,7 @@ public class RunFinalizersCheckTest {
   }
 
   @Test
-  public void noSemantic() {
+  void noSemantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/RunFinalizersCheck.java")
       .withCheck(new RunFinalizersCheck())

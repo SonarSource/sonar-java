@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class DisallowedMethodCheckTest {
+class DisallowedMethodCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setClassName("A");
     disallowedMethodCheck.setMethodName("foo");
@@ -39,7 +39,7 @@ public class DisallowedMethodCheckTest {
   }
 
   @Test
-  public void all_overloads() {
+  void all_overloads() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setClassName("A");
     disallowedMethodCheck.setMethodName("foo");
@@ -51,7 +51,7 @@ public class DisallowedMethodCheckTest {
   }
 
   @Test
-  public void empty_parameters() {
+  void empty_parameters() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setClassName("A");
     disallowedMethodCheck.setMethodName("bar");
@@ -62,7 +62,7 @@ public class DisallowedMethodCheckTest {
   }
 
   @Test
-  public void empty_type_definition() {
+  void empty_type_definition() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setMethodName("bar");
     JavaCheckVerifier.newVerifier()
@@ -72,7 +72,7 @@ public class DisallowedMethodCheckTest {
   }
 
   @Test
-  public void empty_method_name() {
+  void empty_method_name() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setClassName("A");
     JavaCheckVerifier.newVerifier()

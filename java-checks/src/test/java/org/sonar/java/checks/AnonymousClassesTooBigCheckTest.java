@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class AnonymousClassesTooBigCheckTest {
+class AnonymousClassesTooBigCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/AnonymousClassesTooBigCheck.java")
       .withCheck(new AnonymousClassesTooBigCheck())
@@ -33,7 +33,7 @@ public class AnonymousClassesTooBigCheckTest {
   }
 
   @Test
-  public void custom() {
+  void custom() {
     AnonymousClassesTooBigCheck check = new AnonymousClassesTooBigCheck();
     check.max = 6;
     JavaCheckVerifier.newVerifier()

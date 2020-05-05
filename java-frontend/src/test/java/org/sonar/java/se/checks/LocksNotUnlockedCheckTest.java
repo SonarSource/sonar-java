@@ -25,10 +25,10 @@ import org.sonar.java.testing.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LocksNotUnlockedCheckTest {
+class LocksNotUnlockedCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/LocksNotUnlockedCheck.java")
       .withCheck(new LocksNotUnlockedCheck())
@@ -37,7 +37,7 @@ public class LocksNotUnlockedCheckTest {
   }
 
   @Test
-  public void object_constraint_cache_issues() throws Exception {
+  void object_constraint_cache_issues() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/LocksNotUnlockedCheckCache.java")
       .withCheck(new LocksNotUnlockedCheck())
@@ -46,7 +46,7 @@ public class LocksNotUnlockedCheckTest {
   }
 
   @Test
-  public void test_value_as_string_for_locked_constraints() throws Exception {
+  void test_value_as_string_for_locked_constraints() throws Exception {
     assertThat(LocksNotUnlockedCheck.LockConstraint.LOCKED.valueAsString()).isSameAs("locked");
     assertThat(LocksNotUnlockedCheck.LockConstraint.UNLOCKED.valueAsString()).isSameAs("unlocked");
   }

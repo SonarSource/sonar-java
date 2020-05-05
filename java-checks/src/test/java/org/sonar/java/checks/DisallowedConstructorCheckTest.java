@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class DisallowedConstructorCheckTest {
+class DisallowedConstructorCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
     disallowedConstructorCheck.setClassName("A");
     disallowedConstructorCheck.setArgumentTypes("int, long, java.lang.String[]");
@@ -38,7 +38,7 @@ public class DisallowedConstructorCheckTest {
   }
 
   @Test
-  public void all_overloads() {
+  void all_overloads() {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
     disallowedConstructorCheck.setClassName("checks.DisallowedConstructorCheck.A");
     disallowedConstructorCheck.setAllOverloads(true);
@@ -49,7 +49,7 @@ public class DisallowedConstructorCheckTest {
   }
 
   @Test
-  public void empty_parameters() {
+  void empty_parameters() {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
     disallowedConstructorCheck.setClassName("A");
     JavaCheckVerifier.newVerifier()
@@ -59,7 +59,7 @@ public class DisallowedConstructorCheckTest {
   }
 
   @Test
-  public void empty_type_definition() {
+  void empty_type_definition() {
     DisallowedConstructorCheck disallowedConstructorCheck = new DisallowedConstructorCheck();
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/DisallowedConstructorCheck/empty_type_definition.java")

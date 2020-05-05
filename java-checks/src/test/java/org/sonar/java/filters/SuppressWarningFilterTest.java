@@ -38,13 +38,13 @@ import org.sonar.java.checks.serialization.SerialVersionUidCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.java.se.checks.DivisionByZeroCheck;
 
-public class SuppressWarningFilterTest {
+class SuppressWarningFilterTest {
   /**
    * Constant used in test for rule key.
    */
   public static final String CONSTANT_RULE_KEY = "java:S115";
   @Test
-  public void verify() {
+  void verify() {
     FilterVerifier.verify("src/test/files/filters/SuppressWarningFilter.java", new SuppressWarningFilter(),
       // activated rules
       new UnusedPrivateFieldCheck(),

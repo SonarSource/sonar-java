@@ -49,7 +49,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @EnableRuleMigrationSupport
-public class SyntaxHighlighterVisitorTest {
+class SyntaxHighlighterVisitorTest {
 
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
@@ -71,7 +71,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   @Test
-  public void parse_error() throws Exception {
+  void parse_error() throws Exception {
     SensorContextTester spy = spy(context);
     File file = temp.newFile().getAbsoluteFile();
     Files.asCharSink(file, StandardCharsets.UTF_8).write("ParseError");
@@ -80,7 +80,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   @Test
-  public void test_LF() throws Exception {
+  void test_LF() throws Exception {
     this.eol = "\n";
     InputFile inputFile = generateDefaultTestFile();
     scan(inputFile);
@@ -88,7 +88,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   @Test
-  public void test_CR_LF() throws Exception {
+  void test_CR_LF() throws Exception {
     this.eol = "\r\n";
     InputFile inputFile = generateDefaultTestFile();
     scan(inputFile);
@@ -96,7 +96,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   @Test
-  public void test_CR() throws Exception {
+  void test_CR() throws Exception {
     this.eol = "\r";
     InputFile inputFile = generateDefaultTestFile();
     scan(inputFile);
@@ -107,7 +107,7 @@ public class SyntaxHighlighterVisitorTest {
    * Java 9 modules introduces restricted keywords only used in their context
    */
   @Test
-  public void test_restricted_keywords_within_module() throws Exception {
+  void test_restricted_keywords_within_module() throws Exception {
     this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/module-info.java");
     scan(inputFile);
@@ -148,7 +148,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   @Test
-  public void test_restricted_keywords_outside_module() throws Exception {
+  void test_restricted_keywords_outside_module() throws Exception {
     this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/ExampleWithModuleKeywords.java");
     scan(inputFile);
@@ -179,7 +179,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   @Test
-  public void test_java10_var() throws Exception {
+  void test_java10_var() throws Exception {
     this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/Java10Var.java");
     scan(inputFile);
@@ -195,7 +195,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   @Test
-  public void text_block() throws Exception {
+  void text_block() throws Exception {
     this.eol = "\n";
     InputFile inputFile = generateTestFile("src/test/files/highlighter/TextBlock.java");
     scan(inputFile);

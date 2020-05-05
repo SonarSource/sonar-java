@@ -31,10 +31,10 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class CheckerDispatcherTest {
+class CheckerDispatcherTest {
 
   @Test
-  public void test_only_one_execution_of_post_statement_by_check() {
+  void test_only_one_execution_of_post_statement_by_check() {
     List<SECheck> checks = Lists.newArrayList(new NullDereferenceCheck(), new CheckTest(), new CheckTest(), new CheckTest());
     CheckerDispatcher checkerDispatcher = new CheckerDispatcher(mockExplodedGraphWalker(), checks);
     checkerDispatcher.executeCheckPostStatement(mock(Tree.class));

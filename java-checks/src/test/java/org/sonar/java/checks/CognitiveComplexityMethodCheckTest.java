@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class CognitiveComplexityMethodCheckTest {
+class CognitiveComplexityMethodCheckTest {
 
   @Test
-  public void testBasicCalculations() {
+  void testBasicCalculations() {
 
     CognitiveComplexityMethodCheck check = new CognitiveComplexityMethodCheck();
     check.setMax(0);

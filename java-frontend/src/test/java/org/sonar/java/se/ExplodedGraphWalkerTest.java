@@ -72,10 +72,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitor;
 
-public class ExplodedGraphWalkerTest {
+class ExplodedGraphWalkerTest {
 
   @Test
-  public void seEngineTest() {
+  void seEngineTest() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/SeEngineTest.java")
       .withChecks(seChecks())
@@ -84,7 +84,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void test_cleanup_state() {
+  void test_cleanup_state() {
     final int[] steps = new int[2];
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/SeEngineTestCleanupState.java")
@@ -116,7 +116,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void reproducer() throws Exception {
+  void reproducer() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/Reproducer.java")
       .withChecks(seChecks())
@@ -125,7 +125,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void exception_catched_in_loop() throws Exception {
+  void exception_catched_in_loop() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/LoopExceptionField.java")
       .withChecks(seChecks())
@@ -134,7 +134,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void constraints_on_fields() throws Exception {
+  void constraints_on_fields() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/ConstraintsOnFields.java")
       .withChecks(seChecks())
@@ -143,7 +143,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void different_exceptions_lead_to_different_program_states_with_catch_exception_block() {
+  void different_exceptions_lead_to_different_program_states_with_catch_exception_block() {
     Set<Type> encounteredExceptions = new HashSet<>();
     int[] tested = {0};
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
@@ -206,7 +206,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void use_false_branch_on_loop_when_reaching_max_exec_program_point() {
+  void use_false_branch_on_loop_when_reaching_max_exec_program_point() {
     ProgramPoint[] programPoints = new ProgramPoint[2];
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
 
@@ -264,7 +264,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void test_limited_loop_execution() throws Exception {
+  void test_limited_loop_execution() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/SeEngineTestCase.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
@@ -283,7 +283,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void test_max_number_starting_states() throws Exception {
+  void test_max_number_starting_states() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/MaxStartingStates.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
@@ -303,7 +303,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void test_max_number_starting_states_boundaries() throws Exception {
+  void test_max_number_starting_states_boundaries() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/StartingStates1024.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
@@ -322,7 +322,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void test_maximum_steps_reached() throws Exception {
+  void test_maximum_steps_reached() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/MaxSteps.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
@@ -342,7 +342,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void test_maximum_steps_reached_with_issue() throws Exception {
+  void test_maximum_steps_reached_with_issue() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/MaxStepsWithIssue.java")
       .withCheck(
@@ -352,7 +352,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void test_maximum_number_nested_states() throws Exception {
+  void test_maximum_number_nested_states() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/MaxNestedStates.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
@@ -372,7 +372,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void test_propagation_of_bytecode_analysis_failure() throws Exception {
+  void test_propagation_of_bytecode_analysis_failure() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/BytecodeExceptionPropagation.java")
       .withCheck(new NullDereferenceCheck())
@@ -382,7 +382,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void system_exit() throws Exception {
+  void system_exit() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/SystemExit.java")
       .withChecks(seChecks())
@@ -391,7 +391,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void read_parametersAreNonnullByDefault_and_parametersAreNullableByDefault_annotations() throws Exception {
+  void read_parametersAreNonnullByDefault_and_parametersAreNullableByDefault_annotations() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/annotations/PackageAnnotationsNullable.java")
       .withChecks(seChecks())
@@ -427,7 +427,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void read_jetbrains_nullness_annotations() throws Exception {
+  void read_jetbrains_nullness_annotations() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/annotations/JetBrains.java")
       .withChecks(seChecks())
@@ -436,7 +436,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void androidx_nullness_annotations() throws Exception {
+  void androidx_nullness_annotations() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/annotations/AndroidXAnnotations.java")
       .withChecks(seChecks())
@@ -445,7 +445,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void xproc_usage_of_method_behaviors() throws Exception {
+  void xproc_usage_of_method_behaviors() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XProcMethodBehavior.java")
       .withChecks(seChecks())
@@ -454,7 +454,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void xproc_usage_of_method_behaviors_with_explicit_exceptional_path() throws Exception {
+  void xproc_usage_of_method_behaviors_with_explicit_exceptional_path() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XProcMethodBehaviorExplicitException.java")
       .withChecks(seChecks())
@@ -463,7 +463,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void xproc_usage_of_method_behaviors_with_explicit_exceptional_path_and_branching() throws Exception {
+  void xproc_usage_of_method_behaviors_with_explicit_exceptional_path_and_branching() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XProcMethodBehaviorExplicitExceptionBranching.java")
       .withChecks(seChecks())
@@ -472,7 +472,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void xproc_usage_of_exceptional_path_and_branching() throws Exception {
+  void xproc_usage_of_exceptional_path_and_branching() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XProcExceptionalBranching.java")
       .withChecks(seChecks())
@@ -481,7 +481,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void xproc_usage_of_exceptional_path_and_branching_with_reporting() throws Exception {
+  void xproc_usage_of_exceptional_path_and_branching_with_reporting() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XProcExceptionalBranchingReporting.java")
       .withChecks(seChecks())
@@ -490,7 +490,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void xproc_reporting_with_var_args() throws Exception {
+  void xproc_reporting_with_var_args() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XProcReportingWithVarArgs.java")
       .withChecks(seChecks())
@@ -499,7 +499,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void xproc_keep_yield_for_reporting() throws Exception {
+  void xproc_keep_yield_for_reporting() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/YieldReporting.java")
       .withCheck(new SymbolicExecutionVisitor(Collections.emptyList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>()))) {
@@ -518,7 +518,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void test_this_super_not_null() throws Exception {
+  void test_this_super_not_null() throws Exception {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/ThisSuperNotNull.java")
       .withChecks(seChecks())
@@ -541,7 +541,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void methods_should_be_evaluated_only_once() throws Exception {
+  void methods_should_be_evaluated_only_once() throws Exception {
     MethodAsInstruction check = new MethodAsInstruction();
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/EvaluateMethodOnce.java")
@@ -552,7 +552,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void compound_assignment_should_create_new_value_on_stack() throws Exception {
+  void compound_assignment_should_create_new_value_on_stack() throws Exception {
     SECheck check = new SECheck() {
 
       private SymbolicValue rhsValue;
@@ -585,7 +585,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void binary_expression_creates_not_null_value() throws Exception {
+  void binary_expression_creates_not_null_value() throws Exception {
     int[] counter = new int[1];
     SECheck check = new SECheck() {
       @Override
@@ -608,7 +608,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void simple_assignment_should_preserve_value_on_stack() throws Exception {
+  void simple_assignment_should_preserve_value_on_stack() throws Exception {
     SECheck check = new SECheck() {
 
       private SymbolicValue rhsValue;
@@ -641,7 +641,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void eg_walker_factory_default_checks() throws IOException {
+  void eg_walker_factory_default_checks() throws IOException {
     List<String> nonDefaultChecks = Stream.of(
       CustomUnclosedResourcesCheck.class,
       ConditionalUnreachableCodeCheck.class,
@@ -671,7 +671,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void private_method_should_be_visited() {
+  void private_method_should_be_visited() {
     List<String> visitedMethods = new ArrayList<>();
     CheckVerifier.newVerifier()
       .onFile("src/test/files/se/XprocIfaceWithPrivateMethod.java")
@@ -687,7 +687,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void constraints_on_field_reset() {
+  void constraints_on_field_reset() {
     CheckVerifier.newVerifier()
       .onFile("src/test/java/org/sonar/java/resolve/targets/se/EGWResetFieldsA.java")
       .withChecks(seChecks())
@@ -701,7 +701,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void test_enqueueing_of_catch_blocks() {
+  void test_enqueueing_of_catch_blocks() {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/java/org/sonar/java/bytecode/se/testdata/ExceptionEnqueue.java");
 
     MethodBehavior mb = sev.behaviorCache.behaviors

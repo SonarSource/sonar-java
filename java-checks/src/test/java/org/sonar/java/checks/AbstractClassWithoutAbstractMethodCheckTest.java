@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class AbstractClassWithoutAbstractMethodCheckTest {
+class AbstractClassWithoutAbstractMethodCheckTest {
 
   @Test
-  public void detected() {
+  void detected() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/AbstractClassWithoutAbstractMethodCheck.java")
       .withCheck(new AbstractClassWithoutAbstractMethodCheck())

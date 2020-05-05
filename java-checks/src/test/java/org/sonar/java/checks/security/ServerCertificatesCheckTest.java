@@ -22,12 +22,12 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class ServerCertificatesCheckTest {
+class ServerCertificatesCheckTest {
 
   public static final String TEST_FILE = "src/test/files/checks/security/ServerCertificatesCheck.java";
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile(TEST_FILE)
       .withCheck(new ServerCertificatesCheck())
@@ -35,7 +35,7 @@ public class ServerCertificatesCheckTest {
   }
 
   @Test
-  public void test_no_semantic() {
+  void test_no_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(TEST_FILE)
       .withCheck(new ServerCertificatesCheck())

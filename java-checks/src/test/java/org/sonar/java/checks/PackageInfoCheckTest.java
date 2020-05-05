@@ -27,10 +27,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class PackageInfoCheckTest {
+class PackageInfoCheckTest {
 
   @Test
-  public void with_package_info() {
+  void with_package_info() {
     PackageInfoCheck check = new PackageInfoCheck();
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/packageInfo/HelloWorld.java"))
@@ -40,7 +40,7 @@ public class PackageInfoCheckTest {
   }
 
   @Test
-  public void no_package_info() {
+  void no_package_info() {
     PackageInfoCheck check = new PackageInfoCheck();
     String expectedMessage = "Add a 'package-info.java' file to document the '../java-checks-test-sources/src/main/java/checks/packageInfo/nopackageinfo' package"
       .replace('/', File.separatorChar);

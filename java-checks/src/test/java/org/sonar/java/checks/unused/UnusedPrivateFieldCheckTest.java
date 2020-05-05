@@ -24,10 +24,10 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-public class UnusedPrivateFieldCheckTest {
+class UnusedPrivateFieldCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/unused/UnusedPrivateFieldCheck.java")
       .withCheck(new UnusedPrivateFieldCheck())
@@ -35,7 +35,7 @@ public class UnusedPrivateFieldCheckTest {
   }
 
   @Test
-  public void testNative() {
+  void testNative() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/unused/UnusedPrivateFieldCheckWithNative.java"))
       .withCheck(new UnusedPrivateFieldCheck())
@@ -43,7 +43,7 @@ public class UnusedPrivateFieldCheckTest {
   }
 
   @Test
-  public void no_issue_without_semantic() {
+  void no_issue_without_semantic() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/unused/UnusedPrivateFieldCheck.java")
       .withCheck(new UnusedPrivateFieldCheck())

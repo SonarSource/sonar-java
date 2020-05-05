@@ -37,10 +37,10 @@ import static org.sonar.java.se.SETestUtils.createSymbolicExecutionVisitorAndSem
 import static org.sonar.java.se.SETestUtils.getMethodBehavior;
 import static org.sonar.java.se.SETestUtils.mockMethodBehavior;
 
-public class ExceptionalYieldTest {
+class ExceptionalYieldTest {
 
   @Test
-  public void test_equals() {
+  void test_equals() {
     MethodBehavior methodBehavior = mockMethodBehavior();
 
     ExceptionalYield yield = new ExceptionalYield(methodBehavior);
@@ -64,7 +64,7 @@ public class ExceptionalYieldTest {
   }
 
   @Test
-  public void test_hashCode() {
+  void test_hashCode() {
     MethodBehavior methodBehavior = mockMethodBehavior();
 
     ExceptionalYield methodYield = new ExceptionalYield(methodBehavior);
@@ -82,7 +82,7 @@ public class ExceptionalYieldTest {
   }
 
   @Test
-  public void exceptional_yields() {
+  void exceptional_yields() {
     Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYields.java");
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
     Sema semanticModel = sevAndSemantic.b;
@@ -113,7 +113,7 @@ public class ExceptionalYieldTest {
   }
 
   @Test
-  public void test_toString() throws Exception {
+  void test_toString() throws Exception {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/ExceptionalYields.java");
     Set<String> yieldsToString = getMethodBehavior(sev, "myMethod").exceptionalPathYields().map(MethodYield::toString).collect(Collectors.toSet());
     assertThat(yieldsToString).contains(
@@ -123,7 +123,7 @@ public class ExceptionalYieldTest {
   }
 
   @Test
-  public void exceptional_yields_void_method() {
+  void exceptional_yields_void_method() {
     Pair<SymbolicExecutionVisitor, Sema> sevAndSemantic = createSymbolicExecutionVisitorAndSemantic("src/test/files/se/ExceptionalYieldsVoidMethod.java");
     SymbolicExecutionVisitor sev = sevAndSemantic.a;
     Sema semanticModel = sevAndSemantic.b;

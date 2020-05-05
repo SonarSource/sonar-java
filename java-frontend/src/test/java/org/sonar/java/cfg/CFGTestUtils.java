@@ -17,23 +17,27 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.security;
+package org.sonar.java.cfg;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import java.io.File;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 
-class RegexHotspotCheckTest {
+public class CFGTestUtils {
 
-  @Test
-  void test() {
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/RegexHotspotCheck.java")
-      .withCheck(new RegexHotspotCheck())
-      .verifyIssues();
-    JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/security/RegexHotspotCheck.java")
-      .withCheck(new RegexHotspotCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
+  public static CFG buildCFG(String methodCode) {
+    return buildCFGFromCUT(JParserTestUtils.parse("class A { " + methodCode + " }"));
   }
+
+  public static CFG buildCFG(File file) {
+    return buildCFGFromCUT(JParserTestUtils.parse(file));
+  }
+
+  private static CFG buildCFGFromCUT(CompilationUnitTree cut) {
+    MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
+    return CFG.build(tree);
+  }
+
 }
