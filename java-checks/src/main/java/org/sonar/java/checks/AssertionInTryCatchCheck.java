@@ -26,7 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -38,14 +37,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.UnitTestUtils.COMMON_ASSERTION_MATCHER;
+
 @Rule(key = "S5779")
 public class AssertionInTryCatchCheck extends IssuableSubscriptionVisitor {
-
-  private static final MethodMatchers JUNIT_ASSERT_METHOD_MATCHER = MethodMatchers.create()
-    .ofTypes("org.junit.Assert", "org.junit.jupiter.api.Assertions")
-    .name(name -> "fail".equals(name) || name.startsWith("assert"))
-    .withAnyParameters()
-    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -83,7 +78,7 @@ public class AssertionInTryCatchCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-      if (JUNIT_ASSERT_METHOD_MATCHER.matches(methodInvocation)) {
+      if (COMMON_ASSERTION_MATCHER.matches(methodInvocation)) {
         IdentifierTree identifier = ExpressionUtils.methodName(methodInvocation);
         reportIssue(identifier,
           String.format("Don't use %s() inside a try-catch catching an AssertionError.", identifier.name()),

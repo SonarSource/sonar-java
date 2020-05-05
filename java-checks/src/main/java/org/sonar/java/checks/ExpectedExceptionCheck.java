@@ -34,6 +34,8 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
+import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTIONS_METHOD_MATCHER;
+
 @Rule(key = "S5776")
 public class ExpectedExceptionCheck extends AbstractMethodDetection {
 
@@ -62,12 +64,6 @@ public class ExpectedExceptionCheck extends AbstractMethodDetection {
 
   private static class AssertionCollector extends BaseTreeVisitor {
 
-    private static final MethodMatchers JUNIT_ASSERT_METHOD_MATCHER = MethodMatchers.create()
-      .ofTypes("org.junit.Assert", "org.junit.jupiter.api.Assertions")
-      .name(name -> name.startsWith("assert"))
-      .withAnyParameters()
-      .build();
-
     private int collectAfterLine;
     private List<Location> assertions = new ArrayList<>();
 
@@ -78,7 +74,7 @@ public class ExpectedExceptionCheck extends AbstractMethodDetection {
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
       if (methodInvocation.firstToken().line() > collectAfterLine &&
-          JUNIT_ASSERT_METHOD_MATCHER.matches(methodInvocation)) {
+        ASSERTIONS_METHOD_MATCHER.matches(methodInvocation)) {
         assertions.add(new Location("Other assertion", ExpressionUtils.methodName(methodInvocation)));
       }
     }

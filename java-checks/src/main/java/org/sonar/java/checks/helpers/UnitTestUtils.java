@@ -44,6 +44,29 @@ public final class UnitTestUtils {
       "org.assertj.core.api.Fail"
     ).names("fail").withAnyParameters().build();
 
+  public static final MethodMatchers ASSERTIONS_METHOD_MATCHER = MethodMatchers.or(
+    // JUnit 3, 4 and 5
+    MethodMatchers.create()
+      .ofTypes("org.junit.Assert", "org.junit.jupiter.api.Assertions", "junit.framework.Assert", "junit.framework.TestCase")
+      .name(name -> name.startsWith("assert"))
+      .withAnyParameters()
+      .build(),
+    // Fest assert and AssertJ
+    MethodMatchers.create()
+      .ofTypes("org.assertj.core.api.Assertions", "org.fest.assertions.Assertions")
+      .names("assertThat")
+      .withAnyParameters()
+      .build()
+  );
+
+  /**
+   * Match when we are sure that the intention is to assert something, that will result in an AssertionError if the assertion fails.
+   * The purpose is not to detect any assertion method (similar to S2699).
+   */
+  public static final MethodMatchers COMMON_ASSERTION_MATCHER = MethodMatchers.or(
+    FAIL_METHOD_MATCHER, ASSERTIONS_METHOD_MATCHER
+  );
+
   private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList("org.junit.Test", "org.testng.annotations.Test"));
   private static final Set<String> JUNIT5_TEST_ANNOTATIONS = new HashSet<>(asList(
     "org.junit.jupiter.api.Test",

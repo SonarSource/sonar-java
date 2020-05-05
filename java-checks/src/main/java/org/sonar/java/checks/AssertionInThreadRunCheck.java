@@ -19,28 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.java.checks.helpers.UnitTestUtils.COMMON_ASSERTION_MATCHER;
+
 @Rule(key = "S2186")
 public class AssertionInThreadRunCheck extends IssuableSubscriptionVisitor {
-
-  private static final Iterable<String> CHECKED_TYPES = ImmutableList.of(
-    "org.junit.Assert",
-    "org.junit.jupiter.api.Assertions",
-    "junit.framework.Assert",
-    "junit.framework.TestCase",
-    "org.fest.assertions.Assertions");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -66,22 +59,10 @@ public class AssertionInThreadRunCheck extends IssuableSubscriptionVisitor {
   private class AssertionsVisitor extends BaseTreeVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if(tree.symbol().isMethodSymbol()) {
-        Type type = tree.symbol().owner().type();
-        if (isCheckedType(type)) {
-          reportIssue(ExpressionUtils.methodName(tree), "Remove this assertion.");
-        }
+      if (COMMON_ASSERTION_MATCHER.matches(tree)) {
+        reportIssue(ExpressionUtils.methodName(tree), "Remove this assertion.");
       }
       super.visitMethodInvocation(tree);
-    }
-
-    private boolean isCheckedType(Type type) {
-      for (String checkedType : CHECKED_TYPES) {
-        if (type.is(checkedType)) {
-          return true;
-        }
-      }
-      return false;
     }
   }
 }
