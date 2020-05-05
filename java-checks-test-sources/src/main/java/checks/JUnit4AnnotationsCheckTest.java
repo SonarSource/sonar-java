@@ -40,6 +40,9 @@ public class JUnit4AnnotationsCheckTest {
   @org.junit.Test // Noncompliant
   private void someTestMethodWithQualifiedAnnotation() {}
 
+  @Test(timeout = 4) // Noncompliant
+  void testWithTimeout() {}
+
   @org.junit.jupiter.api.Test // compliant (JUnit5 annotation)
   void junit5Test() {}
 
