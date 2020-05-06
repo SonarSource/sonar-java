@@ -1,9 +1,11 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
 import org.easymock.IMocksControl;
 import org.junit.Test;
 
-public class AssertionsInTestsCheckEasyMock extends EasyMockSupport {
+class EasyMockTest extends EasyMockSupport {
 
   Controller controller;
 

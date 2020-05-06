@@ -1,3 +1,5 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
@@ -5,6 +7,9 @@ import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import org.junit.Test;
 
 class WireMockTest {
+
+  WireMockServer wireMockServer;
+
   @Test
   public void myTest() { // Noncompliant
     // do nothing
@@ -23,6 +28,6 @@ class WireMockTest {
     RequestPatternBuilder requestPatternBuilder = new RequestPatternBuilder()
       .allRequests()
       .withUrl("/hello/world/*");
-    WireMockServer.verify(requestPatternBuilder);
+    wireMockServer.verify(requestPatternBuilder);
   }
 }

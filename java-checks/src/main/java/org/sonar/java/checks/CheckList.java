@@ -109,6 +109,7 @@ import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
 import org.sonar.java.checks.synchronization.ValueBasedObjectUsedForLockCheck;
 import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
+import org.sonar.java.checks.tests.AssertionsInTestsCheck;
 import org.sonar.java.checks.tests.JUnitMethodDeclarationCheck;
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
@@ -276,6 +277,7 @@ public final class CheckList {
       ConstantsShouldBeStaticFinalCheck.class,
       ConstructorCallingOverridableCheck.class,
       ConstructorInjectionCheck.class,
+      ControlCharacterInLiteralCheck.class,
       ControllerWithSessionAttributesCheck.class,
       ControllingPermissionsCheck.class,
       CookieDomainCheck.class,
@@ -725,6 +727,7 @@ public final class CheckList {
       CallSuperInTestCaseCheck.class,
       ExpectedExceptionCheck.class,
       IgnoredTestsCheck.class,
+      JUnit4AnnotationsCheck.class,
       JUnit5DefaultPackageClassAndMethodCheck.class,
       JUnit5PrivateClassAndMethodCheck.class,
       JUnitMethodDeclarationCheck.class,
@@ -732,6 +735,7 @@ public final class CheckList {
       NoTestInTestClassCheck.class,
       OneExpectedCheckedExceptionCheck.class,
       OneExpectedRuntimeExceptionCheck.class,
+      TestAnnotationWithExpectedExceptionCheck.class,
       ThreadSleepInTestsCheck.class,
       UnusedTestRuleCheck.class);
   }

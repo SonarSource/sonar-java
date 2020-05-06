@@ -1,0 +1,17 @@
+{
+  "title": "Migrate your tests from JUnit4 to the new JUnit5 annotations",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "junit",
+    "tests"
+  ],
+  "defaultSeverity": "Info",
+  "ruleSpecification": "RSPEC-5793",
+  "sqKey": "S5793",
+  "scope": "Tests"
+}

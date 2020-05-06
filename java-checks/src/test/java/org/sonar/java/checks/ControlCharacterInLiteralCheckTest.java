@@ -20,43 +20,27 @@
 package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.AnalysisException;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
-import org.sonar.java.testing.CheckVerifier;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-class CommentRegularExpressionCheckTest {
+class ControlCharacterInLiteralCheckTest {
 
   @Test
-  void test() {
-    CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
-    check.regularExpression = "(?i).*TODO.*";
-    check.message = "Avoid TODO";
+  void test_non_text_blocks() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CommentRegularExpressionCheck.java")
-      .withCheck(check)
+      .onFile(testSourcesPath("checks/ControlCharacterInLiteralCheck.java"))
+      .withCheck(new ControlCharacterInLiteralCheck())
       .verifyIssues();
   }
 
   @Test
-  void should_not_fail_with_empty_regular_expression() {
-    CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
-    check.regularExpression = "";
+  void test_java13_text_blocks() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/CommentRegularExpressionCheck2.java"))
-      .withCheck(check)
-      .verifyNoIssues();
-  }
-
-  @Test
-  void bad_regex() {
-    CommentRegularExpressionCheck check = new CommentRegularExpressionCheck();
-    check.regularExpression = "[[";
-    CheckVerifier verifier = JavaCheckVerifier.newVerifier().onFile("src/test/files/checks/CommentRegularExpressionCheck.java").withCheck(check);
-    assertThrows(AnalysisException.class, verifier::verifyIssues);
+      .onFile(nonCompilingTestSourcesPath("checks/ControlCharacterInLiteralCheck.java"))
+      .withCheck(new ControlCharacterInLiteralCheck())
+      .verifyIssues();
   }
 
 }

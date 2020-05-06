@@ -1,3 +1,5 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import java.util.List;
 import javax.annotation.Nullable;
 import junit.framework.TestCase;
@@ -5,8 +7,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
+import org.junit.Assert;
 
-public abstract class AssertionsInTestsCheckJunit4 {
+abstract class Junit4Test {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -40,23 +43,23 @@ public abstract class AssertionsInTestsCheckJunit4 {
 
   @Test
   public void junit_assert_equals() {
-    org.junit.Assert.assertEquals(true, true);
+    Assert.assertEquals(true, true);
   }
 
   @Test
   public void junit_assert_true() {
-    org.junit.Assert.assertTrue(true);
-    org.junit.Assert.assertTrue(true); // Coverage
+    Assert.assertTrue(true);
+    Assert.assertTrue(true); // Coverage
   }
 
   @Test
   public void junit_assert_that() {
-    org.junit.Assert.assertThat("aaa", org.junit.matchers.JUnitMatchers.containsString("a"));
+    Assert.assertThat("aaa", org.junit.matchers.JUnitMatchers.containsString("a"));
   }
 
   @Test
   public void junit_assert_that_generic() {
-    org.junit.Assert.<String>assertThat("aaa", org.junit.matchers.JUnitMatchers.containsString("a"));
+    Assert.<String>assertThat("aaa", org.junit.matchers.JUnitMatchers.containsString("a"));
   }
 
   @Test

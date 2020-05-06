@@ -1,16 +1,18 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import io.restassured.RestAssured;
+import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.ResponseSpecification;
 import org.junit.Test;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.fest.assertions.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 
-public class AssertionsInTestsCheckTest {
-  
+class RestAssuredTest {
+
   @Test
   public void incomplete() { // Noncompliant
     // do nothing

@@ -105,6 +105,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>4.0.2</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock</artifactId>
       <version>2.6.0</version>

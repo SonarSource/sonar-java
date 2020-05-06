@@ -24,8 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-
-public class JunitNestedAnnotationCheckTest {
+class JunitNestedAnnotationCheckTest {
 
   @Test
   void test() {
@@ -36,7 +35,7 @@ public class JunitNestedAnnotationCheckTest {
   }
 
   @Test
-  public void noSemantic() {
+  void noSemantic() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/JunitNestedAnnotationCheck.java"))
       .withCheck(new JunitNestedAnnotationCheck())

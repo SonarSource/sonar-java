@@ -1,3 +1,5 @@
+package checks.tests.AssertionsInTestsCheck;
+
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.Sequence;

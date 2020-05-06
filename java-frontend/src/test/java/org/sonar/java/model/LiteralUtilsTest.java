@@ -40,7 +40,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LiteralUtilsTest {
+class LiteralUtilsTest {
 
   static List<VariableTree> variables;
 
@@ -95,7 +95,7 @@ public class LiteralUtilsTest {
   String s4 = "\n";
 
   @Test
-  public void private_constructor() throws Exception {
+  void private_constructor() throws Exception {
     Constructor constructor = LiteralUtils.class.getDeclaredConstructor();
     assertThat(constructor.isAccessible()).isFalse();
     // call for coverage
@@ -104,7 +104,7 @@ public class LiteralUtilsTest {
   }
 
   @Test
-  public void test_int_and_long_value() throws Exception {
+  void test_int_and_long_value() throws Exception {
     Integer[] expectedIntegerValues = {42, -7, 3, null, null, 0xff, 0b0100, 5678, 0xFF, 0b1100110, 0xff000000};
     Long[] expectedLongValues = {42L, 42L, -7L, -7L, +3L, +3L, null, null, 0xFFL, null, null, null,
       Long.MAX_VALUE, Long.MAX_VALUE, 0b11010010_01101001_10010100_10010010L, 10010L, 0xFFL, 0b1100110L};
@@ -124,7 +124,7 @@ public class LiteralUtilsTest {
    * Binary, hex and octal int literals are allowed when they fit into 32-bits (jls11 - §3.10.1)
    */
   @Test
-  public void testLargeBinary() {
+  void testLargeBinary() {
     // 32 bit masks
     assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0b1111_1111_1111_1111_0000_0000_0000_0000"))).isEqualTo(0b1111_1111_1111_1111_0000_0000_0000_0000);
     assertThat(LiteralUtils.intLiteralValue(getIntLiteral("0b0111_1111_1111_1111_0000_0000_0000_0000"))).isEqualTo(0b0111_1111_1111_1111_0000_0000_0000_0000);
@@ -143,7 +143,7 @@ public class LiteralUtilsTest {
   }
 
   @Test
-  public void testTrimLongSuffix() throws Exception {
+  void testTrimLongSuffix() throws Exception {
     assertThat(LiteralUtils.trimLongSuffix("")).isEqualTo("");
     String longValue = "12345";
     assertThat(LiteralUtils.trimLongSuffix(longValue)).isEqualTo(longValue);
@@ -152,7 +152,7 @@ public class LiteralUtilsTest {
   }
 
   @Test
-  public void testEmptyString() {
+  void testEmptyString() {
     boolean[] expectedStringEmptyResult = {true, false, false, false};
     int i = 0;
     for (VariableTree variableTree : variables) {
@@ -166,33 +166,40 @@ public class LiteralUtilsTest {
   }
 
   @Test
-  public void testTrimQuotes() {
+  void testTrimQuotes() {
     assertThat(LiteralUtils.trimQuotes("\"test\"")).isEqualTo("test");
+    assertThat(LiteralUtils.trimQuotes("\"\"\"test\"\"\"")).isEqualTo("test");
   }
 
   @Test
-  public void hasValue_withNonStringLiteral_returnsFalse() {
+  void testIsTextBlock() {
+    assertThat(LiteralUtils.isTextBlock("\"test\"")).isFalse();
+    assertThat(LiteralUtils.isTextBlock("\"\"\"test\"\"\"")).isTrue();
+  }
+
+  @Test
+  void hasValue_withNonStringLiteral_returnsFalse() {
     ExpressionTree tree = getFirstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
     boolean result = LiteralUtils.hasValue(tree, "expected");
     assertThat(result).isFalse();
   }
 
   @Test
-  public void hasValue_withOtherValue_returnsFalse() {
+  void hasValue_withOtherValue_returnsFalse() {
     LiteralTree tree = (LiteralTree) getReturnExpression("void foo(){ return \"other than expected\"; }");
     boolean result = LiteralUtils.hasValue(tree, "expected");
     assertThat(result).isFalse();
   }
 
   @Test
-  public void hasValue_withExpectedValue_returnsTrue() {
+  void hasValue_withExpectedValue_returnsTrue() {
     LiteralTree tree = (LiteralTree) getReturnExpression("void foo(){ return \"expected\"; }");
     boolean result = LiteralUtils.hasValue(tree, "expected");
     assertThat(result).isTrue();
   }
 
   @Test
-  public void is_0xff() {
+  void is_0xff() {
     ExpressionTree tree = getReturnExpression("int foo() { return 0xFF; }");
     assertThat(LiteralUtils.is0xff(tree)).isTrue();
     tree = getReturnExpression("int foo() { return 0x01; }");
@@ -204,37 +211,37 @@ public class LiteralUtilsTest {
   }
 
   @Test
-  public void isTrue_withNonBooleanLiteral_returnsFalse() {
+  void isTrue_withNonBooleanLiteral_returnsFalse() {
     ExpressionTree tree = getFirstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
     assertThat(LiteralUtils.isTrue(tree)).isFalse();
   }
 
   @Test
-  public void isFalse_withNonBooleanLiteral_returnsFalse() {
+  void isFalse_withNonBooleanLiteral_returnsFalse() {
     ExpressionTree tree = getFirstExpression("void foo(java.util.Properties props){ props.setProperty(\"myKey\", \"myValue\"); }");
     assertThat(LiteralUtils.isFalse(tree)).isFalse();
   }
 
   @Test
-  public void isTrue_withFalseValue_returnsFalse() {
+  void isTrue_withFalseValue_returnsFalse() {
     LiteralTree falseTree = (LiteralTree) getReturnExpression("void foo(){ return false; }");
     assertThat(LiteralUtils.isTrue(falseTree)).isFalse();
   }
 
   @Test
-  public void isFalse_withTrueValue_returnsFalse() {
+  void isFalse_withTrueValue_returnsFalse() {
     LiteralTree trueTree = (LiteralTree) getReturnExpression("void foo(){ return true; }");
     assertThat(LiteralUtils.isFalse(trueTree)).isFalse();
   }
 
   @Test
-  public void isTrue_withExpectedValue_returnsTrue() {
+  void isTrue_withExpectedValue_returnsTrue() {
     LiteralTree trueTree = (LiteralTree) getReturnExpression("void foo(){ return true; }");
     assertThat(LiteralUtils.isTrue(trueTree)).isTrue();
   }
 
   @Test
-  public void isFalse_withExpectedValue_returnsTrue() {
+  void isFalse_withExpectedValue_returnsTrue() {
     LiteralTree falseTree = (LiteralTree) getReturnExpression("void foo(){ return false; }");
     assertThat(LiteralUtils.isFalse(falseTree)).isTrue();
   }
