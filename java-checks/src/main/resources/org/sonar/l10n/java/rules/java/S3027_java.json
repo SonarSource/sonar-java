@@ -1,7 +1,7 @@
 {
   "title": "String function use should be optimized for single characters",
   "type": "CODE_SMELL",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
