@@ -8,6 +8,7 @@
   },
   "tags": [
     "cwe",
+    "error-handling",
     "spring",
     "user-experience",
     "owasp-a3"

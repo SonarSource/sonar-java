@@ -1,26 +1,16 @@
 {
   "title": "Throwable.printStackTrace(...) should not be called",
   "type": "VULNERABILITY",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
   "tags": [
-    "cwe",
-    "error-handling",
-    "owasp-a3"
+    
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-1148",
   "sqKey": "S1148",
-  "scope": "Main",
-  "securityStandards": {
-    "CWE": [
-      489
-    ],
-    "OWASP": [
-      "A3"
-    ]
-  }
+  "scope": "Main"
 }
