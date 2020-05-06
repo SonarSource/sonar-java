@@ -57,9 +57,10 @@ class SymbolicValueFactoryTest {
     assertThat(symbolicValue.getClass()).as("Created with factory").isSameAs(TestSymbolicValue.class);
     assertThat(symbolicValue.references(symbolicValue)).isFalse();
     manager.setValueFactory(new TestSymbolicValueFactory());
+    SymbolicValueFactory newFactory = new TestSymbolicValueFactory();
     try {
-      manager.setValueFactory(new TestSymbolicValueFactory());
-      fail("Able to add a second factory to the contraints manager");
+      manager.setValueFactory(newFactory);
+      fail("Should not have been able to add a second factory to the contraints manager");
     } catch (IllegalStateException e) {
       assertThat(e.getMessage()).as("Exception message").isEqualTo("The symbolic value factory has already been defined by another checker!");
     }

@@ -99,14 +99,14 @@ class SinglyLinkedListTest {
 
   @Test
   void empty_pop() {
-    assertThrows(IllegalStateException.class,
-      () -> PCollections.emptyStack().pop());
+    PStack<Object> stack = PCollections.emptyStack();
+    assertThrows(IllegalStateException.class, () -> stack.pop());
   }
 
   @Test
   void empty_peek() {
-    assertThrows(IllegalStateException.class,
-      () -> PCollections.emptyStack().peek());
+    PStack<Object> stack = PCollections.emptyStack();
+    assertThrows(IllegalStateException.class, () -> stack.peek());
   }
 
   @Test
