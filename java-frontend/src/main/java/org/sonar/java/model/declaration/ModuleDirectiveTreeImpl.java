@@ -23,7 +23,6 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.Tree;
 
 public abstract class ModuleDirectiveTreeImpl extends JavaTree implements ModuleDirectiveTree {
 
