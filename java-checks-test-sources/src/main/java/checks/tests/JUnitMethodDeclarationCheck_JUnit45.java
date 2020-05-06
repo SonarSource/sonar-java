@@ -22,6 +22,23 @@ class JUnitMethodDeclarationCheck_JUnit4_compliant {
   @org.junit.After public void tearDown() { }
 }
 
+class JUnitMethodDeclarationCheck_JUnit4_compliant2 {
+  @org.junit.Test void test() { }
+  @org.junit.BeforeClass public void setUp() { }
+  @org.junit.AfterClass public void tearDown() { }
+}
+
+abstract class AbstractJUnitMethodDeclarationCheck_JUnit4 {
+  @org.junit.Before public void setUp() { }
+}
+
+class JUnitMethodDeclarationCheck_JUnit4_compliant3 extends AbstractJUnitMethodDeclarationCheck_JUnit4 {
+  @org.junit.Test void test() { }
+
+  @Override
+  public void setUp() { } // Compliant
+}
+
 class JUnitMethodDeclarationCheck_JUnit5 {
   @org.junit.jupiter.api.Test void test() { }
 
@@ -37,6 +54,12 @@ class JUnitMethodDeclarationCheck_JUnit5_compliant {
   @org.junit.jupiter.api.AfterEach public void tearDown() { }
 }
 
+class JUnitMethodDeclarationCheck_JUnit5_compliant2 {
+  @org.junit.jupiter.api.Test void test() { }
+  @org.junit.jupiter.api.BeforeAll public void setUp() { }
+  @org.junit.jupiter.api.AfterAll public void tearDown() { }
+}
+
 class JUnitMethodDeclarationCheck_JUnit4_5_mixed {
   @org.junit.Test void junit4() { }
   @org.junit.jupiter.api.Test void junit5() { }
@@ -47,4 +70,13 @@ class JUnitMethodDeclarationCheck_JUnit4_5_mixed {
 
   @org.junit.Before public void before() { } // Noncompliant {{Annotate this method with JUnit5 '@org.junit.jupiter.api.BeforeEach' instead of JUnit4 '@Before'.}}
   @org.junit.After public void after() { } // Noncompliant {{Annotate this method with JUnit5 '@org.junit.jupiter.api.AfterEach' instead of JUnit4 '@After'.}}
+}
+
+class JUnitMethodDeclarationCheck_JUnit4_5_mixed2 {
+  @org.junit.Test void junit4() { }
+  @org.junit.jupiter.api.Test void junit5() { }
+
+  // use JUnit 4 annotations
+  @org.junit.BeforeClass public void setUp() { } // Noncompliant {{Annotate this method with JUnit5 '@org.junit.jupiter.api.BeforeAll' instead of JUnit4 '@BeforeClass'.}}
+  @org.junit.AfterClass public void tearDown() { } // Noncompliant {{Annotate this method with JUnit5 '@org.junit.jupiter.api.AfterAll' instead of JUnit4 '@AfterClass'.}}
 }
