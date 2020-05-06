@@ -663,6 +663,7 @@ public final class CheckList {
       UnderscoreOnNumberCheck.class,
       UndocumentedApiCheck.class,
       UnnecessarySemicolonCheck.class,
+      UnreachableCatchCheck.class,
       UnusedLabelCheck.class,
       UnusedLocalVariableCheck.class,
       UnusedMethodParameterCheck.class,
