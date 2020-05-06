@@ -19,25 +19,16 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.tree.Modifier;
 
-import static org.sonar.java.CheckTestUtils.testSourcesPath;
+@Rule(key = "S5786")
+public class JUnit5DefaultPackageClassAndMethodCheck extends AbstractJUnit5NotCompliantModifierChecker {
 
-class TestClassAndMethodVisibilityCheckTest {
-  private static final String testSourcePath = testSourcesPath("checks/TestClassAndMethodVisibilityCheckTest.java");
-
-  @Test
-  void test() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcePath)
-      .withCheck(new TestClassAndMethodVisibilityCheck())
-      .verifyIssues();
-
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcePath)
-      .withCheck(new TestClassAndMethodVisibilityCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
+  @Override
+  protected boolean isNotCompliant(Modifier modifier) {
+    // All visibility modifiers except 'private' handled by S5810
+    return modifier == Modifier.PUBLIC || modifier == Modifier.PROTECTED;
   }
+
 }

@@ -728,13 +728,14 @@ public final class CheckList {
       ExpectedExceptionCheck.class,
       IgnoredTestsCheck.class,
       JUnit4AnnotationsCheck.class,
+      JUnit5DefaultPackageClassAndMethodCheck.class,
+      JUnit5PrivateClassAndMethodCheck.class,
       JUnitMethodDeclarationCheck.class,
       JunitNestedAnnotationCheck.class,
       NoTestInTestClassCheck.class,
       OneExpectedCheckedExceptionCheck.class,
       OneExpectedRuntimeExceptionCheck.class,
       TestAnnotationWithExpectedExceptionCheck.class,
-      TestClassAndMethodVisibilityCheck.class,
       ThreadSleepInTestsCheck.class,
       UnusedTestRuleCheck.class);
   }

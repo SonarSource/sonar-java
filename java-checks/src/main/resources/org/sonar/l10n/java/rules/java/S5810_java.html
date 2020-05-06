@@ -1,0 +1,41 @@
+<p>JUnit5 is more tolerant regarding the visibilities of Test classes and methods than JUnit4, which required everything to be public. JUnit5 supports
+default package, public and protected visibility, even if it is recommended to use the default package visibility, which improves the readability of
+code.</p>
+<p>But in any case, the 'private' modifier should be used. JUnit5 ignores without any warning private classes and private methods!</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+import org.junit.jupiter.api.Test;
+
+class MyClassTest {
+  @Test
+  private void test() { // Noncompliant - ignored by JUnit5
+    // ...
+  }
+  @Nested
+  private class MyNestedClass { // Noncompliant - ignored by JUnit5
+    @Test
+    void test() {
+      // ...
+    }
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+import org.junit.jupiter.api.Test;
+
+class MyClassTest {
+  @Test
+  void test() { // Noncompliant - ignored by JUnit5
+    // ...
+  }
+  @Nested
+  class MyNestedClass { // Noncompliant - ignored by JUnit5
+    @Test
+    void test() {
+      // ...
+    }
+  }
+}
+</pre>
+
