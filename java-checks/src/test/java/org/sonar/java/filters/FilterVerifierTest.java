@@ -31,7 +31,8 @@ class FilterVerifierTest {
   @Test
   void filterVerifierShouldFailInCaseOfInvalidFile() {
     String parseErrorFile = "src/test/files/filters/FilterParseError.java";
-    assertThrows(AssertionError.class, () -> FilterVerifier.verify(parseErrorFile, new TestIssueFilter()));
+    JavaIssueFilter testIssueFilter = new TestIssueFilter();
+    assertThrows(AssertionError.class, () -> FilterVerifier.verify(parseErrorFile, testIssueFilter));
   }
 
   /**

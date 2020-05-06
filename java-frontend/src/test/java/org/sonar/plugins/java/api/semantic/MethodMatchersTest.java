@@ -31,6 +31,9 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.semantic.MethodMatchers.NameBuilder;
+import org.sonar.plugins.java.api.semantic.MethodMatchers.ParametersBuilder;
+import org.sonar.plugins.java.api.semantic.MethodMatchers.TypeBuilder;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -338,62 +341,62 @@ class MethodMatchersTest {
 
   @Test
   void no_types() {
-    assertThrows(IllegalStateException.class,
-      () -> MethodMatchers.create().ofTypes().anyName().withAnyParameters().build());
+    TypeBuilder matcher = MethodMatchers.create();
+    assertThrows(IllegalStateException.class, () -> matcher.ofTypes());
   }
 
   @Test
   void null_type_predicate() {
-    assertThrows(IllegalStateException.class,
-      () -> MethodMatchers.create().ofType(null).anyName().withAnyParameters().build());
+    ParametersBuilder matcher = MethodMatchers.create().ofType(null).anyName().withAnyParameters();
+    assertThrows(IllegalStateException.class, () -> matcher.build());
   }
 
   @Test
   void no_subtypes() {
-    assertThrows(IllegalStateException.class,
-      () -> MethodMatchers.create().ofSubTypes().anyName().withAnyParameters().build());
+    TypeBuilder matcher = MethodMatchers.create();
+    assertThrows(IllegalStateException.class, () -> matcher.ofSubTypes());
   }
 
   @Test
   void invalid_any_type() {
-    assertThrows(IllegalStateException.class,
-      () -> MethodMatchers.create().ofTypes("A", ANY).anyName().withAnyParameters().build());
+    TypeBuilder matcher = MethodMatchers.create();
+    assertThrows(IllegalStateException.class, () -> matcher.ofTypes("A", ANY));
   }
 
   @Test
   void no_name() {
-    assertThrows(IllegalStateException.class,
-      () -> MethodMatchers.create().ofAnyType().names().withAnyParameters().build());
+    NameBuilder matcher = MethodMatchers.create().ofAnyType();
+    assertThrows(IllegalStateException.class, () -> matcher.names());
   }
 
   @Test
   void null_name_predicate() {
-    assertThrows(IllegalStateException.class,
-      () -> MethodMatchers.create().ofAnyType().name(null).withAnyParameters().build());
+    ParametersBuilder matcher = MethodMatchers.create().ofAnyType().name(null).withAnyParameters();
+    assertThrows(IllegalStateException.class, () -> matcher.build());
   }
 
   @Test
   void invalid_any_name() {
-    assertThrows(IllegalStateException.class,
-      () -> MethodMatchers.create().ofAnyType().names("A", ANY).withAnyParameters().build());
+    NameBuilder matcher = MethodMatchers.create().ofAnyType();
+    assertThrows(IllegalStateException.class, () -> matcher.names("A", ANY));
   }
 
   @Test
   void invalid_any_parameters() {
-    assertThrows(IllegalStateException.class,
-      () -> MethodMatchers.create().ofAnyType().anyName().addParametersMatcher("int").withAnyParameters().build());
+    ParametersBuilder matcher = MethodMatchers.create().ofAnyType().anyName().addParametersMatcher("int");
+    assertThrows(IllegalStateException.class, () -> matcher.withAnyParameters());
   }
 
   @Test
   void null_parameter_predicate() {
-    assertThrows(IllegalStateException.class,
-      () -> MethodMatchers.create().ofAnyType().anyName().addParametersMatcher((Predicate<List<Type>>) null).build());
+    ParametersBuilder matcher = MethodMatchers.create().ofAnyType().anyName().addParametersMatcher((Predicate<List<Type>>) null);
+    assertThrows(IllegalStateException.class, () -> matcher.build());
   }
 
   @Test
   void invalid_matcher_without_parameters() {
-    assertThrows(IllegalStateException.class,
-      () -> MethodMatchers.create().ofAnyType().anyName().build());
+    ParametersBuilder matcher = MethodMatchers.create().ofAnyType().anyName();
+    assertThrows(IllegalStateException.class, () -> matcher.build());
   }
 
   @Test

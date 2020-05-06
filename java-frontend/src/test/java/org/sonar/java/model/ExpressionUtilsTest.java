@@ -140,8 +140,8 @@ class ExpressionUtilsTest {
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     MethodTree methodTree = (MethodTree) ((ClassTree) tree.types().get(0)).members().get(1);
     List<AssignmentExpressionTree> assignments = findAssignmentExpressionTrees(methodTree);
-    assertThrows(IllegalArgumentException.class,
-      () -> ExpressionUtils.extractIdentifier(assignments.get(4)));
+    AssignmentExpressionTree assignment = assignments.get(4);
+    assertThrows(IllegalArgumentException.class, () -> ExpressionUtils.extractIdentifier(assignment));
   }
 
   @Test
@@ -154,19 +154,19 @@ class ExpressionUtilsTest {
     // This should reflect method 'mixedReference'.
     assertThat(assignments).hasSize(5);
 
-    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(0).expression())).isPresent();
-    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(1).expression())).isPresent();
+    assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(0).expression())).isPresent();
+    assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(1).expression())).isPresent();
 
-    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(0).expression()).get()).
-    isEqualTo(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(1).expression()).get());
+    assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(0).expression()).get()).
+    isEqualTo(ExpressionUtils.getAssignedSymbol(assignments.get(1).expression()).get());
 
-    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(2).expression())).isNotPresent();
-    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(3).expression())).isNotPresent();
-    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) assignments.get(4).expression())).isNotPresent();
+    assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(2).expression())).isNotPresent();
+    assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(3).expression())).isNotPresent();
+    assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(4).expression())).isNotPresent();
 
     List<VariableTree> variables = findVariableTrees(methodTree);
     assertThat(variables).hasSize(2);
-    assertThat(ExpressionUtils.getAssignedSymbol((MethodInvocationTree) variables.get(1).initializer())).isPresent();
+    assertThat(ExpressionUtils.getAssignedSymbol(variables.get(1).initializer())).isPresent();
 
   }
 

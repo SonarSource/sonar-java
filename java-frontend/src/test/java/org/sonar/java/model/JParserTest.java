@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -33,8 +34,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class JParserTest {
 
@@ -58,13 +59,14 @@ class JParserTest {
 
   @Test
   void should_recover_if_parser_fails() {
+    List<File> classpath = Collections.singletonList(new File("unknownFile"));
     assertThrows(
       RecognitionException.class,
       () -> JParser.parse(
         "12",
         "A",
         "class A { }",
-        Collections.singletonList(new File("unknownFile"))));
+        classpath));
   }
 
   @Test

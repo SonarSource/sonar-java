@@ -282,8 +282,8 @@ class JavaClasspathTest {
   void deprecated_properties_set_should_fail_the_analysis() throws Exception {
     settings.setProperty("sonar.binaries", "bin");
     settings.setProperty("sonar.libraries", "hello.jar");
+    javaClasspath = createJavaClasspath();
     try {
-      javaClasspath = createJavaClasspath();
       javaClasspath.getElements();
       fail("Exception should have been raised");
     } catch (AnalysisException ise) {
@@ -323,8 +323,8 @@ class JavaClasspathTest {
   @Test
   void empty_binaries_on_project_with_more_than_one_source_should_fail() throws Exception {
     createTwoFilesInFileSystem();
+    javaClasspath = createJavaClasspath();
     try {
-      javaClasspath = createJavaClasspath();
       javaClasspath.getElements();
       fail("Exception should have been raised");
     } catch (AnalysisException ise) {
@@ -337,8 +337,8 @@ class JavaClasspathTest {
   @Test
   void empty_binaries_on_project_with_more_than_one_source_should_fail_on_sonarqube() throws Exception {
     createTwoFilesInFileSystem();
+    javaClasspath = createJavaClasspath();
     try {
-      javaClasspath = createJavaClasspath();
       javaClasspath.getElements();
       fail("Exception should have been raised");
     } catch (AnalysisException ise) {
@@ -391,8 +391,8 @@ class JavaClasspathTest {
   }
 
   private void checkIllegalStateException(String message) {
+    javaClasspath = createJavaClasspath();
     try {
-      javaClasspath = createJavaClasspath();
       javaClasspath.getElements();
       fail("Exception should have been raised");
     } catch (IllegalStateException ise) {
