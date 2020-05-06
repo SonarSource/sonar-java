@@ -247,7 +247,7 @@ public class ReplaceLambdaByMethodRefCheck extends SubscriptionVisitor {
       .filter(Symbol::isMethodSymbol)
       .map(s -> (Symbol.MethodSymbol) s)
       .filter(m -> (!m.isStatic() && m.parameterTypes().isEmpty())
-        ||  (m.isStatic() && m.parameterTypes().size() == 1 && m.parameterTypes().get(0).equals(parameterSymbol.type())))
+        ||  (m.isStatic() && m.parameterTypes().size() == 1 && parameterSymbol.type().isSubtypeOf(m.parameterTypes().get(0))))
       .count() > 1;
   }
 }

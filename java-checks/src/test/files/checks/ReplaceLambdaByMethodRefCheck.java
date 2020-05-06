@@ -180,6 +180,7 @@ class AmbiguousMethods {
 
     Function<Ambiguous, String> f4 = a -> a.unknown();  // Compliant, A::f is ambiguous
     Function<Unknown, String> f4 = a -> a.unknown();  // Compliant, A::f is ambiguous
+    Function<AmbiguousChild, String> f5 = a -> a.f();  // Compliant, A::f is ambiguous
   }
 }
 
@@ -193,6 +194,9 @@ class Ambiguous {
     return "";
   }
 
+}
+
+class AmbiguousChild extends Ambiguous {
 }
 
 class NotAmbiguous1 {
