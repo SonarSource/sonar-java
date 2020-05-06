@@ -272,6 +272,7 @@ public final class CheckList {
       ConditionalOnNewLineCheck.class,
       ConditionalUnreachableCodeCheck.class,
       ConfusingOverloadCheck.class,
+      ConfusingVarargCheck.class,
       ConstantMathCheck.class,
       ConstantMethodCheck.class,
       ConstantsShouldBeStaticFinalCheck.class,
