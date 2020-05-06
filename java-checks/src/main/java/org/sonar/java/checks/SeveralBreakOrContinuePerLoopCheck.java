@@ -120,7 +120,7 @@ public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implemen
 
   private void enterLoop() {
     loopCount++;
-    breakAndContinueCounter.push(new ArrayList<Tree>());
+    breakAndContinueCounter.push(new ArrayList<>());
     currentScopeIsSwitch.push(false);
   }
 

@@ -74,7 +74,7 @@ public class CFGLoop {
   }
 
   private void collectBlocks(CFG.Block block, Map<Tree, CFGLoop> container) {
-    collectBlocks(block, container, new HashSet<CFG.Block>());
+    collectBlocks(block, container, new HashSet<>());
   }
 
   private boolean collectBlocks(CFG.Block block, Map<Tree, CFGLoop> container, Set<CFG.Block> visitedBlocks) {

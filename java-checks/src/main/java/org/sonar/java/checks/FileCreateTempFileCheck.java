@@ -75,7 +75,7 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
 
   @Override
   public void visitMethod(MethodTree tree) {
-    symbolStack.push(new HashMap<Symbol, State>());
+    symbolStack.push(new HashMap<>());
     super.visitMethod(tree);
     symbolStack.pop();
   }
