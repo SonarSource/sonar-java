@@ -53,7 +53,7 @@ public class JavaClasspathTest {
   private String fakeGuavaJarPath;
 
   @BeforeClass
-  public static void setUp() {
+  public static void beforeAll() {
     buildDitProject();
   }
 

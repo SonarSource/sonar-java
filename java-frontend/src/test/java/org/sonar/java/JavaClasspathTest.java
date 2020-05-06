@@ -51,7 +51,7 @@ class JavaClasspathTest {
   public LogTester logTester = new LogTester();
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setup() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     fs.add(TestUtils.emptyInputFile("foo.java"));
     settings = new MapSettings();
