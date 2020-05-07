@@ -16,18 +16,41 @@ detailed information on both the system running the application and users. </p>
 <ul>
   <li> Do not enable debug features on production servers. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<h2>Sensitive Code Example</h2>
+<p><code>Throwable.printStackTrace(...)</code> prints a Throwable and its stack trace to <code>System.Err</code> (by default) which is not easily
+parseable and can expose sensitive information:</p>
+<pre>
+try {
+  /* ... */
+} catch(Exception e) {
+  e.printStackTrace();        // Sensitive
+}
+</pre>
+<p><a
+href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/web/configuration/EnableWebSecurity.html">EnableWebSecurity</a>
+annotation for SpringFramework with <code>debug</code> to <code>true</code> enable debugging support:</p>
 <pre>
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @Configuration
-@EnableWebSecurity(debug = true) // Noncompliant
+@EnableWebSecurity(debug = true) // Sensitive
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   // ...
 }
 </pre>
 <h2>Compliant Solution</h2>
+<p>Loggers should be used (instead of <code>printStackTrace</code>) to print throwables:</p>
+<pre>
+try {
+  /* ... */
+} catch(Exception e) {
+  LOGGER.log("context", e); // Compliant
+}
+</pre>
+<p><a
+href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/web/configuration/EnableWebSecurity.html">EnableWebSecurity</a>
+annotation for SpringFramework with <code>debug</code> to <code>false</code> disable debugging support:</p>
 <pre>
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;

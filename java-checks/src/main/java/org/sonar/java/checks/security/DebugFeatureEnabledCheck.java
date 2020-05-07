@@ -19,17 +19,24 @@
  */
 package org.sonar.java.checks.security;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4507")
@@ -37,14 +44,46 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Make sure this debug feature is deactivated before delivering the code in production.";
 
+  private static final MethodMatchers PRINT_STACK_TRACE_MATCHER = MethodMatchers.create()
+    .ofSubTypes("java.lang.Throwable").names("printStackTrace").addWithoutParametersMatcher().build();
+
+  private final Deque<Symbol.TypeSymbol> enclosingClass = new LinkedList<>();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.ANNOTATION);
+    return Arrays.asList(Tree.Kind.ANNOTATION, Tree.Kind.CLASS, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    AnnotationTree annotation = (AnnotationTree) tree;
+    switch (tree.kind()) {
+      case ANNOTATION:
+        checkAnnotation((AnnotationTree) tree);
+        break;
+      case METHOD_INVOCATION:
+        checkMethodInvocation((MethodInvocationTree) tree);
+        break;
+      default:
+        ClassTree classTree = (ClassTree) tree;
+        enclosingClass.push(classTree.symbol());
+        break;
+    }
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree instanceof ClassTree) {
+      enclosingClass.pop();
+    }
+  }
+
+  private void checkMethodInvocation(MethodInvocationTree mit) {
+    if (!enclosingClassExtendsThrowable() && PRINT_STACK_TRACE_MATCHER.matches(mit)) {
+      reportIssue(ExpressionUtils.methodName(mit), MESSAGE);
+    }
+  }
+
+  private void checkAnnotation(AnnotationTree annotation) {
     if (annotation.symbolType().is("org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")) {
       annotation.arguments().stream()
         .map(DebugFeatureEnabledCheck::getDebugArgument)
@@ -65,6 +104,10 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
       }
     }
     return null;
+  }
+
+  private boolean enclosingClassExtendsThrowable() {
+    return enclosingClass.peek() != null && enclosingClass.peek().type().isSubtypeOf("java.lang.Throwable");
   }
 
 }
