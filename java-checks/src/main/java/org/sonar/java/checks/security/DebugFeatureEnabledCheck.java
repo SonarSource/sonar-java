@@ -27,14 +27,15 @@ import java.util.Objects;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -42,6 +43,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Make sure this debug feature is deactivated before delivering the code in production.";
+
+  private static final MethodMatchers PRINT_STACK_TRACE_MATCHER = MethodMatchers.create()
+    .ofSubTypes("java.lang.Throwable").names("printStackTrace").addWithoutParametersMatcher().build();
 
   private final Deque<Symbol.TypeSymbol> enclosingClass = new LinkedList<>();
 
@@ -73,16 +77,9 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkMethodInvocation(MethodInvocationTree tree) {
-    if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) tree.methodSelect();
-      IdentifierTree identifierTree = memberSelectExpressionTree.identifier();
-      if (!enclosingClassExtendsThrowable()
-        && "printStackTrace".equals(identifierTree.name())
-        && calledOnTypeInheritedFromThrowable(memberSelectExpressionTree.expression())
-        && tree.arguments().isEmpty()) {
-        reportIssue(identifierTree, MESSAGE);
-      }
+  private void checkMethodInvocation(MethodInvocationTree mit) {
+    if (!enclosingClassExtendsThrowable() && PRINT_STACK_TRACE_MATCHER.matches(mit)) {
+      reportIssue(ExpressionUtils.methodName(mit), MESSAGE);
     }
   }
 
@@ -111,10 +108,6 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
 
   private boolean enclosingClassExtendsThrowable() {
     return enclosingClass.peek() != null && enclosingClass.peek().type().isSubtypeOf("java.lang.Throwable");
-  }
-
-  private static boolean calledOnTypeInheritedFromThrowable(ExpressionTree tree) {
-    return tree.symbolType().isSubtypeOf("java.lang.Throwable");
   }
 
 }
