@@ -15,6 +15,14 @@ public class UnreachableCatchCheck {
     }
 
     try {
+      throw new CustomDerivedException();
+    } catch (CustomDerivedException e) {
+      // ...
+    } catch (CustomException e) { // Noncompliant
+      // ...
+    }
+
+    try {
       new ThrowingCustomDerivedException();
     } catch (CustomDerivedException e) {
       // ...
@@ -47,7 +55,7 @@ public class UnreachableCatchCheck {
       // ...
     } catch (IOException e) { // Compliant
       // ...
-    } catch (CustomException e) { // Noncompliant [[sc=7;ec=12;secondary=46]]
+    } catch (CustomException e) { // Noncompliant [[sc=7;ec=12;secondary=54]]
       // ...
     }
 
@@ -82,6 +90,15 @@ public class UnreachableCatchCheck {
     } catch (CustomException e) { // Compliant, a CustomException is thrown, this is reachable
       // ...
     }
+
+    try {
+      throw new CustomException();
+    } catch (CustomDerivedException e) {
+      // ...
+    } catch (CustomException e) { // compliant
+      // ...
+    }
+
 
     try {
       throwCustomDerivedException();

@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -64,7 +65,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    MethodThrownTypeCollector collector = new MethodThrownTypeCollector();
+    ThrownExceptionCollector collector = new ThrownExceptionCollector();
     tryStatementTree.block().accept(collector);
     List<Type> thrownTypes = collector.thrownTypes;
 
@@ -129,7 +130,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
     );
   }
 
-  private static class MethodThrownTypeCollector extends BaseTreeVisitor {
+  private static class ThrownExceptionCollector extends BaseTreeVisitor {
     List<Type> thrownTypes = new ArrayList<>();
 
     @Override
@@ -142,6 +143,12 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
     public void visitNewClass(NewClassTree tree) {
       addAllThrownTypes(tree.constructorSymbol());
       super.visitNewClass(tree);
+    }
+
+    @Override
+    public void visitThrowStatement(ThrowStatementTree tree) {
+      thrownTypes.add(tree.expression().symbolType());
+      super.visitThrowStatement(tree);
     }
 
     private void addAllThrownTypes(Symbol symbol) {
