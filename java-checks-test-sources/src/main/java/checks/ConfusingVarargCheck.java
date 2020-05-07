@@ -1,5 +1,10 @@
 package checks;
 
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+
 class ConfusingVarargCheck {
 
   public static void main(String[] args) {
@@ -54,5 +59,25 @@ class ConfusingVarargCheck {
         System.out.println("length: " + s.length);
       }
     }
+  }
+
+  enum MyEnum {
+    A("my little pony", new byte[] {0x00, 0x00, 0xFFFFFFFE, 0xFFFFFFFF}), // Compliant
+    B("armageddon", new byte[] {0xFFFFFFFE, 0xFFFFFFFF, 0x00, 0x00}, new byte[] {0x00, 0x00, 0xFFFFFFFF, 0xFFFFFFFE});
+
+    MyEnum(String s, byte[]... bees) {}
+  }
+
+  static List<byte[]> inference(String s) {
+    return Arrays.asList(s.getBytes(StandardCharsets.UTF_8)); // Compliant
+  }
+
+  void reflection(int[] ints) throws Exception {
+    Method method = ConfusingVarargCheck.class.getMethod("foo", null); // Compliant
+    method.invoke(this, null); // Compliant
+
+    ConfusingVarargCheck.class.getConstructors()[0].newInstance(null); // Compliant
+
+    Arrays.asList(ints).contains(42); // wrong usage, but not a FP, it simply creates a List<int[]>
   }
 }

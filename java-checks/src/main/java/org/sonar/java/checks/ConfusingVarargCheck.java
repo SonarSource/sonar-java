@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -35,6 +36,29 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S5669")
 public class ConfusingVarargCheck extends IssuableSubscriptionVisitor {
+
+  // these methods explicitly handle vararg argument as being null
+  private static final MethodMatchers ALLOWED_VARARG_METHODS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("java.lang.Class")
+      .names("getMethod", "getDeclaredMethod")
+      .addParametersMatcher("java.lang.String", "java.lang.Class[]")
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.lang.Class")
+      .names("getConstructor", "getDeclaredConstructor")
+      .addParametersMatcher("java.lang.Class[]")
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.lang.reflect.Method")
+      .names("invoke")
+      .addParametersMatcher("java.lang.Object", "java.lang.Object[]")
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.lang.reflect.Constructor")
+      .names("newInstance")
+      .addParametersMatcher("java.lang.Object[]")
+      .build());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -54,7 +78,7 @@ public class ConfusingVarargCheck extends IssuableSubscriptionVisitor {
       symbol = nct.constructorSymbol();
       arguments = nct.arguments();
     }
-    if (symbol.isMethodSymbol()) {
+    if (symbol.isMethodSymbol() && !ALLOWED_VARARG_METHODS.matches(symbol)) {
       checkConfusingVararg((Symbol.MethodSymbol) symbol, arguments);
     }
   }
@@ -69,12 +93,18 @@ public class ConfusingVarargCheck extends IssuableSubscriptionVisitor {
       // providing less arguments: not using the vararg
       return;
     }
-    ExpressionTree varargArgument = ExpressionUtils.skipParentheses(arguments.get(arguments.size() - 1));
     Type varargParameter = parameterTypes.get(parameterTypes.size() - 1);
-    if (varargArgument.is(Tree.Kind.NULL_LITERAL)
-      || (isPrimitiveArray(varargArgument.symbolType()) && !isPrimitiveArray(varargParameter))) {
-      reportIssue(varargArgument, message(varargParameter, varargArgument.symbolType()));
+    ExpressionTree varargArgument = ExpressionUtils.skipParentheses(arguments.get(arguments.size() - 1));
+    Type varargArgumentType = varargArgument.symbolType();
+    if (varargArgument.is(Tree.Kind.NULL_LITERAL) || isIncompatibleArray(varargArgumentType, varargParameter)) {
+      reportIssue(varargArgument, message(varargParameter, varargArgumentType));
     }
+  }
+
+  private static boolean isIncompatibleArray(Type varargArgument, Type varargParameter) {
+    return isPrimitiveArray(varargArgument)
+      && !isPrimitiveArray(varargParameter)
+      && !varargArgument.equals(((Type.ArrayType) varargParameter).elementType());
   }
 
   private static boolean isPrimitiveArray(Type type) {
