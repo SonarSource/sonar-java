@@ -59,9 +59,9 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     TryStatementTree tryStatementTree = (TryStatementTree) tree;
     typeToCatchToken.clear();
-    Multimap<Type, Type> derivedToBase = getDerivedTypesCaughtBeforeBaseType(tryStatementTree.catches());
+    Multimap<Type, Type> baseToDerived = getBaseTypeCaughtAfterDerivedType(tryStatementTree.catches());
 
-    if (derivedToBase.isEmpty()) {
+    if (baseToDerived.isEmpty()) {
       return;
     }
 
@@ -69,24 +69,25 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
     tryStatementTree.block().accept(collector);
     List<Type> thrownTypes = collector.thrownTypes;
 
-    derivedToBase.entries().forEach(entry -> {
-      Type derivedType = entry.getKey();
-      Type baseType = entry.getValue();
-
+    baseToDerived.asMap().forEach((baseType, derivedTypes) -> {
       // Catching a derived type before the base type is fine if the body of the try throws an exception which is a subtype of the base type,
       // but not of the derived type. We have to make sure that we are not in this situation before reporting an issue.
-      if (isHidden(baseType, derivedType, thrownTypes)) {
+      List<Type> derivedTypesHiding = derivedTypes.stream()
+        .filter(derivedType -> isHidden(baseType, derivedType, thrownTypes))
+        .collect(Collectors.toList());
+
+      if (!derivedTypesHiding.isEmpty()) {
         reportIssue(typeToCatchToken.get(baseType),
           "Remove this catch block because it is unreachable as hidden by previous catch blocks.",
-          Collections.singletonList(new JavaFileScannerContext.Location("Already catch the exception", typeToCatchToken.get(derivedType))),
+          derivedTypesHiding.stream().map(type -> new JavaFileScannerContext.Location("Already catch the exception", typeToCatchToken.get(type)))
+          .collect(Collectors.toList()),
           null);
       }
     });
   }
 
-  private Multimap<Type, Type> getDerivedTypesCaughtBeforeBaseType(List<CatchTree> catches) {
-    Multimap<Type, Type> derivedBeforeBase = HashMultimap.create();
-
+  private Multimap<Type, Type> getBaseTypeCaughtAfterDerivedType(List<CatchTree> catches) {
+    Multimap<Type, Type> baseAfterDerived = HashMultimap.create();
     List<Type> catchTypes = catches.stream()
       .flatMap(c -> {
         List<Type> types = new ArrayList<>();
@@ -97,15 +98,15 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
       .collect(Collectors.toList());
 
     for (int i = 0; i < catchTypes.size() - 1; i++) {
-      Type topType = catchTypes.get(0);
+      Type topType = catchTypes.get(i);
       for (int j = i + 1; j < catchTypes.size(); j++) {
         Type bottomType = catchTypes.get(j);
         if (topType.isSubtypeOf(bottomType)) {
-          derivedBeforeBase.put(topType, bottomType);
+          baseAfterDerived.put(bottomType, topType);
         }
       }
     }
-    return derivedBeforeBase;
+    return baseAfterDerived;
   }
 
   private void collectTypesFromTypeTree(TypeTree typeTree, List<Type> types, SyntaxToken correspondingCatch) {

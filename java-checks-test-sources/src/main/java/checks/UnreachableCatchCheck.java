@@ -42,9 +42,19 @@ public class UnreachableCatchCheck {
       throwCustomDerivedDerivedException();
     } catch (CustomDerivedDerivedException e) {
       // ...
-    } catch (CustomDerivedException e) { // Noncompliant
+    } catch (CustomDerivedException e) { // Noncompliant [[secondary=43]]
       // ...
-    } catch (CustomException e) { // Noncompliant
+    } catch (CustomException e) { // Noncompliant [[secondary=43,45]]
+      // ...
+    }
+
+    try {
+      throwCustomDerivedException();
+    } catch (CustomDerivedDerivedException e) {
+      // ...
+    } catch (CustomDerivedException e) {
+      // ...
+    } catch (CustomException e) { // Noncompliant [[secondary=55]]
       // ...
     }
 
@@ -55,7 +65,7 @@ public class UnreachableCatchCheck {
       // ...
     } catch (IOException e) { // Compliant
       // ...
-    } catch (CustomException e) { // Noncompliant [[sc=7;ec=12;secondary=54]]
+    } catch (CustomException e) { // Noncompliant [[sc=7;ec=12;secondary=64]]
       // ...
     }
 
