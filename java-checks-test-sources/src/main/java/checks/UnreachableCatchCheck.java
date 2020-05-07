@@ -1,11 +1,11 @@
 package checks;
 
 import java.io.IOException;
+import org.junit.jupiter.api.function.Executable;
 
 public class UnreachableCatchCheck {
 
   void unreachable(boolean cond) {
-
     try {
       throwCustomDerivedException();
     } catch (CustomDerivedException e) {
@@ -55,6 +55,21 @@ public class UnreachableCatchCheck {
       throwCustomDerivedDerivedException();
       throwIOException();
     } catch (CustomDerivedException | IOException e) {
+      // ...
+    } catch (CustomException e) { // Noncompliant
+      // ...
+    }
+
+    try {
+      throwCustomDerivedException();
+
+      class Inner {
+        void f() throws CustomException {
+          throwCustomException(); // not in the same scope
+        }
+      }
+      takeObject((Executable)(() -> throwCustomException())); // not in the same scope
+    } catch (CustomDerivedException e) {
       // ...
     } catch (CustomException e) { // Noncompliant
       // ...
@@ -136,6 +151,10 @@ public class UnreachableCatchCheck {
 
   void throwIllegalArgumentException() throws IllegalArgumentException {
     throw new IllegalArgumentException();
+  }
+
+  void takeObject(Object o) {
+
   }
 
   public static class CustomException extends Exception {
