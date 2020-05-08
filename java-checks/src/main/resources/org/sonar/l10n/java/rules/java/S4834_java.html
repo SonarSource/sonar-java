@@ -43,26 +43,28 @@ done properly.</p>
 <code>javax.annotation.security</code> package.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> at least one accessed action or resource is security-sensitive. </li>
-  <li> there is no access control in place or it does not cover all sensitive actions and resources. </li>
-  <li> users have permissions they don't need. </li>
-  <li> the access control is based on a user input or on some other unsafe data. </li>
-  <li> permissions are difficult to remove or take a long time to be updated. </li>
+  <li> Granted permission to an entity (user, application) allow access to information or functionalities not needed by this entity. </li>
+  <li> Privileges are easily acquired (eg: based on the location of the user, type of device used, defined by third parties, does not require approval
+  ...). </li>
+  <li> Inherited permission, default permission, no privileges (eg: anonymous user) is authorized to access to a protected resource. </li>
 </ul>
-<p>You are at risk if you answered yes to the first question and any of the following ones.</p>
+<p>You are at risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
-<p>The first step is to restrict all sensitive actions to authenticated users.</p>
-<p>Each user should have the lowest privileges possible. The access control granularity should match the sensitivity of each resource or action. The
-more sensitive it is, the less people should have access to it. </p>
-<p>Do not base the access control on a user input or on a value which might have been tampered with. For example, the developer should not read a
-user's permissions from an HTTP cookie as it can be modified client-side.</p>
-<p>Check that the access to each action and resource is properly restricted.</p>
-<p>Enable administrators to swiftly remove permissions when necessary. This enables them to reduce the time an attacker can have access to your
-systems when a breach occurs.</p>
-<p>Log and monitor refused access requests as they can reveal an attack.</p>
+<p>At minimum, an access control system should:</p>
+<ul>
+  <li> Use a well-defined access control model like <a href="https://en.wikipedia.org/wiki/Role-based_access_control">RBAC</a> or <a
+  href="https://en.wikipedia.org/wiki/Access-control_list">ACL</a>. </li>
+  <li> Entities' permissions should be reviewed regularly to remove permissions that are no longer needed. </li>
+  <li> Respect <a href="https://en.wikipedia.org/wiki/Principle_of_least_privilege">the principle of least privilege</a> ("_an entity has access only
+  the information and resources that are necessary for its legitimate purpose_"). </li>
+</ul>
 <h2>See</h2>
 <ul>
   <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control">OWASP Top 10 2017 Category A5</a> - Boken Access Control </li>
   <li> <a href="https://www.sans.org/top25-software-errors/#cat3">SANS Top 25</a> - Porous Defenses </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/276.html">MITRE, CWE-276</a> - Incorrect Default Permissions </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/732.html">MITRE, CWE-732</a> - Incorrect Permission Assignment for Critical Resource </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/668.html">MITRE, CWE-668</a> - Exposure of Resource to Wrong Sphere </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/277.html">MITRE, CWE-277</a> - Insecure Inherited Permissions </li>
 </ul>
 

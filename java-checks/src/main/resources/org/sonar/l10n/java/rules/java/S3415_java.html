@@ -2,6 +2,11 @@
 first argument to be the expected value and the second argument to be the actual value. Swap them, and your test will still have the same outcome
 (succeed/fail when it should) but the error messages will be confusing. </p>
 <p>This rule raises an issue when the second argument to an assertions library method is a hard-coded value and the first argument is not.</p>
+<p>Supported frameworks:</p>
+<ul>
+  <li> JUnit4 </li>
+  <li> JUnit5 </li>
+</ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 org.junit.Assert.assertEquals(runner.exitCode(), 0, "Unexpected exit code");  // Noncompliant; Yields error message like: Expected:&lt;-1&gt;. Actual:&lt;0&gt;.

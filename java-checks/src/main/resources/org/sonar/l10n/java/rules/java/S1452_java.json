@@ -1,5 +1,5 @@
 {
-  "title": "Generic wildcard types should not be used in return parameters",
+  "title": "Generic wildcard types should not be used in return types",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

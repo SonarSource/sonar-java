@@ -9,6 +9,7 @@
   "tags": [
     "cwe",
     "cert",
+    "suspicious",
     "redundant"
   ],
   "defaultSeverity": "Major",

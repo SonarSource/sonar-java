@@ -3,9 +3,8 @@
 <h2>Noncompliant Code Example</h2>
 <pre>
 public class MyClass {
-  private Lock lock = new Lock();
-
   public void doSomething() {
+    Lock lock = new Lock();
     lock.lock(); // Noncompliant
     if (isInitialized()) {
       // ...
@@ -17,9 +16,8 @@ public class MyClass {
 <h2>Compliant Solution</h2>
 <pre>
 public class MyClass {
-  private Lock lock = new Lock();
-
   public void doSomething() {
+    Lock lock = new Lock();
     if (isInitialized()) {
       lock.lock();
       // ...

@@ -13,8 +13,8 @@ public void testG() {
 
 @Test
 public void testGTryCatchIdiom() {
-  try {
-    g(f(1)); // Noncompliant
+  try { // Noncompliant
+    g(f(1));
     Assert.fail("Expected an IOException to be thrown");
   } catch (IOException e) {
     // Test exception message...
