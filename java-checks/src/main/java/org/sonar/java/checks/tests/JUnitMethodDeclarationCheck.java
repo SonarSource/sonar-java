@@ -20,14 +20,10 @@
 package org.sonar.java.checks.tests;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
@@ -49,16 +45,6 @@ public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
   private static final String JUNIT_TEARDOWN = "tearDown";
   private static final String JUNIT_SUITE = "suite";
   private static final int MAX_STRING_DISTANCE = 3;
-
-  private static final Map<String, String> JUNIT4_TO_JUNIT5 = ImmutableMap
-    .<String, String>builder()
-    .put(ORG_JUNIT_BEFORE, "org.junit.jupiter.api.BeforeEach")
-    .put("org.junit.BeforeClass", "org.junit.jupiter.api.BeforeAll")
-    .put(ORG_JUNIT_AFTER, "org.junit.jupiter.api.AfterEach")
-    .put("org.junit.AfterClass", "org.junit.jupiter.api.AfterAll")
-    .build();
-  private static final Set<String> JUNIT4_ANNOTATIONS = JUNIT4_TO_JUNIT5.keySet();
-  private static final Set<String> JUNIT5_ANNOTATIONS = new HashSet<>(JUNIT4_TO_JUNIT5.values());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -156,35 +142,31 @@ public class JUnitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
       reportIssue(methodTree, "This method does not accept parameters.");
     } else if (jUnitVersion > 3) {
       Symbol.MethodSymbol symbol = methodTree.symbol();
-      if (symbol.overriddenSymbol() != null) {
-        return;
-      }
-      SymbolMetadata metadata = symbol.metadata();
-      if (jUnitVersion == 5) {
-        Optional<String> wrongJUnit4Annotation = JUNIT4_ANNOTATIONS.stream().filter(metadata::isAnnotatedWith).findFirst();
-        if (wrongJUnit4Annotation.isPresent()) {
-          String jUnit4Annotation = wrongJUnit4Annotation.get();
-          reportIssue(methodTree, String.format("Annotate this method with JUnit5 '@%s' instead of JUnit4 '@%s'.",
-            JUNIT4_TO_JUNIT5.get(jUnit4Annotation),
-            jUnit4Annotation.substring(jUnit4Annotation.lastIndexOf('.') + 1)));
-          return;
-        }
-      }
-      if (JUNIT4_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith) || JUNIT5_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith)) {
-        return;
-      }
-      reportIssue(methodTree, String.format("Annotate this method with JUnit%d '@%s' or remove it.", jUnitVersion, expectedAnnotation(symbol, jUnitVersion)));
+      expectedAnnotation(symbol, jUnitVersion)
+        .filter(annotation -> !symbol.metadata().isAnnotatedWith(annotation))
+        .ifPresent(annotation -> reportWrongAnnotation(methodTree, jUnitVersion, annotation));
     }
   }
 
-  private static String expectedAnnotation(Symbol.MethodSymbol symbol, int jUnitVersion) {
-    String expected;
-    if (JUNIT_SETUP.equals(symbol.name())) {
-      expected = ORG_JUNIT_BEFORE;
-    } else {
-      expected = ORG_JUNIT_AFTER;
+  private void reportWrongAnnotation(MethodTree methodTree, int jUnitVersion, String annotation) {
+    String ending = "or remove it";
+    if (jUnitVersion == 5) {
+      SymbolMetadata metadata = methodTree.symbol().metadata();
+      if (metadata.isAnnotatedWith(ORG_JUNIT_BEFORE)) {
+        ending = "instead of JUnit4 '@Before'";
+      } else if (metadata.isAnnotatedWith(ORG_JUNIT_AFTER)) {
+        ending = "instead of JUnit4 '@After'";
+      }
     }
-    return jUnitVersion == 4 ? expected : JUNIT4_TO_JUNIT5.get(expected);
+    String issueMessage = String.format("Annotate this method with JUnit%d '@%s' %s.", jUnitVersion, annotation, ending);
+    reportIssue(methodTree, issueMessage);
+  }
+
+  private static Optional<String> expectedAnnotation(Symbol.MethodSymbol symbol, int jUnitVersion) {
+    if (JUNIT_SETUP.equals(symbol.name()) || symbol.metadata().isAnnotatedWith(ORG_JUNIT_BEFORE)) {
+      return Optional.of(jUnitVersion == 4 ? ORG_JUNIT_BEFORE : "org.junit.jupiter.api.BeforeEach");
+    }
+    return Optional.of(jUnitVersion == 4 ? ORG_JUNIT_AFTER : "org.junit.jupiter.api.AfterEach");
   }
 
   private void addIssueForMethodBadName(MethodTree methodTree, String expected, String actual) {
