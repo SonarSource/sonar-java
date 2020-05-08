@@ -17,36 +17,28 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.tests;
+package org.sonar.java.checks;
 
-import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-class JUnitMethodDeclarationCheckTest {
+public class JunitMethodDeclarationCheckTest {
 
   @Test
-  void jUnit3() {
+  public void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/JUnitMethodDeclarationCheck_JUnit3.java"))
-      .withCheck(new JUnitMethodDeclarationCheck())
+      .onFile("src/test/files/checks/JunitMethodDeclarationCheck.java")
+      .withCheck(new JunitMethodDeclarationCheck())
       .verifyIssues();
   }
 
   @Test
-  void jUnit4_and_jUnit5() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/tests/JUnitMethodDeclarationCheck_JUnit45.java"))
-      .withCheck(new JUnitMethodDeclarationCheck())
-      .verifyIssues();
-  }
-
-  @Test
-  void test_string_distance() {
-    JUnitMethodDeclarationCheck check = new JUnitMethodDeclarationCheck();
+  public void test_string_distance() {
+    JunitMethodDeclarationCheck check = new JunitMethodDeclarationCheck();
     assertThat(check.areVerySimilarStrings("short", "short")).isTrue();
     assertThat(check.areVerySimilarStrings("short", "abcdf")).isFalse();
     char[] chars = new char[100000];

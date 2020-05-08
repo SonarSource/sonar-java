@@ -110,7 +110,6 @@ import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
 import org.sonar.java.checks.synchronization.ValueBasedObjectUsedForLockCheck;
 import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
 import org.sonar.java.checks.tests.AssertionsInTestsCheck;
-import org.sonar.java.checks.tests.JUnitMethodDeclarationCheck;
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
 import org.sonar.java.checks.unused.UnusedMethodParameterCheck;
@@ -732,7 +731,7 @@ public final class CheckList {
       JUnit4AnnotationsCheck.class,
       JUnit5DefaultPackageClassAndMethodCheck.class,
       JUnit5PrivateClassAndMethodCheck.class,
-      JUnitMethodDeclarationCheck.class,
+      JunitMethodDeclarationCheck.class,
       JunitNestedAnnotationCheck.class,
       NoTestInTestClassCheck.class,
       OneExpectedCheckedExceptionCheck.class,
