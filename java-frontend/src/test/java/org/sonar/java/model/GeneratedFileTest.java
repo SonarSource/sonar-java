@@ -23,16 +23,15 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.plugins.java.api.SourceMap;
@@ -46,24 +45,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnableRuleMigrationSupport
 class GeneratedFileTest {
 
-  @Rule
-  public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
+  @TempDir
   Path tmp;
   Path expected;
   private GeneratedFile actual;
 
   @Rule
   public LogTester logTester = new LogTester();
-  private DefaultInputFile inputFile;
+  private DefaultFileSystem fs;
 
   @BeforeEach
   public void setUp() throws Exception {
-    tmp = temporaryFolder.newFolder().toPath();
     expected = tmp.resolve("file.jsp");
     Files.write(expected, "content".getBytes(StandardCharsets.UTF_8));
-    inputFile = TestInputFileBuilder.create("", "file.jsp").build();
-    actual = new GeneratedFile(expected, inputFile);
+    fs = new DefaultFileSystem(tmp);
+    actual = new GeneratedFile(expected);
   }
 
   @Test
@@ -116,9 +112,10 @@ class GeneratedFileTest {
       "160,3:300,2\n" +
       "*E\n";
 
-    SmapFile smapFile = new SmapFile(tmp, smap);
-    InputFile inputFile = inputFileFromPath(Paths.get("src/main/webapp/index.jsp"));
-    GeneratedFile generatedFile = new GeneratedFile(tmp.resolve("index_jsp.java"), inputFile);
+    InputFile inputFile = inputFileFromPath(tmp.resolve("src/main/webapp/index.jsp"));
+    fs.add(inputFile);
+    SmapFile smapFile = new SmapFile(tmp, smap, tmp.resolve("src/main/webapp"), fs);
+    GeneratedFile generatedFile = new GeneratedFile(tmp.resolve("index_jsp.java"));
     generatedFile.addSmap(smapFile);
 
     GeneratedFile.SourceMapImpl sourceMap = ((GeneratedFile.SourceMapImpl) generatedFile.sourceMap());
@@ -160,15 +157,54 @@ class GeneratedFileTest {
       "1,6:116,0\n" +
       "*E\n";
 
-    SmapFile smapFile = new SmapFile(tmp, smap);
-    GeneratedFile generatedFile = new GeneratedFile(tmp.resolve("index_jsp.java"), inputFile);
+    SmapFile smapFile = new SmapFile(tmp, smap, tmp, fs);
+    GeneratedFile generatedFile = new GeneratedFile(tmp.resolve("index_jsp.java"));
     generatedFile.addSmap(smapFile);
 
     SourceMap actual = generatedFile.sourceMap();
     assertThat(actual).isSameAs(generatedFile.sourceMap());
   }
 
-  private static InputFile inputFileFromPath(Path path) {
-    return new TestInputFileBuilder("", path.toString()).build();
+  @Test
+  public void test_multiple_files() {
+    String smap = "SMAP\n" +
+      "index_jsp.java\n" +
+      "JSP\n" +
+      "*S JSP\n" +
+      "*F\n" +
+      "+ 0 index.jsp\n" +
+      "index.jsp\n" +
+      "+ 1 index2.jsp\n" +
+      "index2.jsp\n" +
+      "*L\n" +
+      "1:1\n" +
+      "2#1:2\n" +
+      "*E\n";
+
+    Path uriRoot = tmp.resolve("src/main/webapp");
+    InputFile indexJsp = inputFileFromPath(uriRoot.resolve("index.jsp"));
+    InputFile index2Jsp = inputFileFromPath(uriRoot.resolve("index2.jsp"));
+    fs.add(indexJsp);
+    fs.add(index2Jsp);
+    SmapFile smapFile = new SmapFile(tmp, smap, uriRoot, fs);
+    GeneratedFile generatedFile = new GeneratedFile(tmp.resolve("index_jsp.java"));
+    generatedFile.addSmap(smapFile);
+
+    GeneratedFile.SourceMapImpl sourceMap = ((GeneratedFile.SourceMapImpl) generatedFile.sourceMap());
+
+    Optional<SourceMap.Location> loc1 = sourceMap.getLocation(1, 1);
+    assertThat(loc1.get().file()).isEqualTo(indexJsp);
+    assertLocation(loc1, 1, 1);
+
+    Optional<SourceMap.Location> loc2 = sourceMap.getLocation(2, 2);
+    assertThat(loc2.get().file()).isEqualTo(index2Jsp);
+    assertLocation(loc2, 2, 2);
+
+    // spanning two input files would return start file
+    assertThat(sourceMap.getLocation(1, 2).get().file()).isEqualTo(indexJsp);
+  }
+
+  private InputFile inputFileFromPath(Path path) {
+    return new TestInputFileBuilder("", tmp.toFile(), path.toFile()).build();
   }
 }

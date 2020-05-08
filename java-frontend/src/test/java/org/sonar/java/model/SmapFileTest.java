@@ -27,6 +27,9 @@ import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 
@@ -62,11 +65,14 @@ class SmapFileTest {
       "160#2,3:300,2\n" +
       "160,3:300,2\n" +
       "*E\n";
-    SmapFile smap = new SmapFile(temporaryFolder, sourceMap);
+    DefaultFileSystem fs = new DefaultFileSystem(temporaryFolder);
+    DefaultInputFile inputFile = TestInputFileBuilder.create("module", temporaryFolder.toFile(), temporaryFolder.resolve("WEB-INF/test.jsp").toFile()).build();
+    fs.add(inputFile);
+    SmapFile smap = new SmapFile(temporaryFolder, sourceMap, temporaryFolder, fs);
     assertThat(smap.getGeneratedFile()).isEqualTo(temporaryFolder.resolve("test_jsp.java"));
     assertThat(smap.getFileSection()).containsExactly(
-      entry(0, new SmapFile.FileInfo(0, "test.jsp", "WEB-INF/test.jsp")),
-      entry(2, new SmapFile.FileInfo(2, "Incl.xyz", null))
+      entry(0, new SmapFile.FileInfo(0, "test.jsp", "WEB-INF/test.jsp", null)),
+      entry(2, new SmapFile.FileInfo(2, "Incl.xyz", null, null))
       );
     assertThat(smap.getLineSection()).containsExactly(
       new SmapFile.LineInfo(1, 0, 5, 116, 0),
@@ -83,23 +89,23 @@ class SmapFileTest {
   void invalid_file() {
     Path uriRoot = Paths.get("");
     Path p = Paths.get("file.class.smap");
-    assertThatThrownBy(() -> new SmapFile(p, "not a smap file"))
+    assertThatThrownBy(() -> new SmapFile(p, "not a smap file", null, null))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Not a source map");
 
-    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.groovy\nGroovy\n\n"))
+    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.groovy\nGroovy\n\n", null, null))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Not a JSP source map");
 
-    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*E"))
+    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*E", null, null))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Section *S JSP not found");
 
-    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*S JSP\n*E"))
+    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*S JSP\n*E", null, null))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Section *F not found");
 
-    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n"))
+    assertThatThrownBy(() -> new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n", null, null))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Section *L not found");
   }
@@ -109,8 +115,8 @@ class SmapFileTest {
     Path p = Paths.get("file.class.smap");
 
     new SmapFile(p, "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n" +
-      "invalid line info\n"
-      );
+      "invalid line info\n",
+      null, null);
 
     assertThat(logTester.logs(LoggerLevel.WARN)).contains("Invalid line info invalid line info");
   }
@@ -137,15 +143,15 @@ class SmapFileTest {
 
   @Test
   void fileinfo_hashcode_equals_tostring() {
-    SmapFile.FileInfo fileInfo = new SmapFile.FileInfo(0, "file.jsp", "path/file.jsp");
-    SmapFile.FileInfo fileInfo2 = new SmapFile.FileInfo(0, "file.jsp", "path/file.jsp");
+    SmapFile.FileInfo fileInfo = new SmapFile.FileInfo(0, "file.jsp", "path/file.jsp", null);
+    SmapFile.FileInfo fileInfo2 = new SmapFile.FileInfo(0, "file.jsp", "path/file.jsp", null);
     assertThat(fileInfo).isEqualTo(fileInfo);
     assertThat(fileInfo).isEqualTo(fileInfo2);
     assertThat(fileInfo).isNotEqualTo(null);
     assertThat(fileInfo).isNotEqualTo(0);
-    assertThat(fileInfo).isNotEqualTo(new SmapFile.FileInfo(1, "file.jsp", "path/file.jsp"));
-    assertThat(fileInfo).isNotEqualTo(new SmapFile.FileInfo(0, "file2.jsp", "path/file.jsp"));
-    assertThat(fileInfo).isNotEqualTo(new SmapFile.FileInfo(0, "file.jsp", "path/file2.jsp"));
+    assertThat(fileInfo).isNotEqualTo(new SmapFile.FileInfo(1, "file.jsp", "path/file.jsp", null));
+    assertThat(fileInfo).isNotEqualTo(new SmapFile.FileInfo(0, "file2.jsp", "path/file.jsp", null));
+    assertThat(fileInfo).isNotEqualTo(new SmapFile.FileInfo(0, "file.jsp", "path/file2.jsp", null));
     Set<SmapFile.FileInfo> set = new HashSet<>();
     set.add(fileInfo);
     assertThat(set.add(fileInfo2)).isFalse();
@@ -154,7 +160,7 @@ class SmapFileTest {
 
   @Test
   void smapfile_tostring() {
-    SmapFile smapFile = new SmapFile(Paths.get("dir"), "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n");
+    SmapFile smapFile = new SmapFile(Paths.get("dir"), "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n", null, null);
     assertThat(smapFile.toString()).isEqualTo(Paths.get("dir/test.jsp").toString());
   }
 

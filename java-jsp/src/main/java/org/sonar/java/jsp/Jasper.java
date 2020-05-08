@@ -86,7 +86,7 @@ public class Jasper {
       for (InputFile jsp : jspFiles) {
         try {
           Path generatedFile = transpileJsp(jsp.path(), uriRoot, classLoader, servletContext, options, runtimeContext);
-          generatedJavaFiles.put(generatedFile, new GeneratedFile(generatedFile, jsp));
+          generatedJavaFiles.put(generatedFile, new GeneratedFile(generatedFile));
         } catch (Exception e) {
           errorTranspiling = true;
           LOG.debug("Error transpiling " + jsp, e);
@@ -95,13 +95,8 @@ public class Jasper {
       if (errorTranspiling) {
         LOG.warn("Some JSP pages failed to transpile. Enable debug log for details.");
       }
-      runtimeContext.getSmaps().values().forEach(smap -> {
-        SmapFile smapFile = createSmapFile(smap);
-        GeneratedFile generatedFile = generatedJavaFiles.get(smapFile.getGeneratedFile());
-        if (generatedFile != null) {
-          generatedFile.addSmap(smapFile);
-        }
-      });
+      runtimeContext.getSmaps().values().forEach(smap ->
+        processSourceMap(uriRoot, generatedJavaFiles, smap, sensorContext.fileSystem()));
       return generatedJavaFiles.values();
     } catch (Exception e) {
       LOG.warn("Failed to transpile JSP files.", e);
@@ -111,11 +106,14 @@ public class Jasper {
     }
   }
 
-  private static SmapFile createSmapFile(SmapStratum smapStratum) {
-    Path smapRoot = Paths.get(smapStratum.getClassFileName()).getParent();
-    return new SmapFile(smapRoot, smapStratum.getSmapString());
+  private void processSourceMap(Path uriRoot, Map<Path, GeneratedFile> generatedJavaFiles, SmapStratum smap, FileSystem fileSystem) {
+    Path smapRoot = Paths.get(smap.getClassFileName()).getParent();
+    SmapFile smapFile = new SmapFile(smapRoot, smap.getSmapString(), uriRoot, fileSystem);
+    GeneratedFile generatedFile = generatedJavaFiles.get(smapFile.getGeneratedFile());
+    if (generatedFile != null) {
+      generatedFile.addSmap(smapFile);
+    }
   }
-
 
   private static Path transpileJsp(Path jsp, Path uriRoot, ClassLoader classLoader, JspCServletContext servletContext,
                                    JasperOptions options, JspRuntimeContext runtimeContext) throws Exception {
