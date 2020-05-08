@@ -26,10 +26,10 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JunitMethodDeclarationCheckTest {
+class JunitMethodDeclarationCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/JunitMethodDeclarationCheck.java")
       .withCheck(new JunitMethodDeclarationCheck())
@@ -37,7 +37,7 @@ public class JunitMethodDeclarationCheckTest {
   }
 
   @Test
-  public void test_string_distance() {
+  void test_string_distance() {
     JunitMethodDeclarationCheck check = new JunitMethodDeclarationCheck();
     assertThat(check.areVerySimilarStrings("short", "short")).isTrue();
     assertThat(check.areVerySimilarStrings("short", "abcdf")).isFalse();
