@@ -60,10 +60,14 @@ public class StandardInputReadCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkIdentifier(IdentifierTree identifier) {
-    Symbol.TypeSymbol enclosingClass = identifier.symbol().enclosingClass();
-    if (enclosingClass != null
-      && enclosingClass.type().is("java.lang.System")
-      && identifier.symbolType().is("java.io.InputStream")
+    Symbol symbol = identifier.symbol();
+    if (!symbol.isVariableSymbol()) {
+      return;
+    }
+    Symbol owner = symbol.owner();
+    if (!owner.isUnknown()
+      && owner.type().is("java.lang.System")
+      && symbol.type().is("java.io.InputStream")
       && identifier.name().equals("in")
       && !isClosingStream(identifier.parent())) {
       reportIssue(identifier);

@@ -69,3 +69,7 @@ abstract static class B {
   abstract void doSomething(java.io.InputStream inputStream);
 
 }
+
+interface SomeStrangeInterface {
+  com.stuff.main.util.Page<MyUnknownClass> foo(int a, String b);
+}
