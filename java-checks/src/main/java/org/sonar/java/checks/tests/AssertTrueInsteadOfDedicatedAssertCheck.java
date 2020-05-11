@@ -76,13 +76,11 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
     NOT_EQUALS("NotEquals", "An equals check");
 
     public final String methodName;
-    public final String actionDescription;
     public final String useInsteadMessage;
     public final String secondaryExplanationMessage;
 
     Assertion(String namePostfix, String actionDescription) {
       this.methodName = "assert" + namePostfix;
-      this.actionDescription = actionDescription;
       this.useInsteadMessage = String.format("Use %s instead.", methodName);
       this.secondaryExplanationMessage =
         String.format("%s is performed here, which is better expressed with %s.", actionDescription, methodName);
