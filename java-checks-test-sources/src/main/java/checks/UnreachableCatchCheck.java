@@ -34,7 +34,7 @@ public class UnreachableCatchCheck {
       throwIOException();
     } catch (IOException e) {
       // ...
-    } catch (Exception e) { // Noncompliant
+    } catch (Exception e) { // Compliant, also catch runtime exception
       // ...
     }
 

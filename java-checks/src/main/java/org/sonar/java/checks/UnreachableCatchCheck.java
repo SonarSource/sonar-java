@@ -122,6 +122,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
   private static boolean isChecked(Type type) {
     return !type.isSubtypeOf("java.lang.RuntimeException")
       && !type.isSubtypeOf("java.lang.Error")
+      && !type.is("java.lang.Exception")
       && !type.is("java.lang.Throwable");
   }
 
