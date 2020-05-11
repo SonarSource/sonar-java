@@ -72,9 +72,9 @@ public class JspTest {
       );
 
     Path sourceMapTest = TestUtils.projectDir(PROJECT).toPath().resolve("target/sonar/JspCodeCheck.txt");
-    assertThat(sourceMapTest).hasContent(
-      "index.jsp 1:6\n" +
-      "include.jsp 3:3\n" +
+    List<String> actual = Files.readAllLines(sourceMapTest);
+    assertThat(actual).containsExactlyInAnyOrder("index.jsp 1:6",
+      "include.jsp 3:3",
       "test_include.jsp 7:7");
   }
 }
