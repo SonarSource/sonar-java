@@ -50,13 +50,11 @@ public class GeneratedFile implements InputFile {
 
   @VisibleForTesting
   final List<SmapFile> smapFiles = new ArrayList<>();
-  private final InputFile jspSourceFile;
 
   private SourceMap sourceMap;
 
-  public GeneratedFile(Path path, InputFile jspSourceFile) {
+  public GeneratedFile(Path path) {
     this.path = path;
-    this.jspSourceFile = jspSourceFile;
   }
 
   public SourceMap sourceMap() {
@@ -77,17 +75,21 @@ public class GeneratedFile implements InputFile {
     private SourceMapImpl() {
       for (SmapFile sm : smapFiles) {
         for (SmapFile.LineInfo lineInfo : sm.getLineSection()) {
-          for (int i = 0; i < lineInfo.repeatCount; i++) {
-            int inputLine = lineInfo.inputStartLine + i;
-            LocationImpl location = new LocationImpl(jspSourceFile, inputLine, inputLine);
-            int outputStart = lineInfo.outputStartLine + (i * lineInfo.outputLineIncrement);
-            int outputEnd = lineInfo.outputStartLine + ((i + 1) * lineInfo.outputLineIncrement) - 1;
-            // when outputLineIncrement == 0, end will be less than start (looks like bug in spec)
-            outputEnd = max(outputStart, outputEnd);
-            for (int j = outputStart; j <= outputEnd; j++) {
-              lines.merge(j, location, LocationImpl::mergeLocations);
-            }
-          }
+          sm.getInputFile(lineInfo.lineFileId).ifPresent(inputFile -> processLineInfo(inputFile, lineInfo));
+        }
+      }
+    }
+
+    private void processLineInfo(InputFile inputFile, SmapFile.LineInfo lineInfo) {
+      for (int i = 0; i < lineInfo.repeatCount; i++) {
+        int inputLine = lineInfo.inputStartLine + i;
+        LocationImpl location = new LocationImpl(inputFile, inputLine, inputLine);
+        int outputStart = lineInfo.outputStartLine + (i * lineInfo.outputLineIncrement);
+        int outputEnd = lineInfo.outputStartLine + ((i + 1) * lineInfo.outputLineIncrement) - 1;
+        // when outputLineIncrement == 0, end will be less than start (looks like bug in spec)
+        outputEnd = max(outputStart, outputEnd);
+        for (int j = outputStart; j <= outputEnd; j++) {
+          lines.merge(j, location, LocationImpl::mergeLocations);
         }
       }
     }

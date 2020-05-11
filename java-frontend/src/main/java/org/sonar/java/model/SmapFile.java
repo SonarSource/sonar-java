@@ -25,10 +25,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.api.batch.fs.FilePredicates;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
@@ -52,11 +57,11 @@ public class SmapFile {
   private static final Logger LOG = Loggers.get(SmapFile.class);
 
   private final Path generatedFile;
-  private Map<Integer, FileInfo> fileSection;
-  private List<LineInfo> lineSection;
+  private final Map<Integer, FileInfo> fileSection;
+  private final List<LineInfo> lineSection;
   private final Scanner sc;
 
-  public SmapFile(Path rootDir, String smapString) {
+  public SmapFile(Path rootDir, String smapString, Path uriRoot, FileSystem fileSystem) {
     this.sc = new Scanner(smapString);
     String header = sc.nextLine();
     if (!"SMAP".equals(header)) {
@@ -70,7 +75,7 @@ public class SmapFile {
     }
     findSection("*S JSP");
     findSection("*F");
-    fileSection = readFileSection();
+    fileSection = readFileSection(uriRoot, fileSystem);
     findSection("*L");
     lineSection = readLineSection();
   }
@@ -121,7 +126,7 @@ public class SmapFile {
     throw new IllegalStateException("Section " + section + " not found");
   }
 
-  private Map<Integer, FileInfo> readFileSection() {
+  private Map<Integer, FileInfo> readFileSection(Path uriRoot, FileSystem fileSystem) {
     Map<Integer, FileInfo> result = new HashMap<>();
     while (sc.hasNext() && !sc.hasNext("\\*.")) {
       if (sc.hasNext("\\+")) {
@@ -130,14 +135,22 @@ public class SmapFile {
         String file = sc.next();
         sc.nextLine();
         String path = sc.nextLine();
-        result.put(fileId, new FileInfo(fileId, file, path));
+        InputFile inputFile = findFileWithPath(uriRoot.resolve(path), fileSystem);
+        result.put(fileId, new FileInfo(fileId, file, path, inputFile));
       } else {
         int fileId = sc.nextInt();
         String file = sc.next();
-        result.put(fileId, new FileInfo(fileId, file, null));
+        InputFile inputFile = findFileWithPath(uriRoot.resolve(file), fileSystem);
+        result.put(fileId, new FileInfo(fileId, file, null, inputFile));
       }
     }
     return result;
+  }
+
+  @CheckForNull
+  private static InputFile findFileWithPath(Path path, FileSystem fileSystem) {
+    FilePredicates predicates = fileSystem.predicates();
+    return fileSystem.inputFile(predicates.hasPath(path.toString()));
   }
 
   @Override
@@ -145,15 +158,22 @@ public class SmapFile {
     return generatedFile.toString();
   }
 
+  Optional<InputFile> getInputFile(int fileId) {
+    return Optional.ofNullable(fileSection.get(fileId))
+      .map(info -> info.inputFile);
+  }
+
   static class FileInfo {
     final int fileId;
     final String sourceName;
     final String sourcePath;
+    final InputFile inputFile;
 
-    FileInfo(int fileId, String sourceName, @Nullable String sourcePath) {
+    FileInfo(int fileId, String sourceName, @Nullable String sourcePath, @Nullable InputFile inputFile) {
       this.fileId = fileId;
       this.sourceName = sourceName;
       this.sourcePath = sourcePath;
+      this.inputFile = inputFile;
     }
 
     @Override

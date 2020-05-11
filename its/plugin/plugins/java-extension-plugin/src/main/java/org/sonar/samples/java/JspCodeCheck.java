@@ -28,6 +28,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -67,18 +68,26 @@ public class JspCodeCheck extends IssuableSubscriptionVisitor implements JspCode
   }
 
   private void visitMethodInvocation(MethodInvocationTree tree) {
-    Path path = context.getWorkingDirectory().toPath().resolve("GeneratedCodeCheck.txt");
-    if (context.getInputFile().filename().equals("index_jsp.java") && tree.firstToken().line() == 116) {
+    if (isInvocation(tree, "index_jsp.java", 116) ||
+      isInvocation(tree, "test_005finclude_jsp.java", 124) ||
+      isInvocation(tree, "test_005finclude_jsp.java", 129)) {
       context.sourceMap()
         .flatMap(sourceMap -> sourceMap.sourceMapLocationFor(tree))
-        .ifPresent(location -> {
-          try {
-            String data = format("%s %d:%d%n", location.file().filename(), location.startLine(), location.endLine());
-            Files.write(path, data.getBytes(), APPEND, CREATE);
-          } catch (IOException e) {
-            throw new IllegalStateException(e);
-          }
-        });
+        .ifPresent(this::writeToFile);
+    }
+  }
+
+  private boolean isInvocation(MethodInvocationTree tree, String inputFile, int line) {
+    return context.getInputFile().filename().equals(inputFile) && tree.firstToken().line() == line;
+  }
+
+  private void writeToFile(SourceMap.Location location) {
+    try {
+      Path path = context.getWorkingDirectory().toPath().resolve("JspCodeCheck.txt");
+      String data = format("%s %d:%d%n", location.file().filename(), location.startLine(), location.endLine());
+      Files.write(path, data.getBytes(), APPEND, CREATE);
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
     }
   }
 }
