@@ -69,12 +69,10 @@ class CheckVerifierTest {
   @Test
   void verify_unexpected_issue() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withIssue(4, "extra message");
+    CheckVerifier verifier = CheckVerifier.newVerifier().onFile(FILENAME_ISSUES).withCheck(visitor);
 
     try {
-      CheckVerifier.newVerifier()
-        .onFile(FILENAME_ISSUES)
-        .withCheck(visitor)
-        .verifyIssues();
+      verifier.verifyIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Unexpected at [4]");
@@ -84,12 +82,10 @@ class CheckVerifierTest {
   @Test
   void verify_combined_missing_expected_and_unexpected_issues() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withIssue(4, "extra message").withoutIssue(1);
+    CheckVerifier verifier = CheckVerifier.newVerifier().onFile(FILENAME_ISSUES).withCheck(visitor);
 
     try {
-      CheckVerifier.newVerifier()
-        .onFile(FILENAME_ISSUES)
-        .withCheck(visitor)
-        .verifyIssues();
+      verifier.verifyIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Expected at [1], Unexpected at [4]");
@@ -99,12 +95,10 @@ class CheckVerifierTest {
   @Test
   void verify_missing_expected_issue() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withoutIssue(1);
+    CheckVerifier verifier = CheckVerifier.newVerifier().onFile(FILENAME_ISSUES).withCheck(visitor);
 
     try {
-      CheckVerifier.newVerifier()
-        .onFile(FILENAME_ISSUES)
-        .withCheck(visitor)
-        .verifyIssues();
+      verifier.verifyIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Expected at [1]");
@@ -158,11 +152,12 @@ class CheckVerifierTest {
 
   @Test
   void verify_should_fail_when_using_incorrect_shift() throws IOException {
+    CheckVerifier verifier = CheckVerifier.newVerifier()
+      .onFile("src/test/files/JavaCheckVerifierIncorrectShift.java")
+      .withCheck(NO_EFFECT_VISITOR);
+
     try {
-      CheckVerifier.newVerifier()
-        .onFile("src/test/files/JavaCheckVerifierIncorrectShift.java")
-        .withCheck(NO_EFFECT_VISITOR)
-        .verifyNoIssues();
+      verifier.verifyNoIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Use only '@+N' or '@-N' to shifts messages.");
@@ -171,11 +166,12 @@ class CheckVerifierTest {
 
   @Test
   void verify_should_fail_when_using_incorrect_attribute() throws IOException {
+    CheckVerifier verifier = CheckVerifier.newVerifier()
+      .onFile("src/test/files/JavaCheckVerifierIncorrectAttribute.java")
+      .withCheck(NO_EFFECT_VISITOR);
+
     try {
-      CheckVerifier.newVerifier()
-        .onFile("src/test/files/JavaCheckVerifierIncorrectAttribute.java")
-        .withCheck(NO_EFFECT_VISITOR)
-        .verifyNoIssues();
+      verifier.verifyNoIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("// Noncompliant attributes not valid: 'invalid=1'");
@@ -184,11 +180,12 @@ class CheckVerifierTest {
 
   @Test
   void verify_should_fail_when_using_incorrect_attribute2() throws IOException {
+    CheckVerifier verifier = CheckVerifier.newVerifier()
+      .onFile("src/test/files/JavaCheckVerifierIncorrectAttribute2.java")
+      .withCheck(NO_EFFECT_VISITOR);
+
     try {
-      CheckVerifier.newVerifier()
-        .onFile("src/test/files/JavaCheckVerifierIncorrectAttribute2.java")
-        .withCheck(NO_EFFECT_VISITOR)
-        .verifyNoIssues();
+      verifier.verifyNoIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("// Noncompliant attributes not valid: 'invalid=1=2'");
@@ -197,11 +194,12 @@ class CheckVerifierTest {
 
   @Test
   void verify_should_fail_when_using_incorrect_endLine() throws IOException {
+    CheckVerifier verifier = CheckVerifier.newVerifier()
+      .onFile("src/test/files/JavaCheckVerifierIncorrectEndLine.java")
+      .withCheck(NO_EFFECT_VISITOR);
+
     try {
-      CheckVerifier.newVerifier()
-        .onFile("src/test/files/JavaCheckVerifierIncorrectEndLine.java")
-        .withCheck(NO_EFFECT_VISITOR)
-        .verifyNoIssues();
+      verifier.verifyNoIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
@@ -211,11 +209,12 @@ class CheckVerifierTest {
   @Test
   void verify_should_fail_when_using_incorrect_secondaryLocation() throws IOException {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
+    CheckVerifier verifier = CheckVerifier.newVerifier()
+      .onFile("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java")
+      .withCheck(visitor);
+
     try {
-      CheckVerifier.newVerifier()
-        .onFile("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java")
-        .withCheck(visitor)
-        .verifyIssues();
+      verifier.verifyIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Secondary locations: expected: [] unexpected: [3]. In JavaCheckVerifierIncorrectSecondaryLocation.java:10");
@@ -225,11 +224,12 @@ class CheckVerifierTest {
   @Test
   void verify_should_fail_when_using_incorrect_secondaryLocation2() throws IOException {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
+    CheckVerifier verifier = CheckVerifier.newVerifier()
+      .onFile("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java")
+      .withCheck(visitor);
+
     try {
-      CheckVerifier.newVerifier()
-        .onFile("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java")
-        .withCheck(visitor)
-        .verifyIssues();
+      verifier.verifyIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Secondary locations: expected: [5] unexpected: []. In JavaCheckVerifierIncorrectSecondaryLocation2.java:10");
@@ -279,11 +279,12 @@ class CheckVerifierTest {
       .issueWithFlow(20)
       .flow(17, "msg", 19, null)
       .add();
+    CheckVerifier verifier = CheckVerifier.newVerifier()
+      .onFile("src/test/files/JavaCheckVerifierFlows.java")
+      .withCheck(fakeVisitor);
+
     try {
-      CheckVerifier.newVerifier()
-        .onFile("src/test/files/JavaCheckVerifierFlows.java")
-        .withCheck(fakeVisitor)
-        .verifyIssues();
+      verifier.verifyIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Flow npe1 has line differences. Expected: [9, 3] but was: [6, 5]");
@@ -300,11 +301,12 @@ class CheckVerifierTest {
       .issueWithFlow(20)
       .flow(17, "msg", 19, null)
       .add();
+    CheckVerifier verifier = CheckVerifier.newVerifier()
+      .onFile("src/test/files/JavaCheckVerifierFlows.java")
+      .withCheck(fakeVisitor);
+
     try {
-      CheckVerifier.newVerifier()
-        .onFile("src/test/files/JavaCheckVerifierFlows.java")
-        .withCheck(fakeVisitor)
-        .verifyIssues();
+      verifier.verifyIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Missing flows: npe1 [9,3].");
@@ -357,11 +359,12 @@ class CheckVerifierTest {
       .flowItem(3, "a is assigned to null here", 12, 20)
       .flowItem(9, "a is assigned to b here", 7, 12)
       .add();
+    CheckVerifier verifier = CheckVerifier.newVerifier()
+      .onFile("src/test/files/JavaCheckVerifierFlowsSuperfluous.java")
+      .withCheck(fakeVisitor);
+
     try {
-      CheckVerifier.newVerifier()
-        .onFile("src/test/files/JavaCheckVerifierFlowsSuperfluous.java")
-        .withCheck(fakeVisitor)
-        .verifyIssues();
+      verifier.verifyIssues();
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Following flow comments were observed, but not referenced by any issue: {superfluous=8,6,4, npe2=7}");
