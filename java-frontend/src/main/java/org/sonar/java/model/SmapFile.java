@@ -148,7 +148,7 @@ public class SmapFile {
   }
 
   @CheckForNull
-  private InputFile findFileWithPath(Path path, FileSystem fileSystem) {
+  private static InputFile findFileWithPath(Path path, FileSystem fileSystem) {
     FilePredicates predicates = fileSystem.predicates();
     return fileSystem.inputFile(predicates.hasPath(path.toString()));
   }

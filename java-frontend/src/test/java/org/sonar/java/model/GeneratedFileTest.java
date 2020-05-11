@@ -166,7 +166,7 @@ class GeneratedFileTest {
   }
 
   @Test
-  public void test_multiple_files() {
+  void test_multiple_files() {
     String smap = "SMAP\n" +
       "index_jsp.java\n" +
       "JSP\n" +

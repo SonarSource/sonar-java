@@ -106,7 +106,7 @@ public class Jasper {
     }
   }
 
-  private void processSourceMap(Path uriRoot, Map<Path, GeneratedFile> generatedJavaFiles, SmapStratum smap, FileSystem fileSystem) {
+  private static void processSourceMap(Path uriRoot, Map<Path, GeneratedFile> generatedJavaFiles, SmapStratum smap, FileSystem fileSystem) {
     Path smapRoot = Paths.get(smap.getClassFileName()).getParent();
     SmapFile smapFile = new SmapFile(smapRoot, smap.getSmapString(), uriRoot, fileSystem);
     GeneratedFile generatedFile = generatedJavaFiles.get(smapFile.getGeneratedFile());
