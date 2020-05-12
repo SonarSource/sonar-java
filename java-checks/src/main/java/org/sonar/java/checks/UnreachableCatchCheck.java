@@ -123,7 +123,8 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isChecked(Type type) {
-    return !type.isSubtypeOf("java.lang.RuntimeException")
+    return !type.isUnknown()
+      && !type.isSubtypeOf("java.lang.RuntimeException")
       && !type.isSubtypeOf("java.lang.Error")
       && !type.is("java.lang.Exception")
       && !type.is("java.lang.Throwable");
@@ -134,7 +135,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
       // Only throwing a subtype of the first caught exception, hiding the base one
       thrownType.isSubtypeOf(derivedType) ||
       // Or throwing an unrelated exception
-      !derivedType.isSubtypeOf(thrownType)
+      (!thrownType.isUnknown() && !derivedType.isUnknown() && !derivedType.isSubtypeOf(thrownType))
     );
   }
 
