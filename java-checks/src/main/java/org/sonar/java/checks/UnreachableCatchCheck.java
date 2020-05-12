@@ -58,6 +58,10 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     TryStatementTree tryStatementTree = (TryStatementTree) tree;
+    if (!tryStatementTree.resourceList().isEmpty()) {
+      // Try with resource will call close, often throwing an exception.
+      return;
+    }
     typeToCatchToken.clear();
     Multimap<Type, Type> baseToDerived = getBaseTypeCaughtAfterDerivedType(tryStatementTree.catches());
 

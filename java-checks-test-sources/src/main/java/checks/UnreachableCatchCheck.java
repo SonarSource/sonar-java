@@ -1,6 +1,9 @@
 package checks;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import org.junit.jupiter.api.function.Executable;
 
 public class UnreachableCatchCheck {
@@ -42,9 +45,9 @@ public class UnreachableCatchCheck {
       throwCustomDerivedDerivedException();
     } catch (CustomDerivedDerivedException e) {
       // ...
-    } catch (CustomDerivedException e) { // Noncompliant [[secondary=43]]
+    } catch (CustomDerivedException e) { // Noncompliant [[secondary=46]]
       // ...
-    } catch (CustomException e) { // Noncompliant [[secondary=43,45]]
+    } catch (CustomException e) { // Noncompliant [[secondary=46,48]]
       // ...
     }
 
@@ -54,7 +57,7 @@ public class UnreachableCatchCheck {
       // ...
     } catch (CustomDerivedException e) {
       // ...
-    } catch (CustomException e) { // Noncompliant [[secondary=55]]
+    } catch (CustomException e) { // Noncompliant [[secondary=58]]
       // ...
     }
 
@@ -65,7 +68,7 @@ public class UnreachableCatchCheck {
       // ...
     } catch (IOException e) { // Compliant
       // ...
-    } catch (CustomException e) { // Noncompliant [[sc=7;ec=12;secondary=64]]
+    } catch (CustomException e) { // Noncompliant [[sc=7;ec=12;secondary=67]]
       // ...
     }
 
@@ -146,6 +149,11 @@ public class UnreachableCatchCheck {
       throwCustomException();
     } catch (CustomException e) { // Compliant
       // ...
+    }
+
+    try(InputStream input = new FileInputStream("reportFileName")) {
+    } catch (FileNotFoundException e) {
+    } catch (IOException e) { // Compliant, close throws an IOException
     }
 
     try {
