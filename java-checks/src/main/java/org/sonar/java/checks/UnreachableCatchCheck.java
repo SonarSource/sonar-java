@@ -74,10 +74,8 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
     List<Type> thrownTypes = collector.thrownTypes;
 
     baseToDerived.asMap().forEach((baseType, derivedTypes) -> {
-      // Catching a derived type before the base type is fine if the body of the try throws an exception which is a subtype of the base type,
-      // but not of the derived type. We have to make sure that we are not in this situation before reporting an issue.
       List<Type> derivedTypesHiding = derivedTypes.stream()
-        .filter(derivedType -> isHidden(baseType, derivedType, thrownTypes))
+        .filter(derivedType -> isHiding(derivedType, thrownTypes))
         .collect(Collectors.toList());
 
       if (!derivedTypesHiding.isEmpty()) {
@@ -130,9 +128,12 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
       && !type.is("java.lang.Throwable");
   }
 
-  private static boolean isHidden(Type baseType, Type derivedType, List<Type> thrownTypes) {
-    return thrownTypes.stream().noneMatch(thrownType ->
-      thrownType.isSubtypeOf(baseType) && !thrownType.isSubtypeOf(derivedType)
+  private static boolean isHiding(Type derivedType, List<Type> thrownTypes) {
+    return thrownTypes.stream().allMatch(thrownType ->
+      // Only throwing a subtype of the first caught exception, hiding the base one
+      thrownType.isSubtypeOf(derivedType) ||
+      // Or throwing an unrelated exception
+      !derivedType.isSubtypeOf(thrownType)
     );
   }
 

@@ -112,6 +112,25 @@ public class UnreachableCatchCheck {
       // ...
     }
 
+    try {
+      throwCustomException();
+    } catch (CustomDerivedDerivedException e) {
+      // ...
+    } catch (CustomDerivedException e) { // Compliant, throwCustomException can throw one of his subtype
+      // ...
+    } catch (CustomException e) {
+      // ...
+    }
+
+    try {
+      throw new Exception();
+    } catch (CustomDerivedDerivedException e) {
+      // ...
+    } catch (CustomDerivedException e) { // Compliant, FN in this case, but Exception could be one of his subtype
+      // ...
+    } catch (Exception e) {
+      // ...
+    }
 
     try {
       throwCustomDerivedException();
