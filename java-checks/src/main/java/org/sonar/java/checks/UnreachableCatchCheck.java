@@ -38,7 +38,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -47,8 +46,6 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 
 @Rule(key = "S4970")
 public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
-
-  private Map<Type, SyntaxToken> typeToCatchToken = new HashMap<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -63,8 +60,8 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
       // Supporting potential problems is not worth since it is really unlikely that something wrong happen.
       return;
     }
-    typeToCatchToken.clear();
-    Multimap<Type, Type> baseToDerived = getBaseTypeCaughtAfterDerivedType(tryStatementTree.catches());
+    Map<Type, Tree> typeToTypeTree = new HashMap<>();
+    Multimap<Type, Type> baseToDerived = getBaseTypeCaughtAfterDerivedType(tryStatementTree.catches(), typeToTypeTree);
 
     if (baseToDerived.isEmpty()) {
       return;
@@ -80,21 +77,21 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
         .collect(Collectors.toList());
 
       if (!derivedTypesHiding.isEmpty()) {
-        reportIssue(typeToCatchToken.get(baseType),
-          "Remove this catch block because it is unreachable as hidden by previous catch blocks.",
-          derivedTypesHiding.stream().map(type -> new JavaFileScannerContext.Location("Already catch the exception", typeToCatchToken.get(type)))
+        reportIssue(typeToTypeTree.get(baseType),
+          "Remove this type because it is unreachable as hidden by previous catch blocks.",
+          derivedTypesHiding.stream().map(type -> new JavaFileScannerContext.Location("Already catch the exception", typeToTypeTree.get(type)))
           .collect(Collectors.toList()),
           null);
       }
     });
   }
 
-  private Multimap<Type, Type> getBaseTypeCaughtAfterDerivedType(List<CatchTree> catches) {
+  private static Multimap<Type, Type> getBaseTypeCaughtAfterDerivedType(List<CatchTree> catches, Map<Type, Tree> typeToTypeTree) {
     Multimap<Type, Type> baseAfterDerived = HashMultimap.create();
     List<Type> catchTypes = catches.stream()
       .flatMap(c -> {
         List<Type> types = new ArrayList<>();
-        collectTypesFromTypeTree(c.parameter().type(), types, c.catchKeyword());
+        collectTypesFromTypeTree(c.parameter().type(), types, typeToTypeTree);
         return types.stream();
       })
       .filter(UnreachableCatchCheck::isChecked)
@@ -112,12 +109,12 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
     return baseAfterDerived;
   }
 
-  private void collectTypesFromTypeTree(TypeTree typeTree, List<Type> types, SyntaxToken correspondingCatch) {
+  private static void collectTypesFromTypeTree(TypeTree typeTree, List<Type> types, Map<Type, Tree> typeToTypeTree) {
     if (typeTree.is(Tree.Kind.UNION_TYPE)) {
-      ((UnionTypeTree) typeTree).typeAlternatives().forEach(t -> collectTypesFromTypeTree(t, types, correspondingCatch));
+      ((UnionTypeTree) typeTree).typeAlternatives().forEach(t -> collectTypesFromTypeTree(t, types, typeToTypeTree));
     } else {
       Type type = typeTree.symbolType();
-      typeToCatchToken.put(type, correspondingCatch);
+      typeToTypeTree.put(type, typeTree);
       types.add(type);
     }
   }
