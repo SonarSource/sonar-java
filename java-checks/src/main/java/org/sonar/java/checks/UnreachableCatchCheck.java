@@ -59,7 +59,8 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     TryStatementTree tryStatementTree = (TryStatementTree) tree;
     if (!tryStatementTree.resourceList().isEmpty()) {
-      // Try with resource will call close, often throwing an exception.
+      // Try with resource will call close, throwing by default an Exception or IOException.
+      // Supporting potential problems is not worth since it is really unlikely that something wrong happen.
       return;
     }
     typeToCatchToken.clear();

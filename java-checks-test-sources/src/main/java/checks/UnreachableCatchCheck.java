@@ -1,5 +1,6 @@
 package checks;
 
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,7 +8,6 @@ import java.io.InputStream;
 import org.junit.jupiter.api.function.Executable;
 
 public class UnreachableCatchCheck {
-
   void unreachable(boolean cond) {
     try {
       throwCustomDerivedException();
@@ -171,8 +171,27 @@ public class UnreachableCatchCheck {
     }
 
     try(InputStream input = new FileInputStream("reportFileName")) {
+      throwCustomDerivedException();
     } catch (FileNotFoundException e) {
     } catch (IOException e) { // Compliant, close throws an IOException
+    } catch (CustomDerivedException e) {
+      // ...
+    } catch (CustomException e) { // FN
+      // ...
+    }
+
+    class B implements Closeable {
+      @Override
+      public void close() throws FileNotFoundException {
+        throw new RuntimeException();
+      }
+    }
+
+    try (B a = new B()) {
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) { // FN: this can happen only if the class implementing Closable specify a subtype of IOException in the declaration.
+      e.printStackTrace();
     }
 
     try {
