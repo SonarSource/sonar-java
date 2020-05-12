@@ -13,7 +13,7 @@ public class UnreachableCatchCheck {
       throwCustomDerivedException();
     } catch (CustomDerivedException e) {
       // ...
-    } catch (CustomException e) { // Noncompliant [[sc=7;ec=12;secondary=11] {{Remove this catch block because it is unreachable as hidden by previous catch blocks.}}
+    } catch (CustomException e) { // Noncompliant [[sc=14;ec=29;secondary=14]] {{Remove this type because it is unreachable as hidden by previous catch blocks.}}
       // ...
     }
 
@@ -21,7 +21,7 @@ public class UnreachableCatchCheck {
       throw new CustomDerivedException();
     } catch (CustomDerivedException e) {
       // ...
-    } catch (CustomException e) { // Noncompliant
+    } catch (CustomException|IllegalStateException e) { // Noncompliant [[sc=14;ec=29]]
       // ...
     }
 
@@ -68,7 +68,7 @@ public class UnreachableCatchCheck {
       // ...
     } catch (IOException e) { // Compliant
       // ...
-    } catch (CustomException e) { // Noncompliant [[sc=7;ec=12;secondary=67]]
+    } catch (CustomException e) { // Noncompliant [[sc=14;ec=29;secondary=67]]
       // ...
     }
 
