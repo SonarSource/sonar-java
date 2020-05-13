@@ -69,6 +69,12 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
     ThrownExceptionCollector collector = new ThrownExceptionCollector();
     tryStatementTree.block().accept(collector);
+
+    if (collector.unknownVisited || collector.thrownTypes.isEmpty()) {
+      // Unknown method can throw anything, we can not tell anything about it.
+      return;
+    }
+
     List<Type> thrownTypes = collector.thrownTypes;
 
     baseToDerived.asMap().forEach((baseType, derivedTypes) -> {
@@ -138,6 +144,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
   private static class ThrownExceptionCollector extends BaseTreeVisitor {
     List<Type> thrownTypes = new ArrayList<>();
+    boolean unknownVisited = false;
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
@@ -160,6 +167,8 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
     private void addAllThrownTypes(Symbol symbol) {
       if (symbol.isMethodSymbol()) {
         thrownTypes.addAll(((Symbol.MethodSymbol) symbol).thrownTypes());
+      } else if (symbol.isUnknown()) {
+        unknownVisited = true;
       }
     }
 
