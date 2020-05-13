@@ -26,6 +26,30 @@ public class UnreachableCatchCheck {
       // ...
     }
 
+    try {
+      unknown();
+    } catch (CustomDerivedException e) {
+      // ...
+    } catch (CustomException e) { // Compliant
+      // ...
+    }
+
+    try {
+      throwCustomDerivedException();
+      unknown();
+    } catch (CustomDerivedException e) {
+      // ...
+    } catch (CustomException e) { // Compliant, one unknown method
+      // ...
+    }
+
+    try {
+    } catch (CustomDerivedException e) {
+      // ...
+    } catch (CustomException e) { // Compliant
+      // ...
+    }
+
   }
 
   void throwUnknownException() throws Unknown {

@@ -133,6 +133,17 @@ public class UnreachableCatchCheck {
     }
 
     try {
+      throwCustomDerivedDerivedException();
+      throw new Exception();
+    } catch (CustomDerivedDerivedException e) {
+      // ...
+    } catch (CustomDerivedException e) { // Compliant
+      // ...
+    } catch (Exception e) {
+      // ...
+    }
+
+    try {
       throwCustomDerivedException();
     } catch (CustomDerivedException e) {
       // ...
