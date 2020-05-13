@@ -61,9 +61,9 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
       return;
     }
     Map<Type, Tree> typeToTypeTree = new HashMap<>();
-    Multimap<Type, Type> baseToDerived = getBaseTypeCaughtAfterDerivedType(tryStatementTree.catches(), typeToTypeTree);
+    Multimap<Type, Type> baseToSubtype = getBaseTypeCaughtAfterSubtype(tryStatementTree.catches(), typeToTypeTree);
 
-    if (baseToDerived.isEmpty()) {
+    if (baseToSubtype.isEmpty()) {
       return;
     }
 
@@ -77,23 +77,23 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
     List<Type> thrownTypes = collector.thrownTypes;
 
-    baseToDerived.asMap().forEach((baseType, derivedTypes) -> {
-      List<Type> derivedTypesHiding = derivedTypes.stream()
-        .filter(derivedType -> isHiding(derivedType, thrownTypes))
+    baseToSubtype.asMap().forEach((baseType, subtypes) -> {
+      List<Type> subtypesHiding = subtypes.stream()
+        .filter(subtype -> isHiding(subtype, thrownTypes))
         .collect(Collectors.toList());
 
-      if (!derivedTypesHiding.isEmpty()) {
+      if (!subtypesHiding.isEmpty()) {
         reportIssue(typeToTypeTree.get(baseType),
           "Remove this type because it is unreachable as hidden by previous catch blocks.",
-          derivedTypesHiding.stream().map(type -> new JavaFileScannerContext.Location("Already catch the exception", typeToTypeTree.get(type)))
-          .collect(Collectors.toList()),
+          subtypesHiding.stream().map(type -> new JavaFileScannerContext.Location("Already catch the exception", typeToTypeTree.get(type)))
+            .collect(Collectors.toList()),
           null);
       }
     });
   }
 
-  private static Multimap<Type, Type> getBaseTypeCaughtAfterDerivedType(List<CatchTree> catches, Map<Type, Tree> typeToTypeTree) {
-    Multimap<Type, Type> baseAfterDerived = HashMultimap.create();
+  private static Multimap<Type, Type> getBaseTypeCaughtAfterSubtype(List<CatchTree> catches, Map<Type, Tree> typeToTypeTree) {
+    Multimap<Type, Type> baseAfterSubtype = HashMultimap.create();
     List<Type> catchTypes = catches.stream()
       .flatMap(c -> {
         List<Type> types = new ArrayList<>();
@@ -108,11 +108,11 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
       for (int j = i + 1; j < catchTypes.size(); j++) {
         Type bottomType = catchTypes.get(j);
         if (topType.isSubtypeOf(bottomType)) {
-          baseAfterDerived.put(bottomType, topType);
+          baseAfterSubtype.put(bottomType, topType);
         }
       }
     }
-    return baseAfterDerived;
+    return baseAfterSubtype;
   }
 
   private static void collectTypesFromTypeTree(TypeTree typeTree, List<Type> types, Map<Type, Tree> typeToTypeTree) {
@@ -133,12 +133,12 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
       && !type.is("java.lang.Throwable");
   }
 
-  private static boolean isHiding(Type derivedType, List<Type> thrownTypes) {
+  private static boolean isHiding(Type subtype, List<Type> thrownTypes) {
     // All thrown exceptions are caught by the subtype exception, hiding the base one
     // This logic could be improved to remove FN, but it's not trivial and source of FP.
     return thrownTypes.stream()
       .allMatch(thrownType ->
-        thrownType.isSubtypeOf(derivedType)
+        thrownType.isSubtypeOf(subtype)
       );
   }
 

@@ -10,24 +10,24 @@ import org.junit.jupiter.api.function.Executable;
 public class UnreachableCatchCheck {
   void unreachable(boolean cond) {
     try {
-      throwCustomDerivedException();
-    } catch (CustomDerivedException e) {
+      throwExtendsCustomException();
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Noncompliant [[sc=14;ec=29;secondary=14]] {{Remove this type because it is unreachable as hidden by previous catch blocks.}}
       // ...
     }
 
     try {
-      throw new CustomDerivedException();
-    } catch (CustomDerivedException e) {
+      throw new ExtendsCustomException();
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException|IllegalStateException e) { // Noncompliant [[sc=14;ec=29]]
       // ...
     }
 
     try {
-      new ThrowingCustomDerivedException();
-    } catch (CustomDerivedException e) {
+      new ThrowingExtendsCustomException();
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Noncompliant
       // ...
@@ -42,29 +42,29 @@ public class UnreachableCatchCheck {
     }
 
     try {
-      throwCustomDerivedDerivedException();
-    } catch (CustomDerivedDerivedException e) {
+      throwExtendsExtendsCustomException();
+    } catch (ExtendsExtendsCustomException e) {
       // ...
-    } catch (CustomDerivedException e) { // Noncompliant [[secondary=46]]
+    } catch (ExtendsCustomException e) { // Noncompliant [[secondary=46]]
       // ...
     } catch (CustomException e) { // Noncompliant [[secondary=46,48]]
       // ...
     }
 
     try {
-      throwCustomDerivedException();
-    } catch (CustomDerivedDerivedException e) {
+      throwExtendsCustomException();
+    } catch (ExtendsExtendsCustomException e) {
       // ...
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Noncompliant [[secondary=58]]
       // ...
     }
 
     try {
-      throwCustomDerivedException();
+      throwExtendsCustomException();
       throwIOException();
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (IOException e) { // Compliant
       // ...
@@ -73,16 +73,16 @@ public class UnreachableCatchCheck {
     }
 
     try {
-      throwCustomDerivedDerivedException();
+      throwExtendsExtendsCustomException();
       throwIOException();
-    } catch (CustomDerivedException | IOException e) {
+    } catch (ExtendsCustomException | IOException e) {
       // ...
     } catch (CustomException e) { // FN, we don't support correctly the presence of another type of Exception
       // ...
     }
 
     try {
-      throwCustomDerivedException();
+      throwExtendsCustomException();
 
       class Inner {
         void f() throws CustomException {
@@ -90,7 +90,7 @@ public class UnreachableCatchCheck {
         }
       }
       takeObject((Executable)(() -> throwCustomException())); // not in the same scope
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Noncompliant
       // ...
@@ -98,7 +98,7 @@ public class UnreachableCatchCheck {
 
     try {
       throwCustomException();
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Compliant, a CustomException is thrown, this is reachable
       // ...
@@ -106,7 +106,7 @@ public class UnreachableCatchCheck {
 
     try {
       throw new CustomException();
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // compliant
       // ...
@@ -114,9 +114,9 @@ public class UnreachableCatchCheck {
 
     try {
       throwCustomException();
-    } catch (CustomDerivedDerivedException e) {
+    } catch (ExtendsExtendsCustomException e) {
       // ...
-    } catch (CustomDerivedException e) { // Compliant, throwCustomException can throw one of his subtype
+    } catch (ExtendsCustomException e) { // Compliant, throwCustomException can throw one of his subtype
       // ...
     } catch (CustomException e) {
       // ...
@@ -124,28 +124,28 @@ public class UnreachableCatchCheck {
 
     try {
       throw new Exception();
-    } catch (CustomDerivedDerivedException e) {
+    } catch (ExtendsExtendsCustomException e) {
       // ...
-    } catch (CustomDerivedException e) { // Compliant, FN in this case, but Exception could be one of his subtype
+    } catch (ExtendsCustomException e) { // Compliant, FN in this case, but Exception could be one of his subtype
       // ...
     } catch (Exception e) {
       // ...
     }
 
     try {
-      throwCustomDerivedDerivedException();
+      throwExtendsExtendsCustomException();
       throw new Exception();
-    } catch (CustomDerivedDerivedException e) {
+    } catch (ExtendsExtendsCustomException e) {
       // ...
-    } catch (CustomDerivedException e) { // Compliant
+    } catch (ExtendsCustomException e) { // Compliant
       // ...
     } catch (Exception e) {
       // ...
     }
 
     try {
-      throwCustomDerivedException();
-    } catch (CustomDerivedException e) {
+      throwExtendsCustomException();
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (Throwable e) { // Compliant
       // ...
@@ -155,9 +155,9 @@ public class UnreachableCatchCheck {
       if (cond) {
         throwCustomException();
       } else {
-        throwCustomDerivedException();
+        throwExtendsCustomException();
       }
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Compliant, a CustomException is thrown, this is reachable
       // ...
@@ -165,11 +165,11 @@ public class UnreachableCatchCheck {
 
     try {
       if (cond) {
-        throwCustomDerivedException();
+        throwExtendsCustomException();
       } else {
         throwCustomException();
       }
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Compliant
       // ...
@@ -182,10 +182,10 @@ public class UnreachableCatchCheck {
     }
 
     try(InputStream input = new FileInputStream("reportFileName")) {
-      throwCustomDerivedException();
+      throwExtendsCustomException();
     } catch (FileNotFoundException e) {
     } catch (IOException e) { // Compliant, close throws an IOException
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // FN
       // ...
@@ -216,9 +216,9 @@ public class UnreachableCatchCheck {
     }
 
     try {
-      throwCustomDerivedException();
-      throwOtherCustomDerivedException();
-    } catch (CustomDerivedException e) {
+      throwExtendsCustomException();
+      throwOtherOtherExtendsCustomException();
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Compliant
       // ...
@@ -226,7 +226,7 @@ public class UnreachableCatchCheck {
 
     try {
       throwBoth();
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Compliant
       // ...
@@ -238,19 +238,19 @@ public class UnreachableCatchCheck {
     throw new CustomException();
   }
 
-  void throwCustomDerivedException() throws CustomDerivedException {
-    throw new CustomDerivedException();
+  void throwExtendsCustomException() throws ExtendsCustomException {
+    throw new ExtendsCustomException();
   }
 
-  void throwBoth() throws CustomDerivedException,OtherCustomDerivedException {
+  void throwBoth() throws ExtendsCustomException, OtherExtendsCustomException {
   }
 
-  void throwOtherCustomDerivedException() throws OtherCustomDerivedException {
-    throw new OtherCustomDerivedException();
+  void throwOtherOtherExtendsCustomException() throws OtherExtendsCustomException {
+    throw new OtherExtendsCustomException();
   }
 
-  void throwCustomDerivedDerivedException() throws CustomDerivedDerivedException {
-    throw new CustomDerivedDerivedException();
+  void throwExtendsExtendsCustomException() throws ExtendsExtendsCustomException {
+    throw new ExtendsExtendsCustomException();
   }
 
   void throwIOException() throws IOException {
@@ -268,17 +268,17 @@ public class UnreachableCatchCheck {
   public static class CustomException extends Exception {
   }
 
-  public static class CustomDerivedException extends CustomException {
+  public static class ExtendsCustomException extends CustomException {
   }
 
-  public static class OtherCustomDerivedException extends CustomException {
+  public static class OtherExtendsCustomException extends CustomException {
   }
 
-  public static class CustomDerivedDerivedException extends CustomDerivedException {
+  public static class ExtendsExtendsCustomException extends ExtendsCustomException {
   }
 
-  class ThrowingCustomDerivedException {
-    ThrowingCustomDerivedException() throws CustomDerivedException {
+  class ThrowingExtendsCustomException {
+    ThrowingExtendsCustomException() throws ExtendsCustomException {
 
     }
   }

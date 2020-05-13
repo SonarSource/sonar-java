@@ -3,8 +3,8 @@ package checks;
 public class UnreachableCatchCheck {
   void unreachable(boolean cond) {
     try {
-      throwCustomDerivedException();
-    } catch (CustomDerivedException e) {
+      throwExtendsCustomException();
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Noncompliant
       // ...
@@ -12,7 +12,7 @@ public class UnreachableCatchCheck {
 
     try {
       throwUnknownException();
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) {
       // ...
@@ -20,7 +20,7 @@ public class UnreachableCatchCheck {
 
     try {
       throwUnknownException();
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (Unknown e) {
       // ...
@@ -28,23 +28,23 @@ public class UnreachableCatchCheck {
 
     try {
       unknown();
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Compliant
       // ...
     }
 
     try {
-      throwCustomDerivedException();
+      throwExtendsCustomException();
       unknown();
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Compliant, one unknown method
       // ...
     }
 
     try {
-    } catch (CustomDerivedException e) {
+    } catch (ExtendsCustomException e) {
       // ...
     } catch (CustomException e) { // Compliant
       // ...
@@ -56,14 +56,14 @@ public class UnreachableCatchCheck {
     throw new Unknown();
   }
 
-  void throwCustomDerivedException() throws CustomDerivedException {
-    throw new CustomDerivedException();
+  void throwExtendsCustomException() throws ExtendsCustomException {
+    throw new ExtendsCustomException();
   }
 
   public static class CustomException extends Exception {
   }
 
-  public static class CustomDerivedException extends CustomException {
+  public static class ExtendsCustomException extends CustomException {
   }
 
 }
