@@ -134,12 +134,12 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isHiding(Type derivedType, List<Type> thrownTypes) {
-    return thrownTypes.stream().allMatch(thrownType ->
-      // Only throwing a subtype of the first caught exception, hiding the base one
-      thrownType.isSubtypeOf(derivedType) ||
-      // Or throwing an unrelated exception
-      (!thrownType.isUnknown() && !derivedType.isUnknown() && !derivedType.isSubtypeOf(thrownType))
-    );
+    // All thrown exceptions are caught by the subtype exception, hiding the base one
+    // This logic could be improved to remove FN, but it's not trivial and source of FP.
+    return thrownTypes.stream()
+      .allMatch(thrownType ->
+        thrownType.isSubtypeOf(derivedType)
+      );
   }
 
   private static class ThrownExceptionCollector extends BaseTreeVisitor {

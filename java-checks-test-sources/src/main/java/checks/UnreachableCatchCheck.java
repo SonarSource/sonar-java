@@ -68,7 +68,7 @@ public class UnreachableCatchCheck {
       // ...
     } catch (IOException e) { // Compliant
       // ...
-    } catch (CustomException e) { // Noncompliant [[sc=14;ec=29;secondary=67]]
+    } catch (CustomException e) { // FN, line 67 hide this catch, but we don't support correctly the presence of another type of Exception
       // ...
     }
 
@@ -77,7 +77,7 @@ public class UnreachableCatchCheck {
       throwIOException();
     } catch (CustomDerivedException | IOException e) {
       // ...
-    } catch (CustomException e) { // Noncompliant
+    } catch (CustomException e) { // FN, we don't support correctly the presence of another type of Exception
       // ...
     }
 
@@ -215,6 +215,23 @@ public class UnreachableCatchCheck {
       // ...
     }
 
+    try {
+      throwCustomDerivedException();
+      throwOtherCustomDerivedException();
+    } catch (CustomDerivedException e) {
+      // ...
+    } catch (CustomException e) { // Compliant
+      // ...
+    }
+
+    try {
+      throwBoth();
+    } catch (CustomDerivedException e) {
+      // ...
+    } catch (CustomException e) { // Compliant
+      // ...
+    }
+
   }
 
   void throwCustomException() throws CustomException {
@@ -223,6 +240,13 @@ public class UnreachableCatchCheck {
 
   void throwCustomDerivedException() throws CustomDerivedException {
     throw new CustomDerivedException();
+  }
+
+  void throwBoth() throws CustomDerivedException,OtherCustomDerivedException {
+  }
+
+  void throwOtherCustomDerivedException() throws OtherCustomDerivedException {
+    throw new OtherCustomDerivedException();
   }
 
   void throwCustomDerivedDerivedException() throws CustomDerivedDerivedException {
@@ -245,6 +269,9 @@ public class UnreachableCatchCheck {
   }
 
   public static class CustomDerivedException extends CustomException {
+  }
+
+  public static class OtherCustomDerivedException extends CustomException {
   }
 
   public static class CustomDerivedDerivedException extends CustomDerivedException {
