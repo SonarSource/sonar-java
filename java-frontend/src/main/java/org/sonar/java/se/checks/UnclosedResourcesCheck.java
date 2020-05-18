@@ -49,7 +49,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -499,17 +498,12 @@ public class UnclosedResourcesCheck extends SECheck {
     private boolean mitHeuristics(MethodInvocationTree mit) {
       Symbol methodSymbol = mit.symbol();
       return !methodSymbol.isUnknown()
-        && invocationOfMethodFromOtherClass(mit)
+        && invocationOfMethodFromOtherClass(methodSymbol)
         && methodNamesOpeningResource.matcher(methodSymbol.name()).matches();
     }
 
-    private boolean invocationOfMethodFromOtherClass(MethodInvocationTree mit) {
-      Symbol methodClass = mit.symbol().owner();
-      Tree enclosingType = mit;
-      while (!enclosingType.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE)) {
-        enclosingType = enclosingType.parent();
-      }
-      return ((ClassTree) enclosingType).symbol() != methodClass;
+    private boolean invocationOfMethodFromOtherClass(Symbol methodSymbol) {
+      return !visitedMethodOwnerType.symbol().equals(methodSymbol.owner());
     }
   }
 }
