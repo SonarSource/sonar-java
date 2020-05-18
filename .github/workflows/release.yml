@@ -20,9 +20,12 @@ jobs:
 
       - name: LT release
         id: lt_release
+        with:
+          distribute: true
+          attach_artifacts_to_github_release: true
+          run_rules_cov: true
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          ATTACH_ARTIFACTS_TO_GITHUB_RELEASE: true
         # Put your action repo here
         uses: SonarSource/gh-action_LT_release@master
 
