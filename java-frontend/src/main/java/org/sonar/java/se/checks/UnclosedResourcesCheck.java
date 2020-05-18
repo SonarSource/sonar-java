@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Rule;
@@ -448,6 +449,8 @@ public class UnclosedResourcesCheck extends SECheck {
 
   private class PostStatementVisitor extends CheckerTreeNodeVisitor {
 
+    private final Pattern methodNamesOpeningResource = Pattern.compile("(new|create|open).*");
+
     PostStatementVisitor(CheckerContext context) {
       super(context.getState());
     }
@@ -497,7 +500,7 @@ public class UnclosedResourcesCheck extends SECheck {
       Symbol methodSymbol = mit.symbol();
       return !methodSymbol.isUnknown()
         && invocationOfMethodFromOtherClass(mit)
-        && methodSymbol.name().matches("new.*|create.*|open.*");
+        && methodNamesOpeningResource.matcher(methodSymbol.name()).matches();
     }
 
     private boolean invocationOfMethodFromOtherClass(MethodInvocationTree mit) {
