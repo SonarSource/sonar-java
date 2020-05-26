@@ -20,6 +20,7 @@
 package org.sonar.java.checks.tests;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -39,9 +40,19 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   private static final String MESSAGE = "Add a message to this assertion.";
   private static final String ASSERT = "assert";
 
-  private static final String GENERIC_ASSERT = "org.fest.assertions.GenericAssert";
-  private static final MethodMatchers FEST_AS_METHOD = MethodMatchers.create()
-    .ofSubTypes(GENERIC_ASSERT).names("as").addParametersMatcher("java.lang.String").build();
+  private static final String JAVA_LANG_STRING = "java.lang.String";
+
+  private static final String FEST_GENERIC_ASSERT = "org.fest.assertions.GenericAssert";
+  private static final MethodMatchers FEST_MESSAGE_METHODS = MethodMatchers.create()
+    .ofSubTypes(FEST_GENERIC_ASSERT).names("as", "describedAs", "overridingErrorMessage")
+    .addParametersMatcher(types -> matchFirstParameterWithAnyOf(types, JAVA_LANG_STRING, "org.fest.assertions.Description")).build();
+
+  private static final String ASSERTJ_ABSTRACT_ASSERT = "org.assertj.core.api.AbstractAssert";
+  private static final MethodMatchers ASSERTJ_MESSAGE_METHODS = MethodMatchers.create()
+    .ofSubTypes(ASSERTJ_ABSTRACT_ASSERT).names("as", "describedAs", "withFailMessage", "overridingErrorMessage")
+    .addParametersMatcher(types -> matchFirstParameterWithAnyOf(types, JAVA_LANG_STRING, "org.assertj.core.description.Description"))
+    .build();
+
   private static final Set<String> ASSERT_METHODS_WITH_ONE_PARAM = ImmutableSet.of("assertNull", "assertNotNull");
   private static final Set<String> ASSERT_METHODS_WITH_TWO_PARAMS = ImmutableSet.of("assertEquals", "assertSame", "assertNotSame", "assertThat");
   private static final Set<String> JUNIT5_ASSERT_METHODS_IGNORED = ImmutableSet.of("assertAll", "assertLinesMatch");
@@ -51,29 +62,44 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return MethodMatchers.or(
-      MethodMatchers.create().ofTypes("org.junit.jupiter.api.Assertions").name(name -> name.startsWith(ASSERT) || name.equals("fail")).withAnyParameters().build(),
-      MethodMatchers.create().ofTypes("org.junit.Assert").name(name -> name.startsWith(ASSERT) || name.equals("fail")).withAnyParameters().build(),
-      MethodMatchers.create().ofTypes("junit.framework.Assert").name(name -> name.startsWith(ASSERT) || name.startsWith("fail")).withAnyParameters().build(),
-      MethodMatchers.create().ofTypes("org.fest.assertions.Fail").name(name -> name.startsWith("fail")).withAnyParameters().build(),
-      MethodMatchers.create().ofSubTypes(GENERIC_ASSERT).anyName().withAnyParameters().build()
+      MethodMatchers.create()
+        .ofTypes("org.junit.jupiter.api.Assertions", "org.junit.Assert", "junit.framework.Assert", "org.fest.assertions.Fail",
+          "org.assertj.core.api.Fail")
+        .name(name -> name.startsWith(ASSERT) || name.equals("fail")).withAnyParameters().build(),
+      MethodMatchers.create().ofSubTypes(FEST_GENERIC_ASSERT).anyName().withAnyParameters().build(),
+      MethodMatchers.create().ofSubTypes(ASSERTJ_ABSTRACT_ASSERT).anyName().withAnyParameters().build()
     );
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     Symbol symbol = mit.symbol();
-    if (symbol.owner().type().isSubtypeOf(GENERIC_ASSERT) && !FEST_AS_METHOD.matches(mit)) {
-      if (isConstructor(symbol)) {
-        return;
-      }
-      FestVisitor visitor = new FestVisitor();
-      mit.methodSelect().accept(visitor);
-      if (!visitor.useDescription) {
-        reportIssue(mit, MESSAGE);
-      }
-    } else if (symbol.owner().type().is("org.junit.jupiter.api.Assertions")) {
+    Type type = symbol.owner().type();
+
+    if (FEST_MESSAGE_METHODS.matches(mit) || ASSERTJ_MESSAGE_METHODS.matches(mit)) {
+      // If we can establish that the currently tested method is the one adding a message,
+      // we have very easily shown that this rule does not apply.
+      return;
+    }
+
+    if (type.isSubtypeOf(FEST_GENERIC_ASSERT)) {
+      checkFestLikeAssertion(mit, symbol, FEST_MESSAGE_METHODS);
+    } else if(type.isSubtypeOf(ASSERTJ_ABSTRACT_ASSERT)) {
+      checkFestLikeAssertion(mit, symbol, ASSERTJ_MESSAGE_METHODS);
+    } else if (type.is("org.junit.jupiter.api.Assertions")) {
       checkJUnit5(mit);
     } else if (mit.arguments().isEmpty() || !isString(mit.arguments().get(0)) || isAssertingOnStringWithNoMessage(mit)) {
+      reportIssue(mit, MESSAGE);
+    }
+  }
+
+  private void checkFestLikeAssertion(MethodInvocationTree mit, Symbol symbol, MethodMatchers messageMethods) {
+    if (isConstructor(symbol)) {
+      return;
+    }
+    FestLikeVisitor visitor = new FestLikeVisitor(messageMethods);
+    mit.methodSelect().accept(visitor);
+    if (!visitor.useDescription) {
       reportIssue(mit, MESSAGE);
     }
   }
@@ -111,6 +137,18 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
     }
   }
 
+  private static Boolean matchFirstParameterWithAnyOf(List<Type> parameterTypes, String... acceptableTypes) {
+    if (!parameterTypes.isEmpty()) {
+      Type firstParamType = parameterTypes.get(0);
+      for (String acceptableType: acceptableTypes) {
+        if (firstParamType.is(acceptableType)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   private static boolean isConstructor(Symbol symbol) {
     return "<init>".equals(symbol.name());
   }
@@ -128,19 +166,21 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   }
 
   private static boolean isString(ExpressionTree expressionTree) {
-    return expressionTree.symbolType().is("java.lang.String");
+    return expressionTree.symbolType().is(JAVA_LANG_STRING);
   }
 
-  private static class FestVisitor extends BaseTreeVisitor {
+  private static class FestLikeVisitor extends BaseTreeVisitor {
     boolean useDescription = false;
+    private final MethodMatchers methodMatchers;
+
+    public FestLikeVisitor(MethodMatchers methodMatchers) {
+      this.methodMatchers = methodMatchers;
+    }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      useDescription |= FEST_AS_METHOD.matches(tree);
+      useDescription |= methodMatchers.matches(tree);
       super.visitMethodInvocation(tree);
     }
-
   }
-
-
 }
