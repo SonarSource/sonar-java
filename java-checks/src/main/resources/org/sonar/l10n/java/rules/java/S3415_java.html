@@ -1,18 +1,22 @@
 <p>The standard assertions library methods such as <code>org.junit.Assert.assertEquals</code>, and <code>org.junit.Assert.assertSame</code> expect the
-first argument to be the expected value and the second argument to be the actual value. Swap them, and your test will still have the same outcome
-(succeed/fail when it should) but the error messages will be confusing. </p>
-<p>This rule raises an issue when the second argument to an assertions library method is a hard-coded value and the first argument is not.</p>
+first argument to be the expected value and the second argument to be the actual value. For AssertJ, it's the other way around, the argument of
+<code>org.assertj.core.api.Assertions.assertThat</code> is the actual value, and the subsequent calls contain the expected values. Swap them, and your
+test will still have the same outcome (succeed/fail when it should) but the error messages will be confusing. </p>
+<p>This rule raises an issue when the actual argument to an assertions library method is a hard-coded value and the expected argument is not.</p>
 <p>Supported frameworks:</p>
 <ul>
   <li> JUnit4 </li>
   <li> JUnit5 </li>
+  <li> <a href="https://assertj.github.io/doc/">AssertJ</a> </li>
 </ul>
 <h2>Noncompliant Code Example</h2>
 <pre>
 org.junit.Assert.assertEquals(runner.exitCode(), 0, "Unexpected exit code");  // Noncompliant; Yields error message like: Expected:&lt;-1&gt;. Actual:&lt;0&gt;.
+org.assertj.core.api.Assertions.assertThat(0).isEqualTo(runner.exitCode()); // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
 org.junit.Assert.assertEquals(0, runner.exitCode(), "Unexpected exit code");
+org.assertj.core.api.Assertions.assertThat(runner.exitCode()).isEqualTo(0);
 </pre>
 
