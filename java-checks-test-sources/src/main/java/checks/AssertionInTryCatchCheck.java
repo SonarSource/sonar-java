@@ -40,6 +40,14 @@ public class AssertionInTryCatchCheck {
     } catch (Error error) {}
 
     try {
+      org.assertj.core.api.Assertions.fail(""); // Noncompliant
+    } catch (Error error) {}
+
+    try {
+      org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown(IllegalArgumentException.class); // Noncompliant
+    } catch (Error error) {}
+
+    try {
       fail(); // Noncompliant
     } catch (Throwable error) {}
 
