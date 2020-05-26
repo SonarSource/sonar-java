@@ -22,6 +22,7 @@ package org.sonar.java.checks.tests;
 import com.google.common.base.MoreObjects;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
@@ -93,19 +94,36 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
       .build(),
 
     MethodMatchers.create()
+      .ofTypes(
+        // AssertJ 3.X having specific method names
+        "org.assertj.core.api.Assertions")
+      .names(
+        "assertThatObject",
+        "assertThatThrownBy",
+        "assertThatCode",
+        "assertThatExceptionOfType",
+        "assertThatNullPointerException",
+        "assertThatIllegalArgumentException",
+        "assertThatIOException",
+        "assertThatIllegalStateException")
+      .withAnyParameters()
+      .build(),
+
+    MethodMatchers.create()
       .ofSubTypes(
         // Truth 0.29
         "com.google.common.truth.Truth",
         // Truth8 0.39
         "com.google.common.truth.Truth8").name(name -> name.startsWith("assert"))
-      .withAnyParameters()
+      .addParametersMatcher(ANY)
       .build());
+
+  private static final Pattern FEST_LIKE_EXCLUSION_NAMES = Pattern.compile("as.*+|using.*+|with.*+|describedAs|overridingErrorMessage|extracting");
 
   private static final MethodMatchers FEST_LIKE_EXCLUSIONS = MethodMatchers.or(
     MethodMatchers.create()
       .ofSubTypes(FEST_ASSERT_SUPERTYPE, ASSERTJ_SUPERTYPE)
-      .name(name -> name.startsWith("as") || name.startsWith("using") || name.startsWith("with") ||
-        name.equals("describedAs") || name.equals("overridingErrorMessage"))
+      .name(name -> FEST_LIKE_EXCLUSION_NAMES.matcher(name).matches())
       .withAnyParameters()
       .build(),
 
@@ -205,7 +223,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
       return false;
     }
 
-    if (((FEST_LIKE_ASSERT_THAT.matches(mit) && (mit.arguments().size() == 1)) || MOCKITO_VERIFY.matches(mit)) && !Boolean.TRUE.equals(chainedToAnyMethodButFestExclusions)) {
+    if ((FEST_LIKE_ASSERT_THAT.matches(mit) || MOCKITO_VERIFY.matches(mit)) && !Boolean.TRUE.equals(chainedToAnyMethodButFestExclusions)) {
       context.reportIssue(this, mit.methodSelect(), "Complete the assertion.");
       return true;
     }
