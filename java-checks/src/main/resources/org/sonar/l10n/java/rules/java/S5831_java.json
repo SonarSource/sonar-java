@@ -1,0 +1,13 @@
+{
+  "title": "AssertJ configuration should be applied",
+  "type": "BUG",
+  "status": "ready",
+  "tags": [
+    "tests",
+    "assertj"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5831",
+  "sqKey": "S5831",
+  "scope": "Tests"
+}
