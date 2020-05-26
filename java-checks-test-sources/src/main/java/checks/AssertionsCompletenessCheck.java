@@ -96,6 +96,25 @@ public class AssertionsCompletenessCheck {
     org.assertj.core.api.Assertions.assertThat(1).overridingErrorMessage("error"); // Noncompliant
     org.assertj.core.api.Assertions.assertThat(1).usingDefaultComparator().isGreaterThan(0);
     org.assertj.core.api.Assertions.assertThat(1).usingDefaultComparator(); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatObject(null).extracting("name"); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatObject(null).extracting("name").isEqualTo("Paul");
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> {}).describedAs(""); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> {}).describedAs("").hasMessage("42");
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> {}, "desc", 42).usingComparator(null); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> {}, "desc", 42).usingComparator(null).isInstanceOf(IllegalStateException.class);
+    org.assertj.core.api.Assertions.assertThatCode(() -> {}); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatCode(() -> {}).isInstanceOf(IllegalStateException.class);
+    org.assertj.core.api.Assertions.assertThatExceptionOfType(IllegalStateException.class); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> {});
+    org.assertj.core.api.Assertions.assertThatNullPointerException(); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatNullPointerException().isThrownBy(() -> {});
+    org.assertj.core.api.Assertions.assertThatIllegalArgumentException(); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatIllegalArgumentException().isThrownBy(() -> {});
+    org.assertj.core.api.Assertions.assertThatIOException(); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatIOException().isThrownBy(() -> {});
+    org.assertj.core.api.Assertions.assertThatIllegalStateException(); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatIllegalStateException().isThrownBy(() -> {});
+
     Comparator customComparator = null;
     org.assertj.core.api.Assertions.assertThat(1).usingComparator(customComparator).isGreaterThanOrEqualTo(0);
     org.assertj.core.api.Assertions.assertThat(1).usingComparator(customComparator); // Noncompliant
@@ -147,15 +166,6 @@ public class AssertionsCompletenessCheck {
   } // Noncompliant
 
   @Test
-  void assertj_java6_abstract_standard_soft_assertions() {
-    // Java6AbstractStandardSoftAssertions was missing abstract keyword in version < 3.15, it was possible to instanciate it,
-    // but it should not be treated as the others.
-    org.assertj.core.api.Java6AbstractStandardSoftAssertions softly = new org.assertj.core.api.Java6AbstractStandardSoftAssertions(); // Noncompliant {{Use 'Java6SoftAssertions' instead of 'Java6AbstractStandardSoftAssertions'.}}
-    softly.assertThat(5).isLessThan(3);
-    softly.assertThat(5);
-  }
-
-  @Test
   public void assertj_soft_assertions_ok() {
     org.assertj.core.api.SoftAssertions softly = new org.assertj.core.api.SoftAssertions();
     softly.assertThat(5).isLessThan(3);
@@ -204,8 +214,7 @@ public class AssertionsCompletenessCheck {
 
   @Test
   public void assertj_soft_assertions_try_with_resource_java9() {
-    final org.assertj.core.api.AutoCloseableSoftAssertions softly = new org.assertj.core.api.AutoCloseableSoftAssertions();
-    try(softly) {
+    try(org.assertj.core.api.AutoCloseableSoftAssertions softly = new org.assertj.core.api.AutoCloseableSoftAssertions()) {
       softly.assertThat(1).isLessThan(2);
     } // Compliant, no need to call "assertAll()", it will be called by AutoCloseableSoftAssertions
   }
@@ -242,7 +251,7 @@ public class AssertionsCompletenessCheck {
 
   @Test
   public void assertj_junit_soft_assertions_cross_methods_6() throws Exception {
-    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=273,268]] {{Add one or more 'assertThat' before 'assertAll'.}}
+    doIncompleteSoftAssertions2(); // Noncompliant [[sc=5;ec=34;secondary=277,282]] {{Add one or more 'assertThat' before 'assertAll'.}}
   }
 
   private void doSomething(org.assertj.core.api.SoftAssertions softly) {
