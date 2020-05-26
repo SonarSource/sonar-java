@@ -116,7 +116,7 @@ public class MyFirstCustomCheckTest {
 }
 ```
 
-  3. In package org.sonar.samples.java.checks of `/src/main/java`, create a new class called `MyFirstCustomCheck` extending class `org.sonar.plugins.java.api.IssuableSubscriptionVisitor` provided by the Java Plugin API. Then, replace the content of the `nodesToVisit()` method with the content from the following code snippet. This file will be described when dealing with implementation of the rule!
+  3. In package `org.sonar.samples.java.checks` of `/src/main/java`, create a new class called `MyFirstCustomCheck` extending class `org.sonar.plugins.java.api.IssuableSubscriptionVisitor` provided by the Java Plugin API. Then, replace the content of the `nodesToVisit()` method with the content from the following code snippet. This file will be described when dealing with implementation of the rule!
 ```java
 package org.sonar.samples.java.checks;
  
@@ -146,7 +146,7 @@ public class MyFirstCustomCheck extends IssuableSubscriptionVisitor {
 
 ### A specification to make it right
 
-Of course, before going any further, we need a key element in rule writhing, a specification! For the sake of the exercise, lets consider the following quote from a famous Guru as being the specification of our custom rule, as it is of course absolutely correct and incontrovertible.
+Of course, before going any further, we need a key element in rule writing: a specification! For the sake of the exercise, lets consider the following quote from a famous Guru as being the specification of our custom rule, as it is of course absolutely correct and incontrovertible.
 
 >
 > **Gandalf - Why Program When Magic Rulez (WPWMR, p.42)**
