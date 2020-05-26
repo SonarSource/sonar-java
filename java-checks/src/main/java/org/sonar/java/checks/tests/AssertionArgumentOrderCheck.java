@@ -41,7 +41,8 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
   private static final String ORG_JUNIT5_ASSERTIONS = "org.junit.jupiter.api.Assertions";
   private static final Tree.Kind[] LITERAL_KINDS = {Tree.Kind.STRING_LITERAL, Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.CHAR_LITERAL,
     Tree.Kind.NULL_LITERAL, Tree.Kind.BOOLEAN_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL};
-  private static final String MESSAGE = "Swap these 2 arguments so they are in the correct order: expected value, actual value.";
+  private static final String MESSAGE_TWO_LITERALS = "Change this assertion to not compare two literals.";
+  private static final String MESSAGE_SWAP = "Swap these 2 arguments so they are in the correct order: expected value, actual value.";
 
   private static final MethodMatchers COLLECTION_CREATION_CALL = MethodMatchers.or(
     MethodMatchers.create()
@@ -76,11 +77,22 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
     }
   }
 
-  private void checkArguments(Tree expectedArgument, ExpressionTree actualArgument) {
-    if (isConstant(actualArgument) || isNewArrayWithConstants(actualArgument) || isCollectionCreationWithConstants(actualArgument)) {
-      List<JavaFileScannerContext.Location> secondaries = Collections.singletonList(new JavaFileScannerContext.Location("", expectedArgument));
-      context.reportIssue(this, actualArgument, MESSAGE, secondaries, null);
+  private void checkArguments(ExpressionTree expectedArgument, ExpressionTree actualArgument) {
+    if (actualArgument.is(LITERAL_KINDS)) {
+      // When we have a literal as actual, we are sure to have an issue
+      if (expectedArgument.is(LITERAL_KINDS)) {
+        reportIssue(expectedArgument, actualArgument, MESSAGE_TWO_LITERALS);
+      } else {
+        reportIssue(expectedArgument, actualArgument, MESSAGE_SWAP);
+      }
+    } else if (isExpectedPattern(actualArgument) && !isExpectedPattern(expectedArgument)) {
+      reportIssue(expectedArgument, actualArgument, MESSAGE_SWAP);
     }
+  }
+
+  private void reportIssue(ExpressionTree expectedArgument, ExpressionTree actualArgument, String message) {
+    List<JavaFileScannerContext.Location> secondaries = Collections.singletonList(new JavaFileScannerContext.Location("", expectedArgument));
+    context.reportIssue(this, actualArgument, message, secondaries, null);
   }
 
   private static boolean isNewArrayWithConstants(ExpressionTree actualArgument) {
@@ -99,7 +111,7 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
     return false;
   }
 
-  private static Tree previousArg(ExpressionTree argToCheck, MethodInvocationTree mit) {
+  private static ExpressionTree previousArg(ExpressionTree argToCheck, MethodInvocationTree mit) {
     return mit.arguments().get(mit.arguments().indexOf(argToCheck) - 1);
   }
 
@@ -116,6 +128,10 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
 
   private static boolean isDoubleOrFloat(Type type) {
     return type.isPrimitive(Type.Primitives.DOUBLE) || type.isPrimitive(Type.Primitives.FLOAT);
+  }
+
+  private static boolean isExpectedPattern(ExpressionTree actualArgument) {
+    return isConstant(actualArgument) || isNewArrayWithConstants(actualArgument) || isCollectionCreationWithConstants(actualArgument);
   }
 
   private static boolean isConstant(Tree argToCheck) {
