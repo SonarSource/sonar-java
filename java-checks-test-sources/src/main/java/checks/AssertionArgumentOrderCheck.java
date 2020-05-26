@@ -32,6 +32,15 @@ class AssertionArgumentOrderCheck {
     assertEquals("message", actualObject(), CONSTANT); // Noncompliant
     assertEquals("message", actualObject(), AssertionArgumentOrderCheck.CONSTANT); // Noncompliant
     assertEquals("message", AssertionArgumentOrderCheck.CONSTANT, actualObject());
+
+    assertEquals(1, 2); // Noncompliant {{Change this assertion to not compare two literals.}}
+    assertEquals(actualObject(), Boolean.FALSE); // Noncompliant
+    assertEquals(Boolean.FALSE, actualObject());
+
+    assertEquals(MyBean.MY_CST, 123); // Noncompliant
+    assertEquals(123, MyBean.MY_CST); // Compliant, actual is a constant and expected is a literal (testing a constant in a class)
+    assertEquals(actualObject(), ConstantUtils.MY_CONSTANT); // Noncompliant
+    assertEquals(ConstantUtils.MY_CONSTANT, MyBean.MY_CST); // Compliant, comparing two constants
   }
 
   int actual() {
@@ -55,8 +64,14 @@ class AssertionArgumentOrderCheck {
   }
 
   static class MyBean {
+    static final int MY_CST = 123;
+
     public double getDouble() {
       return 1;
     }
   }
+}
+
+class ConstantUtils {
+  static final int MY_CONSTANT = 123;
 }
