@@ -66,9 +66,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
         .ofTypes("org.junit.jupiter.api.Assertions", "org.junit.Assert", "junit.framework.Assert", "org.fest.assertions.Fail",
           "org.assertj.core.api.Fail")
         .name(name -> name.startsWith(ASSERT) || name.equals("fail")).withAnyParameters().build(),
-      MethodMatchers.create().ofSubTypes(FEST_GENERIC_ASSERT).anyName().withAnyParameters().build(),
-      MethodMatchers.create().ofSubTypes(ASSERTJ_ABSTRACT_ASSERT).anyName().withAnyParameters().build()
-    );
+      MethodMatchers.create().ofSubTypes(FEST_GENERIC_ASSERT, ASSERTJ_ABSTRACT_ASSERT).anyName().withAnyParameters().build());
   }
 
   @Override
@@ -84,7 +82,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
 
     if (type.isSubtypeOf(FEST_GENERIC_ASSERT)) {
       checkFestLikeAssertion(mit, symbol, FEST_MESSAGE_METHODS);
-    } else if(type.isSubtypeOf(ASSERTJ_ABSTRACT_ASSERT)) {
+    } else if (type.isSubtypeOf(ASSERTJ_ABSTRACT_ASSERT)) {
       checkFestLikeAssertion(mit, symbol, ASSERTJ_MESSAGE_METHODS);
     } else if (type.is("org.junit.jupiter.api.Assertions")) {
       checkJUnit5(mit);
@@ -140,7 +138,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   private static Boolean matchFirstParameterWithAnyOf(List<Type> parameterTypes, String... acceptableTypes) {
     if (!parameterTypes.isEmpty()) {
       Type firstParamType = parameterTypes.get(0);
-      for (String acceptableType: acceptableTypes) {
+      for (String acceptableType : acceptableTypes) {
         if (firstParamType.is(acceptableType)) {
           return true;
         }
