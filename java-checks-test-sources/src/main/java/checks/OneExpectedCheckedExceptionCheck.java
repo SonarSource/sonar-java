@@ -81,6 +81,20 @@ public class OneExpectedCheckedExceptionCheck {
       // Test exception message...
     }
 
+    try { // Noncompliant
+      throwIOException(throwException(1));
+      org.assertj.core.api.Assertions.fail("Exception expected");
+    } catch (Exception e) {
+      // Test exception message...
+    }
+
+    try { // Noncompliant
+      throwIOException(throwException(1));
+      org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown(Exception.class);
+    } catch (Exception e) {
+      // Test exception message...
+    }
+
     try { // Compliant, only one method can throw IOException
       throwNothing(throwIOException2(1));
       Assert.fail("Expected an IOException to be thrown");

@@ -30,8 +30,8 @@ import static java.util.Arrays.asList;
 
 public final class UnitTestUtils {
 
-  public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.create()
-    .ofTypes(
+  public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.or(
+    MethodMatchers.create().ofTypes(
       // JUnit 5
       "org.junit.jupiter.api.Assertions",
       // JUnit 4
@@ -41,8 +41,13 @@ public final class UnitTestUtils {
       // Fest assert
       "org.fest.assertions.Fail",
       // AssertJ
-      "org.assertj.core.api.Fail"
-    ).names("fail").withAnyParameters().build();
+      "org.assertj.core.api.Fail",
+      "org.assertj.core.api.Assertions")
+      .names("fail").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes(
+      // AssertJ
+      "org.assertj.core.api.Assertions")
+      .names("failBecauseExceptionWasNotThrown").withAnyParameters().build());
 
   public static final MethodMatchers ASSERTIONS_METHOD_MATCHER = MethodMatchers.or(
     // JUnit 3, 4 and 5

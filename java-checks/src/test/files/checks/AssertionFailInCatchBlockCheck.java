@@ -48,6 +48,18 @@ public class MyTest {
       org.fest.assertions.Fail.fail(); // Noncompliant [[sc=7;ec=38]] {{Remove this failure assertion and simply add the exception type to the method signature.}}
     }
 
+    try {
+      // Some code
+    } catch (Exception e) {
+      org.assertj.core.api.Assertions.fail(""); // Noncompliant
+    }
+
+    try {
+      // Some code
+    } catch (Exception e) {
+      org.assertj.core.api.Assertions.fail("", e); // Noncompliant
+    }
+
   }
 
   @Test

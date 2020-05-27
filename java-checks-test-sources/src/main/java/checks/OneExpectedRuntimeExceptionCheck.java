@@ -68,6 +68,22 @@ public class OneExpectedRuntimeExceptionCheck {
     } catch (IOException e) {
     }
 
+    try { // Noncompliant
+      foo(1);
+      throwCheckedException(1);
+      org.assertj.core.api.Assertions.fail("Expected an IOException or a IllegalStateException to be thrown");
+    } catch (IllegalStateException e) {
+    } catch (IOException e) {
+    }
+
+    try { // Noncompliant
+      foo(1);
+      throwCheckedException(1);
+      org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown(IOException.class);
+    } catch (IllegalStateException e) {
+    } catch (IOException e) {
+    }
+
     try { // Compliant, not a unchecked exception
       throwCheckedException(1);
       throwCheckedException(1);
