@@ -21,6 +21,7 @@ package org.sonar.java.checks.tests;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -42,7 +43,8 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
   private static final Tree.Kind[] LITERAL_KINDS = {Tree.Kind.STRING_LITERAL, Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.CHAR_LITERAL,
     Tree.Kind.NULL_LITERAL, Tree.Kind.BOOLEAN_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL};
   private static final String MESSAGE_TWO_LITERALS = "Change this assertion to not compare two literals.";
-  private static final String MESSAGE_SWAP = "Swap these 2 arguments so they are in the correct order: expected value, actual value.";
+  private static final String MESSAGE_SWAP = "Swap these 2 arguments so they are in the correct order: %s.";
+  private static final String MESSAGE_REPLACE = "Replace this literal with the actual expression you want to assert.";
 
   private static final MethodMatchers COLLECTION_CREATION_CALL = MethodMatchers.or(
     MethodMatchers.create()
@@ -63,6 +65,11 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
       MethodMatchers.create().ofTypes(ORG_JUNIT5_ASSERTIONS)
         .names("assertArrayEquals", "assertEquals", "assertIterableEquals", "assertLinesMatch", "assertNotEquals", "assertNotSame", "assertSame")
         .withAnyParameters()
+        .build(),
+      // AssertJ
+      MethodMatchers.create().ofTypes("org.assertj.core.api.Assertions")
+        .names("assertThat", "assertThatObject")
+        .addParametersMatcher(MethodMatchers.ANY)
         .build()
     );
   }
@@ -70,24 +77,58 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (mit.symbol().owner().type().is(ORG_JUNIT5_ASSERTIONS)) {
-      checkArguments(mit.arguments().get(0), mit.arguments().get(1));
-    } else {
+      checkArguments(mit.arguments().get(0), mit.arguments().get(1), "expected value, actual value");
+    } else if (mit.symbol().owner().type().is(ORG_JUNIT_ASSERT)) {
       ExpressionTree argToCheck = getActualArgument(mit);
-      checkArguments(previousArg(argToCheck, mit), argToCheck);
+      checkArguments(previousArg(argToCheck, mit), argToCheck, "expected value, actual value");
+    } else {
+      Optional<ExpressionTree> expectedValue = getExpectedValue(mit);
+      ExpressionTree actualValue = mit.arguments().get(0);
+      if (expectedValue.isPresent()) {
+        checkArguments(expectedValue.get(), actualValue, "actual value, expected value");
+      } else {
+        checkArgument(actualValue);
+      }
     }
   }
 
-  private void checkArguments(ExpressionTree expectedArgument, ExpressionTree actualArgument) {
+  private void checkArguments(ExpressionTree expectedArgument, ExpressionTree actualArgument, String correctOrder) {
     if (actualArgument.is(LITERAL_KINDS)) {
       // When we have a literal as actual, we are sure to have an issue
       if (expectedArgument.is(LITERAL_KINDS)) {
         reportIssue(expectedArgument, actualArgument, MESSAGE_TWO_LITERALS);
       } else {
-        reportIssue(expectedArgument, actualArgument, MESSAGE_SWAP);
+        reportIssue(expectedArgument, actualArgument, String.format(MESSAGE_SWAP, correctOrder));
       }
     } else if (isExpectedPattern(actualArgument) && !isExpectedPattern(expectedArgument)) {
-      reportIssue(expectedArgument, actualArgument, MESSAGE_SWAP);
+      reportIssue(expectedArgument, actualArgument, String.format(MESSAGE_SWAP, correctOrder));
     }
+  }
+
+  private void checkArgument(ExpressionTree actualArgument) {
+    if (actualArgument.is(LITERAL_KINDS)) {
+      reportIssue(actualArgument, MESSAGE_REPLACE);
+    }
+  }
+
+  /**
+   * Find the related expected value from an assertThat, if the expression is "simple enough":
+   * - exactly one subsequent method call
+   * - one argument
+   */
+  private static Optional<ExpressionTree> getExpectedValue(MethodInvocationTree mit) {
+    Tree parentOfParent = mit.parent();
+    parentOfParent = parentOfParent == null ? null : parentOfParent.parent();
+    if (parentOfParent == null || !parentOfParent.is(Tree.Kind.METHOD_INVOCATION)) {
+      return Optional.empty();
+    }
+    MethodInvocationTree secondInvocation = (MethodInvocationTree) parentOfParent;
+    Tree secondInvocationParent = secondInvocation.parent();
+
+    if (secondInvocationParent != null && secondInvocationParent.is(Tree.Kind.EXPRESSION_STATEMENT) && secondInvocation.arguments().size() == 1) {
+      return Optional.of(secondInvocation.arguments().get(0));
+    }
+    return Optional.empty();
   }
 
   private void reportIssue(ExpressionTree expectedArgument, ExpressionTree actualArgument, String message) {

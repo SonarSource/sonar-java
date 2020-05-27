@@ -1,11 +1,15 @@
 package checks;
 
+import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.withinPercentage;
+
 class AssertionArgumentOrderCheck {
   static final String CONSTANT = "";
-  void fun() {
+  void junit() {
     assertEquals(0, new AssertionArgumentOrderCheck().actual());
-    assertEquals(new AssertionArgumentOrderCheck().actual(), 0); // Noncompliant [[sc=62;ec=63;secondary=8]]
+    assertEquals(new AssertionArgumentOrderCheck().actual(), 0); // Noncompliant [[sc=62;ec=63;secondary=12]]
     assertEquals("message", new AssertionArgumentOrderCheck().actual(), 0); // Noncompliant
     assertEquals("message", 0, new AssertionArgumentOrderCheck().actual());
     assertEquals("message", "constantString", actualObject());
@@ -41,6 +45,34 @@ class AssertionArgumentOrderCheck {
     assertEquals(123, MyBean.MY_CST); // Compliant, actual is a constant and expected is a literal (testing a constant in a class)
     assertEquals(actualObject(), ConstantUtils.MY_CONSTANT); // Noncompliant
     assertEquals(ConstantUtils.MY_CONSTANT, MyBean.MY_CST); // Compliant, comparing two constants
+  }
+
+  void assertJ() {
+    // Simple cases, we can find the expected value
+    assertThat(0).isEqualTo(new AssertionArgumentOrderCheck().actual()); // Noncompliant [[sc=16;ec=17;secondary=52]] {{Swap these 2 arguments so they are in the correct order: actual value, expected value.}}
+    assertThat(new AssertionArgumentOrderCheck().actual()).isEqualTo(0);
+    assertThat("a").isEqualTo("b"); // Noncompliant {{Change this assertion to not compare two literals.}}
+    assertThat(actualObject()).isEqualTo("constantString");
+    assertThat("constantString").isEqualTo(actualObject()); // Noncompliant
+    assertThat(0).isLessThanOrEqualTo(actualObject()); // Noncompliant
+    assertThat(CONSTANT).isEqualTo(actualObject()); // Noncompliant
+    assertThat(CONSTANT).isEqualTo(123); // Compliant, CONSTANT can store something you want to test, not the best pattern, but still acceptable in this context.
+    assertThat(MyBean.MY_CST).isEqualTo(actualObject()); // Noncompliant
+    assertThat(MyBean.MY_CST).isEqualTo(123); // Compliant, testing a constant
+    assertThat(MyBean.MY_CST).isEqualTo(ConstantUtils.MY_CONSTANT); // Compliant, testing two constant
+    assertThat(123).isEqualTo(ConstantUtils.MY_CONSTANT); // Noncompliant
+
+    // More "complex" case, we don't have the expected value, report only when the actual is a literal
+    assertThat("constantString").as("message").isEqualTo(actualObject()); // Noncompliant {{Replace this literal with the actual expression you want to assert.}}
+    assertThat(0.1).isCloseTo(actualObject(), withinPercentage(11)); // Noncompliant
+    assertThat(ConstantUtils.MY_CONSTANT).isCloseTo(actualObject(), withinPercentage(11)); // Compliant
+    assertThat(ConstantUtils.MY_CONSTANT).as("message").isEqualTo(actualObject()); // Compliant
+    assertThat(ConstantUtils.MY_CONSTANT).isEqualTo(CONSTANT); // Compliant
+    assertThat("constantString"); // Noncompliant
+
+    assertThatObject(2).isEqualTo(actualObject()); // Noncompliant
+    assertThatObject(actualObject()).isEqualTo(3); // Compliant
+
   }
 
   int actual() {
