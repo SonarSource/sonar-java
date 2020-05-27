@@ -1,5 +1,7 @@
 package checks;
 
+import org.assertj.core.description.TextDescription;
+import org.fest.assertions.BasicDescription;
 import org.fest.assertions.GenericAssert;
 import org.junit.jupiter.api.function.Executable;
 
@@ -25,8 +27,26 @@ class AssertionsWithoutMessageCheck {
 
     org.fest.assertions.Assertions.assertThat(true).isTrue();// Noncompliant {{Add a message to this assertion.}}
     org.fest.assertions.Assertions.assertThat(true).as("verifying the truth").isTrue();
+    org.fest.assertions.Assertions.assertThat(true).as(new BasicDescription("description")).isTrue();
+    org.fest.assertions.Assertions.assertThat(true).describedAs("verifying the truth").isTrue(); // compliant - describedAs is an alias for as
+    org.fest.assertions.Assertions.assertThat(true).describedAs(new BasicDescription("description"));
+    org.fest.assertions.Assertions.assertThat(true).overridingErrorMessage("error message").isTrue();
     org.fest.assertions.Assertions.assertThat("").as("Message").isEqualTo("");
     org.fest.assertions.Assertions.assertThat("").isEqualTo("").as("Message"); // Noncompliant
+
+    org.assertj.core.api.Assertions.assertThat(true).isTrue(); // Noncompliant
+    org.assertj.core.api.Assertions.assertThat(true).as("verifying the truth").isTrue();
+    org.assertj.core.api.Assertions.assertThat(true).as("verifying the truth", new Object()).isTrue();
+    org.assertj.core.api.Assertions.assertThat(true).as(new TextDescription("verifying the truth")).isTrue();
+    org.assertj.core.api.Assertions.assertThat(true).describedAs("verifying the truth").isTrue(); // compliant - describedAs is an alias for as
+    org.assertj.core.api.Assertions.assertThat(true).describedAs("verifying the truth", new Object()).isTrue();
+    org.assertj.core.api.Assertions.assertThat(true).describedAs(new TextDescription("verifying the truth")).isTrue();
+    org.assertj.core.api.Assertions.assertThat(true).withFailMessage("fail message").isTrue();
+    org.assertj.core.api.Assertions.assertThat(true).withFailMessage("fail message", new Object()).isTrue();
+    org.assertj.core.api.Assertions.assertThat(true).overridingErrorMessage("fail message").isTrue();
+    org.assertj.core.api.Assertions.assertThat(true).overridingErrorMessage("fail message", new Object()).isTrue();
+    org.assertj.core.api.Assertions.assertThat("").as("Message").isEqualTo("");
+    org.assertj.core.api.Assertions.assertThat("").isEqualTo("").as("Message"); // Noncompliant
 
     org.junit.Assert.assertThat("foo", null); // Noncompliant {{Add a message to this assertion.}}
     org.junit.Assert.assertThat("foo", "bar", null);
