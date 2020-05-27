@@ -23,9 +23,9 @@ import java.util.List;
 
 public class RegexSyntaxElement {
 
-  protected final RegexSource source;
+  private final RegexSource source;
 
-  protected final IndexRange range;
+  private final IndexRange range;
 
   protected RegexSyntaxElement(RegexSource source, IndexRange range) {
     this.source = source;
@@ -34,6 +34,14 @@ public class RegexSyntaxElement {
 
   public List<Location> getLocations() {
     return source.locationsFor(range);
+  }
+
+  public IndexRange getRange() {
+    return range;
+  }
+
+  public RegexSource getSource() {
+    return source;
   }
 
 }

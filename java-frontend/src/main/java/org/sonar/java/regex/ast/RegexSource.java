@@ -62,9 +62,13 @@ public class RegexSource {
   }
 
   public List<Location> locationsFor(IndexRange range) {
+    return locationsFor(range.getBeginningOffset(), range.getEndingOffset());
+  }
+
+  public List<Location> locationsFor(int beginningOffset, int endingOffset) {
     List<Location> result = new ArrayList<>();
-    Position startPosition = findPosition(range.getBeginningOffset());
-    Position endPosition = findPosition(range.getEndingOffset());
+    Position startPosition = findPosition(beginningOffset);
+    Position endPosition = findPosition(endingOffset);
     for (int i = startPosition.indexOfLiteral; i <= endPosition.indexOfLiteral; i++) {
       LiteralTree literal = stringLiterals.get(i);
       int length = literal.value().length() - 2;

@@ -37,4 +37,12 @@ public class IndexRange {
     return endingOffset;
   }
 
+  public IndexRange merge(IndexRange other) {
+    return new IndexRange(beginningOffset, other.endingOffset);
+  }
+
+  public boolean isEmpty() {
+    return beginningOffset == endingOffset;
+  }
+
 }

@@ -17,29 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+@ParametersAreNonnullByDefault
 package org.sonar.java.regex.ast;
 
-public class PlainTextTree extends RegexTree {
+import javax.annotation.ParametersAreNonnullByDefault;
 
-  private final RegexToken contents;
-
-  public PlainTextTree(RegexToken contents) {
-    super(contents.getSource(), contents.getRange());
-    this.contents = contents;
-  }
-
-  public String getContents() {
-    return contents.getValue();
-  }
-
-  @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitPlainText(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return Kind.PLAIN_TEXT;
-  }
-
-}

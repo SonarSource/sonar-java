@@ -17,29 +17,29 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.ast;
+package org.sonar.java.regex;
 
-public class PlainTextTree extends RegexTree {
+import java.util.Collections;
+import java.util.List;
+import org.sonar.java.regex.ast.RegexTree;
 
-  private final RegexToken contents;
+public class RegexParseResult {
 
-  public PlainTextTree(RegexToken contents) {
-    super(contents.getSource(), contents.getRange());
-    this.contents = contents;
+  private final RegexTree result;
+
+  private final List<SyntaxError> syntaxErrors;
+
+  public RegexParseResult(RegexTree result, List<SyntaxError> syntaxErrors) {
+    this.result = result;
+    this.syntaxErrors = Collections.unmodifiableList(syntaxErrors);
   }
 
-  public String getContents() {
-    return contents.getValue();
+  public RegexTree getResult() {
+    return result;
   }
 
-  @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitPlainText(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return Kind.PLAIN_TEXT;
+  public List<SyntaxError> getSyntaxErrors() {
+    return syntaxErrors;
   }
 
 }

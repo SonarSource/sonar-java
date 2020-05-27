@@ -20,11 +20,19 @@
 package org.sonar.java.regex.ast;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class CurlyBraceQuantifier extends Quantifier {
 
+  @Nonnull
+  private final RegexToken minimumRepetitionsToken;
+
   private final int minimumRepetitions;
+
+  private final RegexToken commaToken;
+
+  private final RegexToken maximumRepetitionsToken;
 
   private final Integer maximumRepetitions;
 
@@ -32,12 +40,20 @@ public class CurlyBraceQuantifier extends Quantifier {
     RegexSource source,
     IndexRange range,
     Modifier modifier,
-    int minimumRepetitions,
-    @Nullable Integer maximumRepetitions
+    RegexToken minimumRepetitionsToken,
+    @Nullable RegexToken commaToken,
+    @Nullable RegexToken maximumRepetitionsToken
   ) {
     super(source, range, modifier);
-    this.minimumRepetitions = minimumRepetitions;
-    this.maximumRepetitions = maximumRepetitions;
+    this.minimumRepetitionsToken = minimumRepetitionsToken;
+    this.minimumRepetitions = Integer.parseInt(minimumRepetitionsToken.getValue());
+    this.commaToken = commaToken;
+    this.maximumRepetitionsToken = maximumRepetitionsToken;
+    if (maximumRepetitionsToken == null) {
+      this.maximumRepetitions = null;
+    } else {
+      this.maximumRepetitions = Integer.parseInt(maximumRepetitionsToken.getValue());
+    }
   }
 
   @Override
@@ -48,7 +64,27 @@ public class CurlyBraceQuantifier extends Quantifier {
   @CheckForNull
   @Override
   public Integer getMaximumRepetitions() {
-    return maximumRepetitions;
+    if (commaToken == null) {
+      return minimumRepetitions;
+    } else {
+      return maximumRepetitions;
+    }
+  }
+
+  public RegexToken getMinimumRepetitionsToken() {
+    return minimumRepetitionsToken;
+  }
+
+  public RegexToken getCommaToken() {
+    return commaToken;
+  }
+
+  public RegexToken getMaximumRepetitionsToken() {
+    return maximumRepetitionsToken;
+  }
+
+  public boolean isSingleNumber() {
+    return commaToken == null;
   }
 
 }

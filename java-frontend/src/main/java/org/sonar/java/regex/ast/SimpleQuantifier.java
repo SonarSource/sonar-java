@@ -23,7 +23,7 @@ import javax.annotation.CheckForNull;
 
 public class SimpleQuantifier extends Quantifier {
 
-  enum Kind {
+  public enum Kind {
     STAR, PLUS, QUESTION_MARK
   }
 
