@@ -68,7 +68,7 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
         .build(),
       // AssertJ
       MethodMatchers.create().ofTypes("org.assertj.core.api.Assertions")
-        .names("assertThat")
+        .names("assertThat", "assertThatObject")
         .addParametersMatcher(MethodMatchers.ANY)
         .build()
     );

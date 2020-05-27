@@ -1,13 +1,15 @@
 package checks;
 
+import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.Assert.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.withinPercentage;
+
 class AssertionArgumentOrderCheck {
   static final String CONSTANT = "";
   void junit() {
     assertEquals(0, new AssertionArgumentOrderCheck().actual());
-    assertEquals(new AssertionArgumentOrderCheck().actual(), 0); // Noncompliant [[sc=62;ec=63;secondary=10]]
+    assertEquals(new AssertionArgumentOrderCheck().actual(), 0); // Noncompliant [[sc=62;ec=63;secondary=12]]
     assertEquals("message", new AssertionArgumentOrderCheck().actual(), 0); // Noncompliant
     assertEquals("message", 0, new AssertionArgumentOrderCheck().actual());
     assertEquals("message", "constantString", actualObject());
@@ -47,7 +49,7 @@ class AssertionArgumentOrderCheck {
 
   void assertJ() {
     // Simple cases, we can find the expected value
-    assertThat(0).isEqualTo(new AssertionArgumentOrderCheck().actual()); // Noncompliant [[sc=16;ec=17;secondary=50]] {{Swap these 2 arguments so they are in the correct order: actual value, expected value.}}
+    assertThat(0).isEqualTo(new AssertionArgumentOrderCheck().actual()); // Noncompliant [[sc=16;ec=17;secondary=52]] {{Swap these 2 arguments so they are in the correct order: actual value, expected value.}}
     assertThat(new AssertionArgumentOrderCheck().actual()).isEqualTo(0);
     assertThat("a").isEqualTo("b"); // Noncompliant {{Change this assertion to not compare two literals.}}
     assertThat(actualObject()).isEqualTo("constantString");
@@ -67,6 +69,9 @@ class AssertionArgumentOrderCheck {
     assertThat(ConstantUtils.MY_CONSTANT).as("message").isEqualTo(actualObject()); // Compliant
     assertThat(ConstantUtils.MY_CONSTANT).isEqualTo(CONSTANT); // Compliant
     assertThat("constantString"); // Noncompliant
+
+    assertThatObject(2).isEqualTo(actualObject()); // Noncompliant
+    assertThatObject(actualObject()).isEqualTo(3); // Compliant
 
   }
 
