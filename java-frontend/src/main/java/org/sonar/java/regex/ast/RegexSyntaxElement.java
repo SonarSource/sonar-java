@@ -14,7 +14,7 @@ public class RegexSyntaxElement {
   }
 
   public List<Location> getLocations() {
-    throw new UnsupportedOperationException();
+    return source.locationsFor(range);
   }
 
 }

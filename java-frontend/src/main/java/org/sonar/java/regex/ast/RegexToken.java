@@ -6,7 +6,7 @@ public class RegexToken extends RegexSyntaxElement {
 
   public RegexToken(RegexSource source, IndexRange range) {
     super(source, range);
-    value = source.getSubstringAt(range);
+    value = source.substringAt(range);
   }
 
   public String getValue() {

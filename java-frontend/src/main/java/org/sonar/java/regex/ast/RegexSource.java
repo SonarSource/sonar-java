@@ -1,5 +1,6 @@
 package org.sonar.java.regex.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,18 +14,18 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 public class RegexSource {
 
   private final List<LiteralTree> stringLiterals;
-  private final List<String> strings;
+  private final String sourceText;
   private final TreeMap<Integer, Integer> indices;
 
   public RegexSource(List<LiteralTree> stringLiterals) {
     this.stringLiterals = stringLiterals;
-    strings = stringLiterals.stream().map(RegexSource::getString).collect(Collectors.toList());
+    sourceText = stringLiterals.stream().map(RegexSource::getString).collect(Collectors.joining());
     indices = new TreeMap<>();
     int currentSourceIndex = 0;
     int currentLiteralIndex = 0;
-    for (String string : strings) {
+    for (LiteralTree string : stringLiterals) {
       indices.put(currentSourceIndex, currentLiteralIndex);
-      currentSourceIndex += string.length();
+      currentSourceIndex += string.value().length() - 2;
       currentLiteralIndex++;
     }
   }
@@ -33,18 +34,26 @@ public class RegexSource {
     return stringLiterals;
   }
 
-  public String getSubstringAt(IndexRange range) {
-    StringBuilder sb = new StringBuilder();
+  public String substringAt(IndexRange range) {
+    return sourceText.substring(range.getBeginningOffset(), range.getEndingOffset());
+  }
 
+  public String getSourceText() {
+    return sourceText;
+  }
+
+  public List<Location> locationsFor(IndexRange range) {
+    List<Location> result = new ArrayList<>();
     Position startPosition = findPosition(range.getBeginningOffset());
     Position endPosition = findPosition(range.getEndingOffset());
     for (int i = startPosition.indexOfLiteral; i <= endPosition.indexOfLiteral; i++) {
-      String string = strings.get(i);
+      LiteralTree literal = stringLiterals.get(i);
+      int length = literal.value().length() - 2;
       int startIndex = startPosition.indexOfLiteral == i ? startPosition.indexInsideLiteral : 0;
-      int endIndex = endPosition.indexOfLiteral == i ? endPosition.indexInsideLiteral : string.length();
-      sb.append(string, startIndex, endIndex);
+      int endIndex = endPosition.indexOfLiteral == i ? endPosition.indexInsideLiteral : length;
+      result.add(new Location(literal, startIndex, endIndex));
     }
-    return sb.toString();
+    return result;
   }
 
   private Position findPosition(int sourceIndex) {
