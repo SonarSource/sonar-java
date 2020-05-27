@@ -171,15 +171,15 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
 
   private static class FestLikeVisitor extends BaseTreeVisitor {
     boolean useDescription = false;
-    private final MethodMatchers methodMatchers;
+    private final MethodMatchers descriptionMethodMatcher;
 
-    public FestLikeVisitor(MethodMatchers methodMatchers) {
-      this.methodMatchers = methodMatchers;
+    public FestLikeVisitor(MethodMatchers descriptionMethodMatcher) {
+      this.descriptionMethodMatcher = descriptionMethodMatcher;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      useDescription |= methodMatchers.matches(tree);
+      useDescription |= descriptionMethodMatcher.matches(tree);
       super.visitMethodInvocation(tree);
     }
   }
