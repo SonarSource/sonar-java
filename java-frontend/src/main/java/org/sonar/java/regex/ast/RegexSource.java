@@ -85,8 +85,8 @@ public class RegexSource {
 
     public Position(int sourceIndex) {
       Map.Entry<Integer, Integer> entry = indices.floorEntry(sourceIndex);
-      this.indexOfLiteral = entry.getKey();
-      this.indexInsideLiteral = entry.getValue();
+      this.indexOfLiteral = entry.getValue();
+      this.indexInsideLiteral = sourceIndex - entry.getKey();
     }
   }
 
