@@ -19,6 +19,8 @@
  */
 package org.sonar.java.regex.ast;
 
+import java.util.Objects;
+
 public class IndexRange {
 
   private final int beginningOffset;
@@ -43,6 +45,23 @@ public class IndexRange {
 
   public boolean isEmpty() {
     return beginningOffset == endingOffset;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    return other instanceof IndexRange
+      && beginningOffset == ((IndexRange) other).beginningOffset
+      && endingOffset == ((IndexRange) other).endingOffset;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(beginningOffset, endingOffset);
+  }
+
+  @Override
+  public String toString() {
+    return beginningOffset + "-" + endingOffset;
   }
 
 }
