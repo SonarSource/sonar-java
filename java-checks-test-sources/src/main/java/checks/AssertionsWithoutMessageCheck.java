@@ -9,7 +9,7 @@ import java.util.Collection;
 
 class AssertionsWithoutMessageCheck {
   void foo() {
-    org.junit.Assert.assertTrue(true); // Noncompliant [[sc=5;ec=38]] {{Add a message to this assertion.}}
+    org.junit.Assert.assertTrue(true); // Noncompliant [[sc=22;ec=32]] {{Add a message to this assertion.}}
     org.junit.Assert.assertTrue("message", true);
     org.junit.Assert.assertTrue(1 > 2); // Noncompliant {{Add a message to this assertion.}}
     org.junit.Assert.assertFalse(false); // Noncompliant
@@ -25,7 +25,7 @@ class AssertionsWithoutMessageCheck {
     junit.framework.Assert.assertNotNull("foo"); // Noncompliant
 
 
-    org.fest.assertions.Assertions.assertThat(true).isTrue();// Noncompliant {{Add a message to this assertion.}}
+    org.fest.assertions.Assertions.assertThat(true).isTrue();// Noncompliant {{Add a message to this assertion before calling this method.}}
     org.fest.assertions.Assertions.assertThat(true).as("verifying the truth").isTrue();
     org.fest.assertions.Assertions.assertThat(true).as(new BasicDescription("description")).isTrue();
     org.fest.assertions.Assertions.assertThat(true).describedAs("verifying the truth").isTrue(); // compliant - describedAs is an alias for as
@@ -46,7 +46,7 @@ class AssertionsWithoutMessageCheck {
     org.assertj.core.api.Assertions.assertThat(true).overridingErrorMessage("fail message").isTrue();
     org.assertj.core.api.Assertions.assertThat(true).overridingErrorMessage("fail message", new Object()).isTrue();
     org.assertj.core.api.Assertions.assertThat("").as("Message").isEqualTo("");
-    org.assertj.core.api.Assertions.assertThat("").isEqualTo("").as("Message"); // Noncompliant
+    org.assertj.core.api.Assertions.assertThat("").isEqualTo("").as("Message"); // Noncompliant [[sc=52;ec=61]] {{Add a message to this assertion before calling this method.}}
 
     org.junit.Assert.assertThat("foo", null); // Noncompliant {{Add a message to this assertion.}}
     org.junit.Assert.assertThat("foo", "bar", null);
@@ -75,7 +75,7 @@ class AssertionsWithoutMessageCheck {
     org.junit.jupiter.api.Assertions.fail(() -> "message");
     org.junit.jupiter.api.Assertions.fail("message", new java.lang.RuntimeException());
 
-    org.junit.jupiter.api.Assertions.assertFalse(false); // Noncompliant [[sc=5;ec=56]] {{Add a message to this assertion.}}
+    org.junit.jupiter.api.Assertions.assertFalse(false); // Noncompliant [[sc=38;ec=49]] {{Add a message to this assertion.}}
     org.junit.jupiter.api.Assertions.assertFalse(false, "message");
     org.junit.jupiter.api.Assertions.assertTrue(false); // Noncompliant
     org.junit.jupiter.api.Assertions.assertTrue(false, () -> "message");

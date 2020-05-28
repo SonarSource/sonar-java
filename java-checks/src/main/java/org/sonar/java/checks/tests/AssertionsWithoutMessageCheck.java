@@ -24,11 +24,13 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 import static org.sonar.plugins.java.api.semantic.Type.Primitives.DOUBLE;
@@ -38,6 +40,7 @@ import static org.sonar.plugins.java.api.semantic.Type.Primitives.FLOAT;
 public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
 
   private static final String MESSAGE = "Add a message to this assertion.";
+  private static final String MESSAGE_FEST_LIKE = "Add a message to this assertion before calling this method.";
   private static final String ASSERT = "assert";
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
@@ -80,57 +83,59 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
       return;
     }
 
+    IdentifierTree reportLocation = ExpressionUtils.methodName(mit);
+
     if (type.isSubtypeOf(FEST_GENERIC_ASSERT)) {
-      checkFestLikeAssertion(mit, symbol, FEST_MESSAGE_METHODS);
+      checkFestLikeAssertion(mit, symbol, FEST_MESSAGE_METHODS, reportLocation);
     } else if (type.isSubtypeOf(ASSERTJ_ABSTRACT_ASSERT)) {
-      checkFestLikeAssertion(mit, symbol, ASSERTJ_MESSAGE_METHODS);
+      checkFestLikeAssertion(mit, symbol, ASSERTJ_MESSAGE_METHODS, reportLocation);
     } else if (type.is("org.junit.jupiter.api.Assertions")) {
-      checkJUnit5(mit);
+      checkJUnit5(mit, reportLocation);
     } else if (mit.arguments().isEmpty() || !isString(mit.arguments().get(0)) || isAssertingOnStringWithNoMessage(mit)) {
-      reportIssue(mit, MESSAGE);
+      reportIssue(reportLocation, MESSAGE);
     }
   }
 
-  private void checkFestLikeAssertion(MethodInvocationTree mit, Symbol symbol, MethodMatchers messageMethods) {
+  private void checkFestLikeAssertion(MethodInvocationTree mit, Symbol symbol, MethodMatchers messageMethods, IdentifierTree reportLocation) {
     if (isConstructor(symbol)) {
       return;
     }
     FestLikeVisitor visitor = new FestLikeVisitor(messageMethods);
     mit.methodSelect().accept(visitor);
     if (!visitor.useDescription) {
-      reportIssue(mit, MESSAGE);
+      reportIssue(reportLocation, MESSAGE_FEST_LIKE);
     }
   }
 
-  private void checkJUnit5(MethodInvocationTree mit) {
+  private void checkJUnit5(MethodInvocationTree mit, IdentifierTree reportLocation) {
     String methodName = mit.symbol().name();
     if (JUNIT5_ASSERT_METHODS_IGNORED.contains(methodName)) {
       return;
     }
 
     if (mit.arguments().isEmpty()) {
-      reportIssue(mit, MESSAGE);
+      reportIssue(reportLocation, MESSAGE);
     } else if (methodName.equals("fail")) {
       if (mit.arguments().size() == 1 && mit.arguments().get(0).symbolType().isSubtypeOf("java.lang.Throwable")) {
-        reportIssue(mit, MESSAGE);
+        reportIssue(reportLocation, MESSAGE);
       }
     } else {
-      checkJUnit5Assertions(mit);
+      checkJUnit5Assertions(mit, reportLocation);
     }
   }
 
-  private void checkJUnit5Assertions(MethodInvocationTree mit) {
+  private void checkJUnit5Assertions(MethodInvocationTree mit, IdentifierTree reportLocation) {
     String methodName = mit.symbol().name();
     if (JUNIT5_ASSERT_METHODS_WITH_ONE_PARAM.contains(methodName)) {
       if (mit.arguments().size() == 1) {
-        reportIssue(mit, MESSAGE);
+        reportIssue(reportLocation, MESSAGE);
       }
     } else if (mit.arguments().size() == 2) {
-      reportIssue(mit, MESSAGE);
+      reportIssue(reportLocation, MESSAGE);
     } else if (JUNIT5_ASSERT_METHODS_WITH_DELTA.contains(methodName) && mit.arguments().size() == 3) {
       Type thirdArgumentType = mit.arguments().get(2).symbolType();
       if (thirdArgumentType.isPrimitive(DOUBLE) || thirdArgumentType.isPrimitive(FLOAT)) {
-        reportIssue(mit, MESSAGE);
+        reportIssue(reportLocation, MESSAGE);
       }
     }
   }
