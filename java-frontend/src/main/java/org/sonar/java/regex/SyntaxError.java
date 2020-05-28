@@ -41,4 +41,8 @@ public class SyntaxError {
     return message;
   }
 
+  @Override
+  public String toString() {
+    return message;
+  }
 }

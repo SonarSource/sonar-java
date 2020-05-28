@@ -19,22 +19,22 @@
  */
 package org.sonar.java.regex.ast;
 
-public class PlainTextTree extends RegexTree {
+public class PlainCharacterTree extends RegexTree {
 
   private final RegexToken contents;
 
-  public PlainTextTree(RegexToken contents) {
-    super(contents.getSource(), contents.getRange());
-    this.contents = contents;
+  public PlainCharacterTree(RegexToken character) {
+    super(character.getSource(), character.getRange());
+    this.contents = character;
   }
 
-  public String getContents() {
-    return contents.getValue();
+  public char getCharacter() {
+    return contents.getValue().charAt(0);
   }
 
   @Override
   public void accept(RegexVisitor visitor) {
-    visitor.visitPlainText(this);
+    visitor.visitPlainCharacter(this);
   }
 
   @Override

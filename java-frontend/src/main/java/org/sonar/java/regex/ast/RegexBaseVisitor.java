@@ -22,7 +22,7 @@ package org.sonar.java.regex.ast;
 public class RegexBaseVisitor implements RegexVisitor {
 
   @Override
-  public void visitPlainText(PlainTextTree tree) {
+  public void visitPlainCharacter(PlainCharacterTree tree) {
     // No children to visit
   }
 

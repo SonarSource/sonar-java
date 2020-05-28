@@ -53,4 +53,7 @@ public class SimpleQuantifier extends Quantifier {
     }
   }
 
+  public Kind getKind() {
+    return kind;
+  }
 }

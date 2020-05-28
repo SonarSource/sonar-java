@@ -26,7 +26,7 @@ import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.IndexRange;
-import org.sonar.java.regex.ast.PlainTextTree;
+import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.Quantifier;
 import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexToken;
@@ -36,6 +36,8 @@ import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.java.regex.ast.SimpleQuantifier;
 
 public class RegexParser {
+
+  private static final int EOF = -1;
 
   private final RegexSource source;
 
@@ -54,7 +56,7 @@ public class RegexParser {
 
   public RegexParseResult parse() {
     List<RegexTree> results = new ArrayList<>();
-    while (index < sourceText.length()) {
+    while (currentChar() != EOF) {
       RegexTree result = parseDisjunction();
       results.add(result);
       if (index < sourceText.length()) {
@@ -69,18 +71,37 @@ public class RegexParser {
 
   private RegexTree parseDisjunction() {
     List<RegexTree> alternatives = new ArrayList<>();
-    RegexTree first = parseRepetition();
+    RegexTree first = parseSequence();
     alternatives.add(first);
     while (currentChar() == '|') {
       index++;
-      RegexTree next = parseRepetition();
+      RegexTree next = parseSequence();
       alternatives.add(next);
     }
     return combineTrees(alternatives, (range, elements) -> new DisjunctionTree(source, range, elements));
   }
 
+  private RegexTree parseSequence() {
+    int startIndex = index;
+    List<RegexTree> elements = new ArrayList<>();
+    RegexTree element = parseRepetition();
+    while (element != null) {
+      elements.add(element);
+      element = parseRepetition();
+    }
+    if (elements.size() == 1) {
+      return elements.get(0);
+    } else {
+      return new SequenceTree(source, new IndexRange(startIndex, index), elements);
+    }
+  }
+
+  @CheckForNull
   private RegexTree parseRepetition() {
-    RegexTree element = parseSequence();
+    RegexTree element = parsePrimaryExpression();
+    if (element == null) {
+      return null;
+    }
     Quantifier quantifier = parseQuantifier();
     if (quantifier == null) {
       return element;
@@ -167,26 +188,14 @@ public class RegexParser {
     return new RegexToken(source, range);
   }
 
-  private RegexTree parseSequence() {
-    int startIndex = index;
-    List<RegexTree> elements = new ArrayList<>();
-    RegexTree element = parsePrimaryExpression();
-    do {
-      elements.add(element);
-      element = parsePrimaryExpression();
-    } while (!element.getRange().isEmpty());
-    if (elements.size() == 1) {
-      return elements.get(0);
-    } else {
-      return new SequenceTree(source, new IndexRange(startIndex, index), elements);
-    }
-  }
-
+  @CheckForNull
   private RegexTree parsePrimaryExpression() {
     if (currentChar() == '(') {
       return parseGroup();
-    } else {
+    } else if (isPlainTextCharacter(currentChar())) {
       return parsePlainText();
+    } else {
+      return null;
     }
   }
 
@@ -204,23 +213,24 @@ public class RegexParser {
     return new GroupTree(source, range, inner);
   }
 
-  private PlainTextTree parsePlainText() {
-    int startIndex = index;
-    while (isPlainTextCharacter(currentChar())) {
-      index++;
-    }
-    return new PlainTextTree(new RegexToken(source, new IndexRange(startIndex, index)));
+  private PlainCharacterTree parsePlainText() {
+    index++;
+    return new PlainCharacterTree(new RegexToken(source, new IndexRange(index - 1, index)));
   }
 
-  private char currentChar() {
-    return sourceText.charAt(index);
+  private int currentChar() {
+    if (index < sourceText.length()) {
+      return sourceText.charAt(index);
+    } else {
+      return EOF;
+    }
   }
 
   private void error(String message) {
     errors.add(new SyntaxError(source.locationsFor(index, index + 1), message));
   }
 
-  private RegexTree combineTrees(List<RegexTree> elements, TreeConstructor treeConstructor) {
+  private static RegexTree combineTrees(List<RegexTree> elements, TreeConstructor treeConstructor) {
     if (elements.size() == 1) {
       return elements.get(0);
     } else {
@@ -233,19 +243,26 @@ public class RegexParser {
     RegexTree construct(IndexRange range, List<RegexTree> elements);
   }
 
-  private static boolean isAsciiDigit(char c) {
+  private static boolean isAsciiDigit(int c) {
     return '0' <= c && c <= '9';
   }
 
-  private static boolean isPlainTextCharacter(char c) {
-    // TODO: Amend this when more syntax is supported
+  private static boolean isPlainTextCharacter(int c) {
     switch (c) {
+      case EOF:
       case '(':
       case ')':
       case '{':
-        return true;
-      default:
+      case '*':
+      case '+':
+      case '?':
+      case '|':
+      case '[':
+      case '\\':
+      case '.':
         return false;
+      default:
+        return true;
     }
   }
 
