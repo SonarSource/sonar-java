@@ -22,7 +22,6 @@ package org.sonar.java.regex.ast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -49,10 +48,6 @@ public class RegexSource {
     }
   }
 
-  public Iterable<LiteralTree> getStringLiterals() {
-    return stringLiterals;
-  }
-
   public String substringAt(IndexRange range) {
     return sourceText.substring(range.getBeginningOffset(), range.getEndingOffset());
   }
@@ -67,8 +62,8 @@ public class RegexSource {
 
   public List<Location> locationsFor(int beginningOffset, int endingOffset) {
     List<Location> result = new ArrayList<>();
-    Position startPosition = findPosition(beginningOffset);
-    Position endPosition = findPosition(endingOffset);
+    Position startPosition = new Position(beginningOffset);
+    Position endPosition = new Position(endingOffset);
     for (int i = startPosition.indexOfLiteral; i <= endPosition.indexOfLiteral; i++) {
       LiteralTree literal = stringLiterals.get(i);
       int length = literal.value().length() - 2;
@@ -79,27 +74,19 @@ public class RegexSource {
     return result;
   }
 
-  private Position findPosition(int sourceIndex) {
-    Map.Entry<Integer, Integer> entry = indices.floorEntry(sourceIndex);
-    return new Position(entry.getKey(), entry.getValue());
-  }
-
   private static String getString(LiteralTree literal) {
-    Optional<String> string = literal.asConstant(String.class);
-    if (string.isPresent()) {
-      return string.get();
-    } else {
-      throw new IllegalArgumentException("Only string literals allowed");
-    }
+    return literal.asConstant(String.class)
+      .orElseThrow(() -> new IllegalArgumentException("Only string literals allowed"));
   }
 
-  private static class Position {
-    int indexOfLiteral;
-    int indexInsideLiteral;
+  private class Position {
+    final int indexOfLiteral;
+    final int indexInsideLiteral;
 
-    public Position(int indexOfLiteral, int indexInsideLiteral) {
-      this.indexOfLiteral = indexOfLiteral;
-      this.indexInsideLiteral = indexInsideLiteral;
+    public Position(int sourceIndex) {
+      Map.Entry<Integer, Integer> entry = indices.floorEntry(sourceIndex);
+      this.indexOfLiteral = entry.getKey();
+      this.indexInsideLiteral = entry.getValue();
     }
   }
 
