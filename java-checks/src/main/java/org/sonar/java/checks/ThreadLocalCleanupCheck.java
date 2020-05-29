@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -76,13 +77,9 @@ public class ThreadLocalCleanupCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean usageIsRemove(IdentifierTree usage) {
-    Tree parent = usage.parent();
-    if (parent.is(Tree.Kind.MEMBER_SELECT)) {
-      Tree mseParent = parent.parent();
-      return mseParent != null && mseParent.is(Tree.Kind.METHOD_INVOCATION)
-        && THREADLOCAL_REMOVE.matches((MethodInvocationTree) mseParent);
-    }
-    return false;
+    return MethodTreeUtils.consecutiveMethodInvocation(usage)
+      .filter(THREADLOCAL_REMOVE::matches)
+      .isPresent();
   }
 }
 

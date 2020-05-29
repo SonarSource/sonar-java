@@ -19,8 +19,14 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.Optional;
+import javax.annotation.Nullable;
+import org.sonar.api.internal.google.common.annotations.VisibleForTesting;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -88,6 +94,35 @@ public final class MethodTreeUtils {
     }
     return returnType.is(Tree.Kind.PRIMITIVE_TYPE)
       && primitive.equals(((PrimitiveTypeTree) returnType).keyword().text());
+  }
+
+  public static Optional<MethodInvocationTree> consecutiveMethodInvocation(Tree tree) {
+    Tree memberSelectExpression = tree;
+    Tree memberSelectExpressionParent = memberSelectExpression.parent();
+    while (hasKind(memberSelectExpressionParent, Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      memberSelectExpression = memberSelectExpressionParent;
+      memberSelectExpressionParent = memberSelectExpressionParent.parent();
+    }
+    if (hasKind(memberSelectExpressionParent, Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) memberSelectExpressionParent;
+      Tree memberSelectParent = memberSelect.parent();
+      if (hasKind(memberSelectParent, Tree.Kind.METHOD_INVOCATION) && memberSelect.expression() == memberSelectExpression) {
+        return Optional.of((MethodInvocationTree) memberSelectParent);
+      }
+    }
+    return Optional.empty();
+  }
+
+  public static Optional<MethodInvocationTree> subsequentMethodInvocation(Tree tree, MethodMatchers methodMatchers) {
+    return consecutiveMethodInvocation(tree)
+      .map(consecutiveMethod ->
+        methodMatchers.matches(consecutiveMethod) ?
+          consecutiveMethod : subsequentMethodInvocation(consecutiveMethod, methodMatchers).orElse(null));
+  }
+
+  @VisibleForTesting
+  static boolean hasKind(@Nullable Tree tree, Tree.Kind kind) {
+    return tree != null &&  tree.kind() == kind;
   }
 
 }

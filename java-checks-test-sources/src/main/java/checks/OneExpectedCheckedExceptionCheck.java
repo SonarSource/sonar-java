@@ -198,10 +198,6 @@ public class OneExpectedCheckedExceptionCheck {
     thrown = org.assertj.core.api.Assertions
       .catchThrowable(() -> throwIOException2(throwIOException(1))); // false-negative, it's complex to find the expected exception type
     org.assertj.core.api.Assertions.assertThat(thrown).isInstanceOf(IOException.class);
-
-    // coverage
-    assertThatExceptionOfType(IOException.class);
-    int coverage = (assertThatExceptionOfType(IOException.class)).toString().getBytes().length;
   }
 
   int throwIOException(int x) throws IOException {

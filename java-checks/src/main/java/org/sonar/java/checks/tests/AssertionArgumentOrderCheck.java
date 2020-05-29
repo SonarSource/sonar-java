@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -117,18 +118,12 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
    * - one argument
    */
   private static Optional<ExpressionTree> getExpectedValue(MethodInvocationTree mit) {
-    Tree parentOfParent = mit.parent();
-    parentOfParent = parentOfParent == null ? null : parentOfParent.parent();
-    if (parentOfParent == null || !parentOfParent.is(Tree.Kind.METHOD_INVOCATION)) {
-      return Optional.empty();
-    }
-    MethodInvocationTree secondInvocation = (MethodInvocationTree) parentOfParent;
-    Tree secondInvocationParent = secondInvocation.parent();
-
-    if (secondInvocationParent != null && secondInvocationParent.is(Tree.Kind.EXPRESSION_STATEMENT) && secondInvocation.arguments().size() == 1) {
-      return Optional.of(secondInvocation.arguments().get(0));
-    }
-    return Optional.empty();
+    return MethodTreeUtils.consecutiveMethodInvocation(mit)
+      .filter(secondInvocation -> {
+        Tree parent = secondInvocation.parent();
+        return parent != null && parent.is(Tree.Kind.EXPRESSION_STATEMENT) && secondInvocation.arguments().size() == 1;
+      })
+      .map(secondInvocation -> secondInvocation.arguments().get(0));
   }
 
   private void reportIssue(ExpressionTree expectedArgument, ExpressionTree actualArgument, String message) {
