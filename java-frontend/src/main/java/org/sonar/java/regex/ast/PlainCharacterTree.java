@@ -39,7 +39,7 @@ public class PlainCharacterTree extends RegexTree {
 
   @Override
   public Kind kind() {
-    return Kind.PLAIN_TEXT;
+    return Kind.PLAIN_CHARACTER;
   }
 
 }

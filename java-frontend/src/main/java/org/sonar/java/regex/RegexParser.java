@@ -215,7 +215,7 @@ public class RegexParser {
     if (currentChar() == ')') {
       index++;
     } else {
-      error("')' expected");
+      expected("')'");
     }
     IndexRange range = new IndexRange(startIndex, index);
     return new GroupTree(source, range, inner);
