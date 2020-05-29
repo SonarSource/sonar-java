@@ -1,0 +1,12 @@
+{
+  "title": "Consecutive AssertJ \"assertThat\" statements should be chained",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "tags": [
+    "tests"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-5853",
+  "sqKey": "S5853",
+  "scope": "Tests"
+}

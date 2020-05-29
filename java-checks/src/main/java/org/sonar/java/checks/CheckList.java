@@ -111,6 +111,7 @@ import org.sonar.java.checks.synchronization.ValueBasedObjectUsedForLockCheck;
 import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
 import org.sonar.java.checks.tests.AssertJContextBeforeAssertionCheck;
 import org.sonar.java.checks.tests.AssertJTestForEmptinessCheck;
+import org.sonar.java.checks.tests.AssertJConsecutiveAssertionCheck;
 import org.sonar.java.checks.tests.AssertTrueInsteadOfDedicatedAssertCheck;
 import org.sonar.java.checks.tests.AssertionArgumentOrderCheck;
 import org.sonar.java.checks.tests.AssertionFailInCatchBlockCheck;
@@ -746,6 +747,7 @@ public final class CheckList {
       AssertionTypesCheck.class,
       AssertionsWithoutMessageCheck.class,
       AssertJApplyConfigurationCheck.class,
+      AssertJConsecutiveAssertionCheck.class,
       AssertJContextBeforeAssertionCheck.class,
       AssertJTestForEmptinessCheck.class,
       AssertTrueInsteadOfDedicatedAssertCheck.class,
