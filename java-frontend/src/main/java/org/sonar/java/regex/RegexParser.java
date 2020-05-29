@@ -99,10 +99,13 @@ public class RegexParser {
   @CheckForNull
   private RegexTree parseRepetition() {
     RegexTree element = parsePrimaryExpression();
+    Quantifier quantifier = parseQuantifier();
     if (element == null) {
+      if (quantifier != null) {
+        errors.add(new SyntaxError(quantifier, "Unexpected quantifier '" + quantifier.getText() + "'"));
+      }
       return null;
     }
-    Quantifier quantifier = parseQuantifier();
     if (quantifier == null) {
       return element;
     } else {
