@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputComponent;
@@ -32,6 +33,8 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
+import org.sonar.java.regex.RegexCheck;
+import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -118,6 +121,32 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     reportIssue(javaCheck, tree, message, Collections.emptyList(), null);
   }
 
+  /**
+   * Not yet part of API, as REGEX-targeting rules are not part of it also
+   */
+  public void reportIssue(RegexCheck regexCheck, RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
+
+    List<List<RegexCheck.RegexIssueLocation>> secondariesAsFlows = new ArrayList<>();
+
+    List<RegexCheck.RegexIssueLocation> mainLocations = new RegexCheck.RegexIssueLocation(regexTree, message).toSingleLocationItems();
+    if (mainLocations.size() > 1) {
+      // handle other main locations as secondaries with same message
+      mainLocations.subList(1, mainLocations.size())
+        .stream()
+        .map(Collections::singletonList)
+        .forEach(secondariesAsFlows::add);
+    }
+
+    secondaries.stream()
+      .flatMap(regexIssueLocation -> regexIssueLocation.toSingleLocationItems().stream())
+      .map(Collections::singletonList)
+      .forEach(secondariesAsFlows::add);
+
+    AnalyzerMessage analyzerMessage = new AnalyzerMessage(regexCheck, inputFile, mainLocations.get(0).locations().get(0), message, cost != null ? cost : 0);
+    completeAnalyzerMessageWithFlows(analyzerMessage, secondariesAsFlows, ril -> ril.locations().get(0), RegexCheck.RegexIssueLocation::message);
+    reportIssue(analyzerMessage);
+  }
+
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
     List<List<Location>> flows = secondary.stream().map(Collections::singletonList).collect(Collectors.toList());
@@ -159,19 +188,33 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   public AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, String message) {
-    return createAnalyzerMessage(inputFile, javaCheck, startTree, null, message, new ArrayList<>(), null);
+    return createAnalyzerMessage(inputFile, javaCheck, startTree, null, message, Collections.emptyList(), null);
   }
 
   protected static AnalyzerMessage createAnalyzerMessage(InputFile inputFile, JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message,
     Iterable<List<Location>> flows, @Nullable Integer cost) {
-    AnalyzerMessage.TextSpan textSpan = endTree != null ? AnalyzerMessage.textSpanBetween(startTree, endTree) : AnalyzerMessage.textSpanFor(startTree);
-    AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, inputFile, textSpan, message, cost != null ? cost : 0);
-    for (List<Location> flow : flows) {
-      List<AnalyzerMessage> sonarqubeFlow =
-      flow.stream().map(l -> new AnalyzerMessage(javaCheck, inputFile, AnalyzerMessage.textSpanFor(l.syntaxNode), l.msg, 0)).collect(Collectors.toList());
+
+    AnalyzerMessage.TextSpan location = endTree != null ? AnalyzerMessage.textSpanBetween(startTree, endTree) : AnalyzerMessage.textSpanFor(startTree);
+    AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, inputFile, location, message, cost != null ? cost : 0);
+    completeAnalyzerMessageWithFlows(analyzerMessage, flows, loc -> AnalyzerMessage.textSpanFor(loc.syntaxNode), loc -> loc.msg);
+    return analyzerMessage;
+  }
+
+  private static <L> void completeAnalyzerMessageWithFlows(
+    AnalyzerMessage analyzerMessage,
+    Iterable<List<L>> flows,
+    Function<L, AnalyzerMessage.TextSpan> flowItemLocationProdivder,
+    Function<L, String> flowItemMessageProvider) {
+
+    JavaCheck check = analyzerMessage.getCheck();
+    InputComponent component = analyzerMessage.getInputComponent();
+
+    for (List<L> flow : flows) {
+      List<AnalyzerMessage> sonarqubeFlow = flow.stream()
+        .map(l -> new AnalyzerMessage(check, component, flowItemLocationProdivder.apply(l), flowItemMessageProvider.apply(l),0))
+        .collect(Collectors.toList());
       analyzerMessage.flows.add(sonarqubeFlow);
     }
-    return analyzerMessage;
   }
 
   @Override
