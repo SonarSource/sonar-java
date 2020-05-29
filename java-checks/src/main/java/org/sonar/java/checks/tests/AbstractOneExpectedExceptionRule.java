@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -118,10 +119,10 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
     if (ASSERTJ_CATCH_THROWABLE_OF_TYPE.matches(mit)) {
       processAssertThrowsArguments(identifierTree, arguments.get(1), arguments.get(0));
     } else if (ASSERTJ_ASSERT_CODE.matches(mit)) {
-      subsequentMethodInvocation(mit, ASSERTJ_INSTANCE_OF_PREDICATES)
+      MethodTreeUtils.subsequentMethodInvocation(mit, ASSERTJ_INSTANCE_OF_PREDICATES)
         .ifPresent(isInstanceOf -> processAssertThrowsArguments(identifierTree, isInstanceOf.arguments(), arguments.get(0)));
     } else if (ASSERTJ_ASSERT_THAT_EXCEPTION_OF_TYPE.matches(mit)) {
-      subsequentMethodInvocation(mit, ASSERTJ_IS_THROWN_BY)
+      MethodTreeUtils.subsequentMethodInvocation(mit, ASSERTJ_IS_THROWN_BY)
         .ifPresent(isThrownBy -> processAssertThrowsArguments(ExpressionUtils.methodName(isThrownBy), arguments.get(0), isThrownBy.arguments().get(0)));
     } else if (JUNIT4_ASSERT_THROWS_WITH_MESSAGE.matches(mit)) {
       processAssertThrowsArguments(identifierTree, arguments.get(1), arguments.get(2));
@@ -155,28 +156,6 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
         reportMultipleCallInTree(expectedExceptions, lambda, reportLocation, "code of the lambda");
       }
     }
-  }
-
-  private static Optional<MethodInvocationTree> consecutiveMethodInvocation(MethodInvocationTree mit) {
-    Tree mitParent = mit.parent();
-    while (mitParent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      mitParent = mitParent.parent();
-    }
-    if (mitParent.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) mitParent;
-      Tree memberSelectParent = memberSelect.parent();
-      if (memberSelectParent.is(Tree.Kind.METHOD_INVOCATION)) {
-        return Optional.of((MethodInvocationTree) memberSelectParent);
-      }
-    }
-    return Optional.empty();
-  }
-
-  private static Optional<MethodInvocationTree> subsequentMethodInvocation(MethodInvocationTree mit, MethodMatchers methodMatchers) {
-    return consecutiveMethodInvocation(mit)
-      .map(consecutiveMethod ->
-        methodMatchers.matches(consecutiveMethod) ?
-          consecutiveMethod : subsequentMethodInvocation(consecutiveMethod, methodMatchers).orElse(null));
   }
 
   private static Optional<IdentifierTree> getExpectedException(ExpressionTree expectedType) {

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -31,7 +32,6 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -63,11 +63,10 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
   private static boolean usesNullKey(Symbol symbol) {
     List<IdentifierTree> usages = symbol.usages();
     for (IdentifierTree usage : usages) {
-      if (usage.parent().is(Tree.Kind.MEMBER_SELECT) && usage.parent().parent().is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree mit = (MethodInvocationTree) usage.parent().parent();
-        if (mapPut.matches(mit) && mit.arguments().get(0).is(Tree.Kind.NULL_LITERAL)) {
-          return true;
-        }
+      if (MethodTreeUtils.consecutiveMethodInvocation(usage)
+        .filter(mit -> mapPut.matches(mit) && mit.arguments().get(0).is(Tree.Kind.NULL_LITERAL))
+        .isPresent()) {
+        return true;
       }
     }
     return false;

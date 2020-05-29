@@ -24,17 +24,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4601")
 public class SpringAntMatcherOrderCheck extends AbstractMethodDetection {
@@ -89,26 +90,14 @@ public class SpringAntMatcherOrderCheck extends AbstractMethodDetection {
 
   private static List<StringConstant> collectAntPatterns(MethodInvocationTree method) {
     List<StringConstant> antPatterns = new ArrayList<>();
-    MethodInvocationTree parentMethod = parentMethodInvocation(method);
-    while (parentMethod != null) {
-      if (ANT_MATCHERS.matches(parentMethod)) {
-        antPatterns.addAll(antMatchersPatterns(parentMethod));
+    Optional<MethodInvocationTree> parentMethod = MethodTreeUtils.consecutiveMethodInvocation(method);
+    while (parentMethod.isPresent()) {
+      if (ANT_MATCHERS.matches(parentMethod.get())) {
+        antPatterns.addAll(antMatchersPatterns(parentMethod.get()));
       }
-      parentMethod = parentMethodInvocation(parentMethod);
+      parentMethod = MethodTreeUtils.consecutiveMethodInvocation(parentMethod.get());
     }
     return antPatterns;
-  }
-
-  @CheckForNull
-  private static MethodInvocationTree parentMethodInvocation(MethodInvocationTree method) {
-    Tree parent = method.parent();
-    if (parent.is(Tree.Kind.MEMBER_SELECT)) {
-      parent = parent.parent();
-      if (parent.is(Tree.Kind.METHOD_INVOCATION)) {
-        return (MethodInvocationTree) parent;
-      }
-    }
-    return null;
   }
 
   @VisibleForTesting

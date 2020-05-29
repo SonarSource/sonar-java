@@ -19,11 +19,20 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -61,6 +70,58 @@ class MethodTreeUtilsTest {
     assertFalse(MethodTreeUtils.isHashCodeMethod(parseMethod("class A { public int hashcode(){} }")));
     assertFalse(MethodTreeUtils.isHashCodeMethod(parseMethod("class A { public boolean hashCode(){} }")));
     assertFalse(MethodTreeUtils.isHashCodeMethod(parseMethod("class A { public int hashCode(int a){} }")));
+  }
+
+  @Test
+  void consecutive_and_subsequent_method_invocation() {
+    List<MethodInvocationTree> methodInvocationList = new ArrayList<>();
+    parseMethod("class A { void m(){ this.toString().toUpperCase().length(); int x = (getClass()).getMethods().length; } }")
+      .block()
+      .accept(new BaseTreeVisitor() {
+        @Override
+        public void visitMethodInvocation(MethodInvocationTree tree) {
+          super.visitMethodInvocation(tree);
+          methodInvocationList.add(tree);
+        }
+      });
+
+    assertThat(methodInvocationList).hasSize(5);
+    MethodInvocationTree toStringMethod = methodInvocationList.get(0);
+    MethodInvocationTree toUpperCaseMethod = methodInvocationList.get(1);
+    MethodInvocationTree lengthMethod = methodInvocationList.get(2);
+    MethodInvocationTree getClassMethod = methodInvocationList.get(3);
+    MethodInvocationTree getMethodsMethod = methodInvocationList.get(4);
+
+    assertThat(toStringMethod.symbol().name()).isEqualTo("toString");
+    assertThat(toUpperCaseMethod.symbol().name()).isEqualTo("toUpperCase");
+    assertThat(lengthMethod.symbol().name()).isEqualTo("length");
+    assertThat(getClassMethod.symbol().name()).isEqualTo("getClass");
+    assertThat(getMethodsMethod.symbol().name()).isEqualTo("getMethods");
+
+    IdentifierTree keywordThis = (IdentifierTree) ((MemberSelectExpressionTree) toStringMethod.methodSelect()).expression();
+
+    assertThat(MethodTreeUtils.consecutiveMethodInvocation(keywordThis)).containsSame(toStringMethod);
+    assertThat(MethodTreeUtils.consecutiveMethodInvocation(toStringMethod)).containsSame(toUpperCaseMethod);
+    assertThat(MethodTreeUtils.consecutiveMethodInvocation(toUpperCaseMethod)).containsSame(lengthMethod);
+    assertThat(MethodTreeUtils.consecutiveMethodInvocation(lengthMethod)).isEmpty();
+    assertThat(MethodTreeUtils.consecutiveMethodInvocation(getClassMethod)).containsSame(getMethodsMethod);
+    assertThat(MethodTreeUtils.consecutiveMethodInvocation(getMethodsMethod)).isEmpty();
+
+    MethodMatchers toUpperCaseMethodMatchers = MethodMatchers.create()
+      .ofTypes("java.lang.String").names("toUpperCase").addWithoutParametersMatcher().build();
+    MethodMatchers lengthMethodMatchers = MethodMatchers.create()
+      .ofTypes("java.lang.String").names("length").addWithoutParametersMatcher().build();
+
+    assertThat(MethodTreeUtils.subsequentMethodInvocation(toStringMethod, lengthMethodMatchers)).containsSame(lengthMethod);
+    assertThat(MethodTreeUtils.subsequentMethodInvocation(toStringMethod, toUpperCaseMethodMatchers)).containsSame(toUpperCaseMethod);
+    assertThat(MethodTreeUtils.subsequentMethodInvocation(toUpperCaseMethod, lengthMethodMatchers)).containsSame(lengthMethod);
+    assertThat(MethodTreeUtils.subsequentMethodInvocation(toUpperCaseMethod, toUpperCaseMethodMatchers)).isEmpty();
+    assertThat(MethodTreeUtils.subsequentMethodInvocation(lengthMethod, toUpperCaseMethodMatchers)).isEmpty();
+    assertThat(MethodTreeUtils.subsequentMethodInvocation(lengthMethod, lengthMethodMatchers)).isEmpty();
+
+    // coverage
+    assertThat(MethodTreeUtils.hasKind(null, Tree.Kind.METHOD_INVOCATION)).isFalse();
+    assertThat(MethodTreeUtils.consecutiveMethodInvocation(((MemberSelectExpressionTree) toStringMethod.parent()).identifier())).isEmpty();
   }
 
   private MethodTree parseMethod(String code) {
