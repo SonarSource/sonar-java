@@ -34,6 +34,12 @@ import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
+import org.sonar.java.regex.RegexCheck;
+import org.sonar.java.regex.RegexParserTestUtils;
+import org.sonar.java.regex.ast.CurlyBraceQuantifier;
+import org.sonar.java.regex.ast.DisjunctionTree;
+import org.sonar.java.regex.ast.RegexTree;
+import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
@@ -251,6 +257,56 @@ class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.flows).isEmpty();
 
     assertMessagePosition(reportedMessage, 2, 6, 3, 10);
+  }
+
+  @Test
+  void report_issue_on_regex_tree() {
+    RegexCheck regexCheck = new RegexCheck() {};
+    String regex = "x{42}|y{23}";
+    RegexTree regexTree = RegexParserTestUtils.parseRegex(regex);
+    DisjunctionTree disjunctionTree = (DisjunctionTree) regexTree;
+    RepetitionTree y23 = (RepetitionTree) disjunctionTree.getAlternatives().get(1);
+    CurlyBraceQuantifier rep23 = (CurlyBraceQuantifier) y23.getQuantifier();
+
+    int cost = 42;
+
+    context.reportIssue(regexCheck, rep23, "regexMsg", cost, Collections.emptyList());
+
+    assertThat(reportedMessage.getMessage()).isEqualTo("regexMsg");
+    assertThat(reportedMessage.getCost()).isEqualTo(Double.valueOf(cost));
+    assertThat(reportedMessage.flows).isEmpty();
+
+    assertMessagePosition(reportedMessage, 3, 7, 3, 11);
+  }
+
+  @Test
+  void report_issue_on_regex_tree_with_secondary() {
+    RegexCheck regexCheck = new RegexCheck() {};
+    String regex = "x{42}|y{23}";
+    RegexTree regexTree = RegexParserTestUtils.parseRegex(regex);
+    DisjunctionTree disjunctionTree = (DisjunctionTree) regexTree;
+
+    RepetitionTree x42 = (RepetitionTree) disjunctionTree.getAlternatives().get(0);
+    CurlyBraceQuantifier rep42 = (CurlyBraceQuantifier) x42.getQuantifier();
+
+    RepetitionTree y23 = (RepetitionTree) disjunctionTree.getAlternatives().get(1);
+    CurlyBraceQuantifier rep23 = (CurlyBraceQuantifier) y23.getQuantifier();
+
+    RegexCheck.RegexIssueLocation secondary = new RegexCheck.RegexIssueLocation(rep42, "regexSecondary");
+    context.reportIssue(regexCheck, rep23, "regexMsg", null, Collections.singletonList(secondary));
+
+    assertThat(reportedMessage.getMessage()).isEqualTo("regexMsg");
+    assertThat(reportedMessage.getCost()).isNull();
+    assertMessagePosition(reportedMessage, 3, 7, 3, 11);
+
+    assertThat(reportedMessage.flows).hasSize(1);
+    List<AnalyzerMessage> reportedSecondaries = reportedMessage.flows.get(0);
+    assertThat(reportedSecondaries).hasSize(1);
+
+    AnalyzerMessage reportedSecondary = reportedSecondaries.get(0);
+    assertThat(reportedSecondary.getMessage()).isEqualTo("regexSecondary");
+    assertThat(reportedSecondary.getCost()).isNull();
+    assertMessagePosition(reportedSecondary, 3, 1, 3, 5);
   }
 
   @Test
