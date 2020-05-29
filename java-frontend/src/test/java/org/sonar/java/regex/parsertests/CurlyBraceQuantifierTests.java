@@ -107,6 +107,7 @@ class CurlyBraceQuantifierTests {
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Integer expected", error.getMessage(), "Error should have the right message.");
+    assertEquals("a", error.getOffendingToken().getValue(), "Error should complain about the correct part of the regex.");
     List<Location> locations = error.getLocations();
     assertEquals(1, locations.size(), "Error should only have one location.");
     assertEquals(new IndexRange(2,3), locations.get(0).getIndexRange(), "Error should have the right location.");

@@ -227,7 +227,8 @@ public class RegexParser {
   }
 
   private void error(String message) {
-    errors.add(new SyntaxError(source.locationsFor(index, index + 1), message));
+    RegexToken offendingToken = new RegexToken(source, new IndexRange(index, index + 1));
+    errors.add(new SyntaxError(offendingToken, message));
   }
 
   private static RegexTree combineTrees(List<RegexTree> elements, TreeConstructor treeConstructor) {
