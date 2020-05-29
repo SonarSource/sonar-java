@@ -40,7 +40,7 @@ public interface RegexCheck extends JavaCheck {
     private final String message;
 
     public RegexIssueLocation(RegexSyntaxElement tree, String message) {
-      this.locations = textSpansFromRegexTree(tree);
+      this.locations = textSpansFromRegexSyntaxElement(tree);
       this.message = message;
     }
 
@@ -66,7 +66,7 @@ public interface RegexCheck extends JavaCheck {
         .collect(Collectors.toList());
     }
 
-    private static List<AnalyzerMessage.TextSpan> textSpansFromRegexTree(RegexSyntaxElement tree) {
+    private static List<AnalyzerMessage.TextSpan> textSpansFromRegexSyntaxElement(RegexSyntaxElement tree) {
       return tree.getLocations().stream()
         .map(location -> {
           AnalyzerMessage.TextSpan result = AnalyzerMessage.textSpanFor(location.getJavaTree());
