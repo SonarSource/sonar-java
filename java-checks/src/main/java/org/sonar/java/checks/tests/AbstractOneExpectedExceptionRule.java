@@ -51,6 +51,7 @@ import static org.sonar.java.checks.helpers.UnitTestUtils.FAIL_METHOD_MATCHER;
 public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscriptionVisitor {
 
   private static final String JUNIT4_ASSERT = "org.junit.Assert";
+  private static final String ASSERTJ_ASSERTIONS = "org.assertj.core.api.Assertions";
 
   private static final MethodMatchers JUNIT4_ASSERT_THROWS_WITH_MESSAGE = MethodMatchers.create()
     .ofTypes(JUNIT4_ASSERT)
@@ -64,6 +65,36 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
     .withAnyParameters()
     .build();
 
+  private static final MethodMatchers ASSERTJ_CATCH_THROWABLE_OF_TYPE = MethodMatchers.create()
+    .ofTypes(ASSERTJ_ASSERTIONS)
+    .names("catchThrowableOfType")
+    .addParametersMatcher("org.assertj.core.api.ThrowableAssert$ThrowingCallable", "java.lang.Class")
+    .build();
+
+  private static final MethodMatchers ASSERTJ_ASSERT_THAT_EXCEPTION_OF_TYPE = MethodMatchers.create()
+    .ofTypes(ASSERTJ_ASSERTIONS)
+    .names("assertThatExceptionOfType")
+    .addParametersMatcher("java.lang.Class")
+    .build();
+
+  private static final MethodMatchers ASSERTJ_IS_THROWN_BY = MethodMatchers.create()
+    .ofTypes("org.assertj.core.api.ThrowableTypeAssert")
+    .names("isThrownBy")
+    .addParametersMatcher("org.assertj.core.api.ThrowableAssert$ThrowingCallable")
+    .build();
+
+  private static final MethodMatchers ASSERTJ_ASSERT_CODE = MethodMatchers.create()
+    .ofTypes(ASSERTJ_ASSERTIONS)
+    .names("assertThatCode", "assertThatThrownBy")
+    .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers ASSERTJ_INSTANCE_OF_PREDICATES = MethodMatchers.create()
+    .ofSubTypes("org.assertj.core.api.Assert")
+    .names("isInstanceOf", "isExactlyInstanceOf", "isOfAnyClassIn", "isInstanceOfAny")
+    .withAnyParameters()
+    .build();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.TRY_STATEMENT, Tree.Kind.METHOD_INVOCATION);
@@ -72,30 +103,80 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) tree;
-      Arguments arguments = mit.arguments();
-      IdentifierTree identifierTree = ExpressionUtils.methodName(mit);
-      if (JUNIT4_ASSERT_THROWS_WITH_MESSAGE.matches(mit)) {
-        processAssertThrowsArguments(identifierTree, arguments.get(1), arguments.get(2));
-      } else if (arguments.size() >= 2 && ALL_ASSERT_THROWS_MATCHER.matches(mit)) {
-        processAssertThrowsArguments(identifierTree, arguments.get(0), arguments.get(1));
-      }
+      visitMethodInvocation((MethodInvocationTree) tree);
     } else {
-      TryStatementTree tryStatementTree = (TryStatementTree) tree;
-      if (isTryCatchFail(tryStatementTree)) {
-        List<Type> expectedTypes = tryStatementTree.catches().stream().map(c -> c.parameter().type().symbolType()).collect(Collectors.toList());
-        reportMultipleCallInTree(expectedTypes, tryStatementTree.block(), tryStatementTree.tryKeyword(), "body of this try/catch");
+      visitTryStatement((TryStatementTree) tree);
+    }
+  }
+
+  private void visitMethodInvocation(MethodInvocationTree mit) {
+    Arguments arguments = mit.arguments();
+    if (arguments.isEmpty()) {
+      return;
+    }
+    IdentifierTree identifierTree = ExpressionUtils.methodName(mit);
+    if (ASSERTJ_CATCH_THROWABLE_OF_TYPE.matches(mit)) {
+      processAssertThrowsArguments(identifierTree, arguments.get(1), arguments.get(0));
+    } else if (ASSERTJ_ASSERT_CODE.matches(mit)) {
+      subsequentMethodInvocation(mit, ASSERTJ_INSTANCE_OF_PREDICATES)
+        .ifPresent(isInstanceOf -> processAssertThrowsArguments(identifierTree, isInstanceOf.arguments(), arguments.get(0)));
+    } else if (ASSERTJ_ASSERT_THAT_EXCEPTION_OF_TYPE.matches(mit)) {
+      subsequentMethodInvocation(mit, ASSERTJ_IS_THROWN_BY)
+        .ifPresent(isThrownBy -> processAssertThrowsArguments(ExpressionUtils.methodName(isThrownBy), arguments.get(0), isThrownBy.arguments().get(0)));
+    } else if (JUNIT4_ASSERT_THROWS_WITH_MESSAGE.matches(mit)) {
+      processAssertThrowsArguments(identifierTree, arguments.get(1), arguments.get(2));
+    } else if (arguments.size() >= 2 && ALL_ASSERT_THROWS_MATCHER.matches(mit)) {
+      processAssertThrowsArguments(identifierTree, arguments.get(0), arguments.get(1));
+    }
+  }
+
+  private void visitTryStatement(TryStatementTree tryStatementTree) {
+    if (isTryCatchFail(tryStatementTree)) {
+      List<Type> expectedTypes = tryStatementTree.catches().stream().map(c -> c.parameter().type().symbolType()).collect(Collectors.toList());
+      reportMultipleCallInTree(expectedTypes, tryStatementTree.block(), tryStatementTree.tryKeyword(), "body of this try/catch");
+    }
+  }
+
+  private void processAssertThrowsArguments(Tree reportLocation, ExpressionTree expectedType, ExpressionTree executable) {
+    processAssertThrowsArguments(reportLocation, Collections.singletonList(expectedType), executable);
+  }
+
+  private void processAssertThrowsArguments(Tree reportLocation, List<ExpressionTree> expectedTypes, ExpressionTree executable) {
+    if (!expectedTypes.isEmpty() && executable.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      List<Type> expectedExceptions = expectedTypes.stream()
+        .map(AbstractOneExpectedExceptionRule::getExpectedException)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .map(ExpressionTree::symbolType)
+        .collect(Collectors.toList());
+
+      if (!expectedExceptions.isEmpty()) {
+        Tree lambda = ((LambdaExpressionTree) executable).body();
+        reportMultipleCallInTree(expectedExceptions, lambda, reportLocation, "code of the lambda");
       }
     }
   }
 
-  private void processAssertThrowsArguments(IdentifierTree assertThrowsIdentifier, ExpressionTree expectedType, ExpressionTree executable) {
-    if (executable.is(Tree.Kind.LAMBDA_EXPRESSION)) {
-      getExpectedException(expectedType).ifPresent(expectedIdentifier ->
-        reportMultipleCallInTree(Collections.singletonList(expectedIdentifier.symbolType()),
-          ((LambdaExpressionTree) executable).body(), assertThrowsIdentifier, "code of this assertThrows")
-      );
+  private static Optional<MethodInvocationTree> consecutiveMethodInvocation(MethodInvocationTree mit) {
+    Tree mitParent = mit.parent();
+    while (mitParent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      mitParent = mitParent.parent();
     }
+    if (mitParent.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) mitParent;
+      Tree memberSelectParent = memberSelect.parent();
+      if (memberSelectParent.is(Tree.Kind.METHOD_INVOCATION)) {
+        return Optional.of((MethodInvocationTree) memberSelectParent);
+      }
+    }
+    return Optional.empty();
+  }
+
+  private static Optional<MethodInvocationTree> subsequentMethodInvocation(MethodInvocationTree mit, MethodMatchers methodMatchers) {
+    return consecutiveMethodInvocation(mit)
+      .map(consecutiveMethod ->
+        methodMatchers.matches(consecutiveMethod) ?
+          consecutiveMethod : subsequentMethodInvocation(consecutiveMethod, methodMatchers).orElse(null));
   }
 
   private static Optional<IdentifierTree> getExpectedException(ExpressionTree expectedType) {

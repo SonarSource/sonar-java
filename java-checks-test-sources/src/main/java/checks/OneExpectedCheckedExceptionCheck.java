@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,11 +22,11 @@ public class OneExpectedCheckedExceptionCheck {
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)) ); // Noncompliant
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)), "Message"); // Noncompliant
     assertThrows(IOException.class, () -> throwIOException2(throwIOException(1)), () -> "message"); // Noncompliant
-    assertThrows(IOException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=25,26] {{Refactor the code of this assertThrows to have only one invocation throwing an exception.}}
+    assertThrows(IOException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=25,26] {{Refactor the code of the lambda to have only one invocation throwing an exception.}}
         if (throwIOException2(1) ==
           throwIOException(1)) {}
       } );
-    assertThrows(IOException.class, () -> // Noncompliant [[sc=5;ec=17;secondary=29,30]]
+    assertThrows(IOException.class, () -> // Noncompliant [[sc=5;ec=17;secondary=30,31]]
       new ThrowingIOException(
         throwIOException(1)
       ) );
@@ -50,7 +51,7 @@ public class OneExpectedCheckedExceptionCheck {
 
   @Test
   public void testGTryCatchIdiom() {
-    try { // Noncompliant [[sc=5;ec=8;secondary=54,55]] {{Refactor the body of this try/catch to have only one invocation throwing an exception.}}
+    try { // Noncompliant [[sc=5;ec=8;secondary=55,56]] {{Refactor the body of this try/catch to have only one invocation throwing an exception.}}
       throwIOException2(
         throwIOException(1)
       );
@@ -150,6 +151,57 @@ public class OneExpectedCheckedExceptionCheck {
       Assert.fail("Expected an IOException to be thrown");
     } catch (IOException e) {
     }
+  }
+
+  @Test
+  public void test_AssertJ() {
+
+    Throwable thrown = org.assertj.core.api.Assertions
+      .catchThrowableOfType(  // Noncompliant [[sc=8;ec=28;secondary=161,162]] {{Refactor the code of the lambda to have only one invocation throwing an exception.}}
+      () -> throwIOException2(
+        throwIOException(1)),
+      IOException.class);
+    org.assertj.core.api.Assertions.assertThat(thrown).hasMessage("error");
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> throwIOException2(throwIOException(1))) // Noncompliant
+      .as("description")
+      .isInstanceOf(IOException.class);
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> throwIOException2(throwIOException(1))) // Compliant, unchecked exception
+      .isInstanceOf(IllegalStateException.class);
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> throwIOException2(throwIOException(1))) // Noncompliant
+      .isExactlyInstanceOf(IOException.class);
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> throwIOException2(throwIOException(1))) // Noncompliant
+      .isOfAnyClassIn(IndexOutOfBoundsException.class, IOException.class);
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> throwIOException2(throwIOException(1))) // Noncompliant
+      .isInstanceOfAny(IOException.class);
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> throwIOException2(throwIOException(1))) // Compliant, expected exception type list is empty
+      .isInstanceOfAny();
+
+    assertThatExceptionOfType(IOException.class)
+      .isThrownBy(() -> throwIOException2(throwIOException(1))); // Noncompliant
+
+    org.assertj.core.api.Assertions
+      .assertThatCode(() -> throwIOException2(throwIOException(1))) // Noncompliant
+      .isInstanceOf(IOException.class);
+
+    thrown = org.assertj.core.api.Assertions
+      .catchThrowable(() -> throwIOException2(throwIOException(1))); // false-negative, it's complex to find the expected exception type
+    org.assertj.core.api.Assertions.assertThat(thrown).isInstanceOf(IOException.class);
+
+    // coverage
+    assertThatExceptionOfType(IOException.class);
+    int coverage = (assertThatExceptionOfType(IOException.class)).toString().getBytes().length;
   }
 
   int throwIOException(int x) throws IOException {

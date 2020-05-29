@@ -19,7 +19,7 @@ public class OneExpectedRuntimeExceptionCheck {
     assertThrows(IllegalStateException.class, () -> foo(foo(1)) ); // Noncompliant
     assertThrows(IllegalStateException.class, () -> foo(foo(1)), "Message"); // Noncompliant
     assertThrows(IllegalStateException.class, () -> foo(foo(1)), () -> "message"); // Noncompliant
-    assertThrows(IllegalStateException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=23,24] {{Refactor the code of this assertThrows to have only one invocation throwing an exception.}}
+    assertThrows(IllegalStateException.class, () -> { // Noncompliant [[sc=5;ec=17;secondary=23,24] {{Refactor the code of the lambda to have only one invocation throwing an exception.}}
       if (foo(1) ==
         foo(1)) {}
     } );
@@ -132,6 +132,55 @@ public class OneExpectedRuntimeExceptionCheck {
     } catch (IllegalStateException e) {
     }
   }
+
+  @Test
+  public void test_AssertJ() {
+
+    Throwable thrown = org.assertj.core.api.Assertions
+      .catchThrowableOfType(  // Noncompliant [[sc=8;ec=28;secondary=141,142]] {{Refactor the code of the lambda to have only one invocation throwing an exception.}}
+        () -> foo(
+          foo(1)),
+        IllegalStateException.class);
+    org.assertj.core.api.Assertions.assertThat(thrown).hasMessage("error");
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> foo(foo(1))) // Compliant, checked exception
+      .isInstanceOf(IOException.class);
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> foo(foo(1))) // Noncompliant
+      .as("description")
+      .isInstanceOf(IllegalStateException.class);
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> foo(foo(1))) // Noncompliant
+      .isExactlyInstanceOf(IllegalStateException.class);
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> foo(foo(1))) // Noncompliant
+      .isOfAnyClassIn(IOException.class, IllegalStateException.class);
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> foo(foo(1))) // Noncompliant
+      .isInstanceOfAny(IllegalStateException.class);
+
+    org.assertj.core.api.Assertions
+      .assertThatThrownBy(() -> foo(foo(1))) // Compliant, expected exception type list is empty
+      .isInstanceOfAny();
+
+    org.assertj.core.api.Assertions
+      .assertThatExceptionOfType(IllegalStateException.class)
+      .isThrownBy(() -> foo(foo(1))); // Noncompliant
+
+    org.assertj.core.api.Assertions
+      .assertThatCode(() -> foo(foo(1))) // Noncompliant
+      .isInstanceOf(IllegalStateException.class);
+
+    thrown = org.assertj.core.api.Assertions
+      .catchThrowable(() -> foo(foo(1))); // false-negative, it's complex to find the expected exception type
+    org.assertj.core.api.Assertions.assertThat(thrown).isInstanceOf(IllegalStateException.class);
+  }
+
 
   int foo(int x) {
     return x;
