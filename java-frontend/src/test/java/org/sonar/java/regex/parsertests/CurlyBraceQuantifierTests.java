@@ -102,15 +102,63 @@ class CurlyBraceQuantifierTests {
   }
 
   @Test
-  void testCurlyBracedQuantifierWithSyntaxError() {
+  void testCurlyBracedQuantifierWithNonNumber() {
     RegexParseResult result = new RegexParser(makeSource("x{a}")).parse();
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
-    assertEquals("Integer expected", error.getMessage(), "Error should have the right message.");
+    assertEquals("Expected integer, but found 'a'", error.getMessage(), "Error should have the right message.");
     assertEquals("a", error.getOffendingToken().getValue(), "Error should complain about the correct part of the regex.");
     List<Location> locations = error.getLocations();
     assertEquals(1, locations.size(), "Error should only have one location.");
     assertEquals(new IndexRange(2,3), locations.get(0).getIndexRange(), "Error should have the right location.");
+  }
+
+  @Test
+  void testCurlyBracedQuantifierWithJunkAfterNumber() {
+    RegexParseResult result = new RegexParser(makeSource("x{1a}")).parse();
+    assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
+    SyntaxError error = result.getSyntaxErrors().get(0);
+    assertEquals("Expected ',' or '}', but found 'a'", error.getMessage(), "Error should have the right message.");
+    assertEquals("a", error.getOffendingToken().getValue(), "Error should complain about the correct part of the regex.");
+    List<Location> locations = error.getLocations();
+    assertEquals(1, locations.size(), "Error should only have one location.");
+    assertEquals(new IndexRange(3,4), locations.get(0).getIndexRange(), "Error should have the right location.");
+  }
+
+  @Test
+  void testCurlyBracedQuantifierWithJunkAfterComma() {
+    RegexParseResult result = new RegexParser(makeSource("x{1,a}")).parse();
+    assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
+    SyntaxError error = result.getSyntaxErrors().get(0);
+    assertEquals("Expected integer or '}', but found 'a'", error.getMessage(), "Error should have the right message.");
+    assertEquals("a", error.getOffendingToken().getValue(), "Error should complain about the correct part of the regex.");
+    List<Location> locations = error.getLocations();
+    assertEquals(1, locations.size(), "Error should only have one location.");
+    assertEquals(new IndexRange(4,5), locations.get(0).getIndexRange(), "Error should have the right location.");
+  }
+
+  @Test
+  void testCurlyBracedQuantifierWithJunkAfterSecondNumber() {
+    RegexParseResult result = new RegexParser(makeSource("x{1,2a}")).parse();
+    assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
+    SyntaxError error = result.getSyntaxErrors().get(0);
+    assertEquals("Expected '}', but found 'a'", error.getMessage(), "Error should have the right message.");
+    assertEquals("a", error.getOffendingToken().getValue(), "Error should complain about the correct part of the regex.");
+    List<Location> locations = error.getLocations();
+    assertEquals(1, locations.size(), "Error should only have one location.");
+    assertEquals(new IndexRange(5,6), locations.get(0).getIndexRange(), "Error should have the right location.");
+  }
+
+  @Test
+  void testCurlyBracedQuantifierWithMissingClosingBrace() {
+    RegexParseResult result = new RegexParser(makeSource("x{1,2")).parse();
+    assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
+    SyntaxError error = result.getSyntaxErrors().get(0);
+    assertEquals("Expected '}', but found the end of the regex", error.getMessage(), "Error should have the right message.");
+    assertEquals("", error.getOffendingToken().getValue(), "Error should complain about the correct part of the regex.");
+    List<Location> locations = error.getLocations();
+    assertEquals(1, locations.size(), "Error should only have one location.");
+    assertEquals(new IndexRange(5,5), locations.get(0).getIndexRange(), "Error should have the right location.");
   }
 
 }

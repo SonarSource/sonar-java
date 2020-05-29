@@ -140,7 +140,7 @@ public class RegexParser {
     index++;
     RegexToken lowerBound = parseInteger();
     if (lowerBound == null) {
-      error("Integer expected");
+      expected("integer");
       return null;
     }
     RegexToken comma = null;
@@ -153,11 +153,16 @@ public class RegexParser {
     Quantifier.Modifier modifier;
     if (currentChar() == '}') {
       index++;
-      modifier = parseQuantifierModifier();
     } else {
-      error("'}' expected");
-      modifier = Quantifier.Modifier.GREEDY;
+      if (comma == null) {
+        expected("',' or '}'");
+      } else if (upperBound == null) {
+        expected("integer or '}'");
+      } else {
+        expected("'}'");
+      }
     }
+    modifier = parseQuantifierModifier();
     IndexRange range = new IndexRange(startIndex, index);
     return new CurlyBraceQuantifier(source, range, modifier, lowerBound, comma, upperBound);
   }
@@ -226,8 +231,14 @@ public class RegexParser {
     }
   }
 
+  private void expected(String expectedToken) {
+    String actual = currentChar() == EOF ? "the end of the regex" : ("'" + (char)currentChar() + "'");
+    error("Expected " + expectedToken + ", but found " + actual);
+  }
+
   private void error(String message) {
-    RegexToken offendingToken = new RegexToken(source, new IndexRange(index, index + 1));
+    IndexRange range = new IndexRange(index, currentChar() == EOF ? index : (index + 1));
+    RegexToken offendingToken = new RegexToken(source, range);
     errors.add(new SyntaxError(offendingToken, message));
   }
 
