@@ -87,10 +87,12 @@ public class RegexParserTestUtils {
     assertEquals(expectedEnd, element.getRange().getEndingOffset(), "Element should end at the given index.");
   }
 
+  // place the String which will contain the regex on 3rd line, starting from index 0
+  private static final String JAVA_CODE = "class Foo {\n  String str = \n\"%s\";\n}";
+
   public static RegexSource makeSource(String content) {
-    CompilationUnitTree tree = JParserTestUtils.parse("class Foo { String str = \"" + content +"\"; }");
+    CompilationUnitTree tree = JParserTestUtils.parse(String.format(JAVA_CODE, content));
     LiteralTree literal = (LiteralTree) ((VariableTree)((ClassTree)tree.types().get(0)).members().get(0)).initializer();
     return new RegexSource(Collections.singletonList(literal));
   }
-
 }
