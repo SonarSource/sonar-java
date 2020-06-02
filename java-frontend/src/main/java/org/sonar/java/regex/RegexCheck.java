@@ -72,9 +72,11 @@ public interface RegexCheck extends JavaCheck {
           AnalyzerMessage.TextSpan result = AnalyzerMessage.textSpanFor(location.getJavaTree());
           return new AnalyzerMessage.TextSpan(
             result.startLine,
-            result.startCharacter + location.getBeginningOffset(),
+            // Adding 1 to handle beginning of the String with quote
+            result.startCharacter + location.getBeginningOffset() + 1,
             result.endLine,
-            result.startCharacter + location.getEndingOffset());
+            // Adding 1 to handle beginning of the String with quote
+            result.startCharacter + location.getEndingOffset() + 1 + (location.isEmpty() ? 1 : 0));
         }).collect(Collectors.toList());
     }
   }

@@ -276,7 +276,7 @@ class DefaultJavaFileScannerContextTest {
     assertThat(reportedMessage.getCost()).isEqualTo(Double.valueOf(cost));
     assertThat(reportedMessage.flows).isEmpty();
 
-    assertMessagePosition(reportedMessage, 3, 7, 3, 11);
+    assertMessagePosition(reportedMessage, 3, 8, 3, 12);
   }
 
   @Test
@@ -297,7 +297,7 @@ class DefaultJavaFileScannerContextTest {
 
     assertThat(reportedMessage.getMessage()).isEqualTo("regexMsg");
     assertThat(reportedMessage.getCost()).isNull();
-    assertMessagePosition(reportedMessage, 3, 7, 3, 11);
+    assertMessagePosition(reportedMessage, 3, 8, 3, 12);
 
     assertThat(reportedMessage.flows).hasSize(1);
     List<AnalyzerMessage> reportedSecondaries = reportedMessage.flows.get(0);
@@ -306,7 +306,7 @@ class DefaultJavaFileScannerContextTest {
     AnalyzerMessage reportedSecondary = reportedSecondaries.get(0);
     assertThat(reportedSecondary.getMessage()).isEqualTo("regexSecondary");
     assertThat(reportedSecondary.getCost()).isNull();
-    assertMessagePosition(reportedSecondary, 3, 1, 3, 5);
+    assertMessagePosition(reportedSecondary, 3, 2, 3, 6);
   }
 
   @Test
