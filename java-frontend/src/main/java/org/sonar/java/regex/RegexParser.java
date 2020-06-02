@@ -56,7 +56,7 @@ public class RegexParser {
 
   public RegexParseResult parse() {
     List<RegexTree> results = new ArrayList<>();
-    while (currentChar() != EOF) {
+    do {
       RegexTree result = parseDisjunction();
       results.add(result);
       if (index < sourceText.length()) {
@@ -64,7 +64,7 @@ public class RegexParser {
         error("Unexpected '" + offendingChar + "'");
         index++;
       }
-    }
+    } while (currentChar() != EOF);
     RegexTree result = combineTrees(results, (range, elements) -> new SequenceTree(source, range, elements));
     return new RegexParseResult(result, errors);
   }
