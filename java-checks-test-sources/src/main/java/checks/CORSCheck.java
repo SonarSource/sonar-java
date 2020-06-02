@@ -18,6 +18,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 class CORSCheck {
 
+  private static final String STAR = "*";
+  private static final String NOT_STAR = "http://domain2.com";
+
+
   // === Java Servlet ===
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     resp.setHeader("Content-Type", "text/plain; charset=utf-8");
@@ -104,6 +108,24 @@ class CORSCheck {
     public ResponseEntity<String> test9() {
       return ResponseEntity.ok().body("ok");
     }
+
+    @CrossOrigin(STAR) // Noncompliant
+    @RequestMapping(value = "/test10")
+    public ResponseEntity<String> test10() {
+      return ResponseEntity.ok().body("ok");
+    }
+
+    @CrossOrigin(CORSCheck.STAR) // Noncompliant
+    @RequestMapping(value = "/test11")
+    public ResponseEntity<String> test11() {
+      return ResponseEntity.ok().body("ok");
+    }
+
+    @CrossOrigin(NOT_STAR) // Compliant
+    @RequestMapping(value = "/test12")
+    public ResponseEntity<String> test12() {
+      return ResponseEntity.ok().body("ok");
+    }
   }
 
   @Bean
@@ -138,19 +160,19 @@ class CORSCheck {
       public CorsFilter corsFilter4() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=142,143]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=164,165]]
         config.applyPermitDefaultValues();
         config.applyPermitDefaultValues();
-        config.addAllowedOrigin("*"); // Noncompliant [[secondary=142,143]]
+        config.addAllowedOrigin("*"); // Noncompliant [[secondary=164,165]]
         return new CorsFilter(source);
       }
     }
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     CorsConfiguration config = new CorsConfiguration();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=151,152]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=173,174]]
     config.applyPermitDefaultValues();
     config.applyPermitDefaultValues();
-    config.addAllowedOrigin("*"); // Noncompliant [[secondary=151,152]]
+    config.addAllowedOrigin("*"); // Noncompliant [[secondary=173,174]]
     return new CorsFilter(source);
   }
 
