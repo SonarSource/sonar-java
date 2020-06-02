@@ -43,6 +43,7 @@ import org.sonar.java.checks.naming.KeywordAsIdentifierCheck;
 import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
+import org.sonar.java.checks.regex.RegexParseErrorCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.security.AndroidExternalStorageCheck;
@@ -549,6 +550,7 @@ public final class CheckList {
       RedundantTypeCastCheck.class,
       ReflectionOnNonRuntimeAnnotationCheck.class,
       RegexHotspotCheck.class,
+      RegexParseErrorCheck.class,
       RegexPatternsNeedlesslyCheck.class,
       RepeatAnnotationCheck.class,
       ReplaceGuavaWithJava8Check.class,

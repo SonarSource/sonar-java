@@ -54,7 +54,10 @@ class CheckListTest {
   private static List<String> SE_CHEKS;
   private final Gson gson = new Gson();
 
-  private static final Set<String> BLACK_LIST = ImmutableSet.of("AbstractXPathBasedCheck.java", "AbstractWebXmlXPathBasedCheck.java");
+  private static final Set<String> BLACK_LIST = ImmutableSet.of(
+    "AbstractXPathBasedCheck.java",
+    "AbstractWebXmlXPathBasedCheck.java",
+    "AbstractRegexCheck.java");
 
   @BeforeAll
   public static void before() throws Exception {
