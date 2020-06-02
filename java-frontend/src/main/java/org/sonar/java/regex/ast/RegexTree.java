@@ -21,7 +21,7 @@ package org.sonar.java.regex.ast;
 
 public abstract class RegexTree extends RegexSyntaxElement {
   public enum Kind {
-    PLAIN_TEXT, SEQUENCE, DISJUNCTION, GROUP, REPETITION
+    PLAIN_CHARACTER, SEQUENCE, DISJUNCTION, GROUP, REPETITION
   }
 
   protected RegexTree(RegexSource source, IndexRange range) {

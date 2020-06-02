@@ -29,7 +29,7 @@ public class PlainCharacterTree extends RegexTree {
   }
 
   public char getCharacter() {
-    return contents.getValue().charAt(0);
+    return contents.getText().charAt(0);
   }
 
   @Override
@@ -39,7 +39,7 @@ public class PlainCharacterTree extends RegexTree {
 
   @Override
   public Kind kind() {
-    return Kind.PLAIN_TEXT;
+    return Kind.PLAIN_CHARACTER;
   }
 
 }
