@@ -21,15 +21,15 @@ package org.sonar.java.regex.ast;
 
 public class PlainCharacterTree extends RegexTree {
 
-  private final RegexToken contents;
+  private final JavaCharacter contents;
 
-  public PlainCharacterTree(RegexToken character) {
+  public PlainCharacterTree(JavaCharacter character) {
     super(character.getSource(), character.getRange());
     this.contents = character;
   }
 
   public char getCharacter() {
-    return contents.getText().charAt(0);
+    return contents.getCharacter();
   }
 
   @Override

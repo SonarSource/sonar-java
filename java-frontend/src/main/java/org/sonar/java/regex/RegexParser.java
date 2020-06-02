@@ -26,6 +26,7 @@ import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.IndexRange;
+import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.Quantifier;
 import org.sonar.java.regex.ast.RegexSource;
@@ -59,9 +60,9 @@ public class RegexParser {
     do {
       RegexTree result = parseDisjunction();
       results.add(result);
-      if (index < sourceText.length()) {
-        char offendingChar = sourceText.charAt(index);
-        error("Unexpected '" + offendingChar + "'");
+      int offendingChar = currentChar();
+      if (offendingChar != EOF) {
+        error("Unexpected '" + (char) offendingChar + "'");
         index++;
       }
     } while (currentChar() != EOF);
@@ -222,8 +223,57 @@ public class RegexParser {
   }
 
   private PlainCharacterTree parsePlainText() {
+    return new PlainCharacterTree(parseJavaCharacter());
+  }
+
+  private JavaCharacter parseJavaCharacter() {
+    int startIndex = index;
+    int character = currentChar();
     index++;
-    return new PlainCharacterTree(new RegexToken(source, new IndexRange(index - 1, index)));
+    if (character == '\\') {
+      character = parseJavaEscapeSequence();
+    }
+    return new JavaCharacter(source, new IndexRange(startIndex, index), (char) character);
+  }
+
+  private int parseJavaEscapeSequence() {
+    int c = currentChar();
+    index++;
+    switch (c) {
+      case 'n':
+        return '\n';
+      case 'r':
+        return '\r';
+      case 'f':
+        return '\f';
+      case 'b':
+        return '\b';
+      case 't':
+        return '\t';
+      case 'u':
+        while (c == 'u') {
+          c = nextChar();
+        }
+        StringBuilder codePoint = new StringBuilder(4);
+        for (int i = 0; i < 4; i++) {
+          codePoint.append((char) c);
+          c = currentChar();
+          index++;
+        }
+        return Integer.parseInt(codePoint.toString(), 16);
+      default:
+        if (isOctalDigit(c)) {
+          StringBuilder codeUnit = new StringBuilder(3);
+          for (int i = 0; i < 3 && isOctalDigit(c); i++) {
+            codeUnit.append((char) c);
+            c = currentChar();
+            index++;
+          }
+          return Integer.parseInt(codeUnit.toString(), 8);
+        } else {
+          return c;
+        }
+    }
   }
 
   private int currentChar() {
@@ -232,6 +282,11 @@ public class RegexParser {
     } else {
       return EOF;
     }
+  }
+
+  private int nextChar() {
+    index++;
+    return currentChar();
   }
 
   private void expected(String expectedToken) {
@@ -262,6 +317,10 @@ public class RegexParser {
     return '0' <= c && c <= '9';
   }
 
+  private static boolean isOctalDigit(int c) {
+    return '0' <= c && c <= '7';
+  }
+
   private static boolean isPlainTextCharacter(int c) {
     switch (c) {
       case EOF:
@@ -273,7 +332,6 @@ public class RegexParser {
       case '?':
       case '|':
       case '[':
-      case '\\':
       case '.':
         return false;
       default:
