@@ -35,11 +35,11 @@ import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.regex.RegexCheck;
-import org.sonar.java.regex.RegexParserTestUtils;
 import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.RepetitionTree;
+import org.sonar.java.regex.parsertests.RegexParserTestUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
@@ -263,7 +263,7 @@ class DefaultJavaFileScannerContextTest {
   void report_issue_on_regex_tree() {
     RegexCheck regexCheck = new RegexCheck() {};
     String regex = "x{42}|y{23}";
-    RegexTree regexTree = RegexParserTestUtils.parseRegex(regex);
+    RegexTree regexTree = RegexParserTestUtils.assertSuccessfulParse(regex);
     DisjunctionTree disjunctionTree = (DisjunctionTree) regexTree;
     RepetitionTree y23 = (RepetitionTree) disjunctionTree.getAlternatives().get(1);
     CurlyBraceQuantifier rep23 = (CurlyBraceQuantifier) y23.getQuantifier();
@@ -283,7 +283,7 @@ class DefaultJavaFileScannerContextTest {
   void report_issue_on_regex_tree_with_secondary() {
     RegexCheck regexCheck = new RegexCheck() {};
     String regex = "x{42}|y{23}";
-    RegexTree regexTree = RegexParserTestUtils.parseRegex(regex);
+    RegexTree regexTree = RegexParserTestUtils.assertSuccessfulParse(regex);
     DisjunctionTree disjunctionTree = (DisjunctionTree) regexTree;
 
     RepetitionTree x42 = (RepetitionTree) disjunctionTree.getAlternatives().get(0);
