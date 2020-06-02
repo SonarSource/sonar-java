@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RegexParserTestUtils {
 
@@ -61,6 +62,7 @@ public class RegexParserTestUtils {
   }
 
   public static void assertPlainCharacter(char expected, RegexTree regex) {
+    assertKind(RegexTree.Kind.PLAIN_CHARACTER, regex);
     PlainCharacterTree characterTree = assertType(PlainCharacterTree.class, regex);
     assertEquals(expected, characterTree.getCharacter(), "Regex should contain the right characters.");
   }
@@ -72,6 +74,12 @@ public class RegexParserTestUtils {
       throw new AssertionFailedError("Object should have the correct type. ", expected, actual);
     }
     return klass.cast(o);
+  }
+
+  public static void assertKind(RegexTree.Kind expected, RegexTree actual) {
+    assertEquals(expected, actual.kind(), "Regex should have kind " + expected);
+    assertTrue(actual.is(expected), "`is` should return true when the kinds match.");
+    assertTrue(actual.is(RegexTree.Kind.PLAIN_CHARACTER, RegexTree.Kind.DISJUNCTION, expected), "`is` should return true when one of the kinds match.");
   }
 
   public static void assertLocation(int expectedStart, int expectedEnd, RegexSyntaxElement element) {
