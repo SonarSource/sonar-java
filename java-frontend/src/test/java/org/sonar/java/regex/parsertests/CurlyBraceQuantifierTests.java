@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertLocation;
 import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertType;
@@ -48,9 +49,13 @@ class CurlyBraceQuantifierTests {
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
     assertPlainCharacter('x', repetition.getElement());
     CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
+    assertLocation(2,4, quantifier.getMinimumRepetitionsToken());
+    assertLocation(4,5, quantifier.getCommaToken());
+    assertLocation(5,7, quantifier.getMaximumRepetitionsToken());
     assertEquals(23, quantifier.getMinimumRepetitions(), "Lower bound should be 23.");
     assertEquals(42, quantifier.getMaximumRepetitions(), "Upper bound should be 42.");
     assertFalse(quantifier.isOpenEnded(), "Quantifier should not be open ended.");
+    assertFalse(quantifier.isSingleNumber(), "Quantifier should not be marked as only having a single number.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
   }
 
@@ -63,6 +68,7 @@ class CurlyBraceQuantifierTests {
     assertEquals(42, quantifier.getMinimumRepetitions(), "Lower bound should be 42.");
     assertNull(quantifier.getMaximumRepetitions(), "Quantifier should be open ended.");
     assertTrue(quantifier.isOpenEnded(), "Quantifier should be open ended.");
+    assertFalse(quantifier.isSingleNumber(), "Quantifier should not be marked as only having a single number.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
   }
 
@@ -107,7 +113,7 @@ class CurlyBraceQuantifierTests {
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected integer, but found 'a'", error.getMessage(), "Error should have the right message.");
-    assertEquals("a", error.getOffendingToken().getValue(), "Error should complain about the correct part of the regex.");
+    assertEquals("a", error.getOffendingSyntaxElement().getText(), "Error should complain about the correct part of the regex.");
     List<Location> locations = error.getLocations();
     assertEquals(1, locations.size(), "Error should only have one location.");
     assertEquals(new IndexRange(2,3), locations.get(0).getIndexRange(), "Error should have the right location.");
@@ -119,7 +125,7 @@ class CurlyBraceQuantifierTests {
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected ',' or '}', but found 'a'", error.getMessage(), "Error should have the right message.");
-    assertEquals("a", error.getOffendingToken().getValue(), "Error should complain about the correct part of the regex.");
+    assertEquals("a", error.getOffendingSyntaxElement().getText(), "Error should complain about the correct part of the regex.");
     List<Location> locations = error.getLocations();
     assertEquals(1, locations.size(), "Error should only have one location.");
     assertEquals(new IndexRange(3,4), locations.get(0).getIndexRange(), "Error should have the right location.");
@@ -131,7 +137,7 @@ class CurlyBraceQuantifierTests {
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected integer or '}', but found 'a'", error.getMessage(), "Error should have the right message.");
-    assertEquals("a", error.getOffendingToken().getValue(), "Error should complain about the correct part of the regex.");
+    assertEquals("a", error.getOffendingSyntaxElement().getText(), "Error should complain about the correct part of the regex.");
     List<Location> locations = error.getLocations();
     assertEquals(1, locations.size(), "Error should only have one location.");
     assertEquals(new IndexRange(4,5), locations.get(0).getIndexRange(), "Error should have the right location.");
@@ -143,7 +149,7 @@ class CurlyBraceQuantifierTests {
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected '}', but found 'a'", error.getMessage(), "Error should have the right message.");
-    assertEquals("a", error.getOffendingToken().getValue(), "Error should complain about the correct part of the regex.");
+    assertEquals("a", error.getOffendingSyntaxElement().getText(), "Error should complain about the correct part of the regex.");
     List<Location> locations = error.getLocations();
     assertEquals(1, locations.size(), "Error should only have one location.");
     assertEquals(new IndexRange(5,6), locations.get(0).getIndexRange(), "Error should have the right location.");
@@ -155,10 +161,37 @@ class CurlyBraceQuantifierTests {
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected '}', but found the end of the regex", error.getMessage(), "Error should have the right message.");
-    assertEquals("", error.getOffendingToken().getValue(), "Error should complain about the correct part of the regex.");
+    assertEquals("", error.getOffendingSyntaxElement().getText(), "Error should complain about the correct part of the regex.");
     List<Location> locations = error.getLocations();
     assertEquals(1, locations.size(), "Error should only have one location.");
     assertEquals(new IndexRange(5,5), locations.get(0).getIndexRange(), "Error should have the right location.");
+    assertTrue(locations.get(0).getIndexRange().isEmpty(), "Error location should be empty range at end of regex.");
+  }
+
+  @Test
+  void testCurlyBracedQuantifierWithoutOperand() {
+    RegexParseResult result = new RegexParser(makeSource("{1,2}")).parse();
+    assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
+    SyntaxError error = result.getSyntaxErrors().get(0);
+    assertEquals("Unexpected quantifier '{1,2}'", error.getMessage(), "Error should have the right message.");
+    assertEquals("{1,2}", error.getOffendingSyntaxElement().getText(), "Error should complain about the correct part of the regex.");
+    List<Location> locations = error.getLocations();
+    assertEquals(1, locations.size(), "Error should only have one location.");
+    assertEquals(new IndexRange(0,5), locations.get(0).getIndexRange(), "Error should have the right location.");
+    assertFalse(locations.get(0).getIndexRange().isEmpty(), "Error location should not be empty range.");
+  }
+
+  @Test
+  void testCurlyBracedQuantifierWithoutOperandInGroup() {
+    RegexParseResult result = new RegexParser(makeSource("({1,2})")).parse();
+    assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
+    SyntaxError error = result.getSyntaxErrors().get(0);
+    assertEquals("Unexpected quantifier '{1,2}'", error.getMessage(), "Error should have the right message.");
+    assertEquals(error.getMessage(), error.toString(), "SyntaxError.toString() should equal the error message.");
+    assertEquals("{1,2}", error.getOffendingSyntaxElement().getText(), "Error should complain about the correct part of the regex.");
+    List<Location> locations = error.getLocations();
+    assertEquals(1, locations.size(), "Error should only have one location.");
+    assertEquals(new IndexRange(1,6), locations.get(0).getIndexRange(), "Error should have the right location.");
   }
 
 }
