@@ -36,6 +36,10 @@ public class RegexSyntaxElement {
     return source.locationsFor(range);
   }
 
+  public String getText() {
+    return source.substringAt(range);
+  }
+
   public IndexRange getRange() {
     return range;
   }

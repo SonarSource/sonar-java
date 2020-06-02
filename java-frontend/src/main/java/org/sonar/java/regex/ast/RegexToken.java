@@ -25,11 +25,12 @@ public class RegexToken extends RegexSyntaxElement {
 
   public RegexToken(RegexSource source, IndexRange range) {
     super(source, range);
-    value = source.substringAt(range);
+    value = super.getText();
   }
 
-  public String getValue() {
+
+  @Override
+  public String getText() {
     return value;
   }
-
 }
