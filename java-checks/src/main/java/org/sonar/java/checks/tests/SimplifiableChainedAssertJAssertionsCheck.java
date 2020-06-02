@@ -34,11 +34,24 @@ public class SimplifiableChainedAssertJAssertionsCheck extends AbstractMethodDet
   private static final MethodMatchers ASSERTIONS_SUBJECT_METHODS = MethodMatchers.create()
     .ofTypes(ASSERTIONS).names("assertThat").withAnyParameters().build();
 
+  /**
+   * Stores multiple lists of simplifiers which are mapped to by a key. The key is the method name of the predicate
+   * that this simplifier applies to. The simplifiers in this map are not provided with the subject argument.
+   *
+   * For instance, if you have a key {@code hasSize} that maps to a list containing
+   * {@code PredicateSimplifierWithoutContext.withSingleArg(arg -> isZero(arg), "isEmpty()")} then it can be read as:
+   * "<b>{@code hasSize}</b> with an argument that is <b>zero</b> can be simplified to <b>{@code isEmpty()}</b>".
+   */
   private static final Map<String, List<SimplifierWithoutContext>> CONTEXT_FREE_SIMPLIFIERS = ImmutableMap.<String, List<SimplifierWithoutContext>>builder()
     .put("hasSize", ImmutableList.of(
       PredicateSimplifierWithoutContext.withSingleArg(SimplifiableChainedAssertJAssertionsCheck::isZero, "isEmpty()")))
     .build();
 
+  /**
+   * Stores multiple lists of simplifiers with context, similar to {@link #CONTEXT_FREE_SIMPLIFIERS}. The
+   * simplifiers in this map, though, have access to the subject as well (i.e. the {@code assertThat(...)} method
+   * and its argument).
+   */
   private static final Map<String, List<SimplifierWithContext>> SIMPLIFIERS_WITH_CONTEXT = ImmutableMap.<String, List<SimplifierWithContext>>builder()
     .build();
 
