@@ -21,25 +21,25 @@ package org.sonar.java.regex;
 
 import java.util.List;
 import org.sonar.java.regex.ast.Location;
-import org.sonar.java.regex.ast.RegexToken;
+import org.sonar.java.regex.ast.RegexSyntaxElement;
 
 public class SyntaxError {
 
-  private final RegexToken offendingToken;
+  private final RegexSyntaxElement offendingSyntaxElement;
 
   private final String message;
 
-  public SyntaxError(RegexToken offendingToken, String message) {
-    this.offendingToken = offendingToken;
+  public SyntaxError(RegexSyntaxElement offendingSyntaxElement, String message) {
+    this.offendingSyntaxElement = offendingSyntaxElement;
     this.message = message;
   }
 
   public List<Location> getLocations() {
-    return offendingToken.getLocations();
+    return offendingSyntaxElement.getLocations();
   }
 
-  public RegexToken getOffendingToken() {
-    return offendingToken;
+  public RegexSyntaxElement getOffendingSyntaxElement() {
+    return offendingSyntaxElement;
   }
 
   public String getMessage() {

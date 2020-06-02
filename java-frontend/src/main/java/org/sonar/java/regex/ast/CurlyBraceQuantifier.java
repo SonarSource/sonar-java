@@ -20,12 +20,10 @@
 package org.sonar.java.regex.ast;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class CurlyBraceQuantifier extends Quantifier {
 
-  @Nonnull
   private final RegexToken minimumRepetitionsToken;
 
   private final int minimumRepetitions;
@@ -46,13 +44,13 @@ public class CurlyBraceQuantifier extends Quantifier {
   ) {
     super(source, range, modifier);
     this.minimumRepetitionsToken = minimumRepetitionsToken;
-    this.minimumRepetitions = Integer.parseInt(minimumRepetitionsToken.getValue());
+    this.minimumRepetitions = Integer.parseInt(minimumRepetitionsToken.getText());
     this.commaToken = commaToken;
     this.maximumRepetitionsToken = maximumRepetitionsToken;
     if (maximumRepetitionsToken == null) {
       this.maximumRepetitions = null;
     } else {
-      this.maximumRepetitions = Integer.parseInt(maximumRepetitionsToken.getValue());
+      this.maximumRepetitions = Integer.parseInt(maximumRepetitionsToken.getText());
     }
   }
 
