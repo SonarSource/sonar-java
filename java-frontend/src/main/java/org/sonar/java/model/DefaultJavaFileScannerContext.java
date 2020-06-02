@@ -33,13 +33,16 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.EndOfAnalysisCheck;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
+import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
+import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
@@ -47,6 +50,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final boolean semanticEnabled;
   private final SonarComponents sonarComponents;
   private final ComplexityVisitor complexityVisitor;
+  private final RegexCache regexCache;
   private final InputFile inputFile;
   private final JavaVersion javaVersion;
   private final boolean fileParsed;
@@ -58,6 +62,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     this.semanticEnabled = semanticModel != null;
     this.sonarComponents = sonarComponents;
     this.complexityVisitor = new ComplexityVisitor();
+    this.regexCache = new RegexCache();
     this.javaVersion = javaVersion;
     this.fileParsed = fileParsed;
   }
@@ -145,6 +150,10 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(regexCheck, inputFile, mainLocations.get(0).locations().get(0), message, cost != null ? cost : 0);
     completeAnalyzerMessageWithFlows(analyzerMessage, secondariesAsFlows, ril -> ril.locations().get(0), RegexCheck.RegexIssueLocation::message);
     reportIssue(analyzerMessage);
+  }
+
+  public RegexParseResult regexForLiterals(LiteralTree... stringLiterals) {
+    return regexCache.getRegexForLiterals(stringLiterals);
   }
 
   @Override
