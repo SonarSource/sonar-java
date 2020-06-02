@@ -48,4 +48,8 @@ public class Location {
     return indexRange.getEndingOffset();
   }
 
+  public boolean isEmpty() {
+    return indexRange.isEmpty();
+  }
+
 }
