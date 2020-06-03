@@ -36,6 +36,7 @@ import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
+import org.sonar.java.regex.RegexScannerContext;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -45,7 +46,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
+public class DefaultJavaFileScannerContext implements JavaFileScannerContext, RegexScannerContext {
   private final JavaTree.CompilationUnitTreeImpl tree;
   private final boolean semanticEnabled;
   private final SonarComponents sonarComponents;
@@ -126,11 +127,8 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     reportIssue(javaCheck, tree, message, Collections.emptyList(), null);
   }
 
-  /**
-   * Not yet part of API, as REGEX-targeting rules are not part of it also
-   */
+  @Override
   public void reportIssue(RegexCheck regexCheck, RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
-
     List<List<RegexCheck.RegexIssueLocation>> secondariesAsFlows = new ArrayList<>();
 
     List<RegexCheck.RegexIssueLocation> mainLocations = new RegexCheck.RegexIssueLocation(regexTree, message).toSingleLocationItems();
@@ -152,6 +150,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     reportIssue(analyzerMessage);
   }
 
+  @Override
   public RegexParseResult regexForLiterals(LiteralTree... stringLiterals) {
     return regexCache.getRegexForLiterals(stringLiterals);
   }
