@@ -37,7 +37,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -109,7 +108,7 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean setSpecificOrigins(Tree tree) {
+  private static boolean setSpecificOrigins(ExpressionTree tree) {
     if (tree.is(Tree.Kind.ASSIGNMENT)) {
       AssignmentExpressionTree assignment = (AssignmentExpressionTree) tree;
       ExpressionTree variable = assignment.variable();
@@ -117,7 +116,7 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
         ANNOTATION_ORIGINS_KEY_ALIAS.contains(((IdentifierTree) variable).name()) &&
         !isStar(assignment.expression());
     }
-    return !isStar((LiteralTree) tree);
+    return !isStar(tree);
   }
 
   private void reportTree(MethodInvocationTree mit) {
