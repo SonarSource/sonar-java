@@ -38,7 +38,6 @@ class PlainTextTests {
     assertPlainCharacter('\n', "\\n");
     assertPlainCharacter('\f', "\\f");
     assertPlainCharacter('\r', "\\r");
-    assertPlainCharacter('\\', "\\\\");
     assertPlainCharacter('"', "\\\"");
   }
 
@@ -57,9 +56,21 @@ class PlainTextTests {
   }
 
   @Test
+  void escapedMetaCharacters() {
+    assertPlainCharacter('\\', "\\\\\\\\");
+    assertPlainCharacter('.', "\\\\.");
+    assertPlainCharacter('(', "\\\\(");
+    assertPlainCharacter(')', "\\\\)");
+    assertPlainCharacter('[', "\\\\[");
+    assertPlainCharacter(']', "\\\\]");
+    assertPlainCharacter('{', "\\\\{");
+    assertPlainCharacter('}', "\\\\}");
+  }
+
+  @Test
   void unicodeRidiculousness() {
     assertPlainCharacter('\t', "\\u005ct");
-    assertPlainCharacter('\\', "\\u005c\\u005c");
+    assertPlainCharacter('\\', "\\u005c\\u005c\\u005c\\u005c");
   }
 
 }

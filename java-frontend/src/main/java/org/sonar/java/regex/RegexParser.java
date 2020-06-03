@@ -197,10 +197,12 @@ public class RegexParser {
   private RegexTree parsePrimaryExpression() {
     if (characters.currentIs('(')) {
       return parseGroup();
+    } else if (characters.currentIs('\\')) {
+      return parseEscapeSequence();
     } else if (isPlainTextCharacter(characters.getCurrentChar())) {
       JavaCharacter character = characters.getCurrent();
       characters.moveNext();
-      return new PlainCharacterTree(character);
+      return new PlainCharacterTree(source, character.getRange(), character);
     } else {
       return null;
     }
@@ -217,6 +219,20 @@ public class RegexParser {
     }
     IndexRange range = openingParen.getRange().extendTo(characters.getCurrentStartIndex());
     return new GroupTree(source, range, inner);
+  }
+
+  private RegexTree parseEscapeSequence() {
+    JavaCharacter backslash = characters.getCurrent();
+    characters.moveNext();
+    if (characters.isAtEnd()) {
+      expected("any character");
+      return new PlainCharacterTree(source, backslash.getRange(), backslash);
+    } else {
+      // TODO: Properly handle escape sequences that aren't escaped metacharacters
+      JavaCharacter character = characters.getCurrent();
+      characters.moveNext();
+      return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
+    }
   }
 
   private void expected(String expectedToken) {
@@ -253,6 +269,7 @@ public class RegexParser {
       case '(':
       case ')':
       case '{':
+      case '\\':
       case '*':
       case '+':
       case '?':

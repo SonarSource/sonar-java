@@ -23,8 +23,8 @@ public class PlainCharacterTree extends RegexTree {
 
   private final JavaCharacter contents;
 
-  public PlainCharacterTree(JavaCharacter character) {
-    super(character.getSource(), character.getRange());
+  public PlainCharacterTree(RegexSource source, IndexRange range, JavaCharacter character) {
+    super(source, range);
     this.contents = character;
   }
 
