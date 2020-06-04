@@ -99,6 +99,10 @@ public final class JUtils {
     return !typeSymbol.isUnknown() && ((JTypeSymbol) typeSymbol).typeBinding().isAnnotation();
   }
 
+  public static boolean isEffectivelyFinal(Symbol.VariableSymbol variableSymbol) {
+    return ((IVariableBinding) ((JVariableSymbol) variableSymbol).binding).isEffectivelyFinal();
+  }
+
   public static boolean isParameter(Symbol symbol) {
     if (symbol instanceof JTypeSymbol.SpecialField) {
       return false;
