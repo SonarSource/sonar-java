@@ -32,6 +32,13 @@ public class AssertJChainSimplificationCheckTest {
     return true;
   }
 
+  void edgeCases() {
+    Object x = "x", y = "y";
+
+    assertThat((x == y)).isTrue(); // Noncompliant
+    assertThat((((((x == y)))))).isTrue(); // Noncompliantx
+  }
+
   void objectRelatedAssertionChains() {
     Comparable x = getBoolean();
     Object y = getObject();
@@ -45,7 +52,7 @@ public class AssertJChainSimplificationCheckTest {
 
     assertThat(getBoolean()).isEqualTo(true); // Noncompliant {{Use isTrue() instead}}
     assertThat(getBoolean()).isEqualTo(false); // Noncompliant {{Use isFalse() instead}}
-    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=48]] {{Use assertThat(actual).isEqualTo(expected) instead}}
+    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=55]] {{Use assertThat(actual).isEqualTo(expected) instead}}
     assertThat(x.equals(y)).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEqualTo(expected) instead}}
     assertThat(x == y).isTrue(); // Noncompliant {{Use assertThat(actual).isSameAs(expected) instead}}
     assertThat(x == y).isFalse(); // Noncompliant {{Use assertThat(actual).isNotSameAs(expected) instead}}
