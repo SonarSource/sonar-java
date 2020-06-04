@@ -67,6 +67,10 @@ public class RegexParserTestUtils {
     assertEquals(expected, characterTree.getCharacter(), "Regex should contain the right characters.");
   }
 
+  public static void assertPlainCharacter(char expected, String regex) {
+    assertPlainCharacter(expected, assertSuccessfulParse(regex));
+  }
+
   public static <T> T assertType(Class<T> klass, Object o) {
     String actual = o.getClass().getSimpleName();
     String expected = klass.getSimpleName();

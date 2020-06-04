@@ -19,27 +19,17 @@
  */
 package org.sonar.java.regex.ast;
 
-public class PlainCharacterTree extends RegexTree {
+public class JavaCharacter extends RegexSyntaxElement {
 
-  private final JavaCharacter contents;
+  private final char character;
 
-  public PlainCharacterTree(RegexSource source, IndexRange range, JavaCharacter character) {
+  public JavaCharacter(RegexSource source, IndexRange range, char character) {
     super(source, range);
-    this.contents = character;
+    this.character = character;
   }
 
   public char getCharacter() {
-    return contents.getCharacter();
-  }
-
-  @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitPlainCharacter(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return Kind.PLAIN_CHARACTER;
+    return character;
   }
 
 }
