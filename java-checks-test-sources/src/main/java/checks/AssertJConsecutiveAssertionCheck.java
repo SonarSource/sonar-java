@@ -23,9 +23,31 @@ public class AssertJConsecutiveAssertionCheck {
 
   @Test
   void assert_that_between() {
-    assertThat(myString).hasSize(2); // Noncompliant [[sc=5;ec=15;secondary=28]] {{Join these multiple assertions subject to one assertion chain.}}
+    assertThat(myString).hasSize(2); // Compliant
+    assertThat(myString.charAt(2)).isEqualTo('2');
+    assertThat(myString).isEqualTo("10");
+  }
+
+  @Test
+  void assert_that_between_2() {
+    assertThat(myString).hasSize(2); // Compliant
     assertThat("myString").isEqualTo("10");
     assertThat(myString).isEqualTo("10");
+  }
+
+  @Test
+  void two_assert_subject_argument() {
+    assertThat(myOtherString).hasSize(2);
+    assertThat(myString).startsWith("4"); // Noncompliant
+    assertThat(myString).isEqualTo("42");
+  }
+
+  @Test
+  void two_assert_subject_argument_2() {
+    assertThat(myOtherString).hasSize(2); // Noncompliant [[sc=5;ec=15;secondary=48]]
+    assertThat(myOtherString).startsWith("2");
+    assertThat(myString).startsWith("4"); // Noncompliant [[sc=5;ec=15;secondary=50]]
+    assertThat(myString).isEqualTo("42");
   }
 
   @Test
@@ -139,6 +161,38 @@ public class AssertJConsecutiveAssertionCheck {
     assertThat(myList.get(1)).isEqualTo("42");
   }
 
+
+  @Test
+  void assert_on_member_select_3() {
+    assertThat(getList()).hasSize(2); // Compliant
+    assertThat(getList()).hasSize(1);
+  }
+
+  @Test
+  void assert_on_member_select_4() {
+    assertThat(getList().size()).isEqualTo(2); // Compliant
+    assertThat(getList().size()).isLessThan(1);
+  }
+
+  @Test
+  void assert_on_member_select_5() {
+    assertThat(getArray().length).isNotEqualTo(2); // Compliant
+    assertThat(getArray().length).isNotEqualTo(1);
+  }
+
+  @Test
+  void assert_on_member_select_6() {
+    assertThat(getFieldOfField().field.list.length).isNotEqualTo(2); // Compliant
+    assertThat(getFieldOfField().field.list.length).isNotEqualTo(1);
+  }
+
+  @Test
+  void assert_on_member_select_7() {
+    FieldOfField fof = new FieldOfField();
+    assertThat(fof.field.list.length).isNotEqualTo(2); // Noncompliant
+    assertThat(fof.field.list.length).isNotEqualTo(1);
+  }
+
   @Test
   void assert_iterator() {
     Iterator<String> it = (new ArrayList<String>()).iterator();
@@ -170,6 +224,18 @@ public class AssertJConsecutiveAssertionCheck {
     assertThat(myString).isEqualTo("42");
   }
 
+  List<String> getList() {
+    return new ArrayList<>();
+  }
+
+  String[] getArray() {
+    return new String[1];
+  }
+
+  FieldOfField getFieldOfField() {
+    return new FieldOfField();
+  }
+
   void modify() {
     myString = "A";
   }
@@ -185,4 +251,9 @@ class MyComparator implements Comparator<Object> {
 abstract class AbstractTestNullBlock {
   @Test
   abstract void simple_example();
+}
+
+class FieldOfField {
+  FieldOfField field = new FieldOfField();
+  String[] list = new String[1];
 }

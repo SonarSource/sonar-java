@@ -72,78 +72,99 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
   }
 
   private void reportConsecutiveAssertions(List<StatementTree> statements) {
-    ExpressionTree currentArgument = null;
-    MethodInvocationTree currentMit = null;
+    AssertSubject currentSubject = null;
     List<MethodInvocationTree> equivalentInvocations = new ArrayList<>();
 
     for (StatementTree statement : statements) {
-      Optional<MethodInvocationTree> assertThatInvocation = getSimpleAssertSubjectInvocation(statement);
+      Optional<AssertSubject> assertThatInvocation = getSimpleAssertSubject(statement);
 
       if (assertThatInvocation.isPresent()) {
-        MethodInvocationTree mit = assertThatInvocation.get();
-        ExpressionTree arg = mit.arguments().get(0);
-        if (currentArgument == null) {
-          currentMit = mit;
-          currentArgument = arg;
-        } else if (areEquivalent(currentArgument, arg)) {
-          equivalentInvocations.add(mit);
+        AssertSubject assertSubject = assertThatInvocation.get();
+        if (currentSubject == null) {
+          currentSubject = assertSubject;
+        } else if (areEquivalent(currentSubject.arg, assertSubject.arg)) {
+          equivalentInvocations.add(assertSubject.mit);
+        } else {
+          reportIssueIfMultipleCalls(currentSubject, equivalentInvocations);
+          currentSubject = assertSubject;
+          equivalentInvocations.clear();
         }
       } else {
-        // We have something else than an assertion subject between two calls
-        reportIssueIfMultipleCalls(currentMit, equivalentInvocations);
-
-        currentArgument = null;
-        currentMit = null;
+        // We have something else than an assertion subject or a subject returning different values between two calls
+        reportIssueIfMultipleCalls(currentSubject, equivalentInvocations);
+        currentSubject = null;
         equivalentInvocations.clear();
       }
     }
 
-    reportIssueIfMultipleCalls(currentMit, equivalentInvocations);
+    reportIssueIfMultipleCalls(currentSubject, equivalentInvocations);
   }
 
-  private static Optional<MethodInvocationTree> getSimpleAssertSubjectInvocation(StatementTree statement) {
+  private static boolean alwaysReturnSameValue(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      // Two method invocation can return different values.
+      return false;
+    } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      return alwaysReturnSameValue(((MemberSelectExpressionTree) expression).expression());
+    }
+    return true;
+  }
+
+  /**
+   * A "simple" assertion subject is coming from an assertion chain containing only one assertion predicate
+   * and the assertion subject argument always returning the same value when called multiple times.
+   */
+  private static Optional<AssertSubject> getSimpleAssertSubject(StatementTree statement) {
     if (statement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
       ExpressionTree expression = ((ExpressionStatementTree) statement).expression();
       if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
         // First method invocation should be an assertion predicate, if not (incomplete assertion), we will not find anything
-        return getSimpleAssertSubjectInvocation(((MethodInvocationTree) expression).methodSelect());
+        return getSimpleAssertSubject(((MethodInvocationTree) expression).methodSelect());
       }
     }
     return Optional.empty();
   }
 
-  private static Optional<MethodInvocationTree> getSimpleAssertSubjectInvocation(ExpressionTree expressionTree) {
+  private static Optional<AssertSubject> getSimpleAssertSubject(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree memberSelectExpression = ((MemberSelectExpressionTree) expressionTree).expression();
       if (memberSelectExpression.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) memberSelectExpression;
         if (ASSERT_THAT_MATCHER.matches(mit)) {
-          return Optional.of(mit);
+          ExpressionTree arg = mit.arguments().get(0);
+          if (alwaysReturnSameValue(arg)) {
+            return Optional.of(new AssertSubject(mit, arg));
+          }
         } else if (ASSERTJ_SET_CONTEXT_METHODS.matches(mit)) {
           return Optional.empty();
         } else {
-          return getSimpleAssertSubjectInvocation(mit.methodSelect());
+          return getSimpleAssertSubject(mit.methodSelect());
         }
       }
     }
     return Optional.empty();
   }
 
-  private static boolean areEquivalent(ExpressionTree e1, ExpressionTree e2) {
-    if (e1.is(Tree.Kind.METHOD_INVOCATION)) {
-      // Two method invocation can return different values.
-      return false;
-    }
-
+  private static boolean areEquivalent(@Nullable ExpressionTree e1, ExpressionTree e2) {
     return SyntacticEquivalence.areEquivalent(e1, e2);
   }
 
-  private void reportIssueIfMultipleCalls(@Nullable MethodInvocationTree mainLocation, List<MethodInvocationTree> equivalentAssertions) {
-    if (mainLocation != null && !equivalentAssertions.isEmpty()) {
-      reportIssue(ExpressionUtils.methodName(mainLocation),
+  private void reportIssueIfMultipleCalls(@Nullable AssertSubject assertSubject, List<MethodInvocationTree> equivalentAssertions) {
+    if (assertSubject != null && !equivalentAssertions.isEmpty()) {
+      reportIssue(ExpressionUtils.methodName(assertSubject.mit),
         "Join these multiple assertions subject to one assertion chain.",
         equivalentAssertions.stream().map(mit -> new JavaFileScannerContext.Location("Other assertThat", ExpressionUtils.methodName(mit))).collect(Collectors.toList()),
         null);
+    }
+  }
+
+  private static class AssertSubject {
+    final MethodInvocationTree mit;
+    final ExpressionTree arg;
+
+    AssertSubject(MethodInvocationTree mit, ExpressionTree arg) {
+      this.mit = mit;
+      this.arg = arg;
     }
   }
 
