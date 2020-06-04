@@ -40,7 +40,11 @@ public class IndexRange {
   }
 
   public IndexRange merge(IndexRange other) {
-    return new IndexRange(beginningOffset, other.endingOffset);
+    return extendTo(other.endingOffset);
+  }
+
+  public IndexRange extendTo(int newEnd) {
+    return new IndexRange(beginningOffset, newEnd);
   }
 
   public boolean isEmpty() {
