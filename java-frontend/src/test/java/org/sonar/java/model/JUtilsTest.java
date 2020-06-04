@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import java.util.List;
 import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -30,6 +31,7 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.StatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -135,6 +137,22 @@ class JUtilsTest {
     assertThat(JUtils.declaringType(cRaw.type().symbolType()))
       .isSameAs(JUtils.declaringType(c.symbol().type()))
       .isSameAs(c.symbol().type());
+  }
+
+  @Test
+  void effectivelyFinal() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class A { void foo(Object o) { int i = 42; int j = 43; j++; foo(i); } }");
+    ClassTreeImpl a = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl m = (MethodTreeImpl) a.members().get(0);
+    List<StatementTree> body = m.block().body();
+    VariableTreeImpl i = (VariableTreeImpl) body.get(0);
+    VariableTreeImpl j = (VariableTreeImpl) body.get(1);
+
+    assertThat(i.symbol().isVariableSymbol()).isTrue();
+    assertThat(JUtils.isEffectivelyFinal((Symbol.VariableSymbol) i.symbol())).isTrue();
+
+    assertThat(j.symbol().isVariableSymbol()).isTrue();
+    assertThat(JUtils.isEffectivelyFinal((Symbol.VariableSymbol) j.symbol())).isFalse();
   }
 
   @Test
