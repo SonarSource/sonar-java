@@ -19,6 +19,9 @@
  */
 package org.sonar.java.regex;
 
+import java.util.NoSuchElementException;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.RegexSource;
@@ -35,6 +38,10 @@ public class JavaCharacterParser {
 
   private final JavaUnicodeEscapeParser unicodeProcessedCharacters;
 
+  /**
+   * Will be null if and only if the end of input has been reached
+   */
+  @CheckForNull
   private JavaCharacter current;
 
   public JavaCharacterParser(RegexSource source) {
@@ -47,7 +54,11 @@ public class JavaCharacterParser {
     current = parseJavaCharacter();
   }
 
+  @Nonnull
   public JavaCharacter getCurrent() {
+    if (current == null) {
+      throw new NoSuchElementException();
+    }
     return current;
   }
 
@@ -87,6 +98,7 @@ public class JavaCharacterParser {
     return current != null && current.getCharacter() == ch;
   }
 
+  @CheckForNull
   private JavaCharacter parseJavaCharacter() {
     JavaCharacter javaCharacter = unicodeProcessedCharacters.getCurrent();
     if (javaCharacter == null) {
@@ -104,29 +116,24 @@ public class JavaCharacterParser {
     JavaCharacter javaCharacter = unicodeProcessedCharacters.getCurrent();
     if (javaCharacter == null) {
       // Should only happen in case of syntactically invalid string literals
-      return null;
+      return backslash;
     }
     char ch = javaCharacter.getCharacter();
     switch (ch) {
       case 'n':
         ch = '\n';
-        unicodeProcessedCharacters.moveNext();
         break;
       case 'r':
         ch = '\r';
-        unicodeProcessedCharacters.moveNext();
         break;
       case 'f':
         ch = '\f';
-        unicodeProcessedCharacters.moveNext();
         break;
       case 'b':
         ch = '\b';
-        unicodeProcessedCharacters.moveNext();
         break;
       case 't':
         ch = '\t';
-        unicodeProcessedCharacters.moveNext();
         break;
       default:
         if (isOctalDigit(ch)) {
@@ -137,11 +144,11 @@ public class JavaCharacterParser {
             javaCharacter = unicodeProcessedCharacters.getCurrent();
           }
           ch = (char) Integer.parseInt(codeUnit.toString(), 8);
-        } else {
-          unicodeProcessedCharacters.moveNext();
+          return new JavaCharacter(source, backslash.getRange().extendTo(getCurrentStartIndex()), ch);
         }
         break;
     }
+    unicodeProcessedCharacters.moveNext();
     return new JavaCharacter(source, backslash.getRange().extendTo(getCurrentStartIndex()), ch);
   }
 
