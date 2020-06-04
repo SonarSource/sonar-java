@@ -724,8 +724,7 @@ public final class CheckList {
       XmlDeserializationCheck.class,
       XxeActiveMQCheck.class,
       XxeProcessingCheck.class,
-      ZipEntryCheck.class
-    );
+      ZipEntryCheck.class);
   }
 
   // Rule classes are listed alphabetically
