@@ -41,9 +41,9 @@ import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.SIMPLI
 public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
   private static final String ISSUE_MESSAGE_FORMAT_STRING = "Use %s instead";
 
-  private static final MethodMatchers ASSERTION_MESSAGE_METHODS = MethodMatchers.create()
-    .ofSubTypes("org.assertj.core.api.AbstractAssert")
+  private static final MethodMatchers ASSERTION_MESSAGE_METHODS = MethodMatchers.create().ofSubTypes("org.assertj.core.api.AbstractAssert")
     .names("as", "describedAs", "withFailMessage", "overridingErrorMessage").withAnyParameters().build();
+
 
   private static final MethodMatchers ASSERTIONS_SUBJECT_METHODS = MethodMatchers.create().ofTypes(
     "org.assertj.core.api.Assertions",
@@ -60,6 +60,7 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree subjectMit) {
     List<MethodInvocationTree> predicates = new ArrayList<>();
     Optional<MethodInvocationTree> nextPredicateOpt = MethodTreeUtils.consecutiveMethodInvocation(subjectMit);
+
 
     while (nextPredicateOpt.isPresent()) {
       MethodInvocationTree nextPredicate = nextPredicateOpt.get();
