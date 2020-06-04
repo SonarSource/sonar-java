@@ -19,6 +19,14 @@
  */
 package org.sonar.java.checks.tests;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -27,36 +35,30 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
-import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-
 @Rule(key = "S5838")
 public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
   private static final String ABSTRACT_ASSERT = "org.assertj.core.api.AbstractAssert";
   private static final List<String> ASSERTION_MESSAGE_NAMES = Arrays.asList("as", "describedAs", "withFailMessage", "overridingErrorMessage");
 
-  private static final MethodMatchers ASSERTION_PREDICATES = MethodMatchers.create()
-                                                               .ofSubTypes(ABSTRACT_ASSERT).name(name -> !ASSERTION_MESSAGE_NAMES.contains(name)).withAnyParameters().build();
+  private static final MethodMatchers ASSERTION_PREDICATES = MethodMatchers.create().ofSubTypes(ABSTRACT_ASSERT)
+    .name(name -> !ASSERTION_MESSAGE_NAMES.contains(name)).withAnyParameters().build();
 
   // TODO: Support more assertion subject methods / from different classes
-  private static final MethodMatchers ASSERTIONS_SUBJECT_METHODS =
-    MethodMatchers.create().ofTypes("org.assertj.core.api.Assertions",
-                                    "org.assertj.core.api.AssertionsForInterfaceTypes",
-                                    "org.assertj.core.api.AssertionsForClassTypes")
-      .names("assertThat").withAnyParameters().build();
+  private static final MethodMatchers ASSERTIONS_SUBJECT_METHODS = MethodMatchers.create().ofTypes(
+    "org.assertj.core.api.Assertions",
+    "org.assertj.core.api.AssertionsForInterfaceTypes",
+    "org.assertj.core.api.AssertionsForClassTypes")
+    .names("assertThat").withAnyParameters().build();
 
   /**
    * @see AssertJChainSimplificationIndex#CONTEXT_FREE_SIMPLIFIERS
    */
-  private static final Map<String, List<SimplifierWithoutContext>> CONTEXT_FREE_SIMPLIFIERS =
-    AssertJChainSimplificationIndex.CONTEXT_FREE_SIMPLIFIERS;
+  private static final Map<String, List<SimplifierWithoutContext>> CONTEXT_FREE_SIMPLIFIERS = AssertJChainSimplificationIndex.CONTEXT_FREE_SIMPLIFIERS;
 
   /**
    * @see AssertJChainSimplificationIndex#SIMPLIFIERS_WITH_CONTEXT
    */
-  private static final Map<String, List<SimplifierWithContext>> SIMPLIFIERS_WITH_CONTEXT =
-    AssertJChainSimplificationIndex.SIMPLIFIERS_WITH_CONTEXT;
+  private static final Map<String, List<SimplifierWithContext>> SIMPLIFIERS_WITH_CONTEXT = AssertJChainSimplificationIndex.SIMPLIFIERS_WITH_CONTEXT;
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -67,14 +69,16 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree subjectMit) {
     List<MethodInvocationTree> predicates = new ArrayList<>();
     Optional<MethodInvocationTree> nextPredicate = MethodTreeUtils.subsequentMethodInvocation(subjectMit, ASSERTION_PREDICATES);
+
     while (nextPredicate.isPresent()) {
       predicates.add(nextPredicate.get());
       nextPredicate = MethodTreeUtils.subsequentMethodInvocation(nextPredicate.get(), ASSERTION_PREDICATES);
     }
 
-    boolean wasIssueRaised = checkPredicatesForSimplification(predicates, CONTEXT_FREE_SIMPLIFIERS,
-                                                              SimplifierWithoutContext::simplify,
-                                                              (predicate, replacement) -> reportIssue(ExpressionUtils.methodName(predicate), String.format("Use %s instead", replacement)));
+    boolean wasIssueRaised = checkPredicatesForSimplification(
+      predicates, CONTEXT_FREE_SIMPLIFIERS, SimplifierWithoutContext::simplify,
+      (predicate, replacement) -> reportIssue(ExpressionUtils.methodName(predicate),
+        String.format("Use %s instead", replacement)));
 
     // We do not continue when we have already raised an issue to avoid potentially conflicting issue reports. If we
     // have more than one predicate we also avoid continuing to avoid FP on cases such as:
@@ -83,10 +87,13 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
       return;
     }
 
-    checkPredicatesForSimplification(predicates, SIMPLIFIERS_WITH_CONTEXT,
-                                     (simplifier, predicate) -> simplifier.simplify(subjectMit, predicate),
-                                     (predicate, replacement) -> reportIssue(ExpressionUtils.methodName(predicate), String.format("Use %s instead", replacement),
-                                                                             Collections.singletonList(new JavaFileScannerContext.Location("", subjectMit)), null));
+    checkPredicatesForSimplification(
+      predicates, SIMPLIFIERS_WITH_CONTEXT, (simplifier, predicate) -> simplifier.simplify(subjectMit, predicate),
+      (predicate, replacement) -> reportIssue(ExpressionUtils.methodName(predicate),
+        String.format("Use %s instead", replacement),
+        Collections.singletonList(
+          new JavaFileScannerContext.Location("", subjectMit)),
+        null));
   }
 
   /**
