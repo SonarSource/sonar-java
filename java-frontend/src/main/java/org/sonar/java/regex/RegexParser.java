@@ -26,6 +26,7 @@ import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.IndexRange;
+import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.Quantifier;
 import org.sonar.java.regex.ast.RegexSource;
@@ -35,22 +36,19 @@ import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.java.regex.ast.SimpleQuantifier;
 
-public class RegexParser {
+import static org.sonar.java.regex.JavaCharacterParser.EOF;
 
-  private static final int EOF = -1;
+public class RegexParser {
 
   private final RegexSource source;
 
-  private final String sourceText;
-
-  private int index;
+  private final JavaCharacterParser characters;
 
   private final List<SyntaxError> errors;
 
   public RegexParser(RegexSource source) {
     this.source = source;
-    this.sourceText = source.getSourceText();
-    this.index = 0;
+    this.characters = new JavaCharacterParser(source);
     this.errors = new ArrayList<>();
   }
 
@@ -59,12 +57,11 @@ public class RegexParser {
     do {
       RegexTree result = parseDisjunction();
       results.add(result);
-      if (index < sourceText.length()) {
-        char offendingChar = sourceText.charAt(index);
-        error("Unexpected '" + offendingChar + "'");
-        index++;
+      if (characters.isNotAtEnd()) {
+        error("Unexpected '" + characters.getCurrent().getCharacter() + "'");
+        characters.moveNext();
       }
-    } while (currentChar() != EOF);
+    } while (characters.isNotAtEnd());
     RegexTree result = combineTrees(results, (range, elements) -> new SequenceTree(source, range, elements));
     return new RegexParseResult(result, errors);
   }
@@ -73,8 +70,8 @@ public class RegexParser {
     List<RegexTree> alternatives = new ArrayList<>();
     RegexTree first = parseSequence();
     alternatives.add(first);
-    while (currentChar() == '|') {
-      index++;
+    while (characters.currentIs('|')) {
+      characters.moveNext();
       RegexTree next = parseSequence();
       alternatives.add(next);
     }
@@ -82,17 +79,17 @@ public class RegexParser {
   }
 
   private RegexTree parseSequence() {
-    int startIndex = index;
     List<RegexTree> elements = new ArrayList<>();
     RegexTree element = parseRepetition();
     while (element != null) {
       elements.add(element);
       element = parseRepetition();
     }
-    if (elements.size() == 1) {
-      return elements.get(0);
+    if (elements.isEmpty()) {
+      int index = characters.getCurrentStartIndex();
+      return new SequenceTree(source, new IndexRange(index, index), elements);
     } else {
-      return new SequenceTree(source, new IndexRange(startIndex, index), elements);
+      return combineTrees(elements, (range, items) -> new SequenceTree(source, range, items));
     }
   }
 
@@ -115,9 +112,8 @@ public class RegexParser {
 
   @CheckForNull
   private Quantifier parseQuantifier() {
-    int startIndex = index;
     SimpleQuantifier.Kind kind;
-    switch (currentChar()) {
+    switch (characters.getCurrentChar()) {
       case '*':
         kind = SimpleQuantifier.Kind.STAR;
         break;
@@ -132,15 +128,16 @@ public class RegexParser {
       default:
         return null;
     }
-    index++;
+    JavaCharacter current = characters.getCurrent();
+    characters.moveNext();
     Quantifier.Modifier modifier = parseQuantifierModifier();
-    return new SimpleQuantifier(source, new IndexRange(startIndex, index), modifier, kind);
+    IndexRange range = current.getRange().extendTo(characters.getCurrentStartIndex());
+    return new SimpleQuantifier(source, range, modifier, kind);
   }
 
   CurlyBraceQuantifier parseCurlyBraceQuantifier() {
-    int startIndex = index;
-    // Discard '{'
-    index++;
+    JavaCharacter openingBrace = characters.getCurrent();
+    characters.moveNext();
     RegexToken lowerBound = parseInteger();
     if (lowerBound == null) {
       expected("integer");
@@ -148,14 +145,14 @@ public class RegexParser {
     }
     RegexToken comma = null;
     RegexToken upperBound = null;
-    if (currentChar() == ',') {
-      comma = new RegexToken(source, new IndexRange(index, index + 1));
-      index++;
+    if (characters.currentIs(',')) {
+      comma = new RegexToken(source, characters.getCurrent().getRange());
+      characters.moveNext();
       upperBound = parseInteger();
     }
     Quantifier.Modifier modifier;
-    if (currentChar() == '}') {
-      index++;
+    if (characters.currentIs('}')) {
+      characters.moveNext();
     } else {
       if (comma == null) {
         expected("',' or '}'");
@@ -166,17 +163,17 @@ public class RegexParser {
       }
     }
     modifier = parseQuantifierModifier();
-    IndexRange range = new IndexRange(startIndex, index);
+    IndexRange range = openingBrace.getRange().extendTo(characters.getCurrentStartIndex());
     return new CurlyBraceQuantifier(source, range, modifier, lowerBound, comma, upperBound);
   }
 
   Quantifier.Modifier parseQuantifierModifier() {
-    switch (currentChar()) {
+    switch (characters.getCurrentChar()) {
       case '+':
-        index++;
+        characters.moveNext();
         return Quantifier.Modifier.POSSESSIVE;
       case '?':
-        index++;
+        characters.moveNext();
         return Quantifier.Modifier.LAZY;
       default:
         return Quantifier.Modifier.GREEDY;
@@ -185,62 +182,66 @@ public class RegexParser {
 
   @CheckForNull
   private RegexToken parseInteger() {
-    int startIndex = index;
-    if (!isAsciiDigit(currentChar())) {
+    int startIndex = characters.getCurrentStartIndex();
+    if (!isAsciiDigit(characters.getCurrentChar())) {
       return null;
     }
-    while(isAsciiDigit(currentChar())) {
-      index++;
+    while(isAsciiDigit(characters.getCurrentChar())) {
+      characters.moveNext();
     }
-    IndexRange range = new IndexRange(startIndex, index);
+    IndexRange range = new IndexRange(startIndex, characters.getCurrentStartIndex());
     return new RegexToken(source, range);
   }
 
   @CheckForNull
   private RegexTree parsePrimaryExpression() {
-    if (currentChar() == '(') {
+    if (characters.currentIs('(')) {
       return parseGroup();
-    } else if (isPlainTextCharacter(currentChar())) {
-      return parsePlainText();
+    } else if (characters.currentIs('\\')) {
+      return parseEscapeSequence();
+    } else if (isPlainTextCharacter(characters.getCurrentChar())) {
+      JavaCharacter character = characters.getCurrent();
+      characters.moveNext();
+      return new PlainCharacterTree(source, character.getRange(), character);
     } else {
       return null;
     }
   }
 
   private GroupTree parseGroup() {
-    int startIndex = index;
-    // Discard '('
-    index++;
+    JavaCharacter openingParen = characters.getCurrent();
+    characters.moveNext();
     RegexTree inner = parseDisjunction();
-    if (currentChar() == ')') {
-      index++;
+    if (characters.currentIs(')')) {
+      characters.moveNext();
     } else {
       expected("')'");
     }
-    IndexRange range = new IndexRange(startIndex, index);
+    IndexRange range = openingParen.getRange().extendTo(characters.getCurrentStartIndex());
     return new GroupTree(source, range, inner);
   }
 
-  private PlainCharacterTree parsePlainText() {
-    index++;
-    return new PlainCharacterTree(new RegexToken(source, new IndexRange(index - 1, index)));
-  }
-
-  private int currentChar() {
-    if (index < sourceText.length()) {
-      return sourceText.charAt(index);
+  private RegexTree parseEscapeSequence() {
+    JavaCharacter backslash = characters.getCurrent();
+    characters.moveNext();
+    if (characters.isAtEnd()) {
+      expected("any character");
+      return new PlainCharacterTree(source, backslash.getRange(), backslash);
     } else {
-      return EOF;
+      // TODO: Properly handle escape sequences that aren't escaped metacharacters
+      JavaCharacter character = characters.getCurrent();
+      characters.moveNext();
+      return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
     }
   }
 
   private void expected(String expectedToken) {
-    String actual = currentChar() == EOF ? "the end of the regex" : ("'" + (char)currentChar() + "'");
+    String actual = characters.isAtEnd() ? "the end of the regex" : ("'" + characters.getCurrent().getCharacter() + "'");
     error("Expected " + expectedToken + ", but found " + actual);
   }
 
   private void error(String message) {
-    IndexRange range = new IndexRange(index, currentChar() == EOF ? index : (index + 1));
+    IndexRange range = characters.getCurrentIndexRange();
     RegexToken offendingToken = new RegexToken(source, range);
     errors.add(new SyntaxError(offendingToken, message));
   }
@@ -268,12 +269,12 @@ public class RegexParser {
       case '(':
       case ')':
       case '{':
+      case '\\':
       case '*':
       case '+':
       case '?':
       case '|':
       case '[':
-      case '\\':
       case '.':
         return false;
       default:
