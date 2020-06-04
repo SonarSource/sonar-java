@@ -56,6 +56,10 @@ public class RegexSource {
     return sourceText;
   }
 
+  public int length() {
+    return sourceText.length();
+  }
+
   public List<Location> locationsFor(IndexRange range) {
     return locationsFor(range.getBeginningOffset(), range.getEndingOffset());
   }
