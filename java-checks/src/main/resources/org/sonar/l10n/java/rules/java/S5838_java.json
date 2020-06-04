@@ -1,0 +1,12 @@
+{
+  "title": "Chained AssertJ assertions should be simplified to the corresponding dedicated assertion",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "tags": [
+    "tests"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-5838",
+  "sqKey": "S5838",
+  "scope": "Tests"
+}

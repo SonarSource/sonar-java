@@ -109,29 +109,7 @@ import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
 import org.sonar.java.checks.synchronization.ValueBasedObjectUsedForLockCheck;
 import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
-import org.sonar.java.checks.tests.AssertJContextBeforeAssertionCheck;
-import org.sonar.java.checks.tests.AssertTrueInsteadOfDedicatedAssertCheck;
-import org.sonar.java.checks.tests.AssertionArgumentOrderCheck;
-import org.sonar.java.checks.tests.AssertionFailInCatchBlockCheck;
-import org.sonar.java.checks.tests.AssertionInThreadRunCheck;
-import org.sonar.java.checks.tests.AssertionInTryCatchCheck;
-import org.sonar.java.checks.tests.AssertionsCompletenessCheck;
-import org.sonar.java.checks.tests.AssertionsInTestsCheck;
-import org.sonar.java.checks.tests.AssertionsWithoutMessageCheck;
-import org.sonar.java.checks.tests.BooleanOrNullLiteralInAssertionsCheck;
-import org.sonar.java.checks.tests.CallSuperInTestCaseCheck;
-import org.sonar.java.checks.tests.ExpectedExceptionCheck;
-import org.sonar.java.checks.tests.IgnoredTestsCheck;
-import org.sonar.java.checks.tests.JUnit4AnnotationsCheck;
-import org.sonar.java.checks.tests.JUnit5DefaultPackageClassAndMethodCheck;
-import org.sonar.java.checks.tests.JUnit5PrivateClassAndMethodCheck;
-import org.sonar.java.checks.tests.JunitMethodDeclarationCheck;
-import org.sonar.java.checks.tests.JunitNestedAnnotationCheck;
-import org.sonar.java.checks.tests.NoTestInTestClassCheck;
-import org.sonar.java.checks.tests.OneExpectedCheckedExceptionCheck;
-import org.sonar.java.checks.tests.OneExpectedRuntimeExceptionCheck;
-import org.sonar.java.checks.tests.TestAnnotationWithExpectedExceptionCheck;
-import org.sonar.java.checks.tests.ThreadSleepInTestsCheck;
+import org.sonar.java.checks.tests.*;
 import org.sonar.java.checks.unused.UnusedLabelCheck;
 import org.sonar.java.checks.unused.UnusedLocalVariableCheck;
 import org.sonar.java.checks.unused.UnusedMethodParameterCheck;
@@ -744,6 +722,7 @@ public final class CheckList {
       AssertionsInTestsCheck.class,
       AssertionsWithoutMessageCheck.class,
       AssertJApplyConfigurationCheck.class,
+      AssertJChainSimplificationCheck.class,
       AssertJContextBeforeAssertionCheck.class,
       AssertTrueInsteadOfDedicatedAssertCheck.class,
       BadTestClassNameCheck.class,
