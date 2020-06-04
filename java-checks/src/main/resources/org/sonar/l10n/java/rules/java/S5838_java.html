@@ -1,0 +1,78 @@
+<p>AssertJ contains many assertions methods specific to common types. Both versions will test the same things, but the dedicated one will provide a
+better error message, simplifying the debugging process.</p>
+<p>This rule reports an issue when an assertion can be simplified to a dedicated one.</p>
+<p>The array below gives a non-exhaustive list of assertion reported by the rule. Code behaving similarly, or with a negation will also be
+reported.</p>
+<table>
+  <tbody>
+    <tr>
+      <th>Original</th>
+      <th>Dedicated</th>
+    </tr>
+    <tr>
+      <th>&nbsp;Related to Object </th>
+      <th>&nbsp;</th>
+    </tr>
+    <tr>
+      <td><code>assertThat(getObject()).isEqualTo(null)</code></td>
+      <td><code>assertThat(getObject()).isNull()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getBoolean()).isEqualTo(true)</code></td>
+      <td><code>assertThat(getBoolean()).isTrue()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getBoolean()).isEqualTo(false)</code></td>
+      <td><code>assertThat(getBoolean()).isFalse()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(x.equals(y)).isTrue()</code></td>
+      <td><code>assertThat(x).isEqualTo(y)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(x == y).isTrue()</code></td>
+      <td><code>assertThat(x).isSameAs(y)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(x == null).isTrue()</code></td>
+      <td><code>assertThat(x).isNull()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(x.toString()).isEqualTo(y)</code></td>
+      <td><code>assertThat(x).hasToString(y)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(x.hashCode()).isEqualTo(y.hashCode())</code></td>
+      <td><code>assertThat(x).hasSameHashCodeAs(y));</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getObject() instanceof MyClass).isTrue()</code></td>
+      <td><code>assertThat(getObject()).isInstanceOf(MyClass.class)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(x.compareTo(y)).isEqualTo(0)</code></td>
+      <td><code>assertThat(x).isEqualByComparingTo(y)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(x &gt;= y).isGreaterThanOrEqualTo(0)</code></td>
+      <td><code>assertThat(x).isGreaterThanOrEqualTo(y)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(x &gt; y).isPositive()</code></td>
+      <td><code>assertThat(x).isGreaterThan(y)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(x &lt;= y).isNotPositive()</code></td>
+      <td><code>assertThat(x).isLessThanOrEqualTo(y)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(x &lt; y).isTrue(0)</code></td>
+      <td><code>assertThat(x).isLessThan(y)</code></td>
+    </tr>
+  </tbody>
+</table>
+<h2>Compliant Solution</h2>
+<pre>
+assertThat(getObject()).isNull();
+</pre>
+
