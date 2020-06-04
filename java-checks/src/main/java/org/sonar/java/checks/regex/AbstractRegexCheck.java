@@ -27,6 +27,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexScannerContext;
@@ -122,7 +123,7 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     }
 
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) symbol;
-    if (!variableSymbol.isFinal()) {
+    if (!(variableSymbol.isFinal() || JUtils.isEffectivelyFinal(variableSymbol))) {
       return Optional.empty();
     }
     VariableTree declaration = variableSymbol.declaration();

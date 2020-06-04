@@ -86,8 +86,24 @@ class AbstractRegexCheckTest {
   }
 
   @Test
-  void test_GetLiterals_non_final_variable() {
-    ExpressionTree expr = getArg("a", "String a = \"abc\";").expr;
+  void test_GetLiterals_effectively_final_variable() {
+    TestCase testcase = getArg("a", "String a = \"abc\";");
+    ExpressionTree expr = testcase.expr;
+    ExpressionTree initializer = ((VariableTree) testcase.preStatements.get(0)).initializer();
+
+    Optional<LiteralTree[]> result = getLiterals(expr);
+    assertThat(result).isPresent();
+
+    assertThat(result.get())
+      .hasSize(1)
+      .allMatch(t -> t.is(Tree.Kind.STRING_LITERAL))
+      .containsExactly((LiteralTree) initializer);
+  }
+
+  @Test
+  void test_GetLiterals_effectively_non_final_variable() {
+    TestCase testcase = getArg("a", "String a = \"abc\";", "a = \"bcd\";");
+    ExpressionTree expr = testcase.expr;
 
     Optional<LiteralTree[]> result = getLiterals(expr);
     assertThat(result).isEmpty();
