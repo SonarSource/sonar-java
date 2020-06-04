@@ -43,7 +43,6 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
   private static final MethodMatchers ASSERTION_PREDICATES = MethodMatchers.create().ofSubTypes(ABSTRACT_ASSERT)
     .name(name -> !ASSERTION_MESSAGE_NAMES.contains(name)).withAnyParameters().build();
 
-  // TODO: Support more assertion subject methods / from different classes
   private static final MethodMatchers ASSERTIONS_SUBJECT_METHODS = MethodMatchers.create().ofTypes(
     "org.assertj.core.api.Assertions",
     "org.assertj.core.api.AssertionsForInterfaceTypes",
