@@ -19,19 +19,29 @@
  */
 package org.sonar.java.checks.regex;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Streams;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
+import org.sonar.java.regex.RegexScannerContext;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 public abstract class AbstractRegexCheck extends AbstractMethodDetection implements RegexCheck {
 
@@ -53,27 +63,84 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
       .withAnyParameters()
       .build());
 
+  private RegexScannerContext regexContext;
+
   @Override
-  protected MethodMatchers getMethodInvocationMatchers() {
+  public final void setContext(JavaFileScannerContext context) {
+    this.regexContext = (RegexScannerContext) context;
+    super.setContext(context);
+  }
+
+  @Override
+  protected final MethodMatchers getMethodInvocationMatchers() {
     return REGEX_METHODS;
   }
 
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+  protected final void onMethodInvocationFound(MethodInvocationTree mit) {
     Arguments args = mit.arguments();
     if (args.isEmpty()) {
       return;
     }
-    ExpressionTree arg0 = args.get(0);
-    if (arg0.is(Tree.Kind.STRING_LITERAL)) {
-      checkRegex(((DefaultJavaFileScannerContext) context).regexForLiterals((LiteralTree) arg0), mit);
+    getLiterals(args.get(0))
+      .map(regexContext::regexForLiterals)
+      .ifPresent(result -> checkRegex(result, mit));
+  }
+
+  @VisibleForTesting
+  protected static Optional<LiteralTree[]> getLiterals(ExpressionTree expr) {
+    switch (expr.kind()) {
+      case PLUS:
+        return getLiteralsFromStringConcatenation((BinaryExpressionTree) expr);
+      case IDENTIFIER:
+        return getLiteralsFromFinalVariables((IdentifierTree) expr);
+      case PARENTHESIZED_EXPRESSION:
+        return getLiterals(ExpressionUtils.skipParentheses(expr));
+      case STRING_LITERAL:
+        return Optional.of(new LiteralTree[] {(LiteralTree) expr});
+      default:
+        return Optional.empty();
     }
+  }
+
+  private static Optional<LiteralTree[]> getLiteralsFromStringConcatenation(BinaryExpressionTree expr) {
+    Optional<LiteralTree[]> leftLiterals = getLiterals(expr.leftOperand());
+    if (!leftLiterals.isPresent()) {
+      return Optional.empty();
+    }
+    Optional<LiteralTree[]> rightLiterals = getLiterals(expr.rightOperand());
+    if (!rightLiterals.isPresent()) {
+      return Optional.empty();
+    }
+    LiteralTree[] combined = Streams.concat(Arrays.stream(leftLiterals.get()), Arrays.stream(rightLiterals.get())).toArray(LiteralTree[]::new);
+    return Optional.of(combined);
+  }
+
+  private static Optional<LiteralTree[]> getLiteralsFromFinalVariables(IdentifierTree identifier) {
+    Symbol symbol = identifier.symbol();
+    if (!symbol.isVariableSymbol()) {
+      return Optional.empty();
+    }
+
+    Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) symbol;
+    if (!(variableSymbol.isFinal() || JUtils.isEffectivelyFinal(variableSymbol))) {
+      return Optional.empty();
+    }
+    VariableTree declaration = variableSymbol.declaration();
+    if (declaration == null) {
+      return Optional.empty();
+    }
+    ExpressionTree initializer = declaration.initializer();
+    if (initializer == null) {
+      return Optional.empty();
+    }
+    return getLiterals(initializer);
   }
 
   public abstract void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit);
 
   public final void reportIssue(RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
-    ((DefaultJavaFileScannerContext) context).reportIssue(this, regexTree, message, cost, secondaries);
+    regexContext.reportIssue(this, regexTree, message, cost, secondaries);
   }
 
 }
