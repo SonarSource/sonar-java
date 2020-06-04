@@ -88,68 +88,69 @@ public class AssertJChainSimplificationIndex {
    * simplifiers in this map, though, have access to the subject as well (i.e. the {@code assertThat(...)} method
    * and its argument).
    */
-  static final Map<String, List<SimplifierWithContext>> SIMPLIFIERS_WITH_CONTEXT = ImmutableMap.<String, List<AssertJChainSimplificationCheck.SimplifierWithContext>>builder()
-    .put(IS_EQUAL_TO, ImmutableList.of(
-      PredicateSimplifierWithContext.methodCallInSubject(Matchers.TO_STRING, msgWithActualCustom("hasToString", "expectedString")),
-      PredicateSimplifierWithContext.withSingleArgument(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.HASH_CODE),
-        subjectArg -> hasMethodCallAsArg(subjectArg, Matchers.HASH_CODE), msgWithActualExpected("hasSameHashCodeAs")),
-      compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected("isEqualByComparingTo"))))
-    .put(IS_FALSE, ImmutableList.of(
-      PredicateSimplifierWithContext.methodCallInSubject(Matchers.EQUALS_METHOD, msgWithActualExpected(IS_NOT_EQUAL_TO)),
-      PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNotNull")),
-      PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> ArgumentHelper.notEqualsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNull")),
-      PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isNotSameAs")),
-      PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isSameAs")),
-      PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isNotInstanceOf", "ExpectedClass.class"))))
-    .put(IS_GREATER_THAN, ImmutableList.of(
-      compareToSimplifier(ArgumentHelper::isNegOne, msgWithActualExpected(IS_GREATER_THAN_OR_EQUAL_TO)),
-      compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_GREATER_THAN))))
-    .put(IS_GREATER_THAN_OR_EQUAL_TO, ImmutableList.of(
-      compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_GREATER_THAN_OR_EQUAL_TO)),
-      compareToSimplifier(ArgumentHelper::isOne, msgWithActualExpected(IS_GREATER_THAN))))
-    .put(IS_LESS_THAN, ImmutableList.of(
-      compareToSimplifier(ArgumentHelper::isOne, msgWithActualExpected(IS_LESS_THAN_OR_EQUAL_TO)),
-      compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_LESS_THAN))))
-    .put(IS_LESS_THAN_OR_EQUAL_TO, ImmutableList.of(
-      compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_LESS_THAN_OR_EQUAL_TO)),
-      compareToSimplifier(ArgumentHelper::isNegOne, msgWithActualExpected(IS_LESS_THAN))))
-    .put(IS_NEGATIVE, Collections.singletonList(
-      compareToSimplifier(msgWithActualExpected(IS_LESS_THAN))))
-    .put(IS_NOT_EQUAL_TO, Collections.singletonList(
-      compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected("isNotEqualByComparingTo"))))
-    .put(IS_NOT_NEGATIVE, Collections.singletonList(
-      compareToSimplifier(msgWithActualExpected(IS_GREATER_THAN_OR_EQUAL_TO))))
-    .put(IS_NOT_POSITIVE, Collections.singletonList(
-      compareToSimplifier(msgWithActualExpected(IS_LESS_THAN_OR_EQUAL_TO))))
-    .put(IS_NOT_ZERO, Collections.singletonList(
-      compareToSimplifier(msgWithActualExpected("isNotEqualByComparingTo"))))
-    .put(IS_POSITIVE, Collections.singletonList(
-      compareToSimplifier(msgWithActualExpected(IS_GREATER_THAN))))
-    .put(IS_TRUE, ImmutableList.of(
-      PredicateSimplifierWithContext.methodCallInSubject(Matchers.EQUALS_METHOD, msgWithActualExpected(IS_EQUAL_TO)),
-      PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNull")),
-      PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> ArgumentHelper.notEqualsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNotNull")),
-      PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isSameAs")),
-      PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isNotSameAs")),
-      PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isInstanceOf", "ExpectedClass.class"))))
-    .put(IS_ZERO, Collections.singletonList(
-      compareToSimplifier(msgWithActualExpected("isEqualByComparingTo"))))
-    .build();
+  static final Map<String, List<SimplifierWithContext>> SIMPLIFIERS_WITH_CONTEXT =
+    ImmutableMap.<String, List<AssertJChainSimplificationCheck.SimplifierWithContext>>builder()
+      .put(IS_EQUAL_TO, ImmutableList.of(
+        PredicateSimplifierWithContext.methodCallInSubject(Matchers.TO_STRING, msgWithActualCustom("hasToString", "expectedString")),
+        PredicateSimplifierWithContext.withSingleArgument(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.HASH_CODE),
+                                                                                                    subjectArg -> hasMethodCallAsArg(subjectArg, Matchers.HASH_CODE), msgWithActualExpected("hasSameHashCodeAs")),
+        compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected("isEqualByComparingTo"))))
+      .put(IS_FALSE, ImmutableList.of(
+        PredicateSimplifierWithContext.methodCallInSubject(Matchers.EQUALS_METHOD, msgWithActualExpected(IS_NOT_EQUAL_TO)),
+        PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNotNull")),
+        PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> ArgumentHelper.notEqualsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNull")),
+        PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isNotSameAs")),
+        PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isSameAs")),
+        PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isNotInstanceOf", "ExpectedClass.class"))))
+      .put(IS_GREATER_THAN, ImmutableList.of(
+        compareToSimplifier(ArgumentHelper::isNegOne, msgWithActualExpected(IS_GREATER_THAN_OR_EQUAL_TO)),
+        compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_GREATER_THAN))))
+      .put(IS_GREATER_THAN_OR_EQUAL_TO, ImmutableList.of(
+        compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_GREATER_THAN_OR_EQUAL_TO)),
+        compareToSimplifier(ArgumentHelper::isOne, msgWithActualExpected(IS_GREATER_THAN))))
+      .put(IS_LESS_THAN, ImmutableList.of(
+        compareToSimplifier(ArgumentHelper::isOne, msgWithActualExpected(IS_LESS_THAN_OR_EQUAL_TO)),
+        compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_LESS_THAN))))
+      .put(IS_LESS_THAN_OR_EQUAL_TO, ImmutableList.of(
+        compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_LESS_THAN_OR_EQUAL_TO)),
+        compareToSimplifier(ArgumentHelper::isNegOne, msgWithActualExpected(IS_LESS_THAN))))
+      .put(IS_NEGATIVE, Collections.singletonList(
+        compareToSimplifier(msgWithActualExpected(IS_LESS_THAN))))
+      .put(IS_NOT_EQUAL_TO, Collections.singletonList(
+        compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected("isNotEqualByComparingTo"))))
+      .put(IS_NOT_NEGATIVE, Collections.singletonList(
+        compareToSimplifier(msgWithActualExpected(IS_GREATER_THAN_OR_EQUAL_TO))))
+      .put(IS_NOT_POSITIVE, Collections.singletonList(
+        compareToSimplifier(msgWithActualExpected(IS_LESS_THAN_OR_EQUAL_TO))))
+      .put(IS_NOT_ZERO, Collections.singletonList(
+        compareToSimplifier(msgWithActualExpected("isNotEqualByComparingTo"))))
+      .put(IS_POSITIVE, Collections.singletonList(
+        compareToSimplifier(msgWithActualExpected(IS_GREATER_THAN))))
+      .put(IS_TRUE, ImmutableList.of(
+        PredicateSimplifierWithContext.methodCallInSubject(Matchers.EQUALS_METHOD, msgWithActualExpected(IS_EQUAL_TO)),
+        PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNull")),
+        PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> ArgumentHelper.notEqualsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNotNull")),
+        PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isSameAs")),
+        PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isNotSameAs")),
+        PredicateSimplifierWithContext.withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isInstanceOf", "ExpectedClass.class"))))
+      .put(IS_ZERO, Collections.singletonList(
+        compareToSimplifier(msgWithActualExpected("isEqualByComparingTo"))))
+      .build();
 
   private static class Matchers {
     public static final MethodMatchers EQUALS_METHOD = MethodMatchers.create().ofAnyType().names("equals")
-      .addParametersMatcher(parameters -> parameters.size() == 1).build();
+                                                         .addParametersMatcher(parameters -> parameters.size() == 1).build();
     public static final MethodMatchers TO_STRING = MethodMatchers.create().ofAnyType().names("toString")
-      .addWithoutParametersMatcher().build();
+                                                     .addWithoutParametersMatcher().build();
     public static final MethodMatchers HASH_CODE = MethodMatchers.create().ofAnyType().names("hashCode")
-      .addWithoutParametersMatcher().build();
+                                                     .addWithoutParametersMatcher().build();
     public static final MethodMatchers COMPARE_TO = MethodMatchers.create().ofSubTypes("java.lang.Comparable")
-      .names("compareTo").addParametersMatcher(parameters -> parameters.size() == 1).build();
+                                                      .names("compareTo").addParametersMatcher(parameters -> parameters.size() == 1).build();
   }
 
   private static PredicateSimplifierWithContext compareToSimplifier(Predicate<ExpressionTree> predicateArgCondition, String simplification) {
     return PredicateSimplifierWithContext.withSingleArgument(predicateArgCondition,
-      arg -> hasMethodCallAsArg(arg, Matchers.COMPARE_TO), simplification);
+                                                             arg -> hasMethodCallAsArg(arg, Matchers.COMPARE_TO), simplification);
   }
 
   private static PredicateSimplifierWithContext compareToSimplifier(String simplification) {
@@ -202,7 +203,7 @@ public class AssertJChainSimplificationIndex {
     public static PredicateSimplifierWithContext withSubjectArgumentCondition(
       Predicate<ExpressionTree> subjectArgumentCondition, String simplification) {
       return new PredicateSimplifierWithContext(x -> true, subjectMit -> subjectMit.arguments().size() == 1 && subjectArgumentCondition.test(unwrap(subjectMit.arguments().get(0))),
-        simplification);
+                                                simplification);
     }
 
     public static PredicateSimplifierWithContext methodCallInSubject(
@@ -217,8 +218,8 @@ public class AssertJChainSimplificationIndex {
       String simplification) {
 
       return new PredicateSimplifierWithContext(predicateMit -> predicateMit.arguments().size() == 1 && predicateArgsCondition.test(unwrap(predicateMit.arguments().get(0))),
-        subjectMit -> subjectMit.arguments().size() == 1 && subjectArgsCondition.test(unwrap(subjectMit.arguments().get(0))),
-        simplification);
+                                                subjectMit -> subjectMit.arguments().size() == 1 && subjectArgsCondition.test(unwrap(subjectMit.arguments().get(0))),
+                                                simplification);
     }
 
     @Override
