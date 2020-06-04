@@ -22,12 +22,23 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class MutableMembersUsageCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/MutableMembersUsageCheck.java")
+      .onFile(testSourcesPath("checks/MutableMembersUsageCheck.java"))
+      .withCheck(new MutableMembersUsageCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_java_9() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/MutableMembersUsageCheck.java"))
       .withCheck(new MutableMembersUsageCheck())
       .verifyIssues();
   }
