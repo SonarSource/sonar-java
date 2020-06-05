@@ -19,13 +19,15 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
-
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S1214")
 public class InterfaceAsConstantContainerCheck extends IssuableSubscriptionVisitor {
@@ -38,12 +40,18 @@ public class InterfaceAsConstantContainerCheck extends IssuableSubscriptionVisit
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (hasConstant(classTree)) {
-      reportIssue(classTree.simpleName(), "Move constants to a class or enum.");
+    List<JavaFileScannerContext.Location> constantsLocation = collectConstantsLocation(classTree);
+    if (!constantsLocation.isEmpty()) {
+      reportIssue(classTree.simpleName(), "Move constants defined in this interfaces to another class or enum.", constantsLocation, null);
     }
   }
 
-  private static boolean hasConstant(ClassTree tree) {
-    return tree.members().stream().anyMatch(member -> member.is(Tree.Kind.VARIABLE));
+  private static List<JavaFileScannerContext.Location> collectConstantsLocation(ClassTree tree) {
+    return tree.members().stream()
+      .filter(member -> member.is(Tree.Kind.VARIABLE))
+      .map(VariableTree.class::cast)
+      .map(VariableTree::simpleName)
+      .map(id -> new JavaFileScannerContext.Location("", id))
+      .collect(Collectors.toList());
   }
 }
