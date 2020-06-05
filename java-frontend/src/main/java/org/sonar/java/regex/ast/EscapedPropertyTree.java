@@ -19,30 +19,36 @@
  */
 package org.sonar.java.regex.ast;
 
-public interface RegexVisitor {
+public class EscapedPropertyTree extends RegexTree {
 
-  default void visit(RegexTree tree) {
-    tree.accept(this);
+  private final JavaCharacter marker;
+  private final String property;
+
+  public EscapedPropertyTree(RegexSource source, JavaCharacter marker, JavaCharacter openingCurlyBrace, JavaCharacter closingCurlyBrace) {
+    super(source, marker.getRange().merge(closingCurlyBrace.getRange()));
+    this.marker = marker;
+    this.property = source.substringAt(
+      new IndexRange(
+        openingCurlyBrace.getRange().getBeginningOffset() + 1,
+        closingCurlyBrace.getRange().getBeginningOffset()));
   }
 
-  void visitPlainCharacter(PlainCharacterTree tree);
+  @Override
+  public void accept(RegexVisitor visitor) {
+    visitor.visitEscapedProperty(this);
+  }
 
-  void visitSequence(SequenceTree tree);
+  @Override
+  public RegexTree.Kind kind() {
+    return RegexTree.Kind.ESCAPED_PROPERTY;
+  }
 
-  void visitDisjunction(DisjunctionTree tree);
+  public boolean isNegation() {
+    return Character.isUpperCase(marker.getCharacter());
+  }
 
-  void visitGroup(GroupTree tree);
-
-  void visitRepetition(RepetitionTree tree);
-
-  void visitCharacterClass(CharacterClassTree tree);
-
-  void visitCharacterRange(CharacterRangeTree tree);
-
-  void visitCharacterClassUnion(CharacterClassUnionTree tree);
-
-  void visitCharacterClassIntersection(CharacterClassIntersectionTree tree);
-
-  void visitEscapedProperty(EscapedPropertyTree tree);
+  public String property() {
+    return property;
+  }
 
 }
