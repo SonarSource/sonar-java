@@ -13,7 +13,7 @@ character use their encoded version (ex: ASCII <code>\n,\t,</code>... or Unicode
 <pre>
 String tabInside = "A	B";  // Noncompliant, contains a tabulation
 String zeroWidthSpaceInside = "foo​bar"; // Noncompliant, it contains a U+200B character inside
-char tab = '	';{code}
+char tab = '	';
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
