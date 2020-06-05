@@ -20,8 +20,14 @@
 package org.sonar.java.regex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.CheckForNull;
+import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
+import org.sonar.java.regex.ast.CharacterClassTree;
+import org.sonar.java.regex.ast.CharacterClassUnionTree;
+import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.GroupTree;
@@ -199,10 +205,12 @@ public class RegexParser {
       return parseGroup();
     } else if (characters.currentIs('\\')) {
       return parseEscapeSequence();
+    } else if (characters.currentIs('[')) {
+      return parseCharacterClass();
     } else if (isPlainTextCharacter(characters.getCurrentChar())) {
       JavaCharacter character = characters.getCurrent();
       characters.moveNext();
-      return new PlainCharacterTree(source, character.getRange(), character);
+      return plainCharacter(character);
     } else {
       return null;
     }
@@ -226,13 +234,131 @@ public class RegexParser {
     characters.moveNext();
     if (characters.isAtEnd()) {
       expected("any character");
-      return new PlainCharacterTree(source, backslash.getRange(), backslash);
+      return plainCharacter(backslash);
     } else {
       // TODO: Properly handle escape sequences that aren't escaped metacharacters
       JavaCharacter character = characters.getCurrent();
       characters.moveNext();
       return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
     }
+  }
+
+  private RegexTree parseCharacterClass() {
+    JavaCharacter openingBracket = characters.getCurrent();
+    characters.moveNext();
+    boolean negated = false;
+    if (characters.currentIs('^')) {
+      characters.moveNext();
+      negated = true;
+    }
+    RegexTree contents = parseCharacterClassIntersection();
+    if (characters.currentIs(']')) {
+      characters.moveNext();
+    } else {
+      expected("]");
+    }
+    IndexRange range = openingBracket.getRange().extendTo(characters.getCurrentStartIndex());
+    return new CharacterClassTree(source, range, negated, contents);
+  }
+
+  private RegexTree parseCharacterClassIntersection() {
+    List<RegexTree> elements = new ArrayList<>();
+    elements.add(parseCharacterClassUnion(true));
+    while (characters.isNotAtEnd() && !characters.currentIs(']')) {
+      elements.add(parseCharacterClassUnion(false));
+    }
+    return combineTrees(elements, (range, items) -> new CharacterClassIntersectionTree(source, range, items));
+  }
+
+  private RegexTree parseCharacterClassUnion(boolean isAtBeginning) {
+    List<RegexTree> elements = new ArrayList<>();
+    List<RegexTree> nextElements = parseCharacterClassElement(isAtBeginning);
+    while (!nextElements.isEmpty()) {
+      elements.addAll(nextElements);
+      nextElements = parseCharacterClassElement(false);
+    }
+    if (elements.isEmpty()) {
+      IndexRange range = new IndexRange(characters.getCurrentStartIndex(), characters.getCurrentStartIndex());
+      return new CharacterClassUnionTree(source, range, elements);
+    } else {
+      return combineTrees(elements, (range, items) -> new CharacterClassUnionTree(source, range, items));
+    }
+  }
+
+  private List<RegexTree> parseCharacterClassElement(boolean isAtBeginning) {
+    if (characters.isAtEnd()) {
+      return Collections.emptyList();
+    }
+    JavaCharacter startCharacter = characters.getCurrent();
+    switch (startCharacter.getCharacter()) {
+      case '\\':
+        RegexTree escape = parseEscapeSequence();
+        if (escape.is(RegexTree.Kind.PLAIN_CHARACTER)) {
+          return parseCharacterRange(((PlainCharacterTree)escape).getContents());
+        } else {
+          return Collections.singletonList(escape);
+        }
+      case '[':
+        return Collections.singletonList(parseCharacterClass());
+      case '&':
+        characters.moveNext();
+        if (characters.currentIs('&')) {
+          characters.moveNext();
+          return Collections.emptyList();
+        }
+        return parseCharacterRange(startCharacter);
+      case ']':
+        if (isAtBeginning) {
+          characters.moveNext();
+          return parseCharacterRange(startCharacter);
+        } else {
+          return Collections.emptyList();
+        }
+      default:
+        characters.moveNext();
+        return parseCharacterRange(startCharacter);
+    }
+  }
+
+  /**
+   * Start state: a simple character has been consumed and passed as an argument. It might be the start of a range.
+   * If it is range: Return a list containing as its single element that range
+   * If the next character is a dash and the one after that is the end of the character class: Returns a list containing
+   * the current character and the dash
+   * Otherwise: Returns a list containing the current character
+   */
+  private List<RegexTree> parseCharacterRange(JavaCharacter startCharacter) {
+    if (characters.currentIs('-')) {
+      JavaCharacter dash = characters.getCurrent();
+      characters.moveNext();
+      if (characters.isAtEnd() || characters.currentIs(']')) {
+        return Arrays.asList(plainCharacter(startCharacter), plainCharacter(dash));
+      } else if (characters.currentIs('\\')) {
+        RegexTree escape = parseEscapeSequence();
+        if (escape.is(RegexTree.Kind.PLAIN_CHARACTER)) {
+          JavaCharacter endCharacter = ((PlainCharacterTree) escape).getContents();
+          return Collections.singletonList(characterRange(startCharacter, endCharacter));
+        } else {
+          expected("simple character");
+          return Arrays.asList(plainCharacter(startCharacter), plainCharacter(dash), escape);
+        }
+      } else {
+        JavaCharacter endCharacter = characters.getCurrent();
+        characters.moveNext();
+        return Collections.singletonList(characterRange(startCharacter, endCharacter));
+      }
+    } else {
+      return Collections.singletonList(plainCharacter(startCharacter));
+    }
+  }
+
+  private RegexTree plainCharacter(JavaCharacter character) {
+    return new PlainCharacterTree(source, character.getRange(), character);
+  }
+
+  private CharacterRangeTree characterRange(JavaCharacter startCharacter, JavaCharacter endCharacter) {
+    IndexRange range = startCharacter.getRange().merge(endCharacter.getRange());
+    return new CharacterRangeTree(source, range, startCharacter, endCharacter);
   }
 
   private void expected(String expectedToken) {
