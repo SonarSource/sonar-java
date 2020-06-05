@@ -23,6 +23,9 @@
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/duplication/InnerDuplicateTest.java':[
 48,
 ],
+'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/duplication/TextBlockTest.java':[
+70,
+],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/event/EventTest.java':[
 63,
 ],
@@ -44,6 +47,12 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/exceptions/MessageTest.java':[
 67,
+],
+'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/ResultTest.java':[
+74,
+78,
+90,
+95,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/RulesAggregationTest.java':[
 70,
@@ -76,8 +85,5 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/DefaultUserTest.java':[
 33,
-],
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/util/ObjectInputStreamIteratorTest.java':[
-46,
 ],
 }
