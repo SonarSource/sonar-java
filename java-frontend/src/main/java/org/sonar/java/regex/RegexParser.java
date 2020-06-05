@@ -30,6 +30,7 @@ import org.sonar.java.regex.ast.CharacterClassUnionTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
+import org.sonar.java.regex.ast.EscapedPropertyTree;
 import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.JavaCharacter;
@@ -236,8 +237,15 @@ public class RegexParser {
       expected("any character");
       return plainCharacter(backslash);
     } else {
-      // TODO: Properly handle escape sequences that aren't escaped metacharacters
       JavaCharacter character = characters.getCurrent();
+      switch (character.getCharacter()) {
+        case 'p':
+        case 'P':
+          return parseProperty();
+        default:
+          // TODO other kind of escape sequences such as boundary markers
+          break;
+      }
       characters.moveNext();
       return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
     }
@@ -359,6 +367,29 @@ public class RegexParser {
   private CharacterRangeTree characterRange(JavaCharacter startCharacter, JavaCharacter endCharacter) {
     IndexRange range = startCharacter.getRange().merge(endCharacter.getRange());
     return new CharacterRangeTree(source, range, startCharacter, endCharacter);
+  }
+
+  private RegexTree parseProperty() {
+    JavaCharacter p = characters.getCurrent();
+    characters.moveNext();
+
+    if (!characters.currentIs('{')) {
+      expected("'{'");
+      return plainCharacter(p);
+    }
+    JavaCharacter openingCurlyBrace = characters.getCurrent();
+    boolean atLeastOneChar = false;
+    do {
+      characters.moveNext();
+      if (characters.isAtEnd()) {
+        expected(atLeastOneChar ? "'}'" : "a property name");
+        return plainCharacter(openingCurlyBrace);
+      }
+      atLeastOneChar = true;
+    } while (!characters.currentIs('}'));
+    JavaCharacter closingCurlyBrace = characters.getCurrent();
+    characters.moveNext();
+    return new EscapedPropertyTree(source, p, openingCurlyBrace, closingCurlyBrace);
   }
 
   private void expected(String expectedToken) {
