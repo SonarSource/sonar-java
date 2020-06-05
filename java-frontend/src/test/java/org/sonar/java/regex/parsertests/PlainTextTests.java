@@ -20,8 +20,12 @@
 package org.sonar.java.regex.parsertests;
 
 import org.junit.jupiter.api.Test;
-
+import org.sonar.java.regex.ast.EscapedPropertyTree;
+import org.sonar.java.regex.ast.RegexTree;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertFailParsing;
 
 class PlainTextTests {
 
@@ -71,6 +75,66 @@ class PlainTextTests {
   void unicodeRidiculousness() {
     assertPlainCharacter('\t', "\\u005ct");
     assertPlainCharacter('\\', "\\u005c\\u005c\\u005c\\u005c");
+  }
+
+  /**
+   * Following the form \p{Prop} or \P{Prop} (negation)
+   */
+  @Test
+  void escapedProperties() {
+    // control
+    assertThat("a".matches("\\p{Lower}")).isTrue();
+    assertThat("A".matches("\\p{Lower}")).isFalse();
+
+    // POSIX character classes
+    assertEscapedProperty("\\\\p{Lower}", "Lower", false);
+    assertEscapedProperty("\\\\p{Upper}", "Upper", false);
+    assertEscapedProperty("\\\\p{ASCII}", "ASCII", false);
+    assertEscapedProperty("\\\\p{Alpha}", "Alpha", false);
+    assertEscapedProperty("\\\\p{Digit}", "Digit", false);
+    assertEscapedProperty("\\\\p{Alnum}", "Alnum", false);
+    assertEscapedProperty("\\\\p{Punct}", "Punct", false);
+    assertEscapedProperty("\\\\p{Graph}", "Graph", false);
+    assertEscapedProperty("\\\\p{Print}", "Print", false);
+    assertEscapedProperty("\\\\p{Blank}", "Blank", false);
+    assertEscapedProperty("\\\\p{Cntrl}", "Cntrl", false);
+    assertEscapedProperty("\\\\p{XDigit}", "XDigit", false);
+    assertEscapedProperty("\\\\p{Space}", "Space", false);
+
+    // java.lang.Character classes
+    assertEscapedProperty("\\\\p{javaLowerCase}", "javaLowerCase", false);
+    assertEscapedProperty("\\\\p{javaUpperCase}", "javaUpperCase", false);
+    assertEscapedProperty("\\\\p{javaWhitespace}", "javaWhitespace", false);
+    assertEscapedProperty("\\\\p{javaMirrored}", "javaMirrored", false);
+
+    // Classes for Unicode scripts, blocks, categories and binary properties
+    assertEscapedProperty("\\\\p{IsLatin}", "IsLatin", false);
+    assertEscapedProperty("\\\\p{InGreek}", "InGreek", false);
+    assertEscapedProperty("\\\\p{Lu}", "Lu", false);
+    assertEscapedProperty("\\\\p{IsAlphabetic}", "IsAlphabetic", false);
+    assertEscapedProperty("\\\\p{Sc}", "Sc", false);
+
+    // Negation
+    assertEscapedProperty("\\\\P{InGreek}", "InGreek", true); // Any character except one in the Greek block
+
+    // accept any property, even if it does not exists in hardcoded properties
+    assertEscapedProperty("\\\\P{Cowabunga}", "Cowabunga", true); // Any character except one in the Greek block
+  }
+
+  @Test
+  void failingInvalidEscapedProperties() {
+    assertFailParsing("\\\\p", "Expected '{', but found the end of the regex");
+    assertFailParsing("\\\\p{", "Expected a property name, but found the end of the regex");
+    assertFailParsing("\\\\p{foo", "Expected '}', but found the end of the regex");
+  }
+
+  private static void assertEscapedProperty(String regex, String expectedProperty, boolean isNegation) {
+    RegexTree tree = assertSuccessfulParse(regex);
+    assertThat(tree).isInstanceOf(EscapedPropertyTree.class);
+
+    EscapedPropertyTree escapedPropertyTree = (EscapedPropertyTree) tree;
+    assertThat(escapedPropertyTree.property()).isEqualTo(expectedProperty);
+    assertThat(escapedPropertyTree.isNegation()).isEqualTo(isNegation);
   }
 
 }

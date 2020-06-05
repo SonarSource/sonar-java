@@ -26,6 +26,7 @@ import org.opentest4j.AssertionFailedError;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexParser;
+import org.sonar.java.regex.SyntaxError;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.PlainCharacterTree;
@@ -38,6 +39,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,6 +55,16 @@ public class RegexParserTestUtils {
       throw new AssertionFailedError("Parsing should complete with no errors.", "no errors", result.getSyntaxErrors());
     }
     return result.getResult();
+  }
+
+  public static void assertFailParsing(String regex, String expectedError) {
+    RegexSource source = makeSource(regex);
+    RegexParseResult result = new RegexParser(source).parse();
+    List<SyntaxError> errors = result.getSyntaxErrors();
+    if (errors.isEmpty()) {
+      throw new AssertionFailedError("Expected error in parsing");
+    }
+    assertThat(errors.stream().map(SyntaxError::getMessage)).contains(expectedError);
   }
 
   public static void assertPlainString(String expected, RegexTree regex) {
