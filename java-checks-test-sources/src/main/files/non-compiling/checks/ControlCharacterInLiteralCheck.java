@@ -9,7 +9,7 @@ public class ControlCharacterInLiteralCheck {
     """
       \u200B
     """,
-    // Noncompliant@+1 {{Remove the non-escaped \u200B character from this string literal.}}
+    // Noncompliant@+1 {{Remove the non-escaped \u200B character from this literal.}}
     """
       U+200B '​' zero width space
     """,

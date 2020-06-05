@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +34,7 @@ import static org.sonar.java.model.LiteralUtils.trimQuotes;
 @Rule(key = "S2479")
 public class ControlCharacterInLiteralCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MESSAGE_FORMAT = "Remove the non-escaped \\u%04X character from this string literal.";
+  private static final String MESSAGE_FORMAT = "Remove the non-escaped \\u%04X character from this literal.";
 
   private static final String CONTROL_CHARACTERS_WITHOUT_TAB =
     // ASCII control character, C0 control characters
@@ -54,7 +54,7 @@ public class ControlCharacterInLiteralCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.STRING_LITERAL);
+    return Arrays.asList(Tree.Kind.STRING_LITERAL, Tree.Kind.CHAR_LITERAL);
   }
 
   @Override

@@ -1,5 +1,5 @@
 {
-  "title": "Whitespace and control characters in string literals should be explicit",
+  "title": "Whitespace and control characters in literals should be explicit",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
