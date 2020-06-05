@@ -73,4 +73,10 @@ public class RegexBaseVisitor implements RegexVisitor {
       visit(child);
     }
   }
+
+  @Override
+  public void visitEscapedProperty(EscapedPropertyTree tree) {
+    // no children to visit
+  }
+
 }
