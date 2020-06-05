@@ -58,7 +58,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
 
   private static final MethodMatchers UNMODIFIABLE_COLLECTION_CALL = MethodMatchers.or(
     MethodMatchers.create().ofTypes("java.util.Collections").name(name -> name.startsWith("unmodifiable") || name.startsWith("singleton")).withAnyParameters().build(),
-    MethodMatchers.create().ofTypes("java.util.Set", "java.util.List").names("of").withAnyParameters().build()
+    MethodMatchers.create().ofTypes("java.util.Set", "java.util.List").names("of", "copyOf").withAnyParameters().build()
   );
 
   private JavaFileScannerContext context;
