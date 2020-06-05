@@ -47,7 +47,7 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
     "org.assertj.core.api.Assertions",
     "org.assertj.core.api.AssertionsForInterfaceTypes",
     "org.assertj.core.api.AssertionsForClassTypes")
-    .names("assertThat").withAnyParameters().build();
+    .names("assertThat", "assertThatObject").withAnyParameters().build();
 
   /**
    * @see AssertJChainSimplificationIndex#CONTEXT_FREE_SIMPLIFIERS

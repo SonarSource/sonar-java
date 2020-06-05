@@ -88,14 +88,6 @@ class AssertJChainSimplificationHelper {
   }
 
   static boolean hasMethodCallAsArg(ExpressionTree arg, MethodMatchers methodCallMatcher) {
-    while (arg.is(Tree.Kind.PARENTHESIZED_EXPRESSION) || arg.is(Tree.Kind.MEMBER_SELECT)) {
-      if (arg.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-        arg = ((ParenthesizedTree) arg).expression();
-      } else {
-        arg = ((MemberSelectExpressionTree) arg).expression();
-      }
-    }
-
     if (arg.is(Tree.Kind.METHOD_INVOCATION)) {
       return methodCallMatcher.matches((MethodInvocationTree) arg);
     }

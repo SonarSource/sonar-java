@@ -36,7 +36,10 @@ public class AssertJChainSimplificationCheckTest {
     Object x = "x", y = "y";
 
     assertThat((x == y)).isTrue(); // Noncompliant
-    assertThat((((((x == y)))))).isTrue(); // Noncompliantx
+    assertThat((((((x == y)))))).isTrue(); // Noncompliant
+    assertThat((x).equals(y)).isTrue(); // Noncompliant
+    assertThat(x != (null)).isFalse(); // Noncompliant
+    assertThat(((x).equals(((y))))).isTrue(); // Noncompliant
   }
 
   void objectRelatedAssertionChains() {
@@ -52,7 +55,7 @@ public class AssertJChainSimplificationCheckTest {
 
     assertThat(getBoolean()).isEqualTo(true); // Noncompliant {{Use isTrue() instead}}
     assertThat(getBoolean()).isEqualTo(false); // Noncompliant {{Use isFalse() instead}}
-    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=55]] {{Use assertThat(actual).isEqualTo(expected) instead}}
+    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=58]] {{Use assertThat(actual).isEqualTo(expected) instead}}
     assertThat(x.equals(y)).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEqualTo(expected) instead}}
     assertThat(x == y).isTrue(); // Noncompliant {{Use assertThat(actual).isSameAs(expected) instead}}
     assertThat(x == y).isFalse(); // Noncompliant {{Use assertThat(actual).isNotSameAs(expected) instead}}
@@ -60,7 +63,7 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(x != y).isFalse(); // Noncompliant {{Use assertThat(actual).isSameAs(expected) instead}}
     assertThat(x == null).isTrue(); // Noncompliant {{Use assertThat(actual).isNull() instead}}
     assertThat(x != null).isTrue(); // Noncompliant {{Use assertThat(actual).isNotNull() instead}}
-    assertThat(x == null).isFalse(); // Noncompliant {{Use assertThat(actual).isNotNull() instead}}
+    assertThat(null == x).isFalse(); // Noncompliant {{Use assertThat(actual).isNotNull() instead}}
     assertThat(x != null).isFalse(); // Noncompliant {{Use assertThat(actual).isNull() instead}}
     assertThat(x.toString()).isEqualTo(y); // Noncompliant {{Use assertThat(actual).hasToString(expectedString) instead}}
     assertThat(x.hashCode()).isEqualTo(y.hashCode()); // Noncompliant {{Use assertThat(actual).hasSameHashCodeAs(expected) instead}}
