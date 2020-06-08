@@ -50,6 +50,10 @@ public class JavaUnicodeEscapeParser {
     return current;
   }
 
+  public int getCurrentStartIndex() {
+    return index;
+  }
+
   public void moveNext() {
     if (index >= sourceText.length()) {
       current = null;
@@ -73,4 +77,5 @@ public class JavaUnicodeEscapeParser {
     }
     current = new JavaCharacter(source, new IndexRange(startIndex, index), ch);
   }
+
 }
