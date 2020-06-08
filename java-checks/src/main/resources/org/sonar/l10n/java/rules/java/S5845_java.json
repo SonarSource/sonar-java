@@ -1,0 +1,16 @@
+{
+  "title": "Assertions of dissimilar types should not be made",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "tests"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5845",
+  "sqKey": "S5845",
+  "scope": "Tests"
+}

@@ -743,6 +743,7 @@ public final class CheckList {
       AssertionInTryCatchCheck.class,
       AssertionsCompletenessCheck.class,
       AssertionsInTestsCheck.class,
+      AssertionTypesCheck.class,
       AssertionsWithoutMessageCheck.class,
       AssertJApplyConfigurationCheck.class,
       AssertJContextBeforeAssertionCheck.class,
