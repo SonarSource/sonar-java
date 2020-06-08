@@ -90,7 +90,7 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
       (predicate, replacement) -> reportIssue(ExpressionUtils.methodName(predicate),
         String.format(ISSUE_MESSAGE_FORMAT_STRING, replacement),
         Collections.singletonList(
-          new JavaFileScannerContext.Location("This could be simplified", subjectMit.arguments().get(0))),
+          new JavaFileScannerContext.Location("This can be simplified", subjectMit.arguments().get(0))),
         null));
   }
 
