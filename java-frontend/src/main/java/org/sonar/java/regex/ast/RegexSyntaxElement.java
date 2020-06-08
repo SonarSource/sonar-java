@@ -21,13 +21,13 @@ package org.sonar.java.regex.ast;
 
 import java.util.List;
 
-public class RegexSyntaxElement {
+public abstract class RegexSyntaxElement {
 
   private final RegexSource source;
 
   private final IndexRange range;
 
-  protected RegexSyntaxElement(RegexSource source, IndexRange range) {
+  public RegexSyntaxElement(RegexSource source, IndexRange range) {
     this.source = source;
     this.range = range;
   }
