@@ -20,10 +20,14 @@
 package org.sonar.java.regex.parsertests;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
 import org.opentest4j.AssertionFailedError;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexParser;
+import org.sonar.java.regex.ast.CharacterClassTree;
+import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
@@ -35,6 +39,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RegexParserTestUtils {
@@ -71,6 +76,22 @@ public class RegexParserTestUtils {
     assertPlainCharacter(expected, assertSuccessfulParse(regex));
   }
 
+  public static RegexTree assertCharacterClass(boolean expectNegated, RegexTree actual) {
+    CharacterClassTree characterClass = assertType(CharacterClassTree.class, actual);
+    if (expectNegated) {
+      assertTrue(characterClass.isNegated(), "Character class should be negated.");
+    } else {
+      assertFalse(characterClass.isNegated(), "Character class should not be negated.");
+    }
+    return characterClass.getContents();
+  }
+
+  public static void assertCharacterRange(char expectedLowerBound, char expectedUpperBound, RegexTree actual) {
+    CharacterRangeTree range = assertType(CharacterRangeTree.class, actual);
+    assertEquals(expectedLowerBound, range.getLowerBound().getCharacter(), "Lower bound should be '" + expectedLowerBound + "'.");
+    assertEquals(expectedUpperBound, range.getUpperBound().getCharacter(), "Upper bound should be '" + expectedUpperBound + "'.");
+  }
+
   public static <T> T assertType(Class<T> klass, Object o) {
     String actual = o.getClass().getSimpleName();
     String expected = klass.getSimpleName();
@@ -78,6 +99,20 @@ public class RegexParserTestUtils {
       throw new AssertionFailedError("Object should have the correct type. ", expected, actual);
     }
     return klass.cast(o);
+  }
+
+  public static <T> void assertListSize(int expected, List<T> actual) {
+    if (actual.size() != expected) {
+      throw new AssertionFailedError("List should have the expected size.", "list of size " + expected, actual);
+    }
+  }
+
+  @SafeVarargs
+  public static <T> void assertListElements(List<T> actual, Consumer<T>... assertions) {
+    assertListSize(assertions.length, actual);
+    for (int i = 0; i < actual.size(); i++) {
+      assertions[i].accept(actual.get(i));
+    }
   }
 
   public static void assertKind(RegexTree.Kind expected, RegexTree actual) {
