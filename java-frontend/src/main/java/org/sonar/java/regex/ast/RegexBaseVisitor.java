@@ -75,8 +75,13 @@ public class RegexBaseVisitor implements RegexVisitor {
   }
 
   @Override
+  public void visitDot(DotTree tree) {
+    // No children to visit
+  }
+
+  @Override
   public void visitEscapedProperty(EscapedPropertyTree tree) {
-    // no children to visit
+    // No children to visit
   }
 
 }
