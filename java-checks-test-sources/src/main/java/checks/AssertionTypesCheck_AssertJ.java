@@ -10,7 +10,7 @@ public class AssertionTypesCheck_AssertJ {
   @Test
   void test_assertj() {
     assertThat(bytePrimitive())
-      .isNotNull(); // Noncompliant [[sc=8;ec=17]] {{Change the assertion arguments to not compare dissimilar types.}}
+      .isNotNull(); // Noncompliant [[sc=8;ec=17]] {{Change the assertion arguments to not compare a primitive value with null.}}
     assertThat(shortPrimitive())
       .as("msg")
       .isNotNull() // Noncompliant
@@ -98,6 +98,9 @@ public class AssertionTypesCheck_AssertJ {
     // could be a false-positive because the positive assertion is helpful and
     // always fails if types are dissimilar
     assertThat(i1).isEqualTo(a); // Compliant
+    // And in case of final classes, the inheritance is known and final,
+    // we can raise issues without having false-positives
+    assertThat(i1).isEqualTo(y); // Noncompliant
 
     assertThat(i2).isNotEqualTo(a);   // Noncompliant
     assertThat(i2).isEqualTo(a);      // Compliant
@@ -110,8 +113,6 @@ public class AssertionTypesCheck_AssertJ {
     assertThat(i2).isEqualTo(i1);      // Compliant
 
     assertThat(i1).isNotEqualTo(y);   // Noncompliant
-    // Y is a final class
-    assertThat(i1).isEqualTo(y);      // Noncompliant
 
     assertThat(a)
       .extracting("hashCode")

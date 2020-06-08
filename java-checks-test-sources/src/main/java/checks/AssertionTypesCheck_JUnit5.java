@@ -11,7 +11,7 @@ public class AssertionTypesCheck_JUnit5 {
 
   @Test
   void test_junit() {
-    assertNotNull(bytePrimitive()); // Noncompliant [[sc=19;ec=34]] {{Change the assertion arguments to not compare dissimilar types.}}
+    assertNotNull(bytePrimitive()); // Noncompliant [[sc=19;ec=34]] {{Change the assertion arguments to not compare a primitive value with null.}}
     assertNotNull(shortPrimitive(), "msg"); // Noncompliant
     assertNotNull(intPrimitive(), () -> "msg"); // Noncompliant
     assertNotNull(charPrimitive()); // Noncompliant
@@ -74,11 +74,18 @@ public class AssertionTypesCheck_JUnit5 {
     // could be a false-positive because the negative assertion is useless by
     // always passing if types are dissimilar
     assertNotEquals(a, i1);         // Noncompliant
+    // example of false-positive:
+    assertNotEquals((A) b, (I1) new B()); // Noncompliant
 
     // Here we are not sure, but it seems NOT valuable to raise an issue that
     // could be a false-positive because the positive assertion is helpful and
     // always fails if types are dissimilar
-    assertEquals(a, i1);            // Compliant
+    assertEquals(a, i1);         // Compliant
+    // example of test that can pass:
+    assertEquals((A) b, (I1) b); // Compliant
+    // And in case of final classes, the inheritance is known and final,
+    // we can raise issues without having false-positives
+    assertEquals(y, i1);            // Noncompliant
 
     assertNotEquals(a, i2);         // Noncompliant
     assertEquals(a, i2);            // Compliant
@@ -91,8 +98,6 @@ public class AssertionTypesCheck_JUnit5 {
     assertEquals(i1, i2);            // Compliant
 
     assertNotEquals(y, i1);         // Noncompliant
-    // Y is a final class
-    assertEquals(y, i1);            // Noncompliant
 
     assertNotEquals(42, Integer.valueOf(42)); // Compliant
     assertNotEquals(42L, Long.valueOf(42L)); // Compliant

@@ -11,7 +11,7 @@ public class AssertionTypesCheck_JUnit4 {
 
   @Test
   void test_junit() {
-    assertNotNull("message", bytePrimitive()); // Noncompliant [[sc=30;ec=45]] {{Change the assertion arguments to not compare dissimilar types.}}
+    assertNotNull("message", bytePrimitive()); // Noncompliant [[sc=30;ec=45]] {{Change the assertion arguments to not compare a primitive value with null.}}
     assertNotNull(shortPrimitive());   // Noncompliant
     assertNotNull(intPrimitive());     // Noncompliant
     assertNotNull(charPrimitive());    // Noncompliant
@@ -84,6 +84,9 @@ public class AssertionTypesCheck_JUnit4 {
     // could be a false-positive because the positive assertion is helpful and
     // always fails if types are dissimilar
     assertEquals(a, i1);             // Compliant
+    // And in case of final classes, the inheritance is known and final,
+    // we can raise issues without having false-positives
+    assertEquals(y, i1);             // Noncompliant
 
     assertNotEquals(a, i2);          // Noncompliant
     assertEquals(a, i2);             // Compliant
@@ -96,8 +99,6 @@ public class AssertionTypesCheck_JUnit4 {
     assertEquals(i1, i2);            // Compliant
 
     assertNotEquals(y, i1);          // Noncompliant
-    // Y is a final class
-    assertEquals(y, i1);             // Noncompliant
 
     assertEquals(true, booleanPrimitive());              // Compliant
     assertEquals(Boolean.TRUE, booleanPrimitive());      // Compliant

@@ -37,7 +37,7 @@ import static org.sonar.java.CheckTestUtils.testSourcesPath;
 class AssertionTypesCheckTest {
 
   @Test
-  void test_junit4_with_semantic() {
+  void test_junit4() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionTypesCheck_JUnit4.java"))
       .withCheck(new AssertionTypesCheck())
@@ -53,7 +53,7 @@ class AssertionTypesCheckTest {
   }
 
   @Test
-  void test_junit5_with_semantic() {
+  void test_junit5() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionTypesCheck_JUnit5.java"))
       .withCheck(new AssertionTypesCheck())
@@ -61,20 +61,11 @@ class AssertionTypesCheckTest {
   }
 
   @Test
-  void test_assertj_with_semantic() {
+  void test_assertj() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/AssertionTypesCheck_AssertJ.java"))
       .withCheck(new AssertionTypesCheck())
       .verifyIssues();
-  }
-
-  @Test
-  void test_without_semantic() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertionTypesCheck_JUnit5.java"))
-      .withCheck(new AssertionTypesCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 
   @Test

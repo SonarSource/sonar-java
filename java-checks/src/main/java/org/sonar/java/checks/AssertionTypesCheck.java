@@ -67,7 +67,7 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     .addParametersMatcher(JAVA_LANG_STRING, MethodMatchers.ANY)
     .build();
 
-  private static final MethodMatchers ASSERT_EQUALS_SECOND_AND_FIRST_ARGUMENTS = MethodMatchers.or(
+  private static final MethodMatchers ASSERT_EQUALS_FIRST_AND_SECOND_ARGUMENTS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(JUNIT4_ASSERTIONS)
       .names(ASSERT_EQUALS)
@@ -81,14 +81,14 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
       .addParametersMatcher(MethodMatchers.ANY, MethodMatchers.ANY, MethodMatchers.ANY, MethodMatchers.ANY)
       .build());
 
-  private static final MethodMatchers ASSERT_EQUALS_THIRD_AND_SECOND_ARGUMENTS = MethodMatchers.create()
+  private static final MethodMatchers ASSERT_EQUALS_SECOND_AND_THIRD_ARGUMENTS = MethodMatchers.create()
     .ofTypes(JUNIT4_ASSERTIONS)
     .names(ASSERT_EQUALS)
     .addParametersMatcher(JAVA_LANG_STRING, MethodMatchers.ANY, MethodMatchers.ANY)
     .addParametersMatcher(JAVA_LANG_STRING, MethodMatchers.ANY, MethodMatchers.ANY, MethodMatchers.ANY)
     .build();
 
-  private static final MethodMatchers ASSERT_NOT_EQUALS_SECOND_AND_FIRST_ARGUMENTS = MethodMatchers.or(
+  private static final MethodMatchers ASSERT_NOT_EQUALS_FIRST_AND_SECOND_ARGUMENTS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(JUNIT4_ASSERTIONS)
       .names(ASSERT_NOT_EQUALS)
@@ -102,7 +102,7 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
       .addParametersMatcher(MethodMatchers.ANY, MethodMatchers.ANY, MethodMatchers.ANY, MethodMatchers.ANY)
       .build());
 
-  private static final MethodMatchers ASSERT_NOT_EQUALS_THIRD_AND_SECOND_ARGUMENTS = MethodMatchers.create()
+  private static final MethodMatchers ASSERT_NOT_EQUALS_SECOND_AND_THIRD_ARGUMENTS = MethodMatchers.create()
     .ofTypes(JUNIT4_ASSERTIONS)
     .names(ASSERT_NOT_EQUALS)
     .addParametersMatcher(JAVA_LANG_STRING, MethodMatchers.ANY, MethodMatchers.ANY)
@@ -142,8 +142,6 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     .withAnyParameters()
     .build();
 
-  private static final String MESSAGE = "Change the assertion arguments to not compare dissimilar types.";
-
   private enum Option {
     ACCEPT_DISSIMILAR_INTERFACE,
     REJECT_DISSIMILAR_INTERFACE,
@@ -156,21 +154,18 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
     MethodInvocationTree mit = (MethodInvocationTree) tree;
     if (ASSERT_NULLABLE_FIRST_ARGUMENT.matches(mit)) {
       checkNullableAssertion(new Argument(mit, 0));
     } else if (ASSERT_NULLABLE_SECOND_ARGUMENT.matches(mit)) {
       checkNullableAssertion(new Argument(mit, 1));
-    } else if (ASSERT_EQUALS_SECOND_AND_FIRST_ARGUMENTS.matches(mit)) {
+    } else if (ASSERT_EQUALS_FIRST_AND_SECOND_ARGUMENTS.matches(mit)) {
       checkCompatibleTypes(new Argument(mit, 1), new Argument(mit, 0), Option.ACCEPT_DISSIMILAR_INTERFACE);
-    } else if (ASSERT_EQUALS_THIRD_AND_SECOND_ARGUMENTS.matches(mit)) {
+    } else if (ASSERT_EQUALS_SECOND_AND_THIRD_ARGUMENTS.matches(mit)) {
       checkCompatibleTypes(new Argument(mit, 2), new Argument(mit, 1), Option.ACCEPT_DISSIMILAR_INTERFACE);
-    } else if (ASSERT_NOT_EQUALS_SECOND_AND_FIRST_ARGUMENTS.matches(mit)) {
+    } else if (ASSERT_NOT_EQUALS_FIRST_AND_SECOND_ARGUMENTS.matches(mit)) {
       checkCompatibleTypes(new Argument(mit, 1), new Argument(mit, 0), Option.REJECT_DISSIMILAR_INTERFACE);
-    } else if (ASSERT_NOT_EQUALS_THIRD_AND_SECOND_ARGUMENTS.matches(mit)) {
+    } else if (ASSERT_NOT_EQUALS_SECOND_AND_THIRD_ARGUMENTS.matches(mit)) {
       checkCompatibleTypes(new Argument(mit, 2), new Argument(mit, 1), Option.REJECT_DISSIMILAR_INTERFACE);
     } else if (ASSERTJ_ASSERT_THAT.matches(mit)) {
       checkSubsequentAssertJPredicateCompatibleTypes(new Argument(mit, 0), mit);
@@ -203,7 +198,7 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
 
   private void checkNullableAssertion(Tree issueLocation, Argument actual) {
     if (actual.isPrimitive()) {
-      reportIssue(issueLocation, MESSAGE);
+      reportIssue(issueLocation, "Change the assertion arguments to not compare a primitive value with null.");
     }
   }
 
@@ -278,7 +273,7 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
   private void createIssue(Argument actual, Argument expected) {
     reportIssue(
       expected.expression,
-      MESSAGE,
+    "Change the assertion arguments to not compare dissimilar types.",
       Collections.singletonList(new JavaFileScannerContext.Location("Actual", actual.expression)),
       null);
   }
