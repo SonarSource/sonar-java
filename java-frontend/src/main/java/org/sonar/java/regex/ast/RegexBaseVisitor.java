@@ -41,6 +41,11 @@ public class RegexBaseVisitor implements RegexVisitor {
   }
 
   @Override
+  public void visitBackReference(BackReferenceTree tree) {
+    // no children to visit
+  }
+
+  @Override
   public void visitGroup(GroupTree tree) {
     visit(tree.getElement());
   }

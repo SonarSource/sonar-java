@@ -21,6 +21,7 @@ package org.sonar.java.regex.ast;
 
 public abstract class RegexTree extends RegexSyntaxElement {
   public enum Kind {
+    BACK_REFERENCE,
     CHARACTER_CLASS,
     CHARACTER_CLASS_INTERSECTION,
     CHARACTER_CLASS_UNION,

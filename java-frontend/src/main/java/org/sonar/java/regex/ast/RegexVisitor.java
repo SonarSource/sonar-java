@@ -25,6 +25,8 @@ public interface RegexVisitor {
     tree.accept(this);
   }
 
+  void visitBackReference(BackReferenceTree tree);
+
   void visitPlainCharacter(PlainCharacterTree tree);
 
   void visitSequence(SequenceTree tree);

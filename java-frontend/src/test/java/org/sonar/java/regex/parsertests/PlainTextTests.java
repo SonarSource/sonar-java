@@ -20,8 +20,13 @@
 package org.sonar.java.regex.parsertests;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.regex.ast.BackReferenceTree;
+import org.sonar.java.regex.ast.DotTree;
 import org.sonar.java.regex.ast.EscapedPropertyTree;
+import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.RegexTree;
+import org.sonar.java.regex.ast.SequenceTree;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertSuccessfulParse;
@@ -126,6 +131,41 @@ class PlainTextTests {
     assertFailParsing("\\\\p", "Expected '{', but found the end of the regex");
     assertFailParsing("\\\\p{", "Expected a property name, but found the end of the regex");
     assertFailParsing("\\\\p{foo", "Expected '}', but found the end of the regex");
+    assertFailParsing("\\\\p{}", "Expected a property name, but found '}'");
+  }
+
+  @Test
+  void backReferences() {
+    assertBackReference("\\\\k<group1>", "group1");
+    assertBackReference("\\\\k<ALPHA>", "ALPHA");
+    assertBackReference("\\\\k<0invalid>", "0invalid");
+
+    assertBackReference("\\\\1", 1);
+    assertBackReference("\\\\42", 42);
+    // octal
+    assertBackReference("\\\\042", 34);
+
+    RegexTree regex = assertSuccessfulParse("\\\\42.");
+    assertThat(regex.is(RegexTree.Kind.SEQUENCE)).isTrue();
+    SequenceTree seq = (SequenceTree) regex;
+    assertThat(seq.getItems()).hasSize(2);
+    assertThat(seq.getItems().get(0)).isInstanceOf(BackReferenceTree.class);
+    assertThat(seq.getItems().get(1)).isInstanceOf(DotTree.class);
+
+    RegexTree regex2 = assertSuccessfulParse("\\\\42a");
+    assertThat(regex2.is(RegexTree.Kind.SEQUENCE)).isTrue();
+    SequenceTree seq2 = (SequenceTree) regex2;
+    assertThat(seq2.getItems()).hasSize(2);
+    assertThat(seq2.getItems().get(0)).isInstanceOf(BackReferenceTree.class);
+    assertThat(seq2.getItems().get(1)).isInstanceOf(PlainCharacterTree.class);
+  }
+
+  @Test
+  void failingInvalidBackReferences() {
+    assertFailParsing("\\\\ko", "Expected '<', but found 'o'");
+    assertFailParsing("\\\\k<", "Expected a group name, but found the end of the regex");
+    assertFailParsing("\\\\k<o", "Expected '>', but found the end of the regex");
+    assertFailParsing("\\\\k<>", "Expected a group name, but found '>'");
   }
 
   private static void assertEscapedProperty(String regex, String expectedProperty, boolean isNegation) {
@@ -135,6 +175,27 @@ class PlainTextTests {
     EscapedPropertyTree escapedPropertyTree = (EscapedPropertyTree) tree;
     assertThat(escapedPropertyTree.property()).isEqualTo(expectedProperty);
     assertThat(escapedPropertyTree.isNegation()).isEqualTo(isNegation);
+  }
+
+  private static void assertBackReference(String regex, String expectedGroupName) {
+    RegexTree tree = assertSuccessfulParse(regex);
+    assertThat(tree).isInstanceOf(BackReferenceTree.class);
+
+    BackReferenceTree backReferenceTree = (BackReferenceTree) tree;
+    assertThat(backReferenceTree.isNamedGroup()).isTrue();
+    assertThat(backReferenceTree.groupName()).isEqualTo(expectedGroupName);
+    assertThat(backReferenceTree.groupNumber()).isEqualTo(-1);
+    assertThat(backReferenceTree.isNumerical()).isFalse();
+  }
+
+  private static void assertBackReference(String regex, int expectedGroupNumber) {
+    RegexTree tree = assertSuccessfulParse(regex);
+    assertThat(tree).isInstanceOf(BackReferenceTree.class);
+
+    BackReferenceTree backReferenceTree = (BackReferenceTree) tree;
+    assertThat(backReferenceTree.isNumerical()).isTrue();
+    assertThat(backReferenceTree.groupNumber()).isEqualTo(expectedGroupNumber);
+    assertThat(backReferenceTree.isNamedGroup()).isFalse();
   }
 
 }

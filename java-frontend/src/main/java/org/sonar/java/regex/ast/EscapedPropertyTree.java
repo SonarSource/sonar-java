@@ -24,8 +24,8 @@ public class EscapedPropertyTree extends RegexTree {
   private final JavaCharacter marker;
   private final String property;
 
-  public EscapedPropertyTree(RegexSource source, JavaCharacter marker, JavaCharacter openingCurlyBrace, JavaCharacter closingCurlyBrace) {
-    super(source, marker.getRange().merge(closingCurlyBrace.getRange()));
+  public EscapedPropertyTree(RegexSource source, JavaCharacter backslash, JavaCharacter marker, JavaCharacter openingCurlyBrace, JavaCharacter closingCurlyBrace) {
+    super(source, backslash.getRange().merge(closingCurlyBrace.getRange()));
     this.marker = marker;
     this.property = source.substringAt(
       new IndexRange(
