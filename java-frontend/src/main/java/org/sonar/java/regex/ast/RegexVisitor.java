@@ -31,6 +31,8 @@ public interface RegexVisitor {
     tree.accept(this);
   }
 
+  void visitBackReference(BackReferenceTree tree);
+
   void visitPlainCharacter(PlainCharacterTree tree);
 
   void visitSequence(SequenceTree tree);
@@ -58,5 +60,7 @@ public interface RegexVisitor {
   void visitDot(DotTree tree);
 
   void visitEscapedProperty(EscapedPropertyTree tree);
+
+  void visitBoundary(BoundaryTree boundaryTree);
 
 }
