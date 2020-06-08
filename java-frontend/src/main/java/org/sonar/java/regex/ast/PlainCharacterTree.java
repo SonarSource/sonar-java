@@ -32,6 +32,10 @@ public class PlainCharacterTree extends RegexTree {
     return contents.getCharacter();
   }
 
+  public JavaCharacter getContents() {
+    return contents;
+  }
+
   @Override
   public void accept(RegexVisitor visitor) {
     visitor.visitPlainCharacter(this);

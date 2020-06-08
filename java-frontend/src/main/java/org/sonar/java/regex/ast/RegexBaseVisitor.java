@@ -50,4 +50,27 @@ public class RegexBaseVisitor implements RegexVisitor {
     visit(tree.getElement());
   }
 
+  @Override
+  public void visitCharacterClass(CharacterClassTree tree) {
+    visit(tree.getContents());
+  }
+
+  @Override
+  public void visitCharacterRange(CharacterRangeTree tree) {
+    // No children to visit
+  }
+
+  @Override
+  public void visitCharacterClassUnion(CharacterClassUnionTree tree) {
+    for (RegexTree child : tree.getCharacterClasses()) {
+      visit(child);
+    }
+  }
+
+  @Override
+  public void visitCharacterClassIntersection(CharacterClassIntersectionTree tree) {
+    for (RegexTree child : tree.getCharacterClasses()) {
+      visit(child);
+    }
+  }
 }
