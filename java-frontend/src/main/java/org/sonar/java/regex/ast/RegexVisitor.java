@@ -35,4 +35,12 @@ public interface RegexVisitor {
 
   void visitRepetition(RepetitionTree tree);
 
+  void visitCharacterClass(CharacterClassTree tree);
+
+  void visitCharacterRange(CharacterRangeTree tree);
+
+  void visitCharacterClassUnion(CharacterClassUnionTree tree);
+
+  void visitCharacterClassIntersection(CharacterClassIntersectionTree tree);
+
 }
