@@ -19,28 +19,30 @@
  */
 package org.sonar.java.regex.ast;
 
-public abstract class RegexTree extends RegexSyntaxElement {
-  public enum Kind {
-    PLAIN_CHARACTER, SEQUENCE, DISJUNCTION, GROUP, REPETITION, CHARACTER_CLASS, CHARACTER_RANGE,
-    CHARACTER_CLASS_INTERSECTION, CHARACTER_CLASS_UNION, CHARACTER_CLASS_NEGATION
-  }
+import java.util.Collections;
+import java.util.List;
 
-  public RegexTree(RegexSource source, IndexRange range) {
+public class CharacterClassIntersectionTree extends RegexTree {
+
+  private final List<RegexTree> characterClasses;
+
+  public CharacterClassIntersectionTree(RegexSource source, IndexRange range, List<RegexTree> characterClasses) {
     super(source, range);
+    this.characterClasses = Collections.unmodifiableList(characterClasses);
   }
 
-  public abstract void accept(RegexVisitor visitor);
+  public List<RegexTree> getCharacterClasses() {
+    return characterClasses;
+  }
 
-  public abstract Kind kind();
+  @Override
+  public void accept(RegexVisitor visitor) {
+    visitor.visitCharacterClassIntersection(this);
+  }
 
-  public boolean is(Kind... kinds) {
-    Kind thisKind = kind();
-    for (Kind kind : kinds) {
-      if (thisKind == kind) {
-        return true;
-      }
-    }
-    return false;
+  @Override
+  public Kind kind() {
+    return Kind.CHARACTER_CLASS_INTERSECTION;
   }
 
 }
