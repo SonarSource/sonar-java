@@ -43,6 +43,8 @@ public interface RegexVisitor {
 
   void visitCharacterClassIntersection(CharacterClassIntersectionTree tree);
 
+  void visitDot(DotTree tree);
+
   void visitEscapedProperty(EscapedPropertyTree tree);
 
 }
