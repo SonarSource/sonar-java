@@ -19,38 +19,19 @@
  */
 package org.sonar.java.regex.ast;
 
-public abstract class RegexTree extends RegexSyntaxElement {
-  public enum Kind {
-    CHARACTER_CLASS,
-    CHARACTER_CLASS_INTERSECTION,
-    CHARACTER_CLASS_UNION,
-    CHARACTER_CLASS_NEGATION,
-    CHARACTER_RANGE,
-    DISJUNCTION,
-    DOT,
-    ESCAPED_PROPERTY,
-    GROUP,
-    PLAIN_CHARACTER,
-    REPETITION,
-    SEQUENCE,
-  }
+public class DotTree extends RegexTree {
 
-  public RegexTree(RegexSource source, IndexRange range) {
+  public DotTree(RegexSource source, IndexRange range) {
     super(source, range);
   }
 
-  public abstract void accept(RegexVisitor visitor);
-
-  public abstract Kind kind();
-
-  public boolean is(Kind... kinds) {
-    Kind thisKind = kind();
-    for (Kind kind : kinds) {
-      if (thisKind == kind) {
-        return true;
-      }
-    }
-    return false;
+  @Override
+  public void accept(RegexVisitor visitor) {
+    visitor.visitDot(this);
   }
 
+  @Override
+  public Kind kind() {
+    return RegexTree.Kind.DOT;
+  }
 }

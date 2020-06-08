@@ -30,6 +30,7 @@ import org.sonar.java.regex.ast.CharacterClassUnionTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
+import org.sonar.java.regex.ast.DotTree;
 import org.sonar.java.regex.ast.EscapedPropertyTree;
 import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.IndexRange;
@@ -202,18 +203,25 @@ public class RegexParser {
 
   @CheckForNull
   private RegexTree parsePrimaryExpression() {
-    if (characters.currentIs('(')) {
-      return parseGroup();
-    } else if (characters.currentIs('\\')) {
-      return parseEscapeSequence();
-    } else if (characters.currentIs('[')) {
-      return parseCharacterClass();
-    } else if (isPlainTextCharacter(characters.getCurrentChar())) {
-      JavaCharacter character = characters.getCurrent();
-      characters.moveNext();
-      return plainCharacter(character);
-    } else {
-      return null;
+    switch (characters.getCurrentChar()) {
+      case '(':
+        return parseGroup();
+      case '\\':
+        return parseEscapeSequence();
+      case '[':
+        return parseCharacterClass();
+      case '.':
+        DotTree tree = new DotTree(source, characters.getCurrentIndexRange());
+        characters.moveNext();
+        return tree;
+      default:
+        if (isPlainTextCharacter(characters.getCurrentChar())) {
+          JavaCharacter character = characters.getCurrent();
+          characters.moveNext();
+          return plainCharacter(character);
+        } else {
+          return null;
+        }
     }
   }
 
