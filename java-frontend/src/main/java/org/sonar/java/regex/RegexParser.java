@@ -20,8 +20,6 @@
 package org.sonar.java.regex;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
@@ -271,7 +269,7 @@ public class RegexParser {
     if (characters.currentIs(']')) {
       characters.moveNext();
     } else {
-      expected("]");
+      expected("']'");
     }
     IndexRange range = openingBracket.getRange().extendTo(characters.getCurrentStartIndex());
     return new CharacterClassTree(source, range, negated, contents);
@@ -280,7 +278,9 @@ public class RegexParser {
   private RegexTree parseCharacterClassIntersection() {
     List<RegexTree> elements = new ArrayList<>();
     elements.add(parseCharacterClassUnion(true));
-    while (characters.isNotAtEnd() && !characters.currentIs(']')) {
+    while (characters.currentIs("&&")) {
+      characters.moveNext();
+      characters.moveNext();
       elements.add(parseCharacterClassUnion(false));
     }
     return combineTrees(elements, (range, items) -> new CharacterClassIntersectionTree(source, range, items));
@@ -288,10 +288,10 @@ public class RegexParser {
 
   private RegexTree parseCharacterClassUnion(boolean isAtBeginning) {
     List<RegexTree> elements = new ArrayList<>();
-    List<RegexTree> nextElements = parseCharacterClassElement(isAtBeginning);
-    while (!nextElements.isEmpty()) {
-      elements.addAll(nextElements);
-      nextElements = parseCharacterClassElement(false);
+    RegexTree element = parseCharacterClassElement(isAtBeginning);
+    while (element != null) {
+      elements.add(element);
+      element = parseCharacterClassElement(false);
     }
     if (elements.isEmpty()) {
       IndexRange range = new IndexRange(characters.getCurrentStartIndex(), characters.getCurrentStartIndex());
@@ -301,9 +301,10 @@ public class RegexParser {
     }
   }
 
-  private List<RegexTree> parseCharacterClassElement(boolean isAtBeginning) {
-    if (characters.isAtEnd()) {
-      return Collections.emptyList();
+  @CheckForNull
+  private RegexTree parseCharacterClassElement(boolean isAtBeginning) {
+    if (characters.isAtEnd() || characters.currentIs("&&")) {
+      return null;
     }
     JavaCharacter startCharacter = characters.getCurrent();
     switch (startCharacter.getCharacter()) {
@@ -312,23 +313,16 @@ public class RegexParser {
         if (escape.is(RegexTree.Kind.PLAIN_CHARACTER)) {
           return parseCharacterRange(((PlainCharacterTree)escape).getContents());
         } else {
-          return Collections.singletonList(escape);
+          return escape;
         }
       case '[':
-        return Collections.singletonList(parseCharacterClass());
-      case '&':
-        characters.moveNext();
-        if (characters.currentIs('&')) {
-          characters.moveNext();
-          return Collections.emptyList();
-        }
-        return parseCharacterRange(startCharacter);
+        return parseCharacterClass();
       case ']':
         if (isAtBeginning) {
           characters.moveNext();
           return parseCharacterRange(startCharacter);
         } else {
-          return Collections.emptyList();
+          return null;
         }
       default:
         characters.moveNext();
@@ -336,35 +330,30 @@ public class RegexParser {
     }
   }
 
-  /**
-   * Start state: a simple character has been consumed and passed as an argument. It might be the start of a range.
-   * If it is range: Return a list containing as its single element that range
-   * If the next character is a dash and the one after that is the end of the character class: Returns a list containing
-   * the current character and the dash
-   * Otherwise: Returns a list containing the current character
-   */
-  private List<RegexTree> parseCharacterRange(JavaCharacter startCharacter) {
+  private RegexTree parseCharacterRange(JavaCharacter startCharacter) {
     if (characters.currentIs('-')) {
-      JavaCharacter dash = characters.getCurrent();
-      characters.moveNext();
-      if (characters.isAtEnd() || characters.currentIs(']')) {
-        return Arrays.asList(plainCharacter(startCharacter), plainCharacter(dash));
-      } else if (characters.currentIs('\\')) {
+      int lookAhead = characters.lookAhead(1);
+      if (lookAhead == EOF || lookAhead == ']') {
+        return plainCharacter(startCharacter);
+      } else if (lookAhead == '\\') {
+        characters.moveNext();
+        JavaCharacter backslash = characters.getCurrent();
         RegexTree escape = parseEscapeSequence();
         if (escape.is(RegexTree.Kind.PLAIN_CHARACTER)) {
           JavaCharacter endCharacter = ((PlainCharacterTree) escape).getContents();
-          return Collections.singletonList(characterRange(startCharacter, endCharacter));
+          return characterRange(startCharacter, endCharacter);
         } else {
           expected("simple character");
-          return Arrays.asList(plainCharacter(startCharacter), plainCharacter(dash), escape);
+          return characterRange(startCharacter, backslash);
         }
       } else {
+        characters.moveNext();
         JavaCharacter endCharacter = characters.getCurrent();
         characters.moveNext();
-        return Collections.singletonList(characterRange(startCharacter, endCharacter));
+        return characterRange(startCharacter, endCharacter);
       }
     } else {
-      return Collections.singletonList(plainCharacter(startCharacter));
+      return plainCharacter(startCharacter);
     }
   }
 
