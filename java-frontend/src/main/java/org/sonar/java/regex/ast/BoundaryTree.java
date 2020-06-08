@@ -19,36 +19,58 @@
  */
 package org.sonar.java.regex.ast;
 
-public class EscapedPropertyTree extends RegexTree {
+import javax.annotation.Nullable;
 
-  private final JavaCharacter marker;
-  private final String property;
+public class BoundaryTree extends RegexTree {
 
-  public EscapedPropertyTree(RegexSource source, JavaCharacter backslash, JavaCharacter marker, JavaCharacter openingCurlyBrace, JavaCharacter closingCurlyBrace) {
-    super(source, backslash.getRange().merge(closingCurlyBrace.getRange()));
-    this.marker = marker;
-    this.property = source.substringAt(
-      new IndexRange(
-        openingCurlyBrace.getRange().getBeginningOffset() + 1,
-        closingCurlyBrace.getRange().getBeginningOffset()));
+  public enum Type {
+    LINE_START('^'),
+    LINE_END('$'),
+    WORD('b'),
+    // requires brackets as well
+    UNICODE_EXTENDED_GRAPHEME_CLUSTER('b'),
+    NON_WORD('B'),
+    INPUT_START('A'),
+    PREVIOUS_MATCH_END('G'),
+    INPUT_END_FINAL_TERMINATOR('Z'),
+    INPUT_END('z');
+
+    private final char key;
+
+    Type(char key) {
+      this.key = key;
+    }
+
+    @Nullable
+    public static Type forKey(char k) {
+      for (Type type : Type.values()) {
+        if (type.key == k) {
+          return type;
+        }
+      }
+      return null;
+    }
+  }
+
+  private final Type type;
+
+  public BoundaryTree(RegexSource source, Type type, IndexRange range) {
+    super(source, range);
+    this.type = type;
   }
 
   @Override
   public void accept(RegexVisitor visitor) {
-    visitor.visitEscapedProperty(this);
+    visitor.visitBoundary(this);
   }
 
   @Override
   public RegexTree.Kind kind() {
-    return RegexTree.Kind.ESCAPED_PROPERTY;
+    return RegexTree.Kind.BOUNDARY;
   }
 
-  public boolean isNegation() {
-    return Character.isUpperCase(marker.getCharacter());
-  }
-
-  public String property() {
-    return property;
+  Type type() {
+    return type;
   }
 
 }

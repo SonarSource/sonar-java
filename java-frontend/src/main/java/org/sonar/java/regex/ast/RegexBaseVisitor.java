@@ -89,6 +89,11 @@ public class RegexBaseVisitor implements RegexVisitor {
   }
 
   @Override
+  public void visitBackReference(BackReferenceTree tree) {
+    // no children to visit
+  }
+
+  @Override
   public void visitRepetition(RepetitionTree tree) {
     visit(tree.getElement());
   }
@@ -125,6 +130,11 @@ public class RegexBaseVisitor implements RegexVisitor {
   @Override
   public void visitEscapedProperty(EscapedPropertyTree tree) {
     // No children to visit
+  }
+
+  @Override
+  public void visitBoundary(BoundaryTree boundaryTree) {
+    // no children to visit
   }
 
 }
