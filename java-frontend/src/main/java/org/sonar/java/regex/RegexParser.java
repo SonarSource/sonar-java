@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
 import org.sonar.java.regex.ast.AtomicGroupTree;
+import java.util.function.Function;
+import org.sonar.java.regex.ast.BackReferenceTree;
+import org.sonar.java.regex.ast.BoundaryTree;
 import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterClassUnionTree;
@@ -217,6 +220,14 @@ public class RegexParser {
         DotTree tree = new DotTree(source, characters.getCurrentIndexRange());
         characters.moveNext();
         return tree;
+      case '^':
+        BoundaryTree lineStart = new BoundaryTree(source, BoundaryTree.Type.LINE_START, characters.getCurrentIndexRange());
+        characters.moveNext();
+        return lineStart;
+      case '$':
+        BoundaryTree lineEnd = new BoundaryTree(source, BoundaryTree.Type.LINE_END, characters.getCurrentIndexRange());
+        characters.moveNext();
+        return lineEnd;
       default:
         if (isPlainTextCharacter(characters.getCurrentChar())) {
           JavaCharacter character = characters.getCurrent();
@@ -372,14 +383,112 @@ public class RegexParser {
       switch (character.getCharacter()) {
         case 'p':
         case 'P':
-          return parseProperty();
+          return parseEscapedProperty(backslash);
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          return parseNumericalBackReference(backslash);
+        case 'k':
+          return parseNamedBackReference(backslash);
+        case 'b':
+        case 'B':
+        case 'A':
+        case 'G':
+        case 'Z':
+        case 'z':
+          return parseBoundary(backslash);
         default:
-          // TODO other kind of escape sequences such as boundary markers
+          // TODO other kind of escape sequences such as quotations
           break;
       }
       characters.moveNext();
       return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
     }
+  }
+
+  private RegexTree parseEscapedProperty(JavaCharacter backslash) {
+    return parseEscapedSequence('{', '}', "a property name", dh -> new EscapedPropertyTree(source, backslash, dh.marker, dh.opener, dh.closer));
+  }
+
+  private RegexTree parseNamedBackReference(JavaCharacter backslash) {
+    return parseEscapedSequence('<', '>', "a group name", dh -> new BackReferenceTree(source, backslash, dh.marker, dh.opener, dh.closer));
+  }
+
+  private RegexTree parseEscapedSequence(char opener, char closer, String expected, Function<EscapedSequenceDataHolder, RegexTree> builder) {
+    JavaCharacter marker = characters.getCurrent();
+    characters.moveNext();
+
+    if (!characters.currentIs(opener)) {
+      expected(("'" + opener + "'"));
+      return plainCharacter(marker);
+    }
+    JavaCharacter openerChar = characters.getCurrent();
+    boolean atLeastOneChar = false;
+    do {
+      characters.moveNext();
+      if (characters.isAtEnd()) {
+        expected(atLeastOneChar ? ("'" + closer + "'") : expected);
+        return plainCharacter(openerChar);
+      }
+      if (!atLeastOneChar && characters.currentIs(closer)) {
+        expected(expected);
+        return plainCharacter(openerChar);
+      }
+      atLeastOneChar = true;
+    } while (!characters.currentIs(closer));
+    JavaCharacter closerChar = characters.getCurrent();
+    characters.moveNext();
+    return builder.apply(new EscapedSequenceDataHolder(marker, openerChar, closerChar));
+  }
+
+  private static final class EscapedSequenceDataHolder {
+    private final JavaCharacter marker;
+    private final JavaCharacter opener;
+    private final JavaCharacter closer;
+
+    private EscapedSequenceDataHolder(JavaCharacter marker, JavaCharacter opener, JavaCharacter closer) {
+      this.marker = marker;
+      this.opener = opener;
+      this.closer = closer;
+    }
+  }
+
+  private RegexTree parseNumericalBackReference(JavaCharacter backslash) {
+    JavaCharacter firstDigit = characters.getCurrent();
+    JavaCharacter lastDigit = firstDigit;
+    do {
+      characters.moveNext();
+      if (!characters.isAtEnd()) {
+        JavaCharacter currentChar = characters.getCurrent();
+        char asChar = currentChar.getCharacter();
+        if (asChar >= '0' && asChar <= '9') {
+          lastDigit = currentChar;
+        } else {
+          break;
+        }
+      }
+    } while (!characters.isAtEnd());
+    return new BackReferenceTree(source, backslash, null, firstDigit, lastDigit);
+  }
+
+  private RegexTree parseBoundary(JavaCharacter backslash) {
+    if (characters.currentIs("b{")) {
+      return parseEscapedSequence(
+        '{',
+        '}',
+        "an Unicode extended grapheme cluster",
+        dh -> new BoundaryTree(source, BoundaryTree.Type.UNICODE_EXTENDED_GRAPHEME_CLUSTER, backslash.getRange().merge(dh.closer.getRange())));
+    }
+    JavaCharacter boundary = characters.getCurrent();
+    characters.moveNext();
+    return new BoundaryTree(source, BoundaryTree.Type.forKey(boundary.getCharacter()), backslash.getRange().merge(boundary.getRange()));
   }
 
   private RegexTree parseCharacterClass() {
@@ -488,29 +597,6 @@ public class RegexParser {
   private CharacterRangeTree characterRange(JavaCharacter startCharacter, JavaCharacter endCharacter) {
     IndexRange range = startCharacter.getRange().merge(endCharacter.getRange());
     return new CharacterRangeTree(source, range, startCharacter, endCharacter);
-  }
-
-  private RegexTree parseProperty() {
-    JavaCharacter p = characters.getCurrent();
-    characters.moveNext();
-
-    if (!characters.currentIs('{')) {
-      expected("'{'");
-      return plainCharacter(p);
-    }
-    JavaCharacter openingCurlyBrace = characters.getCurrent();
-    boolean atLeastOneChar = false;
-    do {
-      characters.moveNext();
-      if (characters.isAtEnd()) {
-        expected(atLeastOneChar ? "'}'" : "a property name");
-        return plainCharacter(openingCurlyBrace);
-      }
-      atLeastOneChar = true;
-    } while (!characters.currentIs('}'));
-    JavaCharacter closingCurlyBrace = characters.getCurrent();
-    characters.moveNext();
-    return new EscapedPropertyTree(source, p, openingCurlyBrace, closingCurlyBrace);
   }
 
   private void expected(String expectedToken) {
