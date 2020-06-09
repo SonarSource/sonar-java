@@ -125,6 +125,7 @@ import org.sonar.java.checks.tests.BooleanOrNullLiteralInAssertionsCheck;
 import org.sonar.java.checks.tests.CallSuperInTestCaseCheck;
 import org.sonar.java.checks.tests.ExpectedExceptionCheck;
 import org.sonar.java.checks.tests.IgnoredTestsCheck;
+import org.sonar.java.checks.tests.JUnit45MethodAnnotationCheck;
 import org.sonar.java.checks.tests.JUnit4AnnotationsCheck;
 import org.sonar.java.checks.tests.JUnit5DefaultPackageClassAndMethodCheck;
 import org.sonar.java.checks.tests.JUnit5PrivateClassAndMethodCheck;
@@ -759,6 +760,7 @@ public final class CheckList {
       ExpectedExceptionCheck.class,
       IgnoredTestsCheck.class,
       JUnit4AnnotationsCheck.class,
+      JUnit45MethodAnnotationCheck.class,
       JUnit5DefaultPackageClassAndMethodCheck.class,
       JUnit5PrivateClassAndMethodCheck.class,
       JunitMethodDeclarationCheck.class,
