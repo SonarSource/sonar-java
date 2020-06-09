@@ -214,8 +214,7 @@ public class AssertJChainSimplificationIndex {
   }
 
   private static PredicateSimplifierWithContext compareToSimplifier(Predicate<ExpressionTree> predicateArgCondition, String simplification) {
-    return PredicateSimplifierWithContext.methodCallInSubject(predicateArgCondition,
-       Matchers.COMPARE_TO, simplification);
+    return PredicateSimplifierWithContext.methodCallInSubject(predicateArgCondition, Matchers.COMPARE_TO, simplification);
   }
 
   private static PredicateSimplifierWithContext compareToSimplifier(String simplification) {
