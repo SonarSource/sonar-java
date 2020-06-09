@@ -47,10 +47,10 @@ public class AssertJChainSimplificationCheckTest {
     assertThatObject(x.equals(y)).isEqualTo(true); // Noncompliant
     org.assertj.core.api.AssertionsForInterfaceTypes.assertThat(x == y).isTrue(); // Noncompliant
     org.assertj.core.api.AssertionsForClassTypes.assertThat(x == y).isTrue(); // Noncompliant
-    assertThat(!getString().equals(x)).isTrue(); // compliant as boolean negation is unsupported but should be: {{Replace with assertThat(actual).isNotEqualTo(expected)}}
-    assertThat(!getString().equals(x)).isFalse(); // compliant as boolean negation is unsupported but should be: {{Replace with assertThat(actual).isEqualTo(expected)}}
-    assertThat(!!getString().equals(x)).isTrue(); // compliant as boolean negation is unsupported but should be: {{Replace with assertThat(actual).isEqualTo(expected)}}
-    assertThat(!!getString().equals(x)).isFalse(); // compliant as boolean negation is unsupported but should be: {{Replace with assertThat(actual).isNotEqualTo(expected)}}
+    assertThat(!getString().equals(x)).isTrue(); // compliant as boolean negation is unsupported but should be: {{Use assertThat(actual).isNotEqualTo(expected) instead}}
+    assertThat(!getString().equals(x)).isFalse(); // compliant as boolean negation is unsupported but should be: {{Use assertThat(actual).isEqualTo(expected) instead}}
+    assertThat(!!getString().equals(x)).isTrue(); // compliant as boolean negation is unsupported but should be: {{Use assertThat(actual).isEqualTo(expected) instead}}
+    assertThat(!!getString().equals(x)).isFalse(); // compliant as boolean negation is unsupported but should be: {{Use assertThat(actual).isNotEqualTo(expected) instead}}
   }
 
   void objectRelatedAssertionChains() {
@@ -110,47 +110,49 @@ public class AssertJChainSimplificationCheckTest {
   void stringRelatedAssertionChains() {
     String x = "x";
 
-    assertThat("some string").hasSize(0); // Noncompliant {{Replace with assertThat(actual).isEmpty()}}
-    assertThat(x).isEqualTo(""); // Noncompliant {{Replace with assertThat(actual).isEmpty()}}
+    assertThat("some string").hasSize(0); // Noncompliant {{Use isEmpty() instead}}
+    assertThat(x).isEqualTo(""); // Noncompliant {{Use isEmpty() instead}}
     assertThat(getString()).isNotEqualTo(""); // Compliant to avoid FP when getString could be null or a non-empty string
-    assertThat(getString().equals(x)).isTrue(); // Noncompliant {{Replace with assertThat(actual).isEqualTo(expected)}}
-    assertThat(getString().equals(x)).isFalse(); // Noncompliant {{Replace with assertThat(actual).isNotEqualTo(expected)}}
-    assertThat(getString().contentEquals(x)).isTrue(); // Noncompliant {{Replace with assertThat(actual).isEqualTo(expected)}}
-    assertThat(getString().contentEquals(x)).isFalse(); // Noncompliant {{Replace with assertThat(actual).isNotEqualTo(expected)}}
-    assertThat(getString().equalsIgnoreCase(x)).isTrue(); // Noncompliant {{Replace with assertThat(actual).isEqualToIgnoringCase(expected)}}
-    assertThat(getString().equalsIgnoreCase(x)).isFalse(); // Noncompliant {{Replace with assertThat(actual).isNotEqualToIgnoringCase(expected)}}
-    assertThat(getString().contains("some string")).isTrue(); // Noncompliant {{Replace with assertThat(actual).contains(expected)}}
-    assertThat(getString().contains(x)).isFalse(); // Noncompliant {{Replace with assertThat(actual).doesNotContain(expected)}}
-    assertThat(getString().startsWith(x)).isTrue(); // Noncompliant {{Replace with assertThat(actual).startsWith(expected)}}
-    assertThat(getString().startsWith(x)).isFalse(); // Noncompliant {{Replace with assertThat(actual).doesNotStartWith(expected)}}
-    assertThat(getString().endsWith(x)).isTrue(); // Noncompliant {{Replace with assertThat(actual).endsWith(expected)}}
-    assertThat(getString().endsWith(x)).isFalse(); // Noncompliant {{Replace with assertThat(actual).doesNotEndWith(expected)}}
-    assertThat(getString().matches(x)).isTrue(); // Noncompliant {{Replace with assertThat(actual).matches(expected)}}
-    assertThat(getString().matches(x)).isFalse(); // Noncompliant {{Replace with assertThat(actual).doesNotMatch(expected)}}
-    assertThat(getString().compareToIgnoreCase(x)).isEqualTo(0); // Noncompliant {{Replace with assertThat(actual).isEqualToIgnoringCase(expected)}}
-    assertThat(getString().compareToIgnoreCase(x)).isNotEqualTo(0); // Noncompliant {{Replace with assertThat(actual).isNotEqualToIgnoringCase(expected)}}
+    assertThat(getString().equals(x)).isTrue(); // Noncompliant {{Use assertThat(actual).isEqualTo(expected) instead}}
+    assertThat(getString().equals(x)).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEqualTo(expected) instead}}
+    assertThat(getString().contentEquals(x)).isTrue(); // Noncompliant {{Use assertThat(actual).isEqualTo(expected) instead}}
+    assertThat(getString().contentEquals(x)).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEqualTo(expected) instead}}
+    assertThat(getString().equalsIgnoreCase(x)).isTrue(); // Noncompliant {{Use assertThat(actual).isEqualToIgnoringCase(expected) instead}}
+    assertThat(getString().equalsIgnoreCase(x)).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEqualToIgnoringCase(expected) instead}}
+    assertThat(getString().contains("some string")).isTrue(); // Noncompliant {{Use assertThat(actual).contains(expected) instead}}
+    assertThat(getString().contains(x)).isFalse(); // Noncompliant {{Use assertThat(actual).doesNotContain(expected) instead}}
+    assertThat(getString().startsWith(x)).isTrue(); // Noncompliant {{Use assertThat(actual).startsWith(expected) instead}}
+    assertThat(getString().startsWith(x)).isFalse(); // Noncompliant {{Use assertThat(actual).doesNotStartWith(expected) instead}}
+    assertThat(getString().endsWith(x)).isTrue(); // Noncompliant {{Use assertThat(actual).endsWith(expected) instead}}
+    assertThat(getString().endsWith(x)).isFalse(); // Noncompliant {{Use assertThat(actual).doesNotEndWith(expected) instead}}
+    assertThat(getString().matches(x)).isTrue(); // Noncompliant {{Use assertThat(actual).matches(expected) instead}}
+    assertThat(getString().matches(x)).isFalse(); // Noncompliant {{Use assertThat(actual).doesNotMatch(expected) instead}}
+    assertThat(getString().compareToIgnoreCase(x)).isEqualTo(0); // Noncompliant {{Use assertThat(actual).isEqualToIgnoringCase(expected) instead}}
+    assertThat(getString().compareToIgnoreCase(x)).isNotEqualTo(0); // Noncompliant {{Use assertThat(actual).isNotEqualToIgnoringCase(expected) instead}}
+    assertThat(getString().compareToIgnoreCase(x)).isZero(); // Noncompliant {{Use assertThat(actual).isEqualToIgnoringCase(expected) instead}}
+    assertThat(getString().compareToIgnoreCase(x)).isNotZero(); // Noncompliant {{Use assertThat(actual).isNotEqualToIgnoringCase(expected) instead}}
 
-    assertThat(getString().indexOf(x)).isEqualTo(0); // Noncompliant {{Replace with assertThat(actual).startsWith(expected)}}
-    assertThat(getString().indexOf(x)).isNotEqualTo(0); // Noncompliant {{Replace with assertThat(actual).doesNotStartWith(expected)}}
-    assertThat(getString().indexOf(x)).isZero(); // Noncompliant {{Replace with assertThat(actual).startsWith(expected)}}
-    assertThat(getString().indexOf(x)).isNotZero(); // Noncompliant {{Replace with assertThat(actual).doesNotStartWith(expected)}}
-    assertThat(getString().indexOf(x)).isEqualTo(-1); // Noncompliant {{Replace with assertThat(actual).doesNotContain(expected)}}
-    assertThat(getString().indexOf(x)).isNegative(); // Noncompliant {{Replace with assertThat(actual).doesNotContain(expected)}}
-    assertThat(getString().indexOf(x)).isLessThan(0); // Noncompliant {{Replace with assertThat(actual).doesNotContain(expected)}}
-    assertThat(getString().indexOf(x)).isLessThanOrEqualTo(-1); // Noncompliant {{Replace with assertThat(actual).doesNotContain(expected)}}
-    assertThat(getString().indexOf(x)).isNotNegative(); // Noncompliant {{Replace with assertThat(actual).contains(expected)}}
-    assertThat(getString().indexOf(x)).isGreaterThanOrEqualTo(0); // Noncompliant {{Replace with assertThat(actual).contains(expected)}}
-    assertThat(getString().indexOf(x)).isGreaterThan(-1); // Noncompliant {{Replace with assertThat(actual).contains(expected)}}
+    assertThat(getString().indexOf(x)).isEqualTo(0); // Noncompliant {{Use assertThat(actual).startsWith(expected) instead}}
+    assertThat(getString().indexOf(x)).isNotEqualTo(0); // Noncompliant {{Use assertThat(actual).doesNotStartWith(expected) instead}}
+    assertThat(getString().indexOf(x)).isZero(); // Noncompliant {{Use assertThat(actual).startsWith(expected) instead}}
+    assertThat(getString().indexOf(x)).isNotZero(); // Noncompliant {{Use assertThat(actual).doesNotStartWith(expected) instead}}
+    assertThat(getString().indexOf(x)).isEqualTo(-1); // Noncompliant {{Use assertThat(actual).doesNotContain(expected) instead}}
+    assertThat(getString().indexOf(x)).isNegative(); // Noncompliant {{Use assertThat(actual).doesNotContain(expected) instead}}
+    assertThat(getString().indexOf(x)).isLessThan(0); // Noncompliant {{Use assertThat(actual).doesNotContain(expected) instead}}
+    assertThat(getString().indexOf(x)).isLessThanOrEqualTo(-1); // Noncompliant {{Use assertThat(actual).doesNotContain(expected) instead}}
+    assertThat(getString().indexOf(x)).isNotNegative(); // Noncompliant {{Use assertThat(actual).contains(expected) instead}}
+    assertThat(getString().indexOf(x)).isGreaterThanOrEqualTo(0); // Noncompliant {{Use assertThat(actual).contains(expected) instead}}
+    assertThat(getString().indexOf(x)).isGreaterThan(-1); // Noncompliant {{Use assertThat(actual).contains(expected) instead}}
 
-    assertThat(getString().trim()).isNotEmpty(); // Noncompliant {{Replace with assertThat(actual).isNotBlank()}}
-    assertThat(getString().trim()).isNotEqualTo(""); // Noncompliant {{Replace with assertThat(actual).isNotBlank()}}
-    assertThat(getString().length()).isEqualTo(0); // Noncompliant {{Replace with assertThat(actual).isEmpty()}}
-    assertThat(getString().length()).isLessThanOrEqualTo(0); // Noncompliant {{Replace with assertThat(actual).isEmpty()}}
-    assertThat(getString().length()).isLessThan(-1); // Noncompliant {{Replace with assertThat(actual).isEmpty()}}
-    assertThat(getString().length()).isZero(); // Noncompliant {{Replace with assertThat(actual).isEmpty()}}
-    assertThat(getString().length()).isEqualTo(x); // Noncompliant {{Replace with assertThat(actual).hasSize(expected)}}
-    assertThat(getString().isEmpty()).isTrue(); // Noncompliant {{Replace with assertThat(actual).isEmpty()}}
-    assertThat(getString().isEmpty()).isFalse(); // Noncompliant {{Replace with assertThat(actual).isNotEmpty()}}
-    assertThat(getString().length()).isEqualTo(x.length()); // Noncompliant {{Replace with assertThat(actual).hasSameSizeAs(expected)}}
+    assertThat(getString().trim()).isNotEmpty(); // Noncompliant {{Use assertThat(actual).isNotBlank() instead}}
+    assertThat(getString().trim()).isNotEqualTo(""); // Noncompliant {{Use assertThat(actual).isNotBlank() instead}}
+    assertThat(getString().length()).isEqualTo(0); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
+    assertThat(getString().length()).isLessThanOrEqualTo(0); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
+    assertThat(getString().length()).isLessThan(1); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
+    assertThat(getString().length()).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
+    assertThat(getString().length()).isEqualTo(x); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead}}
+    assertThat(getString().isEmpty()).isTrue(); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
+    assertThat(getString().isEmpty()).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead}}
+    assertThat(getString().length()).isEqualTo(x.length()); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead}}
   }
 }
