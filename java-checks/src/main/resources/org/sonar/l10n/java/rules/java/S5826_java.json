@@ -1,0 +1,17 @@
+{
+  "title": "Methods setUp() and tearDown() should be correctly annotated starting with JUnit4",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "junit",
+    "tests"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5826",
+  "sqKey": "S5826",
+  "scope": "All"
+}
