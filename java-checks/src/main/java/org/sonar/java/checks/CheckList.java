@@ -109,6 +109,7 @@ import org.sonar.java.checks.synchronization.SynchronizationOnGetClassCheck;
 import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
 import org.sonar.java.checks.synchronization.ValueBasedObjectUsedForLockCheck;
 import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
+import org.sonar.java.checks.tests.AssertJChainSimplificationCheck;
 import org.sonar.java.checks.tests.AssertJContextBeforeAssertionCheck;
 import org.sonar.java.checks.tests.AssertJTestForEmptinessCheck;
 import org.sonar.java.checks.tests.AssertJConsecutiveAssertionCheck;
@@ -723,8 +724,7 @@ public final class CheckList {
       XmlDeserializationCheck.class,
       XxeActiveMQCheck.class,
       XxeProcessingCheck.class,
-      ZipEntryCheck.class
-    );
+      ZipEntryCheck.class);
   }
 
   // Rule classes are listed alphabetically
@@ -747,6 +747,7 @@ public final class CheckList {
       AssertionTypesCheck.class,
       AssertionsWithoutMessageCheck.class,
       AssertJApplyConfigurationCheck.class,
+      AssertJChainSimplificationCheck.class,
       AssertJConsecutiveAssertionCheck.class,
       AssertJContextBeforeAssertionCheck.class,
       AssertJTestForEmptinessCheck.class,
