@@ -29,7 +29,7 @@ public abstract class RegexTree extends RegexSyntaxElement {
     DISJUNCTION,
     DOT,
     ESCAPED_PROPERTY,
-    GROUP,
+    CAPTURING_GROUP,
     PLAIN_CHARACTER,
     REPETITION,
     SEQUENCE,

@@ -20,8 +20,8 @@
 package org.sonar.java.regex;
 
 import java.util.NoSuchElementException;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.RegexSource;
 
@@ -31,13 +31,15 @@ import org.sonar.java.regex.ast.RegexSource;
  */
 public class JavaCharacterParser {
 
-  public static final int EOF = -1;
-
   private final RegexSource source;
 
   private final JavaUnicodeEscapeParser unicodeProcessedCharacters;
 
-  private final CharacterBuffer buffer = new CharacterBuffer(2);
+  /**
+   * Will be null if and only if the end of input has been reached
+   */
+  @CheckForNull
+  private JavaCharacter current;
 
   public JavaCharacterParser(RegexSource source) {
     this.source = source;
@@ -46,93 +48,36 @@ public class JavaCharacterParser {
   }
 
   public void moveNext() {
-    if (!buffer.isEmpty()) {
-      buffer.removeFirst();
-    }
-    if (buffer.isEmpty()) {
-      fillBuffer(1);
-    }
+    current = parseJavaCharacter();
   }
 
   @Nonnull
   public JavaCharacter getCurrent() {
-    fillBuffer(1);
-    if (buffer.isEmpty()) {
+    if (current == null) {
       throw new NoSuchElementException();
     }
-    return buffer.get(0);
-  }
-
-  public int getCurrentChar() {
-    if (isNotAtEnd()) {
-      return getCurrent().getCharacter();
-    } else {
-      return EOF;
-    }
-  }
-
-  public IndexRange getCurrentIndexRange() {
-    if (isNotAtEnd()) {
-      return getCurrent().getRange();
-    } else {
-      return new IndexRange(source.length(), source.length());
-    }
-  }
-
-  public int getCurrentStartIndex() {
-    if (isAtEnd()) {
-      return source.length();
-    } else {
-      return getCurrent().getRange().getBeginningOffset();
-    }
+    return current;
   }
 
   public boolean isAtEnd() {
-    return buffer.isEmpty() && unicodeProcessedCharacters.getCurrent() == null;
+    return current == null;
   }
 
   public boolean isNotAtEnd() {
-    return !isAtEnd();
+    return current != null;
   }
 
-  public boolean currentIs(char ch) {
-    return getCurrentChar() == ch;
-  }
-
-  public boolean currentIs(String str) {
-    fillBuffer(str.length());
-    if (buffer.size() < str.length()) {
-      return false;
+  @CheckForNull
+  private JavaCharacter parseJavaCharacter() {
+    JavaCharacter javaCharacter = unicodeProcessedCharacters.getCurrent();
+    if (javaCharacter == null) {
+      return null;
     }
-    for (int i = 0; i < str.length(); i++) {
-      if (buffer.get(i).getCharacter() != str.charAt(i)) {
-        return false;
-      }
+    if (javaCharacter.getCharacter() == '\\') {
+      return parseJavaEscapeSequence(javaCharacter);
     }
-    return true;
-  }
-
-  public int lookAhead(int offset) {
-    fillBuffer(offset + 1);
-    if (buffer.size() <= offset) {
-      return EOF;
-    }
-    return buffer.get(offset).getCharacter();
-  }
-
-  private void fillBuffer(int size) {
-    while (buffer.size() < size) {
-      JavaCharacter javaCharacter = unicodeProcessedCharacters.getCurrent();
-      if (javaCharacter == null) {
-        break;
-      }
-      if (javaCharacter.getCharacter() == '\\') {
-        buffer.add(parseJavaEscapeSequence(javaCharacter));
-      } else {
-        unicodeProcessedCharacters.moveNext();
-        buffer.add(javaCharacter);
-      }
-    }
+    unicodeProcessedCharacters.moveNext();
+    return javaCharacter;
   }
 
   private JavaCharacter parseJavaEscapeSequence(JavaCharacter backslash) {
@@ -168,7 +113,7 @@ public class JavaCharacterParser {
             javaCharacter = unicodeProcessedCharacters.getCurrent();
           }
           ch = (char) Integer.parseInt(codeUnit.toString(), 8);
-          return new JavaCharacter(source, backslash.getRange().extendTo(getCurrentStartIndex()), ch);
+          return new JavaCharacter(source, backslash.getRange().extendTo(unicodeProcessedCharacters.getCurrentStartIndex()), ch);
         }
         break;
     }

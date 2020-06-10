@@ -31,7 +31,7 @@ public interface RegexVisitor {
 
   void visitDisjunction(DisjunctionTree tree);
 
-  void visitGroup(GroupTree tree);
+  void visitCapturingGroup(CapturingGroupTree tree);
 
   void visitRepetition(RepetitionTree tree);
 

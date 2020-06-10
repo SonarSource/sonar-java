@@ -29,9 +29,9 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 public final class RegexCache {
   private final Map<List<LiteralTree>, RegexParseResult> cache = new HashMap<>();
 
-  public RegexParseResult getRegexForLiterals(LiteralTree... stringLiterals) {
+  public RegexParseResult getRegexForLiterals(boolean freeSpacingMode, LiteralTree... stringLiterals) {
     return cache.computeIfAbsent(
       Arrays.asList(stringLiterals),
-      k -> new RegexParser(new RegexSource(k)).parse());
+      k -> new RegexParser(new RegexSource(k), freeSpacingMode).parse());
   }
 }

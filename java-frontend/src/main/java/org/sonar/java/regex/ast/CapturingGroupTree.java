@@ -19,12 +19,18 @@
  */
 package org.sonar.java.regex.ast;
 
-public class GroupTree extends RegexTree {
+import javax.annotation.Nullable;
+
+public class CapturingGroupTree extends RegexTree {
+
+  @Nullable
+  private final String name;
 
   private final RegexTree element;
 
-  public GroupTree(RegexSource source, IndexRange range, RegexTree element) {
+  public CapturingGroupTree(RegexSource source, IndexRange range, @Nullable String name, RegexTree element) {
     super(source, range);
+    this.name = name;
     this.element = element;
   }
 
@@ -34,12 +40,12 @@ public class GroupTree extends RegexTree {
 
   @Override
   public void accept(RegexVisitor visitor) {
-    visitor.visitGroup(this);
+    visitor.visitCapturingGroup(this);
   }
 
   @Override
   public Kind kind() {
-    return Kind.GROUP;
+    return Kind.CAPTURING_GROUP;
   }
 
 }

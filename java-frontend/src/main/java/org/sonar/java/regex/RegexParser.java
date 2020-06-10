@@ -30,7 +30,7 @@ import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.DotTree;
 import org.sonar.java.regex.ast.EscapedPropertyTree;
-import org.sonar.java.regex.ast.GroupTree;
+import org.sonar.java.regex.ast.CapturingGroupTree;
 import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.PlainCharacterTree;
@@ -42,19 +42,20 @@ import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.java.regex.ast.SimpleQuantifier;
 
-import static org.sonar.java.regex.JavaCharacterParser.EOF;
+import static org.sonar.java.regex.RegexLexer.EOF;
 
 public class RegexParser {
 
   private final RegexSource source;
 
-  private final JavaCharacterParser characters;
+  private final RegexLexer characters;
 
   private final List<SyntaxError> errors;
 
-  public RegexParser(RegexSource source) {
+  public RegexParser(RegexSource source, boolean freeSpacingMode) {
     this.source = source;
-    this.characters = new JavaCharacterParser(source);
+    this.characters = new RegexLexer(source);
+    this.characters.setFreeSpacingMode(freeSpacingMode);
     this.errors = new ArrayList<>();
   }
 
@@ -223,7 +224,7 @@ public class RegexParser {
     }
   }
 
-  private GroupTree parseGroup() {
+  private CapturingGroupTree parseGroup() {
     JavaCharacter openingParen = characters.getCurrent();
     characters.moveNext();
     RegexTree inner = parseDisjunction();
@@ -233,7 +234,7 @@ public class RegexParser {
       expected("')'");
     }
     IndexRange range = openingParen.getRange().extendTo(characters.getCurrentStartIndex());
-    return new GroupTree(source, range, inner);
+    return new CapturingGroupTree(source, range, null, inner);
   }
 
   private RegexTree parseEscapeSequence() {
