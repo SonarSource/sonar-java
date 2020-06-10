@@ -83,10 +83,13 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     if (args.isEmpty()) {
       return;
     }
-    boolean freeSpacingMode = (getFlags(mit) & Pattern.COMMENTS) != 0;
-    getLiterals(args.get(0))
-      .map(literals -> regexContext.regexForLiterals(freeSpacingMode, literals))
-      .ifPresent(result -> checkRegex(result, mit));
+    int flags = getFlags(mit);
+    if ((flags & Pattern.LITERAL) == 0) {
+      boolean freeSpacingMode = (flags & Pattern.COMMENTS) != 0;
+      getLiterals(args.get(0))
+        .map(literals -> regexContext.regexForLiterals(freeSpacingMode, literals))
+        .ifPresent(result -> checkRegex(result, mit));
+    }
   }
 
   @VisibleForTesting

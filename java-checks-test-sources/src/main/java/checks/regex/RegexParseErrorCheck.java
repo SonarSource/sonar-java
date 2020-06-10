@@ -20,8 +20,8 @@ public class RegexParseErrorCheck {
   }
 
   void compliant(String str) {
-    // Pattern.compile("\\(\\[");
-    // Pattern.compile("([", Pattern.LITERAL);
+    Pattern.compile("\\(\\[");
+    Pattern.compile("([", Pattern.LITERAL);
     str.equals("([");
     str.replace("([", "{");
 
@@ -33,8 +33,8 @@ public class RegexParseErrorCheck {
     str.replaceAll("abc", "x");
     str.replaceAll("x{42}", "x");
 
-    // str.matches("(\\w+)-(\\d+)");
-    // str.matches("(\\w+)-\\1");
-    // str.matches("(?<name>\\w+)-\\k<name>");
+    str.matches("(\\w+)-(\\d+)");
+    str.matches("(\\w+)-\\1");
+    str.matches("(?<name>\\w+)-\\k<name>");
   }
 }
