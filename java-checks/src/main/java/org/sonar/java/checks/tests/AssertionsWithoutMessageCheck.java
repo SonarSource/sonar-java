@@ -41,7 +41,7 @@ import static org.sonar.plugins.java.api.semantic.Type.Primitives.FLOAT;
 public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
 
   private static final String MESSAGE = "Add a message to this assertion.";
-  private static final String MESSAGE_FEST_LIKE = "Add a message to this assertion before calling this method.";
+  private static final String MESSAGE_FEST_LIKE = "Add a message to this assertion chain before the predicate method.";
   private static final String ASSERT = "assert";
 
   private static final String JAVA_LANG_STRING = "java.lang.String";

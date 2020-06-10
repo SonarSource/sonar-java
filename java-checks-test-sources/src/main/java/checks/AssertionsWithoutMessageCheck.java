@@ -30,7 +30,7 @@ class AssertionsWithoutMessageCheck {
     junit.framework.Assert.assertNotNull("foo"); // Noncompliant
 
 
-    org.fest.assertions.Assertions.assertThat(true).isTrue();// Noncompliant {{Add a message to this assertion before calling this method.}}
+    org.fest.assertions.Assertions.assertThat(true).isTrue();// Noncompliant {{Add a message to this assertion chain before the predicate method.}}
     org.fest.assertions.Assertions.assertThat(true).as("verifying the truth").isTrue();
     org.fest.assertions.Assertions.assertThat(true).as(new BasicDescription("description")).isTrue();
     org.fest.assertions.Assertions.assertThat(true).describedAs("verifying the truth").isTrue(); // compliant - describedAs is an alias for as
@@ -52,7 +52,7 @@ class AssertionsWithoutMessageCheck {
     org.assertj.core.api.Assertions.assertThat(true).overridingErrorMessage("fail message").isTrue();
     org.assertj.core.api.Assertions.assertThat(true).overridingErrorMessage("fail message", new Object()).isTrue();
     org.assertj.core.api.Assertions.assertThat("").as("Message").isEqualTo("");
-    org.assertj.core.api.Assertions.assertThat("").isEqualTo("").as("Message"); // Noncompliant [[sc=52;ec=61]] {{Add a message to this assertion before calling this method.}}
+    org.assertj.core.api.Assertions.assertThat("").isEqualTo("").as("Message"); // Noncompliant [[sc=52;ec=61]] {{Add a message to this assertion chain before the predicate method.}}
     org.assertj.core.api.Assertions.assertThat("").matches("x").matches("y"); // Noncompliant [[sc=52;ec=59]]
     org.assertj.core.api.AssertionsForClassTypes.assertThat("").isEqualTo(""); // Noncompliant
 
