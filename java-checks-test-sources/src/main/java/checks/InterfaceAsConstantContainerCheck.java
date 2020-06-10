@@ -6,7 +6,7 @@ interface InterfaceAsConstantContainerCheck {
 interface InterfaceAsConstantContainerCheckB {
 }
 
-interface InterfaceAsConstantContainerCheckC { // Noncompliant [[sc=11;ec=45]] {{Move constants to a class or enum.}}
+interface InterfaceAsConstantContainerCheckC { // Noncompliant [[sc=11;ec=45;secondary=10,11]] {{Move constants defined in this interfaces to another class or enum.}}
   int a = 0;
   int b = 0;
 }

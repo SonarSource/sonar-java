@@ -59,15 +59,16 @@ public class AssertJChainSimplificationCheckTest {
 
     assertThat(getObject()).isEqualTo(null); // Noncompliant [[sc=29;ec=38]] {{Use isNull() instead}}
     assertThat(getObject()).isNotEqualTo(null); // Noncompliant {{Use isNotNull() instead}}
-    assertThat(getObject()).isEqualTo(null).isNotEqualTo(getObject()); // Noncompliant
-    assertThat(getObject()).as("some message)").isEqualTo(getObject()).withFailMessage("another message)").isNotEqualTo(null).as("a third message"); // Noncompliant
-                                                                                                                                                     // [[sc=108;ec=120]]
+    assertThat(getObject())
+      .isEqualTo(null) // Noncompliant
+      .isNotEqualTo(getObject());
+    assertThat(getObject()).as("some message)").isEqualTo(getObject()).withFailMessage("another message)").isNotEqualTo(null).as("a third message"); // Noncompliant [[sc=108;ec=120]]
     assertThat(new Object()).isEqualTo(null) // Noncompliant
       .isNotEqualTo(null); // Noncompliant
 
     assertThat(getBoolean()).isEqualTo(true); // Noncompliant {{Use isTrue() instead}}
     assertThat(getBoolean()).isEqualTo(false); // Noncompliant {{Use isFalse() instead}}
-    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=70]] {{Use assertThat(actual).isEqualTo(expected) instead}}
+    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=71]] {{Use assertThat(actual).isEqualTo(expected) instead}}
     assertThat(x.equals(y)).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEqualTo(expected) instead}}
     assertThat(x == y).isTrue(); // Noncompliant {{Use assertThat(actual).isSameAs(expected) instead}}
     assertThat(x == y).isFalse(); // Noncompliant {{Use assertThat(actual).isNotSameAs(expected) instead}}
@@ -102,8 +103,6 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(x.compareTo(y)).isNotNegative(); // Noncompliant {{Use assertThat(actual).isGreaterThanOrEqualTo(expected) instead}}
     assertThat(x.compareTo(y)).isPositive(); // Noncompliant {{Use assertThat(actual).isGreaterThan(expected) instead}}
     assertThat(x.compareTo(y)).isNotPositive(); // Noncompliant {{Use assertThat(actual).isLessThanOrEqualTo(expected) instead}}
-
-    assertThat(x.compareTo(y)).isOne(); // Compliant
   }
 
   // TODO: isNullOrEmpty
@@ -154,5 +153,25 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getString().isEmpty()).isTrue(); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
     assertThat(getString().isEmpty()).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead}}
     assertThat(getString().length()).isEqualTo(x.length()); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead}}
+  }
+
+  void compliantChains() {
+    Comparable x = getBoolean();
+    Object y = getObject();
+
+    assertThat(x.compareTo(y)).isNotEqualTo(0).isNotEqualTo(-1); // Compliant as we have >1 context-dependant predicate
+    assertThat(x.compareTo(y)).isOne();
+    assertThat(x).extracting("test").isEqualTo("test"); // Compliant as we ignore chains containing methods that change the assertion context (too complex)
+    assertThat(true).isTrue();
+    assertThat(getObject()).isNull();
+    assertThat(x).isSameAs(y);
+    assertThat(x).isLessThanOrEqualTo(0);
+    assertThat(x.compareTo(y)).as("message"); // Compliant. Not a proper test, as the predicate is missing, but this is handled elsewhere.
+    assertThat(x).isNotEqualByComparingTo(0);
+    assertThat(x).hasToString("expected");
+    assertThat(x).hasSameHashCodeAs(y);
+    assertThat(x).isInstanceOf(Object.class);
+
+    assertThat(x.compareTo(y)).isOne(); // Compliant
   }
 }

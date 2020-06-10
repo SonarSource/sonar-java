@@ -71,6 +71,11 @@ reported.</p>
     </tr>
   </tbody>
 </table>
+<h2>Noncompliant Code Example</h2>
+<pre>
+assertThat(getObject()).isEqualTo(null); // Noncompliant
+assertThat(getObject()).isNotEqualTo(null); // Noncompliant - not listed above but also supported
+</pre>
 <h2>Compliant Solution</h2>
 <pre>
 assertThat(getObject()).isNull();

@@ -52,21 +52,21 @@ public abstract class JParserTestUtils {
     return ((VariableTree) statement).initializer();
   }
 
-  ClassTree classTree(String classBody) {
+  public static ClassTree classTree(String classBody) {
     CompilationUnitTree compilationUnitTree = parse(classBody);
     return (ClassTree) compilationUnitTree.types().get(0);
   }
 
-  MethodTree methodTree(String classBody) {
+  public static MethodTree methodTree(String classBody) {
     ClassTree firstType = classTree(classBody);
     return (MethodTree) firstType.members().get(0);
   }
 
-  List<StatementTree> methodBody(String code) {
+  public static List<StatementTree> methodBody(String code) {
     return methodTree(code).block().body();
   }
 
-  static String newCode(String... lines) {
+  public static String newCode(String... lines) {
     String lineSeparator = System.lineSeparator();
     StringBuilder sb = new StringBuilder("class A {").append(lineSeparator);
     for (String string : lines) {

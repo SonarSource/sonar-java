@@ -17,29 +17,20 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-class MutableMembersUsageCheckTest {
+class AssertJTestForEmptinessCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/MutableMembersUsageCheck.java"))
-      .withCheck(new MutableMembersUsageCheck())
-      .verifyIssues();
-  }
-
-  @Test
-  void test_java_9() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/MutableMembersUsageCheck.java"))
-      .withCheck(new MutableMembersUsageCheck())
+      .onFile(testSourcesPath("checks/AssertJTestForEmptinessCheck.java"))
+      .withCheck(new AssertJTestForEmptinessCheck())
       .verifyIssues();
   }
 
