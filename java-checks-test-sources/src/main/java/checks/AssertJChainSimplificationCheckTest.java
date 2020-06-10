@@ -105,7 +105,6 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(x.compareTo(y)).isNotPositive(); // Noncompliant {{Use assertThat(actual).isLessThanOrEqualTo(expected) instead}}
   }
 
-  // TODO: isNullOrEmpty
   void stringRelatedAssertionChains() {
     String x = "x";
 
