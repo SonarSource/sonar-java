@@ -53,8 +53,13 @@ public class AssertJChainSimplificationIndex {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
 
+  private static final String CONTAINS = "contains";
+  private static final String DOES_NOT_CONTAIN = "doesNotContain";
+  private static final String DOES_NOT_START_WITH = "doesNotStartWith";
   private static final String HAS_SIZE = "hasSize";
+  private static final String IS_EMPTY = "isEmpty";
   private static final String IS_EQUAL_TO = "isEqualTo";
+  private static final String IS_EQUAL_TO_IGNORING_CASE = "isEqualToIgnoringCase";
   private static final String IS_FALSE = "isFalse";
   private static final String IS_GREATER_THAN = "isGreaterThan";
   private static final String IS_GREATER_THAN_OR_EQUAL_TO = "isGreaterThanOrEqualTo";
@@ -63,12 +68,14 @@ public class AssertJChainSimplificationIndex {
   private static final String IS_NEGATIVE = "isNegative";
   private static final String IS_NOT_EMPTY = "isNotEmpty";
   private static final String IS_NOT_EQUAL_TO = "isNotEqualTo";
+  private static final String IS_NOT_EQUAL_TO_IGNORING_CASE = "isNotEqualToIgnoringCase";
   private static final String IS_NOT_NEGATIVE = "isNotNegative";
   private static final String IS_NOT_POSITIVE = "isNotPositive";
   private static final String IS_NOT_ZERO = "isNotZero";
   private static final String IS_POSITIVE = "isPositive";
   private static final String IS_TRUE = "isTrue";
   private static final String IS_ZERO = "isZero";
+  private static final String STARTS_WITH = "startsWith";
 
   /**
    * Stores multiple lists of simplifiers which are mapped to by a key. The key is the method name of the predicate
@@ -100,18 +107,18 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.TO_STRING, msgWithActualCustom("hasToString", "expectedString")),
       methodCallInSubject(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.HASH_CODE), Matchers.HASH_CODE, msgWithActualExpected("hasSameHashCodeAs")),
       compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected("isEqualByComparingTo")),
-      methodCallInSubject(ArgumentHelper::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected("isEqualToIgnoringCase")),
-      indexOfSimplifier(ArgumentHelper::isZero, "startsWith"),
-      indexOfSimplifier(ArgumentHelper::isNegOne, "doesNotContain"),
-      methodCallInSubject(ArgumentHelper::isZero, Matchers.LENGTH, msgWithActual("isEmpty")),
+      methodCallInSubject(ArgumentHelper::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_EQUAL_TO_IGNORING_CASE)),
+      indexOfSimplifier(ArgumentHelper::isZero, STARTS_WITH),
+      indexOfSimplifier(ArgumentHelper::isNegOne, DOES_NOT_CONTAIN),
+      methodCallInSubject(ArgumentHelper::isZero, Matchers.LENGTH, msgWithActual(IS_EMPTY)),
       methodCallInSubject(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.LENGTH), Matchers.LENGTH, msgWithActualExpected("hasSameSizeAs")),
-      methodCallInSubject(Matchers.LENGTH, msgWithActualExpected("hasSize"))))
+      methodCallInSubject(Matchers.LENGTH, msgWithActualExpected(HAS_SIZE))))
     .put(IS_FALSE, ImmutableList.of(
       methodCallInSubject(Matchers.EQUALS_METHOD, msgWithActualExpected(IS_NOT_EQUAL_TO)),
       methodCallInSubject(Matchers.CONTENT_EQUALS, msgWithActualExpected(IS_NOT_EQUAL_TO)),
-      methodCallInSubject(Matchers.EQUALS_IGNORE_CASE, msgWithActualExpected("isNotEqualToIgnoringCase")),
-      methodCallInSubject(Matchers.CONTAINS, msgWithActualExpected("doesNotContain")),
-      methodCallInSubject(Matchers.STARTS_WITH, msgWithActualExpected("doesNotStartWith")),
+      methodCallInSubject(Matchers.EQUALS_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
+      methodCallInSubject(Matchers.CONTAINS, msgWithActualExpected(DOES_NOT_CONTAIN)),
+      methodCallInSubject(Matchers.STARTS_WITH, msgWithActualExpected(DOES_NOT_START_WITH)),
       methodCallInSubject(Matchers.ENDS_WITH, msgWithActualExpected("doesNotEndWith")),
       methodCallInSubject(Matchers.MATCHES, msgWithActualExpected("doesNotMatch")),
       withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNotNull")),
@@ -119,52 +126,52 @@ public class AssertJChainSimplificationIndex {
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isNotSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isNotInstanceOf", "ExpectedClass.class")),
-      methodCallInSubject(Matchers.IS_EMPTY, msgWithActual("isNotEmpty"))))
+      methodCallInSubject(Matchers.IS_EMPTY, msgWithActual(IS_NOT_EMPTY))))
     .put(IS_GREATER_THAN, ImmutableList.of(
       compareToSimplifier(ArgumentHelper::isNegOne, msgWithActualExpected(IS_GREATER_THAN_OR_EQUAL_TO)),
       compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_GREATER_THAN)),
-      indexOfSimplifier(ArgumentHelper::isNegOne, "contains")))
+      indexOfSimplifier(ArgumentHelper::isNegOne, CONTAINS)))
     .put(IS_GREATER_THAN_OR_EQUAL_TO, ImmutableList.of(
       compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_GREATER_THAN_OR_EQUAL_TO)),
       compareToSimplifier(ArgumentHelper::isOne, msgWithActualExpected(IS_GREATER_THAN)),
-      indexOfSimplifier(ArgumentHelper::isZero, "contains")))
+      indexOfSimplifier(ArgumentHelper::isZero, CONTAINS)))
     .put(IS_LESS_THAN, ImmutableList.of(
       compareToSimplifier(ArgumentHelper::isOne, msgWithActualExpected(IS_LESS_THAN_OR_EQUAL_TO)),
       compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_LESS_THAN)),
-      indexOfSimplifier(ArgumentHelper::isZero, "doesNotContain"),
-      methodCallInSubject(ArgumentHelper::isOne, Matchers.LENGTH, msgWithActual("isEmpty"))))
+      indexOfSimplifier(ArgumentHelper::isZero, DOES_NOT_CONTAIN),
+      methodCallInSubject(ArgumentHelper::isOne, Matchers.LENGTH, msgWithActual(IS_EMPTY))))
     .put(IS_LESS_THAN_OR_EQUAL_TO, ImmutableList.of(
       compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected(IS_LESS_THAN_OR_EQUAL_TO)),
       compareToSimplifier(ArgumentHelper::isNegOne, msgWithActualExpected(IS_LESS_THAN)),
-      indexOfSimplifier(ArgumentHelper::isNegOne, "doesNotContain"),
-      methodCallInSubject(ArgumentHelper::isZero, Matchers.LENGTH, msgWithActual("isEmpty"))))
+      indexOfSimplifier(ArgumentHelper::isNegOne, DOES_NOT_CONTAIN),
+      methodCallInSubject(ArgumentHelper::isZero, Matchers.LENGTH, msgWithActual(IS_EMPTY))))
     .put(IS_NEGATIVE, ImmutableList.of(
       compareToSimplifier(msgWithActualExpected(IS_LESS_THAN)),
-      indexOfSimplifier("doesNotContain")))
+      indexOfSimplifier(DOES_NOT_CONTAIN)))
     .put(IS_NOT_EMPTY, Collections.singletonList(
       methodCallInSubject(Matchers.TRIM, msgWithActual("isNotBlank"))))
     .put(IS_NOT_EQUAL_TO, ImmutableList.of(
       compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected("isNotEqualByComparingTo")),
-      methodCallInSubject(ArgumentHelper::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected("isNotEqualToIgnoringCase")),
-      indexOfSimplifier(ArgumentHelper::isZero, "doesNotStartWith"),
+      methodCallInSubject(ArgumentHelper::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
+      indexOfSimplifier(ArgumentHelper::isZero, DOES_NOT_START_WITH),
       methodCallInSubject(LiteralUtils::isEmptyString, Matchers.TRIM, msgWithActual("isNotBlank"))))
     .put(IS_NOT_NEGATIVE, ImmutableList.of(
       compareToSimplifier(msgWithActualExpected(IS_GREATER_THAN_OR_EQUAL_TO)),
-      indexOfSimplifier("contains")))
+      indexOfSimplifier(CONTAINS)))
     .put(IS_NOT_POSITIVE, Collections.singletonList(
       compareToSimplifier(msgWithActualExpected(IS_LESS_THAN_OR_EQUAL_TO))))
     .put(IS_NOT_ZERO, ImmutableList.of(
       compareToSimplifier(msgWithActualExpected("isNotEqualByComparingTo")),
-      methodCallInSubject(Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected("isNotEqualToIgnoringCase")),
-      indexOfSimplifier("doesNotStartWith")))
+      methodCallInSubject(Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
+      indexOfSimplifier(DOES_NOT_START_WITH)))
     .put(IS_POSITIVE, Collections.singletonList(
       compareToSimplifier(msgWithActualExpected(IS_GREATER_THAN))))
     .put(IS_TRUE, ImmutableList.of(
       methodCallInSubject(Matchers.EQUALS_METHOD, msgWithActualExpected(IS_EQUAL_TO)),
       methodCallInSubject(Matchers.CONTENT_EQUALS, msgWithActualExpected(IS_EQUAL_TO)),
-      methodCallInSubject(Matchers.EQUALS_IGNORE_CASE, msgWithActualExpected("isEqualToIgnoringCase")),
-      methodCallInSubject(Matchers.CONTAINS, msgWithActualExpected("contains")),
-      methodCallInSubject(Matchers.STARTS_WITH, msgWithActualExpected("startsWith")),
+      methodCallInSubject(Matchers.EQUALS_IGNORE_CASE, msgWithActualExpected(IS_EQUAL_TO_IGNORING_CASE)),
+      methodCallInSubject(Matchers.CONTAINS, msgWithActualExpected(CONTAINS)),
+      methodCallInSubject(Matchers.STARTS_WITH, msgWithActualExpected(STARTS_WITH)),
       methodCallInSubject(Matchers.ENDS_WITH, msgWithActualExpected("endsWith")),
       methodCallInSubject(Matchers.MATCHES, msgWithActualExpected("matches")),
       withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNull")),
@@ -172,12 +179,12 @@ public class AssertJChainSimplificationIndex {
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isNotSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isInstanceOf", "ExpectedClass.class")),
-      methodCallInSubject(Matchers.IS_EMPTY, msgWithActual("isEmpty"))))
+      methodCallInSubject(Matchers.IS_EMPTY, msgWithActual(IS_EMPTY))))
     .put(IS_ZERO, ImmutableList.of(
       compareToSimplifier(msgWithActualExpected("isEqualByComparingTo")),
-      methodCallInSubject(Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected("isEqualToIgnoringCase")),
-      indexOfSimplifier("startsWith"),
-      methodCallInSubject(Matchers.LENGTH, msgWithActual("isEmpty"))))
+      methodCallInSubject(Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_EQUAL_TO_IGNORING_CASE)),
+      indexOfSimplifier(STARTS_WITH),
+      methodCallInSubject(Matchers.LENGTH, msgWithActual(IS_EMPTY))))
     .build();
 
   private static class Matchers {
@@ -186,7 +193,7 @@ public class AssertJChainSimplificationIndex {
     public static final MethodMatchers COMPARE_TO_IGNORE_CASE = MethodMatchers.create().ofSubTypes(JAVA_LANG_STRING)
       .names("compareToIgnoreCase").addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers CONTAINS = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
-      .names("contains").addParametersMatcher(MethodMatchers.ANY).build();
+      .names(AssertJChainSimplificationIndex.CONTAINS).addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers CONTENT_EQUALS = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names("contentEquals").addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers ENDS_WITH = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
@@ -200,13 +207,13 @@ public class AssertJChainSimplificationIndex {
     public static final MethodMatchers INDEX_OF_STRING = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names("indexOf").addParametersMatcher(JAVA_LANG_STRING).build();
     public static final MethodMatchers IS_EMPTY = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
-      .names("isEmpty").addWithoutParametersMatcher().build();
+      .names(AssertJChainSimplificationIndex.IS_EMPTY).addWithoutParametersMatcher().build();
     public static final MethodMatchers LENGTH = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names("length").addWithoutParametersMatcher().build();
     public static final MethodMatchers MATCHES = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names("matches").addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers STARTS_WITH = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
-      .names("startsWith").addParametersMatcher(MethodMatchers.ANY).build();
+      .names(AssertJChainSimplificationIndex.STARTS_WITH).addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers TO_STRING = MethodMatchers.create().ofAnyType().names("toString")
       .addWithoutParametersMatcher().build();
     public static final MethodMatchers TRIM = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
