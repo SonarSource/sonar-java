@@ -4,13 +4,13 @@
 <p>Similarly, <code>setUp</code> and <code>tearDown</code> methods that aren't properly capitalized will also be ignored.</p>
 <h2>Noncompliant Code Example</h2>
 <pre>
-Test suite() { ... }  // Noncompliant; must be public static
-public static boolean suite() { ... }  // Noncompliant; wrong return type
-public static Test suit() { ... }  // Noncompliant; typo in method name
+Test suite() { ... } // Noncompliant; must be public static
+public static boolean suite() { ... } // Noncompliant; wrong return type
+public static Test suit() { ... } // Noncompliant; typo in method name
 public static Test suite(int count) { ... } // Noncompliant; must be no-arg
 
 public void setup() { ... } // Noncompliant; should be setUp
-public void tearDwon() { ... }  // Noncompliant; should be tearDown
+public void tearDwon() { ... } // Noncompliant; should be tearDown
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
@@ -18,4 +18,6 @@ public static Test suite() { ... }
 public void setUp() { ... }
 public void tearDown() { ... }
 </pre>
+<h2>Deprecated</h2>
+<p>This rule is deprecated, and will eventually be removed.</p>
 
