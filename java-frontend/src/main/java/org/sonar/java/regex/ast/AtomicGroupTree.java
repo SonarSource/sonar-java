@@ -17,32 +17,29 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex;
+package org.sonar.java.regex.ast;
 
-import java.util.Collections;
-import java.util.List;
-import org.sonar.java.regex.ast.RegexTree;
+public class AtomicGroupTree extends RegexTree {
 
-public class RegexParseResult {
+  private final RegexTree element;
 
-  private final RegexTree result;
-
-  private final List<SyntaxError> syntaxErrors;
-
-  public RegexParseResult(RegexTree result, List<SyntaxError> syntaxErrors) {
-    this.result = result;
-    this.syntaxErrors = Collections.unmodifiableList(syntaxErrors);
+  public AtomicGroupTree(RegexSource source, IndexRange range, RegexTree element) {
+    super(source, range);
+    this.element = element;
   }
 
-  public RegexTree getResult() {
-    return result;
+  public RegexTree getElement() {
+    return element;
   }
 
-  public List<SyntaxError> getSyntaxErrors() {
-    return syntaxErrors;
+
+  @Override
+  public void accept(RegexVisitor visitor) {
+    visitor.visitAtomicGroup(this);
   }
 
-  public boolean hasSyntaxErrors() {
-    return !syntaxErrors.isEmpty();
+  @Override
+  public Kind kind() {
+    return RegexTree.Kind.ATOMIC_GROUP;
   }
 }

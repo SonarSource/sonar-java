@@ -17,32 +17,51 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex;
+package org.sonar.java.regex.ast;
 
-import java.util.Collections;
-import java.util.List;
-import org.sonar.java.regex.ast.RegexTree;
+public class LookAroundTree extends RegexTree {
 
-public class RegexParseResult {
-
-  private final RegexTree result;
-
-  private final List<SyntaxError> syntaxErrors;
-
-  public RegexParseResult(RegexTree result, List<SyntaxError> syntaxErrors) {
-    this.result = result;
-    this.syntaxErrors = Collections.unmodifiableList(syntaxErrors);
+  public enum Direction {
+    AHEAD, BEHIND
   }
 
-  public RegexTree getResult() {
-    return result;
+  public enum Polarity {
+    POSITIVE, NEGATIVE
   }
 
-  public List<SyntaxError> getSyntaxErrors() {
-    return syntaxErrors;
+  private final Polarity polarity;
+
+  private final Direction direction;
+
+  private final RegexTree element;
+
+  public LookAroundTree(RegexSource source, IndexRange range, Polarity polarity, Direction direction, RegexTree element) {
+    super(source, range);
+    this.polarity = polarity;
+    this.direction = direction;
+    this.element = element;
   }
 
-  public boolean hasSyntaxErrors() {
-    return !syntaxErrors.isEmpty();
+  public Polarity getPolarity() {
+    return polarity;
   }
+
+  public Direction getDirection() {
+    return direction;
+  }
+
+  public RegexTree getElement() {
+    return element;
+  }
+
+  @Override
+  public void accept(RegexVisitor visitor) {
+    visitor.visitLookAround(this);
+  }
+
+  @Override
+  public Kind kind() {
+    return RegexTree.Kind.LOOK_AROUND;
+  }
+
 }

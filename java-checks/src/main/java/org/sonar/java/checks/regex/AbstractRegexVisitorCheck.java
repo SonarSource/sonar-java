@@ -17,32 +17,22 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex;
+package org.sonar.java.checks.regex;
 
-import java.util.Collections;
-import java.util.List;
-import org.sonar.java.regex.ast.RegexTree;
+import org.sonar.java.regex.RegexParseResult;
+import org.sonar.java.regex.ast.RegexVisitor;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
-public class RegexParseResult {
+public abstract class AbstractRegexVisitorCheck extends AbstractRegexCheck {
 
-  private final RegexTree result;
+  protected abstract RegexVisitor createVisitor();
 
-  private final List<SyntaxError> syntaxErrors;
-
-  public RegexParseResult(RegexTree result, List<SyntaxError> syntaxErrors) {
-    this.result = result;
-    this.syntaxErrors = Collections.unmodifiableList(syntaxErrors);
-  }
-
-  public RegexTree getResult() {
-    return result;
-  }
-
-  public List<SyntaxError> getSyntaxErrors() {
-    return syntaxErrors;
-  }
-
-  public boolean hasSyntaxErrors() {
-    return !syntaxErrors.isEmpty();
+  @Override
+  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+    if (!regexForLiterals.hasSyntaxErrors()) {
+      RegexVisitor visitor = createVisitor();
+      visitor.setActiveFlags(getFlags(mit));
+      visitor.visit(regexForLiterals.getResult());
+    }
   }
 }

@@ -21,6 +21,21 @@ package org.sonar.java.regex.ast;
 
 public class RegexBaseVisitor implements RegexVisitor {
 
+  private int activeFlags = 0;
+
+  @Override
+  public void setActiveFlags(int activeFlags) {
+    this.activeFlags = activeFlags;
+  }
+
+  protected int getActiveFlags() {
+    return activeFlags;
+  }
+
+  protected boolean flagActive(int flag) {
+    return (activeFlags & flag) != 0;
+  }
+
   @Override
   public void visitPlainCharacter(PlainCharacterTree tree) {
     // No children to visit
@@ -42,6 +57,34 @@ public class RegexBaseVisitor implements RegexVisitor {
 
   @Override
   public void visitCapturingGroup(CapturingGroupTree tree) {
+    visit(tree.getElement());
+  }
+
+  @Override
+  public final void visitNonCapturingGroup(NonCapturingGroupTree tree) {
+    int oldFlags = activeFlags;
+    activeFlags ^= tree.getEnabledFlags();
+    activeFlags ^= ~tree.getDisabledFlags();
+    doVisitNonCapturingGroup(tree);
+    if (tree.getElement() != null) {
+      activeFlags = oldFlags;
+    }
+  }
+
+  protected void doVisitNonCapturingGroup(NonCapturingGroupTree tree) {
+    RegexTree element = tree.getElement();
+    if (element != null) {
+      visit(element);
+    }
+  }
+
+  @Override
+  public void visitAtomicGroup(AtomicGroupTree tree) {
+    visit(tree.getElement());
+  }
+
+  @Override
+  public void visitLookAround(LookAroundTree tree) {
     visit(tree.getElement());
   }
 
