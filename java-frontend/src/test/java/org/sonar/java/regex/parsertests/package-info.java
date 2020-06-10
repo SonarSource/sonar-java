@@ -17,40 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.ast;
+@ParametersAreNonnullByDefault
+package org.sonar.java.regex.parsertests;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-public class CapturingGroupTree extends RegexTree {
-
-  @CheckForNull
-  private final String name;
-
-  private final RegexTree element;
-
-  public CapturingGroupTree(RegexSource source, IndexRange range, @Nullable String name, RegexTree element) {
-    super(source, range);
-    this.name = name;
-    this.element = element;
-  }
-
-  public RegexTree getElement() {
-    return element;
-  }
-
-  @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitCapturingGroup(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return Kind.CAPTURING_GROUP;
-  }
-
-  @CheckForNull
-  public String getName() {
-    return name;
-  }
-}

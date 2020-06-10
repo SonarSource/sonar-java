@@ -33,7 +33,7 @@ public class RegexLexer {
 
   private final JavaCharacterParser characters;
 
-  private final CharacterBuffer buffer = new CharacterBuffer(2);
+  private CharacterBuffer buffer = new CharacterBuffer(2);
 
   private boolean freeSpacingMode = false;
 
@@ -45,8 +45,23 @@ public class RegexLexer {
     moveNext();
   }
 
+  public boolean getFreeSpacingMode() {
+    return freeSpacingMode;
+  }
+
   public void setFreeSpacingMode(boolean freeSpacingMode) {
-    this.freeSpacingMode = freeSpacingMode;
+    if (this.freeSpacingMode != freeSpacingMode) {
+      this.freeSpacingMode = freeSpacingMode;
+      // After changing the spacing mode, the buffer contents are no longer valid as they may contain contents that should
+      // be skipped or may be missing contents that should no longer be skipped
+      emptyBuffer();
+    }
+  }
+
+  public void moveNext(int amount) {
+    for (int i = 0; i < amount; i++) {
+      moveNext();
+    }
   }
 
   public void moveNext() {
@@ -122,6 +137,13 @@ public class RegexLexer {
       return EOF;
     }
     return buffer.get(offset).getCharacter();
+  }
+
+  private void emptyBuffer() {
+    if (!buffer.isEmpty()) {
+      characters.resetTo(buffer.get(0).getRange().getBeginningOffset());
+      buffer = new CharacterBuffer(2);
+    }
   }
 
   private void fillBuffer(int size) {

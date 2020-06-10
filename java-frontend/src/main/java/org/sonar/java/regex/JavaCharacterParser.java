@@ -47,6 +47,11 @@ public class JavaCharacterParser {
     moveNext();
   }
 
+  public void resetTo(int index) {
+    unicodeProcessedCharacters.resetTo(index);
+    moveNext();
+  }
+
   public void moveNext() {
     current = parseJavaCharacter();
   }

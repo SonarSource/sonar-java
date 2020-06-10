@@ -64,4 +64,20 @@ public class LookAroundTree extends RegexTree {
     return RegexTree.Kind.LOOK_AROUND;
   }
 
+  public static LookAroundTree positiveLookAhead(RegexSource source, IndexRange range, RegexTree element) {
+    return new LookAroundTree(source, range, Polarity.POSITIVE, Direction.AHEAD, element);
+  }
+
+  public static LookAroundTree negativeLookAhead(RegexSource source, IndexRange range, RegexTree element) {
+    return new LookAroundTree(source, range, Polarity.NEGATIVE, Direction.AHEAD, element);
+  }
+
+  public static LookAroundTree positiveLookBehind(RegexSource source, IndexRange range, RegexTree element) {
+    return new LookAroundTree(source, range, Polarity.POSITIVE, Direction.BEHIND, element);
+  }
+
+  public static LookAroundTree negativeLookBehind(RegexSource source, IndexRange range, RegexTree element) {
+    return new LookAroundTree(source, range, Polarity.NEGATIVE, Direction.BEHIND, element);
+  }
+
 }
