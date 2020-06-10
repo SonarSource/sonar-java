@@ -170,7 +170,5 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(x).hasToString("expected");
     assertThat(x).hasSameHashCodeAs(y);
     assertThat(x).isInstanceOf(Object.class);
-
-    assertThat(x.compareTo(y)).isOne(); // Compliant
   }
 }
