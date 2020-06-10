@@ -61,7 +61,6 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
     List<MethodInvocationTree> predicates = new ArrayList<>();
     Optional<MethodInvocationTree> nextPredicateOpt = MethodTreeUtils.consecutiveMethodInvocation(subjectMit);
 
-
     while (nextPredicateOpt.isPresent()) {
       MethodInvocationTree nextPredicate = nextPredicateOpt.get();
       if (!ASSERTION_MESSAGE_METHODS.matches(nextPredicate)) {
