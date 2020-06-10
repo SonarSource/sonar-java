@@ -1,15 +1,20 @@
 package checks;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import org.assertj.core.api.AbstractObjectAssert;
+import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.description.TextDescription;
 import org.fest.assertions.BasicDescription;
 import org.fest.assertions.GenericAssert;
 import org.junit.jupiter.api.function.Executable;
 
-import java.util.Collection;
+import static checks.MyAbstractIsEqualTo.isEqualTo;
 
 class AssertionsWithoutMessageCheck {
   void foo() {
-    org.junit.Assert.assertTrue(true); // Noncompliant [[sc=5;ec=38]] {{Add a message to this assertion.}}
+    org.assertj.core.api.Assertions.assertThat("").usingComparator(null).as("a").isEqualTo(222); // Compliant
+    org.junit.Assert.assertTrue(true); // Noncompliant [[sc=22;ec=32]] {{Add a message to this assertion.}}
     org.junit.Assert.assertTrue("message", true);
     org.junit.Assert.assertTrue(1 > 2); // Noncompliant {{Add a message to this assertion.}}
     org.junit.Assert.assertFalse(false); // Noncompliant
@@ -25,7 +30,7 @@ class AssertionsWithoutMessageCheck {
     junit.framework.Assert.assertNotNull("foo"); // Noncompliant
 
 
-    org.fest.assertions.Assertions.assertThat(true).isTrue();// Noncompliant {{Add a message to this assertion.}}
+    org.fest.assertions.Assertions.assertThat(true).isTrue();// Noncompliant {{Add a message to this assertion chain before the predicate method.}}
     org.fest.assertions.Assertions.assertThat(true).as("verifying the truth").isTrue();
     org.fest.assertions.Assertions.assertThat(true).as(new BasicDescription("description")).isTrue();
     org.fest.assertions.Assertions.assertThat(true).describedAs("verifying the truth").isTrue(); // compliant - describedAs is an alias for as
@@ -35,6 +40,7 @@ class AssertionsWithoutMessageCheck {
     org.fest.assertions.Assertions.assertThat("").isEqualTo("").as("Message"); // Noncompliant
 
     org.assertj.core.api.Assertions.assertThat(true).isTrue(); // Noncompliant
+    org.assertj.core.api.Assertions.assertThatObject(true).isEqualTo(""); // Noncompliant
     org.assertj.core.api.Assertions.assertThat(true).as("verifying the truth").isTrue();
     org.assertj.core.api.Assertions.assertThat(true).as("verifying the truth", new Object()).isTrue();
     org.assertj.core.api.Assertions.assertThat(true).as(new TextDescription("verifying the truth")).isTrue();
@@ -46,7 +52,27 @@ class AssertionsWithoutMessageCheck {
     org.assertj.core.api.Assertions.assertThat(true).overridingErrorMessage("fail message").isTrue();
     org.assertj.core.api.Assertions.assertThat(true).overridingErrorMessage("fail message", new Object()).isTrue();
     org.assertj.core.api.Assertions.assertThat("").as("Message").isEqualTo("");
-    org.assertj.core.api.Assertions.assertThat("").isEqualTo("").as("Message"); // Noncompliant
+    org.assertj.core.api.Assertions.assertThat("").isEqualTo("").as("Message"); // Noncompliant [[sc=52;ec=61]] {{Add a message to this assertion chain before the predicate method.}}
+    org.assertj.core.api.Assertions.assertThat("").matches("x").matches("y"); // Noncompliant [[sc=52;ec=59]]
+    org.assertj.core.api.AssertionsForClassTypes.assertThat("").isEqualTo(""); // Noncompliant
+
+    org.assertj.core.api.Assertions.assertThat("").usingComparator(null).as("a").isEqualTo(222); // Compliant
+    org.assertj.core.api.Assertions.assertThat("").as("message").usingComparator(null).isEqualTo(222); // Compliant
+    org.assertj.core.api.Assertions.assertThat("").isEqualTo("1").usingComparator(null).isEqualTo("2"); // Noncompliant [[sc=52;ec=61]]
+    org.assertj.core.api.Assertions.assertThat("").usingComparator(null).isEqualTo(222); // Noncompliant
+    org.assertj.core.api.Assertions.assertThat(new Object()).as("message").extracting("field").isEqualTo(222); // Compliant
+    org.assertj.core.api.Assertions.assertThat(new Object()).extracting("field").isEqualTo(222); // Noncompliant
+    org.assertj.core.api.Assertions.assertThat(new ArrayList<>()).as("message").filteredOn("s", "e").isEqualTo(222); // Compliant
+    org.assertj.core.api.Assertions.assertThat(new ArrayList<>()).filteredOn("s", "e").isEqualTo(222); // Noncompliant
+
+    AbstractStringAssert variableAssert = org.assertj.core.api.Assertions.assertThat("").as("message");
+    variableAssert.isEqualTo("");  // Compliant
+    AbstractStringAssert variableAssertWithoutMessage = org.assertj.core.api.Assertions.assertThat("");
+    variableAssertWithoutMessage.isEqualTo("");  // FN, we can not be sure that the assertion provide a message
+
+    // Compliant, not used as expected (for coverage)
+    isEqualTo();
+    MyAbstractIsEqualTo.isEqualTo();
 
     org.junit.Assert.assertThat("foo", null); // Noncompliant {{Add a message to this assertion.}}
     org.junit.Assert.assertThat("foo", "bar", null);
@@ -75,7 +101,7 @@ class AssertionsWithoutMessageCheck {
     org.junit.jupiter.api.Assertions.fail(() -> "message");
     org.junit.jupiter.api.Assertions.fail("message", new java.lang.RuntimeException());
 
-    org.junit.jupiter.api.Assertions.assertFalse(false); // Noncompliant [[sc=5;ec=56]] {{Add a message to this assertion.}}
+    org.junit.jupiter.api.Assertions.assertFalse(false); // Noncompliant [[sc=38;ec=49]] {{Add a message to this assertion.}}
     org.junit.jupiter.api.Assertions.assertFalse(false, "message");
     org.junit.jupiter.api.Assertions.assertTrue(false); // Noncompliant
     org.junit.jupiter.api.Assertions.assertTrue(false, () -> "message");
@@ -147,5 +173,15 @@ class AssertionsWithoutMessageCheck {
     protected MyCustomGenericAssert(Class<String> selfType, String actual) {
       super(selfType, actual); // Compliant
     }
+  }
+}
+
+class MyAbstractIsEqualTo extends AbstractObjectAssert {
+
+  public MyAbstractIsEqualTo(Object o, Class selfType) {
+    super(o, selfType);
+  }
+
+  public static void isEqualTo() {
   }
 }
