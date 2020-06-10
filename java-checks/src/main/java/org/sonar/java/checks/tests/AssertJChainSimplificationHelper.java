@@ -65,14 +65,6 @@ class AssertJChainSimplificationHelper {
       return tree.is(Tree.Kind.UNARY_MINUS) && isOne(((UnaryExpressionTree) tree).expression());
     }
 
-    static boolean isTrue(ExpressionTree tree) {
-      return tree.is(Tree.Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) tree).value());
-    }
-
-    static boolean isFalse(ExpressionTree tree) {
-      return tree.is(Tree.Kind.BOOLEAN_LITERAL) && "false".equals(((LiteralTree) tree).value());
-    }
-
     static boolean equalsTo(ExpressionTree expression, Predicate<ExpressionTree> comparedWithPredicate) {
       return expression.is(Tree.Kind.EQUAL_TO) && leftOrRightIs((BinaryExpressionTree) expression, comparedWithPredicate);
     }
