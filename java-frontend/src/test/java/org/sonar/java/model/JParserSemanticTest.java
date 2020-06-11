@@ -92,8 +92,9 @@ class JParserSemanticTest {
     InternalPrefixUnaryExpression e = (InternalPrefixUnaryExpression) expression("-2147483648"); // Integer.MIN_VALUE
     assertThat(e.typeBinding).isNotNull();
     AbstractTypedTree t = (AbstractTypedTree) e.expression();
-    assertThat(t.typeBinding).isNotNull();
-    assertThat(t.typeBinding).isSameAs(e.typeBinding);
+    assertThat(t.typeBinding)
+      .isNotNull()
+      .isSameAs(e.typeBinding);
   }
 
   /**
@@ -145,19 +146,20 @@ class JParserSemanticTest {
     IdentifierTreeImpl java = (IdentifierTreeImpl) javaLang.expression();
     assertThat(java.typeBinding).isNull();
     assertThat(java.binding).isNotNull();
-    assertThat(java.binding.getKind() == IBinding.PACKAGE).isTrue();
+    assertThat(java.binding.getKind()).isSameAs(IBinding.PACKAGE);
     assertThat(java.symbol().isPackageSymbol()).isTrue();
 
     IdentifierTreeImpl lang = (IdentifierTreeImpl) javaLang.identifier();
     assertThat(lang.typeBinding).isNull();
     assertThat(lang.binding).isNotNull();
-    assertThat(lang.binding.getKind() == IBinding.PACKAGE).isTrue();
+    assertThat(lang.binding.getKind()).isSameAs(IBinding.PACKAGE);
     assertThat(lang.symbol().isPackageSymbol()).isTrue();
 
     IdentifierTreeImpl system = (IdentifierTreeImpl) javaLangSystem.identifier();
-    assertThat(system.binding).isNotNull();
-    assertThat(system.binding).isEqualTo(system.typeBinding);
-    assertThat(system.binding.getKind() == IBinding.TYPE).isTrue();
+    assertThat(system.binding)
+      .isNotNull()
+      .isEqualTo(system.typeBinding);
+    assertThat(system.binding.getKind()).isSameAs(IBinding.TYPE);
     assertThat(cu.sema.type(system.typeBinding).is("java.lang.System"))
       .isEqualTo(system.symbolType().is("java.lang.System"))
       .isTrue();

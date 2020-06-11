@@ -55,12 +55,12 @@ class AnalyzerMessageTest {
     assertThat(analyzerMessage.getCost()).isEqualTo(cost);
 
     AnalyzerMessage.TextSpan location = analyzerMessage.primaryLocation();
+    assertThat(location).hasToString("(5:-1)-(5:-1)");
     assertThat(location.startLine).isEqualTo(line);
     assertThat(location.startCharacter).isEqualTo(-1);
     assertThat(location.endLine).isEqualTo(line);
     assertThat(location.endCharacter).isEqualTo(-1);
     assertThat(location.isEmpty()).isTrue();
-    assertThat(location.toString()).isEqualTo("(5:-1)-(5:-1)");
   }
 
   @Test
@@ -72,7 +72,7 @@ class AnalyzerMessageTest {
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, -5, message, cost);
     assertThat(analyzerMessage.getCheck()).isEqualTo(javaCheck);
     assertThat(analyzerMessage.getInputComponent()).isEqualTo(file);
-    assertThat(analyzerMessage.getLine()).isEqualTo(null);
+    assertThat(analyzerMessage.getLine()).isNull();
     assertThat(analyzerMessage.getMessage()).isEqualTo(message);
     assertThat(analyzerMessage.getCost()).isEqualTo(cost);
     assertThat(analyzerMessage.primaryLocation()).isNull();
@@ -167,7 +167,7 @@ class AnalyzerMessageTest {
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, null, message, cost);
     assertThat(analyzerMessage.getCheck()).isEqualTo(javaCheck);
     assertThat(analyzerMessage.getInputComponent()).isEqualTo(file);
-    assertThat(analyzerMessage.getLine()).isEqualTo(null);
+    assertThat(analyzerMessage.getLine()).isNull();
     assertThat(analyzerMessage.getMessage()).isEqualTo(message);
     assertThat(analyzerMessage.getCost()).isEqualTo(cost);
     assertThat(analyzerMessage.primaryLocation()).isNull();
@@ -182,7 +182,7 @@ class AnalyzerMessageTest {
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, null, message, cost);
     assertThat(analyzerMessage.getCheck()).isEqualTo(javaCheck);
     assertThat(analyzerMessage.getInputComponent()).isEqualTo(file);
-    assertThat(analyzerMessage.getLine()).isEqualTo(null);
+    assertThat(analyzerMessage.getLine()).isNull();
     assertThat(analyzerMessage.getMessage()).isEqualTo(message);
     assertThat(analyzerMessage.getCost()).isNull();
     assertThat(analyzerMessage.primaryLocation()).isNull();
@@ -195,8 +195,8 @@ class AnalyzerMessageTest {
     String message = "analyzer message";
     int cost = 0;
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, 12, message, cost);
-    assertThat(analyzerMessage.toString()).isEqualTo("'analyzer message' in file:12");
+    assertThat(analyzerMessage).hasToString("'analyzer message' in file:12");
     analyzerMessage = new AnalyzerMessage(javaCheck, null, null, null, cost);
-    assertThat(analyzerMessage.toString()).isEqualTo("'null' in null:null");
+    assertThat(analyzerMessage).hasToString("'null' in null:null");
   }
 }

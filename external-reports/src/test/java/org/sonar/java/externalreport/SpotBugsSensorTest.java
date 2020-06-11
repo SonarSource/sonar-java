@@ -68,7 +68,7 @@ class SpotBugsSensorTest {
     RulesDefinition.Repository repository = context.repository("external_spotbugs");
     assertThat(repository.name()).isEqualTo("SpotBugs");
     assertThat(repository.language()).isEqualTo("java");
-    assertThat(repository.isExternal()).isEqualTo(true);
+    assertThat(repository.isExternal()).isTrue();
     assertThat(repository.rules().size()).isEqualTo(468);
 
     RulesDefinition.Rule rule = repository.rule("AM_CREATES_EMPTY_JAR_FILE_ENTRY");
@@ -83,7 +83,7 @@ class SpotBugsSensorTest {
     RulesDefinition.Repository findsecbugsRepo = context.repository("external_findsecbugs");
     assertThat(findsecbugsRepo.name()).isEqualTo("FindSecBugs");
     assertThat(findsecbugsRepo.language()).isEqualTo("java");
-    assertThat(findsecbugsRepo.isExternal()).isEqualTo(true);
+    assertThat(findsecbugsRepo.isExternal()).isTrue();
     repository = context.repository("external_findsecbugs");
     assertThat(repository.rules().size()).isEqualTo(128);
   }
@@ -221,7 +221,7 @@ class SpotBugsSensorTest {
   @Test
   void no_issues_without_srcdir() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting("spotbugsXml-without-srcdir.xml");
-    assertThat(externalIssues).hasSize(0);
+    assertThat(externalIssues).isEmpty();
     assertThat(logTester.logs(LoggerLevel.DEBUG)).containsExactlyInAnyOrder(
       "Unexpected missing 'BugCollection/Project/SrcDir/text()'.");
   }

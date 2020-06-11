@@ -65,7 +65,7 @@ class CheckstyleSensorTest {
     RulesDefinition.Repository repository = context.repository("external_checkstyle");
     assertThat(repository.name()).isEqualTo("Checkstyle");
     assertThat(repository.language()).isEqualTo("java");
-    assertThat(repository.isExternal()).isEqualTo(true);
+    assertThat(repository.isExternal()).isTrue();
 
     assertThat(repository.rules().size()).isEqualTo(156);
 

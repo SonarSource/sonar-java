@@ -79,7 +79,7 @@ class PmdSensorTest {
     RulesDefinition.Repository repository = context.repository("external_pmd");
     assertThat(repository.name()).isEqualTo("PMD");
     assertThat(repository.language()).isEqualTo("java");
-    assertThat(repository.isExternal()).isEqualTo(true);
+    assertThat(repository.isExternal()).isTrue();
 
     assertThat(repository.rules().size()).isEqualTo(288);
 
