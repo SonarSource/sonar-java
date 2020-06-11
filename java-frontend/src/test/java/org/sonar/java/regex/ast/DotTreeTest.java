@@ -17,21 +17,37 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.parsertests;
+package org.sonar.java.regex.ast;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.regex.ast.RegexTree;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertKind;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertLocation;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertSuccessfulParse;
 
-class SequenceTreeTest {
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterClass;
+import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertType;
+
+class DotTreeTest {
 
   @Test
-  void empty_string() {
-    RegexTree regex = assertSuccessfulParse("");
-    assertLocation(0, 0, regex);
-    assertKind(RegexTree.Kind.SEQUENCE, regex);
+  void onlyDot() {
+    RegexTree regex = assertSuccessfulParse(".");
+    assertType(DotTree.class, regex);
   }
 
+  @Test
+  void escapedDot() {
+    assertPlainCharacter('.', "\\\\.");
+  }
+
+  @Test
+  void dotInCharacterClass() {
+    RegexTree regex = assertSuccessfulParse("[.]");
+    assertPlainCharacter('.', assertCharacterClass(false, regex));
+  }
+
+  @Test
+  void quantifiedDot() {
+    RegexTree regex = assertSuccessfulParse(".*");
+    assertType(DotTree.class, assertType(RepetitionTree.class, regex).getElement());
+  }
 }
