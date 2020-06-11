@@ -28,10 +28,9 @@ class RegexParseErrorCheckTest {
 
   @Test
   void test() {
-    RegexParseErrorCheck check = new RegexParseErrorCheck();
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/regex/RegexParseErrorCheck.java"))
-      .withCheck(check)
+      .withCheck(new RegexParseErrorCheck())
       .verifyIssues();
   }
 

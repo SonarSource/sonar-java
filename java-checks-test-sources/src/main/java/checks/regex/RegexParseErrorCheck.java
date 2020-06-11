@@ -12,11 +12,11 @@ public class RegexParseErrorCheck {
 
     str.replaceAll("x{1,2,3}|(", "x"); // Noncompliant [[sc=26;ec=27;secondary=13,13]] {{Fix the syntax errors inside this regex.}}
 
-    // str.matches("(\\w+-(\\d+)");
+    str.matches("(\\w+-(\\d+)"); // Noncompliant [[sc=30;ec=31;secondary=15]] {{Fix the syntax error inside this regex.}}
 
-    // str.matches("(\\w+)-\\2");
+    str.matches("(\\w+)-\\2"); // False Negative - group numbers not handled in rule
 
-    // str.matches("(?<name>\\w+)-\\k<nae>");
+    str.matches("(?<name>\\w+)-\\k<nae>"); // False Negative - group names not handled in rule
   }
 
   void compliant(String str) {

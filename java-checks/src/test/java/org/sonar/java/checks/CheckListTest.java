@@ -57,8 +57,7 @@ class CheckListTest {
   private static final Set<String> BLACK_LIST = ImmutableSet.of(
     "AbstractXPathBasedCheck.java",
     "AbstractWebXmlXPathBasedCheck.java",
-    "AbstractRegexCheck.java",
-    "AbstractRegexVisitorCheck.java");
+    "AbstractRegexCheck.java");
 
   @BeforeAll
   public static void before() throws Exception {
