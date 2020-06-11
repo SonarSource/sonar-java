@@ -17,30 +17,24 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.parsertests;
+package org.sonar.java.regex.ast;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexParser;
 import org.sonar.java.regex.SyntaxError;
-import org.sonar.java.regex.ast.IndexRange;
-import org.sonar.java.regex.ast.Location;
-import org.sonar.java.regex.ast.Quantifier;
-import org.sonar.java.regex.ast.RegexTree;
-import org.sonar.java.regex.ast.RepetitionTree;
-import org.sonar.java.regex.ast.SimpleQuantifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertPlainCharacter;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertSuccessfulParse;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertType;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.makeSource;
+import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertType;
+import static org.sonar.java.regex.RegexParserTestUtils.makeSource;
 
-class SimpleQuantifierTests {
+class QuantifierTest {
 
   @Test
   void testGreedyStar() {

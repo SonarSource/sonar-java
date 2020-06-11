@@ -22,8 +22,8 @@ package org.sonar.java.regex.ast;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertFailParsing;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 
 class BoundaryTreeTest {
 

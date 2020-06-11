@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.parsertests;
+package org.sonar.java.regex.ast;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -25,29 +25,21 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexParser;
 import org.sonar.java.regex.SyntaxError;
-import org.sonar.java.regex.ast.AtomicGroupTree;
-import org.sonar.java.regex.ast.CapturingGroupTree;
-import org.sonar.java.regex.ast.IndexRange;
-import org.sonar.java.regex.ast.Location;
-import org.sonar.java.regex.ast.LookAroundTree;
-import org.sonar.java.regex.ast.NonCapturingGroupTree;
-import org.sonar.java.regex.ast.RegexTree;
-import org.sonar.java.regex.ast.SequenceTree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertListElements;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertLocation;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertPlainCharacter;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertPlainString;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertSuccessfulParse;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertType;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.makeSource;
+import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
+import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
+import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertType;
+import static org.sonar.java.regex.RegexParserTestUtils.makeSource;
 
-class GroupTests {
+class GroupTreesTest {
 
   @Test
   void testGroup() {
