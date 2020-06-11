@@ -49,10 +49,11 @@ class RegexCacheTest {
     RegexParseResult resultForS1 = cache.getRegexForLiterals(false, s1);
 
     assertThat(s0.value()).isEqualTo(s1.value());
-    assertThat(resultForS0).isNotEqualTo(resultForS1);
+    assertThat(resultForS0)
+      .isNotEqualTo(resultForS1)
+      // same input, same result
+      .isSameAs(cache.getRegexForLiterals(false, s0));
 
-    // same input, same result
-    assertThat(resultForS0).isSameAs(cache.getRegexForLiterals(false, s0));
     assertThat(resultForS1).isSameAs(cache.getRegexForLiterals(false, s1));
   }
 
@@ -73,10 +74,10 @@ class RegexCacheTest {
     RegexParseResult resultForS1S0 = cache.getRegexForLiterals(false, s1, s0);
 
     assertThat(s0.value() + s1.value()).isEqualTo(s1.value() + s0.value());
-    assertThat(resultForS0S1).isNotEqualTo(resultForS1S0);
-
-    // same order of input, same result
-    assertThat(resultForS0S1).isSameAs(cache.getRegexForLiterals(false, s0, s1));
+    assertThat(resultForS0S1)
+      .isNotEqualTo(resultForS1S0)
+      // same order of input, same result
+      .isSameAs(cache.getRegexForLiterals(false, s0, s1));
     assertThat(resultForS1S0).isSameAs(cache.getRegexForLiterals(false, s1, s0));
   }
 

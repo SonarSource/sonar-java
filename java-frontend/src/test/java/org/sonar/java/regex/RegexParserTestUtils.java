@@ -17,16 +17,13 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.parsertests;
+package org.sonar.java.regex;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import org.opentest4j.AssertionFailedError;
 import org.sonar.java.model.JParserTestUtils;
-import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.RegexParser;
-import org.sonar.java.regex.SyntaxError;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.PlainCharacterTree;

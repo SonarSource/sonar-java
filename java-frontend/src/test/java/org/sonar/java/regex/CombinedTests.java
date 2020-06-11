@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.parsertests;
+package org.sonar.java.regex;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -31,12 +31,12 @@ import org.sonar.java.regex.ast.SimpleQuantifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertKind;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertLocation;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertPlainCharacter;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertPlainString;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertSuccessfulParse;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertType;
+import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
+import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
+import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 
 class CombinedTests {
 

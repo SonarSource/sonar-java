@@ -17,8 +17,21 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-@ParametersAreNonnullByDefault
-package org.sonar.java.regex.parsertests;
+package org.sonar.java.regex.ast;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.junit.jupiter.api.Test;
 
+import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
+import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
+
+class SequenceTreeTest {
+
+  @Test
+  void empty_string() {
+    RegexTree regex = assertSuccessfulParse("");
+    assertLocation(0, 0, regex);
+    assertKind(RegexTree.Kind.SEQUENCE, regex);
+  }
+
+}

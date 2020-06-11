@@ -17,12 +17,13 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.parsertests;
+package org.sonar.java.regex.ast;
 
 import org.junit.jupiter.api.Test;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertPlainCharacter;
 
-class PlainTextTests {
+import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+
+class PlainCharacterTreeTest {
 
   @Test
   void testSimpleCharacter() {
