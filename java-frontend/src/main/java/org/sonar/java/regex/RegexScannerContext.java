@@ -28,6 +28,6 @@ public interface RegexScannerContext {
 
   void reportIssue(RegexCheck regexCheck, RegexSyntaxElement regexSyntaxElement, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries);
 
-  RegexParseResult regexForLiterals(LiteralTree... stringLiterals);
+  RegexParseResult regexForLiterals(boolean freeSpacingMode, LiteralTree... stringLiterals);
 
 }

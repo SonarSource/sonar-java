@@ -109,7 +109,7 @@ class CurlyBraceQuantifierTests {
 
   @Test
   void testCurlyBracedQuantifierWithNonNumber() {
-    RegexParseResult result = new RegexParser(makeSource("x{a}")).parse();
+    RegexParseResult result = new RegexParser(makeSource("x{a}"), false).parse();
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected integer, but found 'a'", error.getMessage(), "Error should have the right message.");
@@ -121,7 +121,7 @@ class CurlyBraceQuantifierTests {
 
   @Test
   void testCurlyBracedQuantifierWithJunkAfterNumber() {
-    RegexParseResult result = new RegexParser(makeSource("x{1a}")).parse();
+    RegexParseResult result = new RegexParser(makeSource("x{1a}"), false).parse();
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected ',' or '}', but found 'a'", error.getMessage(), "Error should have the right message.");
@@ -133,7 +133,7 @@ class CurlyBraceQuantifierTests {
 
   @Test
   void testCurlyBracedQuantifierWithJunkAfterComma() {
-    RegexParseResult result = new RegexParser(makeSource("x{1,a}")).parse();
+    RegexParseResult result = new RegexParser(makeSource("x{1,a}"), false).parse();
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected integer or '}', but found 'a'", error.getMessage(), "Error should have the right message.");
@@ -145,7 +145,7 @@ class CurlyBraceQuantifierTests {
 
   @Test
   void testCurlyBracedQuantifierWithJunkAfterSecondNumber() {
-    RegexParseResult result = new RegexParser(makeSource("x{1,2a}")).parse();
+    RegexParseResult result = new RegexParser(makeSource("x{1,2a}"), false).parse();
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected '}', but found 'a'", error.getMessage(), "Error should have the right message.");
@@ -157,7 +157,7 @@ class CurlyBraceQuantifierTests {
 
   @Test
   void testCurlyBracedQuantifierWithMissingClosingBrace() {
-    RegexParseResult result = new RegexParser(makeSource("x{1,2")).parse();
+    RegexParseResult result = new RegexParser(makeSource("x{1,2"), false).parse();
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected '}', but found the end of the regex", error.getMessage(), "Error should have the right message.");
@@ -170,7 +170,7 @@ class CurlyBraceQuantifierTests {
 
   @Test
   void testCurlyBracedQuantifierWithoutOperand() {
-    RegexParseResult result = new RegexParser(makeSource("{1,2}")).parse();
+    RegexParseResult result = new RegexParser(makeSource("{1,2}"), false).parse();
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Unexpected quantifier '{1,2}'", error.getMessage(), "Error should have the right message.");
@@ -183,7 +183,7 @@ class CurlyBraceQuantifierTests {
 
   @Test
   void testCurlyBracedQuantifierWithoutOperandInGroup() {
-    RegexParseResult result = new RegexParser(makeSource("({1,2})")).parse();
+    RegexParseResult result = new RegexParser(makeSource("({1,2})"), false).parse();
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Unexpected quantifier '{1,2}'", error.getMessage(), "Error should have the right message.");

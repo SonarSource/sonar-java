@@ -103,7 +103,7 @@ class SimpleQuantifierTests {
 
   @Test
   void testDoubleQuantifier() {
-    RegexParseResult result = new RegexParser(makeSource("x**")).parse();
+    RegexParseResult result = new RegexParser(makeSource("x**"), false).parse();
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Unexpected quantifier '*'", error.getMessage(), "Error should have the right message.");
