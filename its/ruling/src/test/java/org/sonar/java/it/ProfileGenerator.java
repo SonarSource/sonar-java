@@ -22,20 +22,22 @@ package org.sonar.java.it;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
-import com.google.gson.Gson;
 import com.sonar.orchestrator.Orchestrator;
-import com.sonar.orchestrator.http.HttpMethod;
-import com.sonar.orchestrator.http.HttpResponse;
 import com.sonar.orchestrator.locator.FileLocation;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonarqube.ws.Rules;
+import org.sonarqube.ws.client.rules.SearchRequest;
+
+import static org.sonar.java.it.JavaRulingTest.newAdminWsClient;
 
 public class ProfileGenerator {
   private static final String LANGUAGE = "java";
@@ -44,7 +46,6 @@ public class ProfileGenerator {
   private static final int NUMBER_RULES_BY_PAGE = 500;
 
   private static final Logger LOG = LoggerFactory.getLogger(ProfileGenerator.class);
-  private static final Gson GSON = new Gson();
 
   static void generate(Orchestrator orchestrator, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
     Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
@@ -96,31 +97,23 @@ public class ProfileGenerator {
     // pages are 1-based
     int currentPage = 1;
 
-    Double totalNumberRules;
-    int collectedRulesNumber;
+    long totalNumberRules;
+    long collectedRulesNumber;
     do {
-      HttpResponse response = orchestrator.getServer()
-        .newHttpCall("/api/rules/search")
-        .setMethod(HttpMethod.GET)
-        .setParam("languages", LANGUAGE)
-        .setParam("repositories", REPOSITORY_KEY)
-        .setParam("p", Integer.toString(currentPage))
-        .setParam("ps", Integer.toString(NUMBER_RULES_BY_PAGE)).execute();
+      Rules.SearchResponse searchResponse = newAdminWsClient(orchestrator).rules().search(new SearchRequest()
+        .setLanguages(Collections.singletonList(LANGUAGE))
+        .setRepositories(Collections.singletonList(REPOSITORY_KEY))
+        .setP(Integer.toString(currentPage))
+        .setPs(Integer.toString(NUMBER_RULES_BY_PAGE)));
 
-      @SuppressWarnings("unchecked")
-      Map<Object, Object> jsonObject = GSON.fromJson(response.getBodyAsString(), Map.class);
-
-      @SuppressWarnings("unchecked")
-      List<Map<Object, Object>> jsonRules = (List<Map<Object, Object>>) jsonObject.get("rules");
-
-      jsonRules.stream()
-        .map(jsonRule -> (String) jsonRule.get("key"))
+      searchResponse.getRulesList().stream()
+        .map(Rules.Rule::getKey)
         .map(key -> key.split(":")[1])
         .forEach(ruleKeys::add);
 
       // update number of rules
       collectedRulesNumber = ruleKeys.size();
-      totalNumberRules = (Double) jsonObject.get("total");
+      totalNumberRules = searchResponse.getTotal();
       LOG.info("Collected rule keys: {} / {}", collectedRulesNumber, totalNumberRules);
       // prepare for next page
       currentPage++;
