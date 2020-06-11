@@ -44,12 +44,12 @@ class AVLTreeTest {
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
       return hashCode;
     }
 
     @Override
-    public final String toString() {
+    public String toString() {
       return toString;
     }
   }
@@ -63,23 +63,23 @@ class AVLTreeTest {
       .put(k1, "v1")
       .put(k2, "v2");
 
-    assertThat(t.toString())
+    assertThat(t)
       .as("should create bucket")
-      .isEqualTo(" k2->v2 k1->v1");
+      .hasToString(" k2->v2 k1->v1");
 
     AVLTree<Object, Object> t2 = AVLTree.create()
       .put(k2, "v2")
       .put(k1, "v1");
-    assertThat(t2.toString())
+    assertThat(t2)
       .as("toString depends on order of operations")
-      .isEqualTo(" k1->v1 k2->v2");
+      .hasToString(" k1->v1 k2->v2");
 
-    assertThat(t.equals(t2))
+    assertThat(t)
       .as("should compare buckets")
-      .isTrue();
-    assertThat(t2.equals(t))
+      .isEqualTo(t2);
+    assertThat(t2)
       .as("should compare buckets")
-      .isTrue();
+      .isEqualTo(t);
 
     assertThat(t.hashCode())
       .isEqualTo(((31 * k1.hashCode()) ^ "v1".hashCode()) + ((31 * k2.hashCode()) ^ "v2".hashCode()));
@@ -95,31 +95,31 @@ class AVLTreeTest {
       .as("not such key")
       .isNull();
 
-    assertThat(t.put(k2, "new v2").toString())
+    assertThat(t.put(k2, "new v2"))
       .as("should replace head of bucket")
-      .isEqualTo(" k2->new v2 k1->v1");
-    assertThat(t.put(k1, "new v1").toString())
+      .hasToString(" k2->new v2 k1->v1");
+    assertThat(t.put(k1, "new v1"))
       .as("should replace element of bucket")
-      .isEqualTo(" k1->new v1 k2->v2");
+      .hasToString(" k1->new v1 k2->v2");
     assertThat(t.put(k1, "v1"))
       .as("should not change")
       .isSameAs(t);
     assertThat(t.put(k2, "v2"))
       .as("should not change")
       .isSameAs(t);
-    assertThat(t.put(k3, "v3").toString())
+    assertThat(t.put(k3, "v3"))
       .as("should add to bucket")
-      .isEqualTo(" k3->v3 k2->v2 k1->v1");
+      .hasToString(" k3->v3 k2->v2 k1->v1");
 
-    assertThat(t.remove(k2).toString())
+    assertThat(t.remove(k2))
       .as("should remove head of bucket")
-      .isEqualTo(" k1->v1");
-    assertThat(t.remove(k1).toString())
+      .hasToString(" k1->v1");
+    assertThat(t.remove(k1))
       .as("should remove element of bucket")
-      .isEqualTo(" k2->v2");
-    assertThat(t.remove(k1).remove(k2).toString())
+      .hasToString(" k2->v2");
+    assertThat(t.remove(k1).remove(k2))
       .as("should remove bucket")
-      .isEqualTo("");
+      .hasToString("");
     assertThat(t.remove(k3))
       .as("should not change")
       .isSameAs(t);
@@ -204,8 +204,8 @@ class AVLTreeTest {
     assertThat(t).as("singleton").isSameAs(AVLTree.create());
     assertThat(t.get("anything")).isNull();
     assertThat(t.remove("anything")).isSameAs(t);
-    assertThat(t.toString()).isEqualTo("");
-    assertThat(t.hashCode()).isEqualTo(0);
+    assertThat(t).hasToString("");
+    assertThat(t.hashCode()).isZero();
   }
 
   @Test
@@ -276,8 +276,8 @@ class AVLTreeTest {
       t = t.remove(key);
       assertThat(t.remove(key)).isSameAs(t);
     }
-    assertThat(Counter.countSet(t)).isEqualTo(0);
-    assertThat(Counter.countMap(t)).isEqualTo(0);
+    assertThat(Counter.countSet(t)).isZero();
+    assertThat(Counter.countMap(t)).isZero();
   }
 
   private static class Counter<K, V> implements BiConsumer<K, V>, Consumer<K> {

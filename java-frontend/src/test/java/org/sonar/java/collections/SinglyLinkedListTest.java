@@ -35,7 +35,7 @@ class SinglyLinkedListTest {
   void test() {
     PStack<Object> empty = PCollections.emptyStack();
     assertThat(empty.isEmpty()).isTrue();
-    assertThat(empty.toString()).isEqualTo("[]");
+    assertThat(empty).hasToString("[]");
 
     Object a = new Object(){
       @Override
@@ -44,7 +44,7 @@ class SinglyLinkedListTest {
       }
     };
     PStack<Object> one = empty.push(a);
-    assertThat(one.toString()).isEqualTo("[a]");
+    assertThat(one).hasToString("[a]");
     assertThat(one.isEmpty()).isFalse();
     assertThat(one.peek()).isSameAs(a);
     assertThat(one.pop()).isSameAs(empty);
@@ -56,7 +56,7 @@ class SinglyLinkedListTest {
       }
     };
     PStack<Object> two = one.push(b);
-    assertThat(two.toString()).isEqualTo("[b, a]");
+    assertThat(two).hasToString("[b, a]");
     assertThat(two.isEmpty()).isFalse();
     assertThat(two.peek()).isSameAs(b);
     assertThat(two.pop()).isSameAs(one);
@@ -83,18 +83,19 @@ class SinglyLinkedListTest {
 
     PStack<Object> s1 = PCollections.emptyStack().push(b).push(a);
     PStack<Object> s2 = PCollections.emptyStack().push(b).push(a);
-    assertThat(s1.equals(s2)).isTrue();
 
     // twice to cover hashCode cache
-    assertThat(s1.hashCode() == s2.hashCode()).isTrue();
-    assertThat(s1.hashCode() == s2.hashCode()).isTrue();
+    assertThat(s1.hashCode()).isEqualTo(s2.hashCode());
+    assertThat(s1.hashCode()).isEqualTo(s2.hashCode());
 
-    assertThat(s1).isNotEqualTo(null);
-    assertThat(s1).isEqualTo(s1);
+    assertThat(s1)
+      .isNotNull()
+      .isEqualTo(s2)
+      .isEqualTo(s1);
 
     s1 = PCollections.emptyStack().push(b).push(a);
     s2 = PCollections.emptyStack().push(c).push(a);
-    assertThat(s1.equals(s2)).isFalse();
+    assertThat(s1).isNotEqualTo(s2);
   }
 
   @Test
@@ -124,18 +125,19 @@ class SinglyLinkedListTest {
   @Test
   void size() {
     PStack<Object> s = PCollections.emptyStack();
-    assertThat(s.size()).isEqualTo(0);
+    assertThat(s.size()).isZero();
     s = s.push(new Object());
     assertThat(s.size()).isEqualTo(1);
     s = s.push(new Object());
     assertThat(s.size()).isEqualTo(2);
     s = s.pop().pop();
-    assertThat(s.size()).isEqualTo(0);
+    assertThat(s.size()).isZero();
   }
 
   @Test
   void peek() {
-    assertThatThrownBy(() -> PCollections.emptyStack().peek(0)).isInstanceOf(IllegalStateException.class);
+    PStack<Object> emptyStack = PCollections.emptyStack();
+    assertThatThrownBy(() -> emptyStack.peek(0)).isInstanceOf(IllegalStateException.class);
 
     Object a = new Object();
     PStack<Object> s = PCollections.emptyStack().push(a);

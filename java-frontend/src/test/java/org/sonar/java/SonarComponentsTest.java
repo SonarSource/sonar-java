@@ -139,9 +139,9 @@ class SonarComponentsTest {
     sonarComponents.setSensorContext(sensorContextTester);
 
     JavaCheck[] visitors = sonarComponents.checkClasses();
-    assertThat(visitors).hasSize(0);
+    assertThat(visitors).isEmpty();
     Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
-    assertThat(testChecks).hasSize(0);
+    assertThat(testChecks).isEmpty();
     assertThat(sonarComponents.getJavaClasspath()).isEmpty();
     assertThat(sonarComponents.getJavaTestClasspath()).isEqualTo(javaTestClasspathList);
     NewHighlighting newHighlighting = sonarComponents.highlightableFor(inputFile);
@@ -174,7 +174,7 @@ class SonarComponentsTest {
     assertThat(visitors).hasSize(1);
     assertThat(visitors[0]).isEqualTo(expectedCheck);
     Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
-    assertThat(testChecks).hasSize(0);
+    assertThat(testChecks).isEmpty();
 
     postTestExecutionChecks();
   }
@@ -191,7 +191,7 @@ class SonarComponentsTest {
     sonarComponents.setSensorContext(context);
 
     JavaCheck[] visitors = sonarComponents.checkClasses();
-    assertThat(visitors).hasSize(0);
+    assertThat(visitors).isEmpty();
     Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
     assertThat(testChecks).hasSize(1);
     assertThat(testChecks.iterator().next()).isEqualTo(expectedCheck);

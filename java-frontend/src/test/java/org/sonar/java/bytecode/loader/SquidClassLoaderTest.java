@@ -19,7 +19,6 @@
  */
 package org.sonar.java.bytecode.loader;
 
-import com.google.common.collect.Iterators;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
@@ -81,7 +80,7 @@ class SquidClassLoaderTest {
 
     assertThat(classLoader.loadClass("org.sonar.tests.Hello")).isNotNull();
     assertThat(classLoader.getResource("org/sonar/tests/Hello.class")).isNotNull();
-    assertThat(Iterators.forEnumeration(classLoader.findResources("org/sonar/tests/Hello.class"))).hasSize(1);
+    assertThat(Collections.list(classLoader.findResources("org/sonar/tests/Hello.class"))).hasSize(1);
     assertThrows(ClassNotFoundException.class,
       () -> classLoader.loadClass("foo.Unknown"));
   }
@@ -93,7 +92,7 @@ class SquidClassLoaderTest {
 
     assertThat(classLoader.loadClass("com.github.simonpercic.oklog.BuildConfig")).isNotNull();
     assertThat(classLoader.getResource("com/github/simonpercic/oklog/BuildConfig.class")).isNotNull();
-    assertThat(Iterators.forEnumeration(classLoader.findResources("com/github/simonpercic/oklog/BuildConfig.class"))).hasSize(1);
+    assertThat(Collections.list(classLoader.findResources("com/github/simonpercic/oklog/BuildConfig.class"))).hasSize(1);
     assertThrows(ClassNotFoundException.class,
       () -> classLoader.loadClass("foo.Unknown"));
   }
@@ -158,7 +157,7 @@ class SquidClassLoaderTest {
 
     assertThat(classLoader.loadClass("tags.TagName")).isNotNull();
     assertThat(classLoader.getResource("tags/TagName.class")).isNotNull();
-    assertThat(Iterators.forEnumeration(classLoader.findResources("tags/TagName.class"))).hasSize(1);
+    assertThat(Collections.list(classLoader.findResources("tags/TagName.class"))).hasSize(1);
     assertThrows(ClassNotFoundException.class,
       () -> classLoader.loadClass("foo.Unknown"));
   }
@@ -176,8 +175,8 @@ class SquidClassLoaderTest {
     File dir = new File("src/test/files/bytecode/bin/");
     classLoader = new SquidClassLoader(Arrays.asList(dir, dir));
 
-    assertThat(Iterators.forEnumeration(classLoader.findResources("tags/TagName.class"))).hasSize(2);
-    assertThat(Iterators.forEnumeration(classLoader.findResources("notfound"))).hasSize(0);
+    assertThat(Collections.list(classLoader.findResources("tags/TagName.class"))).hasSize(2);
+    assertThat(Collections.list(classLoader.findResources("notfound"))).hasSize(0);
   }
 
   @Test

@@ -388,7 +388,7 @@ class CFGTest {
           if (name != null) {
             MethodInvocationTree method = (MethodInvocationTree) element;
             MemberSelectExpressionTree select = (MemberSelectExpressionTree) method.methodSelect();
-            assertThat(select.identifier().toString()).as("Method").isEqualTo(name);
+            assertThat(select.identifier()).as("Method").hasToString(name);
           }
           break;
         default:
