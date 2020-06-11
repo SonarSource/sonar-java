@@ -17,23 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.parsertests;
+package org.sonar.java.regex.ast;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
-import org.sonar.java.regex.ast.CharacterClassUnionTree;
-import org.sonar.java.regex.ast.PlainCharacterTree;
-import org.sonar.java.regex.ast.RegexTree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertCharacterClass;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertCharacterRange;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertListElements;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertPlainCharacter;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertSuccessfulParse;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertType;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterClass;
+import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterRange;
+import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
+import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 
-class CharacterClassTests {
+class CharacterClassTreeTest {
 
   @Test
   void simpleCharacterClass() {
