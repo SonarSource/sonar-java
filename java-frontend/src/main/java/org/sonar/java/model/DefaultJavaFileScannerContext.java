@@ -151,8 +151,8 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   }
 
   @Override
-  public RegexParseResult regexForLiterals(LiteralTree... stringLiterals) {
-    return regexCache.getRegexForLiterals(stringLiterals);
+  public RegexParseResult regexForLiterals(boolean freeSpacingMode, LiteralTree... stringLiterals) {
+    return regexCache.getRegexForLiterals(freeSpacingMode, stringLiterals);
   }
 
   @Override

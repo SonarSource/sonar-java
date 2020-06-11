@@ -17,21 +17,40 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex;
+package org.sonar.java.regex.ast;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.sonar.java.regex.ast.RegexSource;
-import org.sonar.plugins.java.api.tree.LiteralTree;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
-public final class RegexCache {
-  private final Map<List<LiteralTree>, RegexParseResult> cache = new HashMap<>();
+public class CapturingGroupTree extends RegexTree {
 
-  public RegexParseResult getRegexForLiterals(boolean freeSpacingMode, LiteralTree... stringLiterals) {
-    return cache.computeIfAbsent(
-      Arrays.asList(stringLiterals),
-      k -> new RegexParser(new RegexSource(k), freeSpacingMode).parse());
+  @CheckForNull
+  private final String name;
+
+  private final RegexTree element;
+
+  public CapturingGroupTree(RegexSource source, IndexRange range, @Nullable String name, RegexTree element) {
+    super(source, range);
+    this.name = name;
+    this.element = element;
+  }
+
+  public RegexTree getElement() {
+    return element;
+  }
+
+  @Override
+  public void accept(RegexVisitor visitor) {
+    visitor.visitCapturingGroup(this);
+  }
+
+  @Override
+  public Kind kind() {
+    return Kind.CAPTURING_GROUP;
+  }
+
+  @CheckForNull
+  public String getName() {
+    return name;
   }
 }
