@@ -10,6 +10,7 @@
 146,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/app/TomcatContextsTest.java':[
+94,
 129,
 135,
 ],
@@ -426,6 +427,7 @@
 77,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/plugins/PluginDownloaderTest.java':[
+110,
 241,
 256,
 ],
@@ -569,6 +571,10 @@
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/source/OpeningHtmlTagTest.java':[
 55,
 56,
+],
+'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/updatecenter/ws/UploadActionTest.java':[
+88,
+144,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/DefaultUserTest.java':[
 35,
