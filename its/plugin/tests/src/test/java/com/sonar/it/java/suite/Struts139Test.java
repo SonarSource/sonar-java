@@ -75,9 +75,9 @@ public class Struts139Test {
   public void unit_test_metrics() {
     assertThat(getMeasureAsInteger(PROJECT_STRUTS, "tests")).isEqualTo(307);
     assertThat(getMeasureAsInteger(PROJECT_STRUTS, "test_execution_time")).isGreaterThan(200);
-    assertThat(getMeasureAsInteger(PROJECT_STRUTS, "test_errors")).isEqualTo(0);
-    assertThat(getMeasureAsInteger(PROJECT_STRUTS, "test_failures")).isEqualTo(0);
-    assertThat(getMeasureAsInteger(PROJECT_STRUTS, "skipped_tests")).isEqualTo(0);
+    assertThat(getMeasureAsInteger(PROJECT_STRUTS, "test_errors")).isZero();
+    assertThat(getMeasureAsInteger(PROJECT_STRUTS, "test_failures")).isZero();
+    assertThat(getMeasureAsInteger(PROJECT_STRUTS, "skipped_tests")).isZero();
     assertThat(getMeasureAsDouble(PROJECT_STRUTS, "test_success_density")).isEqualTo(100.0);
   }
 

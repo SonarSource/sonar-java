@@ -50,12 +50,14 @@ class DefaultJavaResourceLocatorTest {
   @Test
   void resource_by_class() throws Exception {
     Set<String> classNames = javaResourceLocator.resourcesByClass.keySet();
-    assertThat(classNames).hasSize(5);
-    assertThat(classNames).contains("org/sonar/java/DefaultJavaResourceLocatorTest");
-    assertThat(classNames).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A");
-    assertThat(classNames).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$I");
-    assertThat(classNames).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$1B");
-    assertThat(classNames).contains("org/sonar/java/DefaultJavaResourceLocatorTest$A$1B$1");
+    assertThat(classNames)
+      .hasSize(5)
+      .contains(
+        "org/sonar/java/DefaultJavaResourceLocatorTest",
+        "org/sonar/java/DefaultJavaResourceLocatorTest$A",
+        "org/sonar/java/DefaultJavaResourceLocatorTest$A$I",
+        "org/sonar/java/DefaultJavaResourceLocatorTest$A$1B",
+        "org/sonar/java/DefaultJavaResourceLocatorTest$A$1B$1");
   }
 
   @Test

@@ -28,7 +28,7 @@ class PackageUtilsTest {
 
   @Test
   void no_package_empty_string() {
-    assertThat(packageName("class A{}")).isEqualTo("");
+    assertThat(packageName("class A{}")).isEmpty();
   }
 
   @Test

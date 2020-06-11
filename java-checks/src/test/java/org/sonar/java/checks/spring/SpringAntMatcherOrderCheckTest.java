@@ -44,7 +44,7 @@ class SpringAntMatcherOrderCheckTest {
 
   @Test
   void escape_regexp_characters() {
-    assertThat(escapeRegExpChars("")).isEqualTo("");
+    assertThat(escapeRegExpChars("")).isEmpty();
     assertThat(escapeRegExpChars("abc")).isEqualTo("abc");
     assertThat(escapeRegExpChars("a(b)c")).isEqualTo("a\\(b\\)c");
     assertThat(escapeRegExpChars("a{b}c")).isEqualTo("a\\{b\\}c");

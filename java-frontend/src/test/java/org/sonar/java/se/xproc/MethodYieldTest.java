@@ -107,6 +107,7 @@ class MethodYieldTest {
     SymbolicExecutionVisitor sev = createSymbolicExecutionVisitor("src/test/files/se/XProcYieldsReassignments.java");
     MethodBehavior mb = getMethodBehavior(sev, "foo");
     assertThat(mb.happyPathYields())
+      .isNotEmpty()
       .allMatch(y -> y.parametersConstraints.get(0) != null && !ObjectConstraint.NULL.equals(y.parametersConstraints.get(0).get(ObjectConstraint.class)));
   }
 
@@ -119,8 +120,10 @@ class MethodYieldTest {
   @Test
   void flow_should_fail_if_no_parameters_are_passed() throws Exception {
     MethodYield methodYield = new HappyPathYield(null, mockMethodBehavior(1, false));
+    List<Integer> parameters = Collections.emptyList();
+    List<Class<? extends Constraint>> domains = Collections.singletonList(ObjectConstraint.class);
     try {
-      methodYield.flow(Collections.emptyList(), Collections.singletonList(ObjectConstraint.class));
+      methodYield.flow(parameters, domains);
       fail("calling flow with empty list should have failed");
     } catch (IllegalArgumentException iae) {
       assertThat(iae).hasMessage("computing flow on empty symbolic value list should never happen");
@@ -225,7 +228,7 @@ class MethodYieldTest {
   void constraints_on_varargs() throws Exception {
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(new File("src/test/files/se/VarArgsYields.java"));
     Sema semanticModel = cut.sema;
-    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(new SECheck[]{}), new BehaviorCache(new SquidClassLoader(new ArrayList<>())));
+    SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Lists.newArrayList(), new BehaviorCache(new SquidClassLoader(new ArrayList<>())));
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getTree()).thenReturn(cut);
     when(context.getSemanticModel()).thenReturn(semanticModel);

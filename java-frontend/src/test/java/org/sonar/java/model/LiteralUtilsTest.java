@@ -73,7 +73,7 @@ class LiteralUtilsTest {
   long y1 = 42;
   long y2 = 42L;
   long y3 = -7;
-  long y4 = -7l;
+  long y4 = -7L;
   long y5 = +3;
   long y6 = +3L;
   long y7 = 42 + y1;
@@ -144,7 +144,7 @@ class LiteralUtilsTest {
 
   @Test
   void testTrimLongSuffix() throws Exception {
-    assertThat(LiteralUtils.trimLongSuffix("")).isEqualTo("");
+    assertThat(LiteralUtils.trimLongSuffix("")).isEmpty();
     String longValue = "12345";
     assertThat(LiteralUtils.trimLongSuffix(longValue)).isEqualTo(longValue);
     assertThat(LiteralUtils.trimLongSuffix(longValue + "l")).isEqualTo(longValue);

@@ -57,14 +57,13 @@ class FlowTest {
     Flow flow1 = Flow.builder().addAll(flow).build();
     Flow flow2 = Flow.builder().addAll(flow).setAsExceptional().build();
 
-    assertThat(flow1.equals(null)).isFalse();
-    assertThat(flow1.equals(new Object())).isFalse();
-
-    assertThat(flow1.equals(Flow.empty())).isFalse();
-    assertThat(flow1.equals(flow2)).isFalse();
-
-    assertThat(flow1.equals(flow1)).isTrue();
-    assertThat(flow1.equals(Flow.of(flow1))).isTrue();
+    assertThat(flow1)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object())
+      .isNotEqualTo(Flow.empty())
+      .isNotEqualTo(flow2)
+      .isEqualTo(flow1)
+      .isEqualTo(Flow.of(flow1));
   }
 
   private static JavaFileScannerContext.Location locationWithMockTree(String message) {

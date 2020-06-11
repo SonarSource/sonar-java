@@ -34,15 +34,17 @@ class JavaFilesCacheTest {
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/resources/JavaFilesCacheTestFile.java"), new VisitorsBridge(javaFilesCache));
 
     Set<String> classNames = javaFilesCache.getClassNames();
-    assertThat(classNames).hasSize(8);
-    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile");
-    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A");
-    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$plop");
-    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A$I");
-    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A$1B");
-    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A$1B$1");
-    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A$2");
-    assertThat(classNames).contains("org/sonar/java/JavaFilesCacheTestFile$A$3");
+    assertThat(classNames)
+      .hasSize(8)
+      .contains(
+        "org/sonar/java/JavaFilesCacheTestFile",
+        "org/sonar/java/JavaFilesCacheTestFile$A",
+        "org/sonar/java/JavaFilesCacheTestFile$plop",
+        "org/sonar/java/JavaFilesCacheTestFile$A$I",
+        "org/sonar/java/JavaFilesCacheTestFile$A$1B",
+        "org/sonar/java/JavaFilesCacheTestFile$A$1B$1",
+        "org/sonar/java/JavaFilesCacheTestFile$A$2",
+        "org/sonar/java/JavaFilesCacheTestFile$A$3");
   }
 
 }

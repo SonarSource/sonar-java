@@ -101,18 +101,18 @@ class SurefireSensorTest {
 
     assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest", CoreMetrics.TEST_FAILURES).value()).isEqualTo(1);
     assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest", CoreMetrics.TEST_ERRORS).value()).isEqualTo(1);
-    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(0);
+    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest", CoreMetrics.SKIPPED_TESTS).value()).isZero();
 
     assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest2", CoreMetrics.TESTS).value()).isEqualTo(2);
     assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest2", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(2);
-    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest2", CoreMetrics.TEST_FAILURES).value()).isEqualTo(0);
-    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest2", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
-    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest2", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(0);
+    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest2", CoreMetrics.TEST_FAILURES).value()).isZero();
+    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest2", CoreMetrics.TEST_ERRORS).value()).isZero();
+    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest2", CoreMetrics.SKIPPED_TESTS).value()).isZero();
 
     assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest3", CoreMetrics.TESTS).value()).isEqualTo(1);
     assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest3", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(16);
-    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest3", CoreMetrics.TEST_FAILURES).value()).isEqualTo(0);
-    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest3", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
+    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest3", CoreMetrics.TEST_FAILURES).value()).isZero();
+    assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest3", CoreMetrics.TEST_ERRORS).value()).isZero();
     assertThat(context.measure(":org.sonar.core.ExtensionsFinderTest3", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(1);
   }
 
@@ -136,7 +136,7 @@ class SurefireSensorTest {
   void shouldSupportLongAttributeValues() throws URISyntaxException {
     SensorContextTester context = SensorContextTester.create(new File(""));
     collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/should_support_long_attribute_values/");
-    assertThat(context.allAnalysisErrors()).hasSize(0);
+    assertThat(context.allAnalysisErrors()).isEmpty();
   }
 
   @Test
@@ -173,7 +173,7 @@ class SurefireSensorTest {
 
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TESTS).value()).isEqualTo(2);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(1);
-    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
+    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_ERRORS).value()).isZero();
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(1);
   }
 
@@ -185,9 +185,9 @@ class SurefireSensorTest {
 
     collect(context, "/org/sonar/plugins/surefire/SurefireSensorTest/noSuccessRatioIfNoTests/");
 
-    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TESTS).value()).isEqualTo(0);
-    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(0);
-    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
+    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TESTS).value()).isZero();
+    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isZero();
+    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_ERRORS).value()).isZero();
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(2);
   }
 
@@ -201,7 +201,7 @@ class SurefireSensorTest {
 
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TESTS).value()).isEqualTo(4);
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(2);
-    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
+    assertThat(context.measure(":org.sonar.Foo", CoreMetrics.TEST_ERRORS).value()).isZero();
     assertThat(context.measure(":org.sonar.Foo", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(2);
   }
 

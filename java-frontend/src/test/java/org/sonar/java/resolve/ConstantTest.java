@@ -65,8 +65,8 @@ class ConstantTest {
     assertThat(valuesByFieldName.get("CONST1")).isEqualTo("CONST_VALUE");
     assertThat(valuesByFieldName.get("nonStatic")).isNull();
     assertThat(valuesByFieldName.get("nonFinal")).isNull();
-    assertThat(valuesByFieldName.get("BOOLEAN_TRUE")).isEqualTo(true);
-    assertThat(valuesByFieldName.get("BOOLEAN_FALSE")).isEqualTo(false);
+    assertThat(valuesByFieldName.get("BOOLEAN_TRUE")).isEqualTo(Boolean.TRUE);
+    assertThat(valuesByFieldName.get("BOOLEAN_FALSE")).isEqualTo(Boolean.FALSE);
 
     // See Java 13 Virtual Machine Specification 4.7.2:
     // constant values of short, char and byte types are stored in bytecode as CONSTANT_Integer

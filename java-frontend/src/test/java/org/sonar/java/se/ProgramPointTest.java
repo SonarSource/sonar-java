@@ -33,16 +33,17 @@ class ProgramPointTest {
     // ToString method of program point is used by viewer.
     CFG cfg = CFGTestUtils.buildCFG("void foo() {foo();}");
     ProgramPoint pp = new ProgramPoint(cfg.blocks().get(0));
-    assertThat(pp.toString()).isEqualTo("B1.0  IDENTIFIER1");
+    assertThat(pp).hasToString("B1.0  IDENTIFIER1");
     pp = pp.next().next();
-    assertThat(pp.toString()).isEqualTo("B1.2  ");
+    assertThat(pp).hasToString("B1.2  ");
   }
 
   @Test
   void test_program_point_on_bytecode_cfg() throws Exception {
     ProgramPoint pp = new ProgramPoint(new Instructions().visitInsn(Opcodes.NOP).cfg().entry());
-    assertThat(pp.toString()).isEqualTo("B1.0  ");
+    assertThat(pp)
+      .hasToString("B1.0  ")
+      .isNotEqualTo("");
     assertThat(pp.syntaxTree()).isNull();
-    assertThat(pp.equals("")).isFalse();
   }
 }

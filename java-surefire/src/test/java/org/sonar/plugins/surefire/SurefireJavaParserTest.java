@@ -154,10 +154,10 @@ class SurefireJavaParserTest {
 
     parser.collect(context, getDirs("negativeTestTime"), true);
     //Test times : -1.120, 0.644, 0.015 -> computed time : 0.659, ignore negative time.
-    assertThat(context.measure(":java.Foo", CoreMetrics.SKIPPED_TESTS).value()).isEqualTo(0);
+    assertThat(context.measure(":java.Foo", CoreMetrics.SKIPPED_TESTS).value()).isZero();
     assertThat(context.measure(":java.Foo", CoreMetrics.TESTS).value()).isEqualTo(6);
-    assertThat(context.measure(":java.Foo", CoreMetrics.TEST_ERRORS).value()).isEqualTo(0);
-    assertThat(context.measure(":java.Foo", CoreMetrics.TEST_FAILURES).value()).isEqualTo(0);
+    assertThat(context.measure(":java.Foo", CoreMetrics.TEST_ERRORS).value()).isZero();
+    assertThat(context.measure(":java.Foo", CoreMetrics.TEST_FAILURES).value()).isZero();
     assertThat(context.measure(":java.Foo", CoreMetrics.TEST_EXECUTION_TIME).value()).isEqualTo(659);
   }
 

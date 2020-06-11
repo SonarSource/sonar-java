@@ -70,7 +70,7 @@ class JavaRulesDefinitionTest {
     assertThat(unusedLabelRule.name()).isEqualTo("Unused labels should be removed");
     assertThat(repository.rule("S2095").type()).isEqualTo(RuleType.BUG);
     assertThat(repository.rule("S2095").deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S2095"));
-    assertThat(repository.rule("S2095").activatedByDefault()).isEqualTo(true);
+    assertThat(repository.rule("S2095").activatedByDefault()).isTrue();
     RulesDefinition.Rule magicNumber = repository.rule("S109");
     assertThat(magicNumber.params()).isNotEmpty();
     assertThat(magicNumber.activatedByDefault()).isFalse();
@@ -177,7 +177,7 @@ class JavaRulesDefinitionTest {
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
     RulesDefinition.Rule rule = repository.rule("S1104");
-    assertThat(rule.activatedByDefault()).isEqualTo(true);
+    assertThat(rule.activatedByDefault()).isTrue();
     assertThat(rule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "ClassVariableVisibilityCheck"));
   }
 

@@ -45,10 +45,13 @@ class ProgramStateTest {
   void testing_equals() {
     SymbolicValue sv1 = new SymbolicValue();
     ProgramState state = ProgramState.EMPTY_STATE.addConstraint(sv1, ObjectConstraint.NOT_NULL);
-    assertThat(state.equals(null)).isFalse();
-    assertThat(state.equals(new String())).isFalse();
     ProgramState state2 = ProgramState.EMPTY_STATE.addConstraint(sv1, ObjectConstraint.NOT_NULL);
-    assertThat(state.equals(state2)).isTrue();
+    ProgramState state3 = ProgramState.EMPTY_STATE.addConstraint(sv1, ObjectConstraint.NULL);
+    assertThat(state)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object())
+      .isNotEqualTo(state3)
+      .isEqualTo(state2);
   }
 
   @Test
@@ -100,7 +103,10 @@ class ProgramStateTest {
     state = state.stackValue(sv5, variable);
     // FIXME to string is not really nice by displaying classes and order is not guaranteed.
     assertThat(state.toString()).contains("A#x->SV_4", "SV_NULL", "SV_TRUE", "SV_FALSE", "A#x->SV_5", "SV_3");
-      //.isEqualTo("{ A#x->SV_4}  { SV_0_NULL-> class org.sonar.java.se.constraint.ObjectConstraint->NULL SV_1_TRUE-> class org.sonar.java.se.constraint.BooleanConstraint->TRUE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL SV_2_FALSE-> class org.sonar.java.se.constraint.BooleanConstraint->FALSE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL} { [SV_5, SV_3] } { A#x } ");
+    // .isEqualTo("{ A#x->SV_4} { SV_0_NULL-> class org.sonar.java.se.constraint.ObjectConstraint->NULL SV_1_TRUE-> class
+    // org.sonar.java.se.constraint.BooleanConstraint->TRUE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL SV_2_FALSE-> class
+    // org.sonar.java.se.constraint.BooleanConstraint->FALSE class org.sonar.java.se.constraint.ObjectConstraint->NOT_NULL} { [SV_5, SV_3] }
+    // { A#x } ");
   }
 
   @Test
@@ -159,7 +165,6 @@ class ProgramStateTest {
 
     assertThat(child.learnedAssociations(child)).isEmpty();
   }
-
 
   @Test
   void test_peek_nth_value() {

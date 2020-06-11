@@ -42,15 +42,15 @@ class LocationTest {
     Tree node = mock(Tree.class);
     JavaFileScannerContext.Location location = new JavaFileScannerContext.Location(message, node);
 
-    // same message, same node
-    assertThat(location).isEqualTo(new JavaFileScannerContext.Location(message, node));
-    // same object
-    assertThat(location).isEqualTo(location);
-
-    assertThat(location).isNotEqualTo(new JavaFileScannerContext.Location("msg", node));
-    assertThat(location).isNotEqualTo(new JavaFileScannerContext.Location(message, mock(Tree.class)));
-    assertThat(location).isNotEqualTo(null);
-    assertThat(location).isNotEqualTo(new Object());
+    assertThat(location)
+      // same message, same node
+      .isEqualTo(new JavaFileScannerContext.Location(message,node))
+      // same object
+      .isEqualTo(location)
+      .isNotEqualTo(new JavaFileScannerContext.Location("msg", node))
+      .isNotEqualTo(new JavaFileScannerContext.Location(message, mock(Tree.class)))
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object());
   }
 
   @Test
