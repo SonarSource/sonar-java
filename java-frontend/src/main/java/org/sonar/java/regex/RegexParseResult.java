@@ -42,4 +42,7 @@ public class RegexParseResult {
     return syntaxErrors;
   }
 
+  public boolean hasSyntaxErrors() {
+    return !syntaxErrors.isEmpty();
+  }
 }
