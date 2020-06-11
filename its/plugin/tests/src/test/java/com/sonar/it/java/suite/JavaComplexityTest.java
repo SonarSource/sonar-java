@@ -60,7 +60,7 @@ public class JavaComplexityTest {
 
   @Test
   public void testNumberMethods() {
-    assertThat(getMeasureAsInteger(JavaTestSuite.keyFor(PROJECT, "complexity/", "ZeroComplexity.java"), "functions")).isEqualTo(0);
+    assertThat(getMeasureAsInteger(JavaTestSuite.keyFor(PROJECT, "complexity/", "ZeroComplexity.java"), "functions")).isZero();
     assertThat(getMeasureAsInteger(JavaTestSuite.keyFor(PROJECT, "complexity/", "ContainsInnerClasses.java"), "functions")).isEqualTo(4);
     assertThat(getMeasureAsInteger(PROJECT, "functions")).isEqualTo(10);
   }

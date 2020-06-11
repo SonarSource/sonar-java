@@ -270,20 +270,22 @@ class RelationalSymbolicValueTest {
     SymbolicValue eq1 = relationalSV(Tree.Kind.EQUAL_TO, b, b);
     SymbolicValue eq2 = relationalSV(Tree.Kind.EQUAL_TO, a, a);
     SymbolicValue neq = relationalSV(Tree.Kind.NOT_EQUAL_TO, b, a);
-    assertThat(eq).isNotEqualTo(neq);
-    assertThat(eq).isEqualTo(eq);
-    assertThat(eq).isNotEqualTo(eq1);
-    assertThat(eq).isNotEqualTo(eq2);
-    assertThat(eq).isNotEqualTo(null);
-    assertThat(eq).isNotEqualTo(new Object());
+    assertThat(eq)
+      .isEqualTo(eq)
+      .isNotEqualTo(neq)
+      .isNotEqualTo(eq1)
+      .isNotEqualTo(eq2)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object());
 
     SymbolicValue ab1 = relationalSV(Tree.Kind.LESS_THAN, a, b);
     SymbolicValue ab2 = relationalSV(Tree.Kind.LESS_THAN, a, b);
     SymbolicValue ab3 = relationalSV(Tree.Kind.LESS_THAN, a, new SymbolicValue());
     SymbolicValue ab4 = relationalSV(Tree.Kind.LESS_THAN, new SymbolicValue(), b);
-    assertThat(ab1).isEqualTo(ab2);
-    assertThat(ab1).isNotEqualTo(ab3);
-    assertThat(ab1).isNotEqualTo(ab4);
+    assertThat(ab1)
+      .isEqualTo(ab2)
+      .isNotEqualTo(ab3)
+      .isNotEqualTo(ab4);
   }
 
   @Test

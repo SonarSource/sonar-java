@@ -44,9 +44,10 @@ class HappyPathYieldTest {
     HappyPathYield yield = new HappyPathYield(mb);
     HappyPathYield otherYield = new HappyPathYield(mb);
 
-    assertThat(yield).isNotEqualTo(null);
-    assertThat(yield).isEqualTo(yield);
-    assertThat(yield).isEqualTo(otherYield);
+    assertThat(yield)
+      .isNotEqualTo(null)
+      .isEqualTo(yield)
+      .isEqualTo(otherYield);
 
     // same arity and constraints but different return value
     otherYield.setResult(0, yield.resultConstraint());
@@ -82,7 +83,7 @@ class HappyPathYieldTest {
     assertThat(methodYield.hashCode()).isNotEqualTo(other.hashCode());
 
     // exceptional method yield
-    assertThat(methodYield.hashCode()).isNotEqualTo(new ExceptionalYield(mb));
+    assertThat(methodYield.hashCode()).isNotEqualTo(new ExceptionalYield(mb).hashCode());
   }
 
   @Test

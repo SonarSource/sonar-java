@@ -44,8 +44,9 @@ class AbstractMethodDetectionTest {
         .build());
     JavaAstScanner.scanSingleFileForTests(CheckTestUtils.inputFile("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
-    assertThat(visitor.lines).hasSize(3);
-    assertThat(visitor.lines).containsExactly(15, 17, 19);
+    assertThat(visitor.lines)
+      .hasSize(3)
+      .containsExactly(15, 17, 19);
   }
 
   @Test

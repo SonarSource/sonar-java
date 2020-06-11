@@ -88,7 +88,7 @@ class JavaSquidSensorTest {
 
   @Test
   void test_toString() {
-    assertThat(new JavaSquidSensor(null, null, null, null, null, null).toString()).isEqualTo("JavaSquidSensor");
+    assertThat(new JavaSquidSensor(null, null, null, null, null, null)).hasToString("JavaSquidSensor");
   }
 
   @Test

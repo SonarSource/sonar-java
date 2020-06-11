@@ -48,14 +48,14 @@ class SymbolicValueTest {
 
     SymbolicValue.ExceptionalSymbolicValue sv = new SymbolicValue.ExceptionalSymbolicValue(exceptionType);
 
-    assertThat(sv).isEqualTo(sv);
-    assertThat(sv).isNotEqualTo(null);
-    assertThat(sv).isNotEqualTo(new SymbolicValue());
-
-    // different IDs but same exception
-    assertThat(sv).isNotEqualTo(new SymbolicValue.ExceptionalSymbolicValue(sv.exceptionType()));
-    // same IDs but different exception
-    assertThat(sv).isNotEqualTo(new SymbolicValue.ExceptionalSymbolicValue(null));
+    assertThat(sv)
+      .isEqualTo(sv)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new SymbolicValue())
+      // different IDs but same exception
+      .isNotEqualTo(new SymbolicValue.ExceptionalSymbolicValue(sv.exceptionType()))
+      // same IDs but different exception
+      .isNotEqualTo(new SymbolicValue.ExceptionalSymbolicValue(null));
   }
 
   @Test
@@ -78,7 +78,7 @@ class SymbolicValueTest {
     SymbolicValue sv2 = new SymbolicValue();
     SymbolicValue.NotSymbolicValue notSV = new SymbolicValue.NotSymbolicValue();
     SymbolicValueTestUtil.computedFrom(notSV, sv1);
-    assertThat(notSV).hasToString("!("+sv1.toString()+")");
+    assertThat(notSV).hasToString("!(" + sv1.toString() + ")");
 
     SymbolicValue.AndSymbolicValue andSV = new SymbolicValue.AndSymbolicValue();
     SymbolicValueTestUtil.computedFrom(andSV, sv1, sv2);
@@ -104,12 +104,13 @@ class SymbolicValueTest {
   @Test
   void test_hashCode_equals() throws Exception {
     SymbolicValue sv1 = new SymbolicValue();
-    assertThat(sv1.equals(sv1)).isTrue();
-    assertThat(sv1.equals(null)).isFalse();
-    assertThat(sv1.equals(new Object())).isFalse();
-
     SymbolicValue sv2 = new SymbolicValue();
-    assertThat(sv1).isNotEqualTo(sv2);
+    assertThat(sv1)
+      .isEqualTo(sv1)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object())
+      .isNotEqualTo(sv2);
+
     assertThat(sv1.hashCode()).isNotEqualTo(sv2.hashCode());
   }
 

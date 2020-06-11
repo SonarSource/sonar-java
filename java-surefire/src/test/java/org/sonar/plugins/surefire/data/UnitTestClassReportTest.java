@@ -39,18 +39,18 @@ class UnitTestClassReportTest {
     assertThat(report.getTests()).isEqualTo(4);
     assertThat(report.getDurationMilliseconds()).isEqualTo(500L + 200L);
     assertThat(report.getErrors()).isEqualTo(1);
-    assertThat(report.getFailures()).isEqualTo(0);
+    assertThat(report.getFailures()).isZero();
     assertThat(report.getNegativeTimeTestNumber()).isEqualTo(1L);
   }
 
   @Test
   void shouldHaveEmptyReport() {
     UnitTestClassReport report = new UnitTestClassReport();
-    assertThat(report.getResults().size()).isEqualTo(0);
-    assertThat(report.getSkipped()).isEqualTo(0);
-    assertThat(report.getTests()).isEqualTo(0);
+    assertThat(report.getResults().size()).isZero();
+    assertThat(report.getSkipped()).isZero();
+    assertThat(report.getTests()).isZero();
     assertThat(report.getDurationMilliseconds()).isEqualTo(0L);
-    assertThat(report.getErrors()).isEqualTo(0);
-    assertThat(report.getFailures()).isEqualTo(0);
+    assertThat(report.getErrors()).isZero();
+    assertThat(report.getFailures()).isZero();
   }
 }

@@ -39,7 +39,7 @@ class LearnedAssociationTest {
       }
     };
     LearnedAssociation la = new LearnedAssociation(sv, variable("a"));
-    assertThat(la.toString()).isEqualTo("SV_1 - a");
+    assertThat(la).hasToString("SV_1 - a");
   }
 
   private static final Symbol.VariableSymbol variable(String name) {

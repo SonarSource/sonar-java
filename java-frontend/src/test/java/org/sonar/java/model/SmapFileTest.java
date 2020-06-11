@@ -124,44 +124,46 @@ class SmapFileTest {
   @Test
   void lineinfo_hashcode_equals_tostring() {
     SmapFile.LineInfo lineInfo = new SmapFile.LineInfo(1, 0, 1, 1, 1);
-    assertThat(lineInfo.toString()).isEqualTo("LineInfo{inputStartLine=1, lineFileId=0, repeatCount=1, outputStartLine=1, outputLineIncrement=1}");
+    assertThat(lineInfo).hasToString("LineInfo{inputStartLine=1, lineFileId=0, repeatCount=1, outputStartLine=1, outputLineIncrement=1}");
 
     Set<SmapFile.LineInfo> set = new HashSet<>();
     set.add(lineInfo);
     SmapFile.LineInfo lineInfo2 = new SmapFile.LineInfo(1, 0, 1, 1, 1);
     assertThat(set.add(lineInfo2)).isFalse();
-    assertThat(lineInfo).isEqualTo(lineInfo);
-    assertThat(lineInfo).isEqualTo(lineInfo2);
-    assertThat(lineInfo).isNotEqualTo(null);
-    assertThat(lineInfo).isNotEqualTo(0);
-    assertThat(lineInfo).isNotEqualTo(new SmapFile.LineInfo(2, 0, 1, 1, 1));
-    assertThat(lineInfo).isNotEqualTo(new SmapFile.LineInfo(1, 2, 1, 1, 1));
-    assertThat(lineInfo).isNotEqualTo(new SmapFile.LineInfo(1, 0, 2, 1, 1));
-    assertThat(lineInfo).isNotEqualTo(new SmapFile.LineInfo(1, 0, 1, 2, 1));
-    assertThat(lineInfo).isNotEqualTo(new SmapFile.LineInfo(1, 0, 1, 1, 2));
+    assertThat(lineInfo)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object())
+      .isEqualTo(lineInfo)
+      .isEqualTo(lineInfo2)
+      .isNotEqualTo(new SmapFile.LineInfo(2, 0, 1, 1, 1))
+      .isNotEqualTo(new SmapFile.LineInfo(1, 2, 1, 1, 1))
+      .isNotEqualTo(new SmapFile.LineInfo(1, 0, 2, 1, 1))
+      .isNotEqualTo(new SmapFile.LineInfo(1, 0, 1, 2, 1))
+      .isNotEqualTo(new SmapFile.LineInfo(1, 0, 1, 1, 2));
   }
 
   @Test
   void fileinfo_hashcode_equals_tostring() {
     SmapFile.FileInfo fileInfo = new SmapFile.FileInfo(0, "file.jsp", "path/file.jsp", null);
     SmapFile.FileInfo fileInfo2 = new SmapFile.FileInfo(0, "file.jsp", "path/file.jsp", null);
-    assertThat(fileInfo).isEqualTo(fileInfo);
-    assertThat(fileInfo).isEqualTo(fileInfo2);
-    assertThat(fileInfo).isNotEqualTo(null);
-    assertThat(fileInfo).isNotEqualTo(0);
-    assertThat(fileInfo).isNotEqualTo(new SmapFile.FileInfo(1, "file.jsp", "path/file.jsp", null));
-    assertThat(fileInfo).isNotEqualTo(new SmapFile.FileInfo(0, "file2.jsp", "path/file.jsp", null));
-    assertThat(fileInfo).isNotEqualTo(new SmapFile.FileInfo(0, "file.jsp", "path/file2.jsp", null));
+    assertThat(fileInfo)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object())
+      .isEqualTo(fileInfo)
+      .isEqualTo(fileInfo2)
+      .isNotEqualTo(new SmapFile.FileInfo(1, "file.jsp", "path/file.jsp", null))
+      .isNotEqualTo(new SmapFile.FileInfo(0, "file2.jsp", "path/file.jsp", null))
+      .isNotEqualTo(new SmapFile.FileInfo(0, "file.jsp", "path/file2.jsp", null));
     Set<SmapFile.FileInfo> set = new HashSet<>();
     set.add(fileInfo);
     assertThat(set.add(fileInfo2)).isFalse();
-    assertThat(fileInfo.toString()).isEqualTo("FileInfo{fileId=0, sourceName='file.jsp', sourcePath='path/file.jsp'}");
+    assertThat(fileInfo).hasToString("FileInfo{fileId=0, sourceName='file.jsp', sourcePath='path/file.jsp'}");
   }
 
   @Test
   void smapfile_tostring() {
     SmapFile smapFile = new SmapFile(Paths.get("dir"), "SMAP\ntest.jsp\nJSP\n*S JSP\n*F\n*L\n", null, null);
-    assertThat(smapFile.toString()).isEqualTo(Paths.get("dir/test.jsp").toString());
+    assertThat(smapFile).hasToString(Paths.get("dir/test.jsp").toString());
   }
 
 }

@@ -46,9 +46,10 @@ class ExceptionalYieldTest {
     ExceptionalYield yield = new ExceptionalYield(methodBehavior);
     ExceptionalYield otherYield = new ExceptionalYield(methodBehavior);
 
-    assertThat(yield).isNotEqualTo(null);
-    assertThat(yield).isEqualTo(yield);
-    assertThat(yield).isEqualTo(otherYield);
+    assertThat(yield)
+      .isNotEqualTo(null)
+      .isEqualTo(yield)
+      .isEqualTo(otherYield);
 
     otherYield.setExceptionType("java.lang.Exception");
     assertThat(yield).isNotEqualTo(otherYield);
@@ -78,7 +79,7 @@ class ExceptionalYieldTest {
     assertThat(methodYield.hashCode()).isNotEqualTo(other.hashCode());
 
     // happy Path Yield method yield
-    assertThat(methodYield.hashCode()).isNotEqualTo(new HappyPathYield(methodBehavior));
+    assertThat(methodYield.hashCode()).isNotEqualTo(new HappyPathYield(methodBehavior).hashCode());
   }
 
   @Test

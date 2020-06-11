@@ -128,7 +128,7 @@ class MethodMatcherFactoryTest {
     assertThat(visitor.count(stringOnly)).isEqualTo(1);
     assertThat(visitor.count(stringInt)).isEqualTo(2);
     assertThat(visitor.count(intInt)).isEqualTo(3);
-    assertThat(visitor.count(onlyBoolean)).isEqualTo(0);
+    assertThat(visitor.count(onlyBoolean)).isZero();
   }
 
   @Test

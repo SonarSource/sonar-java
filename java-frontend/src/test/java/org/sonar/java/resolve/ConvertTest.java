@@ -29,7 +29,7 @@ class ConvertTest {
 
   @Test
   void private_constructor() throws Exception {
-    Constructor constructor = Convert.class.getDeclaredConstructor();
+    Constructor<Convert> constructor = Convert.class.getDeclaredConstructor();
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
     constructor.newInstance();
@@ -37,7 +37,7 @@ class ConvertTest {
 
   @Test
   void packagePart() {
-    assertThat(Convert.packagePart("org")).isEqualTo("");
+    assertThat(Convert.packagePart("org")).isEmpty();
     assertThat(Convert.packagePart("org.example")).isEqualTo("org");
   }
 
@@ -62,7 +62,7 @@ class ConvertTest {
 
   @Test
   void enclosingClassName() throws Exception {
-    assertThat(Convert.enclosingClassName("MyClass")).isEqualTo("");
+    assertThat(Convert.enclosingClassName("MyClass")).isEmpty();
     assertThat(Convert.enclosingClassName("MyClass$InnerClass")).isEqualTo("MyClass");
     assertThat(Convert.enclosingClassName("MyClass$$InnerClass$class")).isEqualTo("MyClass$");
     assertThat(Convert.enclosingClassName("MyClass$$InnerClass$")).isEqualTo("MyClass$");
