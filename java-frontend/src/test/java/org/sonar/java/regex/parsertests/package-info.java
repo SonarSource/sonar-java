@@ -17,29 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.ast;
+@ParametersAreNonnullByDefault
+package org.sonar.java.regex.parsertests;
 
-public class GroupTree extends RegexTree {
+import javax.annotation.ParametersAreNonnullByDefault;
 
-  private final RegexTree element;
-
-  public GroupTree(RegexSource source, IndexRange range, RegexTree element) {
-    super(source, range);
-    this.element = element;
-  }
-
-  public RegexTree getElement() {
-    return element;
-  }
-
-  @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitGroup(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return Kind.GROUP;
-  }
-
-}

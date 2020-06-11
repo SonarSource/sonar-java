@@ -21,7 +21,9 @@ package org.sonar.java.regex;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
+import org.sonar.java.regex.ast.AtomicGroupTree;
 import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterClassUnionTree;
@@ -30,9 +32,11 @@ import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.DotTree;
 import org.sonar.java.regex.ast.EscapedPropertyTree;
-import org.sonar.java.regex.ast.GroupTree;
+import org.sonar.java.regex.ast.CapturingGroupTree;
 import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.JavaCharacter;
+import org.sonar.java.regex.ast.LookAroundTree;
+import org.sonar.java.regex.ast.NonCapturingGroupTree;
 import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.Quantifier;
 import org.sonar.java.regex.ast.RegexSource;
@@ -42,19 +46,20 @@ import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.java.regex.ast.SimpleQuantifier;
 
-import static org.sonar.java.regex.JavaCharacterParser.EOF;
+import static org.sonar.java.regex.RegexLexer.EOF;
 
 public class RegexParser {
 
   private final RegexSource source;
 
-  private final JavaCharacterParser characters;
+  private final RegexLexer characters;
 
   private final List<SyntaxError> errors;
 
-  public RegexParser(RegexSource source) {
+  public RegexParser(RegexSource source, boolean freeSpacingMode) {
     this.source = source;
-    this.characters = new JavaCharacterParser(source);
+    this.characters = new RegexLexer(source);
+    this.characters.setFreeSpacingMode(freeSpacingMode);
     this.errors = new ArrayList<>();
   }
 
@@ -223,17 +228,137 @@ public class RegexParser {
     }
   }
 
-  private GroupTree parseGroup() {
+  private RegexTree parseGroup() {
     JavaCharacter openingParen = characters.getCurrent();
     characters.moveNext();
+    if (characters.currentIs("?=")) {
+      characters.moveNext(2);
+      return finishGroup(openingParen, (range, inner) -> LookAroundTree.positiveLookAhead(source, range, inner));
+    } else if (characters.currentIs("?<=")) {
+      characters.moveNext(3);
+      return finishGroup(openingParen, (range, inner) -> LookAroundTree.positiveLookBehind(source, range, inner));
+    } else if (characters.currentIs("?!")) {
+      characters.moveNext(2);
+      return finishGroup(openingParen, (range, inner) -> LookAroundTree.negativeLookAhead(source, range, inner));
+    } else if (characters.currentIs("?<!")) {
+      characters.moveNext(3);
+      return finishGroup(openingParen, (range, inner) -> LookAroundTree.negativeLookBehind(source, range, inner));
+    } else if (characters.currentIs("?>")) {
+      characters.moveNext(2);
+      return finishGroup(openingParen, (range, inner) -> new AtomicGroupTree(source, range, inner));
+    } else if (characters.currentIs("?<")) {
+      characters.moveNext(2);
+      String name = parseGroupName();
+      if (characters.currentIs('>')) {
+        characters.moveNext();
+      } else {
+        expected("'>'");
+      }
+      return finishGroup(openingParen, (range, inner) -> new CapturingGroupTree(source, range, name, inner));
+    } else if (characters.currentIs("?")) {
+      return parseNonCapturingGroup(openingParen);
+    } else {
+      return finishGroup(openingParen, (range, inner) -> new CapturingGroupTree(source, range, null, inner));
+    }
+  }
+
+  private String parseGroupName() {
+    StringBuilder sb = new StringBuilder();
+    while (characters.isNotAtEnd() && !characters.currentIs('>')) {
+      sb.append(characters.getCurrent().getCharacter());
+      characters.moveNext();
+    }
+    String name = sb.toString();
+    if (name.isEmpty()) {
+      expected("a name for the group");
+    }
+    return name;
+  }
+
+  private RegexTree parseNonCapturingGroup(JavaCharacter openingParen) {
+    // Discard '?'
+    characters.moveNext();
+    int enabledFlags = parseFlags();
+    int disabledFlags;
+    if (characters.currentIs('-')) {
+      characters.moveNext();
+      disabledFlags = parseFlags();
+    } else {
+      disabledFlags = 0;
+    }
+
+    boolean previousFreeSpacingMode = characters.getFreeSpacingMode();
+    if ((disabledFlags & Pattern.COMMENTS) != 0) {
+      characters.setFreeSpacingMode(false);
+    } else if ((enabledFlags & Pattern.COMMENTS) != 0) {
+      characters.setFreeSpacingMode(true);
+    }
+
+    if (characters.currentIs(')')) {
+      JavaCharacter closingParen = characters.getCurrent();
+      characters.moveNext();
+      IndexRange range = openingParen.getRange().merge(closingParen.getRange());
+      return new NonCapturingGroupTree(source, range, enabledFlags, disabledFlags, null);
+    }
+    if (characters.currentIs(':')) {
+      characters.moveNext();
+    } else {
+      expected("flag or ':' or ')'");
+    }
+    return finishGroup(previousFreeSpacingMode, openingParen, (range, inner) ->
+      new NonCapturingGroupTree(source, range, enabledFlags, disabledFlags, inner)
+    );
+  }
+
+  private int parseFlags() {
+    int flags = 0;
+    while (characters.isNotAtEnd()) {
+      Integer flag = parseFlag(characters.getCurrent().getCharacter());
+      if (flag == null) {
+        break;
+      }
+      characters.moveNext();
+      flags |= flag;
+    }
+    return flags;
+  }
+
+  @CheckForNull
+  private static Integer parseFlag(char ch) {
+    switch (ch) {
+      case 'i':
+        return Pattern.CASE_INSENSITIVE;
+      case 'd':
+        return Pattern.UNIX_LINES;
+      case 'm':
+        return Pattern.MULTILINE;
+      case 's':
+        return Pattern.DOTALL;
+      case 'u':
+        return Pattern.UNICODE_CASE;
+      case 'x':
+        return Pattern.COMMENTS;
+      case 'U':
+        return Pattern.UNICODE_CHARACTER_CLASS;
+      default:
+        return null;
+    }
+  }
+
+  private RegexTree finishGroup(JavaCharacter openingParen, GroupConstructor groupConstructor) {
+    return finishGroup(characters.getFreeSpacingMode(), openingParen, groupConstructor);
+  }
+
+  private RegexTree finishGroup(boolean previousFreeSpacingMode, JavaCharacter openingParen, GroupConstructor groupConstructor) {
     RegexTree inner = parseDisjunction();
+    characters.setFreeSpacingMode(previousFreeSpacingMode);
     if (characters.currentIs(')')) {
       characters.moveNext();
     } else {
       expected("')'");
     }
     IndexRange range = openingParen.getRange().extendTo(characters.getCurrentStartIndex());
-    return new GroupTree(source, range, inner);
+    return groupConstructor.construct(range, inner);
   }
 
   private RegexTree parseEscapeSequence() {
@@ -279,8 +404,7 @@ public class RegexParser {
     List<RegexTree> elements = new ArrayList<>();
     elements.add(parseCharacterClassUnion(true));
     while (characters.currentIs("&&")) {
-      characters.moveNext();
-      characters.moveNext();
+      characters.moveNext(2);
       elements.add(parseCharacterClassUnion(false));
     }
     return combineTrees(elements, (range, items) -> new CharacterClassIntersectionTree(source, range, items));
@@ -411,6 +535,10 @@ public class RegexParser {
 
   private interface TreeConstructor {
     RegexTree construct(IndexRange range, List<RegexTree> elements);
+  }
+
+  private interface GroupConstructor {
+    RegexTree construct(IndexRange range, RegexTree element);
   }
 
   private static boolean isAsciiDigit(int c) {

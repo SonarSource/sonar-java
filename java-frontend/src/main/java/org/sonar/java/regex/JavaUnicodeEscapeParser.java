@@ -45,6 +45,11 @@ public class JavaUnicodeEscapeParser {
     moveNext();
   }
 
+  public void resetTo(int index) {
+    this.index = index;
+    moveNext();
+  }
+
   @CheckForNull
   public JavaCharacter getCurrent() {
     return current;

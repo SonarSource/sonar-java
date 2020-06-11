@@ -19,41 +19,45 @@
  */
 package org.sonar.java.regex.ast;
 
-public abstract class RegexTree extends RegexSyntaxElement {
-  public enum Kind {
-    CHARACTER_CLASS,
-    CHARACTER_CLASS_INTERSECTION,
-    CHARACTER_CLASS_UNION,
-    CHARACTER_CLASS_NEGATION,
-    CHARACTER_RANGE,
-    DISJUNCTION,
-    DOT,
-    ESCAPED_PROPERTY,
-    CAPTURING_GROUP,
-    NON_CAPTURING_GROUP,
-    ATOMIC_GROUP,
-    LOOK_AROUND,
-    PLAIN_CHARACTER,
-    REPETITION,
-    SEQUENCE,
-  }
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
-  public RegexTree(RegexSource source, IndexRange range) {
+public class NonCapturingGroupTree extends RegexTree {
+
+  @CheckForNull
+  private final RegexTree element;
+
+  private final int enabledFlags;
+
+  private final int disabledFlags;
+
+  public NonCapturingGroupTree(RegexSource source, IndexRange range, int enabledFlags, int disabledFlags, @Nullable RegexTree element) {
     super(source, range);
+    this.enabledFlags = enabledFlags;
+    this.disabledFlags = disabledFlags;
+    this.element = element;
   }
 
-  public abstract void accept(RegexVisitor visitor);
-
-  public abstract Kind kind();
-
-  public boolean is(Kind... kinds) {
-    Kind thisKind = kind();
-    for (Kind kind : kinds) {
-      if (thisKind == kind) {
-        return true;
-      }
-    }
-    return false;
+  @CheckForNull
+  public RegexTree getElement() {
+    return element;
   }
 
+  public int getEnabledFlags() {
+    return enabledFlags;
+  }
+
+  public int getDisabledFlags() {
+    return disabledFlags;
+  }
+
+  @Override
+  public void accept(RegexVisitor visitor) {
+    visitor.visitNonCapturingGroup(this);
+  }
+
+  @Override
+  public Kind kind() {
+    return RegexTree.Kind.NON_CAPTURING_GROUP;
+  }
 }

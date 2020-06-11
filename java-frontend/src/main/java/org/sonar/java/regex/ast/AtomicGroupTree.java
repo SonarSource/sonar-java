@@ -17,21 +17,29 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex;
+package org.sonar.java.regex.ast;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.sonar.java.regex.ast.RegexSource;
-import org.sonar.plugins.java.api.tree.LiteralTree;
+public class AtomicGroupTree extends RegexTree {
 
-public final class RegexCache {
-  private final Map<List<LiteralTree>, RegexParseResult> cache = new HashMap<>();
+  private final RegexTree element;
 
-  public RegexParseResult getRegexForLiterals(boolean freeSpacingMode, LiteralTree... stringLiterals) {
-    return cache.computeIfAbsent(
-      Arrays.asList(stringLiterals),
-      k -> new RegexParser(new RegexSource(k), freeSpacingMode).parse());
+  public AtomicGroupTree(RegexSource source, IndexRange range, RegexTree element) {
+    super(source, range);
+    this.element = element;
+  }
+
+  public RegexTree getElement() {
+    return element;
+  }
+
+
+  @Override
+  public void accept(RegexVisitor visitor) {
+    visitor.visitAtomicGroup(this);
+  }
+
+  @Override
+  public Kind kind() {
+    return RegexTree.Kind.ATOMIC_GROUP;
   }
 }

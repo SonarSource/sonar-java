@@ -49,8 +49,12 @@ public class RegexParserTestUtils {
   private RegexParserTestUtils() {}
 
   public static RegexTree assertSuccessfulParse(String regex) {
+    return assertSuccessfulParse(regex, false);
+  }
+
+  public static RegexTree assertSuccessfulParse(String regex, boolean freeSpacingMode) {
     RegexSource source = makeSource(regex);
-    RegexParseResult result = new RegexParser(source).parse();
+    RegexParseResult result = new RegexParser(source, freeSpacingMode).parse();
     if (!result.getSyntaxErrors().isEmpty()) {
       throw new AssertionFailedError("Parsing should complete with no errors.", "no errors", result.getSyntaxErrors());
     }
@@ -59,7 +63,7 @@ public class RegexParserTestUtils {
 
   public static void assertFailParsing(String regex, String expectedError) {
     RegexSource source = makeSource(regex);
-    RegexParseResult result = new RegexParser(source).parse();
+    RegexParseResult result = new RegexParser(source, false).parse();
     List<SyntaxError> errors = result.getSyntaxErrors();
     if (errors.isEmpty()) {
       throw new AssertionFailedError("Expected error in parsing");
