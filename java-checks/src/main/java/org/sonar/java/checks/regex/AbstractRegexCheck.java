@@ -24,6 +24,7 @@ import com.google.common.collect.Streams;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
@@ -82,9 +83,13 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     if (args.isEmpty()) {
       return;
     }
-    getLiterals(args.get(0))
-      .map(regexContext::regexForLiterals)
-      .ifPresent(result -> checkRegex(result, mit));
+    int flags = getFlags(mit);
+    if ((flags & Pattern.LITERAL) == 0) {
+      boolean freeSpacingMode = (flags & Pattern.COMMENTS) != 0;
+      getLiterals(args.get(0))
+        .map(literals -> regexContext.regexForLiterals(freeSpacingMode, literals))
+        .ifPresent(result -> checkRegex(result, mit));
+    }
   }
 
   @VisibleForTesting
@@ -141,6 +146,18 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
 
   public final void reportIssue(RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
     regexContext.reportIssue(this, regexTree, message, cost, secondaries);
+  }
+
+  /**
+   * @param mit A method call constructing a regex.
+   * @return The flags with which the regex is created if flags are supplied and can be determined statically. 0 (no
+   *         flags) otherwise.
+   */
+  private static int getFlags(MethodInvocationTree mit) {
+    if (mit.symbol().name().equals("compile") && mit.arguments().size() == 2) {
+      return mit.arguments().get(1).asConstant(Integer.class).orElse(0);
+    }
+    return 0;
   }
 
 }

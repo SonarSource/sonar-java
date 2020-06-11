@@ -21,6 +21,12 @@ package org.sonar.java.regex.ast;
 
 public interface RegexVisitor {
 
+  /**
+   * When a regex is constructed using Pattern.compile with the flags argument, this method should be called with the
+   * value of the flags argument (if known) before running the visitor
+   */
+  void setActiveFlags(int flags);
+
   default void visit(RegexTree tree) {
     tree.accept(this);
   }
@@ -31,7 +37,13 @@ public interface RegexVisitor {
 
   void visitDisjunction(DisjunctionTree tree);
 
-  void visitGroup(GroupTree tree);
+  void visitCapturingGroup(CapturingGroupTree tree);
+
+  void visitNonCapturingGroup(NonCapturingGroupTree tree);
+
+  void visitAtomicGroup(AtomicGroupTree tree);
+
+  void visitLookAround(LookAroundTree tree);
 
   void visitRepetition(RepetitionTree tree);
 
