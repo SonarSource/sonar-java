@@ -22,21 +22,13 @@ package org.sonar.java.regex.ast;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertFailParsing;
-import static org.sonar.java.regex.parsertests.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 
 class EscapedPropertyTreeTest {
 
-  /**
-   * Following the form \p{Prop} or \P{Prop} (negation)
-   */
   @Test
-  void escapedProperties() {
-    // control
-    assertThat("a".matches("\\p{Lower}")).isTrue();
-    assertThat("A".matches("\\p{Lower}")).isFalse();
-
-    // POSIX character classes
+  void posixCharacterClasses() {
     assertEscapedProperty("\\\\p{Lower}", "Lower", false);
     assertEscapedProperty("\\\\p{Upper}", "Upper", false);
     assertEscapedProperty("\\\\p{ASCII}", "ASCII", false);
@@ -50,25 +42,38 @@ class EscapedPropertyTreeTest {
     assertEscapedProperty("\\\\p{Cntrl}", "Cntrl", false);
     assertEscapedProperty("\\\\p{XDigit}", "XDigit", false);
     assertEscapedProperty("\\\\p{Space}", "Space", false);
+  }
 
-    // java.lang.Character classes
+  @Test
+  void javalangCharacterClasses() {
     assertEscapedProperty("\\\\p{javaLowerCase}", "javaLowerCase", false);
     assertEscapedProperty("\\\\p{javaUpperCase}", "javaUpperCase", false);
     assertEscapedProperty("\\\\p{javaWhitespace}", "javaWhitespace", false);
     assertEscapedProperty("\\\\p{javaMirrored}", "javaMirrored", false);
+  }
 
+  @Test
+  void unicodeScriptsBLocksCategoriesAndBinaryProperties() {
     // Classes for Unicode scripts, blocks, categories and binary properties
     assertEscapedProperty("\\\\p{IsLatin}", "IsLatin", false);
     assertEscapedProperty("\\\\p{InGreek}", "InGreek", false);
     assertEscapedProperty("\\\\p{Lu}", "Lu", false);
     assertEscapedProperty("\\\\p{IsAlphabetic}", "IsAlphabetic", false);
     assertEscapedProperty("\\\\p{Sc}", "Sc", false);
+  }
 
-    // Negation
+  @Test
+  void negation() {
     assertEscapedProperty("\\\\P{InGreek}", "InGreek", true); // Any character except one in the Greek block
+  }
 
-    // accept any property, even if it does not exists in hardcoded properties
-    assertEscapedProperty("\\\\P{Cowabunga}", "Cowabunga", true); // Any character except one in the Greek block
+  /**
+   * Accept any property, even if it does not exists in hardcoded properties
+   */
+  @Test
+  void anyNameProperty() {
+    assertEscapedProperty("\\\\p{Cowabunga}", "Cowabunga", false);
+    assertEscapedProperty("\\\\P{Cowabunga}", "Cowabunga", true);
   }
 
   @Test
