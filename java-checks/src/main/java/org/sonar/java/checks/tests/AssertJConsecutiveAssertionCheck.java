@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -100,16 +101,6 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
     reportIssueIfMultipleCalls(currentSubject, equivalentInvocations);
   }
 
-  private static boolean alwaysReturnSameValue(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-      // Two method invocation can return different values.
-      return false;
-    } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      return alwaysReturnSameValue(((MemberSelectExpressionTree) expression).expression());
-    }
-    return true;
-  }
-
   /**
    * A "simple" assertion subject is coming from an assertion chain containing only one assertion predicate
    * and the assertion subject argument always returning the same value when called multiple times.
@@ -132,7 +123,7 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
         MethodInvocationTree mit = (MethodInvocationTree) memberSelectExpression;
         if (ASSERT_THAT_MATCHER.matches(mit)) {
           ExpressionTree arg = mit.arguments().get(0);
-          if (alwaysReturnSameValue(arg)) {
+          if (ExpressionsHelper.alwaysReturnSameValue(arg)) {
             return Optional.of(new AssertSubject(mit, arg));
           }
         } else if (ASSERTJ_SET_CONTEXT_METHODS.matches(mit)) {
