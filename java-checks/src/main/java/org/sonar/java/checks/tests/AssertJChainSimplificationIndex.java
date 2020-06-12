@@ -72,6 +72,7 @@ public class AssertJChainSimplificationIndex {
   private static final String IS_LESS_THAN = "isLessThan";
   private static final String IS_LESS_THAN_OR_EQUAL_TO = "isLessThanOrEqualTo";
   private static final String IS_NEGATIVE = "isNegative";
+  private static final String IS_NOT_BLANK = "isNotBlank";
   private static final String IS_NOT_EMPTY = "isNotEmpty";
   private static final String IS_NOT_EQUAL_TO = "isNotEqualTo";
   private static final String IS_NOT_EQUAL_TO_IGNORING_CASE = "isNotEqualToIgnoringCase";
@@ -167,7 +168,7 @@ public class AssertJChainSimplificationIndex {
       withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NOT_NULL)),
       withSubjectArgumentCondition(arg -> ArgumentHelper.notEqualsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NULL)),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isNotSameAs")),
-      withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isSameAs")),
+      withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected(IS_SAME_AS)),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isNotInstanceOf", "ExpectedClass.class")),
       methodCallInSubject(Matchers.IS_EMPTY_STRING, msgWithActual(IS_NOT_EMPTY)),
       methodCallInSubject(Matchers.FILE_EXISTS, msgWithActual("doesNotExist")),
@@ -180,15 +181,15 @@ public class AssertJChainSimplificationIndex {
     .put(IS_EMPTY, Collections.singletonList(
       methodCallInSubject(Matchers.FILE_LIST_AND_LIST_FILE, msgWithActual("isEmptyDirectory"))))
     .put(IS_NOT_EMPTY, ImmutableList.of(
-      methodCallInSubject(Matchers.TRIM, msgWithActual("isNotBlank")),
+      methodCallInSubject(Matchers.TRIM, msgWithActual(IS_NOT_BLANK)),
       methodCallInSubject(Matchers.FILE_LIST_AND_LIST_FILE, msgWithActual("isNotEmptyDirectory"))))
     .put(IS_NOT_EQUAL_TO, ImmutableList.of(
       compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected("isNotEqualByComparingTo")),
       methodCallInSubject(ArgumentHelper::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
       indexOfSimplifier(ArgumentHelper::isZero, DOES_NOT_START_WITH),
-      methodCallInSubject(LiteralUtils::isEmptyString, Matchers.TRIM, msgWithActual("isNotBlank")),
+      methodCallInSubject(LiteralUtils::isEmptyString, Matchers.TRIM, msgWithActual(IS_NOT_BLANK)),
       methodCallInSubject(Matchers.MAP_GET, msgWithActualCustom("doesNotContainEntry", "key, value")),
-      methodCallInSubject(LiteralUtils::isEmptyString, Matchers.TRIM, msgWithActual("isNotBlank")),
+      methodCallInSubject(LiteralUtils::isEmptyString, Matchers.TRIM, msgWithActual(IS_NOT_BLANK)),
       withSubjectArgumentCondition(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.EMPTY),
         subjectArg -> subjectArg.symbolType().is(JAVA_UTIL_OPTIONAL), OPTIONAL_PRESENT_REPLACEMENT)))
     .put(IS_NOT_NEGATIVE, ImmutableList.of(
@@ -225,7 +226,7 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.MATCHES, msgWithActualExpected("matches")),
       withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NULL)),
       withSubjectArgumentCondition(arg -> ArgumentHelper.notEqualsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NOT_NULL)),
-      withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isSameAs")),
+      withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected(IS_SAME_AS)),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isNotSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isInstanceOf", "ExpectedClass.class")),
       methodCallInSubject(Matchers.IS_EMPTY_STRING, msgWithActual(IS_EMPTY)),
