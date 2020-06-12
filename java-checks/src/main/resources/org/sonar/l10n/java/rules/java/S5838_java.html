@@ -10,7 +10,7 @@ reported.</p>
       <th>Dedicated</th>
     </tr>
     <tr>
-      <th>&nbsp;Related to Object </th>
+      <th>&nbsp;Related to Object</th>
       <th>&nbsp;</th>
     </tr>
     <tr>
@@ -66,8 +66,144 @@ reported.</p>
       <td><code>assertThat(x).isLessThanOrEqualTo(y)</code></td>
     </tr>
     <tr>
-      <td><code>assertThat(x &lt; y).isTrue(0)</code></td>
+      <td><code>assertThat(x &lt; y).isTrue()</code></td>
       <td><code>assertThat(x).isLessThan(y)</code></td>
+    </tr>
+    <tr>
+      <th>Related to <code>String</code></th>
+      <th>&nbsp;</th>
+    </tr>
+    <tr>
+      <td><code>assertThat(getString().isEmpty()).isTrue()</code></td>
+      <td><code>assertThat(getString()).isEmpty()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(</code><code>getString</code><code>()).hasSize(0)</code></td>
+      <td><code>assertThat(</code><code>getString</code><code>()).isEmpty()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getString().equals(expected)).isTrue()</code></td>
+      <td><code>assertThat(getString()).isEqualTo(expected)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getString().equalsIgnoreCase(expected)).isTrue()</code></td>
+      <td><code>assertThat(getString()).isEqualToIgnoringCase(expected)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getString().contains(expected)).isTrue()</code></td>
+      <td><code>assertThat(getString()).contains(expected)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getString().startsWith(expected)).isTrue()</code></td>
+      <td><code>assertThat(getString()).startsWith(expected)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getString().endsWith(expected)).isTrue()</code></td>
+      <td><code>assertThat(getString()).endsWith(expected)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getString().matches(expected)).isTrue()</code></td>
+      <td><code>assertThat(getString()).matches(expected)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getString().trim()).isEmpty()</code></td>
+      <td><code>assertThat(getString()).isBlank()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getString().length()).isEqualTo(length)</code></td>
+      <td><code>assertThat(getString()).hasSize(length)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getString().length()).hasSize(expected.length())</code></td>
+      <td><code>assertThat(getString()).hasSameSizeAs(expected)</code></td>
+    </tr>
+    <tr>
+      <th>&nbsp;Related to <code>File</code></th>
+      <th>&nbsp;</th>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile()).hasSize(0)</code></td>
+      <td><code>assertThat(getFile()).isEmpty()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().length()).isZero()</code></td>
+      <td><code>assertThat(getFile()).isEmpty()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().length()).isEqualTo(length)</code></td>
+      <td><code>assertThat(getFile()).hasSize(length)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().canRead()).isTrue()</code></td>
+      <td><code>assertThat(getFile()).canRead()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().canWrite()).isTrue()</code></td>
+      <td><code>assertThat(getFile()).canWrite()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().exists()).isTrue()</code></td>
+      <td><code>assertThat(getFile()).exists()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().getName()).isEqualTo(name)</code></td>
+      <td><code>assertThat(getFile()).hasName(name)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().getParent()).isEqualTo(pathname)</code></td>
+      <td><code>assertThat(getFile()).hasParent(pathname)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().getParentFile()).isNull()</code></td>
+      <td><code>assertThat(getFile()).hasNoParent()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().isAbsolute()).isTrue()</code></td>
+      <td><code>assertThat(getFile()).isAbsolute()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().isAbsolute()).isFalse()</code></td>
+      <td><code>assertThat(getFile()).isRelative()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().isDirectory()).isTrue()</code></td>
+      <td><code>assertThat(getFile()).isDirectory()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().isFile()).isTrue()</code></td>
+      <td><code>assertThat(getFile()).isFile()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getFile().list()).isEmpty()</code></td>
+      <td><code>assertThat(getFile()).isEmptyDirectory()</code></td>
+    </tr>
+    <tr>
+      <th>&nbsp;Related to <code>Path</code></th>
+      <th>&nbsp;</th>
+    </tr>
+    <tr>
+      <td><code>assertThat(getPath().startsWith(path)).isTrue()</code></td>
+      <td><code>assertThat(getPath()).startsWithRaw(path)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getPath().endsWith(path)).isTrue()</code></td>
+      <td><code>assertThat(getPath()).endsWithRaw(path)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getPath().getParent()).isEqualTo(name)</code></td>
+      <td><code>assertThat(getPath()).hasParentRaw(name)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getPath().getParent()).isNull()</code></td>
+      <td><code>assertThat(getPath()).hasNoParentRaw()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getPath().isAbsolute()).isTrue()</code></td>
+      <td><code>assertThat(getPath()).isAbsolute()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getPath().isAbsolute()).isFalse()</code></td>
+      <td><code>assertThat(getPath()).isRelative()</code></td>
     </tr>
   </tbody>
 </table>
@@ -75,9 +211,17 @@ reported.</p>
 <pre>
 assertThat(getObject()).isEqualTo(null); // Noncompliant
 assertThat(getObject()).isNotEqualTo(null); // Noncompliant - not listed above but also supported
+
+assertThat(getString().trim()).isEmpty();
+assertThat(getFile().canRead()).isTrue();
+assertThat(getPath().getParent()).isNull();
 </pre>
 <h2>Compliant Solution</h2>
 <pre>
 assertThat(getObject()).isNull();
+
+assertThat(getString()).isBlank();
+assertThat(getFile()).canRead();
+assertThat(getPath()).hasNoParentRaw();
 </pre>
 
