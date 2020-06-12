@@ -52,7 +52,7 @@ class PackageInfoCheckTest {
 
     Set<File> set = check.directoriesWithoutPackageFile;
     assertThat(set).hasSize(1);
-    assertThat(set.iterator().next().getName()).isEqualTo("nopackageinfo");
+    assertThat(set.iterator().next()).hasName("nopackageinfo");
 
     // only one issue per package
     JavaCheckVerifier.newVerifier()

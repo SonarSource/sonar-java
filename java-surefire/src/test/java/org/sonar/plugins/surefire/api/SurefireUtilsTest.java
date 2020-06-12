@@ -52,11 +52,13 @@ class SurefireUtilsTest {
 
     assertThat(directories).hasSize(2);
     File directory1 = directories.get(0);
-    assertThat(directory1.exists()).isTrue();
-    assertThat(directory1.isDirectory()).isTrue();
+    assertThat(directory1)
+      .exists()
+      .isDirectory();
     File directory2 = directories.get(1);
-    assertThat(directory2.exists()).isTrue();
-    assertThat(directory2.isDirectory()).isTrue();
+    assertThat(directory2)
+      .exists()
+      .isDirectory();
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
   }
 
@@ -73,7 +75,7 @@ class SurefireUtilsTest {
     assertThat(directories).hasSize(1);
     File directory = directories.get(0);
     assertThat(directory.getCanonicalPath()).endsWith("target"+File.separator+"surefire-reports");
-    assertThat(directory.exists()).isFalse();
+    assertThat(directory).doesNotExist();
     assertThat(directory.isDirectory()).isFalse();
     assertThat(logTester.logs(LoggerLevel.INFO)).isEmpty();
   }

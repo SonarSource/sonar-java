@@ -62,10 +62,10 @@ class HappyPathYieldTest {
     yield.setResult(-1, NOT_NULL_CONSTRAINT);
     otherYield = new HappyPathYield(mb);
     otherYield.setResult(-1, NOT_NULL_CONSTRAINT);
-    assertThat(yield).isEqualTo(otherYield);
-
-    // same arity and parameters but exceptional yield
-    assertThat(yield).isNotEqualTo(new ExceptionalYield(mb));
+    assertThat(yield)
+      .isEqualTo(otherYield)
+      // same arity and parameters but exceptional yield
+      .isNotEqualTo(new ExceptionalYield(mb));
   }
 
   @Test

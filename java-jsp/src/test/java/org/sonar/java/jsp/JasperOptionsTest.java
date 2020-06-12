@@ -35,23 +35,23 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 class JasperOptionsTest {
-  
+
   @TempDir
   Path baseDir;
   @TempDir
   Path output;
-  
+
   @Test
   void test() throws Exception {
     JspCServletContext servletContext = new Jasper.ServletContext(baseDir.toUri().toURL(), this.getClass().getClassLoader());
     JasperOptions options = new JasperOptions(servletContext, output);
-    
+
     assertThat(options.getErrorOnUseBeanInvalidClassAttribute()).isFalse();
     assertThat(options.getKeepGenerated()).isTrue();
     assertThat(options.isPoolingEnabled()).isFalse();
     assertThat(options.getMappedFile()).isFalse();
     assertThat(options.getClassDebugInfo()).isFalse();
-    assertThat(options.getCheckInterval()).isEqualTo(0);
+    assertThat(options.getCheckInterval()).isZero();
     assertThat(options.getDevelopment()).isFalse();
     assertThat(options.getDisplaySourceFragment()).isFalse();
     assertThat(options.isSmapDumped()).isTrue();
@@ -71,12 +71,12 @@ class JasperOptionsTest {
     assertThat(options.isXpoweredBy()).isFalse();
     assertThat(options.getTagPluginManager()).isNotNull();
     assertThat(options.genStringAsCharArray()).isFalse();
-    assertThat(options.getModificationTestInterval()).isEqualTo(0);
+    assertThat(options.getModificationTestInterval()).isZero();
     assertThat(options.getRecompileOnFail()).isFalse();
     assertThat(options.isCaching()).isFalse();
     assertThat(options.getCache()).isEmpty();
-    assertThat(options.getMaxLoadedJsps()).isEqualTo(0);
-    assertThat(options.getJspIdleTimeout()).isEqualTo(0);
+    assertThat(options.getMaxLoadedJsps()).isZero();
+    assertThat(options.getJspIdleTimeout()).isZero();
     assertThat(options.getStrictQuoteEscaping()).isFalse();
     assertThat(options.getQuoteAttributeEL()).isFalse();
   }
@@ -88,6 +88,6 @@ class JasperOptionsTest {
     doThrow(new IOException()).when(tldScanner).scan();
     assertThatThrownBy(() -> new JasperOptions(servletContext, output, tldScanner)).isInstanceOf(AnalysisException.class);
   }
-  
+
 
 }

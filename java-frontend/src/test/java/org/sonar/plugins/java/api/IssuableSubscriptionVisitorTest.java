@@ -48,8 +48,10 @@ class IssuableSubscriptionVisitorTest {
 
   @Test
   void check_issuable_subscription_visitor_does_not_visit_tree_on_its_own() {
+    CompilationUnitTree tree = Mockito.mock(CompilationUnitTree.class);
+    CustomRule visitor = new CustomRule();
     try {
-      new CustomRule().scanTree(Mockito.mock(CompilationUnitTree.class));
+      visitor.scanTree(tree);
       fail("Analysis should have failed");
     } catch (UnsupportedOperationException e) {
       assertThat(e).hasMessage("IssuableSubscriptionVisitor should not drive visit of AST.");

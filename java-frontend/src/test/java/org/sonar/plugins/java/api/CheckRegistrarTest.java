@@ -21,7 +21,8 @@ package org.sonar.plugins.java.api;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -30,8 +31,11 @@ class CheckRegistrarTest {
 
   @Test
   void repository_key_is_mandatory() throws Exception {
+    CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
+    List<Class<? extends JavaCheck>> checkClasses = Collections.emptyList();
+    List<Class<? extends JavaCheck>> testCheckClasses = Collections.emptyList();
     try {
-      new CheckRegistrar.RegistrarContext().registerClassesForRepository("  ", new ArrayList<>(), new ArrayList<>());
+      registrarContext.registerClassesForRepository("  ", checkClasses, testCheckClasses);
       fail("");
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("Please specify a valid repository key to register your custom rules");

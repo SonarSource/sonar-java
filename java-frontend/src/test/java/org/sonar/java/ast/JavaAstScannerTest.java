@@ -214,8 +214,9 @@ class JavaAstScannerTest {
   void should_propagate_SOError() {
     JavaAstScanner scanner = new JavaAstScanner(null);
     scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingSOError()));
+    List<InputFile> files = Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt"));
     try {
-      scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt")));
+      scanner.scan(files);
       fail("Should have triggered a StackOverflowError and not reach this point.");
     } catch (Error e) {
       assertThat(e).isInstanceOf(StackOverflowError.class);

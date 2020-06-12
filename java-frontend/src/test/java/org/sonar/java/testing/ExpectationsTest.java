@@ -27,7 +27,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.testing.Expectations;
+import org.sonar.java.testing.Expectations.Parser;
+
 import static org.sonar.java.testing.Expectations.IssueAttribute.END_COLUMN;
 import static org.sonar.java.testing.Expectations.IssueAttribute.END_LINE;
 import static org.sonar.java.testing.Expectations.IssueAttribute.FLOWS;
@@ -72,8 +73,9 @@ class ExpectationsTest {
 
   @Test
   void invalid_attribute_name() {
+    Parser parser = new Expectations().parser();
     try {
-      new Expectations().parser().parseIssue("// Noncompliant [[invalid]]", LINE);
+      parser.parseIssue("// Noncompliant [[invalid]]", LINE);
       Fail.fail("exception expected");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("// Noncompliant attributes not valid: 'invalid'");
@@ -98,8 +100,9 @@ class ExpectationsTest {
 
   @Test
   void end_line_attribute() {
+    Parser parser = new Expectations().parser();
     try {
-      new Expectations().parser().parseIssue("// Noncompliant [[endLine=-1]] {{message}}", 0);
+      parser.parseIssue("// Noncompliant [[endLine=-1]] {{message}}", 0);
       Fail.fail("exception expected");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
