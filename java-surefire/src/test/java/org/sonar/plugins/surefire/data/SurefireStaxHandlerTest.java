@@ -67,7 +67,7 @@ class SurefireStaxHandlerTest {
   @Test
   void shouldHaveZeroTests() throws XMLStreamException {
     parse("zeroTests.xml");
-    assertThat(index.size()).isEqualTo(0);
+    assertThat(index.size()).isZero();
   }
 
   @Test

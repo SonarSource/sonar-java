@@ -641,7 +641,7 @@ class JavaTreeModelTest {
     assertThat(type.annotations()).isEmpty();
     type = (ParameterizedTypeTree) ((MemberSelectExpressionTree) type).expression();
     assertThat(type.is(Tree.Kind.PARAMETERIZED_TYPE)).isTrue();
-    assertThat(type.annotations()).hasSize(0);
+    assertThat(type.annotations()).isEmpty();
     assertThatChildrenIteratorHasSize(type, 2);
     type = ((ParameterizedTypeTree) type).type();
     assertThat(type.is(Tree.Kind.IDENTIFIER)).isTrue();
@@ -1410,7 +1410,7 @@ class JavaTreeModelTest {
     tree = (ForStatementTree) firstMethodFirstStatement("class T { void m() { for (int i = 0, j = 1; i < 42; i++, j--) ; } }");
     assertThat(tree.is(Tree.Kind.FOR_STATEMENT)).isTrue();
     assertThat(tree.initializer()).hasSize(2);
-    assertThat(tree.initializer().separators()).hasSize(0);
+    assertThat(tree.initializer().separators()).isEmpty();
     assertThat(tree.condition()).isNotNull();
     assertThat(tree.update()).hasSize(2);
     assertThat(tree.update().separators()).hasSize(1);
@@ -2736,10 +2736,10 @@ class JavaTreeModelTest {
   void lambda_expressions() {
     String code = "class T { public void meth(){IntStream.range(1,12).map(x->x*x).map((int a)-> {return a*a;});}}";
     ExpressionTree expressionTree = ((ExpressionStatementTree) firstMethodFirstStatement(code)).expression();
-    
+
     // parsing not broken by lambda
     assertThat(expressionTree).isNotNull();
-    
+
     MethodInvocationTree mit = (MethodInvocationTree) expressionTree;
     LambdaExpressionTree tree = (LambdaExpressionTree) mit.arguments().get(0);
     assertThat(tree.openParenToken()).isNotNull();
@@ -2764,8 +2764,9 @@ class JavaTreeModelTest {
     assertThat(tree).isNotNull();
     assertThatChildrenIteratorHasSize(tree, 2);
     TypeArguments typeArguments = tree.typeArguments();
-    assertThat(typeArguments).isNotNull();
-    assertThat(typeArguments).hasSize(1);
+    assertThat(typeArguments)
+      .isNotNull()
+      .hasSize(1);
     assertThat(typeArguments.separators()).isEmpty();
     assertThat(typeArguments.openBracketToken()).isNotNull();
     assertThat(typeArguments.closeBracketToken()).isNotNull();
@@ -2775,8 +2776,9 @@ class JavaTreeModelTest {
     assertThat(tree).isNotNull();
     assertThatChildrenIteratorHasSize(tree, 2);
     typeArguments = tree.typeArguments();
-    assertThat(typeArguments).isNotNull();
-    assertThat(typeArguments).hasSize(2);
+    assertThat(typeArguments)
+      .isNotNull()
+      .hasSize(2);
     assertThat(typeArguments.separators()).hasSize(1);
     assertThat(typeArguments.openBracketToken()).isNotNull();
     assertThat(typeArguments.closeBracketToken()).isNotNull();

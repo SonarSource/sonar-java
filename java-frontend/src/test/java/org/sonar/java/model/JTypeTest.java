@@ -153,8 +153,7 @@ class JTypeTest {
       .isEqualTo(expectedFullyQualifiedName);
     assertThat(type.name())
       .isEqualTo(expectedName);
-    assertThat(type.toString())
-      .isEqualTo(expectedName);
+    assertThat(type).hasToString(expectedName);
   }
 
   private static Stream<Arguments> names() {
@@ -285,10 +284,9 @@ class JTypeTest {
     JType wildcardType1 = cu.sema.type(Objects.requireNonNull(w1.typeBinding));
     JType wildcardType2 = cu.sema.type(Objects.requireNonNull(w2.typeBinding));
     JType wildcardType3 = cu.sema.type(Objects.requireNonNull(w3.typeBinding));
-    assertThat(wildcardType1.equals(wildcardType2))
-      .isTrue();
-    assertThat(wildcardType1.equals(wildcardType3))
-      .isFalse();
+    assertThat(wildcardType1)
+      .isEqualTo(wildcardType2)
+      .isNotEqualTo(wildcardType3);
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {

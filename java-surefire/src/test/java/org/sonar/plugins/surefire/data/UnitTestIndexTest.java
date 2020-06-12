@@ -31,7 +31,7 @@ class UnitTestIndexTest {
 
     UnitTestClassReport report = index.index("org.sonar.Foo");
 
-    assertThat(report.getTests()).isEqualTo(0);
+    assertThat(report.getTests()).isZero();
     assertThat(index.size()).isEqualTo(1);
     assertThat(report).isSameAs(index.get("org.sonar.Foo"));
   }
@@ -44,7 +44,7 @@ class UnitTestIndexTest {
     UnitTestClassReport report2 = index.index("org.sonar.Foo");
 
     assertThat(report1).isSameAs(report2);
-    assertThat(report1.getTests()).isEqualTo(0);
+    assertThat(report1.getTests()).isZero();
     assertThat(index.size()).isEqualTo(1);
     assertThat(report1).isSameAs(index.get("org.sonar.Foo"));
   }
@@ -56,7 +56,7 @@ class UnitTestIndexTest {
     index.index("org.sonar.Foo");
     index.remove("org.sonar.Foo");
 
-    assertThat(index.size()).isEqualTo(0);
+    assertThat(index.size()).isZero();
     assertThat(index.get("org.sonar.Foo")).isNull();
   }
 
@@ -77,7 +77,7 @@ class UnitTestIndexTest {
     assertThat(report.getTests()).isEqualTo(4);
     assertThat(report.getFailures()).isEqualTo(1);
     assertThat(report.getErrors()).isEqualTo(2);
-    assertThat(report.getSkipped()).isEqualTo(0);
+    assertThat(report.getSkipped()).isZero();
     assertThat(report.getResults().size()).isEqualTo(4);
     assertThat(report.getDurationMilliseconds()).isEqualTo(500L + 200L + 1000L + 350L);
   }
@@ -94,9 +94,9 @@ class UnitTestIndexTest {
     assertThat(index.size()).isEqualTo(1);
     UnitTestClassReport report = index.get("org.sonar.Foo");
     assertThat(report.getTests()).isEqualTo(2);
-    assertThat(report.getFailures()).isEqualTo(0);
+    assertThat(report.getFailures()).isZero();
     assertThat(report.getErrors()).isEqualTo(1);
-    assertThat(report.getSkipped()).isEqualTo(0);
+    assertThat(report.getSkipped()).isZero();
     assertThat(report.getResults().size()).isEqualTo(2);
     assertThat(report.getDurationMilliseconds()).isEqualTo(500L + 200L);
   }
@@ -107,6 +107,6 @@ class UnitTestIndexTest {
 
     index.merge("org.sonar.Foo$Bar", "org.sonar.Foo");
 
-    assertThat(index.size()).isEqualTo(0);
+    assertThat(index.size()).isZero();
   }
 }

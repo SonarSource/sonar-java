@@ -29,23 +29,23 @@ class UnitTestResultTest {
   void shouldBeError() {
     UnitTestResult result = new UnitTestResult().setStatus(UnitTestResult.STATUS_ERROR);
     assertThat(result.getStatus()).isEqualTo(UnitTestResult.STATUS_ERROR);
-    assertThat(result.isError()).isEqualTo(true);
-    assertThat(result.isErrorOrFailure()).isEqualTo(true);
+    assertThat(result.isError()).isTrue();
+    assertThat(result.isErrorOrFailure()).isTrue();
   }
 
   @Test
   void shouldBeFailure() {
     UnitTestResult result = new UnitTestResult().setStatus(UnitTestResult.STATUS_FAILURE);
     assertThat(result.getStatus()).isEqualTo(UnitTestResult.STATUS_FAILURE);
-    assertThat(result.isError()).isEqualTo(false);
-    assertThat(result.isErrorOrFailure()).isEqualTo(true);
+    assertThat(result.isError()).isFalse();
+    assertThat(result.isErrorOrFailure()).isTrue();
   }
 
   @Test
   void shouldBeSuccess() {
     UnitTestResult result = new UnitTestResult().setStatus(UnitTestResult.STATUS_OK);
     assertThat(result.getStatus()).isEqualTo(UnitTestResult.STATUS_OK);
-    assertThat(result.isError()).isEqualTo(false);
-    assertThat(result.isErrorOrFailure()).isEqualTo(false);
+    assertThat(result.isError()).isFalse();
+    assertThat(result.isErrorOrFailure()).isFalse();
   }
 }

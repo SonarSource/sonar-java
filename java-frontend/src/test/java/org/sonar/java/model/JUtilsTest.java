@@ -156,7 +156,7 @@ class JUtilsTest {
     Symbol.VariableSymbol booleanConstant = cu.sema.variableSymbol(((VariableTreeImpl) c.members().get(3)).variableBinding);
     assertThat(JUtils.constantValue(booleanConstant).orElseThrow(AssertionError::new))
       .isInstanceOf(Boolean.class)
-      .isEqualTo(false);
+      .isEqualTo(Boolean.FALSE);
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {

@@ -33,10 +33,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonarqube.ws.Components;
 import org.sonarqube.ws.Issues.Issue;
-import org.sonarqube.ws.Measures;
-
 import static com.sonar.it.java.suite.JavaTestSuite.getComponent;
-import static com.sonar.it.java.suite.JavaTestSuite.getMeasure;
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasureAsInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -73,7 +70,7 @@ public class JavaTest {
       .setCleanSonarGoals();
 
     BuildResult buildResult = orchestrator.executeBuildQuietly(build);
-    assertThat(buildResult.getLastStatus()).isEqualTo(0);
+    assertThat(buildResult.getLastStatus()).isZero();
   }
 
   @Test
@@ -100,7 +97,7 @@ public class JavaTest {
       .setCleanPackageSonarGoals();
     BuildResult result = orchestrator.executeBuildQuietly(build);
     // since sonar-java 2.1 does not fail if multiple package in same directory.
-    assertThat(result.getLastStatus()).isEqualTo(0);
+    assertThat(result.getLastStatus()).isZero();
   }
 
   @Test
@@ -109,13 +106,13 @@ public class JavaTest {
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))
       .setCleanPackageSonarGoals();
     BuildResult result = orchestrator.executeBuildQuietly(inspection);
-    assertThat(result.getLastStatus()).isEqualTo(0);
+    assertThat(result.getLastStatus()).isZero();
     inspection = MavenBuild.create()
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))
       .setProperty("sonar.skipPackageDesign", "true")
       .setGoals("sonar:sonar");
     result = orchestrator.executeBuildQuietly(inspection);
-    assertThat(result.getLastStatus()).isEqualTo(0);
+    assertThat(result.getLastStatus()).isZero();
   }
 
   /**
@@ -153,7 +150,7 @@ public class JavaTest {
     orchestrator.executeBuild(scan);
 
     assertThat(getMeasureAsInteger("jav-file-extension", "files")).isEqualTo(1);
-    assertThat(getMeasureAsInteger("jav-file-extension", "ncloc")).isGreaterThan(0);
+    assertThat(getMeasureAsInteger("jav-file-extension", "ncloc")).isPositive();
   }
 
   @Test
@@ -168,7 +165,7 @@ public class JavaTest {
     orchestrator.executeBuild(scan);
 
     assertThat(getMeasureAsInteger("jav-file-extension", "files")).isEqualTo(2);
-    assertThat(getMeasureAsInteger("jav-file-extension", "ncloc")).isGreaterThan(0);
+    assertThat(getMeasureAsInteger("jav-file-extension", "ncloc")).isPositive();
   }
 
   @Test
@@ -198,13 +195,13 @@ public class JavaTest {
 
     // no java version specified. maven scanner gets maven default version : java 5.
     orchestrator.executeBuild(build);
-    assertThat(getMeasureAsInteger(projectKey, "violations")).isEqualTo(0);
+    assertThat(getMeasureAsInteger(projectKey, "violations")).isZero();
 
     // invalid java version. got issue on java 7 code
     build.setProperty(sonarJavaSource, "jdk_1.6");
     BuildResult buildResult = orchestrator.executeBuild(build);
     // build should not fail
-    assertThat(buildResult.getLastStatus()).isEqualTo(0);
+    assertThat(buildResult.getLastStatus()).isZero();
     // build logs should contains warning related to sources
     assertThat(buildResult.getLogs()).contains("Invalid java version");
     assertThat(getMeasureAsInteger(projectKey, "violations")).isEqualTo(1);
@@ -217,7 +214,7 @@ public class JavaTest {
     // lower version. no issue on java 7 code
     build.setProperty(sonarJavaSource, "1.6");
     orchestrator.executeBuild(build);
-    assertThat(getMeasureAsInteger(projectKey, "violations")).isEqualTo(0);
+    assertThat(getMeasureAsInteger(projectKey, "violations")).isZero();
 
     SonarScanner scan = SonarScanner.create(TestUtils.projectDir("java-version-aware-visitor"))
       .setProperty("sonar.projectKey", "org.example:example-scanner")

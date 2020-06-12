@@ -38,7 +38,7 @@ class LearnedConstraintTest {
       }
     };
     LearnedConstraint lc = new LearnedConstraint(sv, ObjectConstraint.NOT_NULL);
-    assertThat(lc.toString()).isEqualTo("SV_1 - NOT_NULL");
+    assertThat(lc).hasToString("SV_1 - NOT_NULL");
   }
 
 }

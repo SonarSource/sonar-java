@@ -30,15 +30,16 @@ class TypedConstraintTest {
   void test_equals_hashcode() {
     TypedConstraint object1 = new TypedConstraint("java.lang.String");
     TypedConstraint object2 = new TypedConstraint("java.lang.String");
-    assertThat(object1.equals(object1)).isTrue();
-    assertThat(object1.equals(object2)).isTrue();
-    assertThat(object1.equals(null)).isFalse();
-    assertThat(object1.equals("")).isFalse();
+    assertThat(object1)
+      .isEqualTo(object1)
+      .isEqualTo(object2)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object());
     assertThat(object1.hashCode()).isEqualTo(object2.hashCode());
 
     TypedConstraint nullTC1 = new TypedConstraint(Symbols.unknownType.fullyQualifiedName());
     TypedConstraint nullTC2 = new TypedConstraint(Symbols.unknownType.fullyQualifiedName());
-    assertThat(nullTC1.equals(nullTC2)).isFalse();
-    assertThat(object1.equals(nullTC1)).isFalse();
+    assertThat(nullTC1).isNotEqualTo(nullTC2);
+    assertThat(object1).isNotEqualTo(nullTC1);
   }
 }

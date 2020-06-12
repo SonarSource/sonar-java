@@ -106,13 +106,13 @@ class AnalyzerMessageTest {
 
     textSpan = AnalyzerMessage.textSpanFor(classTree);
     assertThat(textSpan.startLine).isEqualTo(1);
-    assertThat(textSpan.startCharacter).isEqualTo(0);
+    assertThat(textSpan.startCharacter).isZero();
     assertThat(textSpan.endLine).isEqualTo(2);
     assertThat(textSpan.endCharacter).isEqualTo(1);
 
     textSpan = AnalyzerMessage.textSpanBetween(classTree.declarationKeyword(), classTree.openBraceToken());
     assertThat(textSpan.startLine).isEqualTo(1);
-    assertThat(textSpan.startCharacter).isEqualTo(0);
+    assertThat(textSpan.startCharacter).isZero();
     assertThat(textSpan.endLine).isEqualTo(1);
     assertThat(textSpan.endCharacter).isEqualTo(9);
   }

@@ -19,6 +19,10 @@
  */
 package checks;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -38,6 +42,18 @@ public class AssertJChainSimplificationCheckTest {
 
   private String getString() {
     return "a string";
+  }
+
+  private Map<Object, Object> getMap() {
+    return new HashMap<>();
+  }
+
+  private Object[] getArray() {
+    return new Object[1];
+  }
+
+  private Collection<Object> getCollection() {
+    return new ArrayList<>();
   }
 
   private File getFile() {
@@ -84,7 +100,7 @@ public class AssertJChainSimplificationCheckTest {
 
     assertThat(getBoolean()).isEqualTo(true); // Noncompliant {{Use isTrue() instead}}
     assertThat(getBoolean()).isEqualTo(false); // Noncompliant {{Use isFalse() instead}}
-    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=87]] {{Use assertThat(actual).isEqualTo(expected) instead}}
+    assertThat(x.equals(y)).isTrue(); // Noncompliant [[sc=29;ec=35;secondary=103]] {{Use assertThat(actual).isEqualTo(expected) instead}}
     assertThat(x.equals(y)).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEqualTo(expected) instead}}
     assertThat(x == y).isTrue(); // Noncompliant {{Use assertThat(actual).isSameAs(expected) instead}}
     assertThat(x == y).isFalse(); // Noncompliant {{Use assertThat(actual).isNotSameAs(expected) instead}}
@@ -160,6 +176,10 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getString().trim()).isNotEmpty(); // Noncompliant {{Use assertThat(actual).isNotBlank() instead}}
     assertThat(getString().trim()).isNotEqualTo(""); // Noncompliant {{Use assertThat(actual).isNotBlank() instead}}
     assertThat(getString().length()).isEqualTo(0); // Noncompliant {{Use isZero() instead}}
+    assertThat(getString().length()).isEqualTo(12); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead}}
+    assertThat(getString().length()).isEqualTo(x.length()); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead}}
+    assertThat(getString().length()).isEqualTo(getArray().length); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead}}
+
     assertThat(getString().length()).isLessThanOrEqualTo(0); // Noncompliant {{Use isNotPositive() instead}}
     assertThat(getString().length()).isLessThan(1); // Noncompliant {{Use isNotPositive() instead}}
     assertThat(getString().length()).isNotPositive(); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
@@ -169,6 +189,77 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getString().isEmpty()).isTrue(); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
     assertThat(getString().isEmpty()).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead}}
     assertThat(getString().length()).isEqualTo(x.length()); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead}}
+  }
+
+  void arrayRelatedAssertionChains() {
+    Object[] otherArray = new Object[1];
+    int i = 12;
+    MyClassWithLength myClassWithLength = new MyClassWithLength();
+
+    assertThat(getArray().length).isEqualTo(0); // Noncompliant {{Use isZero() instead}}
+    assertThat(getArray().length).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
+    assertThat(getArray().length).isEqualTo(i); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead}}
+    assertThat(getArray().length).isPositive(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead}}
+    assertThat(getArray().length).isNotZero(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead}}
+    assertThat(getArray().length).isEqualTo(otherArray.length); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead}}
+
+    assertThat(getArray().length).isLessThanOrEqualTo(i); // Noncompliant {{Use assertThat(actual).hasSizeLessThanOrEqualTo(expected) instead}}
+    assertThat(getArray().length).isLessThan(i); // Noncompliant {{Use assertThat(actual).hasSizeLessThan(expected) instead}}
+    assertThat(getArray().length).isGreaterThan(i); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThan(expected) instead}}
+    assertThat(getArray().length).isGreaterThanOrEqualTo(i); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThanOrEqualTo(expected) instead}}
+
+    assertThat(getArray().length).isGreaterThan(0); // Noncompliant {{Use isPositive() instead}}
+    assertThat(myClassWithLength.length).isGreaterThanOrEqualTo(i); // Compliant
+  }
+
+  void collectionsRelatedAssertionChains() {
+    int length = 42;
+    String something = "";
+    Collection<Object> otherCollection = new ArrayList<>();
+    assertThat(getCollection()).hasSize(0); // Noncompliant {{Use isEmpty() instead}}
+    assertThat(getCollection().isEmpty()).isTrue(); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
+    assertThat(getCollection().isEmpty()).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead}}
+    assertThat(getCollection().size()).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
+
+    assertThat(getCollection().size()).isEqualTo(length); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead}}
+    assertThat(getCollection().size()).isEqualTo(otherCollection.size()); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead}}
+    assertThat(getCollection().size()).isEqualTo(getArray().length); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead}}
+    assertThat(getCollection().size()).isEqualTo(something.length()); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead}}
+    assertThat(getCollection()).hasSameSizeAs(getArray().length); // Compliant
+    assertThat(getCollection().size()).isLessThanOrEqualTo(length); // Noncompliant {{Use assertThat(actual).hasSizeLessThanOrEqualTo(expected) instead}}
+    assertThat(getCollection().size()).isLessThan(length); // Noncompliant {{Use assertThat(actual).hasSizeLessThan(expected) instead}}
+    assertThat(getCollection().size()).isGreaterThan(length); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThan(expected) instead}}
+    assertThat(getCollection().size()).isGreaterThanOrEqualTo(length); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThanOrEqualTo(expected) instead}}
+
+    assertThat(getCollection().contains(something)).isTrue(); // Noncompliant {{Use assertThat(actual).contains(expected) instead}}
+    assertThat(getCollection().contains(something)).isFalse(); // Noncompliant {{Use assertThat(actual).doesNotContain(expected) instead}}
+    assertThat(getCollection().containsAll(otherCollection)).isTrue(); // Noncompliant {{Use assertThat(actual).containsAll(expected) instead}}
+    assertThat(getCollection().containsAll(otherCollection)).isFalse(); // Compliant, no method "doesNotContainsAll"
+  }
+
+  void mapRelatedAssertionChains() {
+    String value = "";
+    String key = "";
+    Map<Object, Object> otherMap = getMap();
+
+    assertThat(getMap()).hasSize(0); // Noncompliant {{Use isEmpty() instead}}
+    assertThat(getMap().isEmpty()).isTrue(); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
+    assertThat(getMap().isEmpty()).isFalse(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead}}
+    assertThat(getMap().size()).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
+    assertThat(getMap().size()).isEqualTo(42); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead}}
+    assertThat(getMap().size()).isEqualTo(otherMap.size()); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead}}
+    assertThat(getMap().size()).isEqualTo(getCollection().size()); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead}}
+
+    assertThat(getMap().size()).isLessThanOrEqualTo(42); // Noncompliant {{Use assertThat(actual).hasSizeLessThanOrEqualTo(expected) instead}}
+    assertThat(getMap().size()).isLessThan(42); // Noncompliant {{Use assertThat(actual).hasSizeLessThan(expected) instead}}
+    assertThat(getMap().size()).isGreaterThan(42); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThan(expected) instead}}
+    assertThat(getMap().size()).isGreaterThanOrEqualTo(42); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThanOrEqualTo(expected) instead}}
+    assertThat(getMap().size()).isLessThan(0); // Noncompliant {{Use isNegative() instead}}
+
+    assertThat(getMap().containsKey(key)).isTrue(); // Noncompliant {{Use assertThat(actual).containsKey(expected) instead}}
+    assertThat(getMap().containsValue(value)).isTrue(); // Noncompliant {{Use assertThat(actual).containsValue(expected) instead}}
+    assertThat(getMap().get(key)).isEqualTo(value); // Noncompliant {{Use assertThat(actual).containsEntry(key, value) instead}}
+    assertThat(getMap().get(key)).isNotEqualTo(value); // Noncompliant {{Use assertThat(actual).doesNotContainEntry(key, value) instead}}
   }
 
   void fileRelatedAssertionChains() {
@@ -203,7 +294,7 @@ public class AssertJChainSimplificationCheckTest {
 
     // We report only step by step, not the final transformation possible
     assertThat(getFile().list().length).isEqualTo(0); // Noncompliant {{Use isZero() instead}}
-    assertThat(getFile().list().length).isZero(); // will be reported by SONARJAVA-3408
+    assertThat(getFile().list().length).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead}}
     assertThat(getFile().list()).isEmpty(); // Noncompliant	{{Use assertThat(actual).isEmptyDirectory() instead}}
     assertThat(getFile()).isEmptyDirectory(); // Compliant, 3 iterations to reach a nice assertion
   }
@@ -251,4 +342,8 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getOptional().orElse(new Object())).isNull();
     assertThat(getOptional().orElse(getObject())).isNotNull();
   }
+}
+
+class MyClassWithLength {
+  int length = 2;
 }

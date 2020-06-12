@@ -141,9 +141,9 @@ class VisitorsBridgeTest {
 
   @Test
   void rethrow_exception_when_hidden_property_set_to_true_with_JavaFileScanner() {
+    VisitorsBridge visitorsBridge = visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), true);
     try {
-      visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), true)
-        .visitFile(COMPILATION_UNIT_TREE);
+      visitorsBridge.visitFile(COMPILATION_UNIT_TREE);
       Fail.fail("scanning of file should have raise an exception");
     } catch (AnalysisException e) {
       assertThat(e.getMessage()).contains("Failing check");
@@ -173,9 +173,9 @@ class VisitorsBridgeTest {
 
   @Test
   void rethrow_exception_when_hidden_property_set_to_true_with_SubscriptionVisitor() {
+    VisitorsBridge visitorsBridge = visitorsBridge(new SV1_ThrowingNPEVisitingClass(), true);
     try {
-      visitorsBridge(new SV1_ThrowingNPEVisitingClass(), true)
-        .visitFile(COMPILATION_UNIT_TREE);
+      visitorsBridge.visitFile(COMPILATION_UNIT_TREE);
       Fail.fail("scanning of file should have raise an exception");
     } catch (AnalysisException e) {
       assertThat(e.getMessage()).contains("Failing check");
@@ -252,11 +252,11 @@ class VisitorsBridgeTest {
 
   @Test
   void rethrow_exception_when_hidden_property_set_to_true_with_SECheck() {
+    VisitorsBridge visitorsBridge = visitorsBridge(Arrays.asList(
+      new SE1_ThrowingNPEPreStatement(),
+      new SE2_ThrowingNPEPostStatement()), true);
     try {
-      visitorsBridge(Arrays.asList(
-        new SE1_ThrowingNPEPreStatement(),
-        new SE2_ThrowingNPEPostStatement()), true)
-        .visitFile(COMPILATION_UNIT_TREE);
+      visitorsBridge.visitFile(COMPILATION_UNIT_TREE);
       Fail.fail("scanning of file should have raise an exception");
     } catch (AnalysisException e) {
       assertThat(e.getMessage()).contains("Failing check");
@@ -302,9 +302,9 @@ class VisitorsBridgeTest {
 
   @Test
   void rethrow_exception_when_hidden_property_set_to_true_with_Filter() {
+    VisitorsBridge visitorsBridge = visitorsBridge(Arrays.asList(), true, new Filter_ThrowingNPE());
     try {
-      visitorsBridge(Arrays.asList(), true, new Filter_ThrowingNPE())
-        .visitFile(COMPILATION_UNIT_TREE);
+      visitorsBridge.visitFile(COMPILATION_UNIT_TREE);
       Fail.fail("scanning of file should have raise an exception");
     } catch (AnalysisException e) {
       assertThat(e.getMessage()).contains("Failing check");
@@ -320,14 +320,14 @@ class VisitorsBridgeTest {
 
   @Test
   void no_log_when_filter_execute_fine() {
+    VisitorsBridge visitorsBridge = visitorsBridge(Arrays.asList(), true, new FilterNothing());
     try {
-      visitorsBridge(Arrays.asList(), true, new FilterNothing())
-        .visitFile(COMPILATION_UNIT_TREE);
+      visitorsBridge.visitFile(COMPILATION_UNIT_TREE);
     } catch (Exception e) {
       e.printStackTrace();
       Fail.fail("No exception should be raised");
     }
-    assertThat(logTester.logs(LoggerLevel.ERROR)).hasSize(0);
+    assertThat(logTester.logs(LoggerLevel.ERROR)).isEmpty();
   }
 
   @Test

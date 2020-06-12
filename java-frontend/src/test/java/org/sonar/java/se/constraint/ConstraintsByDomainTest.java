@@ -85,18 +85,18 @@ class ConstraintsByDomainTest {
   @Test
   void test_toString() {
     ConstraintsByDomain constraints = ConstraintsByDomain.empty();
-    assertThat(constraints.toString()).isEqualTo("[]");
+    assertThat(constraints).hasToString("[]");
 
     // uses constraints value
     constraints = constraints.put(ObjectConstraint.NOT_NULL);
-    assertThat(constraints.toString()).isEqualTo("[NOT_NULL]");
+    assertThat(constraints).hasToString("[NOT_NULL]");
 
     // ordered by constraint name
     constraints = constraints.put(BooleanConstraint.FALSE);
-    assertThat(constraints.toString()).isEqualTo("[FALSE,NOT_NULL]");
+    assertThat(constraints).hasToString("[FALSE,NOT_NULL]");
 
     constraints = constraints.put(BooleanConstraint.TRUE);
-    assertThat(constraints.toString()).isEqualTo("[NOT_NULL,TRUE]");
+    assertThat(constraints).hasToString("[NOT_NULL,TRUE]");
   }
 
   private static class Counter implements BiConsumer<Class<? extends Constraint>, Constraint> {
@@ -112,9 +112,12 @@ class ConstraintsByDomainTest {
   @Test
   void test_equals_hashcode() throws Exception {
     ConstraintsByDomain c1 = ConstraintsByDomain.empty();
-    assertThat(c1.equals(null)).isFalse();
     ConstraintsByDomain c2 = c1.put(ObjectConstraint.NOT_NULL);
-    assertThat(c1.equals(c2)).isFalse();
+    assertThat(c1)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object())
+      .isNotEqualTo(c2)
+      .isEqualTo(c1);
     assertThat(c1.hashCode()).isNotEqualTo(c2.hashCode());
   }
 

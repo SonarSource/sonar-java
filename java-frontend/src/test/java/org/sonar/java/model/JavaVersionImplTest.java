@@ -98,10 +98,10 @@ class JavaVersionImplTest {
   void test_toString() throws Exception {
     JavaVersion version;
     version = new JavaVersionImpl();
-    assertThat(version.toString()).isEqualTo("none");
+    assertThat(version).hasToString("none");
 
     version = new JavaVersionImpl(7);
-    assertThat(version.toString()).isEqualTo("7");
+    assertThat(version).hasToString("7");
   }
 
   @Test

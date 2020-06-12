@@ -61,8 +61,8 @@ class ExceptionalCheckBasedYieldTest {
 
     assertThat(mb.happyPathYields()).hasSize(1);
     assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == null)).hasSize(1);
-    assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.TRUE)).hasSize(0);
-    assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.FALSE)).hasSize(0);
+    assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.TRUE)).isEmpty();
+    assertThat(mb.happyPathYields().filter(y -> y.parametersConstraints.get(0).get(BooleanConstraint.class) == BooleanConstraint.FALSE)).isEmpty();
 
     assertThat(mb.exceptionalPathYields()).hasSize(2);
     assertThat(mb.exceptionalPathYields()).as("All the exceptional yields are runtime exceptions").allMatch(y -> y.exceptionType(semanticModel).isUnknown());
@@ -98,7 +98,7 @@ class ExceptionalCheckBasedYieldTest {
     assertThat(seCheckExceptionalYield.exceptionType(semanticModel).isSubtypeOf("java.lang.RuntimeException")).isTrue();
     assertThat(seCheckExceptionalYield.generatedByCheck(check)).isTrue();
     assertThat(seCheckExceptionalYield.generatedByCheck(new SECheck() { })).isFalse();
-    assertThat(seCheckExceptionalYield.parameterCausingExceptionIndex()).isEqualTo(0);
+    assertThat(seCheckExceptionalYield.parameterCausingExceptionIndex()).isZero();
 
   }
 
@@ -150,7 +150,7 @@ class ExceptionalCheckBasedYieldTest {
     String exceptionType = "org.foo.MyException";
     ExceptionalCheckBasedYield yield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, exceptionType, SECheck.class, null, mockMethodBehavior());
 
-    assertThat(yield.toString()).isEqualTo("{params: [], exceptional (org.foo.MyException), check: SECheck}");
+    assertThat(yield).hasToString("{params: [], exceptional (org.foo.MyException), check: SECheck}");
   }
 
   @Test
@@ -167,9 +167,11 @@ class ExceptionalCheckBasedYieldTest {
     ExceptionalCheckBasedYield yield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, mockedExceptionType1, seCheckClass1, null, mb);
     ExceptionalYield otherYield = new ExceptionalCheckBasedYield(SV_CAUSING_EXCEPTION, mockedExceptionType1, seCheckClass1, null, mb);
 
-    assertThat(yield).isNotEqualTo(null);
-    assertThat(yield).isEqualTo(yield);
-    assertThat(yield).isEqualTo(otherYield);
+    assertThat(yield)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object())
+      .isEqualTo(yield)
+      .isEqualTo(otherYield);
 
     // same exception, but simple exceptional yield
     otherYield = new ExceptionalYield(null, mb);

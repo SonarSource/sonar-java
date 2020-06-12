@@ -50,7 +50,7 @@ public class ExternalReportTest {
       Issue issue = issues.get(0);
       assertThat(issue.getComponent()).isEqualTo("org.sonarsource.it.projects:checkstyle-external-report:src/main/java/Main.java");
       assertThat(issue.getRule()).isEqualTo("external_checkstyle:javadoc.JavadocPackageCheck");
-      assertThat(issue.getLine()).isEqualTo(0);
+      assertThat(issue.getLine()).isZero();
       assertThat(issue.getMessage()).isEqualTo("Missing package-info.java file.");
       assertThat(issue.getSeverity()).isEqualTo(Severity.MAJOR);
       assertThat(issue.getDebt()).isEqualTo("5min");
