@@ -195,7 +195,8 @@ public class AssertJConsecutiveAssertionCheck {
 
   @Test
   void assert_on_constructor() {
-    assertThat(new java.util.Random()).isNotEqualTo(new java.util.Random()); // Compliant
+    assertThat(new java.util.Random()).isNotNull(); // Compliant
+    assertThat(new java.util.Random()).isNotEqualTo(new java.util.Random());
   }
 
   @Test
