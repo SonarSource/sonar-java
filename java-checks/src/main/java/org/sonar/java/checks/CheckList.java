@@ -110,11 +110,12 @@ import org.sonar.java.checks.synchronization.TwoLocksWaitCheck;
 import org.sonar.java.checks.synchronization.ValueBasedObjectUsedForLockCheck;
 import org.sonar.java.checks.synchronization.WriteObjectTheOnlySynchronizedMethodCheck;
 import org.sonar.java.checks.tests.AssertJChainSimplificationCheck;
+import org.sonar.java.checks.tests.AssertJConsecutiveAssertionCheck;
 import org.sonar.java.checks.tests.AssertJContextBeforeAssertionCheck;
 import org.sonar.java.checks.tests.AssertJTestForEmptinessCheck;
-import org.sonar.java.checks.tests.AssertJConsecutiveAssertionCheck;
 import org.sonar.java.checks.tests.AssertTrueInsteadOfDedicatedAssertCheck;
 import org.sonar.java.checks.tests.AssertionArgumentOrderCheck;
+import org.sonar.java.checks.tests.AssertionCompareToSelfCheck;
 import org.sonar.java.checks.tests.AssertionFailInCatchBlockCheck;
 import org.sonar.java.checks.tests.AssertionInThreadRunCheck;
 import org.sonar.java.checks.tests.AssertionInTryCatchCheck;
@@ -740,6 +741,7 @@ public final class CheckList {
   public static List<Class<? extends JavaCheck>> getJavaTestChecks() {
     return Arrays.asList(
       AssertionArgumentOrderCheck.class,
+      AssertionCompareToSelfCheck.class,
       AssertionFailInCatchBlockCheck.class,
       AssertionInThreadRunCheck.class,
       AssertionInTryCatchCheck.class,
