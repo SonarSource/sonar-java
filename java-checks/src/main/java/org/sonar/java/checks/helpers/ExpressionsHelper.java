@@ -207,4 +207,14 @@ public class ExpressionsHelper {
     }
   }
 
+  public static boolean alwaysReturnSameValue(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
+      // Methods or constructors invoked two times can return different values.
+      return false;
+    } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      return alwaysReturnSameValue(((MemberSelectExpressionTree) expression).expression());
+    }
+    return true;
+  }
+
 }

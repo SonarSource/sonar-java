@@ -194,6 +194,11 @@ public class AssertJConsecutiveAssertionCheck {
   }
 
   @Test
+  void assert_on_constructor() {
+    assertThat(new java.util.Random()).isNotEqualTo(new java.util.Random()); // Compliant
+  }
+
+  @Test
   void assert_iterator() {
     Iterator<String> it = (new ArrayList<String>()).iterator();
     assertThat(it.next()).isEqualTo("1"); // Compliant
