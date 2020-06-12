@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifierTest.FakeVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -44,8 +45,9 @@ class MultipleFilesJavaCheckVerifierTest {
   @Test
   void verify_unexpected_issue() {
     IssuableSubscriptionVisitor visitor = new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues().withIssue(4, "extra message");
+    List<String> files = Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE);
     try {
-      MultipleFilesJavaCheckVerifier.verify(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE), visitor);
+      MultipleFilesJavaCheckVerifier.verify(files, visitor);
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Unexpected at [4]");
@@ -55,8 +57,9 @@ class MultipleFilesJavaCheckVerifierTest {
   @Test
   void verify_combined_missing_expected_and_unexpected_issues() {
     IssuableSubscriptionVisitor visitor = new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues().withIssue(4, "extra message").withoutIssue(1);
+    List<String> files = Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE);
     try {
-      MultipleFilesJavaCheckVerifier.verify(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE), visitor);
+      MultipleFilesJavaCheckVerifier.verify(files, visitor);
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("Expected at [1], Unexpected at [4]");
@@ -71,9 +74,10 @@ class MultipleFilesJavaCheckVerifierTest {
 
   @Test
   void test_issues_with_no_semantic() {
+    List<String> files = Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE);
+    FakeVisitor visitor = new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues();
     try {
-      MultipleFilesJavaCheckVerifier.verifyNoIssueWithoutSemantic(Arrays.asList(FILENAME_ISSUES_FIRST, FILENAME_NO_ISSUE),
-        new JavaCheckVerifierTest.FakeVisitor().withDefaultIssues());
+      MultipleFilesJavaCheckVerifier.verifyNoIssueWithoutSemantic(files, visitor);
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e.getMessage()).contains("No issues expected but got 10 issue(s):");

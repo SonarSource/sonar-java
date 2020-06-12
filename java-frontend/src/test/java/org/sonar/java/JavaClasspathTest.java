@@ -167,7 +167,7 @@ class JavaClasspathTest {
     assertThat(javaClasspath.getElements().get(2)).exists();
     assertThat(javaClasspath.getElements()).extracting("name").contains("hello.jar", "world.jar", "target");
   }
-  
+
   @Test
   void libraries_should_keep_order() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/world.jar,lib/hello.jar,lib/target/classes/*");
@@ -224,8 +224,9 @@ class JavaClasspathTest {
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
     File jar = javaClasspath.getElements().get(0);
-    assertThat(jar).exists();
-    assertThat(jar.getName()).isEqualTo("hello.jar");
+    assertThat(jar)
+      .exists()
+      .hasName("hello.jar");
 
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/*.jar");
     javaClasspath = createJavaClasspath();

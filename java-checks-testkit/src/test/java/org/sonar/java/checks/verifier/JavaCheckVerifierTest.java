@@ -128,8 +128,9 @@ class JavaCheckVerifierTest {
 
   @Test
   void verify_issue_on_file_incorrect() {
+    FakeVisitor visitor = new FakeVisitor().withDefaultIssues();
     try {
-      JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", new FakeVisitor().withDefaultIssues());
+      JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", visitor);
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e).hasMessage("A single issue is expected on the file, but 10 issues have been raised");
@@ -264,8 +265,9 @@ class JavaCheckVerifierTest {
     IssuableSubscriptionVisitor noIssueVisitor = new FakeVisitor();
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, noIssueVisitor);
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_NO_ISSUE, noIssueVisitor);
+    FakeVisitor visitor = new FakeVisitor().withDefaultIssues();
     try {
-      JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, new FakeVisitor().withDefaultIssues());
+      JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, visitor);
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e.getMessage()).contains("No issues expected but got 10 issue(s):");
@@ -278,8 +280,9 @@ class JavaCheckVerifierTest {
     IssuableSubscriptionVisitor noIssueVisitor = new FakeVisitor();
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, noIssueVisitor, java_8);
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_NO_ISSUE, noIssueVisitor, java_8);
+    FakeVisitor visitor = new FakeVisitor().withDefaultIssues();
     try {
-      JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, new FakeVisitor().withDefaultIssues(), java_8);
+      JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, visitor, java_8);
       Fail.fail("Should have failed");
     } catch (AssertionError e) {
       assertThat(e.getMessage()).contains("No issues expected but got 10 issue(s):");

@@ -147,29 +147,19 @@ class MethodYieldTest {
   void test_yield_equality() {
     MethodBehavior methodBehavior = mockMethodBehavior(1, false);
     MethodYield yield = newMethodYield(methodBehavior);
-    MethodYield otherYield;
-
-    assertThat(yield).isNotEqualTo(null);
-    assertThat(yield).isNotEqualTo(new Object());
-
-    // same instance
-    assertThat(yield).isEqualTo(yield);
-
-    // method behavior not taken into account
-    MethodYield myYield = newMethodYield(null);
-    assertThat(yield).isEqualTo(myYield);
-
-    // node not taken into account
-    otherYield = newMethodYield(mockNode(), methodBehavior);
-    assertThat(yield).isEqualTo(otherYield);
-
-    // same arity and constraints on parameters but exceptional path
-    otherYield = new ExceptionalYield(methodBehavior);
-    assertThat(yield).isNotEqualTo(otherYield);
-
-    // same arity and constraints on parameters but happy path path
-    otherYield = new HappyPathYield(methodBehavior);
-    assertThat(yield).isNotEqualTo(otherYield);
+    assertThat(yield)
+      .isNotEqualTo(null)
+      .isNotEqualTo(new Object())
+      // same instance
+      .isEqualTo(yield)
+      // method behavior not taken into account
+      .isEqualTo(newMethodYield(null))
+      // node not taken into account
+      .isEqualTo(newMethodYield(mockNode(), methodBehavior))
+      // same arity and constraints on parameters but exceptional path
+      .isNotEqualTo(new ExceptionalYield(methodBehavior))
+      // same arity and constraints on parameters but happy path path
+      .isNotEqualTo(new HappyPathYield(methodBehavior));
 
     ConstraintsByDomain nullConstraint = ConstraintsByDomain.empty().put(ObjectConstraint.NULL);
     MethodYield yield1 = newMethodYield(methodBehavior);
