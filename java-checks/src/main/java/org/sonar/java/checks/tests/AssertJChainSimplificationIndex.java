@@ -252,7 +252,11 @@ public class AssertJChainSimplificationIndex {
       arrayLengthSimplifier(msgWithActual(IS_EMPTY))))
     .put(IS_NULL, ImmutableList.of(
       methodCallInSubject(Matchers.FILE_GET_PARENT_AND_PARENT_FILE, msgWithActual("hasNoParent")),
-      methodCallInSubject(Matchers.PATH_GET_PARENT_AND_PARENT_FILE, msgWithActual("hasNoParentRaw"))))
+      methodCallInSubject(Matchers.PATH_GET_PARENT_AND_PARENT_FILE, msgWithActual("hasNoParentRaw")),
+      withSubjectArgumentCondition(
+        subjectArg -> hasMethodCallAsArg(subjectArg, Matchers.OR_ELSE) &&
+          ExpressionUtils.isNullLiteral(((MethodInvocationTree) subjectArg).arguments().get(0)),
+        OPTIONAL_EMPTY_REPLACEMENT)))
     .put(IS_LESS_THAN_OR_EQUAL_TO, ImmutableList.of(
       methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpected("hasSizeLessThanOrEqualTo")),
       arrayLengthSimplifier(msgWithActualExpected("hasSizeLessThanOrEqualTo"))))
@@ -264,11 +268,7 @@ public class AssertJChainSimplificationIndex {
       arrayLengthSimplifier(msgWithActualExpected("hasSizeGreaterThanOrEqualTo"))))
     .put(IS_GREATER_THAN, ImmutableList.of(
       methodCallInSubject(Matchers.COLLECTION_SIZE, msgWithActualExpected("hasSizeGreaterThan")),
-      arrayLengthSimplifier(msgWithActualExpected("hasSizeGreaterThan")),
-      withSubjectArgumentCondition(
-        subjectArg -> hasMethodCallAsArg(subjectArg, Matchers.OR_ELSE) &&
-          ExpressionUtils.isNullLiteral(((MethodInvocationTree) subjectArg).arguments().get(0)),
-        OPTIONAL_EMPTY_REPLACEMENT)))
+      arrayLengthSimplifier(msgWithActualExpected("hasSizeGreaterThan"))))
     .build();
 
   private static class Matchers {
