@@ -54,6 +54,7 @@ public class AssertJChainSimplificationIndex {
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_IO_FILE = "java.io.File";
   private static final String JAVA_NIO_FILE_PATH = "java.nio.file.Path";
+  private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
 
   private static final String CONTAINS = "contains";
   private static final String DOES_NOT_CONTAIN = "doesNotContain";
@@ -72,14 +73,21 @@ public class AssertJChainSimplificationIndex {
   private static final String IS_NOT_EQUAL_TO = "isNotEqualTo";
   private static final String IS_NOT_EQUAL_TO_IGNORING_CASE = "isNotEqualToIgnoringCase";
   private static final String IS_NOT_NEGATIVE = "isNotNegative";
+  private static final String IS_NOT_NULL = "isNotNull";
   private static final String IS_NOT_POSITIVE = "isNotPositive";
+  private static final String IS_NOT_PRESENT = "isNotPresent";
   private static final String IS_NOT_ZERO = "isNotZero";
   private static final String IS_POSITIVE = "isPositive";
+  private static final String IS_PRESENT = "isPresent";
+  private static final String IS_SAME_AS = "isSameAs";
   private static final String IS_TRUE = "isTrue";
   private static final String IS_ZERO = "isZero";
   private static final String IS_NULL = "isNull";
   private static final String STARTS_WITH = "startsWith";
   private static final String ENDS_WITH = "endsWith";
+
+  private static final String OPTIONAL_PRESENT_REPLACEMENT = String.format("%s or %s", msgWithActual(IS_PRESENT), msgWithActual(IS_NOT_EMPTY));
+  private static final String OPTIONAL_EMPTY_REPLACEMENT = String.format("%s or %s", msgWithActual(IS_NOT_PRESENT), msgWithActual(IS_EMPTY));
 
   /**
    * Stores multiple lists of simplifiers which are mapped to by a key. The key is the method name of the predicate
@@ -105,7 +113,7 @@ public class AssertJChainSimplificationIndex {
       PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isNotNegative()"),
       PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isOne, "isPositive()")))
     .put(IS_LESS_THAN, ImmutableList.of(
-    PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isNegative()"),
+      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isNegative()"),
       PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isOne, "isNotPositive()")))
     .put(IS_LESS_THAN_OR_EQUAL_TO, ImmutableList.of(
       PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isNegOne, "isNegative()"),
@@ -134,7 +142,10 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.FILE_LENGTH, msgWithActualExpected(HAS_SIZE)),
       methodCallInSubject(Matchers.FILE_GET_NAME, msgWithActualExpected("hasName")),
       methodCallInSubject(Matchers.FILE_GET_PARENT_AND_PARENT_FILE, msgWithActualExpected("hasParent")),
-      methodCallInSubject(Matchers.PATH_GET_PARENT_AND_PARENT_FILE, msgWithActualExpected("hasParentRaw"))))
+      methodCallInSubject(Matchers.PATH_GET_PARENT_AND_PARENT_FILE, msgWithActualExpected("hasParentRaw")),
+      withSubjectArgumentCondition(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.EMPTY),
+        subjectArg -> subjectArg.symbolType().is(JAVA_UTIL_OPTIONAL), OPTIONAL_EMPTY_REPLACEMENT),
+      methodCallInSubject(Matchers.GET, msgWithActualExpected(CONTAINS))))
     .put(IS_FALSE, ImmutableList.of(
       methodCallInSubject(Matchers.EQUALS_METHOD, msgWithActualExpected(IS_NOT_EQUAL_TO)),
       methodCallInSubject(Matchers.CONTENT_EQUALS, msgWithActualExpected(IS_NOT_EQUAL_TO)),
@@ -143,14 +154,16 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.STARTS_WITH, msgWithActualExpected(DOES_NOT_START_WITH)),
       methodCallInSubject(Matchers.ENDS_WITH, msgWithActualExpected("doesNotEndWith")),
       methodCallInSubject(Matchers.MATCHES, msgWithActualExpected("doesNotMatch")),
-      withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNotNull")),
+      withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NOT_NULL)),
       withSubjectArgumentCondition(arg -> ArgumentHelper.notEqualsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NULL)),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isNotSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isNotInstanceOf", "ExpectedClass.class")),
-      methodCallInSubject(Matchers.IS_EMPTY, msgWithActual(IS_NOT_EMPTY)),
+      methodCallInSubject(Matchers.IS_EMPTY_STRING, msgWithActual(IS_NOT_EMPTY)),
       methodCallInSubject(Matchers.FILE_EXISTS, msgWithActual("doesNotExist")),
-      methodCallInSubject(Matchers.FILE_AND_PATH_IS_ABSOLUTE, msgWithActual("isRelative"))))
+      methodCallInSubject(Matchers.FILE_AND_PATH_IS_ABSOLUTE, msgWithActual("isRelative")),
+      methodCallInSubject(Matchers.IS_PRESENT, OPTIONAL_EMPTY_REPLACEMENT),
+      methodCallInSubject(Matchers.IS_EMPTY_OPTIONAL, OPTIONAL_PRESENT_REPLACEMENT)))
     .put(IS_NEGATIVE, ImmutableList.of(
       compareToSimplifier(msgWithActualExpected(IS_LESS_THAN)),
       indexOfSimplifier(DOES_NOT_CONTAIN)))
@@ -163,10 +176,17 @@ public class AssertJChainSimplificationIndex {
       compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected("isNotEqualByComparingTo")),
       methodCallInSubject(ArgumentHelper::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
       indexOfSimplifier(ArgumentHelper::isZero, DOES_NOT_START_WITH),
-      methodCallInSubject(LiteralUtils::isEmptyString, Matchers.TRIM, msgWithActual("isNotBlank"))))
+      methodCallInSubject(LiteralUtils::isEmptyString, Matchers.TRIM, msgWithActual("isNotBlank")),
+      withSubjectArgumentCondition(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.EMPTY),
+        subjectArg -> subjectArg.symbolType().is(JAVA_UTIL_OPTIONAL), OPTIONAL_PRESENT_REPLACEMENT)))
     .put(IS_NOT_NEGATIVE, ImmutableList.of(
       compareToSimplifier(msgWithActualExpected(IS_GREATER_THAN_OR_EQUAL_TO)),
       indexOfSimplifier(CONTAINS)))
+    .put(IS_NOT_NULL, Collections.singletonList(
+      withSubjectArgumentCondition(
+        subjectArg -> hasMethodCallAsArg(subjectArg, Matchers.OR_ELSE) &&
+          ExpressionUtils.isNullLiteral(((MethodInvocationTree) subjectArg).arguments().get(0)),
+        OPTIONAL_PRESENT_REPLACEMENT)))
     .put(IS_NOT_POSITIVE, ImmutableList.of(
       compareToSimplifier(msgWithActualExpected(IS_LESS_THAN_OR_EQUAL_TO)),
       methodCallInSubject(Matchers.STRING_LENGTH, msgWithActual(IS_EMPTY))))
@@ -178,6 +198,8 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.FILE_LENGTH, msgWithActual(IS_NOT_EMPTY))))
     .put(IS_POSITIVE, Collections.singletonList(
       compareToSimplifier(msgWithActualExpected(IS_GREATER_THAN))))
+    .put(IS_SAME_AS, Collections.singletonList(
+      methodCallInSubject(Matchers.GET, msgWithActualExpected("containsSame"))))
     .put(IS_TRUE, ImmutableList.of(
       methodCallInSubject(Matchers.EQUALS_METHOD, msgWithActualExpected(IS_EQUAL_TO)),
       methodCallInSubject(Matchers.CONTENT_EQUALS, msgWithActualExpected(IS_EQUAL_TO)),
@@ -187,11 +209,11 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.ENDS_WITH, msgWithActualExpected(ENDS_WITH)),
       methodCallInSubject(Matchers.MATCHES, msgWithActualExpected("matches")),
       withSubjectArgumentCondition(arg -> ArgumentHelper.equalsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NULL)),
-      withSubjectArgumentCondition(arg -> ArgumentHelper.notEqualsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual("isNotNull")),
+      withSubjectArgumentCondition(arg -> ArgumentHelper.notEqualsTo(arg, ExpressionUtils::isNullLiteral), msgWithActual(IS_NOT_NULL)),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isNotSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isInstanceOf", "ExpectedClass.class")),
-      methodCallInSubject(Matchers.IS_EMPTY, msgWithActual(IS_EMPTY)),
+      methodCallInSubject(Matchers.IS_EMPTY_STRING, msgWithActual(IS_EMPTY)),
       methodCallInSubject(Matchers.FILE_CAN_READ, msgWithActual("canRead")),
       methodCallInSubject(Matchers.FILE_CAN_WRITE, msgWithActual("canWrite")),
       methodCallInSubject(Matchers.FILE_EXISTS, msgWithActual("exists")),
@@ -199,17 +221,23 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.FILE_IS_DIRECTORY, msgWithActual("isDirectory")),
       methodCallInSubject(Matchers.FILE_IS_FILE, msgWithActual("isFile")),
       methodCallInSubject(Matchers.PATH_STARTS_WITH, msgWithActualExpected("startsWithRaw")),
-      methodCallInSubject(Matchers.PATH_ENDS_WITH, msgWithActualExpected("endsWithRaw"))))
+      methodCallInSubject(Matchers.PATH_ENDS_WITH, msgWithActualExpected("endsWithRaw")),
+      methodCallInSubject(Matchers.IS_PRESENT, OPTIONAL_PRESENT_REPLACEMENT),
+      methodCallInSubject(Matchers.IS_EMPTY_OPTIONAL, OPTIONAL_EMPTY_REPLACEMENT)))
     .put(IS_ZERO, ImmutableList.of(
       compareToSimplifier(msgWithActualExpected("isEqualByComparingTo")),
       methodCallInSubject(Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_EQUAL_TO_IGNORING_CASE)),
       indexOfSimplifier(STARTS_WITH),
       methodCallInSubject(Matchers.STRING_LENGTH, msgWithActual(IS_EMPTY)),
-      methodCallInSubject(Matchers.FILE_LENGTH, msgWithActual(IS_EMPTY)))
-    ).put(IS_NULL, ImmutableList.of(
+      methodCallInSubject(Matchers.FILE_LENGTH, msgWithActual(IS_EMPTY))))
+    .put(IS_NULL, ImmutableList.of(
       methodCallInSubject(Matchers.FILE_GET_PARENT_AND_PARENT_FILE, msgWithActual("hasNoParent")),
-      methodCallInSubject(Matchers.PATH_GET_PARENT_AND_PARENT_FILE, msgWithActual("hasNoParentRaw")))
-    ).build();
+      methodCallInSubject(Matchers.PATH_GET_PARENT_AND_PARENT_FILE, msgWithActual("hasNoParentRaw")),
+      withSubjectArgumentCondition(
+        subjectArg -> hasMethodCallAsArg(subjectArg, Matchers.OR_ELSE) &&
+          ExpressionUtils.isNullLiteral(((MethodInvocationTree) subjectArg).arguments().get(0)),
+        OPTIONAL_EMPTY_REPLACEMENT)))
+    .build();
 
   private static class Matchers {
     public static final MethodMatchers COMPARE_TO = MethodMatchers.create().ofSubTypes("java.lang.Comparable")
@@ -220,6 +248,8 @@ public class AssertJChainSimplificationIndex {
       .names(AssertJChainSimplificationIndex.CONTAINS).addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers CONTENT_EQUALS = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names("contentEquals").addParametersMatcher(MethodMatchers.ANY).build();
+    public static final MethodMatchers EMPTY = MethodMatchers.create().ofTypes(JAVA_UTIL_OPTIONAL)
+      .names("empty").addWithoutParametersMatcher().build();
     public static final MethodMatchers ENDS_WITH = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names(AssertJChainSimplificationIndex.ENDS_WITH).addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers EQUALS_IGNORE_CASE = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
@@ -230,8 +260,12 @@ public class AssertJChainSimplificationIndex {
       .addWithoutParametersMatcher().build();
     public static final MethodMatchers INDEX_OF_STRING = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names("indexOf").addParametersMatcher(JAVA_LANG_STRING).build();
-    public static final MethodMatchers IS_EMPTY = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
-      .names(AssertJChainSimplificationIndex.IS_EMPTY).addWithoutParametersMatcher().build();
+    public static final MethodMatchers IS_EMPTY_STRING = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
+      .names(IS_EMPTY).addWithoutParametersMatcher().build();
+    public static final MethodMatchers IS_EMPTY_OPTIONAL = MethodMatchers.create().ofTypes(JAVA_UTIL_OPTIONAL)
+      .names(IS_EMPTY).addWithoutParametersMatcher().build();
+    public static final MethodMatchers IS_PRESENT = MethodMatchers.create().ofTypes(JAVA_UTIL_OPTIONAL)
+      .names(AssertJChainSimplificationIndex.IS_PRESENT).addWithoutParametersMatcher().build();
     public static final MethodMatchers STRING_LENGTH = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names("length").addWithoutParametersMatcher().build();
     public static final MethodMatchers FILE_LENGTH = MethodMatchers.create().ofTypes(JAVA_IO_FILE)
@@ -262,6 +296,10 @@ public class AssertJChainSimplificationIndex {
       .names("isFile").addWithoutParametersMatcher().build();
     public static final MethodMatchers FILE_LIST_AND_LIST_FILE = MethodMatchers.create().ofTypes(JAVA_IO_FILE)
       .names("list", "listFiles").addWithoutParametersMatcher().build();
+    public static final MethodMatchers GET = MethodMatchers.create().ofTypes(JAVA_UTIL_OPTIONAL)
+      .names("get").addWithoutParametersMatcher().build();
+    public static final MethodMatchers OR_ELSE = MethodMatchers.create().ofTypes(JAVA_UTIL_OPTIONAL)
+      .names("orElse").addParametersMatcher(MethodMatchers.ANY).build();
     public static final MethodMatchers PATH_GET_PARENT_AND_PARENT_FILE = MethodMatchers.create().ofTypes(JAVA_NIO_FILE_PATH)
       .names("getParent").addWithoutParametersMatcher().build();
     public static final MethodMatchers PATH_STARTS_WITH = MethodMatchers.create().ofTypes(JAVA_NIO_FILE_PATH)
