@@ -205,6 +205,78 @@ reported.</p>
       <td><code>assertThat(getPath().isAbsolute()).isFalse()</code></td>
       <td><code>assertThat(getPath()).isRelative()</code></td>
     </tr>
+    <tr>
+      <th>&nbsp;Related to <code>Array</code></th>
+      <th>&nbsp;</th>
+    </tr>
+    <tr>
+      <td><code>assertThat(getArray().length).isZero()</code></td>
+      <td><code>assertThat(getArray()).isEmpty()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getArray().length).isEqualTo(length)</code></td>
+      <td><code>assertThat(getArray()).hasSize(length)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getArray().length).isEqualTo(anotherArray.length)</code></td>
+      <td><code>assertThat(getArray()).hasSameSizeAs(getAnotherArray())</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getArray().length).isLessThanOrEqualTo(expression)</code></td>
+      <td><code>assertThat(getArray()).hasSizeLessThanOrEqualTo(expression)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getArray().length).isLessThan(expression)</code></td>
+      <td><code>assertThat(getArray()).hasSizeLessThan(expression)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getArray().length).isGreaterThan(expression)</code></td>
+      <td><code>assertThat(getArray()).hasSizeGreaterThan(expression)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getArray().length).isGreaterThanOrEqualTo(expression)</code></td>
+      <td><code>assertThat(getArray()).hasSizeGreaterThanOrEqualTo(expression)</code></td>
+    </tr>
+    <tr>
+      <th>&nbsp;Related to <code>Collection</code></th>
+      <th>&nbsp;</th>
+    </tr>
+    <tr>
+      <td><code>assertThat(getCollection().isEmpty()).isTrue()</code></td>
+      <td><code>assertThat(getCollection()).isEmpty()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getCollection().size()).isZero()</code></td>
+      <td><code>assertThat(getCollection()).isEmpty()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getCollection().contains(something)).isTrue()</code></td>
+      <td><code>assertThat(getCollection()).contains(something)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getCollection().containsAll(otherCollection)).isTrue()</code></td>
+      <td><code>assertThat(getCollection()).containsAll(otherCollection)</code></td>
+    </tr>
+    <tr>
+      <th>&nbsp;Related to <code>Map</code></th>
+      <th>&nbsp;</th>
+    </tr>
+    <tr>
+      <td><code>assertThat(getMap().size()).isEqualTo(otherMap().size()</code></td>
+      <td><code>assertThat(getMap()).hasSameSizeAs(otherMap())</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getMap().containsKey(key)).isTrue()</code></td>
+      <td><code>assertThat(getMap()).containsKey(key)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getMap().containsValue(value)).isTrue()</code></td>
+      <td><code>assertThat(getMap()).containsValue(value)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getMap().get(key)).isEqualTo(value)</code></td>
+      <td><code>assertThat(getMap()).containsEntry(key, value)</code></td>
+    </tr>
   </tbody>
 </table>
 <h2>Noncompliant Code Example</h2>
