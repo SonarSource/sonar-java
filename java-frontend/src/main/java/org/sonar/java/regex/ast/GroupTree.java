@@ -19,32 +19,32 @@
  */
 package org.sonar.java.regex.ast;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-public class CapturingGroupTree extends GroupTree {
+public abstract class GroupTree extends RegexTree {
+
+  private final RegexTree.Kind kind;
 
   @Nullable
-  private final String name;
-  private final int groupNumber;
+  private final RegexTree element;
 
-  public CapturingGroupTree(RegexSource source, IndexRange range, @Nullable String name, int groupNumber, RegexTree element) {
-    super(source, Kind.CAPTURING_GROUP, element, range);
-    this.name = name;
-    this.groupNumber = groupNumber;
+  public GroupTree(RegexSource source, RegexTree.Kind kind, @Nullable RegexTree element, IndexRange range) {
+    super(source, range);
+    this.kind = kind;
+    this.element = element;
   }
 
   @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitCapturingGroup(this);
+  public final RegexTree.Kind kind() {
+    return kind;
   }
 
-  @CheckForNull
-  public String getName() {
-    return name;
+  /**
+   * Can only be null for non-capturing groups
+   */
+  @Nullable
+  public RegexTree getElement() {
+    return element;
   }
 
-  public int getGroupNumber() {
-    return groupNumber;
-  }
 }
