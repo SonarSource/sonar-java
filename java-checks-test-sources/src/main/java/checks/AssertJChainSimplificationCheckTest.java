@@ -215,6 +215,7 @@ public class AssertJChainSimplificationCheckTest {
 
     assertThat(getArray().length).isGreaterThan(0); // Noncompliant {{Use isPositive() instead.}}
     assertThat(myClassWithLength.length).isGreaterThanOrEqualTo(i); // Compliant
+    assertThat(getArray().hashCode()).isPositive(); // Compliant
   }
 
   void collectionsRelatedAssertionChains() {
@@ -320,6 +321,7 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getOptional().isPresent()).isFalse(); // Noncompliant {{Use assertThat(actual).isNotPresent() or assertThat(actual).isEmpty() instead.}}
     assertThat(getOptional().orElse(null)).isNull(); // Noncompliant {{Use assertThat(actual).isNotPresent() or assertThat(actual).isEmpty() instead.}}
     assertThat(getOptional().orElse(null)).isNotNull(); // Noncompliant {{Use assertThat(actual).isPresent() instead.}}
+    assertThat(getOptional().orElse("foo")).isNotNull(); // Compliant
     assertThat(getOptional()).isEqualTo(Optional.empty()); // Noncompliant {{Use assertThat(actual).isNotPresent() or assertThat(actual).isEmpty() instead.}}
     assertThat(getOptional()).isNotEqualTo(Optional.empty()); // Noncompliant {{Use assertThat(actual).isPresent() instead.}}
     assertThat(getOptional().get()).isEqualTo(getObject()); // Noncompliant {{Use assertThat(actual).contains(expected) instead.}}

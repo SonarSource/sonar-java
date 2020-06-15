@@ -21,12 +21,11 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2122")
 public class ScheduledThreadPoolExecutorZeroCheck extends AbstractMethodDetection {
@@ -44,7 +43,7 @@ public class ScheduledThreadPoolExecutorZeroCheck extends AbstractMethodDetectio
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree arg = mit.arguments().get(0);
-    if (isZeroIntLiteral(arg)) {
+    if (LiteralUtils.isZero(arg)) {
       reportIssue(arg, MESSAGE);
     }
   }
@@ -52,12 +51,9 @@ public class ScheduledThreadPoolExecutorZeroCheck extends AbstractMethodDetectio
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
     ExpressionTree arg = newClassTree.arguments().get(0);
-    if (isZeroIntLiteral(arg)) {
+    if (LiteralUtils.isZero(arg)) {
       reportIssue(arg, MESSAGE);
     }
   }
 
-  private static boolean isZeroIntLiteral(ExpressionTree arg) {
-    return arg.is(Tree.Kind.INT_LITERAL) && "0".equals(((LiteralTree) arg).value());
-  }
 }

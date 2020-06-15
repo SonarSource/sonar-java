@@ -31,6 +31,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -41,7 +42,6 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -201,7 +201,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   private static boolean isZeroDimension(ArrayDimensionTree dim) {
     ExpressionTree expression = dim.expression();
-    return expression != null && expression.is(Tree.Kind.INT_LITERAL) && "0".equals(((LiteralTree) expression).value());
+    return expression != null && LiteralUtils.isZero(expression);
   }
 
   private static boolean returnValueIsMutable(MethodInvocationTree mit) {

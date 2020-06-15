@@ -23,11 +23,8 @@ import java.util.function.Predicate;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 class AssertJChainSimplificationHelper {
 
@@ -51,18 +48,6 @@ class AssertJChainSimplificationHelper {
 
     private ArgumentHelper() {
       // Hide default constructor
-    }
-
-    static boolean isZero(ExpressionTree tree) {
-      return tree.is(Tree.Kind.INT_LITERAL) && "0".equals(((LiteralTree) tree).value());
-    }
-
-    static boolean isOne(ExpressionTree tree) {
-      return tree.is(Tree.Kind.INT_LITERAL) && "1".equals(((LiteralTree) tree).value());
-    }
-
-    static boolean isNegOne(ExpressionTree tree) {
-      return tree.is(Tree.Kind.UNARY_MINUS) && isOne(((UnaryExpressionTree) tree).expression());
     }
 
     static boolean equalsTo(ExpressionTree expression, Predicate<ExpressionTree> comparedWithPredicate) {
@@ -95,12 +80,5 @@ class AssertJChainSimplificationHelper {
 
   static String msgWithActualCustom(String predicateName, String predicateArg) {
     return String.format("assertThat(actual).%s(%s)", predicateName, predicateArg);
-  }
-
-  static ExpressionTree unwrap(ExpressionTree expression) {
-    while (expression.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      expression = ((ParenthesizedTree) expression).expression();
-    }
-    return expression;
   }
 }

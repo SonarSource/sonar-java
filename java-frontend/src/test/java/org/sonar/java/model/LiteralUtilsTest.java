@@ -246,6 +246,51 @@ class LiteralUtilsTest {
     assertThat(LiteralUtils.isFalse(falseTree)).isTrue();
   }
 
+  @Test
+  void isZero_withExpectedValue() {
+    ExpressionTree tree = getReturnExpression("int foo(){ return 0; }");
+    assertThat(LiteralUtils.isZero(tree)).isTrue();
+  }
+
+  @Test
+  void isOne_withExpectedValue() {
+    ExpressionTree tree = getReturnExpression("int foo(){ return 1; }");
+    assertThat(LiteralUtils.isOne(tree)).isTrue();
+  }
+
+  @Test
+  void isNegOne_withExpectedValue() {
+    ExpressionTree tree = getReturnExpression("int foo(){ return -1; }");
+    assertThat(LiteralUtils.isNegOne(tree)).isTrue();
+  }
+
+  @Test
+  void isZero_withUnexpectedValues() {
+    ExpressionTree intTree = getReturnExpression("int foo(){ return 5; }");
+    assertThat(LiteralUtils.isZero(intTree)).isFalse();
+    ExpressionTree boolTree = getReturnExpression("int foo(){ return true; }");
+    assertThat(LiteralUtils.isZero(boolTree)).isFalse();
+  }
+
+  @Test
+  void isOne_withUnexpectedValues() {
+    ExpressionTree intTree = getReturnExpression("int foo(){ return 5; }");
+    assertThat(LiteralUtils.isOne(intTree)).isFalse();
+    ExpressionTree boolTree = getReturnExpression("int foo(){ return true; }");
+    assertThat(LiteralUtils.isOne(boolTree)).isFalse();
+  }
+
+  @Test
+  void isNegOne_withUnexpectedValues() {
+    ExpressionTree intTree = getReturnExpression("int foo(){ return 1; }");
+    assertThat(LiteralUtils.isNegOne(intTree)).isFalse();
+    ExpressionTree negIntTree = getReturnExpression("int foo(){ return -2; }");
+    assertThat(LiteralUtils.isNegOne(negIntTree)).isFalse();
+    ExpressionTree boolTree = getReturnExpression("int foo(){ return true; }");
+    assertThat(LiteralUtils.isNegOne(boolTree)).isFalse();
+  }
+
+
   private ExpressionTree getFirstExpression(String code) {
     ClassTree firstType = getClassTree(code);
     StatementTree firstStatement = ((MethodTree) firstType.members().get(0)).block().body().get(0);

@@ -23,12 +23,12 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -62,8 +62,8 @@ public class CollectionSizeAndArrayLengthCheck extends IssuableSubscriptionVisit
     BinaryExpressionTree bet = (BinaryExpressionTree) tree;
     ExpressionTree leftOperand = ExpressionUtils.skipParentheses(bet.leftOperand());
     ExpressionTree rightOperand = ExpressionUtils.skipParentheses(bet.rightOperand());
-    boolean leftIsZero = isZero(leftOperand);
-    boolean rightIsZero = isZero(rightOperand);
+    boolean leftIsZero = LiteralUtils.isZero(leftOperand);
+    boolean rightIsZero = LiteralUtils.isZero(rightOperand);
     if (!leftIsZero && !rightIsZero) {
       return;
     }
@@ -73,10 +73,6 @@ public class CollectionSizeAndArrayLengthCheck extends IssuableSubscriptionVisit
     } else if (testedValue.is(Tree.Kind.MEMBER_SELECT)) {
       checkArrayLength((MemberSelectExpressionTree) testedValue, bet, leftIsZero);
     }
-  }
-
-  private static boolean isZero(ExpressionTree expr) {
-    return expr.is(Tree.Kind.INT_LITERAL) && "0".equals(((LiteralTree) expr).value());
   }
 
   private void checkCollectionSize(MethodInvocationTree testedValue, BinaryExpressionTree bet, boolean leftIsZero) {

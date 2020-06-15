@@ -43,9 +43,9 @@ import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.hasMe
 import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.msgWithActual;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.msgWithActualCustom;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.msgWithActualExpected;
-import static org.sonar.java.checks.tests.AssertJChainSimplificationHelper.unwrap;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.PredicateSimplifierWithContext.methodCallInSubject;
 import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.PredicateSimplifierWithContext.withSubjectArgumentCondition;
+import static org.sonar.java.model.ExpressionUtils.skipParentheses;
 
 public class AssertJChainSimplificationIndex {
 
@@ -106,29 +106,29 @@ public class AssertJChainSimplificationIndex {
    */
   static final Map<String, List<SimplifierWithoutContext>> CONTEXT_FREE_SIMPLIFIERS = ImmutableMap.<String, List<SimplifierWithoutContext>>builder()
     .put(HAS_SIZE, Collections.singletonList(
-      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isEmpty()")))
+      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isEmpty()")))
     .put(IS_EQUAL_TO, ImmutableList.of(
       PredicateSimplifierWithoutContext.withSingleArg(ExpressionUtils::isNullLiteral, "isNull()"),
       PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isTrue, "isTrue()"),
       PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isFalse, "isFalse()"),
       PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isEmptyString, "isEmpty()"),
-      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isZero()")))
+      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isZero()")))
     .put(IS_GREATER_THAN, ImmutableList.of(
-      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isNegOne, "isNotNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isPositive()")))
+      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isNegOne, "isNotNegative()"),
+      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isPositive()")))
     .put(IS_GREATER_THAN_OR_EQUAL_TO, ImmutableList.of(
-      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isNotNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isOne, "isPositive()")))
+      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isNotNegative()"),
+      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isOne, "isPositive()")))
     .put(IS_LESS_THAN, ImmutableList.of(
-      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isOne, "isNotPositive()")))
+      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isNegative()"),
+      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isOne, "isNotPositive()")))
     .put(IS_LESS_THAN_OR_EQUAL_TO, ImmutableList.of(
-      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isNegOne, "isNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isNotPositive()")))
+      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isNegOne, "isNegative()"),
+      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isNotPositive()")))
     .put(IS_NOT_EQUAL_TO, ImmutableList.of(
       PredicateSimplifierWithoutContext.withSingleArg(subject -> ExpressionUtils.isNullLiteral(subject) &&
         !UnitTestUtils.isInUnitTestRelatedToObjectMethods(subject), "isNotNull()"),
-      PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isNotZero()")))
+      PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isNotZero()")))
     .build();
 
   /**
@@ -140,11 +140,11 @@ public class AssertJChainSimplificationIndex {
     .put(IS_EQUAL_TO, ImmutableList.of(
       methodCallInSubject(Matchers.TO_STRING, msgWithActualCustom("hasToString", "expectedString")),
       methodCallInSubject(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.HASH_CODE), Matchers.HASH_CODE, msgWithActualExpected("hasSameHashCodeAs")),
-      compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected("isEqualByComparingTo")),
-      methodCallInSubject(ArgumentHelper::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_EQUAL_TO_IGNORING_CASE)),
-      indexOfSimplifier(ArgumentHelper::isZero, STARTS_WITH),
-      indexOfSimplifier(ArgumentHelper::isNegOne, DOES_NOT_CONTAIN),
-      methodCallInSubject(ArgumentHelper::isZero, Matchers.STRING_LENGTH, msgWithActual(IS_EMPTY)),
+      compareToSimplifier(LiteralUtils::isZero, msgWithActualExpected("isEqualByComparingTo")),
+      methodCallInSubject(LiteralUtils::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_EQUAL_TO_IGNORING_CASE)),
+      indexOfSimplifier(LiteralUtils::isZero, STARTS_WITH),
+      indexOfSimplifier(LiteralUtils::isNegOne, DOES_NOT_CONTAIN),
+      methodCallInSubject(LiteralUtils::isZero, Matchers.STRING_LENGTH, msgWithActual(IS_EMPTY)),
       methodCallInSubject(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.STRING_LENGTH), Matchers.STRING_LENGTH, msgWithActualExpected(HAS_SAME_SIZE_AS)),
       methodCallInSubject(predicateArg -> hasMethodCallAsArg(predicateArg, Matchers.COLLECTION_SIZE), Matchers.COLLECTION_SIZE, msgWithActualExpected(HAS_SAME_SIZE_AS)),
       withSubjectArgumentCondition(AssertJChainSimplificationIndex::isArrayLength, AssertJChainSimplificationIndex::isArrayLength, msgWithActualExpected(HAS_SAME_SIZE_AS)),
@@ -186,9 +186,9 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.TRIM, msgWithActual(IS_NOT_BLANK)),
       methodCallInSubject(Matchers.FILE_LIST_AND_LIST_FILE, msgWithActual("isNotEmptyDirectory"))))
     .put(IS_NOT_EQUAL_TO, ImmutableList.of(
-      compareToSimplifier(ArgumentHelper::isZero, msgWithActualExpected("isNotEqualByComparingTo")),
-      methodCallInSubject(ArgumentHelper::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
-      indexOfSimplifier(ArgumentHelper::isZero, DOES_NOT_START_WITH),
+      compareToSimplifier(LiteralUtils::isZero, msgWithActualExpected("isNotEqualByComparingTo")),
+      methodCallInSubject(LiteralUtils::isZero, Matchers.COMPARE_TO_IGNORE_CASE, msgWithActualExpected(IS_NOT_EQUAL_TO_IGNORING_CASE)),
+      indexOfSimplifier(LiteralUtils::isZero, DOES_NOT_START_WITH),
       methodCallInSubject(LiteralUtils::isEmptyString, Matchers.TRIM, msgWithActual(IS_NOT_BLANK)),
       methodCallInSubject(Matchers.MAP_GET, msgWithActualCustom("doesNotContainEntry", "key, value")),
       methodCallInSubject(LiteralUtils::isEmptyString, Matchers.TRIM, msgWithActual(IS_NOT_BLANK)),
@@ -429,14 +429,15 @@ public class AssertJChainSimplificationIndex {
       Predicate<ExpressionTree> predicateArgumentCondition, Predicate<ExpressionTree> subjectArgumentCondition,
       String simplification) {
       return new PredicateSimplifierWithContext(
-        predicateMit -> predicateMit.arguments().size() == 1 && predicateArgumentCondition.test(unwrap(predicateMit.arguments().get(0))),
-        subjectMit -> subjectMit.arguments().size() == 1 && subjectArgumentCondition.test(unwrap(subjectMit.arguments().get(0))),
+        predicateMit -> predicateMit.arguments().size() == 1 && predicateArgumentCondition.test(skipParentheses(predicateMit.arguments().get(0))),
+        subjectMit -> subjectMit.arguments().size() == 1 && subjectArgumentCondition.test(skipParentheses(subjectMit.arguments().get(0))),
         simplification);
     }
 
     public static PredicateSimplifierWithContext withSubjectArgumentCondition(
       Predicate<ExpressionTree> subjectArgumentCondition, String simplification) {
-      return new PredicateSimplifierWithContext(x -> true, subjectMit -> subjectMit.arguments().size() == 1 && subjectArgumentCondition.test(unwrap(subjectMit.arguments().get(0))),
+      return new PredicateSimplifierWithContext(x -> true, subjectMit -> subjectMit.arguments().size() == 1 &&
+        subjectArgumentCondition.test(skipParentheses(subjectMit.arguments().get(0))),
         simplification);
     }
 
@@ -451,15 +452,6 @@ public class AssertJChainSimplificationIndex {
       MethodMatchers methodCallMatcher,
       String simplification) {
       return withSubjectArgumentCondition(predicateArgumentCondition, arg -> hasMethodCallAsArg(arg, methodCallMatcher),
-        simplification);
-    }
-
-    public static PredicateSimplifierWithContext withSingleArgument(
-      Predicate<ExpressionTree> predicateArgsCondition, Predicate<ExpressionTree> subjectArgsCondition,
-      String simplification) {
-
-      return new PredicateSimplifierWithContext(predicateMit -> predicateMit.arguments().size() == 1 && predicateArgsCondition.test(unwrap(predicateMit.arguments().get(0))),
-        subjectMit -> subjectMit.arguments().size() == 1 && subjectArgsCondition.test(unwrap(subjectMit.arguments().get(0))),
         simplification);
     }
 

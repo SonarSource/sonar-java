@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -27,7 +28,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -85,11 +85,11 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
     boolean result;
 
     if (isEqualityExpression(tree)) {
-      result = isZero(tree.leftOperand()) || isZero(tree.rightOperand());
+      result = LiteralUtils.isZero(tree.leftOperand()) || LiteralUtils.isZero(tree.rightOperand());
     } else if (tree.is(Kind.GREATER_THAN_OR_EQUAL_TO) || tree.is(Kind.LESS_THAN)) {
-      result = isZero(tree.leftOperand()) || isOne(tree.rightOperand());
+      result = LiteralUtils.isZero(tree.leftOperand()) || LiteralUtils.isOne(tree.rightOperand());
     } else if (tree.is(Kind.GREATER_THAN) || tree.is(Kind.LESS_THAN_OR_EQUAL_TO)) {
-      result = isOne(tree.leftOperand()) || isZero(tree.rightOperand());
+      result = LiteralUtils.isOne(tree.leftOperand()) || LiteralUtils.isZero(tree.rightOperand());
     } else {
       result = false;
     }
@@ -100,16 +100,6 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
   private static boolean isEqualityExpression(BinaryExpressionTree tree) {
     return tree.is(Kind.EQUAL_TO) ||
       tree.is(Kind.NOT_EQUAL_TO);
-  }
-
-  private static boolean isZero(ExpressionTree tree) {
-    return tree.is(Kind.INT_LITERAL) &&
-      "0".equals(((LiteralTree) tree).value());
-  }
-
-  private static boolean isOne(ExpressionTree tree) {
-    return tree.is(Kind.INT_LITERAL) &&
-      "1".equals(((LiteralTree) tree).value());
   }
 
 }
