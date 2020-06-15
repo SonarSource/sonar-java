@@ -91,15 +91,14 @@ public class JUnit45MethodAnnotationCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkJUnitMethod(MethodTree methodTree, int jUnitVersion) {
-    String name = methodTree.simpleName().name();
-    if (isSetupTearDown(name) || (jUnitVersion == 5 && isAnnotatedWith(methodTree, ORG_JUNIT_BEFORE, ORG_JUNIT_AFTER))) {
+    if (isSetupTearDownSignature(methodTree) || (jUnitVersion == 5 && isAnnotatedWith(methodTree, ORG_JUNIT_BEFORE, ORG_JUNIT_AFTER))) {
       checkSetupTearDownSignature(methodTree, jUnitVersion);
     }
   }
 
   private void checkSetupTearDownSignature(MethodTree methodTree, int jUnitVersion) {
     Symbol.MethodSymbol symbol = methodTree.symbol();
-    if (symbol.overriddenSymbol() != null) {
+    if (Boolean.TRUE.equals(methodTree.isOverriding())) {
       // Annotation can be in a parent.
       return;
     }
@@ -126,8 +125,11 @@ public class JUnit45MethodAnnotationCheck extends IssuableSubscriptionVisitor {
     return Arrays.stream(annotations).anyMatch(methodMetadata::isAnnotatedWith);
   }
 
-  private static boolean isSetupTearDown(String name) {
-    return JUNIT_SETUP.equals(name) || JUNIT_TEARDOWN.equals(name);
+  private static boolean isSetupTearDownSignature(MethodTree methodTree) {
+    String name = methodTree.simpleName().name();
+    return (JUNIT_SETUP.equals(name) || JUNIT_TEARDOWN.equals(name))
+      && methodTree.parameters().isEmpty()
+      && !methodTree.symbol().isPrivate();
   }
 
   private static String expectedAnnotation(Symbol.MethodSymbol symbol, int jUnitVersion) {
