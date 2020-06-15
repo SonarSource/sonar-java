@@ -39,7 +39,7 @@ import static org.sonar.java.checks.tests.AssertJChainSimplificationIndex.SIMPLI
 
 @Rule(key = "S5838")
 public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
-  private static final String ISSUE_MESSAGE_FORMAT_STRING = "Use %s instead";
+  private static final String ISSUE_MESSAGE_FORMAT_STRING = "Use %s instead.";
 
   private static final MethodMatchers ASSERTION_MESSAGE_METHODS = MethodMatchers.create()
     .ofSubTypes("org.assertj.core.api.AbstractAssert")
