@@ -34,7 +34,7 @@ class CapturingGroupTreeTest {
     assertKind(RegexTree.Kind.CAPTURING_GROUP, tree);
     CapturingGroupTree abc = ((CapturingGroupTree) tree);
     assertThat(abc.getGroupNumber()).isEqualTo(1);
-    assertThat(abc.getName()).isNull();
+    assertThat(abc.getName()).isEmpty();
 
     RegexTree abcElement = abc.getElement();
     assertKind(RegexTree.Kind.SEQUENCE, abcElement);
@@ -46,10 +46,10 @@ class CapturingGroupTreeTest {
     CapturingGroupTree bc = ((CapturingGroupTree) abcItems.get(2));
 
     assertThat(a.getGroupNumber()).isEqualTo(2);
-    assertThat(a.getName()).isNull();
+    assertThat(a.getName()).isEmpty();
 
     assertThat(bc.getGroupNumber()).isEqualTo(3);
-    assertThat(bc.getName()).isNull();
+    assertThat(bc.getName()).isEmpty();
 
     RegexTree bcElement = bc.getElement();
     assertKind(RegexTree.Kind.SEQUENCE, bcElement);
@@ -61,7 +61,7 @@ class CapturingGroupTreeTest {
 
     CapturingGroupTree c = ((CapturingGroupTree) bcItems.get(1));
     assertThat(c.getGroupNumber()).isEqualTo(4);
-    assertThat(c.getName()).isEqualTo("groupC");
+    assertThat(c.getName()).hasValue("groupC");
   }
 
 }
