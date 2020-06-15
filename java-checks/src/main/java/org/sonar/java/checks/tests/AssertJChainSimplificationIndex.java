@@ -92,7 +92,7 @@ public class AssertJChainSimplificationIndex {
   private static final String HAS_SAME_SIZE_AS = "hasSameSizeAs";
   private static final String LENGTH = "length";
 
-  private static final String OPTIONAL_PRESENT_REPLACEMENT = String.format("%s or %s", msgWithActual(IS_PRESENT), msgWithActual(IS_NOT_EMPTY));
+  private static final String OPTIONAL_PRESENT_REPLACEMENT = msgWithActual(IS_PRESENT);
   private static final String OPTIONAL_EMPTY_REPLACEMENT = String.format("%s or %s", msgWithActual(IS_NOT_PRESENT), msgWithActual(IS_EMPTY));
 
   /**
@@ -170,7 +170,7 @@ public class AssertJChainSimplificationIndex {
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected("isNotSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected(IS_SAME_AS)),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isNotInstanceOf", "ExpectedClass.class")),
-      methodCallInSubject(Matchers.IS_EMPTY_STRING, msgWithActual(IS_NOT_EMPTY)),
+      methodCallInSubject(Matchers.IS_EMPTY_GENERIC, msgWithActual(IS_NOT_EMPTY)),
       methodCallInSubject(Matchers.FILE_EXISTS, msgWithActual("doesNotExist")),
       methodCallInSubject(Matchers.FILE_AND_PATH_IS_ABSOLUTE, msgWithActual("isRelative")),
       methodCallInSubject(Matchers.IS_PRESENT, OPTIONAL_EMPTY_REPLACEMENT),
@@ -229,7 +229,7 @@ public class AssertJChainSimplificationIndex {
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.EQUAL_TO), msgWithActualExpected(IS_SAME_AS)),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.NOT_EQUAL_TO), msgWithActualExpected("isNotSameAs")),
       withSubjectArgumentCondition(arg -> arg.is(Tree.Kind.INSTANCE_OF), msgWithActualCustom("isInstanceOf", "ExpectedClass.class")),
-      methodCallInSubject(Matchers.IS_EMPTY_STRING, msgWithActual(IS_EMPTY)),
+      methodCallInSubject(Matchers.IS_EMPTY_GENERIC, msgWithActual(IS_EMPTY)),
       methodCallInSubject(Matchers.FILE_CAN_READ, msgWithActual("canRead")),
       methodCallInSubject(Matchers.FILE_CAN_WRITE, msgWithActual("canWrite")),
       methodCallInSubject(Matchers.FILE_EXISTS, msgWithActual("exists")),
@@ -238,7 +238,7 @@ public class AssertJChainSimplificationIndex {
       methodCallInSubject(Matchers.FILE_IS_FILE, msgWithActual("isFile")),
       methodCallInSubject(Matchers.PATH_STARTS_WITH, msgWithActualExpected("startsWithRaw")),
       methodCallInSubject(Matchers.PATH_ENDS_WITH, msgWithActualExpected("endsWithRaw")),
-      methodCallInSubject(Matchers.IS_EMPTY_STRING, msgWithActual(IS_EMPTY)),
+      methodCallInSubject(Matchers.IS_EMPTY_GENERIC, msgWithActual(IS_EMPTY)),
       methodCallInSubject(Matchers.MAP_CONTAINS_KEY, msgWithActualExpected("containsKey")),
       methodCallInSubject(Matchers.MAP_CONTAINS_VALUE, msgWithActualExpected("containsValue")),
       methodCallInSubject(Matchers.IS_PRESENT, OPTIONAL_PRESENT_REPLACEMENT),
@@ -294,7 +294,7 @@ public class AssertJChainSimplificationIndex {
       .addWithoutParametersMatcher().build();
     public static final MethodMatchers INDEX_OF_STRING = MethodMatchers.create().ofTypes(JAVA_LANG_STRING)
       .names("indexOf").addParametersMatcher(JAVA_LANG_STRING).build();
-    public static final MethodMatchers IS_EMPTY_STRING = MethodMatchers.create().ofTypes(JAVA_LANG_STRING, JAVA_UTIL_COLLECTION, JAVA_UTIL_MAP)
+    public static final MethodMatchers IS_EMPTY_GENERIC = MethodMatchers.create().ofTypes(JAVA_LANG_STRING, JAVA_UTIL_COLLECTION, JAVA_UTIL_MAP)
       .names(IS_EMPTY).addWithoutParametersMatcher().build();
     public static final MethodMatchers IS_EMPTY_OPTIONAL = MethodMatchers.create().ofTypes(JAVA_UTIL_OPTIONAL)
       .names(IS_EMPTY).addWithoutParametersMatcher().build();

@@ -311,12 +311,12 @@ public class AssertJChainSimplificationCheckTest {
   }
 
   void optionalRelatedAssertionChains() {
-    assertThat(Optional.empty().isPresent()).isTrue(); // Noncompliant {{Use assertThat(actual).isPresent() or assertThat(actual).isNotEmpty() instead}}
+    assertThat(Optional.empty().isPresent()).isTrue(); // Noncompliant {{Use assertThat(actual).isPresent() instead}}
     assertThat(getOptional().isPresent()).isFalse(); // Noncompliant {{Use assertThat(actual).isNotPresent() or assertThat(actual).isEmpty() instead}}
     assertThat(getOptional().orElse(null)).isNull(); // Noncompliant {{Use assertThat(actual).isNotPresent() or assertThat(actual).isEmpty() instead}}
-    assertThat(getOptional().orElse(null)).isNotNull(); // Noncompliant {{Use assertThat(actual).isPresent() or assertThat(actual).isNotEmpty() instead}}
+    assertThat(getOptional().orElse(null)).isNotNull(); // Noncompliant {{Use assertThat(actual).isPresent() instead}}
     assertThat(getOptional()).isEqualTo(Optional.empty()); // Noncompliant {{Use assertThat(actual).isNotPresent() or assertThat(actual).isEmpty() instead}}
-    assertThat(getOptional()).isNotEqualTo(Optional.empty()); // Noncompliant {{Use assertThat(actual).isPresent() or assertThat(actual).isNotEmpty() instead}}
+    assertThat(getOptional()).isNotEqualTo(Optional.empty()); // Noncompliant {{Use assertThat(actual).isPresent() instead}}
     assertThat(getOptional().get()).isEqualTo(getObject()); // Noncompliant {{Use assertThat(actual).contains(expected) instead}}
     assertThat(getOptional().get()).isSameAs(getObject()); // Noncompliant {{Use assertThat(actual).containsSame(expected) instead}}
   }

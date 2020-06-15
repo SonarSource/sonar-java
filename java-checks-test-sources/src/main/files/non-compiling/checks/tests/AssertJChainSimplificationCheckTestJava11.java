@@ -31,6 +31,6 @@ class AssertJChainSimplificationCheckTestJava11 {
 
   void optionalRelatedAssertionChains() {
     assertThat(getOptional().isEmpty()).isTrue(); // Noncompliant {{Use assertThat(actual).isNotPresent() or assertThat(actual).isEmpty() instead}}
-    assertThat(getOptional().isEmpty()).isFalse(); // Noncompliant {{Use assertThat(actual).isPresent() or assertThat(actual).isNotEmpty() instead}}
+    assertThat(getOptional().isEmpty()).isFalse(); // Noncompliant {{Use assertThat(actual).isPresent() instead}}
   }
 }
