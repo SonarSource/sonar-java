@@ -44,6 +44,7 @@ import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
 import org.sonar.java.checks.regex.AnchorPrecedenceCheck;
+import org.sonar.java.checks.regex.DuplicatesInCharacterClassCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
@@ -346,6 +347,7 @@ public final class CheckList {
       DoublePrefixOperatorCheck.class,
       DuplicateArgumentCheck.class,
       DuplicateConditionIfElseIfCheck.class,
+      DuplicatesInCharacterClassCheck.class,
       DynamicClassLoadCheck.class,
       EmailHotspotCheck.class,
       EmptyBlockCheck.class,
