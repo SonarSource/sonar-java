@@ -153,7 +153,7 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
    * @return The flags with which the regex is created if flags are supplied and can be determined statically. 0 (no
    *         flags) otherwise.
    */
-  private static int getFlags(MethodInvocationTree mit) {
+  protected static int getFlags(MethodInvocationTree mit) {
     if (mit.symbol().name().equals("compile") && mit.arguments().size() == 2) {
       return mit.arguments().get(1).asConstant(Integer.class).orElse(0);
     }
