@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
@@ -41,6 +42,7 @@ class CurlyBraceQuantifierTest {
   void testCurlyBracedQuantifier() {
     RegexTree regex = assertSuccessfulParse("x{23,42}");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
+    assertKind(RegexTree.Kind.REPETITION, repetition);
     assertPlainCharacter('x', repetition.getElement());
     CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
     assertLocation(2, 4, quantifier.getMinimumRepetitionsToken());
@@ -57,6 +59,7 @@ class CurlyBraceQuantifierTest {
   void testCurlyBracedQuantifierWithNoUpperBound() {
     RegexTree regex = assertSuccessfulParse("x{42,}");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
+    assertKind(RegexTree.Kind.REPETITION, repetition);
     assertPlainCharacter('x', repetition.getElement());
     CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
     assertEquals(42, quantifier.getMinimumRepetitions(), "Lower bound should be 42.");

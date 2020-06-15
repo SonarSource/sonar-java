@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
+import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 
 class BoundaryTreeTest {
@@ -49,6 +50,7 @@ class BoundaryTreeTest {
   private static void assertBoundary(String regex, BoundaryTree.Type expectedType) {
     RegexTree tree = assertSuccessfulParse(regex);
     assertThat(tree).isInstanceOf(BoundaryTree.class);
+    assertKind(RegexTree.Kind.BOUNDARY, tree);
 
     BoundaryTree boundaryTree = (BoundaryTree) tree;
     assertThat(boundaryTree.type()).isEqualTo(expectedType);
