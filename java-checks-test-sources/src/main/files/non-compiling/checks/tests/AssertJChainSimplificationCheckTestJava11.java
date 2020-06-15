@@ -17,28 +17,20 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.tests;
+package checks.tests;
 
-import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import java.util.Optional;
 
-import static org.sonar.java.CheckTestUtils.nonCompilingTestSourcesPath;
-import static org.sonar.java.CheckTestUtils.testSourcesPath;
+import static org.assertj.core.api.Assertions.assertThat;
 
-class AssertJChainSimplificationCheckTest {
-  @Test
-  void test() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/AssertJChainSimplificationCheckTest.java"))
-      .withCheck(new AssertJChainSimplificationCheck())
-      .verifyIssues();
+class AssertJChainSimplificationCheckTestJava11 {
+
+  private Optional<Object> getOptional() {
+    return null;
   }
 
-  @Test
-  void testJava11Cases() {
-    JavaCheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/tests/AssertJChainSimplificationCheckTestJava11.java"))
-      .withCheck(new AssertJChainSimplificationCheck())
-      .verifyIssues();
+  void optionalRelatedAssertionChains() {
+    assertThat(getOptional().isEmpty()).isTrue(); // Noncompliant {{Use assertThat(actual).isNotPresent() or assertThat(actual).isEmpty() instead}}
+    assertThat(getOptional().isEmpty()).isFalse(); // Noncompliant {{Use assertThat(actual).isPresent() instead}}
   }
 }

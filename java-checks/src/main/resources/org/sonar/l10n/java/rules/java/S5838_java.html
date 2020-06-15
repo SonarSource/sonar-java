@@ -277,6 +277,22 @@ reported.</p>
       <td><code>assertThat(getMap().get(key)).isEqualTo(value)</code></td>
       <td><code>assertThat(getMap()).containsEntry(key, value)</code></td>
     </tr>
+    <tr>
+      <th> Related to <code>Optional</code></th>
+      <th> </th>
+    </tr>
+    <tr>
+      <td><code>assertThat(getOptional().isPresent()).isTrue()</code></td>
+      <td><code>assertThat(getOptional()).isPresent()</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getOptional().get()).isEqualTo(something)</code></td>
+      <td><code>assertThat(getOptional()).contains(something)</code></td>
+    </tr>
+    <tr>
+      <td><code>assertThat(getOptional().get()).isSameAs(something)</code></td>
+      <td><code>assertThat(getOptional()).containsSame(something)</code></td>
+    </tr>
   </tbody>
 </table>
 <h2>Noncompliant Code Example</h2>
