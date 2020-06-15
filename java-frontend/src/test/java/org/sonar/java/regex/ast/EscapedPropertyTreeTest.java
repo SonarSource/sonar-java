@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
+import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 
 class EscapedPropertyTreeTest {
@@ -87,6 +88,7 @@ class EscapedPropertyTreeTest {
   private static void assertEscapedProperty(String regex, String expectedProperty, boolean isNegation) {
     RegexTree tree = assertSuccessfulParse(regex);
     assertThat(tree).isInstanceOf(EscapedPropertyTree.class);
+    assertKind(RegexTree.Kind.ESCAPED_PROPERTY, tree);
 
     EscapedPropertyTree escapedPropertyTree = (EscapedPropertyTree) tree;
     assertThat(escapedPropertyTree.property()).isEqualTo(expectedProperty);

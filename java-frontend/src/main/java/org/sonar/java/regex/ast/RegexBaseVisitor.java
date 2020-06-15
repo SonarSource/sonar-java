@@ -19,6 +19,8 @@
  */
 package org.sonar.java.regex.ast;
 
+import java.util.List;
+
 public class RegexBaseVisitor implements RegexVisitor {
 
   private int activeFlags = 0;
@@ -36,6 +38,10 @@ public class RegexBaseVisitor implements RegexVisitor {
     return (activeFlags & flag) != 0;
   }
 
+  private void visit(List<RegexTree> trees) {
+    trees.forEach(this::visit);
+  }
+
   @Override
   public void visitPlainCharacter(PlainCharacterTree tree) {
     // No children to visit
@@ -43,16 +49,12 @@ public class RegexBaseVisitor implements RegexVisitor {
 
   @Override
   public void visitSequence(SequenceTree tree) {
-    for (RegexTree item : tree.getItems()) {
-      visit(item);
-    }
+    visit(tree.getItems());
   }
 
   @Override
   public void visitDisjunction(DisjunctionTree tree) {
-    for (RegexTree alternative : tree.getAlternatives()) {
-      visit(alternative);
-    }
+    visit(tree.getAlternatives());
   }
 
   @Override
@@ -110,16 +112,12 @@ public class RegexBaseVisitor implements RegexVisitor {
 
   @Override
   public void visitCharacterClassUnion(CharacterClassUnionTree tree) {
-    for (RegexTree child : tree.getCharacterClasses()) {
-      visit(child);
-    }
+    visit(tree.getCharacterClasses());
   }
 
   @Override
   public void visitCharacterClassIntersection(CharacterClassIntersectionTree tree) {
-    for (RegexTree child : tree.getCharacterClasses()) {
-      visit(child);
-    }
+    visit(tree.getCharacterClasses());
   }
 
   @Override

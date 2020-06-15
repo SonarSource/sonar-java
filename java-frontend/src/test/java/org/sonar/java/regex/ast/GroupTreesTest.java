@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
@@ -45,6 +46,7 @@ class GroupTreesTest {
   void testGroup() {
     RegexTree regex = assertSuccessfulParse("(x)");
     CapturingGroupTree group = assertType(CapturingGroupTree.class, regex);
+    assertKind(RegexTree.Kind.CAPTURING_GROUP, group);
     assertNull(group.getName(), "Group should be unnamed");
     assertPlainCharacter('x', group.getElement());
     assertLocation(0, 3, group);
@@ -79,6 +81,7 @@ class GroupTreesTest {
   void testNonCapturing() {
     RegexTree regex = assertSuccessfulParse("(?:x)");
     NonCapturingGroupTree group = assertType(NonCapturingGroupTree.class, regex);
+    assertKind(RegexTree.Kind.NON_CAPTURING_GROUP, group);
     RegexTree element = group.getElement();
     assertNotNull(element, "Group should have a body.");
     assertPlainCharacter('x', element);
@@ -133,6 +136,7 @@ class GroupTreesTest {
   void testNamedGroup() {
     RegexTree regex = assertSuccessfulParse("(?<foo>x)");
     CapturingGroupTree group = assertType(CapturingGroupTree.class, regex);
+    assertKind(RegexTree.Kind.CAPTURING_GROUP, group);
     assertNotNull(group.getName());
     assertEquals("foo", group.getName());
     assertPlainCharacter('x', group.getElement());
@@ -142,6 +146,7 @@ class GroupTreesTest {
   void testPositiveLookAhead() {
     RegexTree regex = assertSuccessfulParse("(?=x)");
     LookAroundTree lookAround = assertType(LookAroundTree.class, regex);
+    assertKind(RegexTree.Kind.LOOK_AROUND, lookAround);
     assertEquals(LookAroundTree.Polarity.POSITIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.AHEAD, lookAround.getDirection());
     assertPlainCharacter('x', lookAround.getElement());
@@ -151,6 +156,7 @@ class GroupTreesTest {
   void testPositiveLookBehind() {
     RegexTree regex = assertSuccessfulParse("(?<=x)");
     LookAroundTree lookAround = assertType(LookAroundTree.class, regex);
+    assertKind(RegexTree.Kind.LOOK_AROUND, lookAround);
     assertEquals(LookAroundTree.Polarity.POSITIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.BEHIND, lookAround.getDirection());
     assertPlainCharacter('x', lookAround.getElement());
@@ -160,6 +166,7 @@ class GroupTreesTest {
   void testNegativeLookAhead() {
     RegexTree regex = assertSuccessfulParse("(?!x)");
     LookAroundTree lookAround = assertType(LookAroundTree.class, regex);
+    assertKind(RegexTree.Kind.LOOK_AROUND, lookAround);
     assertEquals(LookAroundTree.Polarity.NEGATIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.AHEAD, lookAround.getDirection());
     assertPlainCharacter('x', lookAround.getElement());
@@ -169,6 +176,7 @@ class GroupTreesTest {
   void testNegativeLookBehind() {
     RegexTree regex = assertSuccessfulParse("(?<!x)");
     LookAroundTree lookAround = assertType(LookAroundTree.class, regex);
+    assertKind(RegexTree.Kind.LOOK_AROUND, lookAround);
     assertEquals(LookAroundTree.Polarity.NEGATIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.BEHIND, lookAround.getDirection());
     assertPlainCharacter('x', lookAround.getElement());
@@ -178,6 +186,7 @@ class GroupTreesTest {
   void testAtomicGroup() {
     RegexTree regex = assertSuccessfulParse("(?>x)");
     AtomicGroupTree group = assertType(AtomicGroupTree.class, regex);
+    assertKind(RegexTree.Kind.ATOMIC_GROUP, group);
     assertPlainCharacter('x', group.getElement());
   }
 
