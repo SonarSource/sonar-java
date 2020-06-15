@@ -22,6 +22,7 @@ package org.sonar.java.regex.ast;
 import org.junit.jupiter.api.Test;
 
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterClass;
+import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
@@ -32,6 +33,7 @@ class DotTreeTest {
   void onlyDot() {
     RegexTree regex = assertSuccessfulParse(".");
     assertType(DotTree.class, regex);
+    assertKind(RegexTree.Kind.DOT, regex);
   }
 
   @Test
