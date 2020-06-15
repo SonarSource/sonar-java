@@ -16,3 +16,19 @@ class ObjectFinalizeOverridenNotPublicCheck_Compliant_1 {
   }
 
 }
+
+abstract class ClassWithFinalize {
+  public abstract void finalize(String arg) throws Throwable; // Compliant
+}
+
+class ObjectFinalizeOverridenNotPublicCheck_Extends_ClassWithFinalize extends ClassWithFinalize {
+
+  @Override
+  public void finalize(String arg) throws Throwable { // Compliant
+  }
+
+  @Override
+  public void finalize() throws Throwable { // Noncompliant
+  }
+
+}

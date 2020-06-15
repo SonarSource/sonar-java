@@ -19,16 +19,14 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S1174")
 public class ObjectFinalizeOverridenNotPublicCheck extends IssuableSubscriptionVisitor {
@@ -51,12 +49,6 @@ public class ObjectFinalizeOverridenNotPublicCheck extends IssuableSubscriptionV
   }
 
   private static boolean isFinalize(MethodTree methodTree) {
-    if ("finalize".equals(methodTree.simpleName().name())) {
-      Tree returnType = methodTree.returnType();
-      if (returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
-        return "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
-      }
-    }
-    return false;
+    return "finalize".equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty();
   }
 }
