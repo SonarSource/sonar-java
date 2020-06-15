@@ -1,13 +1,5 @@
 package checks;
 
-class JUnit45MethodAnnotationCheck_JUnit4_compliant1 {
-  protected Object step() { return null; } // unrelated
-  protected Object teaDown() { return null; } // typo from tearDown, but could be unrelated
-  @org.junit.Test void test() { }
-  @org.junit.Before public void setUp() { }
-  @org.junit.After public void tearDown() { }
-}
-
 class JUnit45MethodAnnotationCheck_JUnit4 {
   @org.junit.Test void test() { }
 
@@ -18,6 +10,8 @@ class JUnit45MethodAnnotationCheck_JUnit4 {
 class JUnit45MethodAnnotationCheck_JUnit4_compliant {
   protected Object step() { return null; } // unrelated
   protected Object teaDown() { return null; } // typo from tearDown, but could be unrelated
+  public void setUp(boolean b) { } // Compliant, setUp with argument are excluded
+  public void tearDown(String s) { } // Compliant, tearDown with argument are excluded
   @org.junit.Test void test() { }
   @org.junit.Before public void setUp() { }
   @org.junit.After public void tearDown() { }
@@ -27,6 +21,12 @@ class JUnit45MethodAnnotationCheck_JUnit4_compliant2 {
   @org.junit.Test void test() { }
   @org.junit.BeforeClass public static void setUp() { }
   @org.junit.AfterClass public static void tearDown() { }
+}
+
+class JUnit45MethodAnnotationCheck_JUnit4_compliant_private_setup {
+  @org.junit.Test void test() { }
+  private void setUp() { }
+  private void tearDown() { }
 }
 
 abstract class AbstractJUnit45MethodAnnotationCheck_JUnit4 {
