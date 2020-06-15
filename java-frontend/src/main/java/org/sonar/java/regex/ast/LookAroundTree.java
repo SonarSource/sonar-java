@@ -19,7 +19,7 @@
  */
 package org.sonar.java.regex.ast;
 
-public class LookAroundTree extends RegexTree {
+public class LookAroundTree extends GroupTree {
 
   public enum Direction {
     AHEAD, BEHIND
@@ -33,13 +33,10 @@ public class LookAroundTree extends RegexTree {
 
   private final Direction direction;
 
-  private final RegexTree element;
-
   public LookAroundTree(RegexSource source, IndexRange range, Polarity polarity, Direction direction, RegexTree element) {
-    super(source, range);
+    super(source, RegexTree.Kind.LOOK_AROUND, element, range);
     this.polarity = polarity;
     this.direction = direction;
-    this.element = element;
   }
 
   public Polarity getPolarity() {
@@ -50,18 +47,9 @@ public class LookAroundTree extends RegexTree {
     return direction;
   }
 
-  public RegexTree getElement() {
-    return element;
-  }
-
   @Override
   public void accept(RegexVisitor visitor) {
     visitor.visitLookAround(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return RegexTree.Kind.LOOK_AROUND;
   }
 
   public static LookAroundTree positiveLookAhead(RegexSource source, IndexRange range, RegexTree element) {
@@ -79,5 +67,4 @@ public class LookAroundTree extends RegexTree {
   public static LookAroundTree negativeLookBehind(RegexSource source, IndexRange range, RegexTree element) {
     return new LookAroundTree(source, range, Polarity.NEGATIVE, Direction.BEHIND, element);
   }
-
 }

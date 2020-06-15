@@ -22,25 +22,22 @@ package org.sonar.java.regex.ast;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-public class NonCapturingGroupTree extends RegexTree {
-
-  @CheckForNull
-  private final RegexTree element;
+public class NonCapturingGroupTree extends GroupTree {
 
   private final int enabledFlags;
 
   private final int disabledFlags;
 
   public NonCapturingGroupTree(RegexSource source, IndexRange range, int enabledFlags, int disabledFlags, @Nullable RegexTree element) {
-    super(source, range);
+    super(source, RegexTree.Kind.NON_CAPTURING_GROUP, element, range);
     this.enabledFlags = enabledFlags;
     this.disabledFlags = disabledFlags;
-    this.element = element;
   }
 
+  @Override
   @CheckForNull
   public RegexTree getElement() {
-    return element;
+    return super.getElement();
   }
 
   public int getEnabledFlags() {
@@ -54,10 +51,5 @@ public class NonCapturingGroupTree extends RegexTree {
   @Override
   public void accept(RegexVisitor visitor) {
     visitor.visitNonCapturingGroup(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return RegexTree.Kind.NON_CAPTURING_GROUP;
   }
 }
