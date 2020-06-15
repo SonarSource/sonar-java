@@ -21,12 +21,14 @@ package org.sonar.java.regex;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.regex.ast.AtomicGroupTree;
-import java.util.function.Function;
 import org.sonar.java.regex.ast.BackReferenceTree;
 import org.sonar.java.regex.ast.BoundaryTree;
+import org.sonar.java.regex.ast.CapturingGroupTree;
 import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterClassUnionTree;
@@ -35,7 +37,7 @@ import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.DotTree;
 import org.sonar.java.regex.ast.EscapedPropertyTree;
-import org.sonar.java.regex.ast.CapturingGroupTree;
+import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.LookAroundTree;
@@ -58,6 +60,8 @@ public class RegexParser {
   private final RegexLexer characters;
 
   private final List<SyntaxError> errors;
+
+  private int groupNumber = 1;
 
   public RegexParser(RegexSource source, boolean freeSpacingMode) {
     this.source = source;
@@ -239,7 +243,7 @@ public class RegexParser {
     }
   }
 
-  private RegexTree parseGroup() {
+  private GroupTree parseGroup() {
     JavaCharacter openingParen = characters.getCurrent();
     characters.moveNext();
     if (characters.currentIs("?=")) {
@@ -265,12 +269,18 @@ public class RegexParser {
       } else {
         expected("'>'");
       }
-      return finishGroup(openingParen, (range, inner) -> new CapturingGroupTree(source, range, name, inner));
+      return finishGroup(openingParen, newCapturingGroup(name));
     } else if (characters.currentIs("?")) {
       return parseNonCapturingGroup(openingParen);
     } else {
-      return finishGroup(openingParen, (range, inner) -> new CapturingGroupTree(source, range, null, inner));
+      return finishGroup(openingParen, newCapturingGroup(null));
     }
+  }
+
+  private GroupConstructor newCapturingGroup(@Nullable String name) {
+    int index = groupNumber;
+    groupNumber++;
+    return (range, inner) -> new CapturingGroupTree(source, range, name, index, inner);
   }
 
   private String parseGroupName() {
@@ -286,7 +296,7 @@ public class RegexParser {
     return name;
   }
 
-  private RegexTree parseNonCapturingGroup(JavaCharacter openingParen) {
+  private GroupTree parseNonCapturingGroup(JavaCharacter openingParen) {
     // Discard '?'
     characters.moveNext();
     int enabledFlags = parseFlags();
@@ -356,11 +366,11 @@ public class RegexParser {
     }
   }
 
-  private RegexTree finishGroup(JavaCharacter openingParen, GroupConstructor groupConstructor) {
+  private GroupTree finishGroup(JavaCharacter openingParen, GroupConstructor groupConstructor) {
     return finishGroup(characters.getFreeSpacingMode(), openingParen, groupConstructor);
   }
 
-  private RegexTree finishGroup(boolean previousFreeSpacingMode, JavaCharacter openingParen, GroupConstructor groupConstructor) {
+  private GroupTree finishGroup(boolean previousFreeSpacingMode, JavaCharacter openingParen, GroupConstructor groupConstructor) {
     RegexTree inner = parseDisjunction();
     characters.setFreeSpacingMode(previousFreeSpacingMode);
     if (characters.currentIs(')')) {
@@ -624,7 +634,7 @@ public class RegexParser {
   }
 
   private interface GroupConstructor {
-    RegexTree construct(IndexRange range, RegexTree element);
+    GroupTree construct(IndexRange range, RegexTree element);
   }
 
   private static boolean isAsciiDigit(int c) {
