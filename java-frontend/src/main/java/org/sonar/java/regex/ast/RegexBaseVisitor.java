@@ -20,6 +20,7 @@
 package org.sonar.java.regex.ast;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class RegexBaseVisitor implements RegexVisitor {
 
@@ -59,14 +60,14 @@ public class RegexBaseVisitor implements RegexVisitor {
 
   @Override
   public void visitCapturingGroup(CapturingGroupTree tree) {
-    visit(tree.getElement());
+    visitAndRestoreFlags(tree.getElement());
   }
 
   @Override
   public final void visitNonCapturingGroup(NonCapturingGroupTree tree) {
     int oldFlags = activeFlags;
-    activeFlags ^= tree.getEnabledFlags();
-    activeFlags ^= ~tree.getDisabledFlags();
+    activeFlags |= normalizeFlags(tree.getEnabledFlags());
+    activeFlags &= ~normalizeFlags(tree.getDisabledFlags());
     doVisitNonCapturingGroup(tree);
     if (tree.getElement() != null) {
       activeFlags = oldFlags;
@@ -82,12 +83,26 @@ public class RegexBaseVisitor implements RegexVisitor {
 
   @Override
   public void visitAtomicGroup(AtomicGroupTree tree) {
-    visit(tree.getElement());
+    visitAndRestoreFlags(tree.getElement());
   }
 
   @Override
   public void visitLookAround(LookAroundTree tree) {
-    visit(tree.getElement());
+    visitAndRestoreFlags(tree.getElement());
+  }
+
+  private static int normalizeFlags(int flags) {
+    // UNICODE_CHARACTER_CLASS implies UNICODE_CASE (both when enabling and disabling)
+    if ((flags & Pattern.UNICODE_CHARACTER_CLASS) != 0) {
+      flags |= Pattern.UNICODE_CASE;
+    }
+    return flags;
+  }
+
+  private void visitAndRestoreFlags(RegexTree tree) {
+    int oldFlags = activeFlags;
+    visit(tree);
+    activeFlags = oldFlags;
   }
 
   @Override
