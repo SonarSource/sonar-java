@@ -19,7 +19,7 @@
  */
 package org.sonar.java.regex.ast;
 
-import javax.annotation.CheckForNull;
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 public class CapturingGroupTree extends GroupTree {
@@ -39,9 +39,8 @@ public class CapturingGroupTree extends GroupTree {
     visitor.visitCapturingGroup(this);
   }
 
-  @CheckForNull
-  public String getName() {
-    return name;
+  public Optional<String> getName() {
+    return Optional.ofNullable(name);
   }
 
   public int getGroupNumber() {
