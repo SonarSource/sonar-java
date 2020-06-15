@@ -19,7 +19,7 @@
  */
 package org.sonar.java.regex;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import org.opentest4j.AssertionFailedError;
@@ -31,9 +31,11 @@ import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.SequenceTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -144,7 +146,22 @@ public class RegexParserTestUtils {
 
   public static RegexSource makeSource(String content) {
     CompilationUnitTree tree = JParserTestUtils.parse(String.format(JAVA_CODE, content));
-    LiteralTree literal = (LiteralTree) ((VariableTree)((ClassTree)tree.types().get(0)).members().get(0)).initializer();
-    return new RegexSource(Collections.singletonList(literal));
+    ClassTree foo = (ClassTree) tree.types().get(0);
+    VariableTree str = (VariableTree) foo.members().get(0);
+    LiteralCollector visitor = new LiteralCollector();
+    str.initializer().accept(visitor);
+    return new RegexSource(visitor.stringLiterals);
+  }
+
+  private static class LiteralCollector extends BaseTreeVisitor {
+
+    private final List<LiteralTree> stringLiterals = new ArrayList<>();
+
+    @Override
+    public void visitLiteral(LiteralTree tree) {
+      if (tree.is(Tree.Kind.STRING_LITERAL)) {
+        stringLiterals.add(tree);
+      }
+    }
   }
 }
