@@ -26,6 +26,7 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexParser;
 import org.sonar.java.regex.SyntaxError;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -47,7 +48,7 @@ class GroupTreesTest {
     RegexTree regex = assertSuccessfulParse("(x)");
     CapturingGroupTree group = assertType(CapturingGroupTree.class, regex);
     assertKind(RegexTree.Kind.CAPTURING_GROUP, group);
-    assertNull(group.getName(), "Group should be unnamed");
+    assertThat(group.getName()).as("Group should be unnamed").isEmpty();
     assertPlainCharacter('x', group.getElement());
     assertLocation(0, 3, group);
     assertLocation(1, 2, group.getElement());
@@ -137,8 +138,7 @@ class GroupTreesTest {
     RegexTree regex = assertSuccessfulParse("(?<foo>x)");
     CapturingGroupTree group = assertType(CapturingGroupTree.class, regex);
     assertKind(RegexTree.Kind.CAPTURING_GROUP, group);
-    assertNotNull(group.getName());
-    assertEquals("foo", group.getName());
+    assertThat(group.getName()).hasValue("foo");
     assertPlainCharacter('x', group.getElement());
   }
 
