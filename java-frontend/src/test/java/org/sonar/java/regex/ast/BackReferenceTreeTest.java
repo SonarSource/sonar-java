@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
+import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 
 class BackReferenceTreeTest {
@@ -64,6 +65,7 @@ class BackReferenceTreeTest {
   private static void assertBackReference(String regex, String expectedGroupName) {
     RegexTree tree = assertSuccessfulParse(regex);
     assertThat(tree).isInstanceOf(BackReferenceTree.class);
+    assertKind(RegexTree.Kind.BACK_REFERENCE, tree);
 
     BackReferenceTree backReferenceTree = (BackReferenceTree) tree;
     assertThat(backReferenceTree.isNamedGroup()).isTrue();

@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterClass;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterRange;
+import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
@@ -47,6 +48,7 @@ class CharacterClassTreeTest {
   @Test
   void dashRange() {
     RegexTree regex = assertSuccessfulParse("[---]");
+    assertKind(RegexTree.Kind.CHARACTER_CLASS, regex);
     assertCharacterRange('-', '-', assertCharacterClass(false, regex));
   }
 
@@ -54,6 +56,7 @@ class CharacterClassTreeTest {
   void leadingDash() {
     RegexTree regex = assertSuccessfulParse("[-a]");
     CharacterClassUnionTree union = assertType(CharacterClassUnionTree.class, assertCharacterClass(false, regex));
+    assertKind(RegexTree.Kind.CHARACTER_CLASS_UNION, union);
     assertListElements(union.getCharacterClasses(),
       firstChar -> assertPlainCharacter('-', firstChar),
       secondChar -> assertPlainCharacter('a', secondChar)
@@ -93,6 +96,7 @@ class CharacterClassTreeTest {
   void intersection() {
     RegexTree regex = assertSuccessfulParse("[a-z&&[^g-i]&]");
     CharacterClassIntersectionTree intersection = assertType(CharacterClassIntersectionTree.class, assertCharacterClass(false, regex));
+    assertKind(RegexTree.Kind.CHARACTER_CLASS_INTERSECTION, intersection);
     assertListElements(intersection.getCharacterClasses(),
       first -> assertCharacterRange('a', 'z', first),
       second -> {
