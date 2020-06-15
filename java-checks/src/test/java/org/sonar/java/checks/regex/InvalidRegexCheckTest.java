@@ -24,13 +24,13 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-class RegexParseErrorCheckTest {
+class InvalidRegexCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile(testSourcesPath("checks/regex/RegexParseErrorCheck.java"))
-      .withCheck(new RegexParseErrorCheck())
+      .onFile(testSourcesPath("checks/regex/InvalidRegexCheck.java"))
+      .withCheck(new InvalidRegexCheck())
       .verifyIssues();
   }
 
