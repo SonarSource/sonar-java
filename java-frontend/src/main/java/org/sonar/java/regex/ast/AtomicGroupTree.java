@@ -19,27 +19,14 @@
  */
 package org.sonar.java.regex.ast;
 
-public class AtomicGroupTree extends RegexTree {
-
-  private final RegexTree element;
+public class AtomicGroupTree extends GroupTree {
 
   public AtomicGroupTree(RegexSource source, IndexRange range, RegexTree element) {
-    super(source, range);
-    this.element = element;
+    super(source, RegexTree.Kind.ATOMIC_GROUP, element, range);
   }
-
-  public RegexTree getElement() {
-    return element;
-  }
-
 
   @Override
   public void accept(RegexVisitor visitor) {
     visitor.visitAtomicGroup(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return RegexTree.Kind.ATOMIC_GROUP;
   }
 }
