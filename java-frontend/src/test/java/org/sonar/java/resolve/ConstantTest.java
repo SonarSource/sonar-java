@@ -61,12 +61,14 @@ class ConstantTest {
           valuesByFieldName.put(variableTree.simpleName().name(), value);
         }
       }), Collections.singletonList(bytecodeDir), null));
-    assertThat(valuesByFieldName.keySet()).contains("CONST1", "nonStatic", "nonFinal", "BOOLEAN_TRUE", "BOOLEAN_FALSE");
-    assertThat(valuesByFieldName.get("CONST1")).isEqualTo("CONST_VALUE");
-    assertThat(valuesByFieldName.get("nonStatic")).isNull();
-    assertThat(valuesByFieldName.get("nonFinal")).isNull();
-    assertThat(valuesByFieldName.get("BOOLEAN_TRUE")).isEqualTo(Boolean.TRUE);
-    assertThat(valuesByFieldName.get("BOOLEAN_FALSE")).isEqualTo(Boolean.FALSE);
+
+    assertThat(valuesByFieldName)
+      .containsKeys("CONST1", "nonStatic", "nonFinal", "BOOLEAN_TRUE", "BOOLEAN_FALSE")
+      .containsEntry("CONST1", "CONST_VALUE")
+      .containsEntry("nonStatic", null)
+      .containsEntry("nonFinal", null)
+      .containsEntry("BOOLEAN_TRUE", Boolean.TRUE)
+      .containsEntry("BOOLEAN_FALSE", Boolean.FALSE);
 
     // See Java 13 Virtual Machine Specification 4.7.2:
     // constant values of short, char and byte types are stored in bytecode as CONSTANT_Integer
