@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.regex.ast.Location;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -67,8 +68,14 @@ public interface RegexCheck extends JavaCheck {
     }
 
     private static List<AnalyzerMessage.TextSpan> textSpansFromRegexSyntaxElement(RegexSyntaxElement tree) {
-      return tree.getLocations().stream()
-        .map(location -> {
+      List<Location> locs = tree.getLocations().stream()
+        .filter(location -> !location.isEmpty())
+        .collect(Collectors.toList());
+      if (locs.isEmpty()) {
+        // contains only empty locations, take the first one
+        locs = Collections.singletonList(tree.getLocations().get(0));
+      }
+      return locs.stream().map(location -> {
           AnalyzerMessage.TextSpan result = AnalyzerMessage.textSpanFor(location.getJavaTree());
           return new AnalyzerMessage.TextSpan(
             result.startLine,
