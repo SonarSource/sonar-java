@@ -136,4 +136,16 @@ public class LiteralUtils {
   public static boolean isFalse(Tree tree) {
     return tree.is(Kind.BOOLEAN_LITERAL) && "false".equals(((LiteralTree) tree).value());
   }
+
+  public static boolean isZero(ExpressionTree tree) {
+    return tree.is(Kind.INT_LITERAL) && "0".equals(((LiteralTree) tree).value());
+  }
+
+  public static boolean isOne(ExpressionTree tree) {
+    return tree.is(Kind.INT_LITERAL) && "1".equals(((LiteralTree) tree).value());
+  }
+
+  public static boolean isNegOne(ExpressionTree tree) {
+    return tree.is(Kind.UNARY_MINUS) && isOne(((UnaryExpressionTree) tree).expression());
+  }
 }
