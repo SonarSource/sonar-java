@@ -21,9 +21,11 @@ package org.sonar.java.checks.regex;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.DisjunctionTree;
+import org.sonar.java.regex.ast.NonCapturingGroupTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.SequenceTree;
@@ -39,27 +41,42 @@ public class AnchorPrecedenceCheck extends AbstractRegexCheck {
     }
   }
 
+  private enum Position {
+    BEGINNING, END
+  }
+
   private class Visitor extends RegexBaseVisitor {
     @Override
     public void visitDisjunction(DisjunctionTree tree) {
       RegexTree first = tree.getAlternatives().get(0);
       RegexTree last = tree.getAlternatives().get(tree.getAlternatives().size() - 1);
-      if (isAnchoredAtBeginning(first) || isAnchoredAtEnd(last)) {
+      if (isAnchored(first, Position.BEGINNING) || isAnchored(last, Position.END)) {
         reportIssue(tree, "Group the alternatives together to get the intended precedence.", null, Collections.emptyList());
       }
       super.visitDisjunction(tree);
     }
 
-    private boolean isAnchoredAtBeginning(RegexTree tree) {
-      return tree.is(RegexTree.Kind.SEQUENCE) && ((SequenceTree) tree).getItems().get(0).is(RegexTree.Kind.BOUNDARY);
+    private boolean isAnchored(RegexTree tree, Position position) {
+      if (!tree.is(RegexTree.Kind.SEQUENCE)) {
+        return false;
+      }
+      SequenceTree sequence = (SequenceTree) tree;
+      List<RegexTree> items = sequence.getItems().stream()
+        .filter(item -> !isFlagSetter(item))
+        .collect(Collectors.toList());
+      if (items.isEmpty()) {
+        return false;
+      }
+      int index = position == Position.BEGINNING ? 0 : (items.size() - 1);
+      return items.get(index).is(RegexTree.Kind.BOUNDARY);
     }
 
-    private boolean isAnchoredAtEnd(RegexTree tree) {
-      return tree.is(RegexTree.Kind.SEQUENCE) && last(((SequenceTree) tree).getItems()).is(RegexTree.Kind.BOUNDARY);
-    }
-
-    private <T> T last(List<T> items) {
-      return items.get(items.size() - 1);
+    /**
+     * Return whether the given regex is a non-capturing group without contents, i.e. one that only sets flags for the
+     * rest of the expression
+     */
+    private boolean isFlagSetter(RegexTree tree) {
+      return tree.is(RegexTree.Kind.NON_CAPTURING_GROUP) && ((NonCapturingGroupTree) tree).getElement() == null;
     }
 
   }
