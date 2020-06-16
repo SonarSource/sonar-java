@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -125,7 +126,8 @@ public class AssertJChainSimplificationIndex {
       PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isNegOne, "isNegative()"),
       PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isNotPositive()")))
     .put(IS_NOT_EQUAL_TO, ImmutableList.of(
-      PredicateSimplifierWithoutContext.withSingleArg(ExpressionUtils::isNullLiteral, "isNotNull()"),
+      PredicateSimplifierWithoutContext.withSingleArg(subject -> ExpressionUtils.isNullLiteral(subject) &&
+        !UnitTestUtils.isInUnitTestRelatedToObjectMethods(subject), "isNotNull()"),
       PredicateSimplifierWithoutContext.withSingleArg(ArgumentHelper::isZero, "isNotZero()")))
     .build();
 

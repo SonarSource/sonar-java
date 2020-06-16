@@ -77,7 +77,6 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisImplTest.java':[
 90,
-120,
 122,
 123,
 124,
@@ -88,17 +87,14 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/OrganizationTest.java':[
 83,
-94,
 102,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/ComponentImplTest.java':[
-110,
 112,
 113,
 120,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerDefinitionImplTest.java':[
-159,
 161,
 162,
 172,
@@ -152,9 +148,6 @@
 77,
 98,
 ],
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/event/EventTest.java':[
-65,
-],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/filemove/MatchTest.java':[
 76,
 ],
@@ -191,7 +184,6 @@
 64,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureKeyTest.java':[
-55,
 60,
 61,
 64,
@@ -199,7 +191,6 @@
 71,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/QualityGateStatusTest.java':[
-71,
 77,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/metric/MetricImplTest.java':[
@@ -207,7 +198,6 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/period/PeriodTest.java':[
 52,
-61,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionStatusTest.java':[
 77,
@@ -402,7 +392,6 @@
 51,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/exceptions/MessageTest.java':[
-72,
 75,
 79,
 84,
@@ -582,7 +571,6 @@
 329,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QualityProfileTest.java':[
-73,
 78,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/RegisterQualityProfilesMediumTest.java':[

@@ -23,12 +23,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
-import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
@@ -36,7 +34,6 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -111,9 +108,6 @@ public class AssertionCompareToSelfCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Replace this assertion to not have the same actual and expected expression.";
 
-  private static final Pattern UNIT_TEST_NAME_RELATED_TO_OBJECT_METHODS_REGEX =
-    Pattern.compile("equal|hash_?code|object_?method|to_?string", Pattern.CASE_INSENSITIVE);
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Kind.METHOD_INVOCATION);
@@ -151,11 +145,7 @@ public class AssertionCompareToSelfCheck extends IssuableSubscriptionVisitor {
     Type actualExpressionType = actualExpression.symbolType();
     return EQUALS_HASH_CODE_METHODS.contains(comparisonMethodName) &&
       !isPrimitiveOrNull(actualExpressionType) &&
-      isUnitTestNameContainsObjectMethodNames(ExpressionUtils.getEnclosingMethod(actualExpression));
-  }
-
-  private static boolean isUnitTestNameContainsObjectMethodNames(@Nullable MethodTree method) {
-    return method != null && UNIT_TEST_NAME_RELATED_TO_OBJECT_METHODS_REGEX.matcher(method.simpleName().name()).find();
+      UnitTestUtils.isInUnitTestRelatedToObjectMethods(actualExpression);
   }
 
   private static boolean isPrimitiveOrNull(Type actualExpressionType) {

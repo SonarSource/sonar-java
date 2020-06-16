@@ -21,9 +21,13 @@ package org.sonar.java.checks.helpers;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
+import javax.annotation.Nullable;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static java.util.Arrays.asList;
@@ -81,6 +85,9 @@ public final class UnitTestUtils {
     "org.junit.jupiter.params.ParameterizedTest"));
   private static final String NESTED_ANNOTATION = "org.junit.jupiter.api.Nested";
 
+  private static final Pattern UNIT_TEST_NAME_RELATED_TO_OBJECT_METHODS_REGEX =
+    Pattern.compile("equal|hash_?code|object_?method|to_?string", Pattern.CASE_INSENSITIVE);
+
   private UnitTestUtils() {
   }
 
@@ -100,6 +107,14 @@ public final class UnitTestUtils {
 
   private static boolean hasJUnit5TestAnnotation(SymbolMetadata symbolMetadata) {
     return JUNIT5_TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith);
+  }
+
+  public static boolean isInUnitTestRelatedToObjectMethods(ExpressionTree expr) {
+    return isUnitTestRelatedToObjectMethods(ExpressionUtils.getEnclosingMethod(expr));
+  }
+
+  public static boolean isUnitTestRelatedToObjectMethods(@Nullable MethodTree method) {
+    return method != null && UNIT_TEST_NAME_RELATED_TO_OBJECT_METHODS_REGEX.matcher(method.simpleName().name()).find();
   }
 
 }
