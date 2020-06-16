@@ -136,6 +136,11 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(x.compareTo(y)).isNotPositive(); // Noncompliant {{Use assertThat(actual).isLessThanOrEqualTo(expected) instead}}
   }
 
+  void test_equals_method() {
+    Object obj = getObject();
+    assertThat(obj).isNotEqualTo(null); // Compliant, because the name of the test is related to "equals" and ".isNotNull()" does not call "obj.equals(null)"
+  }
+
   void stringRelatedAssertionChains() {
     String x = "x";
 
