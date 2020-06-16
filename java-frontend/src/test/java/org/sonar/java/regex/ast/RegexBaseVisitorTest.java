@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.RegexParserTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 class RegexBaseVisitorTest {
 
@@ -97,6 +98,78 @@ class RegexBaseVisitorTest {
 
       visitor.setActiveFlags(Pattern.LITERAL);
       assertThat(visitor.flagActive(Pattern.LITERAL)).isTrue();
+    }
+
+    @Test
+    void trackingFlagsInRegex() {
+      testFlags("(?i)a(?u:b)|[c](?-i:d)(?u)e((?-U)f)g(?U)h(?-u)i");
+    }
+
+    @Test
+    void trackingFlagsInRegexWithDifferentTypesOfGroups() {
+      testFlags("(?i)a(?:(?u)b)|[c](?>(?-i)d)(?u)e(?=(?-U)f)g(?U)h(?-u)i");
+    }
+
+    @Test
+    void visitingRegexWithVariousFeatures() {
+      PlainCharCollector visitor = new PlainCharCollector();
+      visitor.visit(RegexParserTestUtils.assertSuccessfulParse("[ab&&[^c]]+|d"));
+      assertThat(visitor.visitedCharacters()).isEqualTo("abcd");
+    }
+
+    private void testFlags(String regex) {
+      FlagChecker visitor = new FlagChecker();
+      visitor.visit(RegexParserTestUtils.assertSuccessfulParse(regex));
+      assertThat(visitor.visitedCharacters()).isEqualTo("abcdefghi");
+    }
+
+    private class PlainCharCollector extends RegexBaseVisitor {
+
+      StringBuilder characters = new StringBuilder();
+
+      @Override
+      public void visitPlainCharacter(PlainCharacterTree tree) {
+        characters.append(tree.getCharacter());
+        super.visitPlainCharacter(tree);
+      }
+
+      String visitedCharacters() {
+        return characters.toString();
+      }
+    }
+
+    private class FlagChecker extends PlainCharCollector {
+
+      @Override
+      public void visitPlainCharacter(PlainCharacterTree tree) {
+        switch (tree.getCharacter()) {
+          case 'a': case 'c': case 'f':
+            assertActiveFlags(true, false, false);
+            break;
+          case 'b': case 'e': case 'g':
+            assertActiveFlags(true, true, false);
+            break;
+          case 'd':
+            assertActiveFlags(false, false, false);
+            break;
+          case 'h':
+            assertActiveFlags(true, true, true);
+            break;
+          case 'i':
+            assertActiveFlags(true, false, true);
+            break;
+          default:
+            fail("Uncovered character in regex");
+        }
+        super.visitPlainCharacter(tree);
+      }
+
+      void assertActiveFlags(boolean i, boolean u, boolean U) {
+        assertThat(flagActive(Pattern.CASE_INSENSITIVE)).isEqualTo(i);
+        assertThat(flagActive(Pattern.UNICODE_CASE)).isEqualTo(u);
+        assertThat(flagActive(Pattern.UNICODE_CHARACTER_CLASS)).isEqualTo(U);
+      }
+
     }
 
   }
