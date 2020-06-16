@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.resolve.Symbols;
@@ -160,13 +161,13 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     } else if (ASSERT_NULLABLE_SECOND_ARGUMENT.matches(mit)) {
       checkNullableAssertion(new Argument(mit, 1));
     } else if (ASSERT_EQUALS_FIRST_AND_SECOND_ARGUMENTS.matches(mit)) {
-      checkCompatibleTypes(new Argument(mit, 1), new Argument(mit, 0), Option.ACCEPT_DISSIMILAR_INTERFACE);
+      checkCompatibleTypes(mit, new Argument(mit, 1), new Argument(mit, 0), Option.ACCEPT_DISSIMILAR_INTERFACE);
     } else if (ASSERT_EQUALS_SECOND_AND_THIRD_ARGUMENTS.matches(mit)) {
-      checkCompatibleTypes(new Argument(mit, 2), new Argument(mit, 1), Option.ACCEPT_DISSIMILAR_INTERFACE);
+      checkCompatibleTypes(mit, new Argument(mit, 2), new Argument(mit, 1), Option.ACCEPT_DISSIMILAR_INTERFACE);
     } else if (ASSERT_NOT_EQUALS_FIRST_AND_SECOND_ARGUMENTS.matches(mit)) {
-      checkCompatibleTypes(new Argument(mit, 1), new Argument(mit, 0), Option.REJECT_DISSIMILAR_INTERFACE);
+      checkCompatibleTypes(mit, new Argument(mit, 1), new Argument(mit, 0), Option.REJECT_DISSIMILAR_INTERFACE);
     } else if (ASSERT_NOT_EQUALS_SECOND_AND_THIRD_ARGUMENTS.matches(mit)) {
-      checkCompatibleTypes(new Argument(mit, 2), new Argument(mit, 1), Option.REJECT_DISSIMILAR_INTERFACE);
+      checkCompatibleTypes(mit, new Argument(mit, 2), new Argument(mit, 1), Option.REJECT_DISSIMILAR_INTERFACE);
     } else if (ASSERTJ_ASSERT_THAT.matches(mit)) {
       checkSubsequentAssertJPredicateCompatibleTypes(new Argument(mit, 0), mit);
     }
@@ -179,9 +180,9 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
         if (ASSERTJ_NULL_AND_NOT_NULL.matches(mit)) {
           checkNullableAssertion(ExpressionUtils.methodName(mit), actual);
         } else if (ASSERTJ_POSITIVE_PREDICATES.matches(mit)) {
-          checkCompatibleTypes(actual, new Argument(mit, 0), Option.ACCEPT_DISSIMILAR_INTERFACE);
+          checkCompatibleTypes(mit, actual, new Argument(mit, 0), Option.ACCEPT_DISSIMILAR_INTERFACE);
         } else if (ASSERTJ_NEGATIVE_PREDICATES.matches(mit)) {
-          checkCompatibleTypes(actual, new Argument(mit, 0), Option.REJECT_DISSIMILAR_INTERFACE);
+          checkCompatibleTypes(mit, actual, new Argument(mit, 0), Option.REJECT_DISSIMILAR_INTERFACE);
         } else if (!ASSERTJ_CONFIGURATION.matches(mit)) {
           // stop checking when methods like: extracting, using*, filtered*
           checkFollowingMethod = false;
@@ -202,10 +203,16 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkCompatibleTypes(Argument actual, Argument expected, Option option) {
-    if (areNotCompatibleTypes(actual, expected, option)) {
+  private void checkCompatibleTypes(MethodInvocationTree mit, Argument actual, Argument expected, Option option) {
+    if (areNotCompatibleTypes(actual, expected, option) && !isNotEqualsInTestRelatedToEquals(mit)) {
       createIssue(actual, expected);
     }
+  }
+
+  private static boolean isNotEqualsInTestRelatedToEquals(MethodInvocationTree mit) {
+    String methodName = ExpressionUtils.methodName(mit).name();
+    return (methodName.equals(ASSERT_NOT_EQUALS) || methodName.equals("isNotEqualTo")) &&
+      UnitTestUtils.isInUnitTestRelatedToObjectMethods(mit);
   }
 
   private static boolean areNotCompatibleTypes(Argument actual, Argument expected, Option option) {

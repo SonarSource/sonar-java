@@ -1,10 +1,4 @@
 {
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/OrganizationTest.java':[
-95,
-],
-'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/period/PeriodTest.java':[
-62,
-],
 'org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/ResultTest.java':[
 79,
 97,

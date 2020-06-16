@@ -124,6 +124,12 @@ public class AssertionTypesCheck_JUnit5 {
     assertNotEquals(Long.valueOf(5), Integer.valueOf(5)); // Noncompliant
   }
 
+  void test_equals_method() {
+    A a = new A();
+    assertNotEquals(a, "foo"); // Compliant, because the name of the test is related to "equals"
+                               // so it's legitimate to compare an object with dissimilar types
+  }
+
   interface I1 {
   }
 
