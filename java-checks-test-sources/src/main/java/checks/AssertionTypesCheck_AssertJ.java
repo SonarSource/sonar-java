@@ -124,6 +124,12 @@ public class AssertionTypesCheck_AssertJ {
     assertThat(arrayOfArray).isIn(arrayOfArray);           // false-negative
   }
 
+  void test_equals_method() {
+    A a = new A();
+    assertThat(a).isNotEqualTo("foo"); // Compliant, because the name of the test is related to "equals"
+                                       // so it's legitimate to compare an object with dissimilar types
+  }
+
   @Test
   void test_assertj_primitives() {
     assertThat(booleanPrimitive()).isEqualTo(true);         // Compliant
