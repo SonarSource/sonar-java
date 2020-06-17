@@ -99,7 +99,7 @@ class GroupTreesTest {
       second -> assertPlainCharacter(' ', second),
       third -> {
         NonCapturingGroupTree group = assertType(NonCapturingGroupTree.class, third);
-        assertEquals(Pattern.COMMENTS, group.getEnabledFlags());
+        assertEquals(Pattern.COMMENTS, group.getEnabledFlags().getMask());
         RegexTree element = group.getElement();
         assertNotNull(element, "Group should have a body.");
         assertPlainString("bc", element);
@@ -118,14 +118,14 @@ class GroupTreesTest {
       second -> assertPlainCharacter(' ', second),
       third -> {
         NonCapturingGroupTree group = assertType(NonCapturingGroupTree.class, third);
-        assertEquals(Pattern.COMMENTS, group.getEnabledFlags());
+        assertEquals(Pattern.COMMENTS, group.getEnabledFlags().getMask());
         assertNull(group.getElement(), "Group should not have a body.");
       },
       fourth -> assertPlainCharacter('b', fourth),
       fifth -> assertPlainCharacter('c', fifth),
       sixth -> {
         NonCapturingGroupTree group = assertType(NonCapturingGroupTree.class, sixth);
-        assertEquals(Pattern.COMMENTS, group.getDisabledFlags());
+        assertEquals(Pattern.COMMENTS, group.getDisabledFlags().getMask());
         assertNull(group.getElement(), "Group should not have a body.");
       },
       seventh -> assertPlainCharacter(' ', seventh),

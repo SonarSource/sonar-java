@@ -24,11 +24,17 @@ import javax.annotation.Nullable;
 
 public class NonCapturingGroupTree extends GroupTree {
 
-  private final int enabledFlags;
+  private final FlagSet enabledFlags;
 
-  private final int disabledFlags;
+  private final FlagSet disabledFlags;
 
-  public NonCapturingGroupTree(RegexSource source, IndexRange range, int enabledFlags, int disabledFlags, @Nullable RegexTree element) {
+  public NonCapturingGroupTree(
+    RegexSource source,
+    IndexRange range,
+    FlagSet enabledFlags,
+    FlagSet disabledFlags,
+    @Nullable RegexTree element
+  ) {
     super(source, RegexTree.Kind.NON_CAPTURING_GROUP, element, range);
     this.enabledFlags = enabledFlags;
     this.disabledFlags = disabledFlags;
@@ -40,11 +46,11 @@ public class NonCapturingGroupTree extends GroupTree {
     return super.getElement();
   }
 
-  public int getEnabledFlags() {
+  public FlagSet getEnabledFlags() {
     return enabledFlags;
   }
 
-  public int getDisabledFlags() {
+  public FlagSet getDisabledFlags() {
     return disabledFlags;
   }
 
