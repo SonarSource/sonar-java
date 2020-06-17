@@ -48,12 +48,20 @@ public class AnchorPrecedenceCheck extends AbstractRegexCheck {
   private class Visitor extends RegexBaseVisitor {
     @Override
     public void visitDisjunction(DisjunctionTree tree) {
-      RegexTree first = tree.getAlternatives().get(0);
-      RegexTree last = tree.getAlternatives().get(tree.getAlternatives().size() - 1);
-      if (isAnchored(first, Position.BEGINNING) || isAnchored(last, Position.END)) {
+      List<RegexTree> alternatives = tree.getAlternatives();
+      if (onlyAnchoredAt(alternatives, Position.BEGINNING) || onlyAnchoredAt(alternatives, Position.END)) {
         reportIssue(tree, "Group the alternatives together to get the intended precedence.", null, Collections.emptyList());
       }
       super.visitDisjunction(tree);
+    }
+
+    private boolean onlyAnchoredAt(List<RegexTree> alternatives, Position position) {
+      int itemIndex = position == Position.BEGINNING ? 0 : (alternatives.size() - 1);
+      int othersStartIndex = position == Position.BEGINNING ? 1 : 0;
+      int othersEndOffset = position == Position.BEGINNING ? 0 : 1;
+      RegexTree firstOrLast = alternatives.get(itemIndex);
+      List<RegexTree> others = alternatives.subList(othersStartIndex, alternatives.size() - othersEndOffset);
+      return isAnchored(firstOrLast, position) && others.stream().noneMatch(alt -> isAnchored(alt, position));
     }
 
     private boolean isAnchored(RegexTree tree, Position position) {

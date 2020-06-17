@@ -18,6 +18,11 @@ public class AnchorPrecedenceCheck {
     str.matches("(?:^a)|b|(?:c$)");
     str.matches("^abc$");
     str.matches("a|b|c");
+    str.matches("^a$|^b$|^c$");
+    str.matches("\\ba\\b|\\bb\\b|\\bc\\b");
+    // If multiple alternatives are anchored, but not all, that's more likely to be intentional than if only the first
+    // one were anchored, so we won't report an issue for the following line:
+    str.matches("^a|^b|c");
     str.matches("aa|bb|cc");
     str.matches("^");
     str.matches("^[abc]$");
