@@ -38,6 +38,7 @@ import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexScannerContext;
 import org.sonar.java.regex.ast.FlagSet;
+import org.sonar.java.regex.RegexCheck.RegexIssueLocation;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -130,23 +131,34 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
 
   @Override
   public void reportIssue(RegexCheck regexCheck, RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
-    List<List<RegexCheck.RegexIssueLocation>> secondariesAsFlows = new ArrayList<>();
+    List<RegexCheck.RegexIssueLocation> completedSecondaries = new ArrayList<>();
 
     List<RegexCheck.RegexIssueLocation> mainLocations = new RegexCheck.RegexIssueLocation(regexTree, message).toSingleLocationItems();
     if (mainLocations.size() > 1) {
       // handle other main locations as secondaries with same message
       mainLocations.subList(1, mainLocations.size())
         .stream()
-        .map(Collections::singletonList)
-        .forEach(secondariesAsFlows::add);
+        .forEach(completedSecondaries::add);
     }
+    completedSecondaries.addAll(secondaries);
+
+    reportIssue(regexCheck, mainLocations.get(0).locations().get(0), message, cost, completedSecondaries);
+  }
+
+  @Override
+  public void reportIssue(RegexCheck regexCheck, Tree javaSyntaxElement, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries) {
+    reportIssue(regexCheck, AnalyzerMessage.textSpanFor(javaSyntaxElement), message, cost, secondaries);
+  }
+
+  private void reportIssue(RegexCheck regexCheck, AnalyzerMessage.TextSpan mainLocation, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries) {
+    List<List<RegexCheck.RegexIssueLocation>> secondariesAsFlows = new ArrayList<>();
 
     secondaries.stream()
       .flatMap(regexIssueLocation -> regexIssueLocation.toSingleLocationItems().stream())
       .map(Collections::singletonList)
       .forEach(secondariesAsFlows::add);
 
-    AnalyzerMessage analyzerMessage = new AnalyzerMessage(regexCheck, inputFile, mainLocations.get(0).locations().get(0), message, cost != null ? cost : 0);
+    AnalyzerMessage analyzerMessage = new AnalyzerMessage(regexCheck, inputFile, mainLocation, message, cost != null ? cost : 0);
     completeAnalyzerMessageWithFlows(analyzerMessage, secondariesAsFlows, ril -> ril.locations().get(0), RegexCheck.RegexIssueLocation::message);
     reportIssue(analyzerMessage);
   }
