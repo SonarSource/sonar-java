@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
+
 class ObjectCreatedOnlyToCallGetClassCheckTest {
 
   @Test
   void test() {
     JavaCheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/ObjectCreatedOnlyToCallGetClassCheck.java")
+      .onFile(testSourcesPath("checks/ObjectCreatedOnlyToCallGetClassCheck.java"))
       .withCheck(new ObjectCreatedOnlyToCallGetClassCheck())
       .verifyIssues();
   }
