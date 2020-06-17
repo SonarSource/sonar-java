@@ -39,6 +39,7 @@ public class AssertionTypesCheck_AssertJ {
 
     assertThat(intArray()).isNotEqualTo(42);             // Noncompliant
     assertThat(intArray()).isNotEqualTo(new int[] {42}); // Compliant
+    assertThat(intArray()).isNotEqualTo(null);             // Compliant
 
     assertThat(intPrimitive()).isNotEqualTo(42);             // Compliant
     assertThat(intPrimitive()).isNotEqualTo(new int[] {42}); // Noncompliant

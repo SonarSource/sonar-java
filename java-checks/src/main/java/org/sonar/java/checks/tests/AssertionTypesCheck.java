@@ -317,7 +317,7 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     }
 
     boolean isNotArray() {
-      return !type.isUnknown() && !type.isArray() && !type.is(JAVA_LANG_OBJECT);
+      return !type.isUnknown() && !type.isArray() && !type.is(JAVA_LANG_OBJECT) && !isNullLiteral();
     }
 
     boolean isNullLiteral() {
