@@ -24,14 +24,15 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationValue;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.checks.helpers.SpringUtils.SPRING_SCOPE_ANNOTATION;
+import static org.sonar.java.checks.helpers.SpringUtils.isScopeSingleton;
 
 @Rule(key = "S3750")
 public class SpringComponentWithWrongScopeCheck extends IssuableSubscriptionVisitor {
 
-  private static final String SCOPE_ANNOTATION_FQN = "org.springframework.context.annotation.Scope";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -44,7 +45,7 @@ public class SpringComponentWithWrongScopeCheck extends IssuableSubscriptionVisi
     SymbolMetadata clazzMeta = clazzTree.symbol().metadata();
 
     if (isSpringComponent(clazzMeta)
-      && clazzMeta.isAnnotatedWith(SCOPE_ANNOTATION_FQN)
+      && clazzMeta.isAnnotatedWith(SPRING_SCOPE_ANNOTATION)
       && !isScopeSingleton(clazzMeta)) {
       checkScopeAnnotation(clazzTree);
     }
@@ -56,26 +57,9 @@ public class SpringComponentWithWrongScopeCheck extends IssuableSubscriptionVisi
       || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Repository");
   }
 
-  private static boolean isScopeSingleton(SymbolMetadata clazzMeta) {
-    List<AnnotationValue> values = clazzMeta.valuesForAnnotation(SCOPE_ANNOTATION_FQN);
-    for (AnnotationValue annotationValue : values) {
-      if ("value".equals(annotationValue.name()) || "scopeName".equals(annotationValue.name())) {
-        Object value = annotationValue.value();
-        String stringValue = null;
-        if (value instanceof String) {
-          stringValue = (String) value;
-        }
-        if (stringValue != null && !"singleton".equals(stringValue)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
   private void checkScopeAnnotation(ClassTree tree) {
     tree.modifiers().annotations().stream()
-      .filter(a -> a.annotationType().symbolType().fullyQualifiedName().equals(SCOPE_ANNOTATION_FQN))
+      .filter(a -> a.annotationType().symbolType().fullyQualifiedName().equals(SPRING_SCOPE_ANNOTATION))
       .forEach(a -> reportIssue(a, "Remove this \"@Scope\" annotation."));
   }
 

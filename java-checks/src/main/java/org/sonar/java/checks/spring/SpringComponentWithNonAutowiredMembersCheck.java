@@ -37,6 +37,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.SpringUtils.isScopeSingleton;
+
 @Rule(key = "S3749")
 public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscriptionVisitor {
 
@@ -57,7 +59,7 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
     SymbolMetadata clazzMeta = clazzTree.symbol().metadata();
     Set<Symbol> symbolsUsedInConstructors = symbolsUsedInConstructors(clazzTree);
 
-    if (isSpringComponent(clazzMeta)) {
+    if (isSpringSingletonComponent(clazzMeta)) {
       clazzTree.members().stream().filter(v -> v.is(Kind.VARIABLE))
         .map(m -> (VariableTree) m)
         .filter(v -> !v.symbol().isStatic())
@@ -82,11 +84,12 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
       .anyMatch(metadata::isAnnotatedWith);
   }
 
-  private static boolean isSpringComponent(SymbolMetadata clazzMeta) {
-    return clazzMeta.isAnnotatedWith("org.springframework.stereotype.Controller")
+  private static boolean isSpringSingletonComponent(SymbolMetadata clazzMeta) {
+    return (clazzMeta.isAnnotatedWith("org.springframework.stereotype.Controller")
       || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Service")
       || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Component")
-      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Repository");
+      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Repository"))
+      && isScopeSingleton(clazzMeta);
   }
 
   private Set<Symbol> symbolsUsedInConstructors(ClassTree clazzTree) {
