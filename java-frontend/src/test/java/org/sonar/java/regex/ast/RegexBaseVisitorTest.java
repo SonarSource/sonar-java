@@ -121,6 +121,12 @@ class RegexBaseVisitorTest {
       FlagChecker visitor = new FlagChecker();
       visitor.visit(RegexParserTestUtils.assertSuccessfulParse(regex));
       assertThat(visitor.visitedCharacters()).isEqualTo("abcdefghi");
+      JavaCharacter iFlag = visitor.getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
+      assertThat(iFlag).isNotNull();
+      assertThat(iFlag.getCharacter()).isEqualTo('i');
+      assertThat(visitor.getActiveFlags()).isEqualTo(Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
+      JavaCharacter uFlag = visitor.getJavaCharacterForFlag(Pattern.UNICODE_CASE);
+      assertThat(uFlag).isNull();
     }
 
     private class PlainCharCollector extends RegexBaseVisitor {

@@ -17,6 +17,8 @@ public class UnicodeCaseCheck {
     Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     str.matches("(?iu)söme pättern");
     str.matches("(?iu:söme) pättern");
+    str.matches("(?i)\uD83D\uDCA9"); // compliant because the string doesn't contain any letters
+    str.matches("(?i:öäü"); // rule is not applied to syntactically invalid regexen
 
     // UNICODE_CHARACTER_CLASS implies UNICODE_CASE
     Pattern.compile("söme pättern", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
