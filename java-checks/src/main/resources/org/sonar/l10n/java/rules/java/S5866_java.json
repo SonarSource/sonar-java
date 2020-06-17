@@ -1,0 +1,12 @@
+{
+  "title": "Case insensitive Unicode regular expressions should enable the \u201CUNICODE_CASE\u201D flag",
+  "type": "BUG",
+  "status": "ready",
+  "tags": [
+    "regex"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5866",
+  "sqKey": "S5866",
+  "scope": "All"
+}
