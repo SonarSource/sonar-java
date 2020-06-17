@@ -157,8 +157,8 @@ class ExpressionUtilsTest {
     assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(0).expression())).isPresent();
     assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(1).expression())).isPresent();
 
-    assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(0).expression()).get()).
-    isEqualTo(ExpressionUtils.getAssignedSymbol(assignments.get(1).expression()).get());
+    assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(0).expression())).
+    contains(ExpressionUtils.getAssignedSymbol(assignments.get(1).expression()).get());
 
     assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(2).expression())).isNotPresent();
     assertThat(ExpressionUtils.getAssignedSymbol(assignments.get(3).expression())).isNotPresent();

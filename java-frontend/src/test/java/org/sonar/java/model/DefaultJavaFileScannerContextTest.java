@@ -259,7 +259,7 @@ class DefaultJavaFileScannerContextTest {
     SourceMap sourceMap = mock(SourceMap.class);
     when(file.sourceMap()).thenReturn(sourceMap);
     DefaultJavaFileScannerContext ctx = new DefaultJavaFileScannerContext(compilationUnitTree, file, null, sonarComponents, new JavaVersionImpl(), true);
-    assertThat(ctx.sourceMap().get()).isSameAs(sourceMap);
+    assertThat(ctx.sourceMap()).containsSame(sourceMap);
 
     ctx = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true);
     assertThat(ctx.sourceMap()).isEmpty();

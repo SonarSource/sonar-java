@@ -59,7 +59,7 @@ class ModifiersUtilsTest {
     File file = new File("src/test/files/model/ModifiersUtilsTest.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     ClassTree classTree = (ClassTree) tree.types().get(0);
-    assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.PUBLIC).isPresent()).isTrue();
-    assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.ABSTRACT).isPresent()).isFalse();
+    assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.PUBLIC)).isPresent();
+    assertThat(ModifiersUtils.findModifier(classTree.modifiers(), Modifier.ABSTRACT)).isNotPresent();
   }
 }

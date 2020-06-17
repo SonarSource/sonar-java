@@ -96,19 +96,19 @@ class ExceptionalYieldTest {
 
     // runtime exception
     Optional<ExceptionalYield> runtimeException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).isUnknown()).findFirst();
-    assertThat(runtimeException.isPresent()).isTrue();
+    assertThat(runtimeException).isPresent();
     MethodYield runtimeExceptionYield = runtimeException.get();
     assertThat(runtimeExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.FALSE);
 
     // exception from other method call
     Optional<ExceptionalYield> implicitException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).is("org.foo.MyException2")).findFirst();
-    assertThat(implicitException.isPresent()).isTrue();
+    assertThat(implicitException).isPresent();
     MethodYield implicitExceptionYield = implicitException.get();
     assertThat(implicitExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.FALSE);
 
     // explicitly thrown exception
     Optional<ExceptionalYield> explicitException = exceptionalYields.stream().filter(y -> y.exceptionType(semanticModel).is("org.foo.MyException1")).findFirst();
-    assertThat(explicitException.isPresent()).isTrue();
+    assertThat(explicitException).isPresent();
     MethodYield explicitExceptionYield = explicitException.get();
     assertThat(explicitExceptionYield.parametersConstraints.get(0).get(BooleanConstraint.class)).isEqualTo(BooleanConstraint.TRUE);
   }

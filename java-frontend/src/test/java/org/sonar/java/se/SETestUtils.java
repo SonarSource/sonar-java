@@ -84,7 +84,7 @@ public class SETestUtils {
       .filter(e -> e.getKey().contains("#" + methodName))
       .map(Map.Entry::getValue)
       .findFirst();
-    assertThat(mb.isPresent()).isTrue();
+    assertThat(mb).isPresent();
     return mb.get();
   }
 
