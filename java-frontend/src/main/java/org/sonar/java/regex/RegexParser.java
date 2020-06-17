@@ -37,6 +37,7 @@ import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.DotTree;
 import org.sonar.java.regex.ast.EscapedPropertyTree;
+import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.JavaCharacter;
@@ -299,19 +300,19 @@ public class RegexParser {
   private GroupTree parseNonCapturingGroup(JavaCharacter openingParen) {
     // Discard '?'
     characters.moveNext();
-    int enabledFlags = parseFlags();
-    int disabledFlags;
+    FlagSet enabledFlags = parseFlags();
+    FlagSet disabledFlags;
     if (characters.currentIs('-')) {
       characters.moveNext();
       disabledFlags = parseFlags();
     } else {
-      disabledFlags = 0;
+      disabledFlags = new FlagSet();
     }
 
     boolean previousFreeSpacingMode = characters.getFreeSpacingMode();
-    if ((disabledFlags & Pattern.COMMENTS) != 0) {
+    if (disabledFlags.contains(Pattern.COMMENTS)) {
       characters.setFreeSpacingMode(false);
-    } else if ((enabledFlags & Pattern.COMMENTS) != 0) {
+    } else if (enabledFlags.contains(Pattern.COMMENTS)) {
       characters.setFreeSpacingMode(true);
     }
 
@@ -331,15 +332,15 @@ public class RegexParser {
     );
   }
 
-  private int parseFlags() {
-    int flags = 0;
+  private FlagSet parseFlags() {
+    FlagSet flags = new FlagSet();
     while (characters.isNotAtEnd()) {
       Integer flag = parseFlag(characters.getCurrent().getCharacter());
       if (flag == null) {
         break;
       }
+      flags.add(flag, characters.getCurrent());
       characters.moveNext();
-      flags |= flag;
     }
     return flags;
   }
