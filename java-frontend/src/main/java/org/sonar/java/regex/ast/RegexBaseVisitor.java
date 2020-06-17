@@ -19,24 +19,37 @@
  */
 package org.sonar.java.regex.ast;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.List;
 import java.util.regex.Pattern;
+import javax.annotation.CheckForNull;
 
 public class RegexBaseVisitor implements RegexVisitor {
 
-  private int activeFlags = 0;
+  private FlagSet activeFlags = new FlagSet();
 
   @Override
   public void setActiveFlags(int activeFlags) {
-    this.activeFlags = activeFlags;
+    this.activeFlags.add(activeFlags);
   }
 
+  @VisibleForTesting
   protected int getActiveFlags() {
-    return activeFlags;
+    return activeFlags.getMask();
   }
 
   protected boolean flagActive(int flag) {
-    return (activeFlags & flag) != 0;
+    return activeFlags.contains(flag);
+  }
+
+  /**
+   * Returns the character inside the regex that was used to set the given flag. This will return null if the flag
+   * is not set or if the flag has been set from outside of the regex (i.e. as an argument to Pattern.compile).
+   * Therefore this should not be used to check whether a flag is set.
+   */
+  @CheckForNull
+  protected JavaCharacter getJavaCharacterForFlag(int flag) {
+    return activeFlags.getJavaCharacterForFlag(flag);
   }
 
   private void visit(List<RegexTree> trees) {
@@ -65,9 +78,10 @@ public class RegexBaseVisitor implements RegexVisitor {
 
   @Override
   public final void visitNonCapturingGroup(NonCapturingGroupTree tree) {
-    int oldFlags = activeFlags;
-    activeFlags |= normalizeFlags(tree.getEnabledFlags());
-    activeFlags &= ~normalizeFlags(tree.getDisabledFlags());
+    FlagSet oldFlags = activeFlags;
+    activeFlags = new FlagSet(activeFlags);
+    activeFlags.addAll(tree.getEnabledFlags());
+    activeFlags.removeAll(tree.getDisabledFlags());
     doVisitNonCapturingGroup(tree);
     if (tree.getElement() != null) {
       activeFlags = oldFlags;
@@ -91,16 +105,9 @@ public class RegexBaseVisitor implements RegexVisitor {
     visitAndRestoreFlags(tree.getElement());
   }
 
-  private static int normalizeFlags(int flags) {
-    // UNICODE_CHARACTER_CLASS implies UNICODE_CASE (both when enabling and disabling)
-    if ((flags & Pattern.UNICODE_CHARACTER_CLASS) != 0) {
-      flags |= Pattern.UNICODE_CASE;
-    }
-    return flags;
-  }
-
   private void visitAndRestoreFlags(RegexTree tree) {
-    int oldFlags = activeFlags;
+    FlagSet oldFlags = activeFlags;
+    activeFlags = new FlagSet(activeFlags);
     visit(tree);
     activeFlags = oldFlags;
   }

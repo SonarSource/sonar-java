@@ -150,14 +150,23 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
 
   /**
    * @param mit A method call constructing a regex.
+   * @return An optional containing the expression used to set the regex's flag if the regex is created using
+   *         Pattern.compile with an argument to set the flags. An empty optional otherwise.
+   */
+  protected static Optional<ExpressionTree> getFlagsTree(MethodInvocationTree mit) {
+    if (mit.symbol().name().equals("compile") && mit.arguments().size() == 2) {
+      return Optional.of(mit.arguments().get(1));
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * @param mit A method call constructing a regex.
    * @return The flags with which the regex is created if flags are supplied and can be determined statically. 0 (no
    *         flags) otherwise.
    */
   protected static int getFlags(MethodInvocationTree mit) {
-    if (mit.symbol().name().equals("compile") && mit.arguments().size() == 2) {
-      return mit.arguments().get(1).asConstant(Integer.class).orElse(0);
-    }
-    return 0;
+    return getFlagsTree(mit).flatMap(tree -> tree.asConstant(Integer.class)).orElse(0);
   }
 
 }
