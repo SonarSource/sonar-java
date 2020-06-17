@@ -48,6 +48,10 @@ class CallGetClassCheck_A {
 
     B b = new CallGetClassCheck_A().bar();
     b.getClass(); // Compliant
+
+    Class arrayObject = new Object[0].getClass(); // Noncompliant {{Remove this object instantiation and use "Object[].class" instead.}}
+    Class arrayLong = new Long[0].getClass(); // Noncompliant {{Remove this object instantiation and use "Long[].class" instead.}}
+    Class arrayObject2 = Object[].class; // Compliant
   }
 
   B bar() {
