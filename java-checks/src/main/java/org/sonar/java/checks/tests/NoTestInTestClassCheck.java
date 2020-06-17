@@ -157,7 +157,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isTestMethodAnnotation(Type type) {
-    return  testMethodAnnotations.contains(type.fullyQualifiedName()) || isJUnitTestableMetaAnnotated(type);
+    return testMethodAnnotations.contains(type.fullyQualifiedName()) || isJUnitTestableMetaAnnotated(type);
   }
 
   private boolean isJUnitTestableMetaAnnotated(Type type) {
@@ -197,7 +197,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     }
     Stream<Symbol> defaultMethodsFromInterfaces = symbol.interfaces().stream()
       .flatMap(i -> getAllMembers(i.symbol(), false, visitedSymbols))
-      .filter(m -> m.isMethodSymbol() && JUtils.isDefaultMethod((Symbol.MethodSymbol)m));
+      .filter(m -> m.isMethodSymbol() && JUtils.isDefaultMethod((Symbol.MethodSymbol) m));
     members = Stream.concat(members, defaultMethodsFromInterfaces);
     for (Symbol s : symbol.memberSymbols()) {
       if (isNested(s) || isPublicStaticConcrete(s)) {
@@ -207,7 +207,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     return members;
   }
 
-  private static boolean isNested (Symbol s) {
+  private static boolean isNested(Symbol s) {
     return s.isTypeSymbol() && s.metadata().isAnnotatedWith("org.junit.jupiter.api.Nested");
   }
 
