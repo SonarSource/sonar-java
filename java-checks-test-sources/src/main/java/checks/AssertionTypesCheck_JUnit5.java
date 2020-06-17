@@ -33,6 +33,8 @@ public class AssertionTypesCheck_JUnit5 {
 
     assertNotEquals(42, intArray()); // Noncompliant
     assertNotEquals(new int[] {42}, intPrimitive()); // Noncompliant
+    assertNotEquals(null, intArray()); // Compliant, arrays can be null
+    assertNotEquals(new int[] {42}, null); // Compliant
 
     Object o = new A();
     A a = new A();
