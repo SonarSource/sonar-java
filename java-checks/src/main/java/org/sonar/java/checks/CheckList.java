@@ -49,6 +49,7 @@ import org.sonar.java.checks.regex.InvalidRegexCheck;
 import org.sonar.java.checks.regex.RedosCheck;
 import org.sonar.java.checks.regex.ReluctantQuantifierCheck;
 import org.sonar.java.checks.regex.UnicodeCaseCheck;
+import org.sonar.java.checks.regex.UnusedGroupNamesCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.security.AndroidExternalStorageCheck;
@@ -434,6 +435,7 @@ public final class CheckList {
       InterfaceOrSuperclassShadowingCheck.class,
       InterruptedExceptionCheck.class,
       InvalidDateValuesCheck.class,
+      InvalidRegexCheck.class,
       InvariantReturnCheck.class,
       IterableIteratorCheck.class,
       IteratorNextExceptionCheck.class,
@@ -563,7 +565,6 @@ public final class CheckList {
       RedundantTypeCastCheck.class,
       ReflectionOnNonRuntimeAnnotationCheck.class,
       RegexHotspotCheck.class,
-      InvalidRegexCheck.class,
       RedosCheck.class,
       RegexPatternsNeedlesslyCheck.class,
       ReluctantQuantifierCheck.class,
@@ -704,6 +705,7 @@ public final class CheckList {
       UnicodeCaseCheck.class,
       UnnecessarySemicolonCheck.class,
       UnreachableCatchCheck.class,
+      UnusedGroupNamesCheck.class,
       UnusedLabelCheck.class,
       UnusedLocalVariableCheck.class,
       UnusedMethodParameterCheck.class,

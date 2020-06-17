@@ -22,6 +22,7 @@ package org.sonar.java.checks.regex;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Streams;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -43,12 +44,13 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 public abstract class AbstractRegexCheck extends AbstractMethodDetection implements RegexCheck {
 
-  private static final String JAVA_LANG_STRING = "java.lang.String";
-  private static final MethodMatchers REGEX_METHODS = MethodMatchers.or(
+  protected static final String JAVA_LANG_STRING = "java.lang.String";
+  protected static final MethodMatchers REGEX_METHODS = MethodMatchers.or(
     MethodMatchers.create()
       .ofTypes(JAVA_LANG_STRING)
       .names("matches")
@@ -74,12 +76,18 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
   }
 
   @Override
-  protected final MethodMatchers getMethodInvocationMatchers() {
+  public List<Tree.Kind> nodesToVisit() {
+    // ignore constructors and method references
+    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
+  }
+
+  @Override
+  protected MethodMatchers getMethodInvocationMatchers() {
     return REGEX_METHODS;
   }
 
   @Override
-  protected final void onMethodInvocationFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     Arguments args = mit.arguments();
     if (args.isEmpty()) {
       return;
@@ -146,6 +154,10 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
 
   public final void reportIssue(RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
     regexContext.reportIssue(this, regexTree, message, cost, secondaries);
+  }
+
+  public final void reportIssue(Tree javaTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
+    regexContext.reportIssue(this, javaTree, message, cost, secondaries);
   }
 
   /**

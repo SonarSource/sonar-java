@@ -17,21 +17,21 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex;
+package org.sonar.java.checks.regex;
 
-import java.util.List;
-import javax.annotation.Nullable;
-import org.sonar.java.regex.ast.FlagSet;
-import org.sonar.java.regex.ast.RegexSyntaxElement;
-import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public interface RegexScannerContext {
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-  void reportIssue(RegexCheck regexCheck, RegexSyntaxElement regexSyntaxElement, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries);
+class UnusedGroupNamesCheckTest {
 
-  void reportIssue(RegexCheck regexCheck, Tree javaSyntaxElement, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries);
-
-  RegexParseResult regexForLiterals(FlagSet initialFlags, LiteralTree... stringLiterals);
+  @Test
+  void test() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/regex/UnusedGroupNamesCheck.java"))
+      .withCheck(new UnusedGroupNamesCheck())
+      .verifyIssues();
+  }
 
 }
