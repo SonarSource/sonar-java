@@ -43,6 +43,7 @@ import org.sonar.java.checks.naming.KeywordAsIdentifierCheck;
 import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
+import org.sonar.java.checks.regex.AnchorPrecedenceCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
@@ -214,6 +215,7 @@ public final class CheckList {
       AccessibilityChangeCheck.class,
       AESAlgorithmCheck.class,
       AllBranchesAreIdenticalCheck.class,
+      AnchorPrecedenceCheck.class,
       AndroidBroadcastingCheck.class,
       AndroidExternalStorageCheck.class,
       AndroidSSLConnectionCheck.class,
