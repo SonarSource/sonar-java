@@ -46,6 +46,7 @@ import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
 import org.sonar.java.checks.regex.AnchorPrecedenceCheck;
 import org.sonar.java.checks.regex.DuplicatesInCharacterClassCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
+import org.sonar.java.checks.regex.UnicodeCaseCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
 import org.sonar.java.checks.security.AndroidExternalStorageCheck;
@@ -696,6 +697,7 @@ public final class CheckList {
       UnderscoreMisplacedOnNumberCheck.class,
       UnderscoreOnNumberCheck.class,
       UndocumentedApiCheck.class,
+      UnicodeCaseCheck.class,
       UnnecessarySemicolonCheck.class,
       UnreachableCatchCheck.class,
       UnusedLabelCheck.class,
