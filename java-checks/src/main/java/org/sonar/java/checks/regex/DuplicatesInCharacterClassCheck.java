@@ -69,7 +69,7 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
       if (!duplicates.isEmpty()) {
         List<RegexIssueLocation> secondaries = duplicates.stream()
           .skip(1)
-          .map(duplicate -> new RegexIssueLocation(duplicate, MESSAGE))
+          .map(duplicate -> new RegexIssueLocation(duplicate, "Additional duplicate"))
           .collect(Collectors.toList());
         reportIssue(duplicates.get(0), MESSAGE, null, secondaries);
       }
