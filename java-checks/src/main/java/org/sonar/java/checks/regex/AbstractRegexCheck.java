@@ -32,6 +32,7 @@ import org.sonar.java.model.JUtils;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexScannerContext;
+import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -83,11 +84,10 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     if (args.isEmpty()) {
       return;
     }
-    int flags = getFlags(mit);
-    if ((flags & Pattern.LITERAL) == 0) {
-      boolean freeSpacingMode = (flags & Pattern.COMMENTS) != 0;
+    FlagSet flags = getFlags(mit);
+    if (!flags.contains(Pattern.LITERAL)) {
       getLiterals(args.get(0))
-        .map(literals -> regexContext.regexForLiterals(freeSpacingMode, literals))
+        .map(literals -> regexContext.regexForLiterals(flags, literals))
         .ifPresent(result -> checkRegex(result, mit));
     }
   }
@@ -162,11 +162,12 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
 
   /**
    * @param mit A method call constructing a regex.
-   * @return The flags with which the regex is created if flags are supplied and can be determined statically. 0 (no
-   *         flags) otherwise.
+   * @return A FlagSet containing the flags with which the regex is created if flags are supplied and can be determined
+   *         statically. An empty FlagSet otherwise.
    */
-  protected static int getFlags(MethodInvocationTree mit) {
-    return getFlagsTree(mit).flatMap(tree -> tree.asConstant(Integer.class)).orElse(0);
+  private static FlagSet getFlags(MethodInvocationTree mit) {
+    int flags = getFlagsTree(mit).flatMap(tree -> tree.asConstant(Integer.class)).orElse(0);
+    return new FlagSet(flags);
   }
 
 }

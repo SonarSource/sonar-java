@@ -21,21 +21,29 @@ package org.sonar.java.regex;
 
 import java.util.Collections;
 import java.util.List;
+import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.RegexTree;
 
 public class RegexParseResult {
 
   private final RegexTree result;
 
+  private final FlagSet initialFlags;
+
   private final List<SyntaxError> syntaxErrors;
 
-  public RegexParseResult(RegexTree result, List<SyntaxError> syntaxErrors) {
+  public RegexParseResult(RegexTree result, FlagSet initialFlags, List<SyntaxError> syntaxErrors) {
     this.result = result;
+    this.initialFlags = initialFlags;
     this.syntaxErrors = Collections.unmodifiableList(syntaxErrors);
   }
 
   public RegexTree getResult() {
     return result;
+  }
+
+  public FlagSet getInitialFlags() {
+    return initialFlags;
   }
 
   public List<SyntaxError> getSyntaxErrors() {

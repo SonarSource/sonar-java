@@ -21,6 +21,7 @@ package org.sonar.java.regex;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 
@@ -28,6 +29,6 @@ public interface RegexScannerContext {
 
   void reportIssue(RegexCheck regexCheck, RegexSyntaxElement regexSyntaxElement, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries);
 
-  RegexParseResult regexForLiterals(boolean freeSpacingMode, LiteralTree... stringLiterals);
+  RegexParseResult regexForLiterals(FlagSet initialFlags, LiteralTree... stringLiterals);
 
 }

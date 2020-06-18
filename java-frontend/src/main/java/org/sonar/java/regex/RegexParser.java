@@ -60,15 +60,17 @@ public class RegexParser {
 
   private final RegexLexer characters;
 
-  private final List<SyntaxError> errors;
+  private final FlagSet initialFlags;
+
+  private final List<SyntaxError> errors = new ArrayList<>();
 
   private int groupNumber = 1;
 
-  public RegexParser(RegexSource source, boolean freeSpacingMode) {
+  public RegexParser(RegexSource source, FlagSet initialFlags) {
     this.source = source;
     this.characters = new RegexLexer(source);
-    this.characters.setFreeSpacingMode(freeSpacingMode);
-    this.errors = new ArrayList<>();
+    this.characters.setFreeSpacingMode(initialFlags.contains(Pattern.COMMENTS));
+    this.initialFlags = initialFlags;
   }
 
   public RegexParseResult parse() {
@@ -82,7 +84,7 @@ public class RegexParser {
       }
     } while (characters.isNotAtEnd());
     RegexTree result = combineTrees(results, (range, elements) -> new SequenceTree(source, range, elements));
-    return new RegexParseResult(result, errors);
+    return new RegexParseResult(result, initialFlags, errors);
   }
 
   private RegexTree parseDisjunction() {
