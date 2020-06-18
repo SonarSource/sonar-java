@@ -1,0 +1,26 @@
+{
+  "title": "Using slow regular expressions is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [
+    "cwe",
+    "regex",
+    "owasp-a6"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5852",
+  "sqKey": "S5852",
+  "scope": "All",
+  "securityStandards": {
+    "CWE": [
+      400
+    ],
+    "OWASP": [
+      "A6"
+    ]
+  }
+}
