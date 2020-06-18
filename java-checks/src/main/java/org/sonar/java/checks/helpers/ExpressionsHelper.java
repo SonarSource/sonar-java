@@ -39,7 +39,9 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.helpers.ReassignmentFinder.getInitializerOrExpression;
@@ -213,6 +215,10 @@ public class ExpressionsHelper {
       return false;
     } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       return alwaysReturnSameValue(((MemberSelectExpressionTree) expression).expression());
+    } else if (expression.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      return alwaysReturnSameValue(((ParenthesizedTree) expression).expression());
+    } else if (expression.is(Tree.Kind.NEW_ARRAY)) {
+      return ((NewArrayTree) expression).initializers().stream().allMatch(ExpressionsHelper::alwaysReturnSameValue);
     }
     return true;
   }
