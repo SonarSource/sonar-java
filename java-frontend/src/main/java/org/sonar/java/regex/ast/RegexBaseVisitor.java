@@ -21,17 +21,12 @@ package org.sonar.java.regex.ast;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.List;
-import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
+import org.sonar.java.regex.RegexParseResult;
 
 public class RegexBaseVisitor implements RegexVisitor {
 
-  private FlagSet activeFlags = new FlagSet();
-
-  @Override
-  public void setActiveFlags(int activeFlags) {
-    this.activeFlags.add(activeFlags);
-  }
+  private FlagSet activeFlags;
 
   @VisibleForTesting
   protected int getActiveFlags() {
@@ -52,8 +47,28 @@ public class RegexBaseVisitor implements RegexVisitor {
     return activeFlags.getJavaCharacterForFlag(flag);
   }
 
+  private void visit(RegexTree tree) {
+    tree.accept(this);
+  }
+
   private void visit(List<RegexTree> trees) {
     trees.forEach(this::visit);
+  }
+
+  @Override
+  public void visit(RegexParseResult regexParseResult) {
+    if (!regexParseResult.hasSyntaxErrors()) {
+      activeFlags = regexParseResult.getInitialFlags();
+      visit(regexParseResult.getResult());
+      after(regexParseResult);
+    }
+  }
+
+  /**
+   * Override to perform an action after the entire regex has been visited.
+   */
+  protected void after(RegexParseResult regexParseResult) {
+    // does nothing unless overridden
   }
 
   @Override

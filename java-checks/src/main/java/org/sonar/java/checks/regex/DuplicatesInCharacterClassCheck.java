@@ -42,11 +42,7 @@ public class DuplicatesInCharacterClassCheck extends AbstractRegexCheck {
 
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
-    if (!regexForLiterals.hasSyntaxErrors()) {
-      DuplicateFinder duplicateFinder = new DuplicateFinder();
-      duplicateFinder.setActiveFlags(getFlags(mit));
-      duplicateFinder.visit(regexForLiterals.getResult());
-    }
+    new DuplicateFinder().visit(regexForLiterals);
   }
 
   private class DuplicateFinder extends RegexBaseVisitor {

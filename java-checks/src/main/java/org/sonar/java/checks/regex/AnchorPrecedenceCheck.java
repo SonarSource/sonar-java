@@ -36,9 +36,7 @@ public class AnchorPrecedenceCheck extends AbstractRegexCheck {
 
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
-    if (!regexForLiterals.hasSyntaxErrors()) {
-      new Visitor().visit(regexForLiterals.getResult());
-    }
+    new Visitor().visit(regexForLiterals);
   }
 
   private enum Position {
@@ -46,6 +44,7 @@ public class AnchorPrecedenceCheck extends AbstractRegexCheck {
   }
 
   private class Visitor extends RegexBaseVisitor {
+
     @Override
     public void visitDisjunction(DisjunctionTree tree) {
       List<RegexTree> alternatives = tree.getAlternatives();
