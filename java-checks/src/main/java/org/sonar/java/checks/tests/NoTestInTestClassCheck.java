@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
@@ -81,16 +82,12 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
         checkTestNGmembers(simpleName, members);
       } else {
         boolean isJunit3TestClass = classSymbol.type().isSubtypeOf("junit.framework.TestCase");
-        if (isJunit3TestClass) {
-          checkJunit3TestClass(simpleName, members);
-        } else {
-          if (runWitZohhak(classSymbol)) {
-            testMethodAnnotations.add("com.googlecode.zohhak.api.TestWith");
-          } else if (isArchUnitTestClass(classSymbol)) {
-            testMethodAnnotations.add(ARCH_UNIT_TEST);
-            testFieldAnnotations.add(ARCH_UNIT_TEST);
-          }
-          checkJunit4AndAboveTestClass(simpleName, classSymbol, members);
+        List<Symbol> membersList = members.collect(Collectors.toList());
+        if (isJunit3TestClass && containsJUnit3Tests(membersList)) {
+          return;
+        }
+        if (isJunit3TestClass || classSymbol.name().endsWith("Test")) {
+          checkJunit4AndAboveTestClass(simpleName, classSymbol, membersList);
         }
       }
     }
@@ -107,17 +104,24 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkJunit3TestClass(IdentifierTree className, Stream<Symbol> members) {
-    if (members.noneMatch(m -> m.isMethodSymbol() && m.name().startsWith("test"))) {
+  private static boolean containsJUnit3Tests(List<Symbol> members) {
+    return members.stream().anyMatch(m -> m.isMethodSymbol() && m.name().startsWith("test"));
+  }
+
+  private void checkJunit4AndAboveTestClass(IdentifierTree className, Symbol.TypeSymbol symbol, List<Symbol> members) {
+    addUsedAnnotations(symbol);
+    if (!runWithCucumberOrSuiteOrTheoriesRunner(symbol)
+      && members.stream().noneMatch(this::isTestFieldOrMethod)) {
       reportClass(className);
     }
   }
 
-  private void checkJunit4AndAboveTestClass(IdentifierTree className, Symbol.TypeSymbol symbol, Stream<Symbol> members) {
-    if (symbol.name().endsWith("Test")
-      && !runWithCucumberOrSuiteOrTheoriesRunner(symbol)
-      && members.noneMatch(this::isTestFieldOrMethod)) {
-      reportClass(className);
+  private void addUsedAnnotations(Symbol.TypeSymbol classSymbol) {
+    if (runWitZohhak(classSymbol)) {
+      testMethodAnnotations.add("com.googlecode.zohhak.api.TestWith");
+    } else if (isArchUnitTestClass(classSymbol)) {
+      testMethodAnnotations.add(ARCH_UNIT_TEST);
+      testFieldAnnotations.add(ARCH_UNIT_TEST);
     }
   }
 
@@ -157,7 +161,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isTestMethodAnnotation(Type type) {
-    return  testMethodAnnotations.contains(type.fullyQualifiedName()) || isJUnitTestableMetaAnnotated(type);
+    return testMethodAnnotations.contains(type.fullyQualifiedName()) || isJUnitTestableMetaAnnotated(type);
   }
 
   private boolean isJUnitTestableMetaAnnotated(Type type) {
@@ -197,7 +201,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     }
     Stream<Symbol> defaultMethodsFromInterfaces = symbol.interfaces().stream()
       .flatMap(i -> getAllMembers(i.symbol(), false, visitedSymbols))
-      .filter(m -> m.isMethodSymbol() && JUtils.isDefaultMethod((Symbol.MethodSymbol)m));
+      .filter(m -> m.isMethodSymbol() && JUtils.isDefaultMethod((Symbol.MethodSymbol) m));
     members = Stream.concat(members, defaultMethodsFromInterfaces);
     for (Symbol s : symbol.memberSymbols()) {
       if (isNested(s) || isPublicStaticConcrete(s)) {
@@ -207,7 +211,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
     return members;
   }
 
-  private static boolean isNested (Symbol s) {
+  private static boolean isNested(Symbol s) {
     return s.isTypeSymbol() && s.metadata().isAnnotatedWith("org.junit.jupiter.api.Nested");
   }
 

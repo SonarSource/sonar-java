@@ -3,6 +3,7 @@ import org.junit.experimental.runners.Enclosed;
 import cucumber.api.junit.Cucumber;
 import org.junit.runner.RunWith;
 import org.junit.runner.Suite;
+import org.junit.runners.JUnit4;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -31,6 +32,24 @@ public class JUnit3Test extends junit.framework.TestCase {
 }
 class B extends junit.framework.TestCase { // Noncompliant [[sc=7;ec=8]] {{Add some tests to this class.}}
   void foo() {
+  }
+}
+
+@RunWith(JUnit4.class)
+public class TestJUnit3With5 extends junit.framework.TestCase { // Compliant
+  @org.junit.Test
+  public void notJUnit3() { }
+}
+
+@RunWith(JUnit4.class)
+public class TestJUnit3With4_JUnit3_Style extends junit.framework.TestCase { // Compliant
+  public void testNothing() {
+    assertTrue(true);
+  }
+}
+
+class JUnit4WithJUnit3Test { // Noncompliant
+  public void test() { // Simply naming test is not enough for JUnit 4
   }
 }
 
