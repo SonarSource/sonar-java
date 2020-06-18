@@ -30,6 +30,12 @@ public class AssertionCompareToSelfCheck_JUnit5 {
     assertArrayEquals(expected, actual, "message"); // Compliant
     assertArrayEquals(actual, actual); // Noncompliant
     assertArrayEquals(actual, actual, "message"); // Noncompliant
+
+    assertArrayEquals((new Object[]{new Object()}), (new Object[]{new Object()})); // Compliant
+    assertArrayEquals(new Object[]{1}, new Object[]{1}); // Noncompliant
+    assertArrayEquals(new Object[]{1, new Object()}, new Object[]{1, new Object()}); // Compliant
+    assertArrayEquals(new Object[4], new Object[4]); // Noncompliant
+    assertArrayEquals(new Object[]{}, new Object[]{}); // Noncompliant
   }
 
   @Test
