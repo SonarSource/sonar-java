@@ -46,6 +46,7 @@ import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
 import org.sonar.java.checks.regex.AnchorPrecedenceCheck;
 import org.sonar.java.checks.regex.DuplicatesInCharacterClassCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
+import org.sonar.java.checks.regex.RedosCheck;
 import org.sonar.java.checks.regex.UnicodeCaseCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
 import org.sonar.java.checks.security.AndroidBroadcastingCheck;
@@ -562,6 +563,7 @@ public final class CheckList {
       ReflectionOnNonRuntimeAnnotationCheck.class,
       RegexHotspotCheck.class,
       InvalidRegexCheck.class,
+      RedosCheck.class,
       RegexPatternsNeedlesslyCheck.class,
       RepeatAnnotationCheck.class,
       ReplaceGuavaWithJava8Check.class,
