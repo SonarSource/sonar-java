@@ -37,6 +37,7 @@ import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexScannerContext;
+import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -151,8 +152,8 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext, Re
   }
 
   @Override
-  public RegexParseResult regexForLiterals(boolean freeSpacingMode, LiteralTree... stringLiterals) {
-    return regexCache.getRegexForLiterals(freeSpacingMode, stringLiterals);
+  public RegexParseResult regexForLiterals(FlagSet initialFlags, LiteralTree... stringLiterals) {
+    return regexCache.getRegexForLiterals(initialFlags, stringLiterals);
   }
 
   @Override

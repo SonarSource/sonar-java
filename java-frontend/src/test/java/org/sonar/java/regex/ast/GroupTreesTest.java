@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.RegexParser;
 import org.sonar.java.regex.SyntaxError;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +38,7 @@ import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
-import static org.sonar.java.regex.RegexParserTestUtils.makeSource;
+import static org.sonar.java.regex.RegexParserTestUtils.parseRegex;
 
 class GroupTreesTest {
 
@@ -56,7 +55,7 @@ class GroupTreesTest {
 
   @Test
   void testUnfinishedGroup() {
-    RegexParseResult result = new RegexParser(makeSource("(x"), false).parse();
+    RegexParseResult result = parseRegex("(x");
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Expected ')', but found the end of the regex", error.getMessage(), "Error should have the right message.");
@@ -68,7 +67,7 @@ class GroupTreesTest {
 
   @Test
   void testExtraParenthesis() {
-    RegexParseResult result = new RegexParser(makeSource("(x))"), false).parse();
+    RegexParseResult result = parseRegex("(x))");
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Unexpected ')'", error.getMessage(), "Error should have the right message.");
