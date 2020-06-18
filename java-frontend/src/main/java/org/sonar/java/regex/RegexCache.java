@@ -23,15 +23,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 
 public final class RegexCache {
   private final Map<List<LiteralTree>, RegexParseResult> cache = new HashMap<>();
 
-  public RegexParseResult getRegexForLiterals(boolean freeSpacingMode, LiteralTree... stringLiterals) {
+  public RegexParseResult getRegexForLiterals(FlagSet initialFlags, LiteralTree... stringLiterals) {
     return cache.computeIfAbsent(
       Arrays.asList(stringLiterals),
-      k -> new RegexParser(new RegexSource(k), freeSpacingMode).parse());
+      k -> new RegexParser(new RegexSource(k), initialFlags).parse());
   }
+
 }

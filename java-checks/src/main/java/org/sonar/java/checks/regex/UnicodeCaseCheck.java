@@ -37,25 +37,20 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
 
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
-    if (!regexForLiterals.hasSyntaxErrors()) {
-      Visitor visitor = new Visitor();
-      visitor.setActiveFlags(getFlags(mit));
-      visitor.visit(regexForLiterals.getResult());
-      if (visitor.problematicFlagSetOutsideOfRegex) {
-        getFlagsTree(mit).ifPresent( flagsTree ->
-          reportIssue(flagsTree, String.format(MESSAGE, "\"Pattern.UNICODE_CASE\""))
-        );
-      }
-      for (JavaCharacter flag : visitor.problematicFlags) {
-        reportIssue(flag, String.format(MESSAGE, "the \"u\" flag"), null, Collections.emptyList());
-      }
-    }
+    new Visitor(mit).visit(regexForLiterals);
   }
 
-  private static class Visitor extends RegexBaseVisitor {
+  private class Visitor extends RegexBaseVisitor {
+
     final Set<JavaCharacter> problematicFlags = new HashSet<>();
 
     boolean problematicFlagSetOutsideOfRegex = false;
+
+    final MethodInvocationTree mit;
+
+    Visitor(MethodInvocationTree mit) {
+      this.mit = mit;
+    }
 
     @Override
     public void visitPlainCharacter(PlainCharacterTree tree) {
@@ -69,7 +64,19 @@ public class UnicodeCaseCheck extends AbstractRegexCheck {
       }
     }
 
-    static boolean isNonAsciiLetter(char ch) {
+    @Override
+    protected void after(RegexParseResult regexParseResult) {
+      if (problematicFlagSetOutsideOfRegex) {
+        getFlagsTree(mit).ifPresent( flagsTree ->
+          reportIssue(flagsTree, String.format(MESSAGE, "\"Pattern.UNICODE_CASE\""))
+        );
+      }
+      for (JavaCharacter flag : problematicFlags) {
+        reportIssue(flag, String.format(MESSAGE, "the \"u\" flag"), null, Collections.emptyList());
+      }
+    }
+
+    boolean isNonAsciiLetter(char ch) {
       return ch > 127 && Character.isLetter(ch);
     }
 

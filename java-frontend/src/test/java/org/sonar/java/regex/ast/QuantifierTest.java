@@ -22,7 +22,6 @@ package org.sonar.java.regex.ast;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.RegexParser;
 import org.sonar.java.regex.SyntaxError;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
-import static org.sonar.java.regex.RegexParserTestUtils.makeSource;
+import static org.sonar.java.regex.RegexParserTestUtils.parseRegex;
 
 class QuantifierTest {
 
@@ -97,7 +96,7 @@ class QuantifierTest {
 
   @Test
   void testDoubleQuantifier() {
-    RegexParseResult result = new RegexParser(makeSource("x**"), false).parse();
+    RegexParseResult result = parseRegex("x**");
     assertEquals(1, result.getSyntaxErrors().size(), "Expected exactly one error.");
     SyntaxError error = result.getSyntaxErrors().get(0);
     assertEquals("Unexpected quantifier '*'", error.getMessage(), "Error should have the right message.");

@@ -22,10 +22,12 @@ package org.sonar.java.regex;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import org.opentest4j.AssertionFailedError;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
+import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
@@ -52,17 +54,35 @@ public class RegexParserTestUtils {
   }
 
   public static RegexTree assertSuccessfulParse(String regex, boolean freeSpacingMode) {
-    RegexSource source = makeSource(regex);
-    RegexParseResult result = new RegexParser(source, freeSpacingMode).parse();
+    return assertSuccessfulParseResult(regex, freeSpacingMode).getResult();
+  }
+
+  public static RegexParseResult assertSuccessfulParseResult(String regex) {
+    return assertSuccessfulParseResult(regex, false);
+  }
+
+  public static RegexParseResult assertSuccessfulParseResult(String regex, boolean freeSpacingMode) {
+    RegexParseResult result = parseRegex(regex, freeSpacingMode);
     if (!result.getSyntaxErrors().isEmpty()) {
       throw new AssertionFailedError("Parsing should complete with no errors.", "no errors", result.getSyntaxErrors());
     }
-    return result.getResult();
+    return result;
+  }
+
+  public static RegexParseResult parseRegex(String regex, boolean freeSpacingMode) {
+    int initialFlags = freeSpacingMode ? Pattern.COMMENTS : 0;
+    RegexSource source = makeSource(regex);
+    RegexParseResult result = new RegexParser(source, new FlagSet(initialFlags)).parse();
+    assertEquals(initialFlags, result.getInitialFlags().getMask(), "The initial flags in result should match those passed in.");
+    return result;
+  }
+
+  public static RegexParseResult parseRegex(String regex) {
+    return parseRegex(regex, false);
   }
 
   public static void assertFailParsing(String regex, String expectedError) {
-    RegexSource source = makeSource(regex);
-    RegexParseResult result = new RegexParser(source, false).parse();
+    RegexParseResult result = parseRegex(regex);
     List<SyntaxError> errors = result.getSyntaxErrors();
     if (errors.isEmpty()) {
       throw new AssertionFailedError("Expected error in parsing");
@@ -144,7 +164,7 @@ public class RegexParserTestUtils {
   // place the String which will contain the regex on 3rd line, starting from index 0
   private static final String JAVA_CODE = "class Foo {\n  String str = \n\"%s\";\n}";
 
-  public static RegexSource makeSource(String content) {
+  private static RegexSource makeSource(String content) {
     CompilationUnitTree tree = JParserTestUtils.parse(String.format(JAVA_CODE, content));
     ClassTree foo = (ClassTree) tree.types().get(0);
     VariableTree str = (VariableTree) foo.members().get(0);

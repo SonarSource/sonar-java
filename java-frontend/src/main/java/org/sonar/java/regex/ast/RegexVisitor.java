@@ -19,17 +19,11 @@
  */
 package org.sonar.java.regex.ast;
 
+import org.sonar.java.regex.RegexParseResult;
+
 public interface RegexVisitor {
 
-  /**
-   * When a regex is constructed using Pattern.compile with the flags argument, this method should be called with the
-   * value of the flags argument (if known) before running the visitor
-   */
-  void setActiveFlags(int flags);
-
-  default void visit(RegexTree tree) {
-    tree.accept(this);
-  }
+  void visit(RegexParseResult regexParseResult);
 
   void visitBackReference(BackReferenceTree tree);
 

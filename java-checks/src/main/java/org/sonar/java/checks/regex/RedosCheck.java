@@ -39,17 +39,10 @@ public class RedosCheck extends AbstractRegexCheck {
 
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
-    if (!regexForLiterals.hasSyntaxErrors()) {
-      RegexTree regex = regexForLiterals.getResult();
-      NestedRepetitionsFinder visitor = new NestedRepetitionsFinder();
-      visitor.visit(regex);
-      if (!visitor.offendingRepetitions.isEmpty()) {
-        reportIssue(regex, MESSAGE, null, visitor.offendingRepetitions);
-      }
-    }
+    new NestedRepetitionsFinder().visit(regexForLiterals);
   }
 
-  private static class NestedRepetitionsFinder extends RegexBaseVisitor {
+  private class NestedRepetitionsFinder extends RegexBaseVisitor {
 
     private boolean isInsideRepetition = false;
 
@@ -83,6 +76,12 @@ public class RedosCheck extends AbstractRegexCheck {
       isInsideRepetition = oldIsInsideRepetition;
     }
 
+    @Override
+    protected void after(RegexParseResult regexParseResult) {
+      if (!offendingRepetitions.isEmpty()) {
+        reportIssue(regexParseResult.getResult(), MESSAGE, null, offendingRepetitions);
+      }
+    }
   }
 
 }

@@ -43,9 +43,8 @@ public class InvalidRegexCheck extends AbstractRegexCheck {
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
     List<SyntaxError> syntaxErrors = regexForLiterals.getSyntaxErrors();
-    if (syntaxErrors.isEmpty()) {
-      checkBackReferenceErrors(regexForLiterals.getResult());
-    } else {
+    new GroupVisitor().visit(regexForLiterals);
+    if (!syntaxErrors.isEmpty()) {
       reportSyntaxErrors(syntaxErrors);
     }
   }
@@ -65,42 +64,7 @@ public class InvalidRegexCheck extends AbstractRegexCheck {
     reportIssue(tree, msg, null, secondaries);
   }
 
-  private void checkBackReferenceErrors(RegexTree regex) {
-    GroupVisitor groupVisitor = new GroupVisitor();
-    regex.accept(groupVisitor);
-
-    BackReferenceTree firstWrongBackReference = null;
-    List<RegexIssueLocation> secondaries = new ArrayList<>();
-
-    for (Map.Entry<String, BackReferenceTree> backReference : groupVisitor.backReferenceNames.entrySet()) {
-      String key = backReference.getKey();
-      BackReferenceTree backReferenceTree = backReference.getValue();
-
-      CapturingGroupTree capturingGroupTree = groupVisitor.groupNames.get(key);
-      String groupName = backReferenceTree.groupName();
-      boolean reported = false;
-      if (capturingGroupTree == null) {
-        secondaries.add(new RegexIssueLocation(backReferenceTree, String.format("There is no group named '%s'.", groupName)));
-        reported = true;
-      } else if (isBefore(backReferenceTree, capturingGroupTree)) {
-        secondaries.add(new RegexIssueLocation(backReferenceTree, String.format("The group named '%s' is not yet declared at this position.", groupName)));
-        reported = true;
-      }
-      if (reported && firstWrongBackReference == null) {
-        firstWrongBackReference = backReferenceTree;
-      }
-    }
-
-    if (firstWrongBackReference != null) {
-      reportIssue(firstWrongBackReference, secondaries, "back reference");
-    }
-  }
-
-  private static boolean isBefore(RegexTree t1, RegexTree t2) {
-    return t1.getRange().getBeginningOffset() < t2.getRange().getBeginningOffset();
-  }
-
-  private static final class GroupVisitor extends RegexBaseVisitor {
+  private final class GroupVisitor extends RegexBaseVisitor {
 
     final Map<String, CapturingGroupTree> groupNames = new HashMap<>();
     final Map<String, BackReferenceTree> backReferenceNames = new HashMap<>();
@@ -118,6 +82,40 @@ public class InvalidRegexCheck extends AbstractRegexCheck {
         backReferenceNames.put(tree.groupName(), tree);
       }
     }
+
+    @Override
+    protected void after(RegexParseResult regexParseResult) {
+      BackReferenceTree firstWrongBackReference = null;
+      List<RegexIssueLocation> secondaries = new ArrayList<>();
+
+      for (Map.Entry<String, BackReferenceTree> backReference : backReferenceNames.entrySet()) {
+        String key = backReference.getKey();
+        BackReferenceTree backReferenceTree = backReference.getValue();
+
+        CapturingGroupTree capturingGroupTree = groupNames.get(key);
+        String groupName = backReferenceTree.groupName();
+        boolean reported = false;
+        if (capturingGroupTree == null) {
+          secondaries.add(new RegexIssueLocation(backReferenceTree, String.format("There is no group named '%s'.", groupName)));
+          reported = true;
+        } else if (isBefore(backReferenceTree, capturingGroupTree)) {
+          secondaries.add(new RegexIssueLocation(backReferenceTree, String.format("The group named '%s' is not yet declared at this position.", groupName)));
+          reported = true;
+        }
+        if (reported && firstWrongBackReference == null) {
+          firstWrongBackReference = backReferenceTree;
+        }
+      }
+
+      if (firstWrongBackReference != null) {
+        reportIssue(firstWrongBackReference, secondaries, "back reference");
+      }
+    }
+
+    private boolean isBefore(RegexTree t1, RegexTree t2) {
+      return t1.getRange().getBeginningOffset() < t2.getRange().getBeginningOffset();
+    }
+
   }
 
 }

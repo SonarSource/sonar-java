@@ -31,13 +31,17 @@ public class FlagSet {
   private final Map<Integer, JavaCharacter> flagCharacters;
 
   public FlagSet() {
-    this.mask = 0;
-    this.flagCharacters = new HashMap<>();
+    this(0);
   }
 
   public FlagSet(FlagSet other) {
     this.mask = other.mask;
     this.flagCharacters = new HashMap<>(other.flagCharacters);
+  }
+
+  public FlagSet(int initialFlags) {
+    this.flagCharacters = new HashMap<>();
+    this.mask = initialFlags;
   }
 
   public boolean contains(int flag) {

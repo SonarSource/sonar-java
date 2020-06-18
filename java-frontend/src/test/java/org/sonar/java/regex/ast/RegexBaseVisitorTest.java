@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.RegexParserTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,9 +47,10 @@ class RegexBaseVisitorTest {
         }
       };
 
-      RegexTree tree = RegexParserTestUtils.assertSuccessfulParse("a|b|c");
-      tree.accept(visitor);
+      RegexParseResult result = RegexParserTestUtils.assertSuccessfulParseResult("a|b|c");
+      visitor.visit(result);
 
+      RegexTree tree = result.getResult();
       assertThat(tree).isInstanceOf(DisjunctionTree.class);
       assertThat(((DisjunctionTree) tree).getAlternatives())
         .hasSize(3)
@@ -69,9 +71,10 @@ class RegexBaseVisitorTest {
         }
       };
 
-      RegexTree tree = RegexParserTestUtils.assertSuccessfulParse("abc");
-      tree.accept(visitor);
+      RegexParseResult result = RegexParserTestUtils.assertSuccessfulParseResult("abc");
+      visitor.visit(result);
 
+      RegexTree tree = result.getResult();
       assertThat(tree).isInstanceOf(SequenceTree.class);
       assertThat(((SequenceTree) tree).getItems())
         .hasSize(3)
@@ -82,23 +85,6 @@ class RegexBaseVisitorTest {
 
   @Nested
   class FlagsTest {
-    @Test
-    void getSetActiveFlags() {
-      RegexBaseVisitor visitor = new RegexBaseVisitor();
-      assertThat(visitor.getActiveFlags()).isZero();
-
-      visitor.setActiveFlags(Pattern.LITERAL);
-      assertThat(visitor.getActiveFlags()).isEqualTo(Pattern.LITERAL);
-    }
-
-    @Test
-    void flagActive() {
-      RegexBaseVisitor visitor = new RegexBaseVisitor();
-      assertThat(visitor.flagActive(Pattern.LITERAL)).isFalse();
-
-      visitor.setActiveFlags(Pattern.LITERAL);
-      assertThat(visitor.flagActive(Pattern.LITERAL)).isTrue();
-    }
 
     @Test
     void trackingFlagsInRegex() {
@@ -113,13 +99,20 @@ class RegexBaseVisitorTest {
     @Test
     void visitingRegexWithVariousFeatures() {
       PlainCharCollector visitor = new PlainCharCollector();
-      visitor.visit(RegexParserTestUtils.assertSuccessfulParse("[ab&&[^c]]+|d"));
+      visitor.visit(RegexParserTestUtils.assertSuccessfulParseResult("[ab&&[^c]]+|d"));
       assertThat(visitor.visitedCharacters()).isEqualTo("abcd");
+    }
+
+    @Test
+    void notVisitingRegularExpressionsWithErrors() {
+      PlainCharCollector visitor = new PlainCharCollector();
+      visitor.visit(RegexParserTestUtils.parseRegex("abcd("));
+      assertThat(visitor.visitedCharacters()).isEmpty();
     }
 
     private void testFlags(String regex) {
       FlagChecker visitor = new FlagChecker();
-      visitor.visit(RegexParserTestUtils.assertSuccessfulParse(regex));
+      visitor.visit(RegexParserTestUtils.assertSuccessfulParseResult(regex));
       assertThat(visitor.visitedCharacters()).isEqualTo("abcdefghi");
       JavaCharacter iFlag = visitor.getJavaCharacterForFlag(Pattern.CASE_INSENSITIVE);
       assertThat(iFlag).isNotNull();
