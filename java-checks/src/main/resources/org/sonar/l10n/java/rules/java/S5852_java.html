@@ -1,0 +1,74 @@
+<p>Most of the regular expression engines use <code>backtracking</code> to try all possible execution paths of the regular expression when evaluating
+an input, in some cases it can cause performance issues, called <code>catastrophic backtracking</code> situations. In the worst case, the complexity
+of the regular expression is exponential in the size of the input, this means that a small carefully-crafted input (like 20 chars) can trigger
+<code>catastrophic backtracking</code> and cause a denial of service of the application. Super-linear regex complexity can lead to the same impact too
+with, in this case, a large carefully-crafted input (thousands chars).</p>
+<p>This rule detects regular expression patterns known to have potential performance issues:</p>
+<ul>
+  <li> <code>Nested quantifiers</code> which are quantifiers inside a group that is itself repeated by a quantifier (eg: <code>/(a+)+/</code>). </li>
+</ul>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The input is user-controlled. </li>
+  <li> The input size is not restricted to a small number of characters. </li>
+  <li> There is no timeout in place to limit the regex evaluation time. </li>
+</ul>
+<p>There is a risk if you answered yes to any of those questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>To avoid <code>catastrophic backtracking</code> situations, when possible:</p>
+<ul>
+  <li> The maximum number of expected repetitions should be defined with the corresponding quantifier, like <code>{1,5}</code> instead of
+  <code>+</code> for instance. </li>
+  <li> Refactor <code>nested quantifiers</code> to limit the number of way the inner group can be matched by the outer quantifier, for instance this
+  nested quantifier situation <code>(ba+)+</code> doesn't cause performance issues, indeed, the inner group can be matched only if it exists exactly
+  one <code>b</code> char per repetition of the group. </li>
+  <li> Optimize regular expressions with <code>possessive quantifiers</code> and <code>atomic grouping</code>. </li>
+</ul>
+<h2>Sensitive Code Example</h2>
+<p>The first regex evaluation will never end in <code>OpenJDK</code> &lt;= 9 and the second regex evaluation will never end in any versions of
+<code>OpenJDK</code>:</p>
+<pre>
+java.util.regex.Pattern.compile("(a+)+").matcher(
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
+aaaaaaaaaaaaaaa!").matches(); // Sensitive
+
+java.util.regex.Pattern.compile("(h|h|ih(((i|a|c|c|a|i|i|j|b|a|i|b|a|a|j))+h)ahbfhba|c|i)*").matcher(
+"hchcchicihcchciiicichhcichcihcchiihichiciiiihhcchi"+
+"cchhcihchcihiihciichhccciccichcichiihcchcihhicchcciicchcccihiiihhihihihi"+
+"chicihhcciccchihhhcchichchciihiicihciihcccciciccicciiiiiiiiicihhhiiiihchccch"+
+"chhhhiiihchihcccchhhiiiiiiiicicichicihcciciihichhhhchihciiihhiccccccciciihh"+
+"ichiccchhicchicihihccichicciihcichccihhiciccccccccichhhhihihhcchchihih"+
+"iihhihihihicichihiiiihhhhihhhchhichiicihhiiiiihchccccchichci").matches(); // Sensitive
+</pre>
+<h2>Compliant Solution</h2>
+<p>Possessive quantifiers do not keep backtracking positions, thus can be used, if possible, to avoid performance issues:</p>
+<pre>
+java.util.regex.Pattern.compile("(a+)++").matcher(
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
+aaaaaaaaaaaaaaa!").matches(); // Compliant
+
+java.util.regex.Pattern.compile("(h|h|ih(((i|a|c|c|a|i|i|j|b|a|i|b|a|a|j))+h)ahbfhba|c|i)*+").matcher(
+"hchcchicihcchciiicichhcichcihcchiihichiciiiihhcchi"+
+"cchhcihchcihiihciichhccciccichcichiihcchcihhicchcciicchcccihiiihhihihihi"+
+"chicihhcciccchihhhcchichchciihiicihciihcccciciccicciiiiiiiiicihhhiiiihchccch"+
+"chhhhiiihchihcccchhhiiiiiiiicicichicihcciciihichhhhchihciiihhiccccccciciihh"+
+"ichiccchhicchicihihccichicciihcichccihhiciccccccccichhhhihihhcchchihih"+
+"iihhihihihicichihiiiihhhhihhhchhichiicihhiiiiihchccccchichci").matches(); // Compliant
+</pre>
+<h2>See</h2>
+<ul>
+  <li> <a href="https://cwe.mitre.org/data/definitions/400.html">MITRE, CWE-400</a> - Uncontrolled Resource Consumption </li>
+  <li> <a href="https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS">owasp.org</a> - OWASP Regular expression Denial
+  of Service - ReDoS </li>
+  <li> <a href="https://stackstatus.net/post/147710624694/outage-postmortem-july-20-2016">stackstatus.net</a> - Outage Postmortem - July 20, 2016
+  </li>
+  <li> <a href="https://www.regular-expressions.info/catastrophic.html">regular-expressions.info</a> - Runaway Regular Expressions: Catastrophic
+  Backtracking </li>
+  <li> <a
+  href="https://docs.microsoft.com/fr-fr/dotnet/standard/base-types/backtracking-in-regular-expressions#backtracking-with-nested-optional-quantifiers">docs.microsoft.com</a> - Backtracking with Nested Optional Quantifiers </li>
+</ul>
+
