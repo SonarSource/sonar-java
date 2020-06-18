@@ -1,15 +1,17 @@
 package checks.SpringComponentWithNonAutowiredMembersCheck;
 
+import javax.annotation.Resource;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import javax.inject.Inject;
-import javax.annotation.Resource;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 @Controller
 public class DefaultAnnotations {
@@ -44,9 +46,45 @@ class RepositoryHelloWorld {
   protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
 }
 
+@Repository
+@Scope("prototype")
+class RepositoryHelloWorld_Scoped {
+  protected String name = null; // Compliant, even if using another scope than default is a bad pattern (see S3750), we don't want to report an issue here
+}
+
 @Component
 class ComponentHelloWorld {
   protected String name = null; // Noncompliant [[sc=20;ec=24]] {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+}
+
+@Scope("singleton")
+@Component
+class ComponentHelloWorld_Singleton_1 {
+  protected String name = null; // Noncompliant
+}
+
+@Scope(value = "singleton")
+@Component
+class ComponentHelloWorld_Singleton_2 {
+  protected String name = null; // Noncompliant
+}
+
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+@Component
+class ComponentHelloWorld_Singleton_3 {
+  protected String name = null; // Noncompliant
+}
+
+@Scope(value = "custom_scope")
+@Component
+class ComponentHelloWorld_Prototype_1 {
+  protected String name = null; // Compliant
+}
+
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Component
+class ComponentHelloWorld_Prototype_2 {
+  protected String name = null; // Compliant
 }
 
 class NonSpringComponentClazz {
