@@ -45,7 +45,7 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (hasSemantic() && mit.methodSelect().is(Kind.MEMBER_SELECT)) {
       ExpressionTree expressionTree = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
-      if (expressionTree.is(Kind.NEW_CLASS)) {
+      if (expressionTree.is(Kind.NEW_CLASS, Kind.NEW_ARRAY)) {
         reportIssue(expressionTree);
       } else if (expressionTree.is(Kind.IDENTIFIER) && variableUsedOnlyToGetClass((IdentifierTree) expressionTree)) {
         reportIssue(getInitializer((IdentifierTree) expressionTree));
