@@ -81,7 +81,8 @@ public class CurlyBraceQuantifier extends Quantifier {
     return maximumRepetitionsToken;
   }
 
-  public boolean isSingleNumber() {
+  @Override
+  public boolean isFixed() {
     return commaToken == null;
   }
 

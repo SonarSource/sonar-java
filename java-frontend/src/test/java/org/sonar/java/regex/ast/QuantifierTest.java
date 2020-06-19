@@ -75,13 +75,13 @@ class QuantifierTest {
   }
 
   @Test
-  void testLazyStar() {
+  void testReluctantStar() {
     RegexTree regex = assertSuccessfulParse("x*?");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
     assertPlainCharacter('x', repetition.getElement());
     SimpleQuantifier quantifier = assertType(SimpleQuantifier.class, repetition.getQuantifier());
     assertEquals(SimpleQuantifier.Kind.STAR, quantifier.getKind(), "Quantifier should be a Kleene star.");
-    assertEquals(Quantifier.Modifier.LAZY, quantifier.getModifier(), "Quantifier should be lazy.");
+    assertEquals(Quantifier.Modifier.RELUCTANT, quantifier.getModifier(), "Quantifier should be reluctant.");
   }
 
   @Test

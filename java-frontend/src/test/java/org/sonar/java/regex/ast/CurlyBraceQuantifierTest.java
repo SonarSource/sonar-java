@@ -50,7 +50,7 @@ class CurlyBraceQuantifierTest {
     assertEquals(23, quantifier.getMinimumRepetitions(), "Lower bound should be 23.");
     assertEquals(42, quantifier.getMaximumRepetitions(), "Upper bound should be 42.");
     assertFalse(quantifier.isOpenEnded(), "Quantifier should not be open ended.");
-    assertFalse(quantifier.isSingleNumber(), "Quantifier should not be marked as only having a single number.");
+    assertFalse(quantifier.isFixed(), "Quantifier should not be marked as only having a single number.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
   }
 
@@ -64,7 +64,7 @@ class CurlyBraceQuantifierTest {
     assertEquals(42, quantifier.getMinimumRepetitions(), "Lower bound should be 42.");
     assertNull(quantifier.getMaximumRepetitions(), "Quantifier should be open ended.");
     assertTrue(quantifier.isOpenEnded(), "Quantifier should be open ended.");
-    assertFalse(quantifier.isSingleNumber(), "Quantifier should not be marked as only having a single number.");
+    assertFalse(quantifier.isFixed(), "Quantifier should not be marked as only having a single number.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
   }
 
@@ -77,19 +77,19 @@ class CurlyBraceQuantifierTest {
     assertEquals(42, quantifier.getMinimumRepetitions(), "Lower bound should be 42.");
     assertEquals(42, quantifier.getMaximumRepetitions(), "Upper bound should be the same as lower bound.");
     assertFalse(quantifier.isOpenEnded(), "Quantifier should not be open ended.");
-    assertTrue(quantifier.isSingleNumber(), "Quantifier should be marked as only having a single number.");
+    assertTrue(quantifier.isFixed(), "Quantifier should be marked as only having a single number.");
     assertEquals(Quantifier.Modifier.GREEDY, quantifier.getModifier(), "Quantifier should be greedy.");
   }
 
   @Test
-  void testLazyCurlyBracedQuantifier() {
+  void testReluctantCurlyBracedQuantifier() {
     RegexTree regex = assertSuccessfulParse("x{23,42}?");
     RepetitionTree repetition = assertType(RepetitionTree.class, regex);
     assertPlainCharacter('x', repetition.getElement());
     CurlyBraceQuantifier quantifier = assertType(CurlyBraceQuantifier.class, repetition.getQuantifier());
     assertEquals(23, quantifier.getMinimumRepetitions(), "Lower bound should be 23.");
     assertEquals(42, quantifier.getMaximumRepetitions(), "Upper bound should be 42.");
-    assertEquals(Quantifier.Modifier.LAZY, quantifier.getModifier(), "Quantifier should be lazy.");
+    assertEquals(Quantifier.Modifier.RELUCTANT, quantifier.getModifier(), "Quantifier should be reluctant.");
   }
 
   @Test

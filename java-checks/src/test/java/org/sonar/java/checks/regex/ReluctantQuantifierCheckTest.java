@@ -17,36 +17,21 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.ast;
+package org.sonar.java.checks.regex;
 
-import javax.annotation.CheckForNull;
+import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public abstract class Quantifier extends RegexSyntaxElement {
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-  public enum Modifier {
-    GREEDY, RELUCTANT, POSSESSIVE
+class ReluctantQuantifierCheckTest {
+
+  @Test
+  void test() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/regex/ReluctantQuantifierCheck.java"))
+      .withCheck(new ReluctantQuantifierCheck())
+      .verifyIssues();
   }
-
-  private final Modifier modifier;
-
-  protected Quantifier(RegexSource source, IndexRange range, Modifier modifier) {
-    super(source, range);
-    this.modifier = modifier;
-  }
-
-  public abstract int getMinimumRepetitions();
-
-  @CheckForNull
-  public abstract Integer getMaximumRepetitions();
-
-  public Modifier getModifier() {
-    return modifier;
-  }
-
-  public boolean isOpenEnded() {
-    return getMaximumRepetitions() == null;
-  }
-
-  public abstract boolean isFixed();
 
 }
