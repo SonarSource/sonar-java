@@ -9,13 +9,13 @@ vulnerability to steal session-cookies.</p>
   <li> the <code>HttpOnly</code> attribute offer an additional protection (not the case for an <em>XSRF-TOKEN cookie</em> / CSRF token for example)
   </li>
 </ul>
-<p>You are at risk if you answered yes to any of those questions.</p>
+<p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
   <li> By default the <code>HttpOnly</code> flag should be set to <em>true</em> for most of the cookies and it's mandatory for session /
   sensitive-security cookies. </li>
 </ul>
-<h2>Sensitive Code Examples</h2>
+<h2>Sensitive Code Example</h2>
 <p>If you create a security-sensitive cookie in your JAVA code:</p>
 <pre>
 Cookie c = new Cookie(COOKIENAME, sensitivedata);

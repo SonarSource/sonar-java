@@ -7,24 +7,10 @@
     "constantCost": "30min"
   },
   "tags": [
-    "cwe",
-    "spring",
-    "owasp-a6",
-    "sans-top25-porous",
-    "owasp-a3"
+    
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-2070",
   "sqKey": "S2070",
-  "scope": "Main",
-  "securityStandards": {
-    "CWE": [
-      328,
-      327
-    ],
-    "OWASP": [
-      "A3",
-      "A6"
-    ]
-  }
+  "scope": "Main"
 }

@@ -1,5 +1,5 @@
 {
-  "title": "Classes should not be too complex",
+  "title": "Cyclomatic Complexity of classes should not be too high",
   "type": "CODE_SMELL",
   "status": "deprecated",
   "remediation": {

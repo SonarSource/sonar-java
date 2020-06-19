@@ -8,6 +8,7 @@
   },
   "tags": [
     "cwe",
+    "spring",
     "owasp-a1",
     "sans-top25-insecure",
     "bad-practice",

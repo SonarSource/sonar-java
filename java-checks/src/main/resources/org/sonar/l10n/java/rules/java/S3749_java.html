@@ -4,8 +4,8 @@ such as a logger, but all non-<code>static</code> members should be managed by S
 <code>@Resource</code>, <code>@Inject</code>, <code>@Autowired</code> or <code>@Value</code>.</p>
 <p>Having non-injected members in one of these classes could indicate an attempt to manage state. Because they are singletons, such an attempt is
 almost guaranteed to eventually expose data from User1's session to User2. </p>
-<p>This rule raises an issue when a singleton <code>@Controller</code>, <code>@Service</code>, or <code>@Repository</code> has non-<code>static</code>
-members that are not annotated with one of:</p>
+<p>This rule raises an issue when a singleton <code>@Component</code>, <code>@Controller</code>, <code>@Service</code>, or <code>@Repository</code>
+has non-<code>static</code> members that are not annotated with one of:</p>
 <ul>
   <li> <code>org.springframework.beans.factory.annotation.Autowired</code> </li>
   <li> <code>org.springframework.beans.factory.annotation.Value</code> </li>

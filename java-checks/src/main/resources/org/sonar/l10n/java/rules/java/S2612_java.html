@@ -1,18 +1,14 @@
-<p>Setting files (or directories) permissions should be done with an abundance of caution, to limit as far as possible who can execute, write to and
-read each file. An unexpected user having access to the server where these files are stored could intentionally or not:</p>
-<ul>
-  <li> get access to sensitive data (read or <code>r--</code> permission) </li>
-  <li> override files content that will be then read or executed by the application (write or <code>-w-</code> permission) </li>
-  <li> execute binaries or scripts (execution or <code>--x</code> permission) </li>
-</ul>
-<p>This rule is triggered when read, write or execute permissions are given to "others" class according to the POSIX standard.</p>
+<p>In Unix, "<code>others</code>" class refers to all users except the owner of the file and the members of the group assigned to this file.</p>
+<p>Granting permissions to this group can lead to unauthorized access to files. </p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> if permissions are given to the "others" class while it's not required to run the application </li>
+  <li> The application is designed to be run on a multi-user environment. </li>
+  <li> Corresponding files and directories may contain confidential information. </li>
 </ul>
+<p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
-<p>The most restrictive possible permissions should be assigned to files or directories.</p>
-<h2>Sensitive Code Examples</h2>
+<p>The most restrictive possible permissions should be assigned to files and directories.</p>
+<h2>Sensitive Code Example</h2>
 <pre>
     public void setPermissions(String filePath) {
         Set&lt;PosixFilePermission&gt; perms = new HashSet&lt;PosixFilePermission&gt;();
@@ -66,6 +62,7 @@ read each file. An unexpected user having access to the server where these files
   <li> <a href="https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control">OWASP Top 10 2017 Category A5</a> - Broken Access Control </li>
   <li> <a href="https://www.owasp.org/index.php/Test_File_Permission_(OTG-CONFIG-009)">OWASP File Permission</a> </li>
   <li> <a href="http://cwe.mitre.org/data/definitions/732">MITRE, CWE-732</a> - Incorrect Permission Assignment for Critical Resource </li>
+  <li> <a href="https://cwe.mitre.org/data/definitions/266.html">MITRE, CWE-266</a> - Incorrect Privilege Assignment </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/FIO01-J.+Create+files+with+appropriate+access+permissions">CERT, FIO01-J.</a> -
   Create files with appropriate access permissions </li>
   <li> <a href="https://wiki.sei.cmu.edu/confluence/display/c/FIO06-C.+Create+files+with+appropriate+access+permissions">CERT, FIO06-C.</a> - Create
