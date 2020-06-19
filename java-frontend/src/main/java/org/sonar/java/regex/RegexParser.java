@@ -36,7 +36,7 @@ import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.CurlyBraceQuantifier;
 import org.sonar.java.regex.ast.DisjunctionTree;
 import org.sonar.java.regex.ast.DotTree;
-import org.sonar.java.regex.ast.EscapedPropertyTree;
+import org.sonar.java.regex.ast.EscapedCharacterClassTree;
 import org.sonar.java.regex.ast.FlagSet;
 import org.sonar.java.regex.ast.GroupTree;
 import org.sonar.java.regex.ast.IndexRange;
@@ -417,17 +417,33 @@ public class RegexParser {
         case 'Z':
         case 'z':
           return parseBoundary(backslash);
+        case 'w':
+        case 'W':
+        case 'd':
+        case 'D':
+        case 'S':
+        case 's':
+        case 'h':
+        case 'H':
+        case 'v':
+        case 'V':
+          return parseEscapedCharacterClass(backslash);
         default:
-          // TODO other kind of escape sequences such as quotations
-          break;
+          // TODO other kind of escape sequences such as quotations, special characters, N, x, u, R or X
+          characters.moveNext();
+          return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
       }
-      characters.moveNext();
-      return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
     }
   }
 
+  private RegexTree parseEscapedCharacterClass(JavaCharacter backslash) {
+    RegexTree result = new EscapedCharacterClassTree(source, backslash, characters.getCurrent());
+    characters.moveNext();
+    return result;
+  }
+
   private RegexTree parseEscapedProperty(JavaCharacter backslash) {
-    return parseEscapedSequence('{', '}', "a property name", dh -> new EscapedPropertyTree(source, backslash, dh.marker, dh.opener, dh.closer));
+    return parseEscapedSequence('{', '}', "a property name", dh -> new EscapedCharacterClassTree(source, backslash, dh.marker, dh.opener, dh.closer));
   }
 
   private RegexTree parseNamedBackReference(JavaCharacter backslash) {
@@ -476,6 +492,7 @@ public class RegexParser {
   private RegexTree parseNumericalBackReference(JavaCharacter backslash) {
     JavaCharacter firstDigit = characters.getCurrent();
     JavaCharacter lastDigit = firstDigit;
+    // TODO If there are multiple digits and the first one is 0, it's an octal escape, not a back reference
     do {
       characters.moveNext();
       if (!characters.isAtEnd()) {

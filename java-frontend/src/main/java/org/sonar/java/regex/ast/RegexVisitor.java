@@ -53,7 +53,7 @@ public interface RegexVisitor {
 
   void visitDot(DotTree tree);
 
-  void visitEscapedProperty(EscapedPropertyTree tree);
+  void visitEscapedCharacterClass(EscapedCharacterClassTree tree);
 
   void visitBoundary(BoundaryTree boundaryTree);
 
