@@ -20,6 +20,7 @@ public class DuplicatesInCharacterClassCheck {
 
   void compliant() {
     String str = "123";
+    str.matches("a-z\\d");
     str.matches("[0-9][0-9]?");
     str.matches("[xX]");
     str.matches("(?i)[äÄ]");

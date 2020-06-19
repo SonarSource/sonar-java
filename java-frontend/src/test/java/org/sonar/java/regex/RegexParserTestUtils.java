@@ -164,7 +164,7 @@ public class RegexParserTestUtils {
   // place the String which will contain the regex on 3rd line, starting from index 0
   private static final String JAVA_CODE = "class Foo {\n  String str = \n\"%s\";\n}";
 
-  private static RegexSource makeSource(String content) {
+  public static RegexSource makeSource(String content) {
     CompilationUnitTree tree = JParserTestUtils.parse(String.format(JAVA_CODE, content));
     ClassTree foo = (ClassTree) tree.types().get(0);
     VariableTree str = (VariableTree) foo.members().get(0);
