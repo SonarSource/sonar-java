@@ -195,7 +195,7 @@ public class RegexParser {
         return Quantifier.Modifier.POSSESSIVE;
       case '?':
         characters.moveNext();
-        return Quantifier.Modifier.LAZY;
+        return Quantifier.Modifier.RELUCTANT;
       default:
         return Quantifier.Modifier.GREEDY;
     }

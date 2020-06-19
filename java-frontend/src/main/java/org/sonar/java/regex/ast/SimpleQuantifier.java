@@ -24,7 +24,18 @@ import javax.annotation.CheckForNull;
 public class SimpleQuantifier extends Quantifier {
 
   public enum Kind {
-    STAR, PLUS, QUESTION_MARK
+    STAR("*"), PLUS("+"), QUESTION_MARK("?");
+
+    private final String str;
+
+    Kind(String str) {
+      this.str = str;
+    }
+
+    @Override
+    public String toString() {
+      return str;
+    }
   }
 
   private final Kind kind;
@@ -53,7 +64,13 @@ public class SimpleQuantifier extends Quantifier {
     }
   }
 
+  @Override
+  public boolean isFixed() {
+    return false;
+  }
+
   public Kind getKind() {
     return kind;
   }
+
 }
