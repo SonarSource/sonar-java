@@ -20,7 +20,8 @@
   "securityStandards": {
     "CWE": [
       327,
-      326
+      326,
+      295
     ],
     "OWASP": [
       "A3",

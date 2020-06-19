@@ -11,11 +11,9 @@ detailed information on both the system running the application and users. </p>
   <li> the code or configuration enabling the application debug features is deployed on production servers. </li>
   <li> the application runs by default with debug features activated. </li>
 </ul>
-<p>You are at risk if you answered yes to any of these questions.</p>
+<p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
-<ul>
-  <li> Do not enable debug features on production servers. </li>
-</ul>
+<p>Do not enable debug features on production servers.</p>
 <h2>Sensitive Code Example</h2>
 <p><code>Throwable.printStackTrace(...)</code> prints a Throwable and its stack trace to <code>System.Err</code> (by default) which is not easily
 parseable and can expose sensitive information:</p>

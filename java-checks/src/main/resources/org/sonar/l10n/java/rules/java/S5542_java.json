@@ -13,7 +13,7 @@
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-5542",
   "sqKey": "S5542",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
     "CWE": [
       327,

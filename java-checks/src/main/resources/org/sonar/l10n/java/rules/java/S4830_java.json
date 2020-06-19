@@ -11,6 +11,7 @@
     "privacy",
     "cert",
     "owasp-a6",
+    "sans-top25-porous",
     "ssl",
     "owasp-a3"
   ],

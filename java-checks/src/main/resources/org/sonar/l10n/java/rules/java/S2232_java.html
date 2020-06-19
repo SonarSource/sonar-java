@@ -12,7 +12,7 @@ while (! rs.isLast()) { // Noncompliant
 <h2>Compliant Solution</h2>
 <pre>
 ResultSet rs = stmt.executeQuery("SELECT name, address FROM PERSON");
-while (! rs.next()) {
+while (rs.next()) {
   // process row
 }
 </pre>

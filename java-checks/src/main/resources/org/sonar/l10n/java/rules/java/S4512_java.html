@@ -19,12 +19,12 @@ malicious code.</p>
   <li> the new property values might have been tampered with or provided by an untrusted source. </li>
   <li> sensitive properties can be modified, for example: <code>class.classLoader</code> </li>
 </ul>
-<p>You are at risk if you answered yes to any of these question.</p>
+<p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <p>Sanitize all values used as JavaBean properties.</p>
 <p>Don't set any sensitive properties. Keep full control over which properties are set. If the property names are provided by an unstrusted source,
 filter them with a whitelist.</p>
-<h2>Noncompliant Code Example</h2>
+<h2>Sensitive Code Example</h2>
 <pre>
 Company bean = new Company();
 HashMap map = new HashMap();
@@ -33,7 +33,7 @@ while (names.hasMoreElements()) {
     String name = (String) names.nextElement();
     map.put(name, request.getParameterValues(name));
 }
-BeanUtils.populate(bean, map); // Noncompliant; "map" is populated with data coming from user input, here "request.getParameterNames()"
+BeanUtils.populate(bean, map); // Sensitive: "map" is populated with data coming from user input, here "request.getParameterNames()"
 </pre>
 <h2>See</h2>
 <ul>

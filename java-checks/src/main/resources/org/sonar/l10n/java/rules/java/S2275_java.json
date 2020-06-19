@@ -7,8 +7,7 @@
     "constantCost": "10min"
   },
   "tags": [
-    "cert",
-    "pitfall"
+    "cert"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2275",

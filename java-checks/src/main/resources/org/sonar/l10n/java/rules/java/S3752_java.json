@@ -1,6 +1,6 @@
 {
   "title": "\"@RequestMapping\" methods should specify HTTP method",
-  "type": "VULNERABILITY",
+  "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,18 +10,18 @@
     "cwe",
     "spring",
     "sans-top25-insecure",
-    "owasp-a6"
+    "owasp-a5"
   ],
-  "defaultSeverity": "Critical",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-3752",
   "sqKey": "S3752",
-  "scope": "All",
+  "scope": "Main",
   "securityStandards": {
     "CWE": [
       352
     ],
     "OWASP": [
-      "A6"
+      "A5"
     ]
   }
 }

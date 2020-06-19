@@ -13,13 +13,23 @@ delivery and deployment:</p>
 <p>Last but not least it has an effect on application security. Attackers might be able to decompile the code and thereby discover a potentially
 sensitive address. They can perform a Denial of Service attack on the service at this address or spoof the IP address. Such an attack is always
 possible, but in the case of a hardcoded IP address the fix will be much slower, which will increase an attack's impact.</p>
-<h2>Recommended Secure Coding Practices</h2>
+<h2>Ask Yourself Whether</h2>
+<p>The disclosed IP address is sensitive, eg:</p>
 <ul>
-  <li> make the IP address configurable. </li>
+  <li> Can give information to an attacker about the network topology. </li>
+  <li> It's a personal (assigned to an identifiable person) IP address. </li>
 </ul>
-<h2>Noncompliant Code Example</h2>
+<p>There is a risk if you answered yes to any of these questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<p>Don't hard-code the IP address in the source code, instead make it configurable.</p>
+<h2>Sensitive Code Example</h2>
 <pre>
-String ip = "192.168.12.42"; // Noncompliant
+String ip = "192.168.12.42"; // Sensitive
+Socket socket = new Socket(ip, 6667);
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+String ip = System.getenv("IP_ADDRESS"); // Compliant
 Socket socket = new Socket(ip, 6667);
 </pre>
 <h2>Exceptions</h2>
