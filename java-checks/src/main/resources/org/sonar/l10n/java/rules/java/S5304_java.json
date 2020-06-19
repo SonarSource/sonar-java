@@ -1,18 +1,12 @@
 {
   "title": "Using environment variables is security-sensitive",
   "type": "SECURITY_HOTSPOT",
-  "status": "ready",
+  "status": "deprecated",
   "tags": [
-    "cwe"
+    
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5304",
   "sqKey": "S5304",
-  "scope": "Main",
-  "securityStandards": {
-    "CWE": [
-      526,
-      74
-    ]
-  }
+  "scope": "Main"
 }
