@@ -163,7 +163,7 @@ public class RegexBaseVisitor implements RegexVisitor {
   }
 
   @Override
-  public void visitEscapedProperty(EscapedPropertyTree tree) {
+  public void visitEscapedCharacterClass(EscapedCharacterClassTree tree) {
     // No children to visit
   }
 
