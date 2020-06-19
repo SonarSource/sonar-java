@@ -1,25 +1,16 @@
 {
   "title": "Deserializing objects from an untrusted source is security-sensitive",
   "type": "SECURITY_HOTSPOT",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
   "tags": [
-    "cwe",
-    "owasp-a8"
+    
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4508",
   "sqKey": "S4508",
-  "scope": "Main",
-  "securityStandards": {
-    "CWE": [
-      502
-    ],
-    "OWASP": [
-      "A8"
-    ]
-  }
+  "scope": "Main"
 }
