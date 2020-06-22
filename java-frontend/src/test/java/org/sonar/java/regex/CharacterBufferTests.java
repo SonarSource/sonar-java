@@ -20,6 +20,7 @@
 package org.sonar.java.regex;
 
 import java.util.Collections;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.regex.ast.IndexRange;
 import org.sonar.java.regex.ast.JavaCharacter;
@@ -28,6 +29,7 @@ import org.sonar.java.regex.ast.RegexSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CharacterBufferTests {
@@ -55,6 +57,20 @@ class CharacterBufferTests {
     buffer.removeFirst();
     assertEquals('c', buffer.get(0).getCharacter());
     assertEquals('d', buffer.get(1).getCharacter());
+  }
+
+  @Test
+  void indexOutOfBounds() {
+    CharacterBuffer buffer = new CharacterBuffer(23);
+    buffer.add(makeCharacter('a'));
+    buffer.add(makeCharacter('b'));
+    assertThrows(IndexOutOfBoundsException.class, () -> buffer.get(2));
+  }
+
+  @Test
+  void popEmptyBuffer() {
+    CharacterBuffer buffer = new CharacterBuffer(7);
+    assertThrows(NoSuchElementException.class, buffer::removeFirst);
   }
 
   private void assertEmptyBuffer(CharacterBuffer buffer) {
