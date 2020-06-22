@@ -24,8 +24,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterClass;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterRange;
+import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
+import static org.sonar.java.regex.RegexParserTestUtils.assertListSize;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
@@ -124,6 +126,42 @@ class CharacterClassTreeTest {
       second -> assertPlainCharacter('-', second),
       third -> assertPlainCharacter(']', third)
     );
+  }
+
+  @Test
+  void classWithCharacterClassEscapes() {
+    RegexTree regex = assertSuccessfulParse("[\\\\w\\\\s]");
+    CharacterClassUnionTree union = assertType(CharacterClassUnionTree.class, assertCharacterClass(false, regex));
+    assertListElements(union.getCharacterClasses(),
+      first -> assertEquals('w', assertType(EscapedCharacterClassTree.class, first).getType()),
+      second -> assertEquals('s', assertType(EscapedCharacterClassTree.class, second).getType())
+    );
+  }
+
+  @Test
+  void emptyIntersectionOperands() {
+    RegexTree regex = assertSuccessfulParse("[&&x]");
+    CharacterClassTree characterClass = assertType(CharacterClassTree.class, regex);
+    CharacterClassIntersectionTree intersection = assertType(CharacterClassIntersectionTree.class, characterClass.getContents());
+    assertListElements(intersection.getCharacterClasses(),
+      first -> assertListSize(0, assertType(CharacterClassUnionTree.class, first).getCharacterClasses()),
+      second -> assertPlainCharacter('x', second)
+    );
+  }
+
+  @Test
+  void unclosedCharacterClass() {
+    assertFailParsing("[abc", "Expected ']', but found the end of the regex");
+  }
+
+  @Test
+  void unclosedCharacterClassRange() {
+    assertFailParsing("[abc-", "Expected ']', but found the end of the regex");
+  }
+
+  @Test
+  void illegalRangeWithEscape() {
+    assertFailParsing("[a-\\\\w]", "Expected simple character, but found '\\\\w'");
   }
 
 }

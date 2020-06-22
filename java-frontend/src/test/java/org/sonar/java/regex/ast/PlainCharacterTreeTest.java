@@ -21,7 +21,9 @@ package org.sonar.java.regex.ast;
 
 import org.junit.jupiter.api.Test;
 
+import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
+import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
 
 class PlainCharacterTreeTest {
 
@@ -46,6 +48,8 @@ class PlainCharacterTreeTest {
     assertPlainCharacter('\n', "\\012");
     assertPlainCharacter('\n', "\\12");
     assertPlainCharacter('D', "\\104");
+    assertPlainString("D\n", "\\104\\012");
+    assertPlainString("\nD", "\\12D");
   }
 
   @Test
@@ -70,7 +74,12 @@ class PlainCharacterTreeTest {
   @Test
   void unicodeRidiculousness() {
     assertPlainCharacter('\t', "\\u005ct");
-    assertPlainCharacter('\\', "\\u005c\\u005c\\u005c\\u005c");
+    assertPlainCharacter('\\', "\\u005c\\uu005c\\uuu005c\\u005c");
+  }
+
+  @Test
+  void unclosedEscapeSequence() {
+    assertFailParsing("\\\\", "Expected any character, but found the end of the regex");
   }
 
 }

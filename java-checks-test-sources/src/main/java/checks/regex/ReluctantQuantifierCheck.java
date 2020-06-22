@@ -9,6 +9,8 @@ public class ReluctantQuantifierCheck {
     str.matches("\".*?\""); // Noncompliant [[sc=20;ec=23]] {{Replace this use of a reluctant quantifier with "[^\"]*+".}}
     str.matches(".*?\\w"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "\\W*+".}}
     str.matches(".*?\\W"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "\\w*+".}}
+    str.matches(".*?\\p{L}"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "\\P{L}*+".}}
+    str.matches(".*?\\P{L}"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "\\p{L}*+".}}
     str.matches("\\[.*?\\]"); // Noncompliant [[sc=21;ec=24]] {{Replace this use of a reluctant quantifier with "[^\\]]*+".}}
     str.matches(".+?[abc]"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "[^abc]++".}}
     str.matches(".+?[^abc]"); // Noncompliant [[sc=18;ec=21]] {{Replace this use of a reluctant quantifier with "[abc]++".}}
@@ -28,5 +30,7 @@ public class ReluctantQuantifierCheck {
     str.matches("<--.?-->");
     str.matches("/\\*.?\\*/");
     str.matches("<[^>]+>?");
+    str.matches("");
+    str.matches(".*?(?:a|b|c)"); // Alternatives are currently not covered even if they contain only single characters
   }
 }

@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
@@ -105,6 +106,14 @@ class QuantifierTest {
     assertEquals(1, locations.size(), "Error should only have one location.");
     assertEquals(new IndexRange(2,3), locations.get(0).getIndexRange(), "Error should have the right location.");
     assertFalse(locations.get(0).getIndexRange().isEmpty(), "Error location should not be empty range.");
+  }
+
+  @Test
+  void quantifiersWithoutOperand() {
+    assertFailParsing("*", "Unexpected quantifier '*'");
+    assertFailParsing("+", "Unexpected quantifier '+'");
+    assertFailParsing("?", "Unexpected quantifier '?'");
+    assertFailParsing("{1,10}", "Unexpected quantifier '{1,10}'");
   }
 
 }

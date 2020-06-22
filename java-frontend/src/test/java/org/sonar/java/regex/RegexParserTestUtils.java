@@ -101,6 +101,10 @@ public class RegexParserTestUtils {
     }
   }
 
+  public static void assertPlainString(String expected, String regex) {
+    assertPlainString(expected, assertSuccessfulParse(regex));
+  }
+
   public static void assertPlainCharacter(char expected, RegexTree regex) {
     assertKind(RegexTree.Kind.PLAIN_CHARACTER, regex);
     PlainCharacterTree characterTree = assertType(PlainCharacterTree.class, regex);

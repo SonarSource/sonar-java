@@ -98,14 +98,18 @@ class RegexBaseVisitorTest {
 
     @Test
     void visitingRegexWithVariousFeatures() {
-      PlainCharCollector visitor = new PlainCharCollector();
-      visitor.visit(RegexParserTestUtils.assertSuccessfulParseResult("[ab&&[^c]]+|d"));
-      assertThat(visitor.visitedCharacters()).isEqualTo("abcd");
+      LeafCollector visitor = new LeafCollector();
+      visitor.visit(RegexParserTestUtils.assertSuccessfulParseResult(
+        "^[ab&&[^c]]+|(?<x>d)[e-f].\\\\1\\\\k<x>\\\\w$")
+      );
+      assertThat(visitor.visitedCharacters()).isEqualTo(
+        "<boundary:^>abcd<range:e-f><dot><backref:1><backref:x><char-class-escape:\\\\w><boundary:$>"
+      );
     }
 
     @Test
     void notVisitingRegularExpressionsWithErrors() {
-      PlainCharCollector visitor = new PlainCharCollector();
+      LeafCollector visitor = new LeafCollector();
       visitor.visit(RegexParserTestUtils.parseRegex("abcd("));
       assertThat(visitor.visitedCharacters()).isEmpty();
     }
@@ -122,7 +126,7 @@ class RegexBaseVisitorTest {
       assertThat(uFlag).isNull();
     }
 
-    private class PlainCharCollector extends RegexBaseVisitor {
+    private class LeafCollector extends RegexBaseVisitor {
 
       StringBuilder characters = new StringBuilder();
 
@@ -132,12 +136,52 @@ class RegexBaseVisitorTest {
         super.visitPlainCharacter(tree);
       }
 
+      @Override
+      public void visitDot(DotTree tree) {
+        characters.append("<dot>");
+        super.visitDot(tree);
+      }
+
+      @Override
+      public void visitCharacterRange(CharacterRangeTree tree) {
+        characters.append("<range:");
+        characters.append(tree.getLowerBound().getCharacter());
+        characters.append("-");
+        characters.append(tree.getUpperBound().getCharacter());
+        characters.append(">");
+        super.visitCharacterRange(tree);
+      }
+
+      @Override
+      public void visitBackReference(BackReferenceTree tree) {
+        characters.append("<backref:");
+        characters.append(tree.groupName());
+        characters.append(">");
+        super.visitBackReference(tree);
+      }
+
+      @Override
+      public void visitEscapedCharacterClass(EscapedCharacterClassTree tree) {
+        characters.append("<char-class-escape:");
+        characters.append(tree.getText());
+        characters.append(">");
+        super.visitEscapedCharacterClass(tree);
+      }
+
+      @Override
+      public void visitBoundary(BoundaryTree boundaryTree) {
+        characters.append("<boundary:");
+        characters.append(boundaryTree.getText());
+        characters.append(">");
+        super.visitBoundary(boundaryTree);
+      }
+
       String visitedCharacters() {
         return characters.toString();
       }
     }
 
-    private class FlagChecker extends PlainCharCollector {
+    private class FlagChecker extends LeafCollector {
 
       @Override
       public void visitPlainCharacter(PlainCharacterTree tree) {
