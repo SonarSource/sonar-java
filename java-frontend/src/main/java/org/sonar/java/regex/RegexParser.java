@@ -574,7 +574,7 @@ public class RegexParser {
       case '\\':
         RegexTree escape = parseEscapeSequence();
         if (escape.is(RegexTree.Kind.PLAIN_CHARACTER)) {
-          return parseCharacterRange(((PlainCharacterTree)escape).getContents());
+          return parseCharacterRange(((PlainCharacterTree)escape).getContents(), escape.getRange());
         } else {
           return escape;
         }
@@ -583,49 +583,53 @@ public class RegexParser {
       case ']':
         if (isAtBeginning) {
           characters.moveNext();
-          return parseCharacterRange(startCharacter);
+          return parseCharacterRange(startCharacter, startCharacter.getRange());
         } else {
           return null;
         }
       default:
         characters.moveNext();
-        return parseCharacterRange(startCharacter);
+        return parseCharacterRange(startCharacter, startCharacter.getRange());
     }
   }
 
-  private RegexTree parseCharacterRange(JavaCharacter startCharacter) {
+  private RegexTree parseCharacterRange(JavaCharacter startCharacter, IndexRange startRange) {
     if (characters.currentIs('-')) {
       int lookAhead = characters.lookAhead(1);
       if (lookAhead == EOF || lookAhead == ']') {
-        return plainCharacter(startCharacter);
+        return plainCharacter(startCharacter, startRange);
       } else if (lookAhead == '\\') {
         characters.moveNext();
         JavaCharacter backslash = characters.getCurrent();
         RegexTree escape = parseEscapeSequence();
         if (escape.is(RegexTree.Kind.PLAIN_CHARACTER)) {
           JavaCharacter endCharacter = ((PlainCharacterTree) escape).getContents();
-          return characterRange(startCharacter, endCharacter);
+          return characterRange(startCharacter, startRange, endCharacter);
         } else {
           expected("simple character");
-          return characterRange(startCharacter, backslash);
+          return characterRange(startCharacter, startRange, backslash);
         }
       } else {
         characters.moveNext();
         JavaCharacter endCharacter = characters.getCurrent();
         characters.moveNext();
-        return characterRange(startCharacter, endCharacter);
+        return characterRange(startCharacter, startRange, endCharacter);
       }
     } else {
-      return plainCharacter(startCharacter);
+      return plainCharacter(startCharacter, startRange);
     }
   }
 
   private RegexTree plainCharacter(JavaCharacter character) {
-    return new PlainCharacterTree(source, character.getRange(), character);
+    return plainCharacter(character, character.getRange());
   }
 
-  private CharacterRangeTree characterRange(JavaCharacter startCharacter, JavaCharacter endCharacter) {
-    IndexRange range = startCharacter.getRange().merge(endCharacter.getRange());
+  private RegexTree plainCharacter(JavaCharacter character, IndexRange range) {
+    return new PlainCharacterTree(source, range, character);
+  }
+
+  private CharacterRangeTree characterRange(JavaCharacter startCharacter, IndexRange startRange, JavaCharacter endCharacter) {
+    IndexRange range = startRange.merge(endCharacter.getRange());
     return new CharacterRangeTree(source, range, startCharacter, endCharacter);
   }
 

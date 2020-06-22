@@ -16,6 +16,7 @@ public class DuplicatesInCharacterClassCheck {
     str.matches("(?iu)[äÄ]"); // Noncompliant [[sc=25;ec=26]]
     str.matches("(?iU)[äÄ]"); // Noncompliant [[sc=25;ec=26]]
     str.matches("(?iu)[xX]"); // Noncompliant [[sc=25;ec=26]]
+    str.matches("[\\\"\\\".]"); // Noncompliant [[sc=23;ec=27]]
   }
 
   void compliant() {
