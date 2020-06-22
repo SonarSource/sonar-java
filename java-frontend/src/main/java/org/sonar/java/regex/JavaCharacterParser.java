@@ -118,12 +118,13 @@ public class JavaCharacterParser {
             javaCharacter = unicodeProcessedCharacters.getCurrent();
           }
           ch = (char) Integer.parseInt(codeUnit.toString(), 8);
-          return new JavaCharacter(source, backslash.getRange().extendTo(unicodeProcessedCharacters.getCurrentStartIndex()), ch);
+          int endIndex = javaCharacter == null ? source.length() : javaCharacter.getRange().getBeginningOffset();
+          return new JavaCharacter(source, backslash.getRange().extendTo(endIndex), ch);
         }
         break;
     }
     unicodeProcessedCharacters.moveNext();
-    return new JavaCharacter(source, backslash.getRange().extendTo(unicodeProcessedCharacters.getCurrentStartIndex()), ch);
+    return new JavaCharacter(source, backslash.getRange().merge(javaCharacter.getRange()), ch);
   }
 
   private static boolean isOctalDigit(int c) {
