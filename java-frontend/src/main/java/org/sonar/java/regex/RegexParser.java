@@ -46,6 +46,7 @@ import org.sonar.java.regex.ast.NonCapturingGroupTree;
 import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.Quantifier;
 import org.sonar.java.regex.ast.RegexSource;
+import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexToken;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.RepetitionTree;
@@ -606,7 +607,7 @@ public class RegexParser {
           JavaCharacter endCharacter = ((PlainCharacterTree) escape).getContents();
           return characterRange(startCharacter, startRange, endCharacter);
         } else {
-          expected("simple character");
+          expected("simple character", escape);
           return characterRange(startCharacter, startRange, backslash);
         }
       } else {
@@ -633,9 +634,17 @@ public class RegexParser {
     return new CharacterRangeTree(source, range, startCharacter, endCharacter);
   }
 
+  private void expected(String expectedToken, String actual) {
+    error("Expected " + expectedToken + ", but found " + actual);
+  }
+
+  private void expected(String expectedToken, RegexSyntaxElement actual) {
+    expected(expectedToken, "'" + actual.getText() + "'");
+  }
+
   private void expected(String expectedToken) {
     String actual = characters.isAtEnd() ? "the end of the regex" : ("'" + characters.getCurrent().getCharacter() + "'");
-    error("Expected " + expectedToken + ", but found " + actual);
+    expected(expectedToken, actual);
   }
 
   private void error(String message) {
