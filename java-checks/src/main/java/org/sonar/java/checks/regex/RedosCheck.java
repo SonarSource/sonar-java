@@ -26,7 +26,6 @@ import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.AtomicGroupTree;
 import org.sonar.java.regex.ast.Quantifier;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.RepetitionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
