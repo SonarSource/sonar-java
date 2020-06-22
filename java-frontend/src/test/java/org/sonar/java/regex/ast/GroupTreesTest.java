@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
@@ -90,6 +91,11 @@ class GroupTreesTest {
   }
 
   @Test
+  void testNonCapturingIncomplete() {
+    assertFailParsing("(?", "Expected flag or ':' or ')', but found the end of the regex");
+  }
+
+  @Test
   void testFlags() {
     RegexTree regex = assertSuccessfulParse("a (?x:b c) d");
     SequenceTree seq = assertType(SequenceTree.class, regex);
@@ -133,12 +139,25 @@ class GroupTreesTest {
   }
 
   @Test
+  void testFlags3() {
+    RegexTree regex = assertSuccessfulParse("(?dms)");
+    NonCapturingGroupTree group = assertType(NonCapturingGroupTree.class, regex);
+    assertNull(group.getElement());
+    assertEquals(Pattern.UNIX_LINES | Pattern.MULTILINE | Pattern.DOTALL, group.getEnabledFlags().getMask());
+  }
+
+  @Test
   void testNamedGroup() {
     RegexTree regex = assertSuccessfulParse("(?<foo>x)");
     CapturingGroupTree group = assertType(CapturingGroupTree.class, regex);
     assertKind(RegexTree.Kind.CAPTURING_GROUP, group);
     assertThat(group.getName()).hasValue("foo");
     assertPlainCharacter('x', group.getElement());
+  }
+
+  @Test
+  void testIncompleteNamedGroup() {
+    assertFailParsing("(?<", "Expected '>', but found the end of the regex");
   }
 
   @Test
