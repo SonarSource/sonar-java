@@ -48,19 +48,30 @@ public class AnchorPrecedenceCheck extends AbstractRegexCheck {
     @Override
     public void visitDisjunction(DisjunctionTree tree) {
       List<RegexTree> alternatives = tree.getAlternatives();
-      if (onlyAnchoredAt(alternatives, Position.BEGINNING) || onlyAnchoredAt(alternatives, Position.END)) {
-        reportIssue(tree, "Group the alternatives together to get the intended precedence.", null, Collections.emptyList());
+      if ((anchoredAt(alternatives, Position.BEGINNING) || anchoredAt(alternatives, Position.END))
+        && notAnchoredElseWhere(alternatives)) {
+        reportIssue(tree, "Group parts of the regex together to make the intended operator precedence explicit.", null, Collections.emptyList());
       }
       super.visitDisjunction(tree);
     }
 
-    private boolean onlyAnchoredAt(List<RegexTree> alternatives, Position position) {
+    private boolean anchoredAt(List<RegexTree> alternatives, Position position) {
       int itemIndex = position == Position.BEGINNING ? 0 : (alternatives.size() - 1);
-      int othersStartIndex = position == Position.BEGINNING ? 1 : 0;
-      int othersEndOffset = position == Position.BEGINNING ? 0 : 1;
       RegexTree firstOrLast = alternatives.get(itemIndex);
-      List<RegexTree> others = alternatives.subList(othersStartIndex, alternatives.size() - othersEndOffset);
-      return isAnchored(firstOrLast, position) && others.stream().noneMatch(alt -> isAnchored(alt, position));
+      return isAnchored(firstOrLast, position);
+    }
+
+    private boolean notAnchoredElseWhere(List<RegexTree> alternatives) {
+      if (isAnchored(alternatives.get(0), Position.END)
+        || isAnchored(alternatives.get(alternatives.size() - 1), Position.BEGINNING)) {
+        return false;
+      }
+      for (RegexTree alternative : alternatives.subList(1, alternatives.size() - 1)) {
+        if (isAnchored(alternative, Position.BEGINNING) || isAnchored(alternative, Position.END)) {
+          return false;
+        }
+      }
+      return true;
     }
 
     private boolean isAnchored(RegexTree tree, Position position) {
