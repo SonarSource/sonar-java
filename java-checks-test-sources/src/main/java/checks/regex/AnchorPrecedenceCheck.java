@@ -3,7 +3,7 @@ package checks.regex;
 public class AnchorPrecedenceCheck {
 
   void noncompliant(String str) {
-    str.matches("^a|b|c$"); // Noncompliant [[sc=18;ec=25]] {{Group the alternatives together to get the intended precedence.}}
+    str.matches("^a|b|c$"); // Noncompliant [[sc=18;ec=25]] {{Group parts of the regex together to make the intended operator precedence explicit.}}
     str.matches("^a|b|cd"); // Noncompliant [[sc=18;ec=25]]
     str.matches("(?i)^a|b|cd"); // Noncompliant [[sc=18;ec=29]]
     str.matches("(?i:^a|b|cd)"); // Noncompliant [[sc=22;ec=29]]
@@ -19,6 +19,11 @@ public class AnchorPrecedenceCheck {
     str.matches("^abc$");
     str.matches("a|b|c");
     str.matches("^a$|^b$|^c$");
+    str.matches("^a$|b|c");
+    str.matches("a|b|^c$");
+    str.matches("^a|^b$|c$");
+    str.matches("^a|^b|c$");
+    str.matches("^a|b$|c$");
     str.matches("\\ba\\b|\\bb\\b|\\bc\\b");
     // If multiple alternatives are anchored, but not all, that's more likely to be intentional than if only the first
     // one were anchored, so we won't report an issue for the following line:
