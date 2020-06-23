@@ -59,9 +59,17 @@ public class RegexBaseVisitor implements RegexVisitor {
   public void visit(RegexParseResult regexParseResult) {
     if (!regexParseResult.hasSyntaxErrors()) {
       activeFlags = regexParseResult.getInitialFlags();
+      before(regexParseResult);
       visit(regexParseResult.getResult());
       after(regexParseResult);
     }
+  }
+
+  /**
+   * Override to perform an action before the entire regex has been visited.
+   */
+  protected void before(RegexParseResult regexParseResult) {
+    // does nothing unless overridden
   }
 
   /**

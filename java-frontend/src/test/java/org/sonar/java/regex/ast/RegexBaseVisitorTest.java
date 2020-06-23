@@ -32,6 +32,60 @@ import static org.assertj.core.api.Assertions.fail;
 
 class RegexBaseVisitorTest {
 
+  @Test
+  void before() {
+    class Visitor extends RegexBaseVisitor {
+      boolean visitedBefore = false;
+      boolean visitedSequence = false;
+
+      @Override
+      protected void before(RegexParseResult regexParseResult) {
+        visitedBefore = true;
+        assertThat(visitedSequence).isFalse();
+        super.before(regexParseResult);
+      }
+
+      @Override
+      public void visitSequence(SequenceTree tree) {
+        visitedSequence = true;
+        assertThat(visitedBefore).isTrue();
+        super.visitSequence(tree);
+      }
+    }
+
+    Visitor visitor = new Visitor();
+    visitor.visit(RegexParserTestUtils.assertSuccessfulParseResult("abc"));
+    assertThat(visitor.visitedBefore).isTrue();
+    assertThat(visitor.visitedSequence).isTrue();
+  }
+
+  @Test
+  void after() {
+    class Visitor extends RegexBaseVisitor {
+      boolean visitedAfter = false;
+      boolean visitedSequence = false;
+
+      @Override
+      public void visitSequence(SequenceTree tree) {
+        visitedSequence = true;
+        assertThat(visitedAfter).isFalse();
+        super.visitSequence(tree);
+      }
+
+      @Override
+      protected void after(RegexParseResult regexParseResult) {
+        visitedAfter = true;
+        assertThat(visitedSequence).isTrue();
+        super.before(regexParseResult);
+      }
+    }
+
+    Visitor visitor = new Visitor();
+    visitor.visit(RegexParserTestUtils.assertSuccessfulParseResult("abc"));
+    assertThat(visitor.visitedAfter).isTrue();
+    assertThat(visitor.visitedSequence).isTrue();
+  }
+
   @Nested
   class VisitTest {
     @Test
