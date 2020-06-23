@@ -94,10 +94,18 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     }
     FlagSet flags = getFlags(mit);
     if (!flags.contains(Pattern.LITERAL)) {
-      getLiterals(args.get(0))
-        .map(literals -> regexContext.regexForLiterals(flags, literals))
-        .ifPresent(result -> checkRegex(result, mit));
+      checkRegexConstruction(args.get(0), flags, mit);
     }
+  }
+
+  protected RegexParseResult regexForLiterals(FlagSet flags, LiteralTree[] literals) {
+    return regexContext.regexForLiterals(flags, literals);
+  }
+
+  protected void checkRegexConstruction(ExpressionTree regexArgument, FlagSet flags, MethodInvocationTree mit) {
+    getLiterals(regexArgument)
+      .map(literals -> regexForLiterals(flags, literals))
+      .ifPresent(result -> checkRegex(result, mit));
   }
 
   @VisibleForTesting
@@ -129,7 +137,7 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     return Optional.of(combined);
   }
 
-  private static Optional<LiteralTree[]> getLiteralsFromFinalVariables(IdentifierTree identifier) {
+  protected static Optional<ExpressionTree> getFinalVariableInitializer(IdentifierTree identifier) {
     Symbol symbol = identifier.symbol();
     if (!symbol.isVariableSymbol()) {
       return Optional.empty();
@@ -147,7 +155,11 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     if (initializer == null) {
       return Optional.empty();
     }
-    return getLiterals(initializer);
+    return Optional.of(initializer);
+  }
+
+  private static Optional<LiteralTree[]> getLiteralsFromFinalVariables(IdentifierTree identifier) {
+    return getFinalVariableInitializer(identifier).flatMap(AbstractRegexCheck::getLiterals);
   }
 
   public abstract void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit);

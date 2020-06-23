@@ -17,43 +17,31 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.regex.ast;
+package org.sonar.java.checks.regex;
 
-public class CharacterClassTree extends RegexTree {
+import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-  private final JavaCharacter openingBracket;
+import static org.sonar.java.CheckTestUtils.testSourcesPath;
 
-  private final RegexTree contents;
+class RegexComplexityCheckTest {
 
-  private final boolean negated;
-
-  public CharacterClassTree(RegexSource source, IndexRange range, JavaCharacter openingBracket, boolean negated, RegexTree contents) {
-    super(source, range);
-    this.negated = negated;
-    this.contents = contents;
-    this.openingBracket = openingBracket;
+  @Test
+  void test() {
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/regex/RegexComplexityCheck.java"))
+      .withCheck(new RegexComplexityCheck())
+      .verifyIssues();
   }
 
-  public RegexTree getContents() {
-    return contents;
-  }
-
-  public boolean isNegated() {
-    return negated;
-  }
-
-  public JavaCharacter getOpeningBracket() {
-    return openingBracket;
-  }
-
-  @Override
-  public void accept(RegexVisitor visitor) {
-    visitor.visitCharacterClass(this);
-  }
-
-  @Override
-  public Kind kind() {
-    return RegexTree.Kind.CHARACTER_CLASS;
+  @Test
+  void testWithThreshold0() {
+    RegexComplexityCheck check = new RegexComplexityCheck();
+    check.setMax(0);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/regex/RegexComplexityCheckWithThreshold0.java"))
+      .withCheck(check)
+      .verifyIssues();
   }
 
 }

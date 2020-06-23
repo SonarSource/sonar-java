@@ -25,11 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterClass;
 import static org.sonar.java.regex.RegexParserTestUtils.assertCharacterRange;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
+import static org.sonar.java.regex.RegexParserTestUtils.assertJavaCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListElements;
 import static org.sonar.java.regex.RegexParserTestUtils.assertListSize;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertToken;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 
 class CharacterClassTreeTest {
@@ -38,6 +40,7 @@ class CharacterClassTreeTest {
   void simpleCharacterClass() {
     RegexTree regex = assertSuccessfulParse("[a-z]");
     assertCharacterRange('a', 'z', assertCharacterClass(false, regex));
+    assertJavaCharacter(0, '[', ((CharacterClassTree)regex).getOpeningBracket());
   }
 
   @Test
@@ -99,6 +102,9 @@ class CharacterClassTreeTest {
     RegexTree regex = assertSuccessfulParse("[a-z&&[^g-i]&]");
     CharacterClassIntersectionTree intersection = assertType(CharacterClassIntersectionTree.class, assertCharacterClass(false, regex));
     assertKind(RegexTree.Kind.CHARACTER_CLASS_INTERSECTION, intersection);
+    assertListElements(intersection.getAndOperators(),
+      first -> assertToken(4, "&&", first)
+    );
     assertListElements(intersection.getCharacterClasses(),
       first -> assertCharacterRange('a', 'z', first),
       second -> {

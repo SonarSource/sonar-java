@@ -28,9 +28,11 @@ import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterRangeTree;
 import org.sonar.java.regex.ast.FlagSet;
+import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.RegexSource;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
+import org.sonar.java.regex.ast.RegexToken;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -109,6 +111,17 @@ public class RegexParserTestUtils {
     assertKind(RegexTree.Kind.PLAIN_CHARACTER, regex);
     PlainCharacterTree characterTree = assertType(PlainCharacterTree.class, regex);
     assertEquals(expected, characterTree.getCharacter(), "Regex should contain the right characters.");
+  }
+
+  public static void assertJavaCharacter(int index, char ch, JavaCharacter javaCharacter) {
+    assertEquals(ch, javaCharacter.getCharacter());
+    assertEquals("" + ch, javaCharacter.getText());
+    assertLocation(index, index + 1, javaCharacter);
+  }
+
+  public static void assertToken(int index, String str, RegexToken token) {
+    assertEquals(str, token.getText());
+    assertLocation(index, index + str.length(), token);
   }
 
   public static void assertPlainCharacter(char expected, String regex) {

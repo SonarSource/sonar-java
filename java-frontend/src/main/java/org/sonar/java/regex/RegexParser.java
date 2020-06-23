@@ -90,14 +90,16 @@ public class RegexParser {
 
   private RegexTree parseDisjunction() {
     List<RegexTree> alternatives = new ArrayList<>();
+    List<JavaCharacter> orOperators = new ArrayList<>();
     RegexTree first = parseSequence();
     alternatives.add(first);
     while (characters.currentIs('|')) {
+      orOperators.add(characters.getCurrent());
       characters.moveNext();
       RegexTree next = parseSequence();
       alternatives.add(next);
     }
-    return combineTrees(alternatives, (range, elements) -> new DisjunctionTree(source, range, elements));
+    return combineTrees(alternatives, (range, elements) -> new DisjunctionTree(source, range, elements, orOperators));
   }
 
   private RegexTree parseSequence() {
@@ -537,17 +539,22 @@ public class RegexParser {
       expected("']'");
     }
     IndexRange range = openingBracket.getRange().extendTo(characters.getCurrentStartIndex());
-    return new CharacterClassTree(source, range, negated, contents);
+    return new CharacterClassTree(source, range, openingBracket, negated, contents);
   }
 
   private RegexTree parseCharacterClassIntersection() {
     List<RegexTree> elements = new ArrayList<>();
+    List<RegexToken> andOperators = new ArrayList<>();
     elements.add(parseCharacterClassUnion(true));
     while (characters.currentIs("&&")) {
-      characters.moveNext(2);
+      JavaCharacter firstAnd = characters.getCurrent();
+      characters.moveNext();
+      JavaCharacter secondAnd = characters.getCurrent();
+      characters.moveNext();
+      andOperators.add(new RegexToken(source, firstAnd.getRange().merge(secondAnd.getRange())));
       elements.add(parseCharacterClassUnion(false));
     }
-    return combineTrees(elements, (range, items) -> new CharacterClassIntersectionTree(source, range, items));
+    return combineTrees(elements, (range, items) -> new CharacterClassIntersectionTree(source, range, items, andOperators));
   }
 
   private RegexTree parseCharacterClassUnion(boolean isAtBeginning) {

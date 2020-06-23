@@ -26,13 +26,20 @@ public class DisjunctionTree extends RegexTree {
 
   private final List<RegexTree> alternatives;
 
-  public DisjunctionTree(RegexSource source, IndexRange range, List<RegexTree> alternatives) {
+  private final List<JavaCharacter> orOperators;
+
+  public DisjunctionTree(RegexSource source, IndexRange range, List<RegexTree> alternatives, List<JavaCharacter> orOperators) {
     super(source, range);
-    this.alternatives = alternatives;
+    this.alternatives = Collections.unmodifiableList(alternatives);
+    this.orOperators = Collections.unmodifiableList(orOperators);
   }
 
   public List<RegexTree> getAlternatives() {
-    return Collections.unmodifiableList(alternatives);
+    return alternatives;
+  }
+
+  public List<JavaCharacter> getOrOperators() {
+    return orOperators;
   }
 
   @Override

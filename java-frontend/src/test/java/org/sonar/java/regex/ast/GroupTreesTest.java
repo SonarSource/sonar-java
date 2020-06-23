@@ -38,6 +38,7 @@ import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertToken;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 import static org.sonar.java.regex.RegexParserTestUtils.parseRegex;
 
@@ -49,6 +50,9 @@ class GroupTreesTest {
     CapturingGroupTree group = assertType(CapturingGroupTree.class, regex);
     assertKind(RegexTree.Kind.CAPTURING_GROUP, group);
     assertThat(group.getName()).as("Group should be unnamed").isEmpty();
+    assertNotNull(group.getGroupHeader());
+    assertToken(0, "(", group.getGroupHeader());
+    assertNotNull(group.getElement());
     assertPlainCharacter('x', group.getElement());
     assertLocation(0, 3, group);
     assertLocation(1, 2, group.getElement());
@@ -104,6 +108,8 @@ class GroupTreesTest {
       second -> assertPlainCharacter(' ', second),
       third -> {
         NonCapturingGroupTree group = assertType(NonCapturingGroupTree.class, third);
+        assertNotNull(group.getGroupHeader());
+        assertToken(2, "(?x:", group.getGroupHeader());
         assertEquals(Pattern.COMMENTS, group.getEnabledFlags().getMask());
         RegexTree element = group.getElement();
         assertNotNull(element, "Group should have a body.");
@@ -142,6 +148,7 @@ class GroupTreesTest {
   void testFlags3() {
     RegexTree regex = assertSuccessfulParse("(?dms)");
     NonCapturingGroupTree group = assertType(NonCapturingGroupTree.class, regex);
+    assertNull(group.getGroupHeader());
     assertNull(group.getElement());
     assertEquals(Pattern.UNIX_LINES | Pattern.MULTILINE | Pattern.DOTALL, group.getEnabledFlags().getMask());
   }
@@ -150,8 +157,11 @@ class GroupTreesTest {
   void testNamedGroup() {
     RegexTree regex = assertSuccessfulParse("(?<foo>x)");
     CapturingGroupTree group = assertType(CapturingGroupTree.class, regex);
+    assertNotNull(group.getGroupHeader());
+    assertToken(0, "(?<foo>", group.getGroupHeader());
     assertKind(RegexTree.Kind.CAPTURING_GROUP, group);
     assertThat(group.getName()).hasValue("foo");
+    assertNotNull(group.getElement());
     assertPlainCharacter('x', group.getElement());
   }
 
@@ -167,6 +177,7 @@ class GroupTreesTest {
     assertKind(RegexTree.Kind.LOOK_AROUND, lookAround);
     assertEquals(LookAroundTree.Polarity.POSITIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.AHEAD, lookAround.getDirection());
+    assertNotNull(lookAround.getElement());
     assertPlainCharacter('x', lookAround.getElement());
   }
 
@@ -177,6 +188,7 @@ class GroupTreesTest {
     assertKind(RegexTree.Kind.LOOK_AROUND, lookAround);
     assertEquals(LookAroundTree.Polarity.POSITIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.BEHIND, lookAround.getDirection());
+    assertNotNull(lookAround.getElement());
     assertPlainCharacter('x', lookAround.getElement());
   }
 
@@ -187,6 +199,7 @@ class GroupTreesTest {
     assertKind(RegexTree.Kind.LOOK_AROUND, lookAround);
     assertEquals(LookAroundTree.Polarity.NEGATIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.AHEAD, lookAround.getDirection());
+    assertNotNull(lookAround.getElement());
     assertPlainCharacter('x', lookAround.getElement());
   }
 
@@ -197,6 +210,7 @@ class GroupTreesTest {
     assertKind(RegexTree.Kind.LOOK_AROUND, lookAround);
     assertEquals(LookAroundTree.Polarity.NEGATIVE, lookAround.getPolarity());
     assertEquals(LookAroundTree.Direction.BEHIND, lookAround.getDirection());
+    assertNotNull(lookAround.getElement());
     assertPlainCharacter('x', lookAround.getElement());
   }
 
@@ -205,6 +219,7 @@ class GroupTreesTest {
     RegexTree regex = assertSuccessfulParse("(?>x)");
     AtomicGroupTree group = assertType(AtomicGroupTree.class, regex);
     assertKind(RegexTree.Kind.ATOMIC_GROUP, group);
+    assertNotNull(group.getElement());
     assertPlainCharacter('x', group.getElement());
   }
 
