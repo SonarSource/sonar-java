@@ -49,6 +49,12 @@ public class EmptyLineRegexCheck extends IssuableSubscriptionVisitor {
   private static final String EMPTY_LINE_REGEX = "^$";
   private static final String EMPTY_LINE_MULTILINE_REGEX = "(?m)^$";
 
+  private static final MethodMatchers STRING_REPLACE = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING)
+    .names("replaceAll", "replaceFirst")
+    .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING)
+    .build();
+
   private static final MethodMatchers PATTERN_COMPILE = MethodMatchers.create()
     .ofTypes(JAVA_UTIL_PATTERN)
     .names("compile")
@@ -84,6 +90,8 @@ public class EmptyLineRegexCheck extends IssuableSubscriptionVisitor {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
     if (PATTERN_COMPILE.matches(mit)) {
       checkPatternCompile(mit);
+    } else if (STRING_REPLACE.matches(mit)) {
+      checkStringReplace(mit);
     }
   }
 
@@ -97,6 +105,16 @@ public class EmptyLineRegexCheck extends IssuableSubscriptionVisitor {
       if (isEmptyLineRegex(firstArgument) && isMultilineFlag(secondArgument)) {
         reportIfUsedOnEmpty(mit, secondArgument);
       }
+    }
+  }
+
+  private void checkStringReplace(MethodInvocationTree mit) {
+    ExpressionTree firstArgument = mit.arguments().get(0);
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (isEmptyLineMultilineRegex(firstArgument)
+    && methodSelect.is(Tree.Kind.MEMBER_SELECT)
+    && canBeEmpty(((MemberSelectExpressionTree) methodSelect).expression())) {
+      reportIssue(firstArgument, MESSAGE);
     }
   }
 

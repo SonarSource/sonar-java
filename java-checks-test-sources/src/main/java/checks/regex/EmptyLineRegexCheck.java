@@ -113,6 +113,38 @@ public class EmptyLineRegexCheck {
     Pattern.compile("^$", Pattern.MULTILINE).matcher(str).find(); // Compliant
   }
 
+  void in_replace(String str) {
+    String s1 = str.replaceAll("(?m)^$", "Empty"); // Noncompliant [[sc=32;ec=40]]
+    String s2 = str.replaceAll("^$", "Empty"); // Compliant
+    String s3 = "".replaceAll("(?m)^$", "Empty"); // Noncompliant
+    String s4 = (str).replaceAll("(?m)^$", "Empty"); // Noncompliant
+
+    String s5 = str.replaceFirst("(?m)^$", "Empty"); // Noncompliant
+    String s6 = str.replaceFirst("^$", "Empty"); // Compliant
+    String s7 = "".replaceFirst("(?m)^$", "Empty"); // Noncompliant
+    String s8 = (str).replaceFirst("(?m)^$", "Empty"); // Noncompliant
+  }
+
+  void in_replace_compliant(String str) {
+    if (str.isEmpty()) {
+      return;
+    }
+    String s1 = str.replaceAll("(?m)^$", "Empty"); // Compliant
+    String s2 = str.replaceFirst("(?m)^$", "Empty"); // Compliant
+    String s3 = (str).replaceAll("(?m)^$", "Empty"); // Compliant
+  }
+
+  void in_replace_all_compliant_2(String str) {
+    String s1 = str.isEmpty() ? "Empty" : str.replaceAll("(?m)^$", "Empty"); // Compliant
+    String s2 = str.isEmpty() || str.substring(1).equals("") ? "Empty" : str.replaceAll("(?m)^$", "Empty"); // Compliant
+  }
+
+  void in_matches(String str) {
+    // When used in other context (with matches), mistakes are still possible, but we are not supporting it as it is really unlikely to happen.
+    boolean b = str.matches("(?m).*^$.*"); // Compliant, FN
+    Pattern.matches("(?m).*^$.*", str);
+  }
+
   String getString() {
     return "";
   }
