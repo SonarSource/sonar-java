@@ -140,6 +140,10 @@ abstract class UnusedGroupNamesCheck {
       return str;
     }
 
+     Pattern p11 = Pattern.compile("\\\\u+[a-fA-F0-9]{4}");
+     Matcher m11 = p11.matcher(input);
+     m11.group(0);
+
     return null;
   }
 

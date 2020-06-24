@@ -19,6 +19,7 @@
  */
 package org.sonar.java.regex;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -188,6 +189,12 @@ public class RegexParserTestUtils {
     LiteralCollector visitor = new LiteralCollector();
     str.initializer().accept(visitor);
     return new RegexSource(visitor.stringLiterals);
+  }
+
+  public static List<LiteralTree> getAllStringLiteralsFromFile(File file) {
+    LiteralCollector visitor = new LiteralCollector();
+    JParserTestUtils.parse(file).accept(visitor);
+    return visitor.stringLiterals;
   }
 
   private static class LiteralCollector extends BaseTreeVisitor {
