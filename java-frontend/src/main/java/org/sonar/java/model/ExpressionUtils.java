@@ -223,6 +223,9 @@ public final class ExpressionUtils {
     if (expression.is(Tree.Kind.PLUS)) {
       return resolvePlus((BinaryExpressionTree) expression);
     }
+    if (expression.is(Tree.Kind.OR)) {
+      return resolveOr((BinaryExpressionTree) expression);
+    }
     return null;
   }
 
@@ -261,6 +264,24 @@ public final class ExpressionUtils {
       return ((Integer) left) + ((Long) right);
     } else if (left instanceof Integer && right instanceof Integer) {
       return ((Integer) left) + ((Integer) right);
+    }
+    return null;
+  }
+
+  @CheckForNull
+  private static Object resolveOr(BinaryExpressionTree binaryExpression) {
+    Object left = resolveAsConstant(binaryExpression.leftOperand());
+    Object right = resolveAsConstant(binaryExpression.rightOperand());
+    if (left == null || right == null) {
+      return null;
+    } else if (left instanceof Long && right instanceof Long) {
+      return ((Long) left) | ((Long) right);
+    } else if (left instanceof Long && right instanceof Integer) {
+      return ((Long) left) | ((Integer) right);
+    } else if (left instanceof Integer && right instanceof Long) {
+      return ((Integer) left) | ((Long) right);
+    } else if (left instanceof Integer && right instanceof Integer) {
+      return ((Integer) left) | ((Integer) right);
     }
     return null;
   }
