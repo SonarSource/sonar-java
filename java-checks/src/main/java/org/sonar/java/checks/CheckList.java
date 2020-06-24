@@ -48,6 +48,7 @@ import org.sonar.java.checks.regex.DuplicatesInCharacterClassCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
 import org.sonar.java.checks.regex.RedosCheck;
 import org.sonar.java.checks.regex.ReluctantQuantifierCheck;
+import org.sonar.java.checks.regex.UnicodeAwareCharClassesCheck;
 import org.sonar.java.checks.regex.UnicodeCaseCheck;
 import org.sonar.java.checks.regex.UnusedGroupNamesCheck;
 import org.sonar.java.checks.security.AESAlgorithmCheck;
@@ -703,6 +704,7 @@ public final class CheckList {
       UnderscoreOnNumberCheck.class,
       UndocumentedApiCheck.class,
       UnicodeCaseCheck.class,
+      UnicodeAwareCharClassesCheck.class,
       UnnecessarySemicolonCheck.class,
       UnreachableCatchCheck.class,
       UnusedGroupNamesCheck.class,
