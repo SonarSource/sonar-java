@@ -33,14 +33,17 @@ public class JavaUnicodeEscapeParser {
   private final RegexSource source;
 
   private final String sourceText;
+  private final int textLength;
 
   private int index;
 
   private JavaCharacter current;
+  private boolean isEscaping = false;
 
   public JavaUnicodeEscapeParser(RegexSource source) {
     this.source = source;
     this.sourceText = source.getSourceText();
+    this.textLength = sourceText.length();
     this.index = 0;
     moveNext();
   }
@@ -56,26 +59,30 @@ public class JavaUnicodeEscapeParser {
   }
 
   public void moveNext() {
-    if (index >= sourceText.length()) {
+    if (index >= textLength) {
       current = null;
       return;
     }
     int startIndex = index;
     char ch;
-    boolean isEscapedUnicode = index < sourceText.length() - 1 && sourceText.charAt(index) == '\\' && sourceText.charAt(index + 1) == 'u';
-    if (isEscapedUnicode) {
+
+    boolean isBackslash = sourceText.charAt(index) == '\\';
+    boolean isEscapedUnicode = isBackslash && index < (textLength - 1) && sourceText.charAt(index + 1) == 'u';
+
+    if (isEscapedUnicode && !isEscaping) {
       index += 2;
       while (sourceText.charAt(index) == 'u') {
         index++;
       }
       StringBuilder codePoint = new StringBuilder(4);
-      for (int i = 0; i < 4 && index < sourceText.length(); i++, index++) {
+      for (int i = 0; i < 4 && index < textLength; i++, index++) {
         codePoint.append(sourceText.charAt(index));
       }
       ch = (char) Integer.parseInt(codePoint.toString(), 16);
     } else {
       ch = sourceText.charAt(index);
       index++;
+      isEscaping = isBackslash && !isEscaping;
     }
     current = new JavaCharacter(source, new IndexRange(startIndex, index), ch, isEscapedUnicode);
   }
