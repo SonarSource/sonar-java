@@ -80,10 +80,19 @@ class AssessableExpressionTreeTest {
   @Test
   void uncompilable_expressions() {
     assertThat(expression("42 + 1").asConstant(Integer.class)).isPresent().contains(43);
+    assertThat(expression("42 | 1").asConstant(Integer.class)).isPresent().contains(43);
+    assertThat(expression("42L | 1").asConstant(Long.class)).isPresent().contains(43L);
+    assertThat(expression("42 | 1L").asConstant(Long.class)).isPresent().contains(43L);
+    assertThat(expression("42L | 1L").asConstant(Long.class)).isPresent().contains(43L);
     assertThat(expression("42 + true").asConstant()).isEmpty();
+    assertThat(expression("42 | true").asConstant()).isEmpty();
     assertThat(expression("42L + true").asConstant()).isEmpty();
+    assertThat(expression("42L | true").asConstant()).isEmpty();
     assertThat(expression("true + 42").asConstant()).isEmpty();
+    assertThat(expression("true | 42").asConstant()).isEmpty();
     assertThat(expression("unknownVar").asConstant()).isEmpty();
+    assertThat(expression("unknownVar | 42").asConstant()).isEmpty();
+    assertThat(expression("42 | unknownVar").asConstant()).isEmpty();
   }
 
   private ExpressionTree expression(String expressionAsString) {

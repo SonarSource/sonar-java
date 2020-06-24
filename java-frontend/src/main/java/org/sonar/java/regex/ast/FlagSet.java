@@ -41,7 +41,8 @@ public class FlagSet {
 
   public FlagSet(int initialFlags) {
     this.flagCharacters = new HashMap<>();
-    this.mask = initialFlags;
+    this.mask = 0;
+    add(initialFlags);
   }
 
   public boolean contains(int flag) {
