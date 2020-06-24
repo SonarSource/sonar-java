@@ -1,0 +1,16 @@
+{
+  "title": "Regexes containing characters subject to normalization should use the CANON_EQ flag",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "3min"
+  },
+  "tags": [
+    "regex"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5854",
+  "sqKey": "S5854",
+  "scope": "All"
+}
