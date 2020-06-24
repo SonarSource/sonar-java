@@ -44,6 +44,7 @@ import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
 import org.sonar.java.checks.regex.AnchorPrecedenceCheck;
+import org.sonar.java.checks.regex.CanonEqFlagInRegexCheck;
 import org.sonar.java.checks.regex.DuplicatesInCharacterClassCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
 import org.sonar.java.checks.regex.RedosCheck;
@@ -264,6 +265,7 @@ public final class CheckList {
       CallToDeprecatedCodeMarkedForRemovalCheck.class,
       CallToDeprecatedMethodCheck.class,
       CallToFileDeleteOnExitMethodCheck.class,
+      CanonEqFlagInRegexCheck.class,
       CaseInsensitiveComparisonCheck.class,
       CastArithmeticOperandCheck.class,
       CatchExceptionCheck.class,
