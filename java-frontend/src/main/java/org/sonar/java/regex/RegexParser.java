@@ -631,7 +631,11 @@ public class RegexParser {
 
   private CharacterRangeTree characterRange(JavaCharacter startCharacter, IndexRange startRange, JavaCharacter endCharacter) {
     IndexRange range = startRange.merge(endCharacter.getRange());
-    return new CharacterRangeTree(source, range, startCharacter, endCharacter);
+    CharacterRangeTree characterRange = new CharacterRangeTree(source, range, startCharacter, endCharacter);
+    if (startCharacter.getCharacter() > endCharacter.getCharacter()) {
+      errors.add(new SyntaxError(characterRange, "Illegal character range"));
+    }
+    return characterRange;
   }
 
   private void expected(String expectedToken, String actual) {

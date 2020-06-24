@@ -160,6 +160,11 @@ class CharacterClassTreeTest {
   }
 
   @Test
+  void illegalRange() {
+    assertFailParsing("[z-a]", "Illegal character range");
+  }
+
+  @Test
   void illegalRangeWithEscape() {
     assertFailParsing("[a-\\\\w]", "Expected simple character, but found '\\\\w'");
   }
