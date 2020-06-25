@@ -22,11 +22,16 @@ package org.sonar.java.checks.regex;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.java.regex.RegexParseResult;
+import org.sonar.java.regex.ast.BoundaryTree;
+import org.sonar.java.regex.ast.RegexBaseVisitor;
+import org.sonar.java.regex.ast.RegexTree;
+import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -40,14 +45,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S5846")
-public class EmptyLineRegexCheck extends IssuableSubscriptionVisitor {
+public class EmptyLineRegexCheck extends AbstractRegexCheck {
   private static final String MESSAGE = "Remove MULTILINE mode or change the regex.";
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_PATTERN = "java.util.regex.Pattern";
-
-  private static final String EMPTY_LINE_REGEX = "^$";
-  private static final String EMPTY_LINE_MULTILINE_REGEX = "(?m)^$";
 
   private static final MethodMatchers STRING_REPLACE = MethodMatchers.create()
     .ofTypes(JAVA_LANG_STRING)
@@ -81,89 +83,58 @@ public class EmptyLineRegexCheck extends IssuableSubscriptionVisitor {
     .build();
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
+  protected MethodMatchers getMethodInvocationMatchers() {
+    // Only a few methods can contain problematic regex, we don't need to check all of them.
+    return MethodMatchers.or(STRING_REPLACE, PATTERN_COMPILE);
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
-    if (PATTERN_COMPILE.matches(mit)) {
-      checkPatternCompile(mit);
-    } else if (STRING_REPLACE.matches(mit)) {
-      checkStringReplace(mit);
-    }
-  }
-
-  private void checkPatternCompile(MethodInvocationTree mit) {
-    ExpressionTree firstArgument = mit.arguments().get(0);
-
-    if (isEmptyLineMultilineRegex(firstArgument)) {
-      reportIfUsedOnEmpty(mit, firstArgument);
-    } else if (mit.arguments().size() == 2) {
-      ExpressionTree secondArgument = mit.arguments().get(1);
-      if (isEmptyLineRegex(firstArgument) && isMultilineFlag(secondArgument)) {
-        reportIfUsedOnEmpty(mit, secondArgument);
+  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
+    EmptyLineMultilineVisitor visitor = new EmptyLineMultilineVisitor();
+    visitor.visit(regexForLiterals);
+    if (visitor.containEmptyLine) {
+      if (PATTERN_COMPILE.matches(mit)) {
+        List<Tree> stringNotTestedForEmpty = getStringNotTestedForEmpty(mit);
+        if (!stringNotTestedForEmpty.isEmpty()) {
+          reportWithSecondaries(mit.arguments().get(0), stringNotTestedForEmpty);
+        }
+      } else {
+        // STRING_REPLACE case
+        ExpressionTree methodSelect = mit.methodSelect();
+        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)
+          && canBeEmpty(((MemberSelectExpressionTree) methodSelect).expression())) {
+          reportIssue(mit.arguments().get(0), MESSAGE);
+        }
       }
     }
   }
 
-  private void checkStringReplace(MethodInvocationTree mit) {
-    ExpressionTree firstArgument = mit.arguments().get(0);
-    ExpressionTree methodSelect = mit.methodSelect();
-    if (isEmptyLineMultilineRegex(firstArgument)
-    && methodSelect.is(Tree.Kind.MEMBER_SELECT)
-    && canBeEmpty(((MemberSelectExpressionTree) methodSelect).expression())) {
-      reportIssue(firstArgument, MESSAGE);
-    }
-  }
-
-  private static boolean isEmptyLineMultilineRegex(ExpressionTree regexArgument) {
-    return regexArgument.asConstant(String.class).filter(EMPTY_LINE_MULTILINE_REGEX::equals).isPresent();
-  }
-
-  private static boolean isEmptyLineRegex(ExpressionTree regexArgument) {
-    return regexArgument.asConstant(String.class).filter(EMPTY_LINE_REGEX::equals).isPresent();
-  }
-
-  private static boolean isMultilineFlag(ExpressionTree flag) {
-    if (flag.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) flag;
-      return memberSelect.expression().symbolType().isSubtypeOf(JAVA_UTIL_PATTERN)
-        && "MULTILINE".equals(memberSelect.identifier().name());
-    }
-    return false;
-  }
-
-  private void reportIfUsedOnEmpty(MethodInvocationTree mit, Tree reportLocation) {
+  private static List<Tree> getStringNotTestedForEmpty(MethodInvocationTree mit) {
     Tree parent = mit.parent();
     if (parent != null && parent.is(Tree.Kind.VARIABLE)) {
       // Pattern stored in a variable, check all usage for possibly empty string
-      List<Tree> stringNotTestedForEmpty = ((VariableTree) parent).symbol().usages().stream()
+      return ((VariableTree) parent).symbol().usages().stream()
         .map(EmptyLineRegexCheck::getStringInMatcherFind)
         .filter(Optional::isPresent)
         .map(Optional::get)
         .filter(EmptyLineRegexCheck::canBeEmpty)
         .collect(Collectors.toList());
-
-      if (!stringNotTestedForEmpty.isEmpty()) {
-        reportWithSecondaries(reportLocation, stringNotTestedForEmpty);
-      }
     } else {
       // Pattern can be used directly
-      getStringInMatcherFind(mit)
+      return getStringInMatcherFind(mit)
         .filter(EmptyLineRegexCheck::canBeEmpty)
-        .ifPresent(str -> reportWithSecondaries(reportLocation, Collections.singletonList(str)));
+        .map(Collections::singletonList)
+        .orElseGet(Collections::emptyList);
     }
   }
 
-  private static Optional<ExpressionTree> getStringInMatcherFind(ExpressionTree mit) {
+  private static Optional<Tree> getStringInMatcherFind(ExpressionTree mit) {
     return MethodTreeUtils.subsequentMethodInvocation(mit, PATTERN_MATCHER)
       .filter(matcherMit -> MethodTreeUtils.subsequentMethodInvocation(matcherMit, PATTERN_FIND).isPresent())
       .map(matcherMit -> matcherMit.arguments().get(0));
   }
 
-  private static boolean canBeEmpty(ExpressionTree expressionTree) {
+  private static boolean canBeEmpty(Tree expressionTree) {
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
       Symbol identifierSymbol = ((IdentifierTree) expressionTree).symbol();
       Symbol owner = identifierSymbol.owner();
@@ -181,10 +152,42 @@ public class EmptyLineRegexCheck extends IssuableSubscriptionVisitor {
     return MethodTreeUtils.subsequentMethodInvocation(id, STRING_IS_EMPTY).isPresent();
   }
 
-  private void reportWithSecondaries(Tree reportLocation, List<Tree> secondaries) {
-    reportIssue(reportLocation, MESSAGE,
-      secondaries.stream().map(secondary -> new JavaFileScannerContext.Location("This string can be empty.", secondary)).collect(Collectors.toList()),
-      null);
+  private void reportWithSecondaries(Tree regex, List<Tree> secondaries) {
+    List<JavaFileScannerContext.Location> secondariesLocation =
+      secondaries.stream().map(secondary -> new JavaFileScannerContext.Location("This string can be empty.", secondary))
+        .collect(Collectors.toList());
+    reportIssue(regex, MESSAGE, secondariesLocation, null);
+  }
+
+  private static class EmptyLineMultilineVisitor extends RegexBaseVisitor {
+    boolean visitedStart = false;
+    boolean visitedEndAfterStart = false;
+    boolean containEmptyLine = false;
+
+    @Override
+    public void visitSequence(SequenceTree tree) {
+      List<RegexTree> items = tree.getItems().stream()
+        .filter(item -> !item.is(RegexTree.Kind.NON_CAPTURING_GROUP))
+        .collect(Collectors.toList());
+
+      if (items.size() == 2) {
+        super.visitSequence(tree);
+        containEmptyLine |= visitedEndAfterStart;
+      }
+      visitedStart = false;
+    }
+
+    @Override
+    public void visitBoundary(BoundaryTree boundaryTree) {
+      if (flagActive(Pattern.MULTILINE)) {
+        if (boundaryTree.type().equals(BoundaryTree.Type.LINE_START)) {
+          visitedStart = true;
+        } else if (boundaryTree.type().equals(BoundaryTree.Type.LINE_END)) {
+          visitedEndAfterStart = visitedStart;
+        }
+      }
+    }
+
   }
 
 }
