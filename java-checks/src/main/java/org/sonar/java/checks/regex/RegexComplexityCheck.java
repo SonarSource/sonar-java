@@ -59,15 +59,15 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
   private int max = DEFAULT_MAX;
 
   @Override
-  protected void checkRegexConstruction(ExpressionTree regexArgument, FlagSet flags, MethodInvocationTree mit) {
+  public void checkRegex(RegexParseResult parseResult, MethodInvocationTree mit) {
+    ExpressionTree regexArgument = mit.arguments().get(0);
+    // Other than getting the flags, the parse result is not used. We find and parse the parts of
+    // the regex ourselves because we want to count the complexity of each part individually if
+    // the regex is made out of parts stored in variables.
+    FlagSet flags = parseResult.getInitialFlags();
     for (LiteralTree[] regexPart : findRegexParts(regexArgument)) {
-      checkRegex(regexForLiterals(flags, regexPart), mit);
+      new ComplexityCalculator().visit(regexForLiterals(flags, regexPart));
     }
-  }
-
-  @Override
-  public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
-    new ComplexityCalculator().visit(regexForLiterals);
   }
 
   List<LiteralTree[]> findRegexParts(ExpressionTree regexArgument) {

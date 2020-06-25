@@ -35,7 +35,8 @@ public class RegexComplexityCheckWithThreshold0 {
   void partiallyKnown(String str, String pat1, String pat2) {
     str.matches(pat1 + pat2);
     str.matches("" + (2 * 21));
-    str.matches(pat1 + pat2 + "x*"); // Noncompliant {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
+    String known = "x*"; // Compliant because we ignore all parts of the regex if any part is unknown
+    str.matches(pat1 + pat2 + known);
   }
 
 }

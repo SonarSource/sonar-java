@@ -94,18 +94,14 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     }
     FlagSet flags = getFlags(mit);
     if (!flags.contains(Pattern.LITERAL)) {
-      checkRegexConstruction(args.get(0), flags, mit);
+      getLiterals(args.get(0))
+        .map(literals -> regexForLiterals(flags, literals))
+        .ifPresent(result -> checkRegex(result, mit));
     }
   }
 
-  protected RegexParseResult regexForLiterals(FlagSet flags, LiteralTree[] literals) {
+  protected final RegexParseResult regexForLiterals(FlagSet flags, LiteralTree[] literals) {
     return regexContext.regexForLiterals(flags, literals);
-  }
-
-  protected void checkRegexConstruction(ExpressionTree regexArgument, FlagSet flags, MethodInvocationTree mit) {
-    getLiterals(regexArgument)
-      .map(literals -> regexForLiterals(flags, literals))
-      .ifPresent(result -> checkRegex(result, mit));
   }
 
   @VisibleForTesting
