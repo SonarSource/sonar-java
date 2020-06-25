@@ -66,7 +66,7 @@ public class RegexBaseVisitor implements RegexVisitor {
   }
 
   /**
-   * Override to perform an action before the entire regex has been visited.
+   * Override to perform an action before any part of the regex is visited.
    */
   protected void before(RegexParseResult regexParseResult) {
     // does nothing unless overridden

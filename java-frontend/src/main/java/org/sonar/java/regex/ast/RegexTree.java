@@ -44,6 +44,10 @@ public abstract class RegexTree extends RegexSyntaxElement {
     super(source, range);
   }
 
+  /**
+   * This method should only be called by RegexBaseVisitor (or other implementations of the RegexVisitor interface).
+   * Do not call this method to invoke a visitor, use visitor.visit(tree) instead.
+   */
   public abstract void accept(RegexVisitor visitor);
 
   public abstract Kind kind();
