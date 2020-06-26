@@ -22,14 +22,24 @@ package org.sonar.java.regex.ast;
 public class JavaCharacter extends RegexSyntaxElement {
 
   private final char character;
+  private final boolean isEscapedUnicode;
 
   public JavaCharacter(RegexSource source, IndexRange range, char character) {
+    this(source, range, character, false);
+  }
+
+  public JavaCharacter(RegexSource source, IndexRange range, char character, boolean isEscapedUnicode) {
     super(source, range);
     this.character = character;
+    this.isEscapedUnicode = isEscapedUnicode;
   }
 
   public char getCharacter() {
     return character;
+  }
+
+  public boolean isEscapedUnicode() {
+    return isEscapedUnicode;
   }
 
 }

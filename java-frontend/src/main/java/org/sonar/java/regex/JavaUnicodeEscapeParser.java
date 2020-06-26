@@ -62,7 +62,8 @@ public class JavaUnicodeEscapeParser {
     }
     int startIndex = index;
     char ch;
-    if (index < sourceText.length() - 1 && sourceText.charAt(index) == '\\' && sourceText.charAt(index + 1) == 'u') {
+    boolean isEscapedUnicode = index < sourceText.length() - 1 && sourceText.charAt(index) == '\\' && sourceText.charAt(index + 1) == 'u';
+    if (isEscapedUnicode) {
       index += 2;
       while (sourceText.charAt(index) == 'u') {
         index++;
@@ -76,7 +77,7 @@ public class JavaUnicodeEscapeParser {
       ch = sourceText.charAt(index);
       index++;
     }
-    current = new JavaCharacter(source, new IndexRange(startIndex, index), ch);
+    current = new JavaCharacter(source, new IndexRange(startIndex, index), ch, isEscapedUnicode);
   }
 
 }
