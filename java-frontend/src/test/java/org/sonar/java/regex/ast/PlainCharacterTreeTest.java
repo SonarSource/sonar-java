@@ -21,15 +21,20 @@ package org.sonar.java.regex.ast;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.regex.RegexParserTestUtils.assertFailParsing;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 
 class PlainCharacterTreeTest {
 
   @Test
   void testSimpleCharacter() {
-    assertPlainCharacter('x', "x");
+    RegexTree x = assertSuccessfulParse("x");
+    assertPlainCharacter('x', x);
+    assertFalse(((PlainCharacterTree) x).getContents().isEscapedUnicode());
     assertPlainCharacter(' ', " ");
   }
 
@@ -54,9 +59,15 @@ class PlainCharacterTreeTest {
 
   @Test
   void unicodeEscapeSequences() {
-    assertPlainCharacter('\t', "\\u0009");
-    assertPlainCharacter('D', "\\u0044");
-    assertPlainCharacter('ö', "\\u00F6");
+    RegexTree u1 = assertSuccessfulParse("\\u0009");
+    assertPlainCharacter('\t', u1);
+    assertTrue(((PlainCharacterTree) u1).getContents().isEscapedUnicode());
+    RegexTree u2 = assertSuccessfulParse("\\u0044");
+    assertPlainCharacter('D', u2);
+    assertTrue(((PlainCharacterTree) u2).getContents().isEscapedUnicode());
+    RegexTree u3 = assertSuccessfulParse("\\u00F6");
+    assertPlainCharacter('ö', u3);
+    assertTrue(((PlainCharacterTree) u3).getContents().isEscapedUnicode());
   }
 
   @Test
