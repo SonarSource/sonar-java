@@ -28,7 +28,6 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.regex.RegexParseResult;
-import org.sonar.java.regex.ast.AtomicGroupTree;
 import org.sonar.java.regex.ast.BackReferenceTree;
 import org.sonar.java.regex.ast.CharacterClassIntersectionTree;
 import org.sonar.java.regex.ast.CharacterClassTree;
