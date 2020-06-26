@@ -269,14 +269,6 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
     }
 
     @Override
-    public void visitAtomicGroup(AtomicGroupTree tree) {
-      increaseComplexity(tree.getGroupHeader(), nesting);
-      nesting++;
-      super.visitAtomicGroup(tree);
-      nesting--;
-    }
-
-    @Override
     public void visitBackReference(BackReferenceTree tree) {
       increaseComplexity(tree, 1);
     }

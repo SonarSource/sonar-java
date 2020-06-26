@@ -9,6 +9,7 @@ public class RegexComplexityCheckWithThreshold0 {
     str.matches("");
     str.matches("abc");
     str.matches("(?:abc)");
+    str.matches("(?>abc)");
     str.matches("(abc)");
     str.matches("\\w.c");
   }
@@ -17,10 +18,6 @@ public class RegexComplexityCheckWithThreshold0 {
     // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
     str.matches(
       "(?=abc)"
-    );
-    // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
-    str.matches(
-      "(?>abc)"
     );
     // Noncompliant@+2 {{Simplify this regular expression to reduce its complexity from 1 to the 0 allowed.}}
     str.matches(
