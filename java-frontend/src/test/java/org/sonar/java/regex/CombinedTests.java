@@ -31,18 +31,21 @@ import org.sonar.java.regex.ast.SimpleQuantifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertLocation;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainCharacter;
 import static org.sonar.java.regex.RegexParserTestUtils.assertPlainString;
-import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
+import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParseResult;
 import static org.sonar.java.regex.RegexParserTestUtils.assertType;
 
 class CombinedTests {
 
   @Test
   void testNonTrivialRegex() {
-    RegexTree regex = assertSuccessfulParse("(ab|b)*(||)");
+    RegexParseResult parseResult = assertSuccessfulParseResult("(ab|b)*(||)");
+    assertFalse(parseResult.containsComments());
+    RegexTree regex = parseResult.getResult();
     assertLocation(0, 11, regex);
     assertKind(RegexTree.Kind.SEQUENCE, regex);
     assertFalse(regex.is(RegexTree.Kind.DISJUNCTION), "`is` should return false when kinds don't match");
@@ -83,7 +86,9 @@ class CombinedTests {
 
   @Test
   void testNonTrivialRegexInFreeSpacingMode() {
-    RegexTree regex = assertSuccessfulParse("(ab | b ) #this is a comment\\n*\\\\#(||)#this is another comment", true);
+    RegexParseResult parseResult = assertSuccessfulParseResult("(ab | b ) #this is a comment\\n*\\\\#(||)#this is another comment", true);
+    assertTrue(parseResult.containsComments());
+    RegexTree regex = parseResult.getResult();
     assertLocation(0, 62, regex);
     assertKind(RegexTree.Kind.SEQUENCE, regex);
     assertFalse(regex.is(RegexTree.Kind.DISJUNCTION), "`is` should return false when kinds don't match");

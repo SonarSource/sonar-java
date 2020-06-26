@@ -85,7 +85,7 @@ public class RegexParser {
       }
     } while (characters.isNotAtEnd());
     RegexTree result = combineTrees(results, (range, elements) -> new SequenceTree(source, range, elements));
-    return new RegexParseResult(result, initialFlags, errors);
+    return new RegexParseResult(result, initialFlags, errors, characters.hasComments());
   }
 
   private RegexTree parseDisjunction() {

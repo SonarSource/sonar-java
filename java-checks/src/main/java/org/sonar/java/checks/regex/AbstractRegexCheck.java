@@ -100,7 +100,7 @@ public abstract class AbstractRegexCheck extends AbstractMethodDetection impleme
     }
   }
 
-  protected final RegexParseResult regexForLiterals(FlagSet flags, LiteralTree[] literals) {
+  protected final RegexParseResult regexForLiterals(FlagSet flags, LiteralTree... literals) {
     return regexContext.regexForLiterals(flags, literals);
   }
 

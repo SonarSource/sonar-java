@@ -44,4 +44,14 @@ class RegexComplexityCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void testWithThreshold1() {
+    RegexComplexityCheck check = new RegexComplexityCheck();
+    check.setMax(1);
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/regex/RegexComplexityCheckWithThreshold1.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
 }

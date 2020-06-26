@@ -32,10 +32,13 @@ public class RegexParseResult {
 
   private final List<SyntaxError> syntaxErrors;
 
-  public RegexParseResult(RegexTree result, FlagSet initialFlags, List<SyntaxError> syntaxErrors) {
+  private final boolean containsComments;
+
+  public RegexParseResult(RegexTree result, FlagSet initialFlags, List<SyntaxError> syntaxErrors, boolean containsComments) {
     this.result = result;
     this.initialFlags = initialFlags;
     this.syntaxErrors = Collections.unmodifiableList(syntaxErrors);
+    this.containsComments = containsComments;
   }
 
   public RegexTree getResult() {
@@ -52,5 +55,9 @@ public class RegexParseResult {
 
   public boolean hasSyntaxErrors() {
     return !syntaxErrors.isEmpty();
+  }
+
+  public boolean containsComments() {
+    return containsComments;
   }
 }
