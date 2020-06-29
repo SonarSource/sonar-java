@@ -45,6 +45,11 @@ public interface RegexCheck extends JavaCheck {
       this.message = message;
     }
 
+    public RegexIssueLocation(RegexSyntaxElement start, RegexSyntaxElement end, String message) {
+      this.locations = textSpansBetweenRegexSyntaxElement(start, end);
+      this.message = message;
+    }
+
     private RegexIssueLocation(AnalyzerMessage.TextSpan location, String message) {
       this.locations = Collections.singletonList(location);
       this.message = message;
@@ -65,6 +70,21 @@ public interface RegexCheck extends JavaCheck {
       return locations.stream()
         .map(loc -> new RegexIssueLocation(loc, message))
         .collect(Collectors.toList());
+    }
+
+    private static List<AnalyzerMessage.TextSpan> textSpansBetweenRegexSyntaxElement(RegexSyntaxElement start, RegexSyntaxElement end) {
+      Location startLocation = start.getLocations().get(0);
+      AnalyzerMessage.TextSpan startSpan = AnalyzerMessage.textSpanFor(startLocation.getJavaTree());
+
+      Location endLocation = end.getLocations().get(0);
+      AnalyzerMessage.TextSpan endSpan = AnalyzerMessage.textSpanFor(endLocation.getJavaTree());
+
+      return Collections.singletonList(new AnalyzerMessage.TextSpan(
+        startSpan.startLine,
+        startSpan.startCharacter + startLocation.getBeginningOffset() + 1,
+        endSpan.endLine,
+        endSpan.startCharacter + endLocation.getEndingOffset() + 1
+      ));
     }
 
     private static List<AnalyzerMessage.TextSpan> textSpansFromRegexSyntaxElement(RegexSyntaxElement tree) {
