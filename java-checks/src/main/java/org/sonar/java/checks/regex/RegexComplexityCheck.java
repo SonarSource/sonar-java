@@ -40,6 +40,7 @@ import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexSyntaxElement;
 import org.sonar.java.regex.ast.RegexToken;
 import org.sonar.java.regex.ast.RepetitionTree;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -68,7 +69,6 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
   @Override
   public List<Tree.Kind> nodesToVisit() {
     List<Tree.Kind> nodes = new ArrayList<>(super.nodesToVisit());
-    nodes.add(Tree.Kind.COMPILATION_UNIT);
     nodes.add(Tree.Kind.TRIVIA);
     return nodes;
   }
@@ -92,15 +92,15 @@ public class RegexComplexityCheck extends AbstractRegexCheck {
   }
 
   @Override
-  public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      for (RegexConstructionInfo regexInfo : regexConstructions) {
-        FlagSet flags = regexInfo.initialFlags;
-        for (LiteralTree[] regexPart : findRegexParts(regexInfo)) {
-          new ComplexityCalculator().visit(regexForLiterals(flags, regexPart));
-        }
+  public void leaveFile(JavaFileScannerContext context) {
+    for (RegexConstructionInfo regexInfo : regexConstructions) {
+      FlagSet flags = regexInfo.initialFlags;
+      for (LiteralTree[] regexPart : findRegexParts(regexInfo)) {
+        new ComplexityCalculator().visit(regexForLiterals(flags, regexPart));
       }
     }
+    regexConstructions.clear();
+    commentedLines.clear();
   }
 
   List<LiteralTree[]> findRegexParts(RegexConstructionInfo regexInfo) {
