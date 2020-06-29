@@ -47,6 +47,7 @@ import org.sonar.java.checks.regex.AnchorPrecedenceCheck;
 import org.sonar.java.checks.regex.CanonEqFlagInRegexCheck;
 import org.sonar.java.checks.regex.DuplicatesInCharacterClassCheck;
 import org.sonar.java.checks.regex.EmptyLineRegexCheck;
+import org.sonar.java.checks.regex.GraphemeClustersInClassesCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
 import org.sonar.java.checks.regex.RedosCheck;
 import org.sonar.java.checks.regex.RegexComplexityCheck;
@@ -404,6 +405,7 @@ public final class CheckList {
       GetClassLoaderCheck.class,
       GetRequestedSessionIdCheck.class,
       GettersSettersOnRightFieldCheck.class,
+      GraphemeClustersInClassesCheck.class,
       HardCodedCredentialsCheck.class,
       HardcodedIpCheck.class,
       HardcodedURICheck.class,

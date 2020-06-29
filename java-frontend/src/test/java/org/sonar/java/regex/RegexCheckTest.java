@@ -66,6 +66,37 @@ class RegexCheckTest implements RegexCheck {
   }
 
   @Test
+  void testTextSpansBetweenRegexSyntaxElement() {
+    RegexTree regex = assertSuccessfulParse("ABCD");
+    assertKind(RegexTree.Kind.SEQUENCE, regex);
+
+    assertThat(regex.getLocations())
+      .hasSize(1)
+      .allMatch(loc -> !loc.isEmpty());
+
+    List<RegexTree> items = ((SequenceTree) regex).getItems();
+    assertThat(items).hasSize(4);
+
+    RegexTree A = items.get(0);
+    RegexTree B = items.get(1);
+    RegexTree D = items.get(3);
+
+    List<TextSpan> AB = correspondingTextSpansBetween(A,B);
+    assertThat(AB).hasSize(1);
+    TextSpan ABTestSpan = AB.get(0);
+
+    assertThat(ABTestSpan.startCharacter).isEqualTo(1);
+    assertThat(ABTestSpan.endCharacter).isEqualTo(3);
+
+    List<TextSpan> BD = correspondingTextSpansBetween(B,D);
+    assertThat(BD).hasSize(1);
+    TextSpan BDTestSpan = BD.get(0);
+
+    assertThat(BDTestSpan.startCharacter).isEqualTo(2);
+    assertThat(BDTestSpan.endCharacter).isEqualTo(5);
+  }
+
+  @Test
   void emptyRegex() {
     RegexTree regex = assertSuccessfulParse("");
     assertKind(RegexTree.Kind.SEQUENCE, regex);
@@ -76,6 +107,10 @@ class RegexCheckTest implements RegexCheck {
 
   private static List<TextSpan> correspondingTextSpans(RegexTree tree) {
     return new RegexCheck.RegexIssueLocation(tree, "message").locations();
+  }
+
+  private static List<TextSpan> correspondingTextSpansBetween(RegexTree start, RegexTree end) {
+    return new RegexCheck.RegexIssueLocation(start, end, "message").locations();
   }
 
 }
