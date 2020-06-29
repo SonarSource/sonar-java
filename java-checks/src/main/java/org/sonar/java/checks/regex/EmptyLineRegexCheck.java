@@ -29,6 +29,7 @@ import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.BoundaryTree;
+import org.sonar.java.regex.ast.NonCapturingGroupTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
 import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.SequenceTree;
@@ -167,10 +168,12 @@ public class EmptyLineRegexCheck extends AbstractRegexCheck {
     @Override
     public void visitSequence(SequenceTree tree) {
       List<RegexTree> items = tree.getItems().stream()
-        .filter(item -> !item.is(RegexTree.Kind.NON_CAPTURING_GROUP))
+        .filter(item -> !isNonCapturingWithoutChild(item))
         .collect(Collectors.toList());
 
-      if (items.size() == 2) {
+      if (items.size() == 1 && items.get(0).is(RegexTree.Kind.CAPTURING_GROUP)) {
+        super.visitSequence(tree);
+      } else if (items.size() == 2 && items.get(0).is(RegexTree.Kind.BOUNDARY) && items.get(1).is(RegexTree.Kind.BOUNDARY)) {
         super.visitSequence(tree);
         containEmptyLine |= visitedEndAfterStart;
       }
@@ -186,6 +189,10 @@ public class EmptyLineRegexCheck extends AbstractRegexCheck {
           visitedEndAfterStart = visitedStart;
         }
       }
+    }
+
+    private static boolean isNonCapturingWithoutChild(RegexTree tree) {
+      return tree.is(RegexTree.Kind.NON_CAPTURING_GROUP) && ((NonCapturingGroupTree) tree).getElement() == null;
     }
 
   }

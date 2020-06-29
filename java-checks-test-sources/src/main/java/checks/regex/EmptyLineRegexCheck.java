@@ -22,19 +22,25 @@ public class EmptyLineRegexCheck {
 
   void non_compliant_pattern_directly_used(String str) {
     Pattern.compile("^$", Pattern.MULTILINE).matcher(str).find(); // Noncompliant [[sc=21;ec=25]]
+    Pattern.compile("(^$)", Pattern.MULTILINE).matcher(str).find(); // Noncompliant
+    Pattern.compile("(?:^$)", Pattern.MULTILINE).matcher(str).find(); // Noncompliant
     Pattern.compile("(?m)^$").matcher(str).find(); // Noncompliant
+    Pattern.compile("(?m)(?x)^$").matcher(str).find(); // Noncompliant
+    Pattern.compile("(?m)(^$)").matcher(str).find(); // Noncompliant
     Pattern.compile("(?m)^$", Pattern.MULTILINE).matcher(str).find(); // Noncompliant
     Pattern.compile("(?mx)^$").matcher(str).find(); // Noncompliant
     Pattern.compile("(?mi)^$").matcher(str).find(); // Noncompliant
     Pattern.compile("(?m:^$)").matcher(str).find(); // Noncompliant
     Pattern.compile("^$", Pattern.MULTILINE | Pattern.COMMENTS).matcher(str).find(); // Noncompliant
+    Pattern.compile("^ $", Pattern.MULTILINE | Pattern.COMMENTS).matcher(str).find(); // Noncompliant
     Pattern.compile("^$|empty", Pattern.MULTILINE).matcher(str).find(); // Noncompliant
+    Pattern.compile("(e)(^$)|(?m)^$").matcher(str).find(); // Noncompliant
   }
 
   void nonCompliantOnString(String str) {
     Pattern.compile("^$", Pattern.MULTILINE).matcher("").find(); // Noncompliant
 
-    Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant [[secondary=39]]
+    Pattern p1 = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant [[secondary=45]]
     boolean b1 = p1.matcher("notEmpty").find();
     boolean b2 = p1.matcher("").find();
   }
@@ -70,9 +76,27 @@ public class EmptyLineRegexCheck {
     Pattern.compile("^$e", Pattern.MULTILINE).matcher(str).find(); // Compliant
     Pattern.compile("^e$", Pattern.MULTILINE).matcher(str).find(); // Compliant
     Pattern.compile("e^$", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("e(^$)", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("ee(^$)", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("(^$)e", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("(^$)ee", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("(e)(^$)", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("(e)(^)($)", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("[a-c]^$", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("[a-c](^$)", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("e(?m:^$)", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("ee(?m:^$)", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("(?m:e^)(?m:$e)", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("(?m)(e^$)").matcher(str).find(); // Compliant
     Pattern.compile("^^", Pattern.MULTILINE).matcher(str).find(); // Compliant
     Pattern.compile("$$", Pattern.MULTILINE).matcher(str).find(); // Compliant
     Pattern.compile("$\\B", Pattern.MULTILINE).matcher(str).find(); // Compliant
+    Pattern.compile("(?m:(?-m:^$))").matcher(str).find(); // Compliant
+
+    // 3 FN, we don't expect anyone writing this.
+    Pattern.compile("(?:^)(?:$)", Pattern.MULTILINE).matcher(str).find(); // FN
+    Pattern.compile("(?m:^)(?m:$)").matcher(str).find(); // FN
+    Pattern.compile("(^)($)", Pattern.MULTILINE).matcher(str).find(); // FN
   }
 
   void tested_for_emptiness(String str) {
@@ -104,7 +128,7 @@ public class EmptyLineRegexCheck {
   }
 
   boolean not_tested_for_emptiness(String str1, String str2) {
-    Pattern p4 = Pattern.compile("(?m)^$"); // Noncompliant [[secondary=112]]
+    Pattern p4 = Pattern.compile("(?m)^$"); // Noncompliant [[secondary=136]]
     if (str1.isEmpty()) {
       return false;
     }
