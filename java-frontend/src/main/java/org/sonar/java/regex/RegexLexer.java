@@ -39,6 +39,8 @@ public class RegexLexer {
 
   private boolean escaped = false;
 
+  private boolean hasComments = false;
+
   public RegexLexer(RegexSource source) {
     this.source = source;
     this.characters = new JavaCharacterParser(source);
@@ -139,6 +141,10 @@ public class RegexLexer {
     return buffer.get(offset).getCharacter();
   }
 
+  public boolean hasComments() {
+    return hasComments;
+  }
+
   private void emptyBuffer() {
     if (!buffer.isEmpty()) {
       characters.resetTo(buffer.get(0).getRange().getBeginningOffset());
@@ -163,6 +169,7 @@ public class RegexLexer {
   private void skipCommentsAndWhiteSpace() {
     while (characters.isNotAtEnd() && isSkippable(characters.getCurrent().getCharacter())) {
       if (characters.getCurrent().getCharacter() == '#') {
+        hasComments = true;
         while (characters.isNotAtEnd() && characters.getCurrent().getCharacter() != '\n') {
           consumeCharacter();
         }

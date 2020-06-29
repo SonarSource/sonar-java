@@ -21,14 +21,17 @@ package org.sonar.java.regex.ast;
 
 public class CharacterClassTree extends RegexTree {
 
+  private final JavaCharacter openingBracket;
+
   private final RegexTree contents;
 
   private final boolean negated;
 
-  public CharacterClassTree(RegexSource source, IndexRange range, boolean negated, RegexTree contents) {
+  public CharacterClassTree(RegexSource source, IndexRange range, JavaCharacter openingBracket, boolean negated, RegexTree contents) {
     super(source, range);
     this.negated = negated;
     this.contents = contents;
+    this.openingBracket = openingBracket;
   }
 
   public RegexTree getContents() {
@@ -37,6 +40,10 @@ public class CharacterClassTree extends RegexTree {
 
   public boolean isNegated() {
     return negated;
+  }
+
+  public JavaCharacter getOpeningBracket() {
+    return openingBracket;
   }
 
   @Override

@@ -28,15 +28,31 @@ public abstract class GroupTree extends RegexTree {
   @Nullable
   private final RegexTree element;
 
+  @Nullable
+  private final RegexToken groupHeader;
+
   public GroupTree(RegexSource source, RegexTree.Kind kind, @Nullable RegexTree element, IndexRange range) {
     super(source, range);
     this.kind = kind;
     this.element = element;
+    if (element != null) {
+      this.groupHeader = new RegexToken(source, new IndexRange(range.getBeginningOffset(), element.getRange().getBeginningOffset()));
+    } else {
+      this.groupHeader = null;
+    }
   }
 
   @Override
   public final RegexTree.Kind kind() {
     return kind;
+  }
+
+  /**
+   * The opening sequence of the group from the ( to the :. Returns null for non-capturing groups without a colon/body.
+   */
+  @Nullable
+  public RegexToken getGroupHeader() {
+    return groupHeader;
   }
 
   /**

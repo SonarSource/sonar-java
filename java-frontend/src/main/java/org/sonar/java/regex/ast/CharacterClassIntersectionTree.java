@@ -26,13 +26,20 @@ public class CharacterClassIntersectionTree extends RegexTree {
 
   private final List<RegexTree> characterClasses;
 
-  public CharacterClassIntersectionTree(RegexSource source, IndexRange range, List<RegexTree> characterClasses) {
+  private final List<RegexToken> andOperators;
+
+  public CharacterClassIntersectionTree(RegexSource source, IndexRange range, List<RegexTree> characterClasses, List<RegexToken> andOperators) {
     super(source, range);
     this.characterClasses = Collections.unmodifiableList(characterClasses);
+    this.andOperators = Collections.unmodifiableList(andOperators);
   }
 
   public List<RegexTree> getCharacterClasses() {
     return characterClasses;
+  }
+
+  public List<RegexToken> getAndOperators() {
+    return andOperators;
   }
 
   @Override
