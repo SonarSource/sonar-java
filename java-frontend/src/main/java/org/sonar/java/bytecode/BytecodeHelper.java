@@ -23,7 +23,7 @@ import org.objectweb.asm.Opcodes;
 
 public final class BytecodeHelper {
 
-  public static final int ASM_API_VERSION = Opcodes.ASM7;
+  public static final int ASM_API_VERSION = Opcodes.ASM8;
 
   private BytecodeHelper() {
     // Utility class
