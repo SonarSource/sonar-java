@@ -147,4 +147,41 @@ abstract class UnusedGroupNamesCheck {
     return null;
   }
 
+  static class UsingConstant {
+    private static final Pattern CONSTANT_PATTERN = Pattern.compile("(?<group>[a-z])");
+
+    java.util.Optional<String> extract(String value) {
+      return java.util.Optional.of(CONSTANT_PATTERN.matcher(
+        value))
+        .filter(Matcher::matches)
+        .map(match -> match.group("group")); // use "group"
+    }
+  }
+
+  static class UsingFields {
+    private static final Pattern CONSTANT_PATTERN = Pattern.compile("(?<group>[a-z])");
+    private Matcher matcher;
+
+    UsingFields(String value) {
+      this.matcher = CONSTANT_PATTERN.matcher(value);
+    }
+
+    void useMatcher() {
+      matcher.group("group"); // use "group"
+    }
+  }
+
+  static class UsingFields2 {
+    private static final Pattern CONSTANT_PATTERN = Pattern.compile("(?<group>[a-z])");
+    private final Matcher matcher;
+
+    UsingFields2(String value) {
+      this.matcher = CONSTANT_PATTERN.matcher(value);
+    }
+
+    void useMatcher() {
+      matcher.group(1); // Noncompliant [[secondary=175]] {{Directly use 'group' instead of its group number.}}
+    }
+  }
+
 }

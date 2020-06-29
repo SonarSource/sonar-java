@@ -45,6 +45,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -179,7 +180,15 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheck {
   private void collectPattern(MethodInvocationTree mit) {
     for (Symbol.VariableSymbol knownPattern : knownPatternsWithGroups.keySet()) {
       if (ExpressionUtils.isInvocationOnVariable(mit, knownPattern, false)) {
-        getAssignedPrivateVariable(mit).ifPresent(knownMatcher -> matcherToPattern.put(knownMatcher, knownPattern));
+        Optional<Symbol.VariableSymbol> matcher = getAssignedPrivateVariable(mit);
+        if (matcher.isPresent()) {
+          matcherToPattern.put(matcher.get(), knownPattern);
+        } else {
+          // Kill the noise
+          // can be the case if used within a stream operation
+          // discard the pattern, we lost its track
+          knownPatternsWithGroups.remove(knownPattern);
+        }
         break;
       }
     }
@@ -253,6 +262,11 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheck {
       ExpressionTree variable = ((AssignmentExpressionTree) parent).variable();
       if (variable.is(Tree.Kind.IDENTIFIER)) {
         symbol = ((IdentifierTree) variable).symbol();
+      } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) variable;
+        if (ExpressionUtils.isSelectOnThisOrSuper(mset)) {
+          symbol = mset.identifier().symbol();
+        }
       }
     }
     if (symbol == null || !isPrivateEffectivelyFinalVariable(symbol)) {
