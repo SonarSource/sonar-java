@@ -58,7 +58,8 @@ public class UseSwitchExpressionCheck extends IssuableSubscriptionVisitor implem
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.asInt() == 13;
+    // switch-expression is standard since Java 14
+    return version.asInt() >= 14;
   }
 
   @Override

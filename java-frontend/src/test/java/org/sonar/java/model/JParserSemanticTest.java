@@ -55,11 +55,13 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -73,6 +75,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JParserSemanticTest {
 
@@ -468,9 +471,29 @@ class JParserSemanticTest {
 
   @Test
   void expression_switch() {
-    ExpressionTree expression = expression("switch (0) { default -> 0; case 0 -> 0; }");
-    assertThat(expression).isInstanceOf(AbstractTypedTree.class);
-    assertThat(expression.symbolType().isUnknown()).isTrue();
+    {
+      SwitchExpressionTreeImpl switchExpression = (SwitchExpressionTreeImpl) expression("switch (0) { default: yield 0; }");
+      BreakStatementTreeImpl breakStatement = (BreakStatementTreeImpl) switchExpression.cases().get(0).body().get(0);
+      assertThat(breakStatement.breakKeyword().text()).isEqualTo("yield");
+      assertThat(breakStatement.value()).isNotNull();
+    }
+    {
+      SwitchExpressionTreeImpl switchExpression = (SwitchExpressionTreeImpl) expression("switch (0) { default -> 0; case 0, 1 -> 0; }");
+      assertThat(switchExpression).isInstanceOf(AbstractTypedTree.class);
+      assertThat(switchExpression.symbolType().isUnknown()).isTrue();
+      CaseLabelTree caseLabel = switchExpression.cases().get(1).labels().get(0);
+      assertThat(caseLabel.colonOrArrowToken().text()).isEqualTo("->");
+      assertThat(caseLabel.expressions()).hasSize(2);
+    }
+  }
+
+  /**
+   * Pattern Matching for instanceof (Preview in Java 14) https://openjdk.java.net/jeps/305
+   */
+  @Test
+  void expression_instanceof() {
+    assertThrows(IllegalStateException.class,
+      () -> expression("o instanceof String s"));
   }
 
   /**
@@ -881,6 +904,15 @@ class JParserSemanticTest {
     TypeParameterTreeImpl typeParameter = (TypeParameterTreeImpl) c.typeParameters().get(0);
     assertThat(typeParameter.typeBinding)
       .isNotNull();
+  }
+
+  /**
+   * Records (Preview in Java 14) https://openjdk.java.net/jeps/359
+   */
+  @Test
+  void declaration_record() {
+    assertThrows(IllegalStateException.class,
+      () -> test("record Point(int x, int y) { }"));
   }
 
   /**

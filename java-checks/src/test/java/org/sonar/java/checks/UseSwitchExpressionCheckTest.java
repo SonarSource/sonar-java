@@ -31,12 +31,12 @@ class UseSwitchExpressionCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UseSwitchExpressionCheck.java")
       .withCheck(new UseSwitchExpressionCheck())
-      .withJavaVersion(13)
+      .withJavaVersion(14)
       .verifyIssues();
   }
 
   @Test
-  void test_no_issue_below_java_13() {
+  void test_no_issue_below_java_14() {
     JavaCheckVerifier.newVerifier()
       .onFile(testSourcesPath("checks/UseSwitchExpressionCheck_java11.java"))
       .withCheck(new UseSwitchExpressionCheck())
@@ -47,6 +47,11 @@ class UseSwitchExpressionCheckTest {
       .withCheck(new UseSwitchExpressionCheck())
       .withJavaVersion(12)
       .verifyNoIssues();
+    JavaCheckVerifier.newVerifier()
+      .onFile(testSourcesPath("checks/UseSwitchExpressionCheck_java11.java"))
+      .withCheck(new UseSwitchExpressionCheck())
+      .withJavaVersion(13)
+      .verifyNoIssues();
   }
 
   @Test
@@ -54,7 +59,7 @@ class UseSwitchExpressionCheckTest {
     JavaCheckVerifier.newVerifier()
       .onFile("src/test/files/checks/UseSwitchExpressionCheck.java")
       .withCheck(new UseSwitchExpressionCheck())
-      .withJavaVersion(13)
+      .withJavaVersion(14)
       .withoutSemantic()
       .verifyNoIssues();
   }

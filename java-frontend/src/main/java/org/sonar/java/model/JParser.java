@@ -243,7 +243,7 @@ public class JParser {
 
   private static final Logger LOG = Loggers.get(JParser.class);
 
-  public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "13";
+  public static final String MAXIMUM_SUPPORTED_JAVA_VERSION = "14";
 
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
@@ -255,7 +255,7 @@ public class JParser {
     String source,
     List<File> classpath
   ) {
-    ASTParser astParser = ASTParser.newParser(AST.JLS13);
+    ASTParser astParser = ASTParser.newParser(AST.JLS14);
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_COMPLIANCE, version);
     options.put(JavaCore.COMPILER_SOURCE, version);
@@ -1697,17 +1697,8 @@ public class JParser {
 
         SwitchCase c = (SwitchCase) o;
 
-        final List expressionsToConvert;
-        if (c.getAST().isPreviewEnabled()) {
-          expressionsToConvert = c.expressions();
-        } else if (c.isDefault()) {
-          expressionsToConvert = Collections.emptyList();
-        } else {
-          expressionsToConvert = Collections.singletonList(c.getExpression());
-        }
-
         List<ExpressionTree> expressions = new ArrayList<>();
-        for (Object oo : expressionsToConvert) {
+        for (Object oo : c.expressions()) {
           expressions.add(
             convertExpression((Expression) oo)
           );
@@ -2156,6 +2147,9 @@ public class JParser {
       }
       case ASTNode.INSTANCEOF_EXPRESSION: {
         InstanceofExpression e = (InstanceofExpression) node;
+        if (e.getAST().isPreviewEnabled() && e.getPatternVariable() != null) {
+          throw new IllegalStateException();
+        }
         return new InstanceOfTreeImpl(
           firstTokenAfter(e.getLeftOperand(), TerminalTokens.TokenNameinstanceof),
           convertType(e.getRightOperand())
