@@ -22,17 +22,14 @@ package org.sonar.java.checks.regex;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterClassTree;
 import org.sonar.java.regex.ast.CharacterClassUnionTree;
-import org.sonar.java.regex.ast.JavaCharacter;
-import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.java.regex.ast.RegexSyntaxElement;
-import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+
+import static org.sonar.java.checks.helpers.RegexTreeHelper.getGraphemeInList;
 
 @Rule(key = "S5868")
 public class GraphemeClustersInClassesCheck extends AbstractRegexCheck {
@@ -63,40 +60,10 @@ public class GraphemeClustersInClassesCheck extends AbstractRegexCheck {
 
     @Override
     public void visitCharacterClassUnion(CharacterClassUnionTree tree) {
-      RegexSyntaxElement startGrapheme = null;
-      RegexSyntaxElement endGrapheme = null;
-      for (RegexTree child : tree.getCharacterClasses()) {
-        if (child.is(RegexTree.Kind.PLAIN_CHARACTER)) {
-          JavaCharacter currentCharacter = ((PlainCharacterTree) child).getContents();
-          if (!currentCharacter.isEscapedUnicode()) {
-            if (!isMark(currentCharacter)) {
-              addCurrentGrapheme(startGrapheme, endGrapheme);
-              startGrapheme = child;
-              endGrapheme = null;
-            } else if (startGrapheme != null) {
-              endGrapheme = child;
-            }
-            continue;
-          }
-        }
-        addCurrentGrapheme(startGrapheme, endGrapheme);
-        startGrapheme = null;
-        endGrapheme = null;
-      }
-      addCurrentGrapheme(startGrapheme, endGrapheme);
-
+      graphemeClusters.addAll(getGraphemeInList(tree.getCharacterClasses()));
       super.visitCharacterClassUnion(tree);
     }
 
-    private void addCurrentGrapheme(@Nullable RegexSyntaxElement start, @Nullable RegexSyntaxElement end) {
-      if (start != null && end != null) {
-        graphemeClusters.add(new RegexIssueLocation(start, end, ""));
-      }
-    }
-
-    private boolean isMark(JavaCharacter currentChar) {
-      return MARK_PATTERN.matcher(String.valueOf(currentChar.getCharacter())).matches();
-    }
   }
 
 }
