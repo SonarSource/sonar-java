@@ -1,0 +1,16 @@
+{
+  "title": "Empty lines should not be tested with regex MULTILINE flag",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "regex"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-5846",
+  "sqKey": "S5846",
+  "scope": "All"
+}

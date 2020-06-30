@@ -1,0 +1,44 @@
+<p>One way to test for empty lines is to use the regex <code>"^$"</code>, which can be extremely handy when filtering out empty lines from collections
+of Strings, for instance. With regard to this, the Javadoc for <a
+href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/regex/Pattern.html">Pattern (Line Terminators)</a> states the
+following:</p>
+<blockquote>
+  <p>By default, the regular expressions ^ and <code>$</code> ignore line terminators and only match at the beginning and the end, respectively, of
+  the entire input sequence. If <code>MULTILINE</code> mode is activated then ^ matches at the beginning of input and after any line terminator
+  <strong>except at the end of input</strong>. When in <code>MULTILINE</code> mode <code>$</code> matches just before a line terminator or the end of
+  the input sequence.</p>
+</blockquote>
+<p>As emphasized, ^ is not going to match at the end of an input, and the end of the input is necessarily included in the empty string, which might
+lead to completely missing empty lines, while it would be the initial reason for using such regex.</p>
+<p>Therefore, when searching for empty lines using a multi-line regular expression, you should also check whether the string is empty.</p>
+<p>This rule is raising an issue every time a pattern that can match the empty string is used with <code>MULTILINE</code> flag and without calling
+<code>isEmpty()</code> on the string.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+static final Pattern p = Pattern.compile("^$", Pattern.MULTILINE); // Noncompliant
+
+// Alternatively
+static final Pattern p = Pattern.compile("(?m)^$"); // Noncompliant
+
+
+boolean containsEmptyLines(String str) {
+    return p.matcher(str).find();
+}
+
+// ...
+System.out.println(containsEmptyLines("a\n\nb")); // correctly prints 'true'
+System.out.println(containsEmptyLines("")); // incorrectly prints 'false'
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+static final Pattern p = Pattern.compile("^$", Pattern.MULTILINE);
+
+boolean containsEmptyLines(String str) {
+    return p.matcher(str).find() || str.isEmpty();
+}
+
+// ...
+System.out.println(containsEmptyLines("a\n\nb")); // correctly prints 'true'
+System.out.println(containsEmptyLines("")); // also correctly prints 'false'
+</pre>
+

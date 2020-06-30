@@ -69,7 +69,7 @@ public class BoundaryTree extends RegexTree {
     return RegexTree.Kind.BOUNDARY;
   }
 
-  Type type() {
+  public Type type() {
     return type;
   }
 
