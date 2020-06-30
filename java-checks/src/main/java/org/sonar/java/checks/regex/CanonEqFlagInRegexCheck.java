@@ -26,13 +26,13 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.CharacterClassTree;
-import org.sonar.java.regex.ast.JavaCharacter;
 import org.sonar.java.regex.ast.PlainCharacterTree;
 import org.sonar.java.regex.ast.RegexBaseVisitor;
-import org.sonar.java.regex.ast.RegexTree;
 import org.sonar.java.regex.ast.SequenceTree;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+
+import static org.sonar.java.checks.helpers.RegexTreeHelper.getGraphemeInList;
 
 @Rule(key = "S5854")
 public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
@@ -91,23 +91,7 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
 
     @Override
     public void visitSequence(SequenceTree tree) {
-      char previousChar = 0;
-
-      for (RegexTree element : tree.getItems()) {
-        if (element.is(RegexTree.Kind.PLAIN_CHARACTER)) {
-          JavaCharacter currentCharacter = ((PlainCharacterTree) element).getContents();
-
-          if (!currentCharacter.isEscapedUnicode()) {
-            if (canCanonicallyCombine(previousChar, currentCharacter.getCharacter())) {
-              subjectToNormalization.add(new RegexIssueLocation(tree, ""));
-            }
-            previousChar = currentCharacter.getCharacter();
-            continue;
-          }
-        }
-        previousChar = 0;
-      }
-
+      subjectToNormalization.addAll(getGraphemeInList(tree.getItems()));
       super.visitSequence(tree);
     }
 
@@ -128,9 +112,6 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
       return !Normalizer.isNormalized(str, Normalizer.Form.NFD);
     }
 
-    private static boolean canCanonicallyCombine(char previousChar, char currentChar) {
-      return Normalizer.normalize(new StringBuilder().append(previousChar).append(currentChar), Normalizer.Form.NFC).length() == 1;
-    }
   }
 
 }

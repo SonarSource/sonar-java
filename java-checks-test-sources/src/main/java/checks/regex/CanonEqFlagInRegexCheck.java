@@ -20,11 +20,11 @@ public class CanonEqFlagInRegexCheck {
     Pattern.compile("aèa"); // Noncompliant
     Pattern.compile("aè"); // Noncompliant
     Pattern.compile("èa"); // Noncompliant
+    Pattern.compile("e⃝"); // Noncompliant
     Pattern.compile("a|è|a"); // Noncompliant
     Pattern.compile("\\dè"); // Noncompliant
     // Letter "e" followed by 4 marks
     Pattern.compile("è̀̀̀"); // Noncompliant
-
   }
 
   void can_not_set_flag_directly() {
@@ -47,8 +47,8 @@ public class CanonEqFlagInRegexCheck {
     Pattern.compile("a|e|̀|a"); // Compliant, mark alone (look closely...)
     Pattern.compile("\\d̀"); // Compliant
 
-    Pattern.compile("e\u20DD̀"); // Compliant, can not be canonically combined
-    Pattern.compile("e⃝"); // Compliant, can not be canonically combined
+    Pattern.compile("e\u20DD̀"); // Compliant
+
 
     Pattern.compile("[ée]"); // Compliant, CANON_EQ will not solve the problem, S5868 will target it.
     Pattern.compile("é", Pattern.CANON_EQ); // Compliant, flag is set
