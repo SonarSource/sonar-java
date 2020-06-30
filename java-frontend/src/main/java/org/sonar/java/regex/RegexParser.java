@@ -495,7 +495,7 @@ public class RegexParser {
   private RegexTree parseNumericalBackReference(JavaCharacter backslash) {
     JavaCharacter firstDigit = characters.getCurrent();
     JavaCharacter lastDigit = firstDigit;
-    // TODO If there are multiple digits and the first one is 0, it's an octal escape, not a back reference
+    // TODO If the first digit is 0, it's an octal escape, not a back reference
     do {
       characters.moveNext();
       if (!characters.isAtEnd()) {
