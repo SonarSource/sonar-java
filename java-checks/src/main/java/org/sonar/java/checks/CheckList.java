@@ -49,6 +49,7 @@ import org.sonar.java.checks.regex.DuplicatesInCharacterClassCheck;
 import org.sonar.java.checks.regex.EmptyLineRegexCheck;
 import org.sonar.java.checks.regex.GraphemeClustersInClassesCheck;
 import org.sonar.java.checks.regex.ImpossibleRegexCheck;
+import org.sonar.java.checks.regex.EmptyStringRepetitionCheck;
 import org.sonar.java.checks.regex.InvalidRegexCheck;
 import org.sonar.java.checks.regex.RedosCheck;
 import org.sonar.java.checks.regex.RegexComplexityCheck;
@@ -368,6 +369,7 @@ public final class CheckList {
       EmptyLineRegexCheck.class,
       EmptyMethodsCheck.class,
       EmptyStatementUsageCheck.class,
+      EmptyStringRepetitionCheck.class,
       EncryptionAlgorithmCheck.class,
       EnumEqualCheck.class,
       EnumMapCheck.class,
