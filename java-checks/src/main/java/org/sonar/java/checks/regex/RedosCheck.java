@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks.regex;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.regex.RegexParseResult;
 import org.sonar.java.regex.ast.AtomicGroupTree;
 import org.sonar.java.regex.ast.Quantifier;
@@ -32,20 +32,21 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 @Rule(key = "S5852")
 public class RedosCheck extends AbstractRegexCheck {
 
-  private static final String MESSAGE = "Make sure this regex cannot lead to denial of service here.";
-
-  private static final String SECONDARY_MESSAGE = "Nested non-possessive unbounded repetition";
+  private static final String MESSAGE = "Make sure the regex used in this method call cannot lead to denial of service.";
 
   @Override
   public void checkRegex(RegexParseResult regexForLiterals, MethodInvocationTree mit) {
-    new NestedRepetitionsFinder().visit(regexForLiterals);
+    NestedRepetitionsFinder visitor = new NestedRepetitionsFinder();
+    visitor.visit(regexForLiterals);
+    if (visitor.containsOffendingRepetitions) {
+      reportIssue(ExpressionUtils.methodName(mit), MESSAGE, null, Collections.emptyList());
+    }
   }
 
-  private class NestedRepetitionsFinder extends RegexBaseVisitor {
+  private static class NestedRepetitionsFinder extends RegexBaseVisitor {
 
     private boolean isInsideRepetition = false;
-
-    private final List<RegexIssueLocation> offendingRepetitions = new ArrayList<>();
+    private boolean containsOffendingRepetitions = false;
 
     @Override
     public void visitRepetition(RepetitionTree tree) {
@@ -53,7 +54,7 @@ public class RedosCheck extends AbstractRegexCheck {
         && tree.getQuantifier().getModifier() != Quantifier.Modifier.POSSESSIVE;
       if (isPotentiallyProblematic) {
         if (isInsideRepetition) {
-          offendingRepetitions.add(new RegexIssueLocation(tree, SECONDARY_MESSAGE));
+          containsOffendingRepetitions = true;
           return;
         }
         isInsideRepetition = true;
@@ -73,13 +74,6 @@ public class RedosCheck extends AbstractRegexCheck {
       isInsideRepetition = false;
       super.visitAtomicGroup(tree);
       isInsideRepetition = oldIsInsideRepetition;
-    }
-
-    @Override
-    protected void after(RegexParseResult regexParseResult) {
-      if (!offendingRepetitions.isEmpty()) {
-        reportIssue(regexParseResult.getResult(), MESSAGE, null, offendingRepetitions);
-      }
     }
   }
 
