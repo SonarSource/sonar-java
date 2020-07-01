@@ -47,7 +47,7 @@ public class RegexBaseVisitor implements RegexVisitor {
     return activeFlags.getJavaCharacterForFlag(flag);
   }
 
-  private void visit(RegexTree tree) {
+  protected void visit(RegexTree tree) {
     tree.accept(this);
   }
 
