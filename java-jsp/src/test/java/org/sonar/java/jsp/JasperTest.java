@@ -46,6 +46,7 @@ import org.sonar.api.utils.log.LogTester;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.java.model.GeneratedFile;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,6 +77,8 @@ class JasperTest {
   public LogTester logTester = new LogTester();
   private Path jspFile;
   private final File springJar = Paths.get("target/test-jars/spring-webmvc-5.2.3.RELEASE.jar").toFile();
+  private final File jstlJar = Paths.get("target/test-jars/jstl-1.2.jar").toFile();
+  private final File jee6Jar = Paths.get("target/test-jars/javaee-web-api-6.0.jar").toFile();
 
   @BeforeEach
   void setUp() throws Exception {
@@ -127,6 +130,24 @@ class JasperTest {
     assertThat(generatedCode).contains("    org.springframework.web.servlet.tags.UrlTag _jspx_th_spring_005furl_005f0 = new org.springframework.web.servlet.tags.UrlTag();");
   }
 
+
+  @Test
+  void test_with_classpath_jee6_jstl() throws Exception {
+    SensorContextTester ctx = jspContext(
+      "<%@ taglib uri = \"http://java.sun.com/jsp/jstl/core\" prefix = \"c\" %>\n" +
+      "<html>\n" +
+      "<body>\n" +
+      "<h2>Hello World!</h2>\n" +
+      "<c:if test=\"true\">what-if</c:if>\n" +
+      "</body>\n" +
+      "</html>");
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, asList(jee6Jar, jstlJar));
+
+    assertThat(generatedFiles).isEmpty();
+    assertThat(logTester.logs(LoggerLevel.DEBUG)).matches(logs -> logs.stream().anyMatch(line ->
+      line.startsWith("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp. Error:\njava.lang.ClassFormatError")));
+  }
+
   @Test
   void test_compilation_without_webinf() throws Exception {
     SensorContext ctx = jspContext(JSP_SOURCE, tempFolder.resolve("test.jsp"));
@@ -144,7 +165,9 @@ class JasperTest {
     SensorContextTester ctx = jspContext("<%=");
     Collection<GeneratedFile> inputFiles = new Jasper().generateFiles(ctx, emptyList());
     assertThat(inputFiles).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp");
+    assertThat(logTester.logs(LoggerLevel.DEBUG))
+      .matches(logs -> logs.stream().anyMatch(line ->
+        line.startsWith("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp.")));
     assertThat(logTester.logs(LoggerLevel.WARN)).contains("Some JSP pages failed to transpile. Enable debug log for details.");
   }
 
@@ -235,7 +258,10 @@ class JasperTest {
       stream().collect(Collectors.toMap(GeneratedFile::filename, f -> f));
 
     assertThat(generatedFiles).isEmpty();
-    assertThat(logTester.logs(LoggerLevel.DEBUG)).contains("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp");
+    assertThat(logTester.logs(LoggerLevel.DEBUG))
+      .matches(logs -> logs.stream().anyMatch(line ->
+      line.startsWith("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp. Error:\norg.apache.jasper.JasperException:")));
+
   }
 
   private SensorContextTester jspContext(String jspSource) throws IOException {

@@ -22,6 +22,9 @@
 	<e:forHtml value="${param.name}" /> <!-- Compliant: Sanitized with e:forHtml where "e" stands for OWASP Encoder -->
     <h1>${e:forHtml(param.name)}</h1> <!-- Compliant: Sanitized with e:forHtml where "e" stands for OWASP Encoder -->
 
+  <c:if test="true">
+    <b>true</b>
+  </c:if>
 </body>
 
 </html>
