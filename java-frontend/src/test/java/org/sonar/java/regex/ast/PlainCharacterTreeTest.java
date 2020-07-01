@@ -34,7 +34,7 @@ class PlainCharacterTreeTest {
   void testSimpleCharacter() {
     RegexTree x = assertSuccessfulParse("x");
     assertPlainCharacter('x', x);
-    assertFalse(((PlainCharacterTree) x).getContents().isEscapedUnicode());
+    assertFalse(((PlainCharacterTree) x).getContents().isEscapeSequence());
     assertPlainCharacter(' ', " ");
   }
 
@@ -58,16 +58,47 @@ class PlainCharacterTreeTest {
   }
 
   @Test
+  void octalEscapesWithDoubleBackslash() {
+    assertPlainCharacter('\n', "\\\\0012");
+    assertPlainCharacter('\n', "\\\\012");
+    assertPlainCharacter('D', "\\\\0104");
+    assertPlainString("D\n", "\\\\0104\\\\012");
+    assertPlainString("\nD", "\\\\012D");
+    assertPlainString("%6", "\\\\0456");
+  }
+
+  @Test
+  void errorsInOctalEscapesWithDoubleBackslash() {
+    assertFailParsing("\\\\0", "Expected octal digit, but found the end of the regex");
+    assertFailParsing("\\\\0x", "Expected octal digit, but found 'x'");
+  }
+
+  @Test
   void unicodeEscapeSequences() {
     RegexTree u1 = assertSuccessfulParse("\\u0009");
     assertPlainCharacter('\t', u1);
-    assertTrue(((PlainCharacterTree) u1).getContents().isEscapedUnicode());
+    assertTrue(((PlainCharacterTree) u1).getContents().isEscapeSequence());
     RegexTree u2 = assertSuccessfulParse("\\u0044");
     assertPlainCharacter('D', u2);
-    assertTrue(((PlainCharacterTree) u2).getContents().isEscapedUnicode());
+    assertTrue(((PlainCharacterTree) u2).getContents().isEscapeSequence());
     RegexTree u3 = assertSuccessfulParse("\\u00F6");
     assertPlainCharacter('ö', u3);
-    assertTrue(((PlainCharacterTree) u3).getContents().isEscapedUnicode());
+    assertTrue(((PlainCharacterTree) u3).getContents().isEscapeSequence());
+  }
+
+  @Test
+  void unicodeEscapesWithDoubleBackslash() {
+    assertPlainCharacter('\u1234', "\\\\u1234");
+    assertPlainCharacter('\n', "\\\\u000A");
+  }
+
+  @Test
+  void errorsInUnicodeEscapesWithDoubleBackslash() {
+    assertFailParsing("\\\\u123", "Expected hexadecimal digit, but found the end of the regex");
+    assertFailParsing("\\\\u123X", "Expected hexadecimal digit, but found 'X'");
+    // Note that using multiple 'u's is legal in Java Unicode escapes, but not in regex ones
+    assertFailParsing("\\\\uu1234", "Expected hexadecimal digit, but found 'u'");
+    assertPlainCharacter('\n', "\\\\u000A");
   }
 
   @Test

@@ -401,6 +401,7 @@ public class RegexParser {
         case 'P':
           return parseEscapedProperty(backslash);
         case '0':
+          return parseOctalEscape(backslash);
         case '1':
         case '2':
         case '3':
@@ -431,12 +432,31 @@ public class RegexParser {
         case 'v':
         case 'V':
           return parseEscapedCharacterClass(backslash);
+        case 'u':
+          return parseUnicodeEscape(backslash);
         default:
-          // TODO other kind of escape sequences such as quotations, special characters, N, x, u, R or X
+          // TODO other kind of escape sequences such as quotations, special characters, N, x, R or X
           characters.moveNext();
           return new PlainCharacterTree(source, backslash.getRange().merge(character.getRange()), character);
       }
     }
+  }
+
+  private RegexTree parseUnicodeEscape(JavaCharacter backslash) {
+    // Discard 'u'
+    characters.moveNext();
+    int i = 0;
+    char codeUnit = 0;
+    while (i < 4 && isHexDigit(characters.getCurrentChar())) {
+      codeUnit *= 16;
+      codeUnit += Integer.parseInt("" + characters.getCurrent().getCharacter(), 16);
+      characters.moveNext();
+      i++;
+    }
+    if (i < 4) {
+      expected("hexadecimal digit");
+    }
+    return plainCharacter(new JavaCharacter(source, backslash.getRange().extendTo(characters.getCurrentStartIndex()), codeUnit, true));
   }
 
   private RegexTree parseEscapedCharacterClass(JavaCharacter backslash) {
@@ -495,13 +515,12 @@ public class RegexParser {
   private RegexTree parseNumericalBackReference(JavaCharacter backslash) {
     JavaCharacter firstDigit = characters.getCurrent();
     JavaCharacter lastDigit = firstDigit;
-    // TODO If the first digit is 0, it's an octal escape, not a back reference
     do {
       characters.moveNext();
       if (!characters.isAtEnd()) {
         JavaCharacter currentChar = characters.getCurrent();
         char asChar = currentChar.getCharacter();
-        if (asChar >= '0' && asChar <= '9') {
+        if (isAsciiDigit(asChar)) {
           lastDigit = currentChar;
         } else {
           break;
@@ -509,6 +528,27 @@ public class RegexParser {
       }
     } while (!characters.isAtEnd());
     return new BackReferenceTree(source, backslash, null, firstDigit, lastDigit);
+  }
+
+  private RegexTree parseOctalEscape(JavaCharacter backslash) {
+    // Discard '0'
+    characters.moveNext();
+    char byteValue = 0;
+    int i = 0;
+    while (i < 3 && isOctalDigit(characters.getCurrentChar())) {
+      int newValue = byteValue * 8 + characters.getCurrentChar() - '0';
+      if (newValue > 0xFF) {
+        break;
+      }
+      byteValue = (char) newValue;
+      characters.moveNext();
+      i++;
+    }
+    if (i == 0) {
+      expected("octal digit");
+    }
+    IndexRange range = backslash.getRange().extendTo(characters.getCurrentStartIndex());
+    return plainCharacter(new JavaCharacter(source, range, byteValue, true));
   }
 
   private RegexTree parseBoundary(JavaCharacter backslash) {
@@ -683,6 +723,14 @@ public class RegexParser {
 
   private static boolean isAsciiDigit(int c) {
     return '0' <= c && c <= '9';
+  }
+
+  private static boolean isOctalDigit(int c) {
+    return '0' <= c && c <= '7';
+  }
+
+  private static boolean isHexDigit(int c) {
+    return ('0' <= c && c <= '9') || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F');
   }
 
   private static boolean isPlainTextCharacter(int c) {

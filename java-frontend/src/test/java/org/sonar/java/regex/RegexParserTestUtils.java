@@ -125,8 +125,10 @@ public class RegexParserTestUtils {
     assertLocation(index, index + str.length(), token);
   }
 
-  public static void assertPlainCharacter(char expected, String regex) {
-    assertPlainCharacter(expected, assertSuccessfulParse(regex));
+  public static void assertPlainCharacter(char expected, String regexSource) {
+    RegexTree regex = assertSuccessfulParse(regexSource);
+    assertLocation(0, regexSource.length(), regex);
+    assertPlainCharacter(expected, regex);
   }
 
   public static RegexTree assertCharacterClass(boolean expectNegated, RegexTree actual) {

@@ -46,7 +46,7 @@ public class RegexTreeHelper {
     for (RegexTree child : trees) {
       if (child.is(RegexTree.Kind.PLAIN_CHARACTER)) {
         JavaCharacter currentCharacter = ((PlainCharacterTree) child).getContents();
-        if (!currentCharacter.isEscapedUnicode()) {
+        if (!currentCharacter.isEscapeSequence()) {
           if (!isMark(currentCharacter)) {
             addCurrentGrapheme(result, startGrapheme, endGrapheme);
             startGrapheme = child;
