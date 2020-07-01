@@ -21,6 +21,8 @@ package org.sonar.java.jsp;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -87,9 +89,11 @@ public class Jasper {
         try {
           Path generatedFile = transpileJsp(jsp.path(), uriRoot, classLoader, servletContext, options, runtimeContext);
           generatedJavaFiles.put(generatedFile, new GeneratedFile(generatedFile));
-        } catch (Exception e) {
+        } catch (Exception | LinkageError e) {
           errorTranspiling = true;
-          LOG.debug("Error transpiling " + jsp, e);
+          StringWriter w = new StringWriter();
+          e.printStackTrace(new PrintWriter(w));
+          LOG.debug("Error transpiling {}. Error:\n{}", jsp, w.toString());
         }
       }
       if (errorTranspiling) {
