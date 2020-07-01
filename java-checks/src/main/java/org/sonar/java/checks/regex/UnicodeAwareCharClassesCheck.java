@@ -72,8 +72,19 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
 
     @Override
     protected void after(RegexParseResult regexParseResult) {
-      unicodeUnawareRange.forEach(unawareRange -> reportIssue(unawareRange,
-        "Replace this character range with a Unicode-aware character class.", null, Collections.emptyList()));
+      int unicodeUnawareRangeSize = unicodeUnawareRange.size();
+      if (unicodeUnawareRangeSize == 1) {
+        reportIssue(unicodeUnawareRange.get(0),
+          "Replace this character range with a Unicode-aware character class.", null, Collections.emptyList());
+      } else if (unicodeUnawareRangeSize > 1) {
+        List<RegexCheck.RegexIssueLocation> secondaries = unicodeUnawareRange.stream()
+          .map(tree -> new RegexIssueLocation(tree, "Character range"))
+          .collect(Collectors.toList());
+
+        reportIssue(regexParseResult.getResult(),
+          "Replace these character ranges with Unicode-aware character classes.", null, secondaries);
+      }
+
 
       if (!unicodeAwareWithFlag.isEmpty() && !containsUnicodeCharacterFlag) {
         List<RegexCheck.RegexIssueLocation> secondaries = unicodeAwareWithFlag.stream()

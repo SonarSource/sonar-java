@@ -27,12 +27,13 @@ public class UnicodeAwareCharClassesCheckTest {
     Pattern.compile("[A-Z]"); // Noncompliant
     Pattern.compile("[0-9a-z]"); // Noncompliant
     Pattern.compile("[abcA-Zdef]"); // Noncompliant
-    // Noncompliant@+1
-    Pattern.compile("[a-zA-Z]"); // Noncompliant
+    Pattern.compile("[a-zA-Z]"); // Noncompliant [[sc=22;ec=30;secondary=30,30]] {{Replace these character ranges with Unicode-aware character classes.}}
+    String regex = "[a-zA-Z]"; // Noncompliant
+    Pattern.compile(regex + regex);
   }
 
   void NoncompliantPredefinedPosixClasses() {
-    Pattern.compile("\\p{Lower}"); // Noncompliant [[sc=13;ec=20;secondary=35]] {{Enable the "UNICODE_CHARACTER_CLASS" flag or use a Unicode-aware alternative.}}
+    Pattern.compile("\\p{Lower}"); // Noncompliant [[sc=13;ec=20;secondary=36]] {{Enable the "UNICODE_CHARACTER_CLASS" flag or use a Unicode-aware alternative.}}
     Pattern.compile("\\p{Alnum}"); // Noncompliant
     Pattern.compile("\\p{Space}"); // Noncompliant
     Pattern.compile("\\s"); // Noncompliant
