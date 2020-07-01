@@ -83,6 +83,16 @@
                   <artifactId>spring-webmvc</artifactId>
                   <version>5.2.3.RELEASE</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>javax</groupId>
+                  <artifactId>javaee-web-api</artifactId>
+                  <version>6.0</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.servlet</groupId>
+                  <artifactId>jstl</artifactId>
+                  <version>1.2</version>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>
