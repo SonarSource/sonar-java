@@ -8,9 +8,6 @@
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ServerIdGenerator.java':[
 43,
-43,
-43,
-43,
 ],
 'org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projecttag/ws/SetAction.java':[
 48,
